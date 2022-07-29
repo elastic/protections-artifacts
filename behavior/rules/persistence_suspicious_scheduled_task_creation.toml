@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies the creation of a scheduled task with suspicious argument such as task path or parent process. This behavior
+is consistent with an adversary attempting to establish persistence.
+"""
+id = "beebd95c-93f4-46d2-a902-053bfe78686b"
+license = "Elastic License v2"
+name = "Suspicious Scheduled Task Creation"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+  process.pe.original_file_name : "schtasks.exe" and
+  not process.Ext.token.integrity_level_name == "system" and
+  process.args : ("/create", "-create") and process.args : "/tr" and
+  not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*") and
+  not process.Ext.token.integrity_level_name == "system" and
+  (
+   (process.args : "minute" and process.args : "/mo" and
+    process.args : ("*\\AppData\\*", "*\\ProgramData\\*", "*Users\\Public\\*") and
+    process.parent.name : ("wscript.exe", "RegSvcs.exe", "regsvr32.exe")) or
+
+   (process.args : "HIGHEST" and process.args : "ONLOGON" and
+    process.parent.name : ("wmiprvse.exe", "rundll32.exe", "regsvr32.exe") and
+    not process.parent.command_line : "*rundll32*zzzzInvokeManagedCustomActionOutOfProc*") or
+
+   (process.args : ("onlogon", "minute", "onstart", "daily", "once") and
+    process.parent.name : "cmd.exe" and process.parent.command_line : "*schtasks*" and
+    descendant of [process where event.action == "start" and not process.code_signature.trusted == true]) or
+
+   (process.args : ("SYSTEM", "NT AUTHORITY\\SYSTEM") and process.args : "/ru" and
+    process.command_line : ("*vssadmin*Delete*Shadows*", "*wmic*shadowcopy*", "*regsvr32*-s*"))
+  )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.005"
+name = "Scheduled Task"
+reference = "https://attack.mitre.org/techniques/T1053/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

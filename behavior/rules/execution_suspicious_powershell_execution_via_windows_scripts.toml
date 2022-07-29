@@ -1,0 +1,112 @@
+[rule]
+description = "Identifies suspicious PowerShell execution spawning from Windows Script Host processes (cscript or wscript.exe)."
+id = "3899dd3b-f31a-4634-8467-55326cd87597"
+license = "Elastic License v2"
+name = "Suspicious PowerShell Execution via Windows Scripts"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+  (process.name : ("powershell.exe", "pwsh.exe") or process.pe.original_file_name : ("powershell.exe", "pwsh.exe")) and
+  (
+   process.parent.name : ("wscript.exe", "cscript.exe") or
+   (descendant of [process where event.action == "start" and process.parent.name : ("wscript.exe", "cscript.exe")] and
+    not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
+   ) and
+   process.command_line :
+             ("*^*^*^*^*^*^*^*^*^*",
+              "*''*''*''*",
+              "*`*`*`*`*",
+              "*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*",
+              "*+*+*+*+*+*",
+              "*$*$*$*$*",
+              "*[char[]](*)*-join",
+              "*Base64String*",
+              "*[*Convert]*",
+              "*.Text.Encoding*",
+              "*.Compression.*",
+              "*.replace(*",
+              "*MemoryStream*",
+              "*WriteAllBytes*",
+              "* -en* *",
+              "* -ec *",
+              "* -e *",
+              "* -ep *",
+              "* /e *",
+              "* /en* *",
+              "* /ec *",
+              "* /ep *",
+              "*WebClient*",
+              "*DownloadFile*",
+              "*DownloadString*",
+              "*BitsTransfer*",
+              "*Invoke-Exp*",
+              "*invoke-web*",
+              "*iex*",
+              "*iwr*",
+              "*Reflection.Assembly*",
+              "*Assembly.GetType*",
+              "*.Sockets.*",
+              "*Add-MpPreference*ExclusionPath*",
+              "*raw.githubusercontent*") and
+    /* false positives */
+   not process.parent.name: ("gc_worker.exe", "gc_service.exe") and
+   not process.parent.command_line : "*Windows\\TEMP\\nessus_*" and
+   /* Issue #247 */
+   not process.parent.executable :
+                 ("?:\\Windows\\System32\\svchost.exe",
+                  "?:\\Windows\\System32\\CompatTelRunner.exe",
+                  "?:\\Windows\\System32\\taskeng.exe") and
+   not process.Ext.token.integrity_level_name == "system" and
+
+   /* many legit powershell commands uses those non shortened execution flags excluding Sync-AppvPublishingServer lolbas */
+   not (process.args : ("-EncodedCommand", "Import-Module*", "-NonInteractive") and
+        process.args : "-ExecutionPolicy" and not process.args : "Sync-AppvPublishingServer") and
+
+   /* third party installation related FPs */
+   not process.parent.args : "?:\\Windows\\system32\\gatherNetworkInfo.vbs" and
+   not (process.parent.args : "Microsoft.SystemCenter.ICMPProbe.WithConsecutiveSamples.vbs" and process.args : "Get-SCOMAgent") and
+   not (process.command_line : "*WEBLOGIC_ARGS_CURRENT_1.DATA*" and process.parent.command_line : "*Impact360*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

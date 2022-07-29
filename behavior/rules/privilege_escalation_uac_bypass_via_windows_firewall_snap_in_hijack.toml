@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) by hijacking the Microsoft Management Console (MMC) Windows
+Firewall snap-in. Attackers bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "65f52068-4d08-41af-9fd7-0c1a4f732494"
+license = "Elastic License v2"
+name = "UAC Bypass via Windows Firewall Snap-In Hijack"
+os_list = ["windows"]
+reference = ["https://github.com/AzAgarampur/byeintegrity-uac"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=60s
+ [file where event.action == "rename" and process.name : "dllhost.exe" and
+  file.path : "?:\\Windows\\assembly\\*\\Accessibility.ni.dll"]
+ [process where event.action == "start" and
+  process.Ext.token.integrity_level_name == "high" and
+  process.parent.name : "mmc.exe" and
+  process.parent.args : ("WF.msc", "?:\\WINDOWS\\system32\\WF.msc", "?:\\WINDOWS\\SysWOW64\\WF.msc") and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe",
+            "?:\\Windows\\System32\\wermgr.exe",
+            "?:\\Windows\\SysWOW64\\wermgr.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

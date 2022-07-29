@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies suspicious command line patterns that indicate LinPEAS execution. LinPEAS is a script that search for
+possible paths to escalate privileges on Linux/Unix/MacOS hosts.
+"""
+id = "92bb2a27-745b-4291-90a1-b7b654df1379"
+license = "Elastic License v2"
+name = "Privilege Escalation Enumeration via LinPEAS"
+os_list = ["linux", "macos"]
+reference = ["https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS"]
+version = "1.0.6"
+
+query = '''
+process where event.action == "exec" and
+  process.name == "sed" and process.command_line like "*ImPoSSssSiBlEee*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.14.0"

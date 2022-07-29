@@ -1,0 +1,43 @@
+[rule]
+description = """
+Identifies changes to the Safari configuration using the built-in defaults command. Adversaries may attempt to enable or
+disable certain Safari settings, such as enabling JavaScript from Apple Events to ease the user's browser's hijacking.
+"""
+id = "396e1138-243c-4215-a8ed-be303204710d"
+license = "Elastic License v2"
+name = "Modification of Safari Settings via Defaults Command"
+os_list = ["macos"]
+reference = ["https://objectivebythesea.com/v2/talks/OBTS_v2_Zohar.pdf"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and
+  process.name : "defaults" and process.args : "write" and
+  process.command_line : "*com.apple.Safari*" and process.command_line : ("*IncludeDevelopMenu*", "*JavaScript*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

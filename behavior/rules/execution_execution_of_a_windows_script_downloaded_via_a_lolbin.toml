@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies when a Windows script interpreter executes a file downloaded via commonly abused legit Windows binaries such
+as Certutil or BitsAdmin.
+"""
+id = "f60d4c82-2de5-4c70-95f5-cde9f3ad41a7"
+license = "Elastic License v2"
+name = "Execution of a Windows Script Downloaded via a LOLBIN"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=1m
+ [process where event.type == "start" and
+  process.pe.original_file_name : ("certutil.exe", "bitsadmin.exe", "CertReq.exe") and
+  process.command_line : ("*download*", "*transfer*", "*-decode*", "*http*")]
+ [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "cscript.exe", "mshta.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1197"
+name = "BITS Jobs"
+reference = "https://attack.mitre.org/techniques/T1197/"
+
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

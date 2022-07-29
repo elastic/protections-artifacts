@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies a Remote Desktop Protocol (RDP) network connection from an unusual client process. Adversaries may attempt to
+connect to a remote system over RDP to achieve lateral movement and in some cases, may avoid using the Microsoft
+Terminal Services Client (mstsc.exe) binary in an attempt to evade detection.
+"""
+id = "d448566e-486f-4b61-a76f-945662313d49"
+license = "Elastic License v2"
+name = "Unusual Remote Desktop Client Process"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+   [ library where dll.name : "mstscax.dll" and
+     process.executable:
+           ("?:\\Windows\\System32\\*.exe",
+            "?:\\Windows\\SysWOW64\\*.exe",
+            "?:\\Windows\\Microsoft.NET\\*",
+            "?:\\Windows\\notepad.exe") and
+     not process.executable :
+            ("?:\\Windows\\System32\\mstsc.exe",
+             "?:\\Windows\\SysWOW64\\mstsc.exe",
+             "?:\\Windows\\SysWOW64\\svchost.exe",
+             "?:\\Windows\\System32\\svchost.exe",
+             /* Issue #314 */
+             "?:\\Windows\\System32\\telnet.exe",
+             "?:\\Windows\\SysWOW64\\telnet.exe",
+             "?:\\Windows\\LTSvc\\LTSVC.exe",
+             "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+             "?:\\Windows\\System32\\MicrosoftEdgeCP.exe",
+             "?:\\Windows\\System32\\OpenSSH\\*.exe")]
+    [ network where network.direction : ("outgoing", "egress") and
+      destination.port == 3389 and source.port >= 49152 and
+      process.executable:
+           ("?:\\Windows\\System32\\*.exe",
+            "?:\\Windows\\SysWOW64\\*.exe",
+            "?:\\Windows\\Microsoft.NET\\*",
+            "?:\\Windows\\notepad.exe") ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.001"
+name = "Remote Desktop Protocol"
+reference = "https://attack.mitre.org/techniques/T1021/001/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.16.0"

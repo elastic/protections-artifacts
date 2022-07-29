@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies User Account Control (UAC) bypass via fodhelper.exe execution hijack. Attackers bypass UAC to stealthily
+execute code with elevated permissions.
+"""
+id = "b5c0058e-2bca-4ed5-84b3-4e017c039c57"
+license = "Elastic License v2"
+name = "UAC Bypass via FodHelper Execution Hijack"
+os_list = ["windows"]
+reference = ["https://github.com/hfiref0x/UACME"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=60s
+ [registry where registry.hive == "HKEY_USERS" and registry.data.strings != null and
+   registry.key : "*\\ms-settings*"]
+ [process where event.action == "start" and process.parent.name : "fodhelper.exe" and
+  process.Ext.token.integrity_level_name == "high" and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

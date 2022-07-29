@@ -1,0 +1,74 @@
+[rule]
+description = """
+Identifies the execution of a malicious application via rundll32.exe. Adversaries may abuse rundll32.exe to proxy
+execution of malicious code and bypass application whitelisting configuration.
+"""
+id = "f60455df-5054-49ff-9ff7-1dc4e37b6ea7"
+license = "Elastic License v2"
+name = "Binary Proxy Execution via Rundll32"
+os_list = ["windows"]
+reference = [
+    "https://lolbas-project.github.io/lolbas/Libraries/Shell32/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Zipfldr/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Pcwutl/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Advpack/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Ieadvpack/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Url/",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and
+   process.pe.original_file_name == "RUNDLL32.EXE" and
+   process.command_line :
+          ("*advpack*RegisterOCX*",
+           "*advpack*#12*",
+           "*zipfldr*RouteTheCall*",
+           "*pcwutl*LaunchApplication*",
+           "*pcwutl*#1*",
+           "*url.dll*FileProtocolHandler*file://*",
+           "*url.dll*FileProtocolHandler*.exe*",
+           "*shell32.dll*ShellExec_RunDLL*",
+           "*advpack*LaunchINFSection*") and
+   /* Issue #265 */
+   not (process.command_line : "*url.dll*FileProtocolHandler*" and
+        process.command_line : ("*http://*", "*zoommtg://*", "*://*&*&*")) and
+
+   /* Legit LaunchApplication instances via msdt */
+   not (process.command_line : "*pcwutl.dll,LaunchApplication*" and
+        process.parent.name :  "msdt.exe" and
+        process.working_directory : "?:\\Windows\\system32\\")] by process.entity_id
+  [process where event.action == "start" and
+   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+   not (process.name : "wscript.exe" and process.args : "Cathexis Archive Viewer.vbs") and
+   not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+   not process.Ext.token.integrity_level_name == "system"
+   ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

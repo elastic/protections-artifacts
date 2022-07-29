@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies attempts to tamper with the executable file of a process. Attackers may attempt to tamper with the executable
+file of a process in order to run or inject malicious code via techniques such as Process Ghosting or Process
+Doppelgänging. Attackers may use these techniques in attempts to evade process-based defenses and in some cases, to
+elevate privileges. Process Ghosting is a technique where an attacker can write a malicious file to disk in such a way
+that it is difficult for security tools to scan or delete - and where the deleted malicious file is subsequently
+executed as though it were a regular file on disk. Process Doppelgänging is a technique that exploits Transactional NTFS
+to execute arbitrary code in the address space of a separate running process, without committing the code to disk.
+"""
+id = "905f4c30-a8c5-40a5-80e3-a50c6714632f"
+license = "Elastic License v2"
+name = "Process Executable Image Tampering Attempt"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and 
+  process.Ext.defense_evasions : "Process Tampering: Image is locked for access"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.013"
+name = "Process Doppelgänging"
+reference = "https://attack.mitre.org/techniques/T1055/013/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

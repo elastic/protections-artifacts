@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies when a Windows Script module is loaded into the Microsoft Core XML Services (MSXML) process. This may
+indicate an attempt to bypass application whitelisting by executing a malicious script in a trusted process.
+"""
+id = "de3615bc-4e50-485e-b3b5-8548ef6faa3d"
+license = "Elastic License v2"
+name = "Script Execution via MSXSL"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/OtherMSBinaries/Msxsl/"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and process.pe.original_file_name == "msxsl.exe"]
+ [library where dll.name : ("scrobj.dll", "jscript.dll", "vbscript.dll", "jscript9.dll")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1220"
+name = "XSL Script Processing"
+reference = "https://attack.mitre.org/techniques/T1220/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

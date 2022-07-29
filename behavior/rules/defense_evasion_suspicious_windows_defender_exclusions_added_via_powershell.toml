@@ -1,0 +1,88 @@
+[rule]
+description = """
+Identifies modifications to the Windows Defender configuration settings using PowerShell to add exclusions at the folder
+directory or process level.
+"""
+id = "2ad8b514-baf0-4e29-a712-d6734868aa57"
+license = "Elastic License v2"
+name = "Suspicious Windows Defender Exclusions Added via PowerShell"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
+]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and
+   not process.Ext.token.integrity_level_name == "system" and
+   (
+    (process.code_signature.trusted != true) or
+    (process.executable : ("?:\\Windows\\Microsoft.NET\\*",
+                           "?:\\Users\\Public\\*",
+                           "?:\\Users\\*\\AppData\\Local\\Temp\\*",
+                           "?:\\Users\\*\\AppData\\Roaming\\*",
+                           "?:\\Users\\*\\Pictures\\*",
+                           "?:\\Users\\*\\Documents\\*",
+                           "?:\\Windows\\Resources\\Themes\\*",
+                           "?:\\ProgramData\\*") and not process.executable : "?:\\ProgramData\\*\\*") or
+    (process.name : ("rundll32.exe", "regsvr32.exe", "WScript.exe"))
+    )] by process.entity_id
+  [process where event.action == "start" and
+   process.name : ("cmd.exe", "powershell.exe") and
+   process.args : ("Add-MpPreference", "Set-MpPreference") and
+   process.args : ("-ExclusionPath", "-DisableRealtimeMonitoring", "-DisableScriptScanning", "-DisableArchiveScanning")] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

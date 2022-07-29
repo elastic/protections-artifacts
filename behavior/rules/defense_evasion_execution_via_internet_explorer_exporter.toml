@@ -1,0 +1,42 @@
+[rule]
+description = """
+Identifies the execution of the built-in Windows program, ExtExport, which can be used for execution via side-loading a
+malicious DLL with one of the following names: mozcrt19.dll, mozsqlite3.dll, or sqlite.dll.
+"""
+id = "e13a65b7-f46f-4c7f-85cf-7e59170071fa"
+license = "Elastic License v2"
+name = "Execution via Internet Explorer Exporter"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Extexport/"]
+version = "1.0.7"
+
+query = '''
+sequence by user.id with maxspan=5m
+ [file where event.action != "deletion" and
+  file.name : ("sqlite3.dll", "mozcrt19.dll", "mozsqlite3.dll") and
+  not file.path : ("?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")]
+ [process where event.action == "start" and process.pe.original_file_name : "extexport.exe" and
+  not process.executable : ("?:\\Program Files (x86)\\Internet Explorer\\ExtExport.exe",
+                            "?:\\Program Files\\Internet Explorer\\ExtExport.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

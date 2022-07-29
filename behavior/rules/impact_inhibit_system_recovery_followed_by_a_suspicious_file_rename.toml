@@ -1,0 +1,57 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings and subsequently followed by a
+suspicious file rename operation. This may indicate Ransomware behavior.
+"""
+id = "92f114fb-7113-4e82-b021-6c2c4ca0a507"
+license = "Elastic License v2"
+name = "Inhibit System Recovery Followed by a Suspicious File Rename"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5s
+ [process where event.action == "start" and
+  (
+    (process.pe.original_file_name == "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or
+    (process.pe.original_file_name == "VSSADMIN.EXE" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*")) or
+    (process.pe.original_file_name == "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+    (process.pe.original_file_name == "WBADMIN.EXE" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*") or
+    (process.pe.original_file_name == "iCACLS.EXE" and process.command_line : ("*/deny*S-1-1-0*", "*?:\\*\" /grant*Everyone:F*"))
+  )]
+ [file where event.action : "rename" and process.pid != 4 and
+  file.extension != null and file.Ext.entropy >= 7 and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
+  not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

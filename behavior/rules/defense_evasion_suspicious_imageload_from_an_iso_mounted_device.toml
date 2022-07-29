@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies instances of RunDLL32 or Regsvr32 loading a DLL from a mounted ISO device. Adversaries may deliver a
+malicious payload via an ISO file and execute it via rundll32.exe or regsvr32.
+"""
+id = "779b9502-7912-4773-95a1-51cd702a71c8"
+license = "Elastic License v2"
+name = "Suspicious ImageLoad from an ISO Mounted Device"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  process.name : ("rundll32.exe", "regsvr32.exe") and
+  process.parent.name : ("cmd.exe", "explorer.exe", "powershell.exe", "winrar.exe", "7zFM.exe")]
+ [library where process.name : ("rundll32.exe", "regsvr32.exe") and
+  not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+
+  /* loading dll from a mounted device */
+  (dll.path : "\\Device\\CdRom*" or dll.path regex """[d-zD-Z]:\\[0-9a-zA-Z\.]+""")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

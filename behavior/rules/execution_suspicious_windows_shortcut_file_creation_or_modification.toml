@@ -1,0 +1,105 @@
+[rule]
+description = """
+Identifies when an unusually large Windows Shortcut (LNK) file is created or modified with a suspicious file name.
+Adversaries may embed malicious scripts or files in a shortcut file before delivering it to their target and tricking
+them into executing the payload. Adversaries also leverage malicious shortcut files to maintain persistence on an
+endpoint and ensure that their malicious code is executed when a routine event occurs such as when a user logs in to
+Windows.
+"""
+id = "bc8949e6-98e0-4b50-96d4-88fdbb29f0d4"
+license = "Elastic License v2"
+name = "Suspicious Windows Shortcut File Creation or Modification"
+os_list = ["windows"]
+reference = ["https://docs.google.com/presentation/d/13SsBd0wI0PpyH5C8WlnE_DsJjy1KxAjZ5Dmke9FHfRE/"]
+version = "1.0.10"
+
+query = '''
+file where event.action == "creation" and
+
+   // limited to common archive file handlers
+    process.name : ("winrar.exe", "7zFM.exe") and
+
+    // Match shortcut (LNK) files by header (4C 00 00 00)
+    file.Ext.header_bytes : "4c000000*" and
+
+    // LNK files larger than 200,000 bytes
+    file.size > 200000 and
+
+    // LNK files with suspicious file extension combinations
+    file.name : (
+      "*.pdf.lnk",
+      "*.doc.lnk",
+      "*.docx.lnk",
+      "*.ppt.lnk",
+      "*.pptx.lnk",
+      "*.xls.lnk",
+      "*.xlsx.lnk",
+      "*.rtf.lnk",
+      "*.jpg.lnk",
+      "*.png.lnk",
+      "*.html.lnk",
+      "*.htm.lnk",
+      "*.txt.lnk",
+      "*.exe.lnk",
+      "*.mp4.lnk",
+      "*.avi.lnk",
+      "*.bat.lnk",
+      "*.rar.lnk",
+      "*.zip.lnk",
+      "*.img.lnk",
+      "*.iso.lnk"
+      )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

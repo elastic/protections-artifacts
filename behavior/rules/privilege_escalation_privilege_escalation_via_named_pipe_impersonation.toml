@@ -1,0 +1,40 @@
+[rule]
+description = """
+Identifies a privilege escalation attempt via named pipe impersonation. An adversary may abuse this technique by
+utilizing a framework like Metasploit's getsystem command.
+"""
+id = "a0265178-779d-4bc5-b3f1-abb3bcddedab"
+license = "Elastic License v2"
+name = "Privilege Escalation via Named Pipe Impersonation"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/privilege-escalation/windows-namedpipes-privilege-escalation",
+]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+   process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE") and process.command_line : "*echo*>*\\\\.\\pipe\\*" and
+   not (process.command_line : "*chrome-extension://*" and process.parent.executable : "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

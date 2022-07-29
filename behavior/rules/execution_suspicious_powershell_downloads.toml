@@ -1,0 +1,124 @@
+[rule]
+description = """
+Identifies PowerShell processes that attempted to download files and were descendants of Microsoft Office, document
+viewers, web browsers, or other business application software.
+"""
+id = "7200673e-588c-45d5-be48-bc5c7a908d6b"
+license = "Elastic License v2"
+name = "Suspicious PowerShell Downloads"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+  (process.name : ("powershell.exe", "pwsh.exe") or process.pe.original_file_name : ("powershell.exe", "pwsh.exe")) and
+   process.command_line : ("*.downloadstring*", "*.downloadfile*", "*.downloaddata*", "*BitsTransfer*") and
+   not process.Ext.token.integrity_level_name : "system" and
+  (process.parent.name : (
+      "winword.exe",
+      "excel.exe",
+      "outlook.exe",
+      "powerpnt.exe",
+      "eqnedt32.exe",
+      "fltldr.exe",
+      "mspub.exe",
+      "msaccess.exe",
+      "acrord32.exe",
+      "rdrcef.exe",
+      "foxitphantomPDF.exe",
+      "foxitreader.exe",
+      "firefox.exe",
+      "chrome.exe",
+      "iexplore.exe",
+      "opera.exe",
+      "plugin-container.exe",
+      "safari.exe",
+      "microsoftedge.exe",
+      "w3wp.exe",
+      "httpd.exe",
+      "nginx.exe",
+      "php.exe",
+      "php-cgi.exe",
+      "tomcat.exe",
+      "msbuild.exe",
+      "mshta.exe"
+      ) or
+  descendant of [process where event.action == "start" and
+    process.parent.name : (
+      "winword.exe",
+      "excel.exe",
+      "outlook.exe",
+      "powerpnt.exe",
+      "eqnedt32.exe",
+      "fltldr.exe",
+      "mspub.exe",
+      "msaccess.exe",
+      "acrord32.exe",
+      "rdrcef.exe",
+      "foxitphantomPDF.exe",
+      "foxitreader.exe",
+      "firefox.exe",
+      "chrome.exe",
+      "iexplore.exe",
+      "opera.exe",
+      "plugin-container.exe",
+      "safari.exe",
+      "microsoftedge.exe",
+      "w3wp.exe",
+      "httpd.exe",
+      "nginx.exe",
+      "php.exe",
+      "php-cgi.exe",
+      "tomcat.exe"
+    )]) and
+  not process.parent.executable : "?:\\Program Files\\JumpCloud\\jumpcloud-agent.exe" and
+  not (process.command_line : "*https://us.ri.logicnow.com*" and process.parent.name : "cscript.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

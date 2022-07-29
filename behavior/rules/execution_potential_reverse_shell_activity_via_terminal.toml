@@ -1,0 +1,56 @@
+[rule]
+description = "Identifies the execution of a shell process with suspicious arguments which may be indicative of reverse shell activity."
+id = "d0e45f6c-1f83-4d97-a8d9-c8f9eb61c15c"
+license = "Elastic License v2"
+name = "Potential Reverse Shell Activity via Terminal"
+os_list = ["linux", "macos"]
+reference = [
+    "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md",
+    "https://github.com/WangYihang/Reverse-Shell-Manager",
+    "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
+]
+version = "1.0.8"
+
+query = '''
+process where event.action == "exec" and
+  process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
+  process.args : ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and
+
+  /* noisy FPs */
+  not (process.parent.name : "timeout" and process.executable : "/var/lib/docker/overlay*") and
+  not process.command_line : ("*/dev/tcp/sirh_db/*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*", "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*") and
+  not process.parent.command_line : "runc init"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

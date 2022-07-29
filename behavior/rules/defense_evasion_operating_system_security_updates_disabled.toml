@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies changes to the SoftwareUpdate preferences using the built-in defaults command. Adversaries may abuse this in
+an attempt to disable security updates.
+"""
+id = "741ad90d-e8d0-4d29-b91b-3d68108cb789"
+license = "Elastic License v2"
+name = "Operating System Security Updates Disabled"
+os_list = ["macos"]
+reference = ["https://blog.checkpoint.com/2017/07/13/osxdok-refuses-go-away-money/"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and
+ process.name == "defaults" and
+ process.args : "write" and process.args : "-bool" and
+ process.command_line : "*com.apple.SoftwareUpdate*" and process.args : "CriticalUpdateInstall" and process.args : "NO"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

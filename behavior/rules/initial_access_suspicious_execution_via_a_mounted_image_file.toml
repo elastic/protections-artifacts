@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies the execution of a process from a mounted image file. Attacker may abuse IMG files to deliver malicious
+programs.
+"""
+id = "9401d27c-200a-4d72-ad36-f7051c4b3dcb"
+license = "Elastic License v2"
+name = "Suspicious Execution via a Mounted Image File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+ process.parent.executable : "\\Device\\CdRom0\\*" and
+ not process.executable : ("?:\\Program Files\\*.exe",
+                           "?:\\Program Files (x86)\\*.exe",
+                           "\\Device\\CdRom0\\*") and
+ not process.code_signature.trusted == true and
+ not (process.parent.name : "setup.exe" and process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\setup.tmp")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

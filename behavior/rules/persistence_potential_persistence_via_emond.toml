@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies the execution of a suspicious child process of the Event Monitor Daemon (emond). Adversaries may abuse this
+service by writing a rule to execute commands when a defined event occurs, such as system start up or user
+authentication.
+"""
+id = "1cd247d8-00e8-4c62-b9ee-90cd1811460b"
+license = "Elastic License v2"
+name = "Potential Persistence via Emond"
+os_list = ["macos"]
+reference = ["https://www.xorrior.com/emond-persistence/"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and
+ process.parent.name : "emond" and
+ process.name : (
+   "bash",
+   "dash",
+   "sh",
+   "tcsh",
+   "csh",
+   "zsh",
+   "ksh",
+   "fish",
+   "Python",
+   "python*",
+   "perl*",
+   "php*",
+   "osascript",
+   "pwsh",
+   "curl",
+   "wget",
+   "cp",
+   "mv",
+   "touch",
+   "echo",
+   "base64",
+   "launchctl",
+   "ruby*",
+   "node*",
+   "tcl*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.014"
+name = "Emond"
+reference = "https://attack.mitre.org/techniques/T1546/014/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

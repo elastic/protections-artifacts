@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies a file extension used by DARKRADIATION bash ransomware that abuses the openssl utility to encrypt files.
+Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to
+system and network resources.
+"""
+id = "33309858-3154-47a6-b601-eda2de62557b"
+license = "Elastic License v2"
+name = "DARKRADIATION Ransomware Infection"
+os_list = ["linux", "macos"]
+reference = [
+    "https://www.trendmicro.com/en_us/research/21/f/bash-ransomware-darkradiation-targets-red-hat--and-debian-based-linux-distributions.html",
+]
+version = "1.0.5"
+
+query = '''
+process where event.action == "exec" and
+ process.name : "xargs" and process.args == "openssl" and process.args == "enc" and
+ /* radiation unicode symbol used by DARKRADIATION ransomware */
+ process.args : "*.☢*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

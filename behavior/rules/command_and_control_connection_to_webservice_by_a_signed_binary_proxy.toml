@@ -1,0 +1,125 @@
+[rule]
+description = """
+Identifies DNS queries to common web services by a signed Microsoft binary execution proxy. Adversaries may implement
+command and control communications that use common web services in order to hide their activity.
+"""
+id = "c567240c-445b-4000-9612-b5531e21e050"
+license = "Elastic License v2"
+name = "Connection to WebService by a Signed Binary Proxy"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+    (
+     process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
+                     "msxsl.exe", "xwizard.exe", "csc.exe") or
+     process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Windows\\Microsoft.NET\\*.exe") or
+     (process.name : ("powershell.exe", "pwsh.exe") and process.args_count >= 2)
+     ) and
+     not (process.name : "rundll32.exe" and process.command_line : "*davclnt.dll,DavSetCookie*") and
+     not (process.parent.executable : ("?:\\Program Files\\Microsoft SQL Server\\MSSQL*.EXE", "?:\\Program Files\\WindowsApps\\Microsoft.*.exe") and
+          process.name : ("powershell.exe", "pwsh.exe")) and
+     not (process.name : "java.exe" and process.parent.executable : "?:\\Program Files\\OWASP\\Zed Attack Proxy\\ZAP.exe") and
+     not (process.name : "java.exe" and process.args_count >= 5)
+  ]
+  [dns where
+    dns.question.name :
+    (
+        "raw.githubusercontent.*",
+        "pastebin.*",
+        "paste.ee",
+        "ghostbin.com",
+        "drive.google.com",
+        "?.docs.live.net",
+        "api.dropboxapi.*",
+        "content.dropboxapi.*",
+        "dl.dropboxusercontent.*",
+        "api.onedrive.com",
+        "*.onedrive.org",
+        "onedrive.live.com",
+        "filebin.net",
+        "?.tcp.ngrok.io",
+        "ngrok.com",
+        "*.portmap.*",
+        "*serveo.net",
+        "*localtunnel.me",
+        "*pagekite.me",
+        "*localxpose.io",
+        "*notabug.org",
+        "rawcdn.githack.*",
+        "paste.nrecom.net",
+        "zerobin.net",
+        "controlc.com",
+        "requestbin.net",
+        "slack.com",
+        "api.slack.com",
+        "slack-redir.net",
+        "slack-files.com",
+        "cdn.discordapp.com",
+        "discordapp.com",
+        "discord.com",
+        "apis.azureedge.net",
+        "cdn.sql.gg",
+        "api.*",
+        "?.top4top.io",
+        "top4top.io",
+        "www.uplooder.net",
+        "*.cdnmegafiles.com",
+        "transfer.sh",
+        "updates.peer2profit.com",
+        "api.telegram.org",
+        "meacz.gq",
+        "rwrd.org",
+        "*.publicvm.com",
+        "*.blogspot.com"
+    )
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

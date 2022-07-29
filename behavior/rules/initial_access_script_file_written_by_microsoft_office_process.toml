@@ -1,0 +1,103 @@
+[rule]
+description = """
+Identifies the execution of a script file written by a Microsoft Office application (Word, PowerPoint, or Excel). Script
+interpreters are often launched during exploitation of Office applications or from documents containing malicious
+macros.
+"""
+id = "78e2e5e1-e727-4106-9206-8cf43b9f8919"
+license = "Elastic License v2"
+name = "Script File Written by Microsoft Office Process"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/"]
+version = "1.0.5"
+
+query = '''
+sequence by user.id with maxspan=1m
+ [file where event.action != "deletion" and
+
+  /* script dropped by MS Office program */
+   file.extension : ("hta", "vbs", "js", "wsf", "vbe", "jse", "ps1", "bat", "cmd", "sct") and
+   process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe")]
+ [process where event.action == "start" and
+  process.name : ("cscript.exe", "wscript.exe", "mshta.exe", "powershell.exe", "cmd.exe", "regsvr32.exe", "cmstp.exe", "wmic.exe") and not
+
+ /*  descendant of MS office but not a direct child - already covered by ruleId c34a9dca-66cf-4283-944d-1800b28ae690 */
+  process.parent.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe", "mspub.exe",
+                         "msaccess.exe", "WmiPrvse.exe", "explorer.exe") and
+  descendant of [process where event.action == "start" and
+     process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe")] and
+  not (process.name : "cmd.exe" and process.parent.executable : "\\Device\\Mup\\*\\netlogon\\*") and
+  not (process.name : "cmd.exe" and process.parent.name : ("chrome.exe", "msedge.exe", "iexplore.exe", "opera.exe", "firefox.exe")) and
+  not (process.command_line : "cmd.exe /c set" and process.parent.executable : "?:\\Program Files (x86)\\eparakstitajs?\\eparakstitajs?.exe")
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

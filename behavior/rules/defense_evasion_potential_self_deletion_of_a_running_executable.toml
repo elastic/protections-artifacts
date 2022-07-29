@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the execution of a file followed by the rename of its primary file stream. This may indicate an attempt to
+delete the currently running process executable file on disk, bypassing the file lock restriction. Adversaries may
+delete files left behind by the actions of their intrusion activity.
+"""
+id = "24082642-49a7-4072-952b-10c244b24f8e"
+license = "Elastic License v2"
+name = "Potential Self Deletion of a Running Executable"
+os_list = ["windows"]
+reference = ["https://github.com/LloydLabs/delete-self-poc"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+    [process where event.action == "start" and
+     process.executable : ("?:\\Users\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*", "?:\\Python*")] by process.name
+    [file where event.action == "rename" and
+     /* Rename the primary file stream */
+     file.name : "*:*" and not file.Ext.original.name : "*:*"  and file.size == 0] by file.Ext.original.name
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal on Host"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.004"
+name = "File Deletion"
+reference = "https://attack.mitre.org/techniques/T1070/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

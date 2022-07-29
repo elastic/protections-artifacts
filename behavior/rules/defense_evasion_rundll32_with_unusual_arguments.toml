@@ -1,0 +1,115 @@
+[rule]
+description = """
+Identifies unusual instances of RunDLL32 with suspicious keywords or paths in the process command line value.
+Adversaries may abuse rundll32.exe to proxy execution of malicious code.
+"""
+id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
+license = "Elastic License v2"
+name = "RunDLL32 with Unusual Arguments"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and process.name : "rundll32.exe" and
+  (
+   /* suspicious extensions and paths */
+
+   (process.command_line : "*\\AppData\\Local\\Temp\\*,*" and not process.command_line : "*.dll*") or
+    process.command_line :
+          ("*.jpg*,*",
+           "*.png*,*",
+           "*.gif*,*",
+           "*.bmp*,*",
+           "*.jpeg*,*",
+           "*.TIFF*,*",
+           "*.tmp*,*",
+           "*.dat*,*",
+           "*.txt*,*",
+           "* ?:/*/*",
+           "* ..\\*",
+           "*:\\Users\\Public\\*,*",
+           "*:\\Users\\*\\Documents\\*,*",
+           "*:\\Users\\*\\Pictures\\*,*",
+           "*:\\Users\\*\\Music\\*,*",
+           "*:\\Windows\\Tasks\\*,*",
+           "*:\\Windows\\System32\\tasks\\*,*",
+           "*:\\Documents and Settings\\*,*",
+
+           /* Issue #371 */
+           "*.bin,*",
+           "*.log,*",
+           "*.nki,*",
+           "*\\M?-*.dll,_run@*",
+           "*%TEMP%\\*.cpl*",
+           "*\\Users\\*\\Downloads\\*.cpl*",
+           "*\\appdata\\roaming\\microsoft\\templates\\*,*") or
+    process.command_line like "*rUNdlL32.eXe*" or
+
+    /* fake Control_RunDLL export */
+    (process.command_line : "*Control_RunDLL*" and not process.command_line : "*shell32.dll*Control_RunDLL*") or
+
+    /* delayed execution */
+    (process.parent.name : "cmd.exe" and process.parent.args : ("timeout", "ping", "choice") and process.parent.args : ("/nobreak", "/n", "/t")) or
+
+    /* execution from temp with suspicious parent process tree */
+    (process.command_line : "*\\AppData\\Local\\Temp\\*" and process.parent.name : ("wscript.exe", "cscript.exe", "wmiprvse.exe")) or
+
+    /* suspicious parent powershell args */
+    (process.parent.name : "powershell.exe" and
+     process.parent.args : ("-enc", "IEX", "*wp-content*", "*wp-admin*", "*wp-includes*", "*$*$*$*$*$*", "*^*^*^*^*^*^*^*^*^*", "*.replace*"))
+    )
+
+   /* False Positives */
+   and not
+
+  process.command_line :
+           ("*JOBID=*",
+            "*davclnt.dll,DavSetCookie*",
+            "*PhotoViewer.dll*ImageView_Fu*",
+            "*url.dll,FileProtocolHandler*",
+            "*zzzzInvokeManagedCustomActionOutOfProc*",
+            "*,DeferredDelete*",
+            "*:\\WINDOWS\\system32\\spool\\*",
+            "*:\\Program Files (x86)\\*",
+            "*:\\Program Files\\*",
+            /* Issue #282 - FP */
+            "*cryptext.dll,CryptExtAddPFX*",
+            "*dfshim.dll*ShOpenVerbShortcut*",
+            "*\\Documents\\DocuShare\\*",
+
+            /* Issue #371 */
+            "*ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile*",
+            "*FirewallControlPanel.dll,ShowNotificationDialog*",
+            "*--type=renderer*--log-file=*",
+            "*--lang=*--log-file=*") and not
+   (process.command_line : "*.tmp*" and
+    process.parent.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\System32\\msiexec.exe") and
+    process.parent.args : "-Embedding") and
+  not process.args : "?:\\ProgramData\\Parallels\\RASLogs\\tmp*.tmp,StopMemshell"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

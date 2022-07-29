@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies built-in Windows programs that have been renamed and can be used for execution, downloads, and/or evasion.
+Attackers may abuse this tactic to evade filename based detection of built-in tools.
+"""
+id = "b0207677-5041-470b-981d-13ab956cf5b4"
+license = "Elastic License v2"
+name = "Execution via Renamed Signed Binary Proxy"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+ process.name != null and
+     (
+       (process.pe.original_file_name == "cscript.exe" and not process.name : "cscript.exe") or
+       (process.pe.original_file_name == "wscript.exe" and not process.name : "wscript.exe") or
+       (process.pe.original_file_name == "PowerShell.EXE" and not process.name : "PowerShell.EXE") or
+       (process.pe.original_file_name == "Cmd.Exe" and not process.name : ("Cmd.Exe", "command.com")) or
+       (process.pe.original_file_name == "MSHTA.EXE" and not process.name : "MSHTA.EXE") or
+       (process.pe.original_file_name == "RUNDLL32.EXE" and not process.name : "RUNDLL32.EXE") or
+       (process.pe.original_file_name == "REGSVR32.EXE" and not process.name : "REGSVR32.EXE") or
+       (process.pe.original_file_name == "MSBuild.exe" and not process.name : "MSBuild.exe") or
+       (process.pe.original_file_name == "InstallUtil.exe" and not process.name : "InstallUtil.exe") or
+       (process.pe.original_file_name == "RegAsm.exe" and not process.name : "RegAsm.exe") or
+       (process.pe.original_file_name == "RegSvcs.exe" and not process.name : "RegSvcs.exe") or
+       (process.pe.original_file_name == "msxsl.exe" and not process.name : "msxsl.exe") or
+       (process.pe.original_file_name == "Microsoft.Workflow.Compiler.exe" and
+        not process.name : "Microsoft.Workflow.Compiler.exe") or
+       (process.pe.original_file_name == "msiexec.exe" and not process.name : "msiexec.exe" and
+        not process.executable : "?:\\Windows\\Installer\\MSI*.tmp") or
+       (process.pe.original_file_name == "CMSTP.EXE" and not process.name : "CMSTP.EXE") or
+       (process.pe.original_file_name == "bitsadmin.exe" and not process.name : "bitsadmin.exe") or
+       (process.pe.original_file_name == "CertUtil.exe" and not process.name : "CertUtil.exe") or
+       (process.pe.original_file_name == "wmic.exe" and not process.name : "wmic.exe") or
+       (process.pe.original_file_name == "schtasks.exe" and not process.name : "schtasks.exe") or
+       (process.pe.original_file_name == "wuauclt.exe" and not process.name : "wuauclt.exe") or
+       (process.pe.original_file_name == "Bginfo.exe" and not process.name : "Bginfo*.exe") or
+       (process.pe.original_file_name == "VsJITDebugger.exe" and not process.name : "VsJITDebugger.exe") or
+       (process.pe.original_file_name == "xwizard.exe" and not process.name : "xwizard.exe") or
+       (process.pe.original_file_name == "extexport.exe" and not process.name : "extexport.exe") or 
+       (process.pe.original_file_name == "CertReq.exe" and not process.name : "CertReq.exe")
+     ) and
+ /* some third party programs tend to include renamed binaries, still often run from trusted paths */
+ not process.executable :
+        (
+          "?:\\Windows\\System32\\*.exe",
+          "?:\\Windows\\SysWOW64\\*.exe",
+          "?:\\Program Files (x86)\\*.exe",
+          "?:\\Program Files\\*.exe",
+          "\\Device\\HarddiskVolume*\\Windows\\System32\\*.exe",
+          "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\*.exe",
+          "\\Device\\HarddiskVolume*\\Windows\\Microsoft.NET\\*.exe",
+          "\\Device\\HarddiskVolume*\\Program Files (x86)\\*.exe",
+          "\\Device\\HarddiskVolume*\\Program Files\\*.exe"
+        ) and
+  not (process.pe.original_file_name in ("RegAsm.exe", "REGSVR32.EXE") and process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and
+       process.parent.executable : "?:\\WINDOWS\\system32\\msiexec.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

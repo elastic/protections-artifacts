@@ -1,0 +1,41 @@
+[rule]
+description = """
+Identifies attempt to disable memory crashdump via registry modification. Malware using kernel mode component may
+perform this action to limit exposure in the case of an unexpected system crash.
+"""
+id = "77ca3fcc-f607-45e0-837e-e4173e4ffc2a"
+license = "Elastic License v2"
+name = "CrashDump Disabled via Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://elastic.github.io/security-research/intelligence/2022/03/01.hermeticwiper-targets-ukraine/article/",
+    "https://docs.microsoft.com/en-us/troubleshoot/windows-server/performance/memory-dump-file-options",
+]
+version = "1.0.5"
+
+query = '''
+registry where registry.value : "CrashDumpEnabled" and registry.data.strings : "0" and
+ not (user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+      process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\msiexec.exe"))
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

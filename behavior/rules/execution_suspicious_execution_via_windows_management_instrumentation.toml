@@ -1,0 +1,102 @@
+[rule]
+description = "Identifies suspicious processes executing via the Windows Management Instrumentation (WMI) protocol."
+id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
+license = "Elastic License v2"
+name = "Suspicious Execution via Windows Management Instrumentation"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+process where event.action == "start" and
+ process.parent.name : "WmiPrvSe.exe" and not user.id : "S-1-5-18" and
+ (
+  (process.name : ("rundll32.exe", "regsvr32.exe", "mshta.exe", "wmic.exe", "wscript.exe", "cscript.exe", "bitsadmin.exe", "certutil.exe", "vssadmin.exe", "curl.exe", "explorer.exe")) or
+  (process.name : "schtasks.exe" and process.args : "/create") or
+  (process.name : "cmd.exe" and process.command_line : ("*powershell*", "*mshta*", "*wmic*", "*msiexec*", "*\\AppData\\Local\\Temp\\*.bat")) or
+  process.executable : ("?:\\Users\\*\\AppData\\*.exe", "?:\\Users\\Public\\*", "?:\\ProgramData\\*.exe", "?:\\Windows\\Tasks\\*.exe") or
+  (process.name : ("powershell.exe", "cmd.exe") and
+      process.command_line :
+        (
+          "*^*^*^*^*^*^*^*^*^*",
+          "*set *set *set *",
+          "*set *for *call *",
+          "*set *for *cmd *",
+          "*$*$*$*$*$*$*$*$*$*$*$*",
+          "*comspec*",
+          "*%%*%%*%%*",
+          "*''*''*''*",
+          "*`*`*`*`*",
+          "*+*+*+*+*+*",
+          "*[char[]](*)*-join",
+          "*Base64String*",
+          "*[*Convert]*",
+          "*.Text.Encoding*",
+          "*.Compression.*",
+          "*.replace*",
+          "*MemoryStream*",
+          "*WriteAllBytes*",
+          "* -en* *",
+          "* -ec *",
+          "* -e *",
+          "* /e *",
+          "* /en* *",
+          "* /ec *",
+          "*WebClient*",
+          "*DownloadFile*",
+          "*DownloadString*",
+          "*Invoke-Exp*",
+          "*invoke-web*",
+          "*iex*",
+          "*iwr*",
+          "*Reflection.Assembly*",
+          "*Assembly.GetType*"
+        )) or
+	(process.name : "powershell.exe" and length(process.command_line) > 200 )
+) and
+
+/* Noisy FPs */
+
+not (process.name : ("powershell.exe", "cmd.exe") and
+     process.command_line : ("*Windows\\CCM\\*", "*WINDOWS\\TEMP\\nessus_*", "*%SystemRoot%\\TEMP\\nessus_*",
+     "*Get-NetFirewallProfile*", "*windows\\temp\\netstatcache_*", "*$ErrorActionPreference*", "*D:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1*",
+     "*app360edatabase\\Install-360DB.ps1*", "*CgAgACAAIAAgAHQAcgBhAHAAIA*")) and
+
+not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
+
+not (process.pe.original_file_name in ("ATMGR.EXE", "git.exe") and process.code_signature.trusted == true) and
+
+not (process.name : ("cscript.exe", "wscript.exe") and
+     process.args : ("?:\\windows\\CCM\\*", "?:\\windows\\ccmcache\\*") and process.args_count <= 3) and
+
+not (process.pe.original_file_name in ("PinVantageToolbarToast.exe", "Update.exe", "git-credential-manager-core.exe", "DismHost.exe") and
+     process.code_signature.trusted == true) and
+
+not (process.name : "cmd.exe" and process.working_directory : "?:\\tmp\\smartcheck\\sitetool\\proc\\*" and
+     process.command_line : "*Citrix.SmartChecks.BlueprintBootstrap*-xdSiteId*") and
+
+not (process.pe.original_file_name == "360se.exe" and process.code_signature.trusted == true and
+     process.code_signature.subject_name == "Beijing Qihu Technology Co., Ltd.") and
+
+not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

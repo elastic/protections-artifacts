@@ -1,0 +1,101 @@
+[rule]
+description = """
+Identifies DNS queries to common web services by an unsigned program. Adversaries may implement command and control
+communications that use common web services in order to hide their activity.
+"""
+id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
+license = "Elastic License v2"
+name = "Connection to WebService by an Unsigned Binary"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ /* execution of an unsigned PE file followed by dns lookup to commonly abused trusted webservices */
+
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+   not process.code_signature.trusted == true and
+   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*")]
+  [dns where
+    dns.question.name :
+    (
+        "raw.githubusercontent.*",
+        "pastebin.*",
+        "paste.ee",
+        "ghostbin.com",
+        "drive.google.com",
+        "d.docs.live.net",
+        "api.dropboxapi.*",
+        "content.dropboxapi.*",
+        "dl.dropboxusercontent.*",
+        "api.onedrive.com",
+        "*.onedrive.org",
+        "onedrive.live.com",
+        "filebin.net",
+        "?.tcp.ngrok.io",
+        "ngrok.com",
+        "*.portmap.*",
+        "*serveo.net",
+        "*localtunnel.me",
+        "*pagekite.me",
+        "*localxpose.io",
+        "*notabug.org",
+        "rawcdn.githack.*",
+        "paste.nrecom.net",
+        "zerobin.net",
+        "controlc.com",
+        "requestbin.net",
+        "slack.com",
+        "api.slack.com",
+        "slack-redir.net",
+        "slack-files.com",
+        "cdn.discordapp.com",
+        "discordapp.com",
+        "discord.com",
+        "cdn.sql.gg",
+        "cdn.discordapp.com",
+        "www.uplooder.net",
+        "*.cdnmegafiles.com",
+        "transfer.sh",
+        "updates.peer2profit.com",
+        "api.telegram.org",
+        "bing.com",
+        "yahoo.com",
+        "meacz.gq",
+        "rwrd.org", 
+        "*.publicvm.com", 
+        "*.blogspot.com"
+    )
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

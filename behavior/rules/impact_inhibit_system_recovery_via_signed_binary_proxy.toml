@@ -1,0 +1,132 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings. Adversaries may delete or remove
+built-in operating system data and turn off services designed to aid in the recovery of a corrupted system and prevent
+recovery.
+"""
+id = "740ad26d-3e67-47e1-aff1-adb47a697375"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Signed Binary Proxy"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and
+  descendant of [process where event.action == "start" and
+                 process.name:
+                    ( 
+					 "rundll32.exe", 
+					 "cscript.exe", 
+					 "wscript.exe", 
+					 "regsvr32.exe", 
+					 "regasm.exe", 
+					 "regsvcs.exe", 
+					 "installutil.exe", 
+					 "mshta.exe", 
+					 "cmstp.exe", 
+					 "msxsl.exe", 
+					 "Microsoft.Workflow.Compiler.exe", 
+					 "ieexec.exe", 
+					 "iexpress.exe"
+					 )]
+  and
+  (
+    (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and 
+	 process.command_line : "*delete*") or
+    (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and 
+	 process.command_line : ("*delete*", "*resize*401*")) or
+    (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+    (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
+  ) and
+  not (process.name : "vssadmin.exe" and process.args : "Resize" and process.parent.executable : "?:\\Program Files\\Geni\\Insights\\GsAgent.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1216"
+name = "Signed Script Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1216/"
+
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.003"
+name = "CMSTP"
+reference = "https://attack.mitre.org/techniques/T1218/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.004"
+name = "InstallUtil"
+reference = "https://attack.mitre.org/techniques/T1218/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.009"
+name = "Regsvcs/Regasm"
+reference = "https://attack.mitre.org/techniques/T1218/009/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+[[threat.technique]]
+id = "T1220"
+name = "XSL Script Processing"
+reference = "https://attack.mitre.org/techniques/T1220/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

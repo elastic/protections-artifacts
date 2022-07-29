@@ -1,0 +1,34 @@
+on:
+  issues:
+    types: [opened]
+name: Duplicate Open Issue to Internal Repo
+
+jobs:
+  post_new_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Duplicate issue to internal behavior repo
+        uses: octokit/request-action@v2.x
+        if: contains(github.event.issue.labels.*.name, 'behavior')
+        with:
+          route: POST /repos/{owner}/{repo}/issues
+          owner: elastic
+          repo: endpoint-rules
+          title: "${{ toJSON(format('{0} {1}', '[Openness Issue]', github.event.issue.title ))}}"
+          body: ${{toJSON(github.event.issue.body)}}
+          labels: ${{toJSON(github.event.issue.labels)}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROTECTIONS_MACHINE_TOKEN }}
+
+      - name: Duplicate issue to internal yara repo
+        uses: octokit/request-action@v2.x
+        if: contains(github.event.issue.labels.*.name, 'yara')
+        with:
+          route: POST /repos/{owner}/{repo}/issues
+          owner: elastic
+          repo: protections-yara-rules
+          title: "${{ toJSON(format('{0} {1}', '[Openness Issue]', github.event.issue.title ))}}"
+          body: ${{toJSON(github.event.issue.body)}}
+          labels: ${{toJSON(github.event.issue.labels)}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROTECTIONS_MACHINE_TOKEN }}

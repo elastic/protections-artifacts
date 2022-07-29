@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) via Windows activation changepk.exe execution hijack. Attackers
+bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "71ad1420-ed83-46d0-835b-63d4b2008427"
+license = "Elastic License v2"
+name = "UAC Bypass via Windows Activation Execution Hijack"
+os_list = ["windows"]
+reference = [
+    "https://github.com/hfiref0x/UACME",
+    "https://medium.com/@mattharr0ey/privilege-escalation-uac-bypass-in-changepk-c40b92818d1b",
+]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=60s
+ [registry where registry.hive == "HKEY_USERS" and registry.data.strings != null and
+   registry.key :
+          ("S-1-5-21-*Classes\\Launcher.SystemSettings\\shell\\open\\command",
+           "S-1-5-21-*Classes\\exefile\\shell\\open\\command")]
+ [process where event.action == "start" and
+  process.parent.name : ("changepk.exe", "slui.exe") and
+  process.Ext.token.integrity_level_name == "high" and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe",
+            "?:\\Windows\\System32\\changepk.exe",
+            "?:\\WINDOWS\\system32\\slui.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

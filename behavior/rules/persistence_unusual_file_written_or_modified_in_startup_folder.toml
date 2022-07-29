@@ -1,0 +1,89 @@
+[rule]
+description = """
+Identifies suspicious file extensions or names written to the startup folder. Adversaries may use this technique to
+maintain persistence.
+"""
+id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
+license = "Elastic License v2"
+name = "Unusual File Written or Modified in Startup Folder"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+file where event.action != "deletion" and
+  process.pid != 4 and
+  file.name != null and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+  file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
+  (
+   /* file extensions rarely written to Startup folder by legit installers */
+   file.extension : ("exe", "com", "scr", "dll", "hta", "bat", "ps1", "cmd", "url", "wsh", "wsf", "vbe", "jse", "sick", "png", "jpg") or
+
+   /* suspicious file names */
+   length(file.name) <= 6 or
+   file.name :
+        ("*Microsoft*",
+         "*fuck*",
+         "*:*",
+         "*.*.",
+         "*update*",
+         "*windows*",
+         "*setup*",
+         "*googl*",
+         "*adobe*",
+         "*chrome*")
+   ) and
+   not process.executable :
+               ("?:\\Windows\\SysWOW64\\msiexec.exe",
+                "?:\\Windows\\system32\\msiexec.exe",
+                "?:\\Windows\\explorer.exe",
+                "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe",
+                "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*.exe",
+                "?:\\Program Files\\Windows Defender Advanced Threat Protection\\*.exe",
+                "?:\\Program Files\\*.exe",
+                "?:\\Program Files (x86)\\*.exe") and
+    not (process.executable : "?:\\Windows\\System32\\cmd.exe" and file.extension : "cmd")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

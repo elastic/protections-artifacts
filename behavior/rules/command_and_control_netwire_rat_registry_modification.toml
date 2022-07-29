@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies registry modification activity consistent with the NetWire Remote Access Trojan (RAT). NetWire is a publicly
+available, multi-platform RAT that is used by criminal and APT groups.
+"""
+id = "102f340f-1839-4bad-8493-824cc02c4e69"
+license = "Elastic License v2"
+name = "NetWire RAT Registry Modification"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/software/S0198/", "https://any.run/malware-trends/netwire"]
+version = "1.0.5"
+
+query = '''
+registry where
+   registry.path : (
+      "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\NetWire\\HostId",
+      "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\NetWire\\Install Date")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies the use of the grep command to discover known third-party macOS and Linux security tools, such as Antivirus
+or Host Firewall details.
+"""
+id = "13eade2e-73dd-4fab-a511-88258635559d"
+license = "Elastic License v2"
+name = "Potential Security Software Discovery via Grep"
+os_list = ["linux", "macos"]
+reference = ["https://objective-see.com/blog/blog_0x4F.html"]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and
+process.name : ("grep", "egrep", "sh") and user.id != 0 and
+   process.command_line : "*grep*Little Snitch*" and not process.parent.executable : "/Library/Application Support/*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1518"
+name = "Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/"
+[[threat.technique.subtechnique]]
+id = "T1518.001"
+name = "Security Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/001/"
+
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

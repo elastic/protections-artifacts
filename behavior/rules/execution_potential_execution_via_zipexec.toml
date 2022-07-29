@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies the execution of file dropped via a compressed file (potentially password protected). This may indicate an
+attempt to bypass disk-based or anti-malware scanning mechanisms.
+"""
+id = "8eb74917-9363-4073-a09b-c47101f52c40"
+license = "Elastic License v2"
+name = "Potential Execution via ZIPExec"
+os_list = ["windows"]
+reference = ["https://github.com/Tylous/ZipExec"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+
+  /* cmdkey invoking Windows Shell to open a compressed file */
+ [process where event.action == "start" and
+   process.pe.original_file_name : "cmdkey.exe" and
+   process.command_line : "*Microsoft_Windows_Shell*Folder*filename*"] by process.parent.entity_id
+
+ /* executable file creation by parent of cmdkey*/
+ [file where event.action == "creation" and file.Ext.header_bytes : "4d5a*"] by process.entity_id
+
+ /* execution from Explorer temp decompression directory by parent of cmdkey */
+ [process where event.action == "start" and process.command_line : "*\\Temp\\Temp?_*"] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 2
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

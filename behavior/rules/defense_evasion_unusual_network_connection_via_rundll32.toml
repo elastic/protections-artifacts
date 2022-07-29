@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies unusual instances of rundll32.exe making outbound network connections. This may be indicative of adversarial
+command and control activity.
+"""
+id = "2e708541-c6e8-4ded-923f-78a6c160987e"
+license = "Elastic License v2"
+name = "Unusual Network Connection via RunDLL32"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "start" and process.name : "rundll32.exe" and process.args_count == 1 and
+   not (process.code_signature.subject_name == "Teramind Inc." and
+        process.code_signature.trusted == true and process.Ext.token.integrity_level_name == "system" and
+        process.args == "/update" and process.parent.name == "tmagentsvc.exe")]
+  [network where event.action == "connection_attempted" and process.name : "rundll32.exe"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

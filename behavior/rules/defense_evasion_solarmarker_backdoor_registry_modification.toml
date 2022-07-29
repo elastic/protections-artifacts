@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies registry modification consistent with the SolarMarker Backdoor installer that registers a rogue custom shell
+extension handler which runs a PowerShell command when a file with a matching extension is opened.
+"""
+id = "f7e6d239-9af5-42e3-8d23-91e7188a5cb0"
+license = "Elastic License v2"
+name = "SolarMarker Backdoor Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://blog.morphisec.com/new-jupyter-evasive-delivery-through-msi-installer",
+    "https://www.ired.team/offensive-security/persistence/hijacking-default-file-extension",
+    "https://www.binarydefense.com/mars-deimos-solarmarker-jupyter-infostealer-part-1/",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and 
+   process.name : ("reg.exe", "powershell.exe", "msiexec.exe")]
+ [registry where
+  registry.path : "HKEY_USERS\\S-1-5-21-*Classes\\*\\shell\\open\\command*" and
+
+  /* Command value contains PowerShell and its length is greater or equal than 200 chars */
+  registry.data.strings : "*PowerShell*" and length(registry.data.strings) >= 200]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.001"
+name = "Change Default File Association"
+reference = "https://attack.mitre.org/techniques/T1546/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies when the Microsoft HTML Help Executable (hh.exe) creates a portable executable (PE) file and the file is
+subsequently executed. Adversaries may conceal malicious code in a CHM file and deliver it to a victim for execution.
+"""
+id = "9c3b13f6-bc26-4397-9721-4ba23ddd1014"
+license = "Elastic License v2"
+name = "File Execution via Microsoft HTML Help"
+os_list = ["windows"]
+reference = [
+    "https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/higaisa-or-winnti-apt-41-backdoors-old-and-new/",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=2m
+ [file where event.action != "deletion" and process.name : "hh.exe"] by file.path
+ [process where event.action == "start"] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.001"
+name = "Compiled HTML File"
+reference = "https://attack.mitre.org/techniques/T1218/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

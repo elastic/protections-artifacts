@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies the execution of a process from a downloaded ISO file. Attacker may abuse ISO files to deliver malicious
+programs.
+"""
+id = "df9cc41e-4686-4aa0-8f79-60055dd01812"
+license = "Elastic License v2"
+name = "Execution from a Downloaded ISO File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action != "deletion" and file.extension : ("ISO", "IMG") and
+  (
+    file.path : ("?:\\Users\\*\\Downloads\\*",
+                 "?:\\Users\\*\\Content.Outlook\\*",
+                 "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*") or
+    file.name : "*:Zone.Identifier" or
+    file.Ext.windows.zone_identifier > 1
+   )
+  ]
+ [process where event.action == "start" and
+  process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and 
+  process.working_directory : "?:\\" and 
+
+  /* execution from mounted ISO file */
+  (process.executable : "\\Device\\CdRom*" or (process.executable : "?:\\*" and not process.executable : "?:\\*\\*"))]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

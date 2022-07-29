@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies Windows Management Instrumentation Command-Line utility (WMIC) whitelisting bypass attempts by alerting on
+suspicious execution of scripts. When WMIC loads scripting libraries, it may be indicative of an attempt to bypass
+application whitelisting
+"""
+id = "18371ec4-ee2f-465b-8757-ee726914006c"
+license = "Elastic License v2"
+name = "Suspicious WMIC XSL Script Execution"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=2m
+[process where event.action == "start" and
+   (process.name : "WMIC.exe" or process.pe.original_file_name : "wmic.exe") and
+   process.command_line : ("* format*:*", "*/format*:*", "*-format*:*") and
+   not process.command_line :
+              (
+               "*format:list*",
+               "*format:table*",
+               "*format:htable",
+               "*format:texttablewsys*",
+               "*format:texttable*",
+               "*format:textvaluelist*",
+               "*format:TEXTVALUELIST*",
+               "*format:csv*",
+               "*format:value*"
+               ) and
+   not process.parent.executable : "?:\\Program Files\\Trend Micro\\Titanium\\plugin\\Pt\\win32\\inspect\\Inspect.exe"]
+[library where dll.name : ("jscript.dll", "vbscript.dll")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1220"
+name = "XSL Script Processing"
+reference = "https://attack.mitre.org/techniques/T1220/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

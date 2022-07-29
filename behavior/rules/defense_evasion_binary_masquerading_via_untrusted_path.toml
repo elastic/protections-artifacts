@@ -1,0 +1,162 @@
+[rule]
+description = """
+Identifies binaries that have been identically named to Windows built-in programs and being run from untrusted or
+commonly abused paths. Adversaries may attempt to manipulate the name of a task or service to make it appear legitimate
+or benign.
+"""
+id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
+license = "Elastic License v2"
+name = "Binary Masquerading via Untrusted Path"
+os_list = ["windows"]
+version = "1.0.11"
+
+query = '''
+process where event.action == "start" and
+  process.name : (
+    "at.exe",
+    "atbroker.exe",
+    "arp.exe",
+    "bcdedit.exe",
+    "bitsadmin.exe",
+    "certutil.exe",
+    "cmstp.exe",
+    "conhost.exe",
+    "control.exe",
+    "cscript.exe",
+    "csrss.exe",
+    "csi.exe",
+    "dsget.exe",
+    "dfsvc.exe",
+    "dllhost.exe",
+    "dsquery.exe",
+    "eventvwr.exe",
+    "fsutil.exe",
+    "ieexec.exe",
+    "installutil.exe",
+    "ipconfig.exe",
+    "lsass.exe",
+    "Microsoft.Workflow.Compiler.exe",
+    "mmc.exe",
+    "msbuild.exe",
+    "msdt.exe",
+    "mshta.exe",
+    "msiexec.exe",
+    "net.exe",
+    "net1.exe",
+    "netsh.exe",
+    "netstat.exe",
+    "odbcconf.exe",
+    "ping.exe",
+    "powershell.exe",
+    "qprocess.exe",
+    "quser.exe",
+    "qwinsta.exe",
+    "reg.exe",
+    "regasm.exe",
+    "regsvcs.exe",
+    "regsvr32.exe",
+    "runas.exe",
+    "rundll32.exe",
+    "schtasks.exe",
+    "sdclt.exe",
+    "services.exe",
+    "spoolsv.exe",
+    "svchost.exe",
+    "taskhost.exe",
+    "taskhostw.exe",
+    "tasklist.exe",
+    "userinit.exe",
+    "vaultcmd.exe",
+    "vssadmin.exe",
+    "wininit.exe",
+    "winlogon.exe",
+    "whoami.exe",
+    "wmic.exe",
+    "wevtutil.exe",
+    "wscript.exe",
+    "gprslt.exe",
+    "nbtstat.exe",
+    "systeminfo.exe",
+    "VsJITDebugger.exe",
+    "extexport.exe",
+    "extexport.exe") and
+    
+  not process.executable : (
+    "?:\\Windows\\System32\\*.exe",
+    "?:\\Windows\\SysWOW64\\*.exe",
+    "?:\\Windows\\Microsoft.NET\\*.exe",
+    "?:\\Program Files (x86)\\*.exe",
+    "?:\\Program Files\\*.exe",
+
+    /* Issue # 295 */
+    "?:\\Users\\*\\AppData\\Local\\Programs\\Git\\usr\\bin\\hostname.exe",
+    "?:\\*\\usr\\bin\\hostname.exe",
+    "?:\\ProgramData\\West Wind Technologies\\Uninstall\\*\\regsvr32.exe",
+    "?:\\ProgramData\\chocolatey\\*.exe",
+    "?:\\cygwin*\\bin\\*.exe",
+
+    /* PR #685 */
+    "\\Device\\HarddiskVolume*\\Windows\\System32\\*.exe",
+    "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\*.exe",
+    "\\Device\\HarddiskVolume*\\Windows\\Microsoft.NET\\*.exe",
+    "\\Device\\HarddiskVolume*\\Program Files (x86)\\*.exe",
+    "\\Device\\HarddiskVolume*\\Program Files\\*.exe"
+    ) and
+
+  not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\Netskope\\STAgent\\stAgentUI.exe" and process.code_signature.subject_name: "netSkope Inc") and
+  not (process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\*.exe" and process.code_signature.subject_name : "Lenovo") and
+
+  /* Issue #582 */
+  not (process.name : "certutil.exe" and process.parent.name : "cmd.exe" and process.args : "-A" and
+       process.parent.args : "?:\\Users\\*\\Firefox-Add_certs*\\firefox_add-certs-windows\\add-certs.cmd") and
+  not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\DYMO\\DYMO Connect\\DYMO.WebApi.Win.Host.exe") and
+  /* Sfax Download Service */
+  not (process.name : "InstallUtil.exe" and process.parent.name : "Engine.exe" and
+       process.parent.args : "/OriginExe=*\\SfaxInstaller\\Sfax Windows Service.exe") and
+  not (process.pe.original_file_name == "RegAsm.exe" and
+       process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoBatteryGaugePackage\\*\\RegAsm.exe") and
+  not (process.name : "regsvr32.exe" and process.parent.executable : ("?:\\ERPU\\Browser\\AutoUpgrade.exe", "?:\\ERPU\\Browser\\NeoWeb.exe")) and
+  not (process.name : "certutil.exe" and process.parent.name : "TOTALCMD*.EXE" and process.args_count <= 2) and
+  not (process.executable : "?:\\Campus\\System\\DLL\\CADability\\RegAsm.exe" and process.parent.executable : "?:\\Campus\\System\\DLL\\CADability\\RegCADability.exe") and
+  not (process.name : "certutil.exe" and process.args : "-d" and process.args : "-n") and
+  not (process.name : "services.exe" and process.args : "-i*" and process.parent.name : "monitor.exe") and
+  not (process.name : "RegAsm.exe" and process.args : ("directdeposit.vb.tlb", "?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")) and
+  not process.executable : "D:\\Reform V*\\Reform_PDC_Server_v*\\Plugins\\Monitoring\\CScript.exe" and
+  not (process.name : "rundll32.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true) and
+  not (process.name : "regsvr32.exe" and
+       process.args : ("?:\\Sage\\Sage300 Programs\\GL69A\\FRCOM690.DLL",
+                       "?:\\Program Files (x86)\\*.dll",
+                       "?:\\Program Files\\*.dll",
+                       "?:\\WINDOWS\\system32\\*.dll")) and
+  not process.executable : ("?:\\Microsoft Visual Studio\\*\\Msbuild.exe", "?:\\adv\\app\\RegAsm.exe", "?:\\Windows\\WinSxS\\wow64_microsoft-windows*management-console_*\\mmc.exe") and
+  not (process.executable : "?:\\Engeman\\RegAsm.exe" and process.parent.executable : "?:\\Engeman\\Engeman.exe") and
+  not process.command_line : ("installutil  /unattended Sage.CNA.WindowsService.exe ",
+                              "installutil  /u Sage.CNA.WindowsService.exe ",
+                              "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.004"
+name = "Masquerade Task or Service"
+reference = "https://attack.mitre.org/techniques/T1036/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

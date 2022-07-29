@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies suspicious startup shell folder modifications. An adversary may attempt to change the default startup
+directory in order to bypass detections that monitor for suspicious file creation events in the default Windows Startup
+folder.
+"""
+id = "377aad38-24e0-4dd7-93c2-bd231cb749e3"
+license = "Elastic License v2"
+name = "Unusual Startup Shell Folder Modification"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+registry where
+  user.id : "S-1-5-21-*" and
+  registry.path : (
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Common Startup",
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Common Startup",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\Startup",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Startup"
+     ) and
+  registry.data.strings != null and
+   // Normal Startup Folder Paths
+   not registry.data.strings :  (
+           "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "%ProgramData%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup",
+           "\\\\*"
+           ) and
+   not process.executable :
+             ("?:\\Windows\\explorer.exe",
+              "?:\\Windows\\System32\\regsvr32.exe",
+              "?:\\Windows\\System32\\runonce.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

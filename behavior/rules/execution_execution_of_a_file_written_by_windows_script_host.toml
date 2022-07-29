@@ -1,0 +1,56 @@
+[rule]
+description = "Identifies the execution of a file written or modified by Microsoft Windows Script Host processes (cscript or wscript)."
+id = "49e47c2a-307f-4591-939a-dfdae6e5156c"
+license = "Elastic License v2"
+name = "Execution of a File Written by Windows Script Host"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=1m
+  [file where event.action != "deletion" and
+   process.name : ("cscript.exe", "wscript.exe") and
+   not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] by file.path
+  [process where event.action == "start" and
+   not process.Ext.token.integrity_level_name == "system" and
+   not process.parent.executable : "?:\\Windows\\System32\\drvinst.exe" and
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name : ("Microsoft *", "ESET, spol. s r.o.", "VORTECH SOLUTIONS PTY LTD")) and
+   not (process.pe.original_file_name : "Packman.exe" and process.args : "checkCompileErrors=true") and
+   not process.pe.original_file_name : ("CCCLauncher.exe", "Bginfo.exe") and
+   not process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
+   not (process.pe.original_file_name == "cognosrcp.exe" and
+        process.code_signature.subject_name == "IBM Canada Ltd." and process.code_signature.trusted == true)
+   ] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

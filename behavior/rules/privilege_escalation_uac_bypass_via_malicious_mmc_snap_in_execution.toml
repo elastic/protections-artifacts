@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) by executing a malicious Microsoft Management Console (MMC)
+snap-in. Attackers bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "ccdf56a8-697b-497c-ab90-3aa01bfc5f9f"
+license = "Elastic License v2"
+name = "UAC Bypass via Malicious MMC Snap-In Execution"
+os_list = ["windows"]
+reference = ["https://github.com/hfiref0x/UACME/"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=60s
+ [file where event.action != "deletion" and file.extension : "msc" and not user.name : "SYSTEM"]
+ [process where event.action == "start" and
+  process.name : "mmc.exe" and process.command_line : "*.msc *.msc*"]
+ [process where event.action == "start" and
+  process.parent.name : "mmc.exe" and process.Ext.token.integrity_level_name == "high" and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

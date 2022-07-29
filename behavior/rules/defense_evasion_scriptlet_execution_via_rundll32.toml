@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies when scrobj.dll is loaded into rundll32.exe. An adversary may abuse rundll32.exe to proxy execution of
+malicious code.
+"""
+id = "93438ae3-becd-43fa-81de-645ce17afa8e"
+license = "Elastic License v2"
+name = "Scriptlet Execution via Rundll32"
+os_list = ["windows"]
+reference = [
+    "https://lolbas-project.github.io/lolbas/Libraries/Ieadvpack/",
+    "https://lolbas-project.github.io/lolbas/Libraries/Advpack/",
+]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and process.pe.original_file_name == "RUNDLL32.EXE" and
+  process.command_line : "*advpack*LaunchINFSection*"]
+ [library where dll.name : "scrobj.dll"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

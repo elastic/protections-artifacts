@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies attempts to tamper with a DLL associated with a Protected Process Light (PPL) process. The purpose of PPL is
+to protect critical system processes against modification, access, or tampering via open process functions. An attacker
+may attempt to tamper with the DLL associated with a PPL process in order to bypass PPL protection and inject malicious
+code into the protected process, elevating their privileges. This privilege escalation can enable them to evade or
+disable security software, and access sensitive information such as credentials.
+"""
+id = "905f4c30-a8c5-40a5-80e3-a50c5613432f"
+license = "Elastic License v2"
+name = "Protected Process Light Bypass via DLL Tampering"
+os_list = ["windows"]
+reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=3s
+ [process where event.action == "start" and process.Ext.protection != null and
+  process.Ext.protection != "PsProtectedSignerAntimalware-Light" and
+  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and process.args == "WaaSMedicSvc" and
+       process.parent.executable : "?:\\Windows\\System32\\services.exe")]
+ [library where dll.Ext.defense_evasions : "Process Tampering: Code integrity violation" and
+  not (dll.code_signature.trusted == true and
+       dll.code_signature.subject_name :
+                 ("ESET, spol. s r.o.",
+                  "Acronis International GmbH",
+                  "Kaseya Corporation",
+                  "Veeam Software Group GmbH",
+                  "Trend Micro, Inc.",
+                  "Sophos Ltd",
+                  "DeviceLock, Inc")) and
+  not process.executable : "?:\\Program Files (x86)\\Common Files\\BattlEye\\BEService.exe" and
+  /* potential services child processes */
+  not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1211"
+name = "Exploitation for Defense Evasion"
+reference = "https://attack.mitre.org/techniques/T1211/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

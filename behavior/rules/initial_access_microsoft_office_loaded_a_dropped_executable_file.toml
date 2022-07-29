@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process creates an executable file (DLL) and the file is subsequently loaded. An
+adversary may deliver a weaponized Office document to their target that writes and loads malicious modules.
+"""
+id = "a0a82ad6-98ed-4426-abd8-52e7b052e297"
+license = "Elastic License v2"
+name = "Microsoft Office Loaded a Dropped Executable File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [ file where event.action != "deletion" and
+      process.name :
+          ("WINWORD.EXE",
+           "EXCEL.EXE",
+           "POWERPNT.EXE",
+           "MSACCESS.EXE") and
+      (
+        file.extension : ("dll", "cpl", "ocx") or
+        // Match Windows PE files by header data (MZ)
+        file.Ext.header_bytes : "4d5a*"
+      )] by file.path
+  [ library where
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and 
+    not (dll.code_signature.trusted == true and dll.path : "?:\\Users\\*\\appdata\\local\\assembly\\*.dll") and
+    not (dll.code_signature.subject_name == "Bloomberg L.P." and dll.code_signature.trusted == true) ] by dll.path
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.16.0"

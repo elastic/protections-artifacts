@@ -1,0 +1,131 @@
+[rule]
+description = """
+Identifies when suspicious values are written to Run and RunOnce registry keys via signed binaries. Run and RunOnce
+registry keys cause programs to run each time that a user logs on and are often abused by adversaries to maintain
+persistence on an endpoint.
+"""
+id = "727db78e-e1dd-4bc0-89b0-885cd99e069e"
+license = "Elastic License v2"
+name = "Suspicious String Value Written to Registry Run Key"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
+version = "1.0.10"
+
+query = '''
+registry where registry.data.strings != null and
+  user.id : "S-1-5-21*" and
+  registry.path : (
+      "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+      "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+      "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+      "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*") and
+  not process.executable :
+           ("?:\\Windows\\SysWOW64\\msiexec.exe",
+	    "?:\\Windows\\system32\\msiexec.exe",
+	    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\*.exe",
+	    "?:\\Windows\\Downloaded Program Files\\*.exe",
+	    "?:\\Windows\\system32\\spool\\DRIVERS\\*",
+	    "?:\\Windows\\system32\\mmc.exe",
+	    "?:\\Windows\\Samsung\\PanelMgr\\SSMMgr.exe",
+	    "?:\\Windows\\System32\\wsl.exe",
+	    "?:\\Windows\\SysWOW64\\d3con.exe",
+	    "?:\\Windows\\System32\\StikyNot.exe",
+	    "?:\\WINDOWS\\splwow64.exe",
+	    "?:\\Program Files\\*.exe",
+	    "?:\\Program Files (x86)\\*.exe",
+	    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil*_Plugin.exe") and
+  not (process.name : "cscript.exe" and registry.value : "ContingencyUninstallNXTSForCurrentUser") and
+  not (process.name : "ZoomInfoContactContributor*.exe" and registry.value : "ZoomInfo Contact Contributor") and
+  not (process.name : "rundll32.exe" and registry.value : ("bit4id csp store register*", "SafeDiveCertMgm")) and
+  not (process.name : ("bomgar-scc.exe", "ThinkGear Connector.exe") and registry.value : ("Bomgar_Cleanup_*", "ThinkGear Connector")) and
+  registry.data.strings :
+            ("*rundll32*",
+             "*regsvr32*",
+             "*mshta*",
+             "*msbuild*",
+             "*RegAsm*",
+             "*RegSvcs*",
+             "*InstallUtil*",
+             "*cscript*",
+             "*wscript*",
+             "*.js?",
+             "*.js",
+             "*.vbs?",
+             "*.vbs",
+             "*.vbe?",
+             "*.vbe",
+             "*.bat?",
+             "*.bat",
+             "*.url",
+             "*.url?",
+             "*.lnk",
+             "*.lnk?",
+             "*msxsl*",
+             "*cmstp*",
+             "*cerutil*",
+             "*bitsadmin*",
+             "*msiexec*",
+             "*wmic*",
+             "*powershell*",
+             "*cmd.exe *",
+             "*svchost*",
+             "*lsass*",
+             "*csrss*",
+             "*winlogon*",
+             "*Microsoft.Workflow.Compiler.exe*",
+             "*VBScript.Encode*",
+             "*http://*",
+             "*WScript.Shell*",
+             "*VBScript.Encode*",
+             "*:\\Users\\Public\\*",
+             "*:\\Users\\*\\Documents\\*",
+             "*:\\Documents and Settings\\*",
+             "*:\\Users\\*\\Pictures\\*",
+             "*:\\Users\\*\\Music\\*",
+             "*:\\Users\\*\\Pictures\\*",
+             "*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*") and not
+    registry.data.strings :
+                   ("*rundll32.exe*advpack.dll,DelNodeRunDLL32*",
+                    "*LogiLDA.dll,LogiFetch*",
+                    "*\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*",
+                    "*%ProgramFiles%*",
+                    "*:\\Program Files\\*",
+                    "*:\\Program Files (x86)\\*",
+                    "*:\\Windows\\SystemApps\\*",
+                    "*:\\Windows\\System32\\DriverStore\\*",
+                    "*:\\WINDOWS\\Speech\\*",
+                    "*:\\WINDOWS\\System32\\RtkAudUService*",
+                    "*:\\WINDOWS\\system32\\SecurityHealthSystray.exe",
+                    "*restartSAPinst.vbs*",
+                    /* Issue #324 */
+                    "*\\Windows\\Downloaded Program Files\\*",
+                    "*\\Windows\\SysWOW64\\Macromed\\*",
+                    "*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk*",
+                    "*\\Pictures\\*com_Internet_Download_Manager*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

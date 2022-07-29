@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies User Account Control (UAC) bypass attempts via hijacking the DiskCleanup scheduled task. Attackers bypass UAC
+to stealthily execute code with elevated permissions.
+"""
+id = "d487049e-381d-44ad-9ec9-d23e88dbf573"
+license = "Elastic License v2"
+name = "UAC Bypass via DiskCleanup Scheduled Task Hijack"
+os_list = ["windows"]
+reference = ["https://www.tiraniddo.dev/2017/05/exploiting-environment-variables-in.html"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ process.Ext.token.integrity_level_name == "high" and
+ process.args : "/autoclean" and process.args : "/d" and
+ not process.executable : ("?:\\Windows\\System32\\cleanmgr.exe",
+                           "?:\\Windows\\SysWOW64\\cleanmgr.exe",
+                           "?:\\Windows\\System32\\taskhostw.exe",
+                           /* Issue #359 */
+                           "?:\\Windows\\System32\\taskhost.exe",
+                           "?:\\Windows\\SysWOW64\\taskhost.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

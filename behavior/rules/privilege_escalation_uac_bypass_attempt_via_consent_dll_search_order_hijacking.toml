@@ -1,0 +1,82 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) via DLL search order hijacking. Attackers may attempt to bypass
+UAC to stealthily execute code with elevated permissions.
+"""
+id = "39827014-4836-498e-8b16-bf62f7aae4bf"
+license = "Elastic License v2"
+name = "UAC Bypass Attempt via Consent DLL Search Order Hijacking"
+os_list = ["windows"]
+reference = [
+    "https://github.com/hfiref0x/UACME",
+    "https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=60s
+ [file where event.action : "rename" and process.name : "dllhost.exe" and
+  file.path : ("?:\\*\\consent.exe.*\\*.dll", "?:\\*\\consent.exe.*\\*.dll")]
+ [process where event.action == "start" and
+  process.parent.name : "consent.exe" and process.Ext.token.integrity_level_name == "system" and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe",
+            "?:\\Windows\\System32\\wermgr.exe",
+            "?:\\Windows\\SysWOW64\\wermgr.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1129"
+name = "Shared Modules"
+reference = "https://attack.mitre.org/techniques/T1129/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

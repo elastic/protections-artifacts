@@ -1,0 +1,94 @@
+[rule]
+description = """
+Identifies DNS queries to known Dynamic DNS Providers by a signed Microsoft binary execution proxy. Dynamic DNS
+providers are often misused to host malware Command and Control servers.
+"""
+id = "fb6939a2-1b54-428c-92a2-3a831585af2a"
+license = "Elastic License v2"
+name = "Connection to Dynamic DNS Provider by a Signed Binary Proxy"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+    (
+     process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "powershell.exe", "pwsh.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe",
+                     "installutil.exe","RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe") or
+     process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Windows\\Microsoft.NET\\*.exe")
+     )
+  ]
+  [dns where
+    dns.question.name :
+         (
+          "*.no-ip.com",
+          "*.no-ip.org",
+          "*.no-ip.biz",
+          "*.no-ip.info",
+          "*.noip.com",
+          "*.afraid.org",
+          "*.changeip.com",
+          "*.ddns.net",
+          "*.dyndns.org",
+          "*.hopto.org",
+          "*.zapto.org",
+          "*.servehttp.com",
+          "*.sytes.net",
+          "*.myftp.biz",
+          "*.myftp.org",
+          "*.ddnsfree.com",
+          "*.duckdns.org",
+          "*.000webhostapp.com",
+          "*.myddns.me",
+          "*.dlinkddns.com",
+          "*.chickenkiller.com",
+          "*.thddns.net",
+          "*.linkpc.net",
+          "*.gotdns.ch"
+         ) and
+
+     /* covered by rule Id 51894221-7657-4b56-9406-e080e19ad159 */
+    not dns.question.name : "checkip.dyndns.org"
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,174 @@
+[rule]
+description = """
+Identifies process execution from suspicious default Windows directories. This may be abused by adversaries to hide
+malware in trusted paths.
+"""
+id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
+license = "Elastic License v2"
+name = "Execution from Unusual Directory"
+os_list = ["windows"]
+version = "1.0.11"
+
+query = '''
+process where event.action == "start" and
+  process.name : ("wscript.exe",
+                  "cscript.exe",
+                  "rundll32.exe",
+                  "regsvr32.exe",
+                  "cmstp.exe",
+                  "RegAsm.exe",
+                  "installutil.exe",
+                  "mshta.exe",
+                  "RegSvcs.exe",
+                  "msbuild.exe",
+                  "msxsl.exe",
+                  "xwizard.exe") and
+  /* add suspicious execution paths here */
+  process.args : ("?:\\PerfLogs\\*",
+                  "?:\\Users\\*\\Pictures\\*",
+                  "?:\\Users\\*\\Music\\*",
+                  "?:\\Users\\Public\\*",
+                  "?:\\Windows\\Tasks\\*",
+                  "?:\\Windows\\System32\\Tasks\\*",
+                  "?:\\Intel\\*",
+                  "?:\\AMD\\Temp\\*",
+                  "?:\\Windows\\AppReadiness\\*",
+                  "?:\\Windows\\ServiceState\\*",
+                  "?:\\Windows\\security\\*",
+                  "?:\\Windows\\IdentityCRL\\*",
+                  "?:\\Windows\\Branding\\*",
+                  "?:\\Windows\\csc\\*",
+                  "?:\\Windows\\DigitalLocker\\*",
+                  "?:\\Windows\\en-US\\*",
+                  "?:\\Windows\\wlansvc\\*",
+                  "?:\\Windows\\Prefetch\\*",
+                  "?:\\Windows\\Fonts\\*",
+                  "?:\\Windows\\diagnostics\\*",
+                  "?:\\Windows\\TAPI\\*",
+                  "?:\\Windows\\INF\\*",
+                  "?:\\windows\\tracing\\*",
+                  "?:\\windows\\IME\\*",
+                  "?:\\Windows\\Performance\\*",
+                  "?:\\windows\\intel\\*",
+                  "?:\\windows\\ms\\*",
+                  "?:\\Windows\\dot3svc\\*",
+                  "?:\\Windows\\ServiceProfiles\\*",
+                  "?:\\Windows\\panther\\*",
+                  "?:\\Windows\\RemotePackages\\*",
+                  "?:\\Windows\\OCR\\*",
+                  "?:\\Windows\\appcompat\\*",
+                  "?:\\Windows\\apppatch\\*",
+                  "?:\\Windows\\addins\\*",
+                  "?:\\Windows\\Setup\\*",
+                  "?:\\Windows\\Help\\*",
+                  "?:\\Windows\\SKB\\*",
+                  "?:\\Windows\\Vss\\*",
+                  "?:\\Windows\\Web\\*",
+                  "?:\\Windows\\servicing\\*",
+                  "?:\\Windows\\CbsTemp\\*",
+                  "?:\\Windows\\Logs\\*",
+                  "?:\\Windows\\WaaS\\*",
+                  "?:\\Windows\\twain_32\\*",
+                  "?:\\Windows\\ShellExperiences\\*",
+                  "?:\\Windows\\ShellComponents\\*",
+                  "?:\\Windows\\PLA\\*",
+                  "?:\\Windows\\Migration\\*",
+                  "?:\\Windows\\debug\\*",
+                  "?:\\Windows\\Cursors\\*",
+                  "?:\\Windows\\Containers\\*",
+                  "?:\\Windows\\Boot\\*",
+                  "?:\\Windows\\bcastdvr\\*",
+                  "?:\\Windows\\TextInput\\*",
+                  "?:\\Windows\\schemas\\*",
+                  "?:\\Windows\\SchCache\\*",
+                  "?:\\Windows\\Resources\\*",
+                  "?:\\Windows\\rescache\\*",
+                  "?:\\Windows\\Provisioning\\*",
+                  "?:\\Windows\\PrintDialog\\*",
+                  "?:\\Windows\\PolicyDefinitions\\*",
+                  "?:\\Windows\\media\\*",
+                  "?:\\Windows\\Globalization\\*",
+                  "?:\\Windows\\L2Schemas\\*",
+                  "?:\\Windows\\LiveKernelReports\\*",
+                  "?:\\Windows\\ModemLogs\\*",
+                  "?:\\Windows\\ImmersiveControlPanel\\*",
+                  "?:\\$Recycle.Bin\\*") and not
+    (process.name : "rundll32.exe" and
+     process.command_line : ("*uxtheme.dll,#64*", "*PRINTUI.DLL,PrintUIEntry*", "*OpenAs_RunDLL*", "*ShowNotificationDialog*")) and not
+    /* Issue #322 */
+    (process.name : "rundll32.exe" and 
+     process.command_line : ("*cryptext.dll*",
+                             "*:\\Users\\*\\Documents\\DocuShare\\*",
+                             "*dfshim.dll*ShOpenVerbShortcut*",
+                             "*dvpack.dll,LaunchINFSection*\\Windows\\INF\\*",
+                             "*PhotoViewer.dll*ImageView_Fu*",
+                             "*GeneralTel.dll,RunGeneralTelemetry*",
+                             "*setupapi,InstallHinfSection*")) and not
+    (process.name : "cscript.exe" and process.command_line : "*PerfLogs\\*\\ServerManager*") and not 
+    (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and 
+     process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe", 
+                                  "?:\\Program Files\\Hewlett-Packard\\*.exe",
+                                  "?:\\Program Files (x86)\\HP\\*.exe",
+                                  "?:\\Program Files\\HP\\*.exe",
+                                  "?:\\ProgramData\\Hewlett-Packard\\UninstallHPSA.exe",
+                                  "?:\\*\\setup.exe")) and not
+    (process.name : "rundll32.exe" and process.parent.name : "svchost.exe" and process.parent.args : "LocalServiceNoNetworkFirewall") and not
+    (process.name : "cscript.exe" and process.args : "RemoveServerPeformanceLog" and process.args : "?:\\PerfLogs\\*" and
+     process.args : "?:\\Windows\\system32\\calluxxprovider.vbs") and not
+
+     /* Issue #535 */
+    (process.name : "rundll32.exe" and
+     process.args : ("?:\\Windows\\system32\\themecpl.dll,OpenThemeAction",
+                     "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acsnative.dll*",
+                     "?:\\WINDOWS\\System32\\shimgvw.dll,*",
+                     "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
+                     "?:\\Program Files\\CopyTrans HEIC for Windows\\CopyTransHEICforWindows.dll*")) and not
+     /* MS Visual Studio */
+     process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
+
+     not (process.parent.executable : "?:\\Windows\\system32\\CompatTelRunner.exe" and process.parent.args : "-m:appraiser.dll") and
+     not (process.name : "regsvr32.exe" and process.parent.name == "InstallHPSA.exe" and process.args : "?:\\Windows\\Help\\OEM\\scripts\\checkmui.dll")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

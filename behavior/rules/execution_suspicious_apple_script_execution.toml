@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies the execution of the Apple script interpreter (osascript) process with suspicious command line arguments.
+This behavior is consistent with an attacker executing malicious scripts for execution or command and control.
+"""
+id = "7b9d544a-5b2a-4f0d-984a-cdc89a7fad25"
+license = "Elastic License v2"
+name = "Suspicious Apple Script Execution"
+os_list = ["macos"]
+reference = ["https://github.com/its-a-feature/Mythic"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "exec" and
+ process.name : "osascript" and
+ process.args : "JavaScript" and
+ process.command_line : "*eval(*" and
+ process.command_line : ("*initWithDataEncoding*", "*dataWithContentsOfURL*", "*URLWithString*", "*http*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

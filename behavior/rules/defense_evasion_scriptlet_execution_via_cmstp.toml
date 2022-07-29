@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies when scrobj.dll is loaded into the Microsoft Connection Manager Profile Installer (cmstp.exe) process. This
+may indicate an attempt to bypass application whitelisting by executing a malicious scriptlet in a trusted process.
+"""
+id = "8adfa9ad-0ed2-4b1b-bdad-f2c52e1d2a00"
+license = "Elastic License v2"
+name = "Scriptlet Execution via CMSTP"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Cmstp/"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and process.pe.original_file_name == "CMSTP.EXE"]
+ [library where dll.name : "scrobj.dll"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.003"
+name = "CMSTP"
+reference = "https://attack.mitre.org/techniques/T1218/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

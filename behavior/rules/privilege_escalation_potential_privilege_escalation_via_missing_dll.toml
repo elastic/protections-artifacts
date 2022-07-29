@@ -1,0 +1,95 @@
+[rule]
+description = """
+Identifies the loading of a non Microsoft signed DLL that is missing on a default Windows installation (phantom DLL) or
+one that can be loaded from a different location by a native Windows process. This may be abused to persist or elevate
+privileges via privileged file write vulnerabilities.
+"""
+id = "a2a3d803-5c25-43cc-84b9-a4ae2a4dab27"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Missing DLL"
+os_list = ["windows"]
+reference = [
+    "https://itm4n.github.io/windows-dll-hijacking-clarified/",
+    "http://remoteawesomethoughts.blogspot.com/2019/05/windows-10-task-schedulerservice.html",
+    "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
+    "https://shellz.club/edgegdi-dll-for-persistence-and-lateral-movement/",
+    "https://windows-internals.com/faxing-your-way-to-system/",
+    "http://waleedassar.blogspot.com/2013/01/wow64logdll.html",
+    "https://github.com/rapid7/metasploit-framework/blob/5863ff7e357af1634f5b370e811d647a9c999158/modules/exploits/windows/local/cve_2020_17136.rb#L192",
+]
+version = "1.0.10"
+
+query = '''
+sequence with maxspan=5m
+  [file where event.action != "deletion" and
+   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+   file.name :
+        ("wlbsctrl.dll",
+         "WptsExtensions.dll",
+         "Tsmsisrv.dll",
+         "TSVIPSrv.dll",
+         "Msfte.dll",
+         "wow64log.dll",
+         "WindowsCoreDeviceInfo.dll",
+         "phoneinfo.dll",
+         "EdgeGdi.dll",
+         "cdpsgshims.dll",
+         "diagtrack_win.dll",
+         "wbemcomn.dll",
+         "Ualapi.dll",
+         "wlanhlp.dll",
+         "healthapi.dll",
+         "prntvpt.dll")] by file.name
+  [library where
+   user.id : "S-1-5-18" and
+     (
+       dll.name :
+         ("wlbsctrl.dll",
+          "WptsExtensions.dll",
+          "Tsmsisrv.dll",
+          "TSVIPSrv.dll",
+          "Msfte.dll",
+          "wow64log.dll",
+          "WindowsCoreDeviceInfo.dll",
+          "phoneinfo.dll",
+          "EdgeGdi.dll",
+          "cdpsgshims.dll",
+          "diagtrack_win.dll",
+          "wlanhlp.dll",
+          "healthapi.dll",
+          "prntvpt.dll") or
+       dll.path : ("?:\\Windows\\System32\\wbem\\wbemcomn.dll", "?:\\Windows\\SysWOW64\\wbem\\wbemcomn.dll") or
+       dll.path : ("?:\\Windows\\System32\\Ualapi.dll",
+                   "?:\\Windows\\SysWOW64\\Ualapi.dll",
+                   "?:\\Windows\\System\\Ualapi.dll",
+                   "?:\\Windows\\Ualapi.dll")
+     ) and
+     not (dll.code_signature.subject_name : "Microsoft*" and dll.code_signature.trusted == true) and
+     not dll.path : "?:\\Windows\\System32\\prntvpt.dll"] by dll.name
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

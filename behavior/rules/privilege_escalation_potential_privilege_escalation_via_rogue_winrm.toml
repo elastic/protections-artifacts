@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies a privilege escalation attempt via impersonation using RogueWinRM. RogueWinRM is a local privilege escalation
+exploit that allows to escalate from a Service account (with SeImpersonatePrivilege) to Local System account if the
+WinRM service is not running.
+"""
+id = "33962262-436f-43d7-86e9-06dbddfffb5d"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Rogue WinRM"
+os_list = ["windows"]
+reference = [
+    "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
+    "https://github.com/antonioCoco/RogueWinRM",
+]
+version = "1.0.5"
+
+query = '''
+sequence with maxspan=1m
+ [network where event.action == "disconnect_received" and
+
+  /* localhost connection via WinRM default listening port */
+  destination.port == 5985 and source.port >= 49152 and
+  destination.address : ("127.*", "::1") and source.address : ("127.*", "::1") and
+  not process.executable : "?:\\Windows\\System32\\svchost.exe" and not user.id : "S-1-5-18"] by process.entity_id
+ [process where event.action == "start" and user.id : "S-1-5-18" and
+  /* started via seclogon service */
+  process.parent.Ext.real.pid > 0] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

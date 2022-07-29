@@ -1,0 +1,125 @@
+[rule]
+description = """
+Identifies trusted Windows processes that rarely modify the Run and RunOnce keys. Run and RunOnce registry keys cause
+programs to run each time that a user logs on and are often abused by adversaries to maintain persistence on an
+endpoint.
+"""
+id = "b2fcbb09-d9bd-4f6c-a08e-247548b4edcd"
+license = "Elastic License v2"
+name = "Registry Run Key Modified by Unusual Process"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "start" and process.executable : "?:\\Windows\\*" and not
+    process.executable :
+             ("?:\\Windows\\SysWOW64\\msiexec.exe",
+              "?:\\Windows\\System32\\msiexec.exe",
+              "?:\\Windows\\System32\\drvinst.exe",
+              "?:\\Windows\\System32\\WinSAT.exe",
+              "?:\\Windows\\System32\\reg.exe",
+              "?:\\Windows\\regedit.exe",
+              "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil*_*.exe",
+              "?:\\Windows\\SysWOW64\\reg.exe",
+              "?:\\Windows\\System32\\csrss.exe",
+              "?:\\Windows\\SysWOW64\\DriverStore\\*.exe",
+              "?:\\Windows\\System32\\DriverStore\\*.exe",
+              "?:\\Windows\\Installer\\*.exe",
+              "?:\\Windows\\IMECache\\*.exe",
+              "?:\\Windows\\System32\\sihost.exe",
+              "?:\\Windows\\System32\\Speech\\SpeechUX\\SpeechUXWiz.exe",
+              "?:\\Windows\\System32\\CompPkgSrv.exe",
+              "?:\\Windows\\SysWOW64\\prevhost.exe",
+              "?:\\Windows\\System32\\conhost.exe",
+              "?:\\Windows\\System32\\taskhostw.exe",
+              /* Issue #291 */
+              "?:\\Windows\\System32\\svchost.exe",
+              "?:\\Windows\\System32\\MRT.exe",
+              "?:\\Windows\\explorer.exe",
+              "?:\\Windows\\Temp\\*",
+              "?:\\Windows\\Downloaded Program Files\\*.exe",
+              "?:\\Windows\\ccmsetup\\*.exe",
+              "?:\\Windows\\CCM\\*",
+              "?:\\Windows\\ccmcache\\*",
+              "?:\\Windows\\Installer\\*",
+              "?:\\Windows\\SysWOW64\\config\\systemprofile\\*.exe",
+              "?:\\Windows\\System32\\config\\systemprofile\\*.exe",
+              "?:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell*.exe",
+              "?:\\Windows\\SoftwareDistribution\\Download\\*.exe",
+              "?:\\Windows\\Samsung\\PanelMgr\\SSMMgr.exe",
+              "?:\\Windows\\SysWOW64\\d3con.exe",
+              "?:\\WINDOWS\\SysWOW64\\DWRCS.EXE",
+              "?:\\WINDOWS\\splwow64.exe",
+              "?:\\Windows\\Xerox\\PanelMgr\\SSMMgr.exe",
+              "?:\\Windows\\System32\\PrintIsolationHost.exe",
+              "?:\\windows\\syswow64\\d3con.exe",
+              "?:\\Windows\\Xerox\\PanelMgr\\SSMMgr.exe",
+              "?:\\Windows\\System32\\ZXPPlvAsyncUIClient.exe",
+              "?:\\Windows\\System32\\wsmprovhost.exe",
+              "?:\\Windows\\System32\\wmiprvse.exe",
+              "?:\\Windows\\System32\\userinit.exe") and
+   not (process.name : "rundll32.exe" and process.command_line : ("*\\Windows\\Downloaded Program Files\\*", "*zzzzInvokeManagedCustomActionOutOfProc*")) and
+   not (process.name : ("powershell.exe", "cscript.exe", "wscript.exe") and process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")) and
+   not (process.pe.original_file_name == "NKHlp.exe" and process.code_signature.subject_name == "DBS AG" and process.code_signature.trusted == true) and
+   not (process.executable : "*\\WINDOWS\\system32\\mmc.exe" and process.args : "?:\\Windows\\System32\\gpme.msc") and
+   not process.Ext.token.integrity_level_name == "system" and
+   not (process.pe.original_file_name : "NKInstallOnShutdownComm.exe" and
+        process.code_signature.subject_name : "DBS AG" and process.code_signature.trusted == true) and
+   not (process.code_signature.subject_name : "Microsoft Windows Hardware Compatibility Publisher" and process.code_signature.trusted == true) and
+   not (process.executable : "?:\\WINDOWS\\system32\\wsl.exe" and process.args : "--install") and
+   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\Speech\\SpeechUX\\sapi.cpl")
+   ]
+  [registry where registry.data.strings != null and
+    registry.path : (
+      "*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+      "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+      "*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+      "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*"
+    ) and not
+    registry.data.strings : (
+      "grpconv -o",
+      "?:\\Windows\\System32\\StikyNot.exe",
+      "ctfmon.exe /n",
+      "netsh.exe trace postreset",
+      "\"?:\\Windows\\System32\\RtkAudUService64.exe*-background",
+      "%WINDIR%\\system32\\BitLockerWizardElev.exe *Volume{*",
+      "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*",
+      "?:\\Program Files (x86)\\*.exe",
+      "?:\\Program Files\\*.exe",
+      "*\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*",
+      /* Issue #291 */
+      "*\\Windows\\Downloaded Program Files\\*",
+      "*%ProgramFiles%*",
+      "rundll32.exe ?:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher",
+      "*:\\Program Files (x86)\\*",
+      "*:\\Program Files\\*"
+    )]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

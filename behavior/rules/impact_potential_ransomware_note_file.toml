@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings and subsequently followed by the
+creation of a file with a name and file header content similar to common Ransomware notes files. This may indicate a
+Ransomware attack behavior.
+"""
+id = "5dba1130-72df-46f1-b581-18d9c866cb23"
+license = "Elastic License v2"
+name = "Potential Ransomware Note File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=60s
+ [process where event.action == "start" and
+  (
+    (process.pe.original_file_name == "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or
+    (process.pe.original_file_name == "VSSADMIN.EXE" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*")) or
+    (process.pe.original_file_name == "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+    (process.pe.original_file_name == "WBADMIN.EXE" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*") or
+    (process.pe.original_file_name == "iCACLS.EXE" and process.command_line : ("*/deny*S-1-1-0*", "*?:\\*\" /grant*Everyone:F*"))
+  )]
+ [file where event.action == "creation" and file.extension : ("hta", "txt", "readme") and
+  ( 
+   /* ransom note header file content */
+    file.Ext.header_bytes :
+           ("416c6c20796f75722066696c65*",
+            "2d002d002d003d003d003d0020005700",
+            "596f7572206e6574776f726b20686173",
+            "54006f00200064006500630072007900",
+            "3a3a3a204772656574696e6773203a3a",
+            "49742773206e6f74206c61746520746f",
+            "5f5f5f5f5f202020202020205f5f205f",
+            "546865206e6574776f726b206973204c",
+            "415454454e54494f4e210d0a0d0a446f",
+            "4f6f6f70732120416c6c20796f757220",
+            "2d2d2d2d2d2d2d2d2d2d2d205b205765",
+            "2a2d2a414c4c2046494c4553204f4e20",
+            "3c68746d6c3e0d0a3c686561643e0d0a",
+            "3c21444f43545950452068746d6c3e0d",
+            "efbbbf3c21444f43545950452068746d",
+            "4c6f636b426974*",
+            "486920436f6d70616e792c0d0a0d0a45",
+            "2020202020207e2b2020202020202020",
+            "41766f734c6f636b6572*") or
+       /* ransom file name keywords */      
+    file.name : ("*read*me*", "*unlock*", "*@*", "*RECOVER*", "*decrypt*", "*restore*file*", "*FILES_BACK*")
+  )]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1485"
+name = "Data Destruction"
+reference = "https://attack.mitre.org/techniques/T1485/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

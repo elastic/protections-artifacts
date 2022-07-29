@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies modifications to the root crontab file. Adversaries may overwrite this file to gain code execution with root
+privileges by exploiting privileged file write or move related vulnerabilities.
+"""
+id = "31151602-1de1-4301-9b75-215ac8902b75"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Root Crontab File Modification"
+os_list = ["macos"]
+reference = [
+    "https://phoenhex.re/2017-06-09/pwn2own-diskarbitrationd-privesc",
+    "https://www.exploit-db.com/exploits/42146",
+]
+version = "1.0.4"
+
+query = '''
+file where event.type != "deletion" and
+ file.path : "/private/var/at/tabs/root" and not process.executable : "/usr/bin/crontab"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies a suspicious network connection from the Microsoft Equation Editor process, which is frequently targeted by
+attackers using weaponized Microsoft Office documents. This behavior is consistent with the successful exploitation of
+Office applications via known vulnerabilities CVE-2017-1182 or CVE-2018-0798.
+"""
+id = "365571bb-2b93-4ae8-8c39-0558f8a6c4cc"
+license = "Elastic License v2"
+name = "Suspicious Network Connection from Microsoft Equation Editor"
+os_list = ["windows"]
+reference = [
+    "https://www.anomali.com/blog/multiple-chinese-threat-groups-exploiting-cve-2018-0798-equation-editor-vulnerability-since-late-2018",
+    "https://nvd.nist.gov/vuln/detail/CVE-2017-11882",
+    "https://nvd.nist.gov/vuln/detail/CVE-2018-0798",
+]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+  [process where event.action == "start" and process.name : "EQNEDT32.EXE" and process.args : "-Embedding"]
+  [network where event.action == "connection_attempted" and process.name : "EQNEDT32.EXE"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

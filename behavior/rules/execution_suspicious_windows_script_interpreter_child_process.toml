@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies unusual windows script interpreter child process which could indicate code injection or other form of
+malicious code execution via Windows scripts.
+"""
+id = "83da4fac-563a-4af8-8f32-5a3797a9068e"
+license = "Elastic License v2"
+name = "Suspicious Windows Script Interpreter Child Process"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and
+  process.parent.name : ("wscript.exe", "cscript.exe", "mshta.exe") and
+  process.parent.args_count >= 2 and
+  not process.Ext.token.integrity_level_name == "system" and
+   (
+    process.name : ("rundll32.exe", "regsvr32.exe") or
+
+    /* suspicious or unusual paths */
+    process.executable : ("?:\\Windows\\Microsoft.NET\\*",
+                          "?:\\Users\\Public\\*",
+                          "?:\\Windows\\Tasks\\*",
+                          "?:\\Windows\\System32\\Tasks\\*") or
+
+     /* potential hollowed trusted system process with no arguments */
+    (process.args_count == 1 and
+     process.executable : ("?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
+     process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *" and
+     not process.name : ("conhost.exe", "gpupdate.exe", "logoff.exe", "HOSTNAME.EXE"))
+     ) and
+     not (process.parent.name : "mshta.exe" and process.parent.args : "?:\\Program Files\\HP\\*\\HPSolutionsPortal.hta") and
+     not (process.name : "regsvr32.exe" and process.parent.name : "wscript.exe" and process.parent.command_line : ("*LiteTouch.wsf*", "*LTICleanup.wsf*")) and
+     not (process.pe.original_file_name == "acslaunch" and process.executable : "?:\\Users\\Public\\IBM\\*.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

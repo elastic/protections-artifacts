@@ -1,0 +1,115 @@
+[rule]
+description = """
+Identifies a Microsoft Office application (Word, PowerPoint, Excel) starting Windows PowerShell with a suspicious
+command line.
+"""
+id = "93ef8a09-0f8d-4aa1-b0fb-47d5d5b40cf2"
+license = "Elastic License v2"
+name = "PowerShell Obfuscation Spawned via Microsoft Office"
+os_list = ["windows"]
+reference = ["https://github.com/danielbohannon/Invoke-Obfuscation"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and
+ (process.pe.original_file_name == "PowerShell.EXE" or process.name : ("powershell.exe", "pwsh.exe")) and
+ (
+  process.parent.name : ("excel.exe", "powerpnt.exe", "winword.exe") or
+  (descendant of [process where event.action == "start" and process.name : ("excel.exe", "powerpnt.exe", "winword.exe")] and
+   /* Issue #263 */
+   not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
+  ) and
+  not process.Ext.token.integrity_level_name == "system" and
+  process.command_line :
+              ("*^*^*^*^*^*^*^*^*^*",
+              "*''*''*''*",
+              "*`*`*`*`*",
+              "*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*{*",
+              "*+*+*+*+*+*",
+              "*$*$*$*$*",
+              "*[char[]](*)*-join",
+              "*Base64String*",
+              "*[*Convert]*",
+              "*.Text.Encoding*",
+              "*.Compression.*",
+              "*.replace(*",
+              "*MemoryStream*",
+              "*WriteAllBytes*",
+              "* -en* *",
+              "* -ec *",
+              "* -e *",
+              "* -ex* *",
+              "* -ep *",
+              "* /e *",
+              "* /en* *",
+              "* /ec *",
+              "* /ex* *",
+              "* /ep *",
+              "*WebClient*",
+              "*DownloadFile*",
+              "*DownloadString*",
+              "*BitsTransfer*",
+              "*Invoke-Exp*",
+              "*invoke-web*",
+              "*iex*",
+              "*iwr*",
+              "*Reflection.Assembly*",
+              "*Assembly.GetType*",
+              "*.Sockets.*") and
+  /* Issue #263 */
+  not process.parent.executable :
+                 ("?:\\ProgramData\\CentraStage\\AEMAgent\\AEMAgent.exe",
+                  "?:\\Windows\\System32\\svchost.exe",
+                  "?:\\Windows\\System32\\CompatTelRunner.exe",
+                  "?:\\Windows\\System32\\taskeng.exe") and
+
+  not process.args : ("Get-AuthenticodeSignature*", "Write-Host") and not process.command_line : "*Get-AppxPackage*Microsoft.Office*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

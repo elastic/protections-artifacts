@@ -1,0 +1,127 @@
+[rule]
+description = """
+Identifies when RunDLL32 or Regsvr32 loads an executable that was dropped by commonly abused programs via phishing such
+as Microsoft Office or Powershell. An adversary may deliver a weaponized Office document to their target that writes and
+executes a malicious DLL.
+"""
+id = "901f0c30-a7c5-40a5-80e3-a50c6744632f"
+license = "Elastic License v2"
+name = "RunDLL32/Regsvr32 Loads Dropped Executable"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+sequence with maxspan=1m
+  [ file where event.action != "deletion" and 
+    not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+      process.name :
+          ("WINWORD.EXE",
+           "EXCEL.EXE",
+           "POWERPNT.EXE",
+           "MSACCESS.EXE",
+           "MSHTA.EXE",
+           "cscript.exe",
+           "wscript.exe",
+           "CertUtil.exe",
+           "CertReq.exe",
+           "Cmd.exe",
+           "xcopy.exe",
+           "curl.exe",
+           "powershell.exe") and
+      (
+        file.extension : ("dll", "cpl", "ocx") or
+        // Match Windows PE files by header data (MZ)
+        file.Ext.header_bytes : "4d5a*"
+      )
+  ] by file.path
+  [ library where process.name : ("rundll32.exe", "regsvr32.exe") and 
+    not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+    not dll.path : ("?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll") and
+    not (dll.pe.original_file_name == "RbkVssProvider.dll" and dll.path : "?:\\Windows\\Temp\\rubrik_vmware*\\RbkVssProvider.dll")
+   ] by dll.path
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

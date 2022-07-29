@@ -1,0 +1,52 @@
+[rule]
+description = "Identifies the execution of an unsigned file written or modified by Microsoft Office processes."
+id = "bb23a662-2d75-4714-837d-4ec9c2e772a5"
+license = "Elastic License v2"
+name = "Untrusted File Execution via Microsoft Office"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+sequence by user.id with maxspan=1m
+  [file where event.action != "deletion" and
+    (file.extension : ("exe", "com", "pif", "scr") or file.Ext.header_bytes : "4d5a*") and
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    not file.path :
+            (
+              "?:\\Users\\*\\Desktop\\*",
+              "?:\\Users\\*\\Downloads\\*",
+              "?:\\Users\\*\\AppData\\Local\\Temp\\*-*-*-*\\*",
+              "?:\\Program Files (x86)\\*",
+              "?:\\Program Files\\*"
+            )
+    ] by file.path
+  [process where event.action == "start" and
+    process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    not process.code_signature.trusted == true] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

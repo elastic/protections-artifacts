@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) via WSReset execution hijack. Attackers bypass UAC to
+stealthily execute code with elevated permissions.
+"""
+id = "11c67af9-9599-4800-9e84-bd38f2a51581"
+license = "Elastic License v2"
+name = "UAC Bypass via WSReset Execution Hijack"
+os_list = ["windows"]
+reference = ["https://github.com/hfiref0x/UACME"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=60s
+ [registry where
+  registry.path : ("HKEY_USERS\\S-1-5-21-*Classes\\*\\Shell\\open\\command\\DelegateExecute", "*\\ms-windows-store*")]
+ [process where event.action == "start" and process.parent.name : "WSReset.exe" and
+  process.Ext.token.integrity_level_name == "high" and
+  not process.executable :
+           ("?:\\Windows\\System32\\WerFault.exe",
+            "?:\\Windows\\SysWOW64\\WerFault.exe",
+            "?:\\Windows\\System32\\mmc.exe",
+            "?:\\Windows\\SysWOW64\\mmc.exe",
+            "?:\\Windows\\system32\\conhost.exe",
+            "?:\\Windows\\SysWOW6\\conhost.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

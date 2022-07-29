@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies potential parent process spoofing via abusing the seclogon service. Adversaries may spoof the parent process
+identifier (PPID) of a new process to evade process-monitoring defenses or to elevate privileges.
+"""
+id = "3bd31cbf-b581-41b7-b021-020cc64cfd9d"
+license = "Elastic License v2"
+name = "Potential Parent Process PID Spoofing via MalSecLogon"
+os_list = ["windows"]
+reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and process.name : "svchost.exe" and process.args : "seclogon"] by process.entity_id
+  [process where event.action == "start" and
+   process.parent.Ext.real.pid > 0 and not process.Ext.token.integrity_level_name == "system" and
+
+   /* dirs hosting interesting processes to spoof as parent process like Explorer.exe */
+   process.parent.executable : ("?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
+
+    /* common secLogon Clients running from trusted directories */
+    not (process.parent.executable : "?:\\WINDOWS\\Explorer.EXE" and process.name : "rundll32.exe" and process.command_line : "*SHELL32.dll,RunAsNewUser_RunDLL*") and
+
+    not (process.parent.executable : ("?:\\Windows\\System32\\runas.exe", "?:\\WINDOWS\\system32\\ShellRunas.exe") and process.parent.args_count >= 2) and
+
+    not (process.parent.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.parent.args : "WdiServiceHost" and
+         process.name : "rundll32.exe" and process.command_line : "*winethc.dll*ForceProxyDetectionOnNextRun*") and
+
+    not (process.parent.executable : "?:\\Windows\\Sys*\\OneDriveSetup.exe" and process.parent.args : ("/thfirstsetup", "/uninstall") and
+         process.pe.original_file_name in ("OneDrive.exe", "OneDriveSetup.exe") and
+         process.code_signature.subject_name == "Microsoft Corporation" and process.code_signature.trusted == true) and
+
+    not (process.parent.executable : "?:\\Windows\\Sys*\\MsiExec.exe" and process.parent.args : "-Embedding") and
+
+    not (process.parent.executable : "?:\\Windows\\System32\\consent.exe" and process.executable : "?:\\WINDOWS\\system32\\UserAccountControlSettings.exe") and
+
+    /* RunAs execution via windows scripts */
+    not process.parent.name : ("cscript.exe", "powershell.exe", "wscript.exe") and
+
+    not process.parent.executable : ("?:\\windows\\system32\\ServerManager.exe", "?:\\Windows\\System32\\LogonUI.exe", "?:\\Windows\\System32\\dgagent\\dsagent.exe") and
+
+    not (process.parent.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\AircommandEngine.exe" and
+         process.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\AircommandEngine.exe") and
+
+    not (process.parent.executable : "?:\\Windows\\System32\\mmc.exe" and process.executable : "?:\\Windows\\system32\\gpupdate.exe") and
+
+    not (process.pe.original_file_name == "OffCATcmd.exe" and process.code_signature.subject_name == "Microsoft Corporation" and
+         process.code_signature.trusted == true and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe") and 
+	 
+    not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc")] by process.parent.Ext.real.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.004"
+name = "Parent PID Spoofing"
+reference = "https://attack.mitre.org/techniques/T1134/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

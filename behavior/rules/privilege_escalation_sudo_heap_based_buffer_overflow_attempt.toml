@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies the attempted use of a heap-based buffer overflow vulnerability for the Sudo binary in Unix-like systems
+(CVE-2021-3156). Successful exploitation allows an unprivileged user to escalate to the root user.
+"""
+id = "95718a3c-edc7-46ef-978b-77891ca6198f"
+license = "Elastic License v2"
+name = "Sudo Heap-Based Buffer Overflow Attempt"
+os_list = ["linux", "macos"]
+reference = [
+    "https://cve.mitre.org/cgi-bin/cvename.cgi?name=2021-3156",
+    "https://blog.qualys.com/vulnerabilities-research/2021/01/26/cve-2021-3156-heap-based-buffer-overflow-in-sudo-baron-samedit",
+    "https://www.bleepingcomputer.com/news/security/latest-macos-big-sur-also-has-sudo-root-privilege-escalation-flaw",
+    "https://www.sudo.ws/alerts/unescape_overflow.html",
+]
+version = "1.0.6"
+
+query = '''
+process where event.action == "exec" and
+  process.name in ("sudoedit", "sudo") and
+  process.args in ("-s", "-S") and process.args : "sudoedit" and process.args : "*\\"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

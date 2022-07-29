@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies attempts to elevate privileges by dropping a DLL file via elevated IFileOperation (Rename, Move or Copy)
+followed by DLL side-loading into a process running with SYSTEM integrity. Attackers may attempt to hijack DLL search
+order and stealthily execute code with elevated permissions.
+"""
+id = "8b4791a8-2355-4f43-8b60-d367b5c2aa51"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Elevated IFileOperation"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileoperation"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=1m
+  [file where event.action in ("creation", "overwrite", "rename", "modification") and
+
+   /* IFileOperation are performed by DllHost */
+   process.name : "dllhost.exe" and user.id : "S-1-5-21-*" and
+
+   /* executable file dropped via NewItem, Rename, Move or Copy IFileOperation */
+   (file.extension : "dll" or file.Ext.header_bytes : "4d5a*") and
+
+   /* protected system paths usually abused via DLL search order hijack */
+   file.path : ("?:\\Windows\\system32\\*",
+                "?:\\Windows\\syswow64\\*",
+                "?:\\Program Files (x86)\\Microsoft\\*",
+                "?:\\Program Files\\Microsoft\\*"
+                )] by file.path
+  [library where
+   /* non MS signed DLL loaded by a System Process */
+   user.id : "S-1-5-18" and
+   process.executable :
+               ("?:\\Windows\\system32\\*",
+                "?:\\Windows\\syswow64\\*",
+                "?:\\Program Files (x86)\\Microsoft\\*",
+                "?:\\Program Files\\Microsoft\\*") and
+  not (dll.code_signature.subject_name : "Microsoft *" and dll.code_signature.trusted == true)] by dll.path
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

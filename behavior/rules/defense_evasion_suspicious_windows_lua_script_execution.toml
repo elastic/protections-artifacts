@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies the execution of Lua Windows Standalone Interpreter modules from suspicious locations. Attackers may abuse
+Lua for Windows to execute malicious Lua script and bypass signature-based detection.
+"""
+id = "8f237d98-1825-4c27-a5cd-e38bde70882a"
+license = "Elastic License v2"
+name = "Suspicious Windows LUA Script Execution"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [library where dll.name : ("luacom.dll", "lua?.?.dll") and not user.id : "S-1-5-18" and
+  not dll.code_signature.trusted == true and
+  dll.path : ("?:\\Programdata\\*", "?:\\Users\\*", "?:\\Windows\\Temp\\*", "?:\\windows\\System32\\Tasks\\*", "?:\\Windows\\Tasks\\*")]
+ [network where event.action == "connection_attempted"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.003"
+name = "Rename System Utilities"
+reference = "https://attack.mitre.org/techniques/T1036/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

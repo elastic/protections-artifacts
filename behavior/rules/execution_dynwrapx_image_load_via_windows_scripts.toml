@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies when a Windows script interpreter loads an external library that allow to call Windows API functions from
+scripts in JScript and VBScript. Malware may abuse this legit capability to interact further with the Operating System.
+"""
+id = "4cd6f758-0057-4e8a-9701-20b6116c2118"
+license = "Elastic License v2"
+name = "Dynwrapx Image Load via Windows Scripts"
+os_list = ["windows"]
+reference = [
+    "https://www.script-coding.com/dynwrapx_eng.html",
+    "https://www.splunk.com/en_us/blog/security/detecting-malware-script-loaders-using-remcos-threat-research-release-december-2021.html",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.type == "start" and
+  process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "wmic.exe", "cmstp.exe", "msxsl.exe")]
+ [library where dll.pe.original_file_name : "dynwrapx.dll"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

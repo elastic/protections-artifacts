@@ -1,0 +1,85 @@
+[rule]
+description = """
+Identifies the execution of a Windows scripting interpreter with suspicious process arguments such as unusual script
+engine or unusual process working directory.
+"""
+id = "ffbab5db-73ae-42fd-a33f-36bf649f41cc"
+license = "Elastic License v2"
+name = "Suspicious Windows Script Process Execution"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.action == "start" and
+ process.pe.original_file_name : ("cscript.exe", "wscript.exe") and
+ not process.Ext.token.integrity_level_name == "system" and
+ process.working_directory != null and
+  (
+    /* execution from a RA or ZIP file */
+    process.working_directory :
+          ("?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*") or
+    process.command_line :
+          (
+            /* JScript9 */
+           "*{16d51579-a30b-4c8b-a276-0ff4dc41e755}*",
+
+            /* JScript or VBScript Language Encoding */
+           "*{F414C262-6AC0-11CF-B6D1-00AA00BBBB58}*",
+           "*{B54F3743-5B07-11cf-A4B0-00AA004A55E8}*",
+
+           /* chakra */
+           "*{1b7cd997-e5ff-4932-a7a6-2a9e636da385}*",
+           
+           /* appdata folder */
+           "*\\AppData\\Local\\Temp\\*",
+           "*\\AppData\\Roaming\\*"
+           ) or
+    (
+     process.command_line : "*\\Users\\*\\AppData\\Local\\Temp\\Temp?_*" and
+     process.args_count == 2
+    )
+  ) and
+
+  /* most legit executions from temp come from System32 working dir */
+  not (process.command_line : ("*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\*") and
+       process.working_directory : "?:\\Windows\\system32\\" and not process.parent.name : "explorer.exe") and
+  not process.parent.executable : ("?:\\Program Files\\Adobe\\Adobe After Effects *\\Support Files\\AfterFX.exe",
+                                   "?:\\Program Files (x86)\\Microsoft Dynamics NAV\\*\\Classic\\finsql.exe") and
+  not process.working_directory : ("?:\\Windows\\system32\\spool\\DRIVERS\\*", "?:\\windows\\system32\\driverstore\\filerepository\\*")]
+ [network where event.action == "connection_attempted"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

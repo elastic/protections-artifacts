@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings. Adversaries may delete or remove
+built-in operating system data and turn off services designed to aid in the recovery of a corrupted system and prevent
+recovery.
+"""
+id = "d3588fad-43ae-4f2d-badd-15a27df72132"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Untrusted Parent Process"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and
+    process.Ext.token.integrity_level_name : ("high", "system") and
+    not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
+    not process.code_signature.trusted == true] by process.entity_id
+  [process where event.action == "start" and
+    (
+      (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or
+      (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*")) or
+      (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+      (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
+    )
+  ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

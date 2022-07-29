@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies the execution of the built-in Windows program, Netsh, to add a program to the Windows Firewall exception list
+via an untrusted parent process.
+"""
+id = "5c01669c-e1cc-4acc-95b6-8b5e4a92c970"
+license = "Elastic License v2"
+name = "Windows Firewall Exception List Modified via Untrusted Process"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/netsh-advfirewall-firewall-control-firewall-behavior",
+]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and
+   process.executable : ("?:\\ProgramData\\*", "?:\\Users\\*", "?:\\Python*") and not process.code_signature.trusted == true] by process.entity_id
+  [process where event.action == "start" and process.name : "netsh.exe" and
+   process.command_line : "*add*allowedprogram*ENABLE*" and
+   not process.args : ("program=*:\\Program Files\\*", "program=*:\\Program Files (x86)\\*") and
+   not (process.args : "name=Free Download Manager" and process.parent.name : "fdm_x64_setup.tmp")
+   ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.004"
+name = "Disable or Modify System Firewall"
+reference = "https://attack.mitre.org/techniques/T1562/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

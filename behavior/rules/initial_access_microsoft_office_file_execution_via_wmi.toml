@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies the execution of a file written or modified by Microsoft Office processes followed by a child process spawned
+via Windows Management Instrumentation (WMI). This behavior may indicate adversarial activity to avoid spawning a
+suspicious MS Office child process.
+"""
+id = "792411bd-59ef-4ac0-89be-786d52d1a5c8"
+license = "Elastic License v2"
+name = "Microsoft Office File Execution via WMI"
+os_list = ["windows"]
+reference = [
+    "https://medium.com/threatpunter/detecting-adversary-tradecraft-with-image-load-event-logging-and-eql-8de93338c16",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m
+  [file where event.action != "deletion" and
+   (file.extension : ("exe", "com") or file.Ext.header_bytes : "4d5a*") and
+   process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "MSPUB.EXE", "fltldr.exe")] by file.path
+  [process where event.action == "start" and process.parent.name : "wmiprvse.exe" and
+   not process.Ext.token.integrity_level_name == "system"] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

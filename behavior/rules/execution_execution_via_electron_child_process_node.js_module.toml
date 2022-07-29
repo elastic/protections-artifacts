@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies attempts to execute a child process from within the context of an Electron application using the
+child_process Node.js module. Adversaries may abuse this technique to inherit permissions from parent processes.
+"""
+id = "1d43f87d-2466-4714-8fef-d52816cc25fb"
+license = "Elastic License v2"
+name = "Execution via Electron Child Process Node.js Module"
+os_list = ["macos"]
+reference = [
+    "https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html",
+    "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
+    "https://nodejs.org/api/child_process.html",
+]
+version = "1.0.7"
+
+query = '''
+process where event.action == "exec" and
+ process.args : "-e" and process.command_line : "*require*child_process*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

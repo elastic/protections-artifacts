@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies a suspicious managed code hosting process which could indicate code injection or other form of suspicious
+code execution via Windows scripts.
+"""
+id = "5a898048-d98c-44c6-b7ba-f63a31eb3571"
+license = "Elastic License v2"
+name = "Managed .NET Code Execution via Windows Script Interpreter"
+os_list = ["windows"]
+reference = [
+    "https://blog.menasec.net/2019/07/interesting-difr-traces-of-net-clr.html",
+    "https://github.com/med0x2e/GadgetToJScript",
+    "https://github.com/mdsecactivebreach/SharpShooter",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=2m
+ [process where event.type == "start" and
+  process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "wmic.exe", "cmstp.exe", "msxsl.exe") and
+
+  /* Only FPs observed so far, similar FPs can be handled via user custom applied exclusions */
+  not (process.name : "mshta.exe" and process.parent.name : "Explorer.exe" and
+       process.working_directory : "H:\\Code\\SignatureGen\\") and
+  not (process.name : "wscript.exe" and process.parent.name : "wscript.exe" and
+       process.parent.args : "/ChangedHostBitness" and process.parent.args : "/ALL")]
+ [file where event.action == "creation" and
+  file.path : "?:\\Users\\*\\Microsoft\\CLR_*\\UsageLogs\\*.exe.log" and
+  /*
+   CLR Usage Logs are created only for the first time
+   the program executes .NET which should reduce noise compared to clr.dll imageload
+  */
+  file.name : ("wscript.exe.log",
+               "cscript.exe.log",
+               "mshta.exe.log",
+               "wmic.exe.log",
+               "cmstp.exe.log",
+               "msxsl.exe.log")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1220"
+name = "XSL Script Processing"
+reference = "https://attack.mitre.org/techniques/T1220/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

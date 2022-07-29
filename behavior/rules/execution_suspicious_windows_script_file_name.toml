@@ -1,0 +1,116 @@
+[rule]
+description = """
+Identifies the execution of a Windows script with a file name following commonly used phishing naming convention via
+including legit document and image extensions or keywords that may lure a victim user into opening the malicious script.
+"""
+id = "8c69476a-d8ea-46da-8052-6a4f9254125c"
+license = "Elastic License v2"
+name = "Suspicious Windows Script File Name"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name : ("cscript.exe", "wscript.exe", "mshta.exe") and
+ process.args_count >= 2 and
+ process.command_line : ("*\\AppData\\*", "*\\outlook\\*", "*\\users\\public\\*", "*Menu\\Programs\\Startup\\*", "*\\Downloads\\*") and
+ /* script name commonly used in phishing */
+ process.args :
+     (
+      "*.pdf.js",
+      "*.pdf.vbs",
+      "*_pdf.vbs",
+      "*_pdf.js",
+      "*.doc.js",
+      "*.doc.vbs",
+      "*.docx.js",
+      "*.docx.vbs",
+      "*.ppt.js",
+      "*.ppt.vbs",
+      "*.xls.js",
+      "*.xlsx.js",
+      "*.xls.vbs",
+      "*.xlsx.vbs",
+      "*.jpg.js",
+      "*.png.js",
+      "*.jpg.vbs",
+      "*.png.vbs",
+      "*.pdf.hta",
+      "_pdf.hta",
+      "*.doc.hta",
+      "*.xls.hta",
+      "*.jpg.hta",
+      "*Receipt.js",
+      "*Receipt.vbs",
+      "*Delivery*.js",
+      "*Delivery*.vbs",
+      "*Invoice*.js",
+      "*Invoice*.vbs",
+      "*Fedex*.js",
+      "*Fedex*.vbs",
+      "*Supplies.js",
+      "*Supplies.vbs",
+      "*PayOff Wire*",
+      "*PURCHASE ORDER*",
+      "*payment.js",
+      "*payment.vbs",
+      "*Quotation*.js",
+      "*Quotation*.vbs",
+      "*dhl*.js",
+      "*dhl*.vbs",
+      "*Confirmation*.js",
+      "*Confirmation*.vbs",
+      "*Wire Transfer*.js",
+      "*Wire Transfer*.vbs",
+      "*Moneygram*",
+      "*agreement*.js",
+      "*agreement*.vbs")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

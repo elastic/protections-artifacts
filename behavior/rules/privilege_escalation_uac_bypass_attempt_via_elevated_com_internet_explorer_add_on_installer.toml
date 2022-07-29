@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies User Account Control (UAC) bypass attempts by abusing an elevated COM Interface to launch a malicious
+program. Attackers may attempt to bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "badd95ba-2416-4785-8f7f-787952b58a1d"
+license = "Elastic License v2"
+name = "UAC Bypass Attempt via Elevated COM Internet Explorer Add-On Installer"
+os_list = ["windows"]
+reference = ["https://swapcontext.blogspot.com/2020/11/uac-bypasses-from-comautoapprovallist.html"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m
+ [file where event.action == "rename" and
+  process.name : "dllhost.exe" and file.Ext.header_bytes : "4d5a*"] by file.path
+ [process where event.action == "start" and
+   process.Ext.token.integrity_level_name == "high" and
+   process.executable : "?:\\*\\AppData\\*\\Temp\\IDC*.tmp\\*.exe" and
+   process.parent.name : "ieinstal.exe" and process.parent.args : "-Embedding"] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

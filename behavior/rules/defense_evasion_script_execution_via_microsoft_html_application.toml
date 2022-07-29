@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies the execution of scripts via HTML applications using Windows utilities rundll32.exe or mshta.exe. Adversaries
+may bypass process and/or signature-based defenses by proxying execution of malicious content with signed binaries.
+"""
+id = "f0630213-c4c4-4898-9514-746395eb9962"
+license = "Elastic License v2"
+name = "Script Execution via Microsoft HTML Application"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and
+ (process.name : ("rundll32.exe", "mshta.exe") or
+  process.pe.original_file_name in ("MSHTA.EXE", "RUNDLL32.EXE")) and
+  (
+     (process.command_line :
+        (
+        "*script*eval(*",
+         "*script*GetObject*",
+         "*.regread(*",
+         "*WScript.Shell*",
+         "*.run(*",
+         "*).Exec()*",
+         "*mshta*http*",
+         "*mshtml*RunHTMLApplication*",
+         "*mshtml*,#135*",
+         "*StrReverse*",
+         "*.RegWrite*",
+         /* Issue #379 */
+         "*window.close(*",
+         "* Chr(*"
+         )
+     /* FPs observed in telemetry */
+     and not process.parent.executable :
+                  ("?:\\Program Files (x86)\\Citrix\\System32\\wfshell.exe",
+                   "?:\\Program Files (x86)\\Microsoft Office\\Office*\\MSACCESS.EXE",
+                   "?:\\Program Files\\Quokka.Works GTInstaller\\GTInstaller.exe")
+     and not (process.name : "mshta.exe" and process.parent.name : "cscript.exe" and process.parent.command_line : "*GTInstaller.vbs*")
+     ) or
+    /* Issue #379 */
+    (process.pe.original_file_name : "mshta.exe" and
+     not process.command_line : ("*.hta*", "*.htm*", "-Embedding") and process.args_count >=2) or
+
+     /* Execution of HTA file downloaded from the internet */
+     (process.pe.original_file_name : "mshta.exe" and process.command_line : "*\\Users\\*\\Downloads\\*.hta*") or 
+     
+     /* Execution of HTA file from archive */
+     (process.pe.original_file_name : "mshta.exe" and 
+      process.args : ("?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*", "?:\\Users\\*\\Temp\\BNZ.*")) or
+      
+     /* Execution of HTA file from mounted ISO files */
+     (process.pe.original_file_name : "mshta.exe" and 
+      process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and process.working_directory : "?:\\")
+   )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,66 @@
+[rule]
+description = """
+Adversaries may use the trusted PubPrn script to proxy execution of malicious files. This behavior may bypass signature
+validation restrictions and application control solutions that do not account for use of these scripts.
+"""
+id = "0d4454a7-c682-4085-995c-300973c5bdea"
+license = "Elastic License v2"
+name = "Scriptlet Proxy Execution via PubPrn"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Scripts/Pubprn/"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name in ("cscript.exe", "wscript.exe") and process.args_count >= 4 and
+ /* Issue 259 - additional rule strictness */
+ process.command_line : ("*localhost*script:http*", "*127.0.0.*script:http*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1216"
+name = "Signed Script Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1216/"
+[[threat.technique.subtechnique]]
+id = "T1216.001"
+name = "PubPrn"
+reference = "https://attack.mitre.org/techniques/T1216/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

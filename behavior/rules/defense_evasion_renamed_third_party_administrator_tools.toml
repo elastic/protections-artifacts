@@ -1,0 +1,48 @@
+[rule]
+description = "Identifies third party administrative tools commonly used by adversaries but running with unexpected file names."
+id = "b707de5c-8e4d-4d2c-be22-b09a7e82b73f"
+license = "Elastic License v2"
+name = "Renamed Third Party Administrator Tools"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+  (
+   (process.pe.original_file_name : "procdump" and 
+    process.code_signature.subject_name == "Microsoft Corporation" and not process.name : "*procdump*.exe") or
+   (process.pe.original_file_name : "psexec.c" and process.code_signature.subject_name == "Microsoft Corporation" and not process.name : "*psexec*.exe") or
+   (process.pe.original_file_name : "sdelete.exe" and process.code_signature.subject_name == "Microsoft Corporation" and not process.name : "*sdelete*")
+  ) and
+  not process.executable :
+    ("?:\\Windows\\System32\\*.exe", 
+	 "?:\\Windows\\SysWOW64\\*.exe", 
+	 "?:\\Program Files (x86)\\*.exe", 
+	 "?:\\Program Files\\*.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.003"
+name = "Rename System Utilities"
+reference = "https://attack.mitre.org/techniques/T1036/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies the execution of an untrusted program with two persistence locations (registry run keys and startup folder).
+Adversaries may use this technique to maintain multiple methods of persistence on an endpoint.
+"""
+id = "392b0c89-1427-4601-8b32-01e8e40600a6"
+license = "Elastic License v2"
+name = "Untrusted Process Writing to Commonly Abused Persistence Locations"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
+version = "1.0.10"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [registry where
+   user.id : "S-1-5-21*" and
+   registry.path :
+            ("H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+             "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+             /* Issue #320 */
+             "HKEY_USERS\\*\\Environment\\UserInitMprLogonScript",
+             "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+             "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell") and
+   registry.data.strings != null and
+   not registry.data.strings : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*") and
+   not process.executable :
+                        ("?:\\Program Files\\*",
+                         "?:\\Program Files (x86)\\*",
+                         "?:\\programdata\\chocolatey\\*\\multiclip.exe",
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\*.tmp")]
+  [file where event.action != "deletion" and
+   file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*" and file.name != null]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

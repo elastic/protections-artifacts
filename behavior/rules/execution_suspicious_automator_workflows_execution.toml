@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies the execution of the Automator Workflows process followed by a network connection from the XPC service.
+Adversaries may drop a custom workflow template that hosts malicious JavaScript for Automation (JXA) code as an
+alternative to using osascript.
+"""
+id = "e390d36d-c739-43ee-9e3d-5a76fa853bd5"
+license = "Elastic License v2"
+name = "Suspicious Automator Workflows Execution"
+os_list = ["macos"]
+reference = ["https://posts.specterops.io/persistent-jxa-66e1c3cd1cf5"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=30s
+ [process where event.action == "exec" and process.name == "automator"]
+ [network where process.name == "com.apple.automator.runner"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

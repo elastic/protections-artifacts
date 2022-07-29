@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies unexpected processes making network connections over port 445. Windows File Sharing is typically implemented
+over Server Message Block (SMB), which communicates between hosts using port 445. When legitimate, these network
+connections are established by the kernel. Processes making 445/tcp connections may be port scanners, exploits, or
+suspicious user-level processes moving laterally.
+"""
+id = "2fbbd139-3919-4b6b-9c50-9452b0aef005"
+license = "Elastic License v2"
+name = "Unexpected SMB Connection from User-mode Process"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "start" and
+   process.executable : "?:\\Windows\\*.exe" and
+   /* Issue #338 */
+   not (process.code_signature.subject_name : "RAPIDFIRE TOOLS INC." and process.code_signature.trusted == true) and
+   not user.id : ("S-1-5-19", "S-1-5-20")]
+  [network where network.direction : ("outgoing", "egress") and
+   destination.port == 445 and source.port >= 49152 and
+   not process.executable :
+                 ("?:\\Windows\\System32\\MicrosoftEdgeCP.exe",
+                  "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+                  "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
+                  "?:\\Windows\\System32\\wsmprovhost.exe",
+                  "?:\\Windows\\System32\\mmc.exe",
+                  "?:\\Windows\\SysWOW64\\mmc.exe",
+                  "?:\\Windows\\System32\\svchost.exe",
+                  "?:\\Windows\\System32\\WerFault.exe",
+                  "?:\\Windows\\System32\\userinit.exe",
+                  "?:\\Windows\\System32\\vpc.exe",
+                  "?:\\Windows\\SysWOW64\\vmnat.exe",
+                  "?:\\Windows\\System32\\telnet.exe",
+                  "?:\\windows\\system32\\windowspowershell\\v*\\powershell.exe",
+                  "?:\\windows\\SysWOW64\\windowspowershell\\v*\\powershell.exe",
+                  "?:\\windows\\system32\\windowspowershell\\v*\\powershell_ise.exe",
+                  "?:\\Windows\\NetworkDetective-RDC-*\\nacmdline.exe",
+                  "?:\\Windows\\ProPatches\\Installation\\InstallationSandbox*\\stdeploy.exe",
+                  "?:\\Windows\\System32\\ctfmon.exe",
+                  "?:\\Windows\\SysWOW64\\ctfmon.exe",
+                  "?:\\Windows\\System32\\OpenSSH\\ssh.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

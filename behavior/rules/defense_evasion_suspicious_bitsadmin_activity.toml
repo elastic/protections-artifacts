@@ -1,0 +1,104 @@
+[rule]
+description = """
+Identifies downloads, transfers, or job creations using Windows Background Intelligent Transfer Service (BITS) Admin
+Tool. This tactic may be indicative of malicious activity where malware is downloading second stage payloads using
+obscure methods.
+"""
+id = "676ac66c-4899-498f-ae21-ed5620af5477"
+license = "Elastic License v2"
+name = "Suspicious Bitsadmin Activity"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+  (process.name : "bitsadmin.exe" or process.pe.original_file_name : "bitsadmin.exe") and
+  process.command_line : ("*download*", "*transfer*", "*create*", "*addfile*", "*SetNotifyCmdLine*") and
+  (process.parent.name : (
+      "winword.exe",
+      "excel.exe",
+      "outlook.exe",
+      "powerpnt.exe",
+      "eqnedt32.exe",
+      "fltldr.exe",
+      "mspub.exe",
+      "msaccess.exe",
+      "acrord32.exe",
+      "rdrcef.exe",
+      "foxitphantomPDF.exe",
+      "foxitreader.exe",
+      "firefox.exe",
+      "chrome.exe",
+      "iexplore.exe",
+      "opera.exe",
+      "plugin-container.exe",
+      "safari.exe",
+      "microsoftedge.exe",
+      "w3wp.exe",
+      "httpd.exe",
+      "nginx.exe",
+      "php.exe",
+      "php-cgi.exe",
+      "tomcat.exe",
+      "wscript.exe",
+      "cscript.exe",
+      "powershell.exe",
+      "pwsh.exe",
+      "cmd.exe"
+      ) or
+  descendant of [process where event.action == "start" and
+    process.parent.name : (
+      "winword.exe",
+      "excel.exe",
+      "outlook.exe",
+      "powerpnt.exe",
+      "eqnedt32.exe",
+      "fltldr.exe",
+      "mspub.exe",
+      "msaccess.exe",
+      "acrord32.exe",
+      "rdrcef.exe",
+      "foxitphantomPDF.exe",
+      "foxitreader.exe",
+      "firefox.exe",
+      "chrome.exe",
+      "iexplore.exe",
+      "opera.exe",
+      "plugin-container.exe",
+      "safari.exe",
+      "microsoftedge.exe",
+      "w3wp.exe",
+      "httpd.exe",
+      "nginx.exe",
+      "php.exe",
+      "php-cgi.exe",
+      "tomcat.exe",
+      "wscript.exe",
+      "cscript.exe",
+      "powershell.exe",
+      "pwsh.exe",
+      "cmd.exe"
+    )])
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1197"
+name = "BITS Jobs"
+reference = "https://attack.mitre.org/techniques/T1197/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

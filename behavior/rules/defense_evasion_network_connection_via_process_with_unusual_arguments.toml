@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies suspicious network connections from Windows processes that typically have more than one command line
+argument. This may be indicative of a masquerading attempt to evade detections that monitor for suspicious parent-child
+process relationships.
+"""
+id = "95601d8b-b969-4189-9744-090140ae29e6"
+license = "Elastic License v2"
+name = "Network Connection via Process with Unusual Arguments"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+  [process where event.action == "start" and process.args_count == 1 and
+   process.name :
+     ("AddInProcess.exe",
+      "AddInProcess32.exe",
+      "AddInUtil.exe",
+      "AppLaunch.exe",
+      "aspnet_compiler.exe",
+      "aspnet_regbrowsers.exe",
+      "aspnet_regiis.exe",
+      "aspnet_regsql.exe",
+      "aspnet_state.exe",
+      "aspnet_wp.exe",
+      "CasPol.exe",
+      "ComSvcConfig.exe",
+      "csc.exe",
+      "cvtres.exe",
+      "DataSvcUtil.exe",
+      "EdmGen.exe",
+      "ilasm.exe",
+      "InstallUtil.exe",
+      "jsc.exe",
+      "Microsoft.Workflow.Compiler.exe",
+      "MSBuild.exe",
+      "mscorsvw.exe",
+      "ngen.exe",
+      "ngentask.exe",
+      "RegAsm.exe",
+      "RegSvcs.exe",
+      "ServiceModelReg.exe",
+      "vbc.exe",
+      "WsatConfig.exe",
+      "dllhost.exe",
+      "regsvr32.exe",
+      "GPUpdate.exe",
+      "SearchProtocolHost.exe",
+      /* Issue #639 - added msiexec */
+      "msiexec.exe")]
+  [network where event.action == "connection_attempted"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies the execution of renamed Windows utilities to tamper with system recovery settings. Adversaries may delete or
+remove built-in operating system data and turn off services designed to aid in the recovery of a corrupted system to
+prevent recovery.
+"""
+id = "153f52e2-2fe5-420b-8691-ddb8562b99d7"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Renamed Utilities"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+  (
+    process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and
+    process.command_line : ("*delete*", "*resize*shadowstorage*") and not process.name : "vssadmin.exe"
+  ) or
+  (
+    process.pe.original_file_name : "bcdedit.exe" and
+    process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*") and not process.name : "bcdedit.exe"
+  ) or
+  (
+    process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and
+    process.command_line : "*delete*" and not process.name : "wbadmin.exe"
+  )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

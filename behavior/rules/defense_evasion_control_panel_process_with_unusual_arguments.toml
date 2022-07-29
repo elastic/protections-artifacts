@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies instances of the Control Panel application running with suspicious keywords or paths in the process command
+line value. Adversaries may abuse Control.exe to proxy execution of malicious code.
+"""
+id = "a4862afb-1292-4f65-a15f-8d6a8019b5e2"
+license = "Elastic License v2"
+name = "Control Panel Process with Unusual Arguments"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
+ process.command_line :
+          ("*.jpg*",
+           "*.png*",
+           "*.gif*",
+           "*.bmp*",
+           "*.jpeg*",
+           "*.TIFF*",
+           "*.inf*",
+           "*.dat*",
+           "*.cpl:../*",
+           "*..\\..\\*",
+           "*/AppData/Local/*",
+           "*:\\Users\\Public\\*",
+           "*\\AppData\\Local\\*") and
+
+ /* excluding FPs where /name arg is used to specify a control by name */
+ not (process.args : "/name" and process.args_count >= 2) and
+ /* excluding system IL to minimize risk of killing system critical execution */
+ not process.Ext.token.integrity_level_name == "system"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.002"
+name = "Control Panel"
+reference = "https://attack.mitre.org/techniques/T1218/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

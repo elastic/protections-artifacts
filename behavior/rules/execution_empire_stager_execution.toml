@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies when a script interpreter executes a base64-encoded Empire stager. Empire is penetration testing software
+that is often utilized by attackers.
+"""
+id = "b7974ff6-82ff-4743-9e07-1c6901b1f0ea"
+license = "Elastic License v2"
+name = "Empire Stager Execution"
+os_list = ["linux", "macos"]
+reference = ["https://github.com/EmpireProject/Empire", "https://github.com/BC-SECURITY/Empire"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "exec" and
+  process.name : ("python*", "osascript", "sh", "bash", "dash", "ksh", "tcsh", "zsh") and
+  process.command_line : "*exec(base64.b64decode*aW1wb3J0IHN5cztpbXBvcnQg*"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1132"
+name = "Data Encoding"
+reference = "https://attack.mitre.org/techniques/T1132/"
+[[threat.technique.subtechnique]]
+id = "T1132.001"
+name = "Standard Encoding"
+reference = "https://attack.mitre.org/techniques/T1132/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

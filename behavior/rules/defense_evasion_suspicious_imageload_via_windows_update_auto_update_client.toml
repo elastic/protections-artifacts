@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies abuse of the Windows Update Auto Update Client (wuauclt.exe) to load an arbitrary DLL. This behavior is used
+as a defense evasion technique to blend-in malicious activity with legitimate Windows software.
+"""
+id = "3788c03d-28a5-4466-b157-d6dd4dc449bb"
+license = "Elastic License v2"
+name = "Suspicious ImageLoad via Windows Update Auto Update Client"
+os_list = ["windows"]
+reference = ["https://dtm.uk/wuauclt/"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  (process.pe.original_file_name == "wuauclt.exe" or process.name : "wuauclt.exe") and
+   process.parent.executable != null and
+   process.args : "/RunHandlerComServer" and process.args : "/UpdateDeploymentProvider" and
+   not process.parent.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\MoUsoCoreWorker.exe")]
+ [library where
+  not (dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") and dll.code_signature.trusted == true) and
+  not (dll.code_signature.trusted == true and
+       dll.path : ("?:\\Program Files\\*.dll",
+                  "?:\\Program Files (x86)\\*.dll",
+                  "?:\\Windows\\System32\\*.dll",
+                  "?:\\Windows\\SysWOW64\\*.dll",
+                  "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*.dll"))]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

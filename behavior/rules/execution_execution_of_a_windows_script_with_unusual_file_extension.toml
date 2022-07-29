@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies the execution of a script with an unusual file extension by Windows Script Host processes (cscript or
+wscript).
+"""
+id = "b76c0a04-b504-4a2f-a0cf-b4175a2f3eea"
+license = "Elastic License v2"
+name = "Execution of a Windows Script with Unusual File Extension"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name : ("cscript.exe", "wscript.exe") and
+ process.args : ("-e:*", "/e:*", "//e:*") and
+ not process.command_line : ("*.js*", "*.vb*", "*.wsf*", "*.wsh*", "*.wsc*", "*.tmp*") and
+ /* Issue #286 */
+ not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and 
+ not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "*\\Windows\\system32\\spool\\DRIVERS\\*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

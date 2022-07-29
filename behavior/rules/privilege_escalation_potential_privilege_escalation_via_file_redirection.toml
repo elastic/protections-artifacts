@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies suspicious modification of an executable file in a protected Windows directory and by a medium or low
+integrity process. This may indicate an attempt to elevate privileges via privileged file redirection vulnerabilities or
+weak permissions.
+"""
+id = "3de7dc4a-9c3d-459d-b760-670ec240078e"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via File Redirection"
+os_list = ["windows"]
+reference = [
+    "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
+    "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
+]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and process.Ext.token.integrity_level_name : "medium"]
+ [file where event.action != "deletion" and
+  (file.extension : ("exe", "com", "dll") or file.Ext.header_bytes : "4d5a*") and
+  file.path : ("?:\\Windows\\System32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Program Files\\Microsoft\\*") and
+  not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and process.executable != null and
+  not file.path : ("?:\\Windows\\System32\\Tasks\\*",
+                   "?:\\Windows\\SysWOW64\\wpcap.dll",
+                   "?:\\Windows\\SysWOW64\\Npcap\\wpcap.dll",
+                   "?:\\WINDOWS\\system32\\KOBDrvAPIIF.DLL",
+                   "?:\\WINDOWS\\SysWOW64\\uvxv1us.dll",
+                   "?:\\Windows\\SysWOW64\\rufus-3.18.exe",
+                   "?:\\Windows\\System32\\DriverStore\\Temp\\*.sys",
+                   "?:\\Program Files (x86)\\Microsoft\\EdgeCore\\*\\BHO\\ie_to_edge_bho.dll",
+                   "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\msedgeupdate.dll") and
+  not (process.executable : "?:\\Windows\\splwow64.exe" and file.path : "?:\\Windows\\System32\\spool\\drivers\\*") and
+  not process.executable : ("?:\\Program Files\\Npcap\\NPFInstall.exe", "?:\\Program Files\\Wireshark\\npcap-*.exe")
+
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.16.0"

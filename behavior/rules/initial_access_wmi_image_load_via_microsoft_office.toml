@@ -1,0 +1,93 @@
+[rule]
+description = """
+Identifies a suspicious image load (wmiutils.dll) from Microsoft Office processes followed by a child process spawned
+via Windows Management Instrumentation (WMI). This behavior may indicate adversarial activity to avoid spawning a
+suspicious MS Office child process.
+"""
+id = "46952f58-6741-4280-8e74-fa43f63c9604"
+license = "Elastic License v2"
+name = "WMI Image Load via Microsoft Office"
+os_list = ["windows"]
+reference = [
+    "https://medium.com/threatpunter/detecting-adversary-tradecraft-with-image-load-event-logging-and-eql-8de93338c16",
+]
+version = "1.0.8"
+
+query = '''
+sequence by user.id with maxspan=30s
+    [library where dll.name : ("wmiutils.dll", "fastprox.dll", "wbemprox.dll") and 
+     process.name : ("excel.exe", "powerpnt.exe", "winword.exe")]
+    [process where event.action == "start" and
+     process.parent.name : "wmiprvse.exe" and
+     not process.Ext.token.integrity_level_name == "system" and
+     (process.pe.original_file_name :
+        (
+          "cscript.exe",
+          "wscript.exe",
+          "PowerShell.EXE",
+          "Cmd.Exe",
+          "pwsh.exe",
+          "bitsadmin.exe",
+          "certutil.exe",
+          "hh.exe",
+          "MSHTA.EXE",
+          "RUNDLL32.EXE",
+          "REGSVR32.EXE",
+          "MSBuild.exe",
+          "InstallUtil.exe",
+          "RegAsm.exe",
+          "RegSvcs.exe",
+          "msxsl.exe",
+          "CONTROL.EXE",
+          "EXPLORER.EXE",
+          "Microsoft.Workflow.Compiler.exe",
+          "msiexec.exe",
+          "sc.exe",
+          "schtasks.exe",
+          "WMIC.exe",
+          "curl.exe"
+        ) or
+      process.executable : ("?:\\Users\\*.exe", "?:\\ProgramData\\*.exe")
+     ) and
+     not (process.name : "powershell.exe" and process.command_line : "*\\windows\\CCM\\*")
+
+    ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

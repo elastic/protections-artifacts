@@ -1,0 +1,103 @@
+[rule]
+description = """
+Identifies the execution of a signed file written or modified by a Microsoft Office process. This may indicate an
+attempt to side-load a DLL or execute signed malware.
+"""
+id = "321e7877-075a-4582-8eff-777dde15e787"
+license = "Elastic License v2"
+name = "Signed Binary Execution via Microsoft Office"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by user.id with maxspan=1m
+  [file where event.action != "deletion" and
+    (file.extension : ("exe", "com") or file.Ext.header_bytes : "4d5a*") and
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    not file.path : (
+               "?:\\Users\\*\\Desktop\\*",
+               "?:\\Users\\*\\Downloads\\*",
+               "?:\\Users\\*\\Documents\\*",
+               "?:\\Users\\*\\AppData\\Local\\Temp\\*-*-*-*\\*",
+               "?:\\Program Files (x86)\\*",
+               "?:\\Program Files\\*"
+             )
+    ] by file.path
+  [process where event.action == "start" and
+    process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    process.code_signature.trusted == true and
+    not (
+        (
+          process.pe.original_file_name in ("ZoomIt.exe", "setup.exe", "Setup.exe", "SFXCAB.EXE") and
+          process.code_signature.subject_name == "Microsoft Corporation"
+	    ) or
+	      process.code_signature.subject_name in
+	        (
+	          "Add-in Express",
+	          "Adaptive Insights LLC",
+	           "Adaptive Insights, Inc.",
+	           "Beijing Yundong Zhixiao Network Technology Co. , Ltd.",
+	           "Dynamo Software, Inc.",
+	           "Environmental Systems Research Institute Inc.",
+	           "Essential Objects, Inc.",
+	           "iSpring Solutions, Inc.",
+	           "Insightsoftware.Com, Inc.",
+	           "JPMorgan Chase and Co.",
+	           "KNOWLEDGE MANAGEMENT ASSOCIATES, LLC",
+	           "Poll Everywhere, Inc.",
+	           "PitchBook Data, Inc.",
+	           "Tagetik Software Srl",
+	           "SAS Institute, Inc.",
+	           "Thomson Reuters Corporation",
+	           "TEAMDEV LTD.",
+	           "Vena Solutions Canada Inc.",
+	           "Zhuhai Kingsoft Office Software Co., Ltd.",
+	           "Citrix Systems, Inc.",
+	           "Grammarly, Inc."
+	        )
+    )
+    ] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

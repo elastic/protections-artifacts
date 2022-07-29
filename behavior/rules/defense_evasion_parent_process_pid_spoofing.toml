@@ -1,0 +1,115 @@
+[rule]
+description = """
+Identifies parent process spoofing used to thwart detection. Adversaries may spoof the parent process identifier (PPID)
+of a new process to evade process-monitoring defenses or to elevate privileges.
+"""
+id = "816ba7e7-519a-4f85-be2a-bacd6ccde57f"
+license = "Elastic License v2"
+name = "Parent Process PID Spoofing"
+os_list = ["windows"]
+reference = ["https://blog.didierstevens.com/2017/03/20/"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=5m
+ [process where event.action == "start" and
+  process.parent.executable != null and
+  /* FP - AppInfo */
+  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+       user.id == "S-1-5-18" and process.command_line : "* -k netsvcs*") and
+
+  /* FP - Windows Errors Reporting */
+  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+       user.id == "S-1-5-18" and process.command_line : "*WerSvcGroup*") and
+
+   /* FP - Secondary Logon */
+  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+       user.id == "S-1-5-18" and process.command_line : "*seclogon*") and
+
+   /* FP - Application Brokers */
+  not (process.executable : ("?:\\Windows\\System32\\RuntimeBroker.exe",
+                             "?:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe")) and
+
+   /* FP - Third Party Programs except MS Office */
+  not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
+       process.code_signature.trusted == true and
+       not process.name : ("winword.exe",
+                           "excel.exe",
+                           "outlook.exe",
+                           "powerpnt.exe",
+                           "eqnedt32.exe",
+                           "fltldr.exe",
+                           "mspub.exe",
+                           "msaccess.exe")) and
+
+   /* FP Issue #488 - WerFaultSecure ProtectedCrash  */
+  not (
+       process.executable : ("?:\\Windows\\System32\\WerFaultSecure.exe", "?:\\WINDOWS\\SysWOW64\\WerFaultSecure.exe") and
+       user.id == "S-1-5-18" and process.parent.command_line != null and
+       ((process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.command_line : "*WerSvcGroup*") or
+         process.parent.executable : "?:\\Windows\\System32\\dxgiadaptercache.exe")
+       ) and
+
+   /* FP Issue #488 - File Picker UI Host is real parent of Authentication Broker AuthHost.exe */
+  not (process.executable : "?:\\Windows\\System32\\PickerHost.Exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+
+   /* FP Issue #488 - Roblox Game Client */
+  not (process.pe.original_file_name : "RobloxApp.exe" and
+        process.code_signature.subject_name == "Roblox Corporation" and process.code_signature.trusted == true) and
+
+   /* FP OpenWith handles unknown file handlers via GUI popup */
+  not (process.executable : ("?:\\WINDOWS\\system32\\OpenWith.exe", "?:\\WINDOWS\\syswow64\\OpenWith.exe") and process.args: "-Embedding" and
+       process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+
+  not (process.pe.original_file_name : "notification_helper.exe" and process.code_signature.subject_name == "Microsoft Corporation" and
+       process.code_signature.trusted == true) and
+
+  not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name == "BeyondTrust Software, Inc" and
+       process.code_signature.trusted == true) and
+
+  not (process.executable : "?:\\Windows\\SystemApps\\Microsoft.MicrosoftEdge_*\\MicrosoftEdge.exe" and
+       process.Ext.token.integrity_level_name == "low" and process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+
+  not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name == "Malwarebytes Inc" and
+       process.code_signature.trusted == true) and
+
+  not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and process.Ext.token.integrity_level_name == "low" and process.parent.name : "svchost.exe")
+  ] by process.entity_id
+ [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
+  /* FP Issue #488 - Auth Host Broker for WindowsApps */
+  not process.executable :  "?:\\Windows\\system32\\AuthHost.exe" and
+  not (process.parent.executable : "?:\\Windows\\System32\\sihost.exe" and
+        process.pe.original_file_name : ("chrome.exe", "msedge.exe") and process.args_count >= 2 and
+        process.code_signature.subject_name : ("Google LLC", "Microsoft Corporation"))] by process.parent.Ext.real.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.004"
+name = "Parent PID Spoofing"
+reference = "https://attack.mitre.org/techniques/T1134/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,116 @@
+[rule]
+description = """
+Identifies the execution of a script or program extracted from within a Windows shortcut (lnk) file. Adversaries may
+embed malicious scripts or files in a shortcut file before delivering it to their target in order to trick them into
+executing the payload.
+"""
+id = "8076640d-ec66-4d24-a252-ee2f054e00a1"
+license = "Elastic License v2"
+name = "Windows Shortcut File Embedded Object Execution"
+os_list = ["windows"]
+reference = ["https://docs.google.com/presentation/d/13SsBd0wI0PpyH5C8WlnE_DsJjy1KxAjZ5Dmke9FHfRE/"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=60s
+  [process where event.action == "start" and process.name : "cmd.exe" and
+   process.command_line :
+         ("*find*.*.lnk*>*&*",
+          "*.lnk*find*>*&*",
+          "*dir*/s*/b*.lnk*",
+          "*dir*.lnk*/s*/b*",
+          "*for*/f*in*.lnk*",
+          "*LoadFromFile*.lnk*>*&*",
+          "*.lnk*do type*",
+          "*/s*/d*type*.lnk*",
+          "*.doc.lnk*",
+          "*.pdf.lnk*")
+   ] by process.entity_id
+  [file where event.action != "deletion" and process.name : "cmd.exe"] by process.entity_id
+  [process where event.action == "start" and
+   not process.executable : 
+           ("?:\\Windows\\system32\\attrib.exe", 
+            "?:\\Windows\\SysWOW64\\attrib.exe", 
+            "?:\\Windows\\system32\\find.exe", 
+            "?:\\Windows\\SysWOW64\\find.exe",
+            "?:\\Windows\\system32\\findstr.exe",
+            "?:\\Windows\\SysWOW64\\findstr.exe",
+            "?:\\Windows\\system32\\conhost.exe", 
+            "?:\\Windows\\SysWOW64\\conhost.exe") and
+   not (process.name : "cmd.exe" and
+          process.command_line :
+                 ("*find*.*.lnk*>*",
+                  "*.lnk*find*>*",
+                  "*dir*/s*/b*.lnk*",
+                  "*dir*.lnk*/s*/b*",
+                  "*for*/f*in*.lnk*",
+                  "*LoadFromFile*.lnk*",
+                  "*.lnk*do type*",
+                  "*/s*/d*type*.lnk*",
+                  "*.doc.lnk*",
+                  "*.pdf.lnk*"))
+   ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

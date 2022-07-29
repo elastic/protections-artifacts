@@ -1,0 +1,72 @@
+[rule]
+description = """
+Identifies the creation of a svchost process with an unusual parent. This may indicate an attempt to masquerade a
+malicious process.
+"""
+id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
+license = "Elastic License v2"
+name = "Potential Masquerading as SVCHOST"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+process where event.action == "start" and
+  process.name : "svchost.exe" and
+  process.parent.executable != null and
+  not process.parent.executable : (
+    "?:\\Windows\\System32\\services.exe",
+    "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
+    "?:\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
+    "?:\\Program Files*\\Windows Defender\\MsMpEng.exe",
+    "?:\\Windows\\*\\rpcnet*.exe",
+    "?:\\Windows\\System32\\MRT.exe",
+    "?:\\Windows\\System32\\MRT-*.exe",
+    "?:\\Program Files*\\Unity Client\\Unity.exe",
+    "?:\\Windows\\System32\\wermgr.exe",
+
+	"\\Device\\HarddiskVolume?\\Windows\\System32\\services.exe",
+	"\\Device\\HarddiskVolume?\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
+	"\\Device\\HarddiskVolume?\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
+	"\\Device\\HarddiskVolume?\\Program Files*\\Windows Defender\\MsMpEng.exe",
+	"\\Device\\HarddiskVolume?\\Windows\\*\\rpcnet*.exe",
+	"\\Device\\HarddiskVolume?\\Windows\\system32\\MRT.exe",
+	"\\Device\\HarddiskVolume?\\Program Files*\\Unity Client\\Unity.exe",
+	"\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe"
+	) and
+  not (process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.executable : "?:\\Windows\\syswow64\\svchost.exe") and
+  not (process.parent.executable :
+                   ("?:\\Windows\\System32\\svchost.exe",
+                    "?:\\Program Files\\COMODO\\COMODO Internet Security\\cmdvirth.exe",
+                    "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\acrocef*\\RdrCEF.exe") and
+       process.Ext.token.integrity_level_name == "system") and
+  not (process.pe.original_file_name == "AsDVDLock.exe" and
+       process.executable : "?:\\Program Files (x86)\\ASUS\\ASUS Manager\\USB Lock\\svchost.exe") and
+  not (process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
+       process.parent.args : "ClipboardSvcGroup" and process.executable : "?:\\Windows\\System32\\svchost.exe")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.004"
+name = "Masquerade Task or Service"
+reference = "https://attack.mitre.org/techniques/T1036/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

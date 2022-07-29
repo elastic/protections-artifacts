@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies the execution of a file written or modified by Microsoft Equation Editor, which is frequently targeted by
+attackers using weaponized Microsoft Office documents. These files are often written or modified during the exploitation
+of Office applications via known vulnerabilities CVE-2017-1182 or CVE-2018-0798.
+"""
+id = "8bc4f22c-9bb1-4c76-a7b6-195bee3579db"
+license = "Elastic License v2"
+name = "Execution of File Written or Modified by Microsoft Equation Editor"
+os_list = ["windows"]
+reference = [
+    "https://www.anomali.com/blog/multiple-chinese-threat-groups-exploiting-cve-2018-0798-equation-editor-vulnerability-since-late-2018",
+    "https://nvd.nist.gov/vuln/detail/CVE-2017-11882",
+    "https://nvd.nist.gov/vuln/detail/CVE-2018-0798",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=5m
+  [file where event.action != "deletion" and process.name : "eqnedt32.exe" and
+   (file.extension : ("exe", "com") or file.Ext.header_bytes : "4d5a*")] by file.path
+  [process where event.action == "start"] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

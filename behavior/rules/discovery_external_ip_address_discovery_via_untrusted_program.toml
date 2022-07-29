@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies a dropped unsigned program making a DNS request to a known public IP address lookup web service. Malwares
+tend to perform this action to assess potential targets.
+"""
+id = "dfe28e03-9b0b-47f5-9753-65ed2666663f"
+license = "Elastic License v2"
+name = "External IP Address Discovery via Untrusted Program"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+
+ /* execution of an unsigned PE file followed by dns request to public ip discovery web services */
+
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+   not process.code_signature.trusted == true and
+   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*")]
+  [dns where
+    dns.question.name :
+         (
+          "ip-api.com",
+          "checkip.dyndns.org",
+          "api.ipify.org",
+          "whatismyip.akamai.com",
+          "bot.whatismyipaddress.com",
+          "ifcfg.me",
+          "ident.me",
+          "ipof.in",
+          "ip.tyk.nu",
+          "icanhazip.com",
+          "curlmyip.com",
+          "wgetip.com",
+          "eth0.me",
+          "ipecho.net",
+          "ip.appspot.com",
+          "api.myip.com",
+          "geoiptool.com",
+          "api.2ip.ua",
+          "api.ip.sb",
+          "ipinfo.io",
+          "checkip.amazonaws.com",
+          "wtfismyip.com",
+          "iplogger.org",
+          "freegeoip.net",
+          "freegeoip.app",
+          "ipinfo.io",
+          "geoplugin.net",
+          "myip.dnsomatic.com",
+          "www.geoplugin.net",
+          "api64.ipify.org",
+          "ip4.seeip.org",
+          "*.geojs.io",
+          "*portmap.io"
+         )]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1016"
+name = "System Network Configuration Discovery"
+reference = "https://attack.mitre.org/techniques/T1016/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

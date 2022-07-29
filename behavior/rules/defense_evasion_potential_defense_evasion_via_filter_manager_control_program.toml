@@ -1,0 +1,40 @@
+[rule]
+description = "Identifies attempt to unload a security driver via the Filter Manager Control Program."
+id = "5b39f347-077c-4a1e-8d3c-6f7789ca09e8"
+license = "Elastic License v2"
+name = "Potential Defense Evasion via Filter Manager Control Program"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/FltMC/"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name == "fltMC.exe" and
+ process.args : "unload" and process.command_line : ("*security*", "*sysmon*", "*esensor*", "*Elastic*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

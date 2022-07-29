@@ -1,0 +1,89 @@
+[rule]
+description = """
+Identifies the use of Windows commands to tamper with system recovery settings via Microsoft Office processes.
+Ransomware and other malware may do this to prevent system recovery.
+"""
+id = "58a08390-e69d-4b32-9487-1d1ddb16ba09"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Microsoft Office Process"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+  descendant of [process where event.action == "start" and
+    process.name : (
+      "WINWORD.EXE",
+      "EXCEL.EXE",
+      "POWERPNT.EXE",
+      "MSACCESS.EXE",
+      "MSPUB.EXE",
+      "fltldr.exe"
+    )] and
+  not descendant of [process where event.action == "start" and
+    process.name : (
+      "iexplore.exe",
+      "msedge.exe",
+      "microsoftedge.exe",
+      "chrome.exe",
+      "firefox.exe",
+      "opera.exe",
+      "safari.exe"
+    )] and
+    (
+    (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or
+    (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*")) or
+    (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+    (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
+    )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

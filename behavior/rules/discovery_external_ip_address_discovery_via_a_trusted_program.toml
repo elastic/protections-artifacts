@@ -1,0 +1,84 @@
+[rule]
+description = """
+Identifies scripting utilities and commonly abused binary proxy programs making a DNS request to a known public IP
+address lookup web service. Malwares tend to perform this action to assess potential targets.
+"""
+id = "51894221-7657-4b56-9406-e080e19ad159"
+license = "Elastic License v2"
+name = "External IP Address Discovery via a Trusted Program"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+    (
+     process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "powershell.exe", "pwsh.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe",
+                     "installutil.exe","RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or
+     process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Windows\\Microsoft.NET\\*.exe")
+     )
+   ]
+  [dns where
+    dns.question.name :
+         (
+          "ip-api.com",
+          "checkip.dyndns.org",
+          "api.ipify.org",
+          "api.ipify.com",
+          "whatismyip.akamai.com",
+          "bot.whatismyipaddress.com",
+          "ifcfg.me",
+          "ident.me",
+          "ipof.in",
+          "ip.tyk.nu",
+          "icanhazip.com",
+          "curlmyip.com",
+          "wgetip.com",
+          "eth0.me",
+          "ipecho.net",
+          "ip.appspot.com",
+          "api.myip.com",
+          "geoiptool.com",
+          "api.2ip.ua",
+          "api.ip.sb",
+          "ipinfo.io",
+          "checkip.amazonaws.com",
+          "wtfismyip.com",
+          "iplogger.org",
+          "freegeoip.net",
+          "freegeoip.app",
+          "ipinfo.io",
+          "geoplugin.net",
+          "myip.dnsomatic.com",
+          "www.geoplugin.net",
+          "api64.ipify.org",
+          "ip4.seeip.org",
+          "*.geojs.io",
+          "*portmap.io"
+         )
+  ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1016"
+name = "System Network Configuration Discovery"
+reference = "https://attack.mitre.org/techniques/T1016/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

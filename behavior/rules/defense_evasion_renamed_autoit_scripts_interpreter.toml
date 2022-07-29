@@ -1,0 +1,41 @@
+[rule]
+description = """
+Identifies suspicious AutoIT process execution events. Attackers may rename an AutoIT executable file in an attempt to
+avoid signature-based detection.
+"""
+id = "99f2327e-871f-4b8a-ae75-d1c4697aefe4"
+license = "Elastic License v2"
+name = "Renamed AutoIt Scripts Interpreter"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+  process.pe.original_file_name : "AutoIt*.exe" and not process.name : "AutoIt*.exe"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.003"
+name = "Rename System Utilities"
+reference = "https://attack.mitre.org/techniques/T1036/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the execution of an unsigned file written or modified by Microsoft Office processes via a Windows Shell
+process.
+"""
+id = "54aabea0-3687-4ef1-b70c-015ca588e563"
+license = "Elastic License v2"
+name = "Microsoft Office File Execution via Script Interpreter"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence by user.id with maxspan=1m
+  [file where event.action != "deletion" and
+    (file.extension : ("exe", "com", "pif", "scr") or
+      // Match Windows PE files by header data (MZ)
+      file.Ext.header_bytes : "4d5a*") and
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE")] by file.path
+  [process where event.action == "start" and
+    process.parent.name : ("powershell.exe", "pwsh.exe", "cmd.exe", "cscript.exe", "wscript.exe")] by process.executable
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

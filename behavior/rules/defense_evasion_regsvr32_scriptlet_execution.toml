@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies the native Windows tool, regsvr32.exe, executing a scriptlet file. This can allow an attacker to bypass
+whitelisting and run arbitrary scripts.
+"""
+id = "0524c24c-e45e-4220-b21a-abdba0c46c4d"
+license = "Elastic License v2"
+name = "Regsvr32 Scriptlet Execution"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ (process.pe.original_file_name : "regsvr32.exe" or process.name : "regsvr32.exe") and
+  (
+    (process.command_line : "*scrobj*" and process.command_line : ("* /i:*", "* -i:*", "*.sct*")) or
+      /* attackers may rename scrobj.dll */
+      (
+        process.command_line : "* /u*" and
+        process.command_line :
+          (
+            "* /i:C:\\*",
+            "* /i:\"C:\\*",
+            "* -i:C:\\*",
+            "* -i:\"C:\\*",
+            "* /i:*http*",
+            "* -i:*http*"
+          )
+      )
+  ) and
+  /* Issue #326 */
+  not (process.Ext.token.integrity_level_name == "system" and not process.command_line : "*scrobj.dll*") and
+  not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*") and
+  not (process.parent.executable : ("?:\\Windows\\SysWOW64\\msiexec.exe", "?:\\Windows\\system32\\msiexec.exe") and
+      not process.command_line : "*scrobj.dll*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

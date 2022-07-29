@@ -1,0 +1,63 @@
+[rule]
+description = """
+Identifies suspicious service execution via Windows Command Shell which may indicate lateral movement attempt via known
+offensive testing tool like SMBExec.
+"""
+id = "c6a9046e-7ca3-460b-9707-f17e6dfabcb6"
+license = "Elastic License v2"
+name = "Potential Lateral Movement via SMBExec"
+os_list = ["windows"]
+reference = ["https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbexec.py#L277"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+ (
+   ((process.name : "cmd.exe" or process.pe.original_file_name == "Cmd.Exe") and process.parent.name : "services.exe" and
+     process.command_line : "*/Q*echo*.bat*del*.bat*") or
+
+   /* descendant of SMBExec */
+   (descendant of
+    [process where event.action == "start" and (process.name : "cmd.exe" or process.pe.original_file_name == "Cmd.Exe") and
+     process.parent.name : "services.exe" and process.command_line : "*/Q*echo*.bat*del*.bat*"] and
+     not process.executable : ("?:\\Windows\\system32\\cmd.exe", "?:\\Windows\\System32\\conhost.exe"))
+  )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

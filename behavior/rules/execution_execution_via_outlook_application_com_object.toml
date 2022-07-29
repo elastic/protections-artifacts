@@ -1,0 +1,112 @@
+[rule]
+description = """
+Identifies the execution of commonly abused utilities to run DLLs or scripts via the Outlook.Application COM Object.
+This behavior may indicate adversarial activity to evade defenses on the system.
+"""
+id = "17030515-5ed0-43c8-9602-f97cbebd43c0"
+license = "Elastic License v2"
+name = "Execution via Outlook Application COM Object"
+os_list = ["windows"]
+reference = ["https://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=1m
+   /* Outlook started via DCOM */
+ [process where event.action == "start" and
+  process.name : "outlook.exe" and process. command_line : "*-Embedding*" and
+  process.parent.name : "svchost.exe"] by process.entity_id
+   /* Suspicious Outlook child processes */
+ [process where event.action == "start" and
+   process.pe.original_file_name :
+               ("cscript.exe",
+                "wscript.exe",
+                "powershell.exe",
+                "rundll32.exe",
+                "cmd.exe",
+                "mshta.exe",
+                "msbuild.exe",
+                "InstallUtil.exe",
+                "Microsoft.Workflow.Compiler.exe",
+                "wmic.exe",
+                "regsvr32.exe",
+                "pwsh.exe",
+                "ScriptRunner.exe") and not
+   /* Issue #330 */
+   (process.name:"rundll32.exe" and process.args : ("--eoim", "--enable-speech-input"))] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

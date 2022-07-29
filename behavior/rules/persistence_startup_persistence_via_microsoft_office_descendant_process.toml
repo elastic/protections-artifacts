@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies files written to or modified in the startup folder by a Microsoft Office descendant process. Adversaries may
+use this technique to maintain persistence and to avoid spawning suspicious child processes in an attempt to evade
+detection.
+"""
+id = "c01cddb6-bbcf-437c-8256-6b4d44c6bdc3"
+license = "Elastic License v2"
+name = "Startup Persistence via Microsoft Office Descendant Process"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+ [process where event.action == "start" and
+  (process.parent.name : ("EQNEDT32.EXE", "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE") or
+   descendant of [process where event.action == "start" and
+                  process.name :
+                       ("EQNEDT32.EXE",
+                        "WINWORD.EXE",
+                        "EXCEL.EXE",
+                        "POWERPNT.EXE",
+                        "MSPUB.EXE",
+                        "MSACCESS.EXE")]) and
+   /* Issue #334 */
+   not process.Ext.token.integrity_level_name == "system" and
+   /* Issue #409 */
+   not (process.code_signature.subject_name != null and process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true) and
+   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*" and process.working_directory : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*")
+   ]
+ [file where event.action != "deletion" and
+  file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
+  /* Issue #334 */
+  not file.name : "desktop.ini"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

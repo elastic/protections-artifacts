@@ -1,0 +1,77 @@
+[rule]
+description = """
+Identifies suspicious execution of commonly abused third party Windows automation script interpreters. Attackers may
+rename AutoHotKey, Rebol or KIXTART executable files or execute scripts from suspicious paths in an attempt to avoid
+signature-based detection.
+"""
+id = "92d720dd-93b2-49e0-b68a-d5d6acbe4910"
+license = "Elastic License v2"
+name = "Renamed Windows Automaton Script Interpreter"
+os_list = ["windows"]
+reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+  (
+     /* renamed */
+   (process.pe.original_file_name : "AutoHotkey.exe" and not process.name : "AutoHotkey*.exe") or 
+   (process.pe.original_file_name : "KIX32.EXE" and not process.name : "KIX*.EXE") or 
+   (process.name : "rebol-view*.exe" and process.parent.name : "msiexec.exe") or 
+   (process.name : ("AutoHotkey*.exe", "KIX32.EXE", "rebol-view*.exe") and 
+     
+	 /* execution from common suspicious paths */
+     process.args : ("?:\\Users\\Public\\*", 
+                     "?:\\ProgramData\\*", 
+                     "?:\\Users\\*\\AppData\\*", 
+                     "?:\\Windows\\Temp\\*",
+                     "?:\\Windows\\Tasks\\*")) or 
+    
+	/* legit rebol script interpreter has no original file name thus adding this hash abused by mirrorblast*/
+    process.hash.sha256 : "215e28f9660472b6271a9902573c9d190e4d7ccca33fcf8d6054941d52a3ab85" or 
+	
+	/* unusual script extension */
+	(process.name : ("rebol-view*.exe", "AutoHotkey*.exe", "KIX*.EXE") and process.args_count == 2 and 
+	 not process.command_line : ("*.ahk*", "*.rb*", "*.kix*", "*.scr*", "*.bms"))
+   
+   ) and  
+   
+   /* FP - chocolatey installs and runs Autohotkey from programdata */
+   not (process.pe.original_file_name == "AutoHotkey.exe" and
+         process.executable : ("?:\\ProgramData\\chocolatey\\*", 
+                               "?:\\Program Files\\AutoHotkey\\AutoHotkey*.exe",
+                               "?:\\Program Files (x86)\\AutoHotkey\\AutoHotkey*.exe")) and
+   not (process.executable : "?:\\ProgramData\\chocolatey\\lib\\autohotkey.install\\tools\\AutoHotkey_*setup.exe" and 
+        process.parent.executable : "?:\\ProgramData\\chocolatey\\choco.exe") and
+   not (process.pe.original_file_name == "KIX32.EXE" and process.command_line : "*\\NETLOGON\\*") and
+   not (process.pe.original_file_name == "KIX32.EXE" and process.parent.command_line : "*\\netlogon\\*") and
+   not (process.pe.original_file_name == "KIX32.EXE" and process.executable : ("C:\\kworking\\Bin\\RMMKSE.EXE", "C:\\kworking\\Bin\\RMMSSE.EXE")) and
+   not (process.pe.original_file_name == "AutoHotkey.exe" and process.executable : "C:\\TCPU73\\Programm\\ClockTC\\ClockTC.exe" and
+        process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.003"
+name = "Rename System Utilities"
+reference = "https://attack.mitre.org/techniques/T1036/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies User Account Control (UAC) bypass attempts via the ICMLuaUtil elevated COM interface. Attackers may attempt
+to bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "13fab475-06e4-4ac9-87fc-2105c7441244"
+license = "Elastic License v2"
+name = "UAC Bypass via ICMLuaUtil Elevated COM Interface"
+os_list = ["windows"]
+reference = ["https://github.com/hfiref0x/UACME"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ process.parent.name : "dllhost.exe" and
+ process.Ext.token.integrity_level_name == "high" and
+ process.parent.command_line : ("*3E5FC7F9-9A51-4367-9063-A120244FBEC7*", "*D2E7041B-2927-42FB-8E9F-7CE93B6DC937*") and
+ not process.executable :
+             ("?:\\Windows\\System32\\WerFault.exe",
+              "?:\\Windows\\SysWOW64\\WerFault.exe",
+              "?:\\Windows\\System32\\wermgr.exe",
+              "?:\\Windows\\SysWOW64\\wermgr.exe") and
+ /* Issue #364 */
+ not (process.code_signature.subject_name == "WireGuard LLC" and process.code_signature.trusted == true)
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

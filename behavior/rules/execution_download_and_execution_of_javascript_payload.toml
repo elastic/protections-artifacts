@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies when curl is used to download a JavaScript payload and subsequently execute it using the built-in osascript
+utility. An adversary may use this technique to execute their malicious payload and obtain initial access to an
+endpoint.
+"""
+id = "871f0c30-a7c5-40a5-80e3-a50c6714632f"
+license = "Elastic License v2"
+name = "Download and Execution of JavaScript Payload"
+os_list = ["macos"]
+reference = ["https://github.com/its-a-feature/Mythic"]
+version = "1.0.8"
+
+query = '''
+sequence by user.id with maxspan=30s
+  [process where event.action == "exec" and
+    process.name : "curl" and process.args : "http*" and
+    not process.args : ("https://*.jamfcloud.com/JSSResource/*",
+                        "https://download.zerotier.com/RELEASES/*",
+                        "https://download.mozilla.org/?os=osx&product=firefox-latest-ssl")]
+  [process where event.action == "exec" and process.name : "osascript" and
+    process.command_line : "*-l JavaScript*" and
+    /* rule scope is limited to curl output passed to osascript via pipe */
+    process.args_count <= 3]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

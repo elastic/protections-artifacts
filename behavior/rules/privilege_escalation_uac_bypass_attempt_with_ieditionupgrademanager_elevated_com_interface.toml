@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) by abusing an elevated COM interface to launch a rogue Windows
+ClipUp program. Attackers may attempt to bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "f1008eeb-bc85-4d5e-91ac-e99aaba08ecf"
+license = "Elastic License v2"
+name = "UAC Bypass Attempt with IEditionUpgradeManager Elevated COM Interface"
+os_list = ["windows"]
+reference = ["https://github.com/hfiref0x/UACME"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ process.parent.name : "dllhost.exe" and
+ process.Ext.token.integrity_level_name == "high" and
+ process.parent.command_line : "*BD54C901-076B-434E-B6C7-17C531F4AB41*" and 
+ process.executable : ("?:\\*\\System32\\*.exe", "?:\\*\\SysWOW64\\*.exe") and
+ not process.executable : ("?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
+ not (process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\*\\dismhost.exe" and
+      process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true)
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

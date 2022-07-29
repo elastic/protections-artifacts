@@ -1,0 +1,43 @@
+[rule]
+description = """
+Identifies the execution of a Windows service from suspicious path such as mounted localhost admin share. This may
+indicate an attempt to elevate privileges via windows services.
+"""
+id = "cd25c529-73b4-4a9d-84a9-e24c4a3540d1"
+license = "Elastic License v2"
+name = "Suspicious Windows Service Execution"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "services.exe" and
+  process.Ext.token.integrity_level_name == "system" and
+  process.executable : ("\\\\127.0.0.1\\*", "\\Device\\Mup\\*\\c$\\*", "\\Device\\Mup\\*\\ADMIN$\\*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

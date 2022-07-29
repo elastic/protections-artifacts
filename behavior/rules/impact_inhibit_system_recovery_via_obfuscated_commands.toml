@@ -1,0 +1,110 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings. Adversaries may delete or remove
+built-in operating system data and turn off services designed to aid in the recovery of a corrupted system and prevent
+recovery.
+"""
+id = "99358f31-a84a-4f92-bb91-4370083acda0"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Obfuscated Commands"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and
+  descendant of
+    [process where process.name : ("powershell.exe", "pwsht.exe", "cmd.exe") and
+      process.command_line :
+        (
+          "*^*^*^*^*^*^*^*^*^*",
+          "*set *set *set *",
+          "*set *for *call *",
+          "*set *for *cmd *",
+          "*$*$*$*$*$*$*$*$*$*$*$*",
+          "*comspec*",
+          "*%%*%%*%%*",
+          "*''*''*''*",
+          "*`*`*`*`*",
+          "*+*+*+*+*+*",
+          "*[char[]](*)*-join",
+          "*Base64String*",
+          "*[*Convert]*",
+          "*.Text.Encoding*",
+          "*.Compression.*",
+          "*.replace(*",
+          "*MemoryStream*",
+          "*WriteAllBytes*",
+          "* -en* *",
+          "* -ec *",
+          "* -e *",
+          "* /e *",
+          "* /en* *",
+          "* /ec *",
+          "*WebClient*",
+          "*DownloadFile*",
+          "*DownloadString*",
+          "*Invoke-Exp*",
+          "*invoke-web*",
+          "*iex*",
+          "*iwr*",
+          "*Reflection.Assembly*",
+          "*Assembly.GetType*"
+        )
+  ] and
+  (
+    (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and 
+	 process.command_line : "*delete*") or
+    (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and 
+	 process.command_line : ("*delete*", "*resize*")) or
+    (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+    (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
+  )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

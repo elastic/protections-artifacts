@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) by modifying the DelegateExecute registry value. Attackers
+bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "25c41954-5d42-4530-b9cb-bdaf9d028ce7"
+license = "Elastic License v2"
+name = "UAC Bypass via DelegateExecute Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://medium.com/cybersecpadawan/utilizing-a-common-windows-binary-to-escalate-to-system-privileges-c16482cced4b",
+]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "start" and
+   process.Ext.token.integrity_level_name == "medium" and process.executable != null and not
+
+   /* excludes OpenWith which is used to delegate handling a file type to a chosen program */
+   process.executable : ("?:\\Windows\\System32\\OpenWith.exe", "?:\\Windows\\SysWOW64\\OpenWith.exe") and not
+
+   /* exclude signed third party programs */
+   (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+     process.code_signature.trusted == true)]
+  [registry where registry.data.strings != null and
+   registry.value : "DelegateExecute" and registry.hive : "HKEY_USERS"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies the execution of the built-in Windows Installer, MSIEXEC, with a url in the command line. Adversaries may
+abuse msiexec.exe to launch local or network accessible MSI files.
+"""
+id = "8ba98e28-d83e-451e-8df7-f0964f7e69b6"
+license = "Elastic License v2"
+name = "Remote File Execution via MSIEXEC"
+os_list = ["windows"]
+reference = [
+    "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
+    "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
+]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and process.args_count <= 4 and
+ process.pe.original_file_name : "msiexec.exe" and process.args : "http*" and
+  process.args : ("/i", "-i") and
+  process.args : ("/q", "/quiet", "/qn", "-q", "-quiet", "-qn") and
+  not descendant of
+       [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
+  not process.Ext.token.integrity_level_name == "system"
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

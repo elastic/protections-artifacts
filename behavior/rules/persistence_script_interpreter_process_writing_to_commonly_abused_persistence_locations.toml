@@ -1,0 +1,98 @@
+[rule]
+description = """
+Identifies a Windows script interpreter writing to two persistence locations (registry run keys and startup folder).
+Adversaries may use this technique to maintain multiple methods of persistence on an endpoint.
+"""
+id = "be42f9fc-bdca-41cd-b125-f223d09eef69"
+license = "Elastic License v2"
+name = "Script Interpreter Process Writing to Commonly Abused Persistence Locations"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+  [process where event.action == "start" and
+   process.pe.original_file_name : ("cscript.exe", "wscript.exe", "powershell.exe", "pwsh.exe", "mshta.exe")]
+  [any where event.category : ("registry", "file") and event.action != "deletion" and
+   (
+    (registry.data.strings != null and
+     registry.path :
+            ("*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*")) or
+    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
+   )
+   ]
+ [any where event.category : ("registry", "file") and event.action != "deletion" and
+   (
+    (registry.data.strings != null and
+     registry.path :
+            ("*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+             "*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+             "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*")) or
+    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
+   )
+   ]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

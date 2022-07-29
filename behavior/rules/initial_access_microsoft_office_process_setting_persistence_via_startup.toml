@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies files written to or modified in the startup folder by a Microsoft Office process. Adversaries may use this
+technique to maintain persistence and avoid spawning suspicious child processes.
+"""
+id = "2b8ea430-897d-486c-85a8-add9d7072ff3"
+license = "Elastic License v2"
+name = "Microsoft Office Process Setting Persistence via Startup"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+file where event.action != "deletion" and
+  file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
+  process.name : ("EQNEDT32.EXE", "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

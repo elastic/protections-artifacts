@@ -1,0 +1,74 @@
+[rule]
+description = """
+Identifies the transfer of a library via SMB followed by loading it into commonly DLL proxy execution binaries such as
+rundll32, regsvr32 and shared services via svchost.exe. This may indicate an attempt to remotely execute malicious code.
+"""
+id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
+license = "Elastic License v2"
+name = "ImageLoad of a File dropped via SMB"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+sequence with maxspan=5m
+  [ file where event.action != "deletion" and
+   /* library dropped via SMB */
+   process.pid == 4 and user.id : "S-1-5-21*" and
+   (file.extension : ("dll", "cpl", "ocx") or file.Ext.header_bytes : "4d5a*")] by file.path
+  [ library where
+    (process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe", "lsass.exe") or process.executable : "?:\\Windows\\Microsoft.NET\\*.exe") and
+
+    /* signed FPs */
+    not (dll.code_signature.subject_name in ("Veeam Software Group GmbH", "Veeam Software AG", "Lansweeper", "Microsoft Windows", 
+                                             "Microsoft Corporation", "GOVERLAN, LLC", "Cisco WebEx LLC") and dll.code_signature.trusted == true) and
+    not (dll.path : "?:\\oracle\\client\\product\\*\\ora*.dll" and dll.pe.original_file_name : "Ora*.dll" and process.name : "regsvr32.exe") and 
+    not (dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and dll.code_signature.trusted == true) ] by dll.path
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.16.0"

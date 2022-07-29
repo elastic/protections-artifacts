@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies attempts to load a module by a SYSTEM process and via side by side DLL redirection. This may indicate an
+attempt to elevate privileges via DLL search order hijacking.
+"""
+id = "f5dd34c1-733c-43d7-831c-a4b0affb914a"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via DLL Redirection"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection",
+    "https://secret.club/2020/04/23/directory-deletion-shell.html",
+]
+version = "1.0.4"
+
+query = '''
+library where user.id : "S-1-5-18" and
+   dll.path : ("?:\\Windows\\system32\\*.exe.local\\*",
+               "?:\\Windows\\syswow64\\*.exe.local\\*",
+               "?:\\Program Files (x86)\\Microsoft\\*.exe.local\\*",
+               "?:\\Program Files\\Microsoft\\*.exe.local\\*") and
+  not (dll.code_signature.subject_name : "Microsoft *" and dll.code_signature.trusted == true) and
+  process.executable :
+               ("?:\\Windows\\system32\\*",
+                "?:\\Windows\\syswow64\\*",
+                "?:\\Program Files (x86)\\Microsoft\\*",
+                "?:\\Program Files\\Microsoft\\*")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1129"
+name = "Shared Modules"
+reference = "https://attack.mitre.org/techniques/T1129/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.16.0"

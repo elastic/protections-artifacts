@@ -1,0 +1,96 @@
+[rule]
+description = """
+Identifies the execution of an unsigned program or script from the Startup shell folder followed by an immediate network
+connection. This may indicate the presence of a malicious persistent item.
+"""
+id = "0b33141a-3f73-4414-ba90-d8410e6ab176"
+license = "Elastic License v2"
+name = "Network Connection via Startup Item"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  // unsigned program starting from startup folder
+  (process.executable : (
+   "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+   "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")  and
+   not process.code_signature.trusted == true) or
+  // Scripts starting from startup folder
+  (process.name : ("cscript.exe", "wscript.exe", "mshta.exe", "powershell.exe") and
+   process.command_line : (
+  "*:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+  "*:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*") )]
+ [network where true]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

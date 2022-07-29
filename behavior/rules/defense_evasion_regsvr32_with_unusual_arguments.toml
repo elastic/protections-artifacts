@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies unusual instances of Regsvr32 with suspicious keywords or paths in the process command line value.
+Adversaries may abuse regsvr32.exe to proxy execution of malicious code.
+"""
+id = "5db08297-bf72-49f4-b426-f405c2b01326"
+license = "Elastic License v2"
+name = "Regsvr32 with Unusual Arguments"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and process.name : "regsvr32.exe" and
+ process.command_line :
+          ("*.jpg*",
+           "*.png*",
+           "*.gif*",
+           "*.bmp*",
+           "*.jpeg*",
+           "*.TIFF*",
+           "*.tmp*",
+           "*.dat*",
+           "*.pdf*",
+           "*.doc*",
+           "*.xls*",
+           "*.ppt*",
+           "*.txt*",
+           "* ?:/*/*",
+           "* ..\\*",
+           "*DumpStack.log*",
+           "*:\\Users\\Public\\*",
+           "*:\\Users\\*\\Documents\\*",
+           "*:\\Users\\*\\Pictures\\*",
+           "*:\\Users\\*\\Music\\*",
+           "*:\\Users\\*\\Pictures\\*",
+           "*:\\Windows\\Tasks\\*",
+           "*:\\Windows\\System32\\tasks\\*") and not
+ process.command_line : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and 
+ 
+ /*  path traversal */
+ not (process.command_line : "* ..\\*" and process.command_line :"* ..\\*\\*") and
+ not process.parent.executable : "?:\\Program Files (x86)\\Tencent\\QQPCMgr\\*\\QQPCTray.exe" and
+ not process.command_line :
+             ("*\\Program Files (x86)\\Tencent\\QQPCMgr\\*.dat*",
+              "*QQPCMgr*TSWebMon64.dat*",
+              "*BarTender Suite\\Codejock.DockingPane.x64.v15.3.1.ocx*") and
+ not process.parent.executable : "?:\\Eaglesoft\\Shared Files\\OcxReg.exe" and
+ not process.args : ("?:\\windows\\system32\\ChartFX.ClientServer.Data.dll", "?:\\Windows\\SysWOW64\\ChartFX.ClientServer.Data.dll")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies the execution of the built-in MSBuild utility with a suspicious count of command line arguments (less than
+three). Adversaries may use MSBuild to proxy the execution of malicious code via a trusted Windows utility.
+"""
+id = "6518cdaf-e6cd-4cf9-a51e-043117c3dbeb"
+license = "Elastic License v2"
+name = "MSBuild with Unusual Arguments"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msbuild/"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name == "MSBuild.exe" and process.args_count == 2 and
+  /* FP - expected developers msbuild installation directories */
+
+ not process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*",
+                           "?:\\Program Files\\Microsoft Visual Studio\\*") and
+ not process.command_line : ("* /*", "* .\\*", "*.proj*", "*.sln*") and
+  /* FP - Third Party Programs except MS Office */
+
+ not (process.parent.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
+       not process.parent.name : 
+                          ("winword.exe",
+                           "excel.exe",
+                           "outlook.exe",
+                           "powerpnt.exe",
+                           "eqnedt32.exe",
+                           "fltldr.exe",
+                           "mspub.exe",
+                           "msaccess.exe"))
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1127"
+name = "Trusted Developer Utilities Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1127/"
+[[threat.technique.subtechnique]]
+id = "T1127.001"
+name = "MSBuild"
+reference = "https://attack.mitre.org/techniques/T1127/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

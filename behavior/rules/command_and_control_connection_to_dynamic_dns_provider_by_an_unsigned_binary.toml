@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies DNS queries to known Dynamic DNS Providers by an unsigned program. Dynamic DNS providers are often misused to
+host malware Command and Control servers.
+"""
+id = "75b80e66-90d0-4ab6-9e6b-976f7d690906"
+license = "Elastic License v2"
+name = "Connection to Dynamic DNS Provider by an Unsigned Binary"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ /* execution of an unsigned PEfollowed by dns request to dynamic dns provider */
+  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+   not process.code_signature.trusted == true and
+   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*")]
+  [dns where
+    dns.question.name :
+         (
+          "*.no-ip.com",
+          "*.no-ip.org",
+          "*.no-ip.biz",
+          "*.no-ip.info",
+          "*.noip.com",
+          "*.afraid.org",
+          "*.changeip.com",
+          "*.ddns.net",
+          "*.dyndns.org",
+          "*.hopto.org",
+          "*.zapto.org",
+          "*.servehttp.com",
+          "*.sytes.net",
+          "*.myftp.biz",
+          "*.myftp.org",
+          "*.ddnsfree.com",
+          "*.duckdns.org",
+          "*.000webhostapp.com",
+          "*.myddns.me",
+          "*.dlinkddns.com",
+          "*.chickenkiller.com", 
+          "*.thddns.net", 
+          "*.linkpc.net", 
+          "*.gotdns.ch"
+         ) and
+
+    /* covered by rule Id dfe28e03-9b0b-47f5-9753-65ed2666663f */
+    not dns.question.name : "checkip.dyndns.org"]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

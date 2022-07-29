@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies the execution of Windows utilities to tamper with system recovery settings. Adversaries may delete or remove
+built-in operating system data and turn off services designed to aid in the recovery of a corrupted system and prevent
+recovery.
+"""
+id = "d3588fad-43ae-4f2d-badd-15a27df72133"
+license = "Elastic License v2"
+name = "Inhibit System Recovery via Windows Command Shell"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "start" and process.name : "cmd.exe" and
+    not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")
+  ] by process.entity_id
+  [process where event.action == "start" and
+    (
+     (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or
+     (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*401*")) or
+     (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
+     (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
+    ) and
+    /* noisy FP patterns */
+    not (process.name : "bcdedit.exe" and process.args : "DisplayAllFailures") and
+    not (process.name : "wbadmin.exe" and process.args : "-keepVersions*") and
+    not (process.name : "bcdedit.exe" and process.command_line: "*recoveryenabled*yes*") and
+    /* granular deletion of a shadowcopy by unique ID often seen in legit deletion */
+    not (process.name : "vssadmin.exe" and process.command_line : "*/shadow=*")
+  ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

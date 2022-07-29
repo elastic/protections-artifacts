@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies when RunDLL32 or Regsvr32 loads an executable downloaded via Microsoft BITS Jobs. An adversary may leverage
+this technique to avoid suspicious processes making network connections and executing a malicious DLL.
+"""
+id = "74c1fd79-5961-4f1d-8ff8-b810b7c88545"
+license = "Elastic License v2"
+name = "RunDLL32/Regsvr32 Loads a DLL Downloaded via BITS"
+os_list = ["windows"]
+reference = [
+    "https://blog.menasec.net/2021/05/hunting-for-suspicious-usage-of.html",
+    "https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2",
+]
+version = "1.0.6"
+
+query = '''
+sequence with maxspan=5m
+   [file where event.action : "rename" and
+    /* Executable File downloaded via BITS */
+    (file.extension : ("dll", "cpl", "ocx") or file.Ext.header_bytes : "4d5a*") and process.name : "svchost.exe" and
+    file.Ext.original.name : "BIT*.tmp"] by file.path
+   [library where process.name : ("rundll32.exe", "regsvr32.exe") and 
+    not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+    not dll.path : ("?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")] by dll.path
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1197"
+name = "BITS Jobs"
+reference = "https://attack.mitre.org/techniques/T1197/"
+
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

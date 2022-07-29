@@ -1,0 +1,120 @@
+[rule]
+description = """
+Identifies suspicious access to the ShellBrowserWindow or ShellWindow COM objects by a Microsoft Office process followed
+by the execution of commonly abused signed proxy binary. This may indicate an attempt to avoid triggering a suspicious
+process tree using malicious phishing documents.
+"""
+id = "cbbb130f-d9d3-459d-a796-c61ee27f9f70"
+license = "Elastic License v2"
+name = "Suspicious Execution via ShellBrowserWindow/ShellWindow COM"
+os_list = ["windows"]
+reference = ["https://blog.f-secure.com/dechaining-macros-and-evading-edr/"]
+version = "1.0.4"
+
+query = '''
+sequence by user.id with maxspan=5s
+  [registry where event.action == "query" and
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    /* COM - ShellWindows and ShellBrowserWindows can be used to exec a
+     process via Explorer and avoid susp process tree */
+    registry.key :
+      (
+      "SOFTWARE\\Classes\\CLSID\\{9BA05972-F6A8-11CF-A442-00A0C90A8F39}*",
+      "SOFTWARE\\Classes\\CLSID\\{c08afd90-f2a1-11d1-8455-00a0c91f3880}*")]
+   [process where event.action == "start" and
+     process.args_count >= 2 and
+     (process.parent.executable : "?:\\Windows\\explorer.exe" and process.parent.args_count == 1) and
+     /* for now limited to common lolbas + combined to maxspan set to 5s to avoid any unexpected high peak in FPs*/
+     process.name :
+              ("rundll32.exe",
+               "powershell.exe",
+               "mshta.exe",
+               "msbuild.exe",
+               "certutil.exe",
+               "regsvr32.exe",
+               "cscript.exe",
+               "wscript.exe",
+               "wmic.exe",
+               "msxsl.exe",
+               "Microsoft.Workflow.Compiler.exe",
+               "ieexec.exe",
+               "iexpress.exe",
+               "installutil.exe",
+               "RegSvcs.exe",
+               "RegAsm.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "Signed Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

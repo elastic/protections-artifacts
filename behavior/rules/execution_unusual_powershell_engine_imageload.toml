@@ -1,0 +1,122 @@
+[rule]
+description = """
+Identifies the PowerShell engine being invoked by unexpected processes. Instead of executing PowerShell functionality
+with powershell.exe, some attackers do this to operate more stealthily.
+"""
+id = "f57505bb-a1d2-4d3b-b7b5-1d81d7bdb80e"
+license = "Elastic License v2"
+name = "Unusual PowerShell Engine ImageLoad"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  not process.Ext.token.integrity_level_name : ("system", "low") and 
+  process.code_signature.subject_name : "Microsoft *" and 
+  /* Issue #288 */
+  process.executable : ("?:\\Windows\\System32\\*.exe", 
+                        "?:\\Windows\\SysWOW64\\*.exe", 
+                        "?:\\Windows\\Microsoft.NET\\*.exe") and
+  not process.executable : ("?:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
+                            "?:\\Windows\\SysWOW64\\wbem\\WmiPrvSE.exe",
+                            "?:\\Windows\\System32\\inetsrv\\*",
+                            "?:\\Windows\\System32\\WindowsPowerShell\\*",
+                            "?:\\windows\\System32\\DriverStore\\*") and
+  not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 
+  not (process.name : "dllhost.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
+       /* CrowdStrike.RemoteResponse CLSIDs */
+       process.command_line : ("*BD07DDB9-1C61-4DCE-9202-A2BA1757CDB2*", 
+                               "*BFCC80BE-AE9A-4E79-8B13-454A10C3A1B1*", 
+                               "*AB8902B4-09CA-4BB6-B78D-A8F59079A8D5*",
+                               "*338B40F9-9D68-4B53-A793-6B9AA0C5F63B*")) and 
+  not (process.name : "SearchFilterHost.exe" and process.parent.executable : "?:\\WINDOWS\\system32\\SearchIndexer.exe") and 
+  not (process.name : ("RuntimeBroker.exe", "smartscreen.exe") and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
+  not (process.name : "RegAsm.exe" and process.args : "?:\\Program Files\\CloudBackup\\DS-Client\\\\System.Management.Automation.dll")]
+ [library where dll.name : ("System.Management.Automation.ni.dll", "System.Management.Automation.dll") and not
+  process.name :
+   (
+    "Altaro.SubAgent.exe",
+    "AppV_Manage.exe",
+    "azureadconnect.exe",
+    "CcmExec.exe",
+    "configsyncrun.exe",
+    "choco.exe",
+    "ctxappvservice.exe",
+    "DVLS.Console.exe",
+    "edgetransport.exe",
+    "exsetup.exe",
+    "forefrontactivedirectoryconnector.exe",
+    "InstallUtil.exe",
+    "JenkinsOnDesktop.exe",
+    "Microsoft.EnterpriseManagement.ServiceManager.UI.Console.exe",
+    "mmc.exe",
+    "mscorsvw.exe",
+    "msexchangedelivery.exe",
+    "msexchangefrontendtransport.exe",
+    "msexchangehmworker.exe",
+    "msexchangesubmission.exe",
+    "msiexec.exe",
+    "MsiExec.exe",
+    "noderunner.exe",
+    "NServiceBus.Host.exe",
+    "NServiceBus.Host32.exe",
+    "NServiceBus.Hosting.Azure.HostProcess.exe",
+    "OuiGui.WPF.exe",
+    "powershell.exe",
+    "powershell_ise.exe",
+    "pwsh.exe",
+    "SCCMCliCtrWPF.exe",
+    "ScriptEditor.exe",
+    "ScriptRunner.exe",
+    "sdiagnhost.exe",
+    "servermanager.exe",
+    "setup100.exe",
+    "ServiceHub.VSDetouredHost.exe",
+    "SPCAF.Client.exe",
+    "SPCAF.SettingsEditor.exe",
+    "SQLPS.exe",
+    "telemetryservice.exe",
+    "UMWorkerProcess.exe",
+    "w3wp.exe",
+    "wsmprovhost.exe",
+    "dsac.exe",
+    "RemoteFXvGPUDisablement.exe",
+    "RAMgmtUI.exe",
+    "taskhostw.exe",
+    "ClusterUpdateUI.exe",
+    "auditpol.exe",
+    "perfmon.exe",
+    "gpupdate.exe",
+    "conhost.exe",
+    "cmd.exe",
+    "Dsamain.exe",
+    "taskhost.exe",
+    "stordiag.exe")]
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

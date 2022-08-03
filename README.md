@@ -3,7 +3,7 @@
 
 Elastic Security prevents ransomware and malware, detects advanced threats, and arms responders with vital context. It’s free and open, ready for every endpoint.
 
-Protections-Artifacts is the home of our detection logic (rules, yara, etc) for [Elastic Security for endpoint](https://www.elastic.co/security/endpoint-security). At Elastic, we believe that being open and transparent is critical for the success of us and our users. Check out our [blog post](https://www.elastic.co/security-labs/) if you are interested in additional background.
+Protections-Artifacts is the home of our detection logic (rules, yara, etc) for [Elastic Security for endpoint](https://www.elastic.co/security/endpoint-security). At Elastic, we believe that being open and transparent is critical for the success of us and our users. Check out our [blog post](https://www.elastic.co/blog/continued-leadership-in-open-and-transparent-security) if you are interested in additional background.
 
 # Directory
 

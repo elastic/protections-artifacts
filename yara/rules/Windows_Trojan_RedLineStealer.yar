@@ -53,25 +53,6 @@ rule Windows_Trojan_RedLineStealer_f54632eb {
         6 of ($a*)
 }
 
-rule Windows_Trojan_RedLineStealer_a7da40b7 {
-    meta:
-        id = "a7da40b7-63cc-4456-a592-0485932092d5"
-        fingerprint = "62a62ede10d977582329b3daaa80b0b64576add77736135bac97d3a3eb6de558"
-        creation_date = "2022-02-17"
-        last_modified = "2022-04-12"
-        threat_name = "Windows.Trojan.RedLineStealer"
-        reference_sample = "2fb7241ffdfa7525f125e6d7b18e895cfb512ebb6905d056dbe7d76e8d6df806"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $a = { 18 B9 10 00 00 00 83 E2 0F 2B CA 3B 4D 14 76 03 8B 4D 14 8D 5C }
-    condition:
-        all of them
-}
-
 rule Windows_Trojan_RedLineStealer_d4b38e13 {
     meta:
         id = "d4b38e13-1439-4549-ba90-0b4a8ed57fb3"

@@ -8,21 +8,17 @@ license = "Elastic License v2"
 name = "Privilege Escalation Enumeration via LinPEAS"
 os_list = ["linux", "macos"]
 reference = ["https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "exec" and
   process.name == "sed" and process.command_line like "*ImPoSSssSiBlEee*"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 0
-
-[[actions]]
-action = "kill_process"
-field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

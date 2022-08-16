@@ -7,7 +7,7 @@ id = "b76c0a04-b504-4a2f-a0cf-b4175a2f3eea"
 license = "Elastic License v2"
 name = "Execution of a Windows Script with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -19,6 +19,7 @@ process where event.action == "start" and
  not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "*\\Windows\\system32\\spool\\DRIVERS\\*")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

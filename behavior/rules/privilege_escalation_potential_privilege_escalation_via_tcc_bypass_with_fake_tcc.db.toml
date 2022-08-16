@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies the creation of an alternate or fake TCC database potentially containing rogue macOS privacy preferences. The
+creation of another TCC database should not occur normally in any circumstance and should be considered highly
+suspicious.
+"""
+id = "8446b30d-a9c4-4646-8261-979c06edd0ff"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via TCC bypass with fake TCC.db"
+os_list = ["macos"]
+reference = [
+    "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
+]
+version = "1.0.5"
+
+query = '''
+file where event.action != "deletion" and 
+file.name : "TCC.db" and process.executable != null and
+not process.executable : (
+  "/Applications/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/Support/tccd",
+  "/System/Library/PrivateFrameworks/TCC.framework/*",
+  "/Applications/*/iOS.simruntime/*/System/Library/PrivateFrameworks/TCC.framework/tccd",
+  "/Users/*/Downloads/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",
+  "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS *simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",
+  "/System/Library/Frameworks/FileProvider.framework/XPCServices/ArchiveService.xpc/Contents/MacOS/ArchiveService",
+  "/Applications/FortiClient.app/Contents/Frameworks/FortiClient Helper (Renderer).app/Contents/MacOS/FortiClient Helper (Renderer)",
+  "/usr/libexec/xpcproxy", "/sbin/launchd") and 
+not file.path : "/Volumes/*" and 
+not (event.action == "modification" and file.path : "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and not file.path : "/Users/*/*/Library/*") and
+not file.path : "/Users/*/Library/Developer/CoreSimulator/Devices/*/data/Library/TCC/TCC.db"
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

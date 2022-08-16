@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies when a process running in a suspicious directory, such as the temp directory attempts to download a second
+stage payload. This behavior is consistent with malware families such as Bundlore.
+"""
+id = "04d124d4-2be7-405e-b830-9494f927a51e"
+license = "Elastic License v2"
+name = "Payload Downloaded by Process Running in Suspicious Directory"
+os_list = ["macos"]
+reference = ["https://attack.mitre.org/software/S0482/", "https://objective-see.com/blog/blog_0x69.html"]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [process where event.action == "exec" and
+    descendant of [
+      process where event.action : ("exec", "fork") and
+        process.executable : (
+          "/private/tmp/*",
+          "/tmp/*",
+          "/Users/*/Library/Preferences/*"
+        )
+    ] and
+    process.name == "curl" and
+    not process.args : "https://omahaproxy.appspot.com/history"
+  ]
+  [network where event.action == "connection_attempted"]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -12,7 +12,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/antonioCoco/RogueWinRM",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=1m
@@ -27,6 +27,7 @@ sequence with maxspan=1m
   process.parent.Ext.real.pid > 0] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

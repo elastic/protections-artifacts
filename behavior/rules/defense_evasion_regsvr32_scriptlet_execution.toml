@@ -7,7 +7,7 @@ id = "0524c24c-e45e-4220-b21a-abdba0c46c4d"
 license = "Elastic License v2"
 name = "Regsvr32 Scriptlet Execution"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -35,6 +35,7 @@ process where event.action == "start" and
       not process.command_line : "*scrobj.dll*")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -44,7 +45,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.010"

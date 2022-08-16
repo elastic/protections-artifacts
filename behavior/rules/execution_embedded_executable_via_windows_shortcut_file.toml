@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Embedded Executable via Windows Shortcut File"
 os_list = ["windows"]
 reference = ["https://www.x86matthew.com/view_post?id=embed_exe_lnk"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=1m
@@ -20,6 +20,7 @@ sequence with maxspan=1m
    process.parent.name : ("cmd.exe", "powershell.exe") and process.parent.command_line : "*.lnk*"] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

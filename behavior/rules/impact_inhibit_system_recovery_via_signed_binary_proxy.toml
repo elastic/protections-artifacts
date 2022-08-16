@@ -8,32 +8,32 @@ id = "740ad26d-3e67-47e1-aff1-adb47a697375"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
   descendant of [process where event.action == "start" and
                  process.name:
-                    ( 
-					 "rundll32.exe", 
-					 "cscript.exe", 
-					 "wscript.exe", 
-					 "regsvr32.exe", 
-					 "regasm.exe", 
-					 "regsvcs.exe", 
-					 "installutil.exe", 
-					 "mshta.exe", 
-					 "cmstp.exe", 
-					 "msxsl.exe", 
-					 "Microsoft.Workflow.Compiler.exe", 
-					 "ieexec.exe", 
+                    (
+					 "rundll32.exe",
+					 "cscript.exe",
+					 "wscript.exe",
+					 "regsvr32.exe",
+					 "regasm.exe",
+					 "regsvcs.exe",
+					 "installutil.exe",
+					 "mshta.exe",
+					 "cmstp.exe",
+					 "msxsl.exe",
+					 "Microsoft.Workflow.Compiler.exe",
+					 "ieexec.exe",
 					 "iexpress.exe"
 					 )]
   and
   (
-    (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and 
+    (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and
 	 process.command_line : "*delete*") or
-    (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and 
+    (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and
 	 process.command_line : ("*delete*", "*resize*401*")) or
     (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
     (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
@@ -41,6 +41,7 @@ process where event.action == "start" and
   not (process.name : "vssadmin.exe" and process.args : "Resize" and process.parent.executable : "?:\\Program Files\\Geni\\Insights\\GsAgent.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -67,12 +68,12 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1216"
-name = "Signed Script Proxy Execution"
+name = "System Script Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1216/"
 
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.003"

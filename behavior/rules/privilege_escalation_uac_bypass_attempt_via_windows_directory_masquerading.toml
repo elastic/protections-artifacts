@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via Windows Directory Masquerading"
 os_list = ["windows"]
 reference = ["https://medium.com/tenable-techblog/uac-bypass-by-mocking-trusted-directories-24a96675f6e"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -20,6 +20,7 @@ process where event.action == "start" and
           "?:\\ Windows*\\SysWOW64\\*.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

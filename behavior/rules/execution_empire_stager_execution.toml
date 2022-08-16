@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Empire Stager Execution"
 os_list = ["linux", "macos"]
 reference = ["https://github.com/EmpireProject/Empire", "https://github.com/BC-SECURITY/Empire"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "exec" and
@@ -16,6 +16,7 @@ process where event.action == "exec" and
   process.command_line : "*exec(base64.b64decode*aW1wb3J0IHN5cztpbXBvcnQg*"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Lateral Movement via SMBExec"
 os_list = ["windows"]
 reference = ["https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbexec.py#L277"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -24,6 +24,7 @@ process where event.action == "start" and
   )
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

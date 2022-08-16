@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies the execution of an installer from an archive or with suspicious properties. Adversaries may abuse
+msiexec.exe to launch local or network accessible MSI files in an attempt to bypass application whitelisting.
+"""
+id = "fb1c106a-9629-42d3-9f76-71ef31a33426"
+license = "Elastic License v2"
+name = "Windows Installer with Suspicious Properties"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msiexec/"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=1m
+  [registry where process.name : "msiexec.exe" and
+   (
+    (registry.value : "InstallSource" and
+     registry.data.strings : ("?:\\Users\\*\\Temp\\Temp?_*.zip\\*",
+                             "?:\\Users\\*\\*.7z\\*",
+                             "?:\\Users\\*\\*.rar\\*")) or
+
+    (registry.value : ("DisplayName", "ProductName") and registry.data.strings : "SetupTest")
+    )]
+  [process where event.action == "start" and
+    process.parent.name : "msiexec.exe" and user.id : "S-1-5-21*" and
+    not process.name : "msiexec.exe" and
+    not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true)]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

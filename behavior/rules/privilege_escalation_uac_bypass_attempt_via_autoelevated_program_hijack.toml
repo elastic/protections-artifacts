@@ -1,0 +1,182 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) via hijacking the normal execution flow of an auto-elevated
+application or COM Interface. Attackers may attempt to bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "0dcaa1e9-677a-4d6a-a27a-7af188a98323"
+license = "Elastic License v2"
+name = "UAC Bypass Attempt via AutoElevated Program Hijack"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works",
+]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+    process.Ext.token.integrity_level_name : ("high", "system") and
+    process.parent.command_line != null and
+
+    /* descendant of an auto-elevated application or COM object */
+    process.Ext.token.security_attributes : "LUA://DecHdAutoAp" and
+     (
+    /* common lolbins, evasion and proxy execution programs */
+       process.pe.original_file_name :
+                  ("rundll32.exe",
+                   "cmd.exe",
+                   "pwsh*",
+                   "powershell.exe",
+                   "mshta.exe",
+                   "msbuild.exe",
+                   "regsvr32.exe",
+                   "powershell.exe",
+                   "cscript.exe",
+                   "wscript.exe",
+                   "wmic.exe",
+                   "installutil.exe",
+                   "msxsl.exe",
+                   "Microsoft.Workflow.Compiler.exe",
+                   "ieexec.exe",
+                   "iexpress.exe",
+                   "RegAsm.exe",
+                   "installutil.exe",
+                   "RegSvcs.exe",
+                   "RegAsm.exe",
+                   "javaw.exe",
+                   "reg.exe",
+                   "vssadmin.exe",
+                   "bcdedit.exe",
+                   "wbadmin.exe",
+                   "msiexec.exe") or
+
+       (process.pe.original_file_name : ("net.exe", "sc.exe", "schtasks.exe") and process.args : ("stop", "/create", "create")) or
+
+       /* suspicious or unusual paths */
+       process.executable : ("?:\\Users\\Public\\*",
+                             "?:\\Programdata\\*",
+                             "?:\\Windows\\Temp\\*",
+                             "?:\\Windows\\Tasks\\*",
+                             "?:\\Windows\\System32\\Tasks\\*") or
+
+       /* MS signed but from unusual paths */
+       (process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *" and
+        not process.executable : ("?:\\Windows\\system32\\*.exe",
+                                  "?:\\Windows\\SysWOW64\\*.exe",
+                                  "?:\\Program Files\\*.exe",
+                                  "?:\\Program Files (x86)\\*",
+                                  "?:\\ProgramData\\Microsoft\\*",
+                                  "\\Device\\HarddiskVolume*\\Windows\\System32\\*.exe",
+                                  "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\*.exe") and
+        /* runs from temp folder and invoked by different elevated processes */
+        not (process.pe.original_file_name == "DismHost.exe" and
+             process.parent.name : ("cleanmgr.exe", "SystemSettingsAdminFlows.exe", "mmc.exe", "ChangePk.exe", "msiexec.exe", "dllhost.exe", "Dism.exe"))) or
+
+	  /* elevated and unsigned or untrusted programs excluding third party uninstallers executed via appwiz.cpl */
+       ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+         not (process.parent.name : "dllhost.exe" and process.parent.command_line : "*FCC74B77-EC3E-4DD8-A80B-008A702075A9*")) or
+
+       /* proxy execution via explorer */
+       (process.name : "explorer.exe" and process.args : ("*.hta*", "*.vb*", "*.wsh*", "*.js*", "*.ps*", "*.scr*", "*.pif*", "*bat*", "*.cmd*", "*.exe *.exe*"))
+     ) and
+
+   /* Rundll32 FPs */
+   not (process.name : "rundll32.exe" and
+        process.args : ("devmgr.dll,DeviceProperties_RunDLL", "?:\\Windows\\system32\\iesetup.dll,IEShowHardeningDialog") and
+        process.parent.name : ("dllhost.exe", "ServerManager.exe")) and
+
+   /* uninstallers executed via appwiz.cpl */
+   not descendant of
+      [process where event.action == "start" and process.name : "dllhost.exe" and process.command_line : "*FCC74B77-EC3E-4DD8-A80B-008A702075A9*"] and
+
+   /* server manager may spawn interactive powershell commands */
+   not (process.name : "powershell.exe" and process.parent.executable : "?:\\Windows\\System32\\ServerManager.exe") and
+
+   /* Windows Installer service descendants */
+   not descendant of
+      [process where event.action == "start" and
+       process.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\SysWOW64\\msiexec.exe") and
+       process.args : ("/V", "-Embedding")] and
+
+   /* Network Common Connections Ui */
+   not (process.name : "rundll32.exe" and process.args : "shell32.dll,Control_RunDLL" and
+        process.parent.name : "dllhost.exe" and process.parent.command_line : "*7007ACD1-3202-11D1-AAD2-00805FC1270E*") and
+
+   /* DNS Management Spawns Cmd to execute NsLookup */
+   not (process.name : "cmd.exe" and process.args : "/k" and process.args : "?:\\Windows\\system32\\nslookup.exe*" and
+        process.parent.name : "mmc.exe" and process.parent.args : "?:\\Windows\\system32\\dnsmgmt.msc") and
+
+   /* System Diagnostics descendants */
+   not ( process.name : ("csc.exe", "sc.exe", "net.exe", "net1.exe", "cvtres.exe") and
+   descendant of
+      [process where event.action == "start" and process.executable : "?:\\Windows\\System32\\sdiagnhost.exe" and process.args : "-Embedding"] ) and
+
+   not (process.name : "wscript.exe" and process.parent.name : "mmc.exe" and process.parent.args : "?:\\Windows\\system32\\dsa.msc") and
+   not (process.name : "net.exe" and process.parent.executable : "?:\\Windows\\System32\\inetsrv\\InetMgr.exe") and
+   not (process.name : "msiexec.exe" and process.args : ("/x", "-Embedding")) and
+   not (process.name : "cmd.exe" and
+        process.args : ("/c devcon findall USB Print* ",
+                        "?:\\Users\\*\\AppData\\Local\\Temp\\Creative Cloud Uninstaller.exe")) and
+   not (process.name : "cmd.exe" and process.parent.executable : "?:\\Program Files\\WinLaunch\\WinLaunch.exe") and
+   not (process.name : "explorer.exe" and process.args : "ms-settings:*") and
+   not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework\\v*\\mscorsvw.exe" and
+        process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework\\v*\\ngen.exe") and
+   not (process.name : ("regsvr32.exe", "rundll32.exe") and process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "?:\\PROGRA~1\\*")) and
+   not (process.name : "rundll32.exe" and
+        process.args : ("iesetup.dll,IEHardenMachineNow",
+                        "?:\\Windows\\system32\\davclnt.dll,DavSetCookie",
+                        "?:\\Windows\\system32\\pnpui.dll,InstallSecurityPromptRunDllW*",
+                        "?:\\WINDOWS\\system32\\spool\\DRIVERS\\*",
+                        "Shell32.dll,Control_RunDLL",
+                        "devmgr.dll,DeviceProperties_RunDLL",
+                        "?:\\Windows\\system32\\pnpui.dll*",
+                        "printui*,PrintUIEntry",
+                        "newdev.dll,DeviceInternetSettingUi",
+                        "?:\\Windows\\Installer\\MSI*E.tmp,zzzzInvokeManagedCustomActionOutOfProc")) and
+   not (process.name : "rundll32.exe" and
+        process.parent.executable : ("?:\\Windows\\System32\\svchost.exe",
+                                     "?:\\Windows\\System32\\printui.exe",
+                                     "?:\\Program Files (x86)\\*",
+                                     "?:\\Program Files\\*")) and
+   not process.executable :
+           ("?:\\Program Files (x86)\\Common Files\\InstallShield\\*.exe",
+            "?:\\Windows\\splwow64.exe",
+            "?:\\Windows\\System32\\dsac.exe",
+            "?:\\Windows\\regedit.exe",
+            "?:\\Windows\\Installer\\MSI*.tmp",
+            "?:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe",
+            "?:\\Windows\\Microsoft.NET\\Framework64\\*\\cvtres.exe",
+            "?:\\Windows\\SoftwareDistribution\\Download\\Install\\rsatcustominstaller.exe") and
+   not (process.name : "reg.exe" and process.args : "query") and
+   not process.parent.executable :
+             ("?:\\Program Files\\Common Files\\McAfee\\*.exe",
+              "?:\\Program Files (x86)\\Common Files\\McAfee\\*.exe",
+              "?:\\Program Files\\McAfee\\*.exe",
+              "?:\\Program Files (x86)\\McAfee\\*.exe")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.16.0"

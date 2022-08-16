@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "exec" and
@@ -18,10 +18,11 @@ process where event.action == "exec" and
 
   /* noisy FPs */
   not (process.parent.name : "timeout" and process.executable : "/var/lib/docker/overlay*") and
-  not process.command_line : ("*/dev/tcp/sirh_db/*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*", "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*") and
+  not process.command_line : ("*/dev/tcp/sirh_db/*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*", "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*") and
   not process.parent.command_line : "runc init"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

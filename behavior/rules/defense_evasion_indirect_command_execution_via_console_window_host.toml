@@ -1,0 +1,40 @@
+[rule]
+description = """
+Identifies abuse of the Console Window Host (conhost.exe) to execute an arbitrary executable. This behavior is used as a
+defense evasion technique to blend-in malicious activity with legitimate Windows software.
+"""
+id = "4b61b37d-c569-444a-bafa-e29d221ee55c"
+license = "Elastic License v2"
+name = "Indirect Command Execution via Console Window Host"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Conhost/"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "conhost.exe" and process.parent.args_count >= 2 and
+  process.parent.command_line : "*conhost* *.exe*" and
+  not process.command_line : ("?:\\windows\\system32\\cmd.exe", "?:\\windows\\SysWOW64\\cmd.exe", "cmd.exe")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1202"
+name = "Indirect Command Execution"
+reference = "https://attack.mitre.org/techniques/T1202/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

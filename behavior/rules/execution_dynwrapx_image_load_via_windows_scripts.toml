@@ -11,7 +11,7 @@ reference = [
     "https://www.script-coding.com/dynwrapx_eng.html",
     "https://www.splunk.com/en_us/blog/security/detecting-malware-script-loaders-using-remcos-threat-research-release-december-2021.html",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,6 +20,7 @@ sequence by process.entity_id with maxspan=1m
  [library where dll.pe.original_file_name : "dynwrapx.dll"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

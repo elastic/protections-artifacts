@@ -8,7 +8,7 @@ id = "95601d8b-b969-4189-9744-090140ae29e6"
 license = "Elastic License v2"
 name = "Network Connection via Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -52,6 +52,7 @@ sequence by process.entity_id with maxspan=5m
   [network where event.action == "connection_attempted"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

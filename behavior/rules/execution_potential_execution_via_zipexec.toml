@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Execution via ZIPExec"
 os_list = ["windows"]
 reference = ["https://github.com/Tylous/ZipExec"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -25,14 +25,10 @@ sequence with maxspan=5m
  [process where event.action == "start" and process.command_line : "*\\Temp\\Temp?_*"] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 2
-
-[[actions]]
-action = "kill_process"
-field = "process.parent.entity_id"
 state = 2
 
 [[threat]]

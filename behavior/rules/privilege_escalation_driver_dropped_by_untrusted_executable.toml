@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies the creation of a driver file by an untrusted program and subsequently loaded in the kernel. Adversaries may
+bring a driver onto a compromised machine to execute code with the highest privileges.
+"""
+id = "3f1cbf09-dba1-428d-8c84-a86db573889e"
+license = "Elastic License v2"
+name = "Driver Dropped by Untrusted Executable"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action != "deletion" and
+  (file.extension : "sys" or file.Ext.header_bytes : "4d5a*") and
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+  not process.executable : ("?:\\Windows\\System32\\drvinst.exe",
+                            "?:\\ProgramData\\Lenovo\\SystemUpdate\\sessionSE\\Repository\\*\\WINUPTP.EXE",
+                            "?:\\Program Files (x86)\\SimHub\\SimHubWPF.exe",
+                            "?:\\Program Files (x86)\\SCCA\\ePass3000GM_SCCA\\ePass3000_drv\\InstDrvAction.exe",
+                            "?:\\Program Files\\Amazon Web Services, Inc\\Amazon WorkSpaces\\pcoipusb\\bin\\USB\\pcoip_hub_filter_installer.exe") and
+  not process.code_signature.status : ("errorTimeStamp", "errorChaining", "errorCode_endpoint*", "errorExpired")] by file.path
+ [library where process.pid == 4 and
+  not dll.pe.imphash :
+          ("0109bf02bbd845b03c84c9676bdd8869",
+           "70dfb19ec9802de85e2d68ccd3e0a42b",
+           "b35b4e570041a8cb73f5e6afa1fd5c7d",
+           "a5133e97cadbd737ec8e8341ca24aa55",
+           "d41fa95d4642dc981f10de36f4dc8cd7",
+           "0cdcd611bd5dba23c5f365d9ae0e27f3",
+           "58623490691babe8330adc81cd04a663",
+           "bfc88c1c5b6d829a4bab7a165d25d83f",
+           "d0b73a9defa3459abe55bae4cd1f844f",
+           "e54cb614fcaa06fed22c681d4526d8bf",
+           "55db306bc2be3ff71a6b91fd9db051b8",
+           "f86759bb4de4320918615dc06e998a39",
+           "b8022367f73cdbdb08bb0667e4088757",
+           "dc8acd7d20149d09a6c261c7a5f609c4",
+           "db4408247c447c666c12863d8fa61ff5",
+           "b05ee5c816a30bc52378c759486af0b9")] by dll.path
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.0.0"

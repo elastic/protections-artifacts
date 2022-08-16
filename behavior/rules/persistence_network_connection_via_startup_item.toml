@@ -7,7 +7,7 @@ id = "0b33141a-3f73-4414-ba90-d8410e6ab176"
 license = "Elastic License v2"
 name = "Network Connection via Startup Item"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,6 +25,7 @@ sequence by process.entity_id with maxspan=1m
  [network where true]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -78,7 +79,7 @@ reference = "https://attack.mitre.org/tactics/TA0003/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.005"

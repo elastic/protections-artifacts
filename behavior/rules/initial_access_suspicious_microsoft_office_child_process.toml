@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Microsoft Office Child Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,8 @@ process where event.action == "start" and
 		    "curl.exe",
 		    "ScriptRunner.exe",
 		    "CertOC.exe",
-		    "Workfolders.exe"
+		    "Workfolders.exe",
+		    "odbcconf.exe"
 		   ) and
 		not process.args : ("-Embedding", "-hashfile")
 		) or
@@ -83,9 +84,11 @@ process where event.action == "start" and
 	not (process.executable : "?:\\Windows\\hh.exe" and process.args : "-mapid") and
 	not (process.executable : "?:\\Windows\\System32\\sc.exe" and process.args : "queryex") and
 	not (process.name : "rundll32.exe" and process.command_line : ("?:\\Windows\\SysWOW64\\rundll32.exe --eoim", "*--enable-speech-input --auto-scan-plugin --lang=*")) and
-	not (process.name : "RegAsm.exe" and process.args :  "?:\\Program Files (x86)\\Thomson Reuters\\WSF\\*.dll")
+	not (process.name : "RegAsm.exe" and process.args :  "?:\\Program Files (x86)\\Thomson Reuters\\WSF\\*.dll") and
+	not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

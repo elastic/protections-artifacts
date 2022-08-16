@@ -8,7 +8,7 @@ id = "c01cddb6-bbcf-437c-8256-6b4d44c6bdc3"
 license = "Elastic License v2"
 name = "Startup Persistence via Microsoft Office Descendant Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -35,6 +35,7 @@ sequence by process.entity_id with maxspan=5m
   not file.name : "desktop.ini"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -8,7 +8,7 @@ id = "d448566e-486f-4b61-a76f-945662313d49"
 license = "Elastic License v2"
 name = "Unusual Remote Desktop Client Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -39,6 +39,7 @@ sequence by process.entity_id with maxspan=5m
             "?:\\Windows\\notepad.exe") ]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

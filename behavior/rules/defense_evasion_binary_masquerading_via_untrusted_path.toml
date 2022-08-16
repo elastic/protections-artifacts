@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -28,9 +28,7 @@ process where event.action == "start" and
     "dsget.exe",
     "dfsvc.exe",
     "dllhost.exe",
-    "dsquery.exe",
     "eventvwr.exe",
-    "fsutil.exe",
     "ieexec.exe",
     "installutil.exe",
     "ipconfig.exe",
@@ -100,7 +98,14 @@ process where event.action == "start" and
     "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\*.exe",
     "\\Device\\HarddiskVolume*\\Windows\\Microsoft.NET\\*.exe",
     "\\Device\\HarddiskVolume*\\Program Files (x86)\\*.exe",
-    "\\Device\\HarddiskVolume*\\Program Files\\*.exe"
+    "\\Device\\HarddiskVolume*\\Program Files\\*.exe",
+
+    /* VHD */
+    "\\Device\\VhdHardDisk*\\Windows\\System32\\*.exe",
+    "\\Device\\VhdHardDisk*\\Windows\\SysWOW64\\*.exe",
+    "\\Device\\VhdHardDisk*\\Windows\\Microsoft.NET\\*.exe",
+    "\\Device\\VhdHardDisk*\\Program Files (x86)\\*.exe",
+    "\\Device\\VhdHardDisk*\\Program Files\\*.exe"
     ) and
 
   not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\Netskope\\STAgent\\stAgentUI.exe" and process.code_signature.subject_name: "netSkope Inc") and
@@ -118,7 +123,7 @@ process where event.action == "start" and
   not (process.name : "regsvr32.exe" and process.parent.executable : ("?:\\ERPU\\Browser\\AutoUpgrade.exe", "?:\\ERPU\\Browser\\NeoWeb.exe")) and
   not (process.name : "certutil.exe" and process.parent.name : "TOTALCMD*.EXE" and process.args_count <= 2) and
   not (process.executable : "?:\\Campus\\System\\DLL\\CADability\\RegAsm.exe" and process.parent.executable : "?:\\Campus\\System\\DLL\\CADability\\RegCADability.exe") and
-  not (process.name : "certutil.exe" and process.args : "-d" and process.args : "-n") and
+  not (process.name : "certutil.exe" and process.args : "-d" and process.args : ("-n", "-L")) and
   not (process.name : "services.exe" and process.args : "-i*" and process.parent.name : "monitor.exe") and
   not (process.name : "RegAsm.exe" and process.args : ("directdeposit.vb.tlb", "?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")) and
   not process.executable : "D:\\Reform V*\\Reform_PDC_Server_v*\\Plugins\\Monitoring\\CScript.exe" and
@@ -132,9 +137,22 @@ process where event.action == "start" and
   not (process.executable : "?:\\Engeman\\RegAsm.exe" and process.parent.executable : "?:\\Engeman\\Engeman.exe") and
   not process.command_line : ("installutil  /unattended Sage.CNA.WindowsService.exe ",
                               "installutil  /u Sage.CNA.WindowsService.exe ",
-                              "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe")
+                              "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe") and
+  not (process.name : "regsvr32.exe" and process.code_signature.subject_name == "Tarma Software Research Ltd" and process.code_signature.trusted == true) and
+  not (process.name : "CertUtil.exe" and process.code_signature.subject_name == "Certisur S.A." and process.code_signature.trusted == true) and
+  not (process.parent.executable : "?:\\Gb\\GBsoftware.exe" and process.executable : "?:\\Gb\\Lib\\regsvr32.exe") and
+  not (process.executable : "?:\\OfficeMate\\REGSVR32.EXE" and process.parent.args : "?:\\OfficeMate\\~Reg*DLLs.bat" and process.parent.name : "cmd.exe") and
+  not (process.name : "powershell.exe" and process.executable : "?:\\Windows\\WinSxS\\amd64_microsoft-windows-powershell-exe_*\\powershell.exe") and
+  not process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoBatteryGaugePackage\\x64\\RegAsm.exe" and
+  not (process.name : "regasm.exe" and process.parent.executable : "?:\\Program Files (x86)\\Common Files\\InstallShield\\Driver\\*\\IDriver.exe") and
+  not process.executable : "?:\\Windows\\WinSxS\\amd64_microsoft-windows-powershell-exe_*\\powershell.exe" and
+  not (process.executable : ("?:\\Gb\\Lib\\regsvr32.exe", "?:\\E20-II\\ENVIRO\\regasm.exe") and
+       process.parent.executable : ("?:\\Gb\\GBsoftware.exe", "?:\\E20-II\\PCN33\\CODE\\SilentPCBEngTools128.exe")) and
+  not (process.name : "certutil.exe" and process.args : "-addstore") and
+  not (process.parent.executable : "?:\\apps\\sage300\\Programs\\runtime\\a4wcontainerXP.exe" and process.name : "regsvr32.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

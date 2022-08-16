@@ -7,7 +7,7 @@ id = "8c69476a-d8ea-46da-8052-6a4f9254125c"
 license = "Elastic License v2"
 name = "Suspicious Windows Script File Name"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -67,6 +67,7 @@ process where event.action == "start" and
       "*agreement*.vbs")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

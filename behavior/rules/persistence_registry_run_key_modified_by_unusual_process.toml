@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Registry Run Key Modified by Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -98,6 +98,7 @@ sequence by process.entity_id with maxspan=1m
     )]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -13,7 +13,7 @@ reference = [
     "https://www.bleepingcomputer.com/news/security/latest-macos-big-sur-also-has-sudo-root-privilege-escalation-flaw",
     "https://www.sudo.ws/alerts/unescape_overflow.html",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "exec" and
@@ -21,14 +21,10 @@ process where event.action == "exec" and
   process.args in ("-s", "-S") and process.args : "sudoedit" and process.args : "*\\"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 0
-
-[[actions]]
-action = "kill_process"
-field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

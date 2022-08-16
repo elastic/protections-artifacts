@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via Windows Firewall Snap-In Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/AzAgarampur/byeintegrity-uac"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=60s
@@ -25,6 +25,7 @@ sequence with maxspan=60s
             "?:\\Windows\\SysWOW64\\wermgr.exe")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

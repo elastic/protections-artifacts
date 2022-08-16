@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -85,9 +85,13 @@ process where event.action == "start" and process.name : "rundll32.exe" and
    (process.command_line : "*.tmp*" and
     process.parent.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\System32\\msiexec.exe") and
     process.parent.args : "-Embedding") and
-  not process.args : "?:\\ProgramData\\Parallels\\RASLogs\\tmp*.tmp,StopMemshell"
+  not process.args : "?:\\ProgramData\\Parallels\\RASLogs\\tmp*.tmp,StopMemshell" and
+  not (process.args : "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acsnative.dll*" and
+       process.parent.executable : "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acslaunch_*.exe") and
+  not process.parent.executable : ("?:\\Program Files\\Common Files\\BullGuardInstall\\BullGuard*.exe", "?:\\Program Files (x86)\\Intuit\\QuickBooks 20??\\QBW??.EXE")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -97,7 +101,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.011"

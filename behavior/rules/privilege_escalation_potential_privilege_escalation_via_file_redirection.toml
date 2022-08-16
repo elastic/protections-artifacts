@@ -12,11 +12,18 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
- [process where event.action == "start" and process.Ext.token.integrity_level_name : "medium"]
+ [process where event.action == "start" and process.Ext.token.integrity_level_name : "medium" and
+  not process.executable :
+              ("?:\\Program Files\\Npcap\\NPFInstall.exe",
+               "?:\\Program Files\\Wireshark\\npcap-*.exe",
+               "?:\\Program Files (x86)\\SigmaPlot\\SPW12\\Spw.exe",
+               "?:\\Program Files (x86)\\LABEL MATRIX 2021\\lmw.exe")
+
+ ]
  [file where event.action != "deletion" and
   (file.extension : ("exe", "com", "dll") or file.Ext.header_bytes : "4d5a*") and
   file.path : ("?:\\Windows\\System32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Program Files\\Microsoft\\*") and
@@ -30,12 +37,11 @@ sequence by process.entity_id with maxspan=1m
                    "?:\\Windows\\System32\\DriverStore\\Temp\\*.sys",
                    "?:\\Program Files (x86)\\Microsoft\\EdgeCore\\*\\BHO\\ie_to_edge_bho.dll",
                    "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\msedgeupdate.dll") and
-  not (process.executable : "?:\\Windows\\splwow64.exe" and file.path : "?:\\Windows\\System32\\spool\\drivers\\*") and
-  not process.executable : ("?:\\Program Files\\Npcap\\NPFInstall.exe", "?:\\Program Files\\Wireshark\\npcap-*.exe")
-
+  not (process.executable : "?:\\Windows\\splwow64.exe" and file.path : "?:\\Windows\\System32\\spool\\drivers\\*")
   ]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

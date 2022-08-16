@@ -12,7 +12,7 @@ reference = [
     "https://www.ired.team/offensive-security/persistence/hijacking-default-file-extension",
     "https://www.binarydefense.com/mars-deimos-solarmarker-jupyter-infostealer-part-1/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,11 +25,7 @@ sequence by process.entity_id with maxspan=1m
   registry.data.strings : "*PowerShell*" and length(registry.data.strings) >= 200]
 '''
 
-[[actions]]
-action = "kill_process"
-field = "process.entity_id"
-state = 0
-
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

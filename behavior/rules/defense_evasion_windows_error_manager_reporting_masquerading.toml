@@ -8,15 +8,16 @@ id = "3d16f5f9-da4c-4b15-a501-505761b75ca6"
 license = "Elastic License v2"
 name = "Windows Error Manager/Reporting Masquerading"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-sequence by process.entity_id with maxspan=1m
+sequence by process.entity_id with maxspan=5m
   [process where event.action == "start" and
    process.name : ("wermgr.exe", "WerFault.exe") and process.args_count == 1]
   [network where event.action == "connection_attempted" and process.name : ("wermgr.exe", "WerFault.exe")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

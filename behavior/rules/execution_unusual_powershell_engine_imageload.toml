@@ -7,7 +7,7 @@ id = "f57505bb-a1d2-4d3b-b7b5-1d81d7bdb80e"
 license = "Elastic License v2"
 name = "Unusual PowerShell Engine ImageLoad"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -32,7 +32,8 @@ sequence by process.entity_id with maxspan=1m
                                "*338B40F9-9D68-4B53-A793-6B9AA0C5F63B*")) and 
   not (process.name : "SearchFilterHost.exe" and process.parent.executable : "?:\\WINDOWS\\system32\\SearchIndexer.exe") and 
   not (process.name : ("RuntimeBroker.exe", "smartscreen.exe") and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
-  not (process.name : "RegAsm.exe" and process.args : "?:\\Program Files\\CloudBackup\\DS-Client\\\\System.Management.Automation.dll")]
+  not (process.name : "RegAsm.exe" and process.args : "?:\\Program Files\\CloudBackup\\DS-Client\\\\System.Management.Automation.dll") and
+  not (process.name : "WerFault.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "WerSvcGroup")]
  [library where dll.name : ("System.Management.Automation.ni.dll", "System.Management.Automation.dll") and not
   process.name :
    (
@@ -92,9 +93,11 @@ sequence by process.entity_id with maxspan=1m
     "cmd.exe",
     "Dsamain.exe",
     "taskhost.exe",
-    "stordiag.exe")]
+    "stordiag.exe",
+    "SpatialAudioLicenseSrv.exe")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -7,7 +7,7 @@ id = "42d2bbfb-a2fb-4327-b701-89ead6044ca1"
 license = "Elastic License v2"
 name = "Suspicious Execution from a Mounted Device"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m
@@ -24,6 +24,7 @@ sequence with maxspan=1m
     process.args_count >= 2] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -60,7 +61,7 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.005"

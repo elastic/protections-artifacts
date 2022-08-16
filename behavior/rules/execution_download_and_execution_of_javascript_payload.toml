@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by user.id with maxspan=30s
@@ -24,15 +24,11 @@ sequence by user.id with maxspan=30s
     process.args_count <= 3]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
-
-[[actions]]
-action = "kill_process"
-field = "process.entity_id"
-state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

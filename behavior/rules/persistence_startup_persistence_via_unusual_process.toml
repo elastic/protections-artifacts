@@ -7,7 +7,7 @@ id = "95d13ce1-ffb2-4be8-a56e-cc9a891e81e2"
 license = "Elastic License v2"
 name = "Startup Persistence via Unusual Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 file where event.action != "deletion" and
@@ -36,6 +36,7 @@ file where event.action != "deletion" and
   not (process.name : "svchost.exe" and event.action == "overwrite")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

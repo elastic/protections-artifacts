@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies the creation of a thread in a remote process, this type of behavior may indicate inter-process code
+injection. Adversaries may inject code into processes in order to evade process-based defenses as well as possibly
+elevate privileges.
+"""
+id = "458f0b4b-be9a-45bc-8f19-a26dac267250"
+license = "Elastic License v2"
+name = "Potential Code Injection via Remote Thread"
+os_list = ["macos"]
+reference = ["http://newosxbook.com/src.jl?tree=listings&file=inject.c"]
+version = "1.0.4"
+
+query = '''
+process where event.action : "remote_thread" and
+ not process.executable :
+          ("/usr/libexec/rosetta/debugserver",
+           "/Applications/Xcode-*.app/Contents/SharedFrameworks/DVTInstrumentsFoundation.framework/Versions/A/Resources/RemoteInjectionAgent")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.002"
+name = "Portable Executable Injection"
+reference = "https://attack.mitre.org/techniques/T1055/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

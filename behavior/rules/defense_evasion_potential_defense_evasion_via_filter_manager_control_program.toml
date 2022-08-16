@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Potential Defense Evasion via Filter Manager Control Program"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/FltMC/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -13,6 +13,7 @@ process where event.action == "start" and
  process.args : "unload" and process.command_line : ("*security*", "*sysmon*", "*esensor*", "*Elastic*")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Security Software Discovery via Grep"
 os_list = ["linux", "macos"]
 reference = ["https://objective-see.com/blog/blog_0x4F.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and
@@ -16,14 +16,10 @@ process.name : ("grep", "egrep", "sh") and user.id != 0 and
    process.command_line : "*grep*Little Snitch*" and not process.parent.executable : "/Library/Application Support/*"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 0
-
-[[actions]]
-action = "kill_process"
-field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

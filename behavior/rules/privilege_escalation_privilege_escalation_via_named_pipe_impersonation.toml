@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/privilege-escalation/windows-namedpipes-privilege-escalation",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -18,6 +18,7 @@ process where event.action == "start" and
    not (process.command_line : "*chrome-extension://*" and process.parent.executable : "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies instances of the Windows Explorer process with an unusual parent process or unusual process arguments.This
+may be indicative of a masquerading or injection into trusted processes in an attempt to evade suspicion.
+"""
+id = "f8ec5b76-53cf-4989-b451-7d16abec7298"
+license = "Elastic License v2"
+name = "Suspicious Windows Explorer Execution"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+   process.executable : ("?:\\Windows\\SysWOW64\\explorer.exe", "?:\\Windows\\explorer.exe") and
+ (
+   /* miners injecting into Explorer */
+    process.args : ("etc", "easyminer*", "ton", "Rg", "eth", "Toncoin", "mmrig", "--cinit-*", "pool.*", "--coin=*", "--cpu-*") or
+
+    /* Explorer with unusual process arg length */
+    (length(process.command_line) >= 200 and process.args_count == 3 and not process.args : "/select*") or
+
+   /* commonly abused lolbin as parent */
+   (process.parent.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe", "cmd.exe", "mshta.exe") and process.parent.args_count >= 2 and
+    process.args_count == 1 and
+    not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\Windows\\System32\\SHELL32.dll,RunAsNewUser_RunDLL")) or
+
+    /* unusual parent process by path */
+    (process.parent.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Windows\\Microsoft.NET\\*.exe") and
+     process.args_count == 1 and not process.parent.args : ("-runfromtemp", "/IS_temp", "-removeonly", "/update_silent", "-media_path*") and
+     not process.parent.executable : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe",
+                                      "?:\\Users\\*\\AppData\\Local\\Adobe\\Acrobat\\Kaizen\\DC\\Reader\\Acrobat_DC_Set-Up.exe") and
+     not (process.executable : "?:\\Windows\\SysWOW64\\explorer.exe" and process.args : "?:\\Windows\\system32\\explorer.exe") and
+     not (process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\chocolatey\\*" and process.parent.args_count >= 2) and
+     not (process.parent.args :  "NGen Worker Process" and process.parent.name : "mscorsvw.exe") and
+     not (process.command_line : "explorer.exe" and process.parent.name : "cmd.exe") and
+     not (process.executable : "?:\\WINDOWS\\Explorer.EXE" and process.parent.executable : "?:\\Users\\*\\AppData\\*"))  or
+
+    (process.executable : "?:\\Windows\\SysWOW64\\explorer.exe" and process.parent.executable : "?:\\Windows\\explorer.exe" and process.args_count == 1) or
+
+     /* Indirect Command Execution via Explorer */
+    (process.name : "explorer.exe" and process.command_line : "*.exe *.exe*" and not process.args : "*/select*" and not process.command_line : "*:\\Program Files*")
+    )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,13 +7,22 @@ id = "ab29a79a-b3c2-4ae4-9670-70dd0ea68a4a"
 license = "Elastic License v2"
 name = "UAC Bypass via Event Viewer"
 os_list = ["windows"]
-reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.7"
+reference = ["https://github.com/hfiref0x/UACME", "https://twitter.com/orange_8361/status/1518970259868626944"]
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
- process.parent.name : "eventvwr.exe" and
  process.Ext.token.integrity_level_name == "high" and
+ (
+  /* mscfile hijacking */
+  process.parent.name : "eventvwr.exe" or
+
+  /* Unsafe .Net Deserialization in Windows Event Viewer */
+  (process.parent.name : "mmc.exe" and
+   process.parent.args : ("?:\\WINDOWS\\system32\\eventvwr.msc", "?:\\WINDOWS\\SysWOW64\\eventvwr.msc", "eventvwr.msc"))
+  ) and
+
+ /* FPs */
  not process.executable :
            ("?:\\Windows\\SysWOW64\\mmc.exe",
             "?:\\Windows\\System32\\mmc.exe",
@@ -23,6 +32,7 @@ process where event.action == "start" and
             "?:\\Windows\\SysWOW64\\wermgr.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -47,4 +57,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "7.13.0"
+min_endpoint_version = "7.15.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Renamed Signed Binary Proxy"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -39,7 +39,7 @@ process where event.action == "start" and
        (process.pe.original_file_name == "Bginfo.exe" and not process.name : "Bginfo*.exe") or
        (process.pe.original_file_name == "VsJITDebugger.exe" and not process.name : "VsJITDebugger.exe") or
        (process.pe.original_file_name == "xwizard.exe" and not process.name : "xwizard.exe") or
-       (process.pe.original_file_name == "extexport.exe" and not process.name : "extexport.exe") or 
+       (process.pe.original_file_name == "extexport.exe" and not process.name : "extexport.exe") or
        (process.pe.original_file_name == "CertReq.exe" and not process.name : "CertReq.exe")
      ) and
  /* some third party programs tend to include renamed binaries, still often run from trusted paths */
@@ -59,6 +59,7 @@ process where event.action == "start" and
        process.parent.executable : "?:\\WINDOWS\\system32\\msiexec.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -68,7 +69,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 
 

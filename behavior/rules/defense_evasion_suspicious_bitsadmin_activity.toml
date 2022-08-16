@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Bitsadmin Activity"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -82,6 +82,7 @@ process where event.action == "start" and
     )])
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

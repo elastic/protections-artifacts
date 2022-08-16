@@ -4,7 +4,7 @@ id = "49e47c2a-307f-4591-939a-dfdae6e5156c"
 license = "Elastic License v2"
 name = "Execution of a File Written by Windows Script Host"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=1m
@@ -24,6 +24,7 @@ sequence with maxspan=1m
    ] by process.executable
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

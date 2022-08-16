@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies the execution of commonly abused signed proxy execution utilities such as rundll32, regsvr32 and powershell
+followed by a suspicious file rename operation. This may indicate Ransomware behavior leveraging legit Windows
+utilities.
+"""
+id = "df874d7e-6639-44ce-b47d-96254022ccd5"
+license = "Elastic License v2"
+name = "Suspicious File Rename by an Unusual Process"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+ [process where event.action == "start" and process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe")]
+ [file where event.action : "rename" and
+  file.extension != null and file.Ext.entropy >= 7 and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
+  not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url", "jpg", "bmp",
+                        "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx")]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

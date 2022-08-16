@@ -1,0 +1,45 @@
+[rule]
+description = "Identifies attempt to stop or disable the Windows Defender services from an unusual parent process."
+id = "32ab2977-2932-4172-9117-36e382591818"
+license = "Elastic License v2"
+name = "Attempt to Disable Windows Defender Services"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+  process.pe.original_file_name : ("net.exe", "sc.exe", "cmd.exe") and
+  process.command_line : ("*disabled*", "*stop*") and process.command_line : ("*WdNisSvc*", "*WinDefend*") and
+    (process.parent.executable :
+                    ("?:\\Windows\\Microsoft.NET\\*",
+                     "?:\\Users\\*",
+                     "?:\\ProgramData\\*") or
+    process.parent.name : ("rundll32.exe", "regsvr32.exe", "wscript.exe", "cscript.exe", "powershell.exe", "mshta.exe"))
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

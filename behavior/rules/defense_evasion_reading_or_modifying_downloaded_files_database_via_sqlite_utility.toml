@@ -1,0 +1,38 @@
+[rule]
+description = """
+Identifies the sqlite3 utility being used to search or manipulate the database containing metadata on downloaded files.
+Attackers may configure their malware to check the downloaded files database and determine the URL that their malware
+was downloaded from in order to track their infections during a campaign.
+"""
+id = "b8fb52cd-5f06-4519-921d-bd1b363dc01b"
+license = "Elastic License v2"
+name = "Reading or Modifying Downloaded Files Database via SQLite Utility"
+os_list = ["macos"]
+reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/"]
+version = "1.0.6"
+
+query = '''
+sequence with maxspan=30s
+  [process where event.action == "exec" and
+   (process.code_signature.trusted == false or process.code_signature.exists == false)] by process.entity_id
+  [process where event.action == "exec" and
+    process.name in ("sqlite3", "bash", "sh") and process.command_line : "*sqlite*LSQuarantineDataURLString*"
+  ] by process.parent.entity_id
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

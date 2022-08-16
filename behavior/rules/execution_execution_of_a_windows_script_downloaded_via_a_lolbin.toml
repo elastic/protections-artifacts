@@ -7,16 +7,17 @@ id = "f60d4c82-2de5-4c70-95f5-cde9f3ad41a7"
 license = "Elastic License v2"
 name = "Execution of a Windows Script Downloaded via a LOLBIN"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
  [process where event.type == "start" and
-  process.pe.original_file_name : ("certutil.exe", "bitsadmin.exe", "CertReq.exe") and
-  process.command_line : ("*download*", "*transfer*", "*-decode*", "*http*")]
+  process.pe.original_file_name : ("certutil.exe", "bitsadmin.exe", "CertReq.exe", "curl.exe") and
+  process.command_line : ("*download*", "*transfer*", "*-decode*", "*http*", "* -o*", "* --output*")]
  [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "cscript.exe", "mshta.exe")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -53,7 +54,7 @@ reference = "https://attack.mitre.org/techniques/T1197/"
 
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.005"

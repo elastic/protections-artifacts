@@ -11,14 +11,17 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
  [process where event.action == "start" and process.Ext.protection != null and
   process.Ext.protection != "PsProtectedSignerAntimalware-Light" and
   not (process.executable : "?:\\Windows\\System32\\svchost.exe" and process.args == "WaaSMedicSvc" and
-       process.parent.executable : "?:\\Windows\\System32\\services.exe")]
+       process.parent.executable : "?:\\Windows\\System32\\services.exe") and
+ not (process.executable : "?:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe" and
+ process.parent.executable : "?:\\Windows\\System32\\services.exe")
+ ]
  [library where dll.Ext.defense_evasions : "Process Tampering: Code integrity violation" and
   not (dll.code_signature.trusted == true and
        dll.code_signature.subject_name :
@@ -31,9 +34,11 @@ sequence by process.entity_id with maxspan=3s
                   "DeviceLock, Inc")) and
   not process.executable : "?:\\Program Files (x86)\\Common Files\\BattlEye\\BEService.exe" and
   /* potential services child processes */
-  not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe")]
+  not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe") and
+  not dll.path : "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

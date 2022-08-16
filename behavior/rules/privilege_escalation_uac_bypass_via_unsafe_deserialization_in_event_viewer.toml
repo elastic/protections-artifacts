@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies attempts to bypass User Account Control (UAC) via Unsafe .Net Deserialization in Windows Event Viewer.
+Attackers bypass UAC to stealthily execute code with elevated permissions.
+"""
+id = "df7e55c9-cd36-4e33-9e82-3a54b9c84495"
+license = "Elastic License v2"
+name = "UAC Bypass via Unsafe Deserialization in Event Viewer"
+os_list = ["windows"]
+reference = [
+    "https://twitter.com/orange_8361/status/1518970259868626944",
+    "https://github.com/CsEnox/EventViewer-UACBypass",
+]
+version = "1.0.1"
+
+query = '''
+file where event.action != "deletion" and file.name : "RecentViews" and
+ file.path : "?:\\Users\\*\\AppData\\*\\Microsoft\\Event Viewer\\RecentViews" and
+ not process.executable :  ("?:\\Windows\\System32\\mmc.exe", "?:\\Windows\\SysWOW64\\mmc.exe")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

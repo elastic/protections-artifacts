@@ -1,0 +1,158 @@
+[rule]
+description = """
+Identifies when a macOS installer package is executed followed by the execution of a utility that's commonly used by
+attackers when downloading a payload, establishing persistence, profiling an endpoint, or decompressing/decoding a file
+before execution. An attacker may configure an installer package to download an additional payload or malware for
+execution to gain initial access or establish persistence on an endpoint.
+"""
+id = "d40ffcba-b83e-4d0a-8d6d-84385def8e18"
+license = "Elastic License v2"
+name = "Initial Access via macOS Installer Package"
+os_list = ["macos"]
+reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.action == "exec" and process.name : ("Installer", "package_script_service")]
+  [process where event.action : ("exec", "fork") and
+
+    // Descendant of macOS installer process
+    descendant of [
+        process where event.action == "exec" and
+        process.name : ("Installer", "package_script_service")
+        ] and
+
+    (
+      // curl scope limited to silver-sparrows to reduce noise
+      (process.name : "curl" and
+	   process.command_line : ("*.amazonaws.com*", "*.cloudfront.net*", "*raw.githubusercontent.com*")) or
+      // No hang up executed with a bash command
+      (process.name == "nohup" and process.command_line : "*bash *") or
+      // Open SSL used to encrypt or encode/decode data
+      (process.name == "openssl" and process.args : ("-base64", "-enc")) or
+      // chmod used to make files readable, writable and executable by all users
+      (process.name == "chmod" and process.args : "777" and process.args : "/tmp/*" and
+	   not process.args : "/tmp/com.adobe.acrobat.DC") or
+      // xattr used to change extended attributes for a file
+      (process.name == "xattr" and process.args : "/tmp/*") or
+	  // convert a downloaded file from the temp folder to a plist
+	  (process.name == "plutil" and process.args : "-convert" and process.args : "/tmp/*")
+    )
+  ]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+[[threat.technique]]
+id = "T1569"
+name = "System Services"
+reference = "https://attack.mitre.org/techniques/T1569/"
+[[threat.technique.subtechnique]]
+id = "T1569.001"
+name = "Launchctl"
+reference = "https://attack.mitre.org/techniques/T1569/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

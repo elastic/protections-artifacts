@@ -7,7 +7,7 @@ id = "2b8ea430-897d-486c-85a8-add9d7072ff3"
 license = "Elastic License v2"
 name = "Microsoft Office Process Setting Persistence via Startup"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 file where event.action != "deletion" and
@@ -16,6 +16,7 @@ file where event.action != "deletion" and
   process.name : ("EQNEDT32.EXE", "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -11,7 +11,7 @@ reference = [
     "https://www.winhelponline.com/blog/vbscripts-and-uac-elevation/",
     "https://github.com/S3cur3Th1sSh1t/OffensiveVBA/blob/main/src/ShellApplication_ShellExecute_privileged.vba",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -38,15 +38,14 @@ sequence with maxspan=5m
 
   not process.executable : ("?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
                             "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-                            "?:\\Program Files\\Mozilla Firefox\\firefox.exe")
+                            "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                            "?:\\Program Files\\Mozilla Firefox\\firefox.exe") and
+  not (process.executable : "?:\\ProgramData\\chocolatey\\bin\\choco.exe" and process.parent.name : "cscript.exe" and
+       process.parent.args : "?:\\ProgramData\\chocolatey\\lib\\Sudo\\bin\\sudo.vbs")
   ] by process.parent.entity_id
 '''
 
-[[actions]]
-action = "kill_process"
-field = "process.entity_id"
-state = 0
-
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -112,7 +111,7 @@ reference = "https://attack.mitre.org/tactics/TA0004/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.005"

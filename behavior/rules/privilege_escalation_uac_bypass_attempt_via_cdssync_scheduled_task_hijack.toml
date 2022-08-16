@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via CDSSync Scheduled Task Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/AzAgarampur/byeintegrity5-uac"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=60s
@@ -19,6 +19,7 @@ sequence with maxspan=60s
    process.parent.name : "taskhostw.exe" and process.Ext.token.integrity_level_name == "high"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

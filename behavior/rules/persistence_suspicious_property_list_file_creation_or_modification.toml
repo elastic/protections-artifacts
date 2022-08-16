@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious Property List File Creation or Modification"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -19,22 +19,19 @@ sequence by user.id with maxspan=5m
     process.command_line : "*RunAtLoad *LaunchAgents*" and
     /* Issue #649 */
     not (process.args : "/Library/LaunchAgents/com.microsoft.OneDriveStandaloneUpdater.plist" and
-         process.args : "*/Applications/OneDrive.app/Contents/StandaloneUpdater.app/Contents/MacOS/OneDriveStandaloneUpdater*")
+         process.args : "*/Applications/OneDrive.app/Contents/StandaloneUpdater.app/Contents/MacOS/OneDriveStandaloneUpdater*") and
+    not process.parent.executable : "/Library/Application Support/TrendMicro/TmccMac/Extensions/ExtManager"
    ]
   [process where event.action == "exec" and
     process.name : "plistbuddy" and
     process.command_line : "*ProgramArguments*"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
-
-[[actions]]
-action = "kill_process"
-field = "process.entity_id"
-state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

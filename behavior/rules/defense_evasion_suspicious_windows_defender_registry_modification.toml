@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies modifications to the Windows Defender configuration settings via registry changes to disable certain
+protection features and performed by a suspicious process.
+"""
+id = "56751d32-cded-41ad-a273-e6860820c4c3"
+license = "Elastic License v2"
+name = "Suspicious Windows Defender Registry Modification"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+ [registry where
+  registry.value :
+         ("DisableBehaviorMonitoring",
+          "DisableOnAccessProtection",
+          "DisableScanOnRealtimeEnable",
+          "DisableRealtimeMonitoring",
+          "DisableIOAVProtection",
+          "DisableRawWriteNotification",
+          "DisableScriptScanning",
+          "DisableArchiveScanning") and registry.data.strings : "1" and
+   (
+     /* suspicious paths, common lolbins, unsigned or untrusted file signature */
+     process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Microsoft.NET\\*", "?:\\ProgramData\\*") or
+     process.name : ("rundll32.exe", "regsvr32.exe", "cscript.exe", "wscript.exe", "mshta.exe", "msbuild.exe", "powershell.exe") or
+     process.code_signature.trusted == false or
+     process.code_signature.exists == false
+   )
+   and not process.executable :
+             ("?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
+              "?:\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
+              "*\\Program Files*\\Windows Defender\\MsMpEng.exe")
+   ]
+   [registry where
+    registry.value :
+         ("DisableBehaviorMonitoring",
+          "DisableOnAccessProtection",
+          "DisableScanOnRealtimeEnable",
+          "DisableRealtimeMonitoring",
+          "DisableIOAVProtection",
+          "DisableRawWriteNotification",
+          "DisableScriptScanning",
+          "DisableArchiveScanning") and registry.data.strings : "1"]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

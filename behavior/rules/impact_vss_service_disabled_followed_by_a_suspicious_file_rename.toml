@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies changes of the Volume Shadow Service start type to disabled status and subsequently followed by a suspicious
+file rename operation. This may indicate Ransomware behavior.
+"""
+id = "d6cde651-adc9-4074-b167-65e6b82116b4"
+license = "Elastic License v2"
+name = "VSS Service Disabled Followed by a Suspicious File Rename"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=1m
+ [registry where registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\VSS\\Start" and registry.data.strings : "4"]
+ [file where event.action : "rename" and
+  file.extension != null and file.Ext.entropy >= 7 and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
+  not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url", "jpg",
+                        "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx")]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

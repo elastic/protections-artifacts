@@ -1,13 +1,13 @@
 [rule]
 description = """
-Identifies the execution of an unsigned file written or modified by Microsoft Office processes via a Windows Shell
+Identifies the execution of an executable file written or modified by Microsoft Office processes and via a Windows Shell
 process.
 """
 id = "54aabea0-3687-4ef1-b70c-015ca588e563"
 license = "Elastic License v2"
 name = "Microsoft Office File Execution via Script Interpreter"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -20,6 +20,7 @@ sequence by user.id with maxspan=1m
     process.parent.name : ("powershell.exe", "pwsh.exe", "cmd.exe", "cscript.exe", "wscript.exe")] by process.executable
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

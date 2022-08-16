@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://medium.com/threatpunter/detecting-adversary-tradecraft-with-image-load-event-logging-and-eql-8de93338c16",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=1m
@@ -22,6 +22,7 @@ sequence with maxspan=1m
    not process.Ext.token.integrity_level_name == "system"] by process.executable
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

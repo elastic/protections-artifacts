@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies when a child process is spawned by the screensaver engine process, which is consistent with an attacker's
+malicious payload being executed after the screensaver activated on the endpoint. An adversary can maintain persistence
+on a macOS endpoint by creating a malicious screensaver (.saver) file and configuring the screensaver plist file to
+execute code each time the screensaver is activated.
+"""
+id = "fba012f6-7aa8-448e-8f59-cdecce2845b5"
+license = "Elastic License v2"
+name = "Unexpected Child Process of macOS Screensaver Engine"
+os_list = ["macos"]
+reference = [
+    "https://posts.specterops.io/saving-your-access-d562bf5bf90b",
+    "https://github.com/D00MFist/PersistentJXA",
+]
+version = "1.0.6"
+
+query = '''
+process where event.action == "exec" and process.parent.name == "ScreenSaverEngine"
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.002"
+name = "Screensaver"
+reference = "https://attack.mitre.org/techniques/T1546/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

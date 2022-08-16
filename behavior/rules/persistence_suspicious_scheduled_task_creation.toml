@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Creation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -31,10 +31,13 @@ process where event.action == "start" and
     descendant of [process where event.action == "start" and not process.code_signature.trusted == true]) or
 
    (process.args : ("SYSTEM", "NT AUTHORITY\\SYSTEM") and process.args : "/ru" and
-    process.command_line : ("*vssadmin*Delete*Shadows*", "*wmic*shadowcopy*", "*regsvr32*-s*"))
+    process.command_line : ("*vssadmin*Delete*Shadows*", "*wmic*shadowcopy*", "*regsvr32*-s*")) or 
+    
+   process.command_line : ("*comspec*", "*cmd.exe*/c*", "*^*^*^*")
   )
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

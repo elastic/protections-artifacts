@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies when a process loads the Windows NTDLL image from an unusual path. This may be indicative of adversarial
+attempt to evade NTDLL syscall hooking by loading a clean (unhooked) copy of the same image.
+"""
+id = "3205274e-7eb0-4765-a712-5783361091ae"
+license = "Elastic License v2"
+name = "NTDLL Loaded from an Unusual Path"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+library where dll.pe.original_file_name : "ntdll.dll" and
+ dll.name != null and process.pid != 4 and process.executable != null and
+ not dll.path : ("?:\\Windows\\SysWOW64\\ntdll.dll",
+                 "?:\\Windows\\System32\\ntdll.dll",
+                 "?:\\Windows\\WinSxS\\amd64_microsoft-windows-ntdll_*\\ntdll.dll",
+                 "?:\\Windows\\WinSxS\\wow64_microsoft-windows-ntdll_*\\ntdll.dll",
+                 /* vsmbSharePrefix */
+                 "\\Device\\vmsmb\\VSMB-{*}\\os\\windows\\*\\ntdll.dll",
+                 "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

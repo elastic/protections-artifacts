@@ -7,7 +7,7 @@ id = "f0630213-c4c4-4898-9514-746395eb9962"
 license = "Elastic License v2"
 name = "Script Execution via Microsoft HTML Application"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -43,18 +43,19 @@ process where event.action == "start" and
      not process.command_line : ("*.hta*", "*.htm*", "-Embedding") and process.args_count >=2) or
 
      /* Execution of HTA file downloaded from the internet */
-     (process.pe.original_file_name : "mshta.exe" and process.command_line : "*\\Users\\*\\Downloads\\*.hta*") or 
-     
+     (process.pe.original_file_name : "mshta.exe" and process.command_line : "*\\Users\\*\\Downloads\\*.hta*") or
+
      /* Execution of HTA file from archive */
-     (process.pe.original_file_name : "mshta.exe" and 
+     (process.pe.original_file_name : "mshta.exe" and
       process.args : ("?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*", "?:\\Users\\*\\Temp\\BNZ.*")) or
-      
+
      /* Execution of HTA file from mounted ISO files */
-     (process.pe.original_file_name : "mshta.exe" and 
+     (process.pe.original_file_name : "mshta.exe" and
       process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and process.working_directory : "?:\\")
    )
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -64,7 +65,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.005"

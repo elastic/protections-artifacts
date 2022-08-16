@@ -12,13 +12,14 @@ reference = [
     "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
     "https://nodejs.org/api/child_process.html",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "exec" and
  process.args : "-e" and process.command_line : "*require*child_process*"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

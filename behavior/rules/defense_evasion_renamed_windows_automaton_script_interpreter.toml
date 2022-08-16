@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -50,6 +50,7 @@ process where event.action == "start" and
         process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

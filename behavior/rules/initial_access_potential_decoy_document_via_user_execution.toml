@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies the execution of Microsoft Office or Adobe Reader to open a potential decoy document from an untrusted parent
+process. An adversary may employ this technique to avoid victim suspicion by displaying a legit document after opening a
+malicious executable or script.
+"""
+id = "5ec7d995-c321-4866-b304-8cc5c4bb6157"
+license = "Elastic License v2"
+name = "Potential Decoy Document via User Execution"
+os_list = ["windows"]
+reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5s
+ [process where event.action == "start" and user.id : "S-1-5-21*" and
+  (
+    process.parent.name : ("cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe") or
+    (process.name : "rundll32.exe" and process.args : "FileProtocolHandler") or
+    (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*") and process.code_signature.trusted != true)
+  )
+  ] by process.entity_id
+ [process where event.action == "start" and
+
+    /* Word as decoy document */
+  (process.name : "WINWORD.EXE" and
+   process.args : "/n" and process.args : "/o" and process.args : ("?:\\Users\\*", "?:\\ProgramData\\*")) or
+
+    /* PDF as decoy document */
+  (process.name : "AcroRd32.exe" and process.args_count == 2 and process.args : ("?:\\Users\\*.pdf", "?:\\ProgramData\\*.pdf"))
+   ] by process.parent.entity_id
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

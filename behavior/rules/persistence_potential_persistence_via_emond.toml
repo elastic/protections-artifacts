@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Persistence via Emond"
 os_list = ["macos"]
 reference = ["https://www.xorrior.com/emond-persistence/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and
@@ -42,6 +42,7 @@ process where event.type == "start" and
    "tcl*")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -1,0 +1,68 @@
+[rule]
+description = """
+Identifies the execution of a Windows script from an archive file, mounted ISO or IMG path. Adversaries may use this
+technique to deliver malicious scripts.
+"""
+id = "816e1e39-e1a3-4935-9b7b-18395d244670"
+license = "Elastic License v2"
+name = "Windows Script Execution from Archive File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+ user.id : "S-1-5-21-*" and
+ process.pe.original_file_name in ("cscript.exe", "wscript.exe") and
+ (
+   /* execution from archive temp file */
+   process.args : ("?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*") or
+
+  /* execution from mounted ISO or IMG  */
+   (process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and process.working_directory : "?:\\" and
+    not process.args : "?:\\Windows\\System32\\winrm.vbs" and not process.working_directory : "C:\\")
+  )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

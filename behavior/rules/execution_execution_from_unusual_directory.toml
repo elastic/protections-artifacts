@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -96,7 +96,7 @@ process where event.action == "start" and
     (process.name : "rundll32.exe" and
      process.command_line : ("*uxtheme.dll,#64*", "*PRINTUI.DLL,PrintUIEntry*", "*OpenAs_RunDLL*", "*ShowNotificationDialog*")) and not
     /* Issue #322 */
-    (process.name : "rundll32.exe" and 
+    (process.name : "rundll32.exe" and
      process.command_line : ("*cryptext.dll*",
                              "*:\\Users\\*\\Documents\\DocuShare\\*",
                              "*dfshim.dll*ShOpenVerbShortcut*",
@@ -104,9 +104,9 @@ process where event.action == "start" and
                              "*PhotoViewer.dll*ImageView_Fu*",
                              "*GeneralTel.dll,RunGeneralTelemetry*",
                              "*setupapi,InstallHinfSection*")) and not
-    (process.name : "cscript.exe" and process.command_line : "*PerfLogs\\*\\ServerManager*") and not 
-    (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and 
-     process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe", 
+    (process.name : "cscript.exe" and process.command_line : "*PerfLogs\\*\\ServerManager*") and not
+    (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and
+     process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe",
                                   "?:\\Program Files\\Hewlett-Packard\\*.exe",
                                   "?:\\Program Files (x86)\\HP\\*.exe",
                                   "?:\\Program Files\\HP\\*.exe",
@@ -130,6 +130,7 @@ process where event.action == "start" and
      not (process.name : "regsvr32.exe" and process.parent.name == "InstallHPSA.exe" and process.args : "?:\\Windows\\Help\\OEM\\scripts\\checkmui.dll")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -161,7 +162,7 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 
 

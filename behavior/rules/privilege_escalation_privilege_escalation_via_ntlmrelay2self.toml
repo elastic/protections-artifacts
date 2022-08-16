@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies attempt to coerce a local NTLM authentication via HTTP using Printer Spooler service as a target. An
+adversary may use this primitive in combination with others to elevate privileges on a compromised system.
+"""
+id = "cabd7f21-70ff-429b-8818-f210ba603461"
+license = "Elastic License v2"
+name = "Privilege Escalation via NTLMRelay2Self"
+os_list = ["windows"]
+reference = ["https://github.com/med0x2e/NTLMRelay2Self"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+  process.name : "rundll32.exe" and 
+  
+  /* Rundll32 WbeDav Client  */
+  process.args : ("?:\\Windows\\System32\\davclnt.dll,DavSetCookie", "?:\\Windows\\SysWOW64\\davclnt.dll,DavSetCookie") and 
+  
+  /* Access to named pipe via http */
+  process.args : ("http*/print/pipe/*", "http*/pipe/spoolss", "http*/pipe/srvsvc")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1558"
+name = "Steal or Forge Kerberos Tickets"
+reference = "https://attack.mitre.org/techniques/T1558/"
+
+
+[threat.tactic]
+id = "TA0006"
+name = "Credential Access"
+reference = "https://attack.mitre.org/tactics/TA0006/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "df9cc41e-4686-4aa0-8f79-60055dd01812"
 license = "Elastic License v2"
 name = "Execution from a Downloaded ISO File"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -28,6 +28,7 @@ sequence with maxspan=5m
   (process.executable : "\\Device\\CdRom*" or (process.executable : "?:\\*" and not process.executable : "?:\\*\\*"))]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

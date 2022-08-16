@@ -8,7 +8,7 @@ id = "18371ec4-ee2f-465b-8757-ee726914006c"
 license = "Elastic License v2"
 name = "Suspicious WMIC XSL Script Execution"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -31,6 +31,7 @@ sequence by process.entity_id with maxspan=2m
 [library where dll.name : ("jscript.dll", "vbscript.dll")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

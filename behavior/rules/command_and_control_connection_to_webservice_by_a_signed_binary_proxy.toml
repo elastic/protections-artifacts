@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -25,7 +25,11 @@ sequence by process.entity_id with maxspan=5m
      not (process.parent.executable : ("?:\\Program Files\\Microsoft SQL Server\\MSSQL*.EXE", "?:\\Program Files\\WindowsApps\\Microsoft.*.exe") and
           process.name : ("powershell.exe", "pwsh.exe")) and
      not (process.name : "java.exe" and process.parent.executable : "?:\\Program Files\\OWASP\\Zed Attack Proxy\\ZAP.exe") and
-     not (process.name : "java.exe" and process.args_count >= 5)
+     not (process.name : "java.exe" and process.args_count >= 5) and
+     not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\MSBuild.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\MSBuild.exe") and
+     not (process.name : "javaw.exe" and
+          process.parent.executable : ("?:\\Program Files\\QZ Tray\\qz-tray.exe", "?:\\Program Files (x86)\\PGP Tool\\pgptool.exe", "?:\\Program Files\\OWASP\\Zed Attack Proxy\\ZAP.exe")) and
+     not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc")
   ]
   [dns where
     dns.question.name :
@@ -81,6 +85,7 @@ sequence by process.entity_id with maxspan=5m
   ]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -90,7 +95,7 @@ state = 1
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Script Interpreter Process Writing to Commonly Abused Persistence Locations"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -44,6 +44,7 @@ sequence by process.entity_id with maxspan=5m
    ]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

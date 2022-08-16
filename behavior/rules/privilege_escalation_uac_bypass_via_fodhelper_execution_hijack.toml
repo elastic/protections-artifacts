@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via FodHelper Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=60s
@@ -21,6 +21,7 @@ sequence with maxspan=60s
             "?:\\Windows\\SysWOW64\\WerFault.exe")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

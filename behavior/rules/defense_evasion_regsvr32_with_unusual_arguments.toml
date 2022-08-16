@@ -7,11 +7,13 @@ id = "5db08297-bf72-49f4-b426-f405c2b01326"
 license = "Elastic License v2"
 name = "Regsvr32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and process.name : "regsvr32.exe" and
- process.command_line :
+ (
+  (process.args_count == 2 and process.working_directory : "?:\\" and not process.working_directory : "C:\\") or
+  process.command_line :
           ("*.jpg*",
            "*.png*",
            "*.gif*",
@@ -34,9 +36,11 @@ process where event.action == "start" and process.name : "regsvr32.exe" and
            "*:\\Users\\*\\Music\\*",
            "*:\\Users\\*\\Pictures\\*",
            "*:\\Windows\\Tasks\\*",
-           "*:\\Windows\\System32\\tasks\\*") and not
- process.command_line : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and 
- 
+           "*:\\Windows\\System32\\tasks\\*")
+  ) and
+
+ not process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
+
  /*  path traversal */
  not (process.command_line : "* ..\\*" and process.command_line :"* ..\\*\\*") and
  not process.parent.executable : "?:\\Program Files (x86)\\Tencent\\QQPCMgr\\*\\QQPCTray.exe" and
@@ -45,9 +49,11 @@ process where event.action == "start" and process.name : "regsvr32.exe" and
               "*QQPCMgr*TSWebMon64.dat*",
               "*BarTender Suite\\Codejock.DockingPane.x64.v15.3.1.ocx*") and
  not process.parent.executable : "?:\\Eaglesoft\\Shared Files\\OcxReg.exe" and
- not process.args : ("?:\\windows\\system32\\ChartFX.ClientServer.Data.dll", "?:\\Windows\\SysWOW64\\ChartFX.ClientServer.Data.dll")
+ not process.args : ("?:\\windows\\system32\\ChartFX.ClientServer.Data.dll", "?:\\Windows\\SysWOW64\\ChartFX.ClientServer.Data.dll") and
+ not (process.args : "?:\\Users\\*\\AppData\\Local\\Microsoft\\TeamsMeetingAddin\\*\\Microsoft.Teams.AddinLoader.dll" and process.args : "/i:user")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -57,7 +63,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.010"

@@ -1,0 +1,177 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process spawns a descendant process used for initial access or malicious code
+execution. This behavior is consistent with a user opening an Office document that contains malicious macros.
+"""
+id = "64021ef9-19d3-4797-ac3c-79e38d5e5a5a"
+license = "Elastic License v2"
+name = "Initial Access or Execution via Microsoft Office Application"
+os_list = ["macos"]
+reference = ["https://objective-see.com/blog/blog_0x4B.html"]
+version = "1.0.6"
+
+query = '''
+process where event.action == "exec" and
+  descendant of [
+    process where event.action == "exec" and
+    process.name: (
+      "Microsoft Word",
+      "Microsoft Excel",
+      "Microsoft PowerPoint"
+    )
+  ] and
+  process.name : (
+    "curl",
+    "bash",
+    "sh",
+    "osascript",
+    "python*",
+    "perl*",
+    "mktemp",
+    "chmod",
+    "php",
+    "nohup",
+    "openssl",
+    "plutil",
+    "PlistBuddy",
+    "xattr",
+    "mktemp",
+    "sqlite3",
+    "funzip",
+    "popen"
+  ) and
+
+  // Filter FPs related to product version discovery and Office error reporting behavior
+  not process.args:
+    (
+      "ProductVersion",
+      "hw.model",
+      "ioreg",
+      "ProductName",
+      "ProductUserVisibleVersion",
+      "ProductBuildVersion",
+      "/Library/Application Support/Microsoft/MERP*/Microsoft Error Reporting.app/Contents/MacOS/Microsoft Error Reporting",
+      "open -a Safari *",
+      "defaults read *",
+      "sysctl hw.model*",
+      "ioreg -d2 -c IOPlatformExpertDevice *"
+    ) and
+
+   not process.parent.executable :
+        (
+          "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
+          "/usr/local/Privacy-i/PISupervisor",
+          "/opt/jc/bin/jumpcloud-agent",
+          "/usr/sbin/networksetup"
+        )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

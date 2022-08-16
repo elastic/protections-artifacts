@@ -1,0 +1,82 @@
+[rule]
+description = """
+Identifies the execution a file from an archive temporary path or mounted IOS/IMG file followed by loading a DLL with
+untrusted code signature status and from the same suspicious path. This may indicate a DLL side-loading attempt via user
+execution.
+"""
+id = "08fba401-b76f-4c7b-9a88-4f3b17fe00c1"
+license = "Elastic License v2"
+name = "DLL Loaded from an Archive File"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+ [process where event.action == "start" and
+  (
+   /* archive extraction temp path */
+   process.executable : ("?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*", "?:\\Users\\*\\Temp\\BNZ.*") or
+
+   /* mounted ISO device */
+   ((process.working_directory : "?:\\" or process.executable : "\\Device\\Cdrom?\\*") and
+     process.parent.name : ("cmd.exe", "powershell.exe") and process.parent.args_count >= 2 and not process.working_directory : "C:\\")
+   ) and
+   not process.pe.original_file_name : ("java.exe", "javaw.exe", "HPDiagnosticCoreUI.exe", "MirrorOp.exe", "SetupFrontEnd.dll", "HP-DQEX5.exe", "KmInstall.exe",
+                                        "7z.exe", "EasyInst.exe", "KmInstCm.exe", "hpbcsiInstaller.exe", "BradyInstallerSetup.exe", "ProgressWebInstaller.exe",
+                                        "InstallShield Setup.exe") and
+   not (process.name : "7z.exe" and process.args : "x") and
+   not (process.code_signature.subject_name in ("Autodesk, Inc.",  "HIKVISION DIGITAL TECHNOLOGY CO.,LTD.", "BlueStack Systems, Inc.") and
+        process.code_signature.trusted == true)
+ ]
+ [library where dll.code_signature.trusted != true and
+   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and not dll.name : "*.exe" and
+
+    /* loading dll from a mounted device or archive temp path */
+   (dll.path : ("\\Device\\Cdrom?\\*", "?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*", "?:\\Users\\*\\Temp\\BNZ.*") or
+    (dll.path : "?:\\*" and not dll.path : "?:\\*\\*" and not dll.path : "C:\\*")) and
+   not dll.path : ("\\Device\\Cdrom?\\*\\*", "?:\\Users\\*\\Temp\\7z*\\*\\*", "?:\\Users\\*\\Temp\\Rar$*\\*\\*")]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

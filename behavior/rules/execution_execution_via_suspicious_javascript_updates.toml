@@ -1,0 +1,94 @@
+[rule]
+description = """
+Identifies the execution of a Windows script with a file name following a phishing naming convention commonly used by
+SocGolish. SocGholish is an initial access threat that leverages drive-by-downloads masquerading as software updates.
+"""
+id = "28d4818c-7da1-4173-bb7c-4b7bb8f0976f"
+license = "Elastic License v2"
+name = "Execution via Suspicious JavaScript Updates"
+os_list = ["windows"]
+reference = ["https://malpedia.caad.fkie.fraunhofer.de/details/js.fakeupdates"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+ process.pe.original_file_name in ("cscript.exe", "wscript.exe") and
+ (
+  process.args :
+        (
+         /* Temp archive file */
+         "?:\\Users\\*\\AppData\\Local\\Temp\\7z*\\*.Update.*.js",
+         "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*\\*.Update.*.js",
+         "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*.Update.*.js",
+         "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
+
+         /* extracted by victim user to a random folder */
+         "?:\\Users\\*\\chrome.update.*.js",
+         "?:\\Users\\*\\firefox.update.*.js",
+         "?:\\Users\\*\\Opera.update.*.js",
+         "?:\\Users\\*\\Firefox.js",
+         "?:\\Users\\*\\Chrome.js",
+         "?:\\Users\\*\\Edge.js",
+         "?:\\Users\\*\\Opera.js"
+         ) or
+
+  /* execution from mounted ISO or IMG  */
+   (process.args regex~ """[D-Z]:\\[a-z0-9]+\.Update\.[a-z0-9]+\.js""" and process.working_directory : "?:\\" )
+  )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

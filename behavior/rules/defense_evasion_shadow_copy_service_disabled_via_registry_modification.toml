@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies attempt to disable the Windows Shadow Copy service via registry modification. Malware may include this type
+of suspicious service start changes to decrease system recovery chances.
+"""
+id = "b2409cd4-3b23-4b2d-82e4-bbb25594999a"
+license = "Elastic License v2"
+name = "Shadow Copy Service Disabled via Registry Modification"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+registry where
+ registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\VSS\\Start" and registry.data.strings : "4" and
+ not process.executable : "?:\\Windows\\System32\\services.exe" and process.executable : "?*"
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

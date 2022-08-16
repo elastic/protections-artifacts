@@ -7,7 +7,7 @@ id = "17cd570a-979a-4806-80b5-9b3854e9d603"
 license = "Elastic License v2"
 name = "Potential Remote File Execution via MSIEXEC"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=1m
@@ -24,13 +24,20 @@ sequence with maxspan=1m
                             "?:\\Program Files\\*.exe",
                             "?:\\Program Files (x86)\\*.exe",
                             "?:\\Windows\\System32\\ie4uinit.exe",
-                            "?:\\Windows\\SysWOW64\\ie4uinit.exe") and 
-  not (process.code_signature.subject_name == "Citrix Systems, Inc." and process.code_signature.trusted == true) and 
-  not (process.name : ("regsvr32.exe", "powershell.exe") and 
+                            "?:\\Windows\\SysWOW64\\ie4uinit.exe",
+                            "?:\\Windows\\System32\\sc.exe",
+                            "?:\\Windows\\system32\\Wbem\\mofcomp.exe",
+                            "?:\\Windows\\twain_32\\fjscan32\\SOP\\crtdmprc.exe",
+                            "?:\\Windows\\SysWOW64\\taskkill.exe") and
+  not (process.code_signature.subject_name == "Citrix Systems, Inc." and process.code_signature.trusted == true) and
+  not (process.name : ("regsvr32.exe", "powershell.exe", "rundll32.exe", "wscript.exe") and
        process.Ext.token.integrity_level_name == "high" and
-       process.args : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))] by process.parent.entity_id
+       process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true)
+  ] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -57,7 +64,7 @@ reference = "https://attack.mitre.org/tactics/TA0001/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.007"

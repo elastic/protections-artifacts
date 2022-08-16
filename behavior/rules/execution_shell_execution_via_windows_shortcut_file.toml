@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shell Execution via Windows Shortcut File"
 os_list = ["windows"]
 reference = ["https://docs.google.com/presentation/d/13SsBd0wI0PpyH5C8WlnE_DsJjy1KxAjZ5Dmke9FHfRE/"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=1m
@@ -31,6 +31,7 @@ sequence with maxspan=1m
    ] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -8,7 +8,7 @@ id = "15b1d979-5be0-4e7f-9202-0c4cfd76b146"
 license = "Elastic License v2"
 name = "Suspicious Java Execution via a Windows Script"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -19,6 +19,7 @@ sequence by process.entity_id with maxspan=1m
  [dns where process.name : "java*.exe" and not dns.question.name : "repo?.maven.org"]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

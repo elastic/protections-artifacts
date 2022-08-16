@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://blog.trendmicro.com/trendlabs-security-intelligence/xcsset-mac-malware-infects-xcode-projects-performs-uxss-attack-on-safari-other-browsers-leverages-zero-day-exploits/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and
@@ -20,6 +20,7 @@ process where event.type == "start" and
  process.command_line : ("*scp *localhost:/*", "*scp *127.0.0.?:/*") and not process.command_line : "*vagrant@*127.0.0.1*"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

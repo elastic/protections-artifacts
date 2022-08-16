@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via SilentCleanup Task DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://github.com/EncodeGroup/UAC-SilentClean"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -21,6 +21,7 @@ sequence by user.id with maxspan=1m
          process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *")] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

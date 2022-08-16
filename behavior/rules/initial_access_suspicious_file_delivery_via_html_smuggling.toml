@@ -1,0 +1,82 @@
+[rule]
+description = """
+Identifies the execution of a browser process to open an HTML file followed immediately by the creation of an
+executable, script or archive file. Adversaries may smuggle data and files past content filters by hiding malicious
+payloads inside of seemingly benign HTML files.
+"""
+id = "4415ab60-7cff-41dc-b3f0-939bd22c1810"
+license = "Elastic License v2"
+name = "Suspicious File Delivery via HTML Smuggling"
+os_list = ["windows"]
+reference = [
+    "https://research.nccgroup.com/2017/08/08/smuggling-hta-files-in-internet-explorer-edge/",
+    "https://outflank.nl/blog/2018/08/14/html-smuggling-explained/",
+]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=30s
+ [process where event.action == "start" and
+  process.parent.name : "explorer.exe" and
+  (
+   (process.name in ("chrome.exe", "msedge.exe", "brave.exe", "whale.exe", "browser.exe", "dragon.exe", "vivaldi.exe", "opera.exe")
+    and process.args == "--single-argument") or
+   (process.name == "iexplore.exe" and process.args_count == 2) or
+   (process.name in ("firefox.exe", "waterfox.exe") and process.args == "-url")
+  )
+  and process.args : ("?:\\Users\\*\\Downloads\\*.htm*",
+                      "?:\\Users\\*\\Content.Outlook\\*.htm*",
+                      "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*.htm*",
+                      "?:\\Users\\*\\AppData\\Local\\Temp\\7z*.htm*",
+                      "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*.htm*",
+                      "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*.htm*")]
+ [file where event.action == "rename" and
+  process.name in ("chrome.exe", "msedge.exe", "brave.exe", "whale.exe", "browser.exe", "dragon.exe", "vivaldi.exe",
+                   "opera.exe", "iexplore", "firefox.exe", "waterfox.exe", "iexplore.exe") and
+  file.extension : ("iso", "rar", "zip", "7z", "img", "vhd", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe") and
+  file.path : "?:\\Users\\*\\Downloads\\*" and file.Ext.original.name : ("*.crdownload", "*.part", "*.partial")]
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.006"
+name = "HTML Smuggling"
+reference = "https://attack.mitre.org/techniques/T1027/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

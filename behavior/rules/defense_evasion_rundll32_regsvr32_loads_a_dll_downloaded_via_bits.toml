@@ -11,7 +11,7 @@ reference = [
     "https://blog.menasec.net/2021/05/hunting-for-suspicious-usage-of.html",
     "https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -19,11 +19,12 @@ sequence with maxspan=5m
     /* Executable File downloaded via BITS */
     (file.extension : ("dll", "cpl", "ocx") or file.Ext.header_bytes : "4d5a*") and process.name : "svchost.exe" and
     file.Ext.original.name : "BIT*.tmp"] by file.path
-   [library where process.name : ("rundll32.exe", "regsvr32.exe") and 
-    not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+   [library where process.name : ("rundll32.exe", "regsvr32.exe") and
+    not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
     not dll.path : ("?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")] by dll.path
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -38,7 +39,7 @@ reference = "https://attack.mitre.org/techniques/T1197/"
 
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.010"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Script Execution via MSXSL"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/OtherMSBinaries/Msxsl/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -16,6 +16,7 @@ sequence by process.entity_id with maxspan=1m
  [library where dll.name : ("scrobj.dll", "jscript.dll", "vbscript.dll", "jscript9.dll")]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

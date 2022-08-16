@@ -4,7 +4,7 @@ id = "b8a0a3aa-0345-4035-b41d-f758a6c59a78"
 license = "Elastic License v2"
 name = "Command Shell Activity Started via RunDLL32"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and
@@ -25,6 +25,7 @@ process where event.type == "start" and
          process.parent.args : "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -51,7 +52,7 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.011"

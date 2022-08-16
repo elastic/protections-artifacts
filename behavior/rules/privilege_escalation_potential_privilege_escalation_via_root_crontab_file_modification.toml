@@ -11,13 +11,14 @@ reference = [
     "https://phoenhex.re/2017-06-09/pwn2own-diskarbitrationd-privesc",
     "https://www.exploit-db.com/exploits/42146",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 file where event.type != "deletion" and
  file.path : "/private/var/at/tabs/root" and not process.executable : "/usr/bin/crontab"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

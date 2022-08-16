@@ -7,7 +7,7 @@ id = "321e7877-075a-4582-8eff-777dde15e787"
 license = "Elastic License v2"
 name = "Signed Binary Execution via Microsoft Office"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -24,7 +24,7 @@ sequence by user.id with maxspan=1m
              )
     ] by file.path
   [process where event.action == "start" and
-    process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "Cmd.exe") and
     process.code_signature.trusted == true and
     not (
         (
@@ -59,6 +59,7 @@ sequence by user.id with maxspan=1m
     ] by process.executable
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

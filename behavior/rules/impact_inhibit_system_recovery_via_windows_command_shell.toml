@@ -8,12 +8,13 @@ id = "d3588fad-43ae-4f2d-badd-15a27df72133"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Windows Command Shell"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "start" and process.name : "cmd.exe" and
-    not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")
+    not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+    not (process.args : "\\\\*\\SysVol\\*\\Policies\\{*}\\*" and process.parent.executable : "?:\\Windows\\System32\\gpscript.exe")
   ] by process.entity_id
   [process where event.action == "start" and
     (
@@ -31,6 +32,7 @@ sequence with maxspan=1m
   ] by process.parent.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

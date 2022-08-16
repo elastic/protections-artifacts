@@ -1,0 +1,114 @@
+[rule]
+description = """
+Identifies the execution of commonly abused utilities to run DLLs or scripts via a seperate Windows Explorer trampoline.
+Explorer can be abused to launch malicious scripts or executables from a trusted parent process.
+"""
+id = "5e8498bb-8cc0-412f-9017-793d94ab76a5"
+license = "Elastic License v2"
+name = "Execution of Commonly Abused Utilities via Explorer Trampoline"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Explorer/"]
+version = "1.0.9"
+
+query = '''
+process where event.action == "start" and
+  (
+   process.name : ("cscript.exe", "wscript.exe", "rundll32.exe", "mshta.exe", "regsvr32.exe") or
+   process.pe.original_file_name :
+               ("cscript.exe",
+                "wscript.exe",
+                "rundll32.exe",
+                "mshta.exe",
+                "regsvr32.exe")
+  ) and
+  /* Explorer started via DCOM */
+  process.parent.name : "explorer.exe" and process.parent.command_line : "*/factory,{75dff2b7-6936-4c06-a8bb-676a7b00b24b}*" and
+  not
+     (
+      process.name : "rundll32.exe" and
+      process.command_line : ("rundll32.exe*\\Users\\*\\AppData\\Local\\Cognitas\\CrossLink6\\csathl32.dll*",
+                              /* Issue #340 */
+                              "*dfshim.dll*ShOpenVerbApplication*",
+                              "?:\\WINDOWS\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
+                              "cryptext.dll,CryptExtOpenCER",
+                              "cryptext.dll,CryptExtAddCER",
+                              "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile",
+                              "shwebsvc.dll,AddNetPlaceRunDll")
+     )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

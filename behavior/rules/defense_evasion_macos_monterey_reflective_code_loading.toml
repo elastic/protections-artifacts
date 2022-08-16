@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects the attempt of in memory Mach-O loading on MacOS Monterey specifically by looking for the predictable temporary
+file creation of "NSCreateObjectFileImageFromMemory-*******" in the /tmp directory.
+"""
+id = "16fba7a9-f8f6-43ce-ae24-6a392a48e49c"
+license = "Elastic License v2"
+name = "MacOS Monterey Reflective Code Loading"
+os_list = ["macos"]
+reference = [
+    "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
+    "https://github.com/slyd0g/SwiftInMemoryLoading",
+]
+version = "1.0.4"
+
+query = '''
+file where event.type != "deletion" and 
+file.path : "/private/tmp/NSCreateObjectFileImageFromMemory-*" and 
+not process.name : ("osx-x86_64",  "Setup", "Install")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

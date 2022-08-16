@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5m
@@ -55,39 +55,49 @@ sequence with maxspan=5m
 
    /* FP Issue #488 - Roblox Game Client */
   not (process.pe.original_file_name : "RobloxApp.exe" and
-        process.code_signature.subject_name == "Roblox Corporation" and process.code_signature.trusted == true) and
+        process.code_signature.subject_name == "Roblox Corporation" and
+        (process.code_signature.trusted == true or process.code_signature.status == "errorTimeStamp")) and
 
    /* FP OpenWith handles unknown file handlers via GUI popup */
   not (process.executable : ("?:\\WINDOWS\\system32\\OpenWith.exe", "?:\\WINDOWS\\syswow64\\OpenWith.exe") and process.args: "-Embedding" and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
-  not (process.pe.original_file_name : "notification_helper.exe" and process.code_signature.subject_name == "Microsoft Corporation" and
+  not (process.pe.original_file_name : ("notification_helper.exe", "cpptools.exe") and process.code_signature.subject_name == "Microsoft Corporation" and
        process.code_signature.trusted == true) and
 
-  not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name == "BeyondTrust Software, Inc" and
+  not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name in ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
        process.code_signature.trusted == true) and
 
   not (process.executable : "?:\\Windows\\SystemApps\\Microsoft.MicrosoftEdge_*\\MicrosoftEdge.exe" and
        process.Ext.token.integrity_level_name == "low" and process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
-  not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name == "Malwarebytes Inc" and
+  not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and process.Ext.token.integrity_level_name == "low" and process.parent.name : "svchost.exe")
+  not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and process.Ext.token.integrity_level_name == "low" and process.parent.name : "svchost.exe") and
+
+  not (process.executable : "?:\\Windows\\System32\\SystemSettingsBroker.exe" and process.parent.args : "DcomLaunch" and
+       process.parent.executable :  "?:\\Windows\\System32\\svchost.exe") and
+
+  not (process.pe.original_file_name == "tailscale-ipn.exe" and
+        process.code_signature.subject_name == "Tailscale Inc." and
+        (process.code_signature.trusted == true or process.code_signature.status == "errorChaining"))
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
   not process.executable :  "?:\\Windows\\system32\\AuthHost.exe" and
   not (process.parent.executable : "?:\\Windows\\System32\\sihost.exe" and
         process.pe.original_file_name : ("chrome.exe", "msedge.exe") and process.args_count >= 2 and
-        process.code_signature.subject_name : ("Google LLC", "Microsoft Corporation"))] by process.parent.Ext.real.entity_id
+        process.code_signature.subject_name : ("Google LLC", "Microsoft Corporation")) and
+  not (process.executable : "?:\\Windows\\System32\\fsutil.exe" and process.args : "file" and
+       process.parent.executable : "?:\\Users\\*\\.vscode\\extensions\\ms-vscode.cpptools-*\\bin\\cpptools.exe") and
+
+  /* noisy with variable patterns for the parent and real parent process */
+  not (process.executable : "?:\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system")
+  ] by process.parent.Ext.real.entity_id
 '''
 
-[[actions]]
-action = "kill_process"
-field = "process.entity_id"
-state = 0
-
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

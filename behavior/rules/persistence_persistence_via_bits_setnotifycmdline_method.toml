@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies suspicious execution from the Windows Background Intelligent Transfer Service (BITS) service via BITS
+SetNotifyCmdLine method. This method specifies a program to execute when a BITS job enters the BG_JOB_STATE_ERROR or
+BG_JOB_STATE_TRANSFERRED state. This feature can be abused to maintain stealthy persistence on an infected system.
+"""
+id = "3400fac0-3978-4cc5-a82d-69d08625c3ad"
+license = "Elastic License v2"
+name = "Persistence via BITS SetNotifyCmdLine Method"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/windows/win32/api/bits1_5/nf-bits1_5-ibackgroundcopyjob2-setnotifycmdline",
+    "https://blog.menasec.net/2021/05/hunting-for-suspicious-usage-of.html",
+]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+
+ /* child process of the BITS service */
+ process.parent.name == "svchost.exe" and process.parent.args == "BITS" and
+
+ (
+  /* commonly abused trusted programs */
+  process.pe.original_file_name in ("cscript.exe", "wscript.exe", "PowerShell.EXE", "Cmd.Exe", "MSHTA.EXE", "RUNDLL32.EXE",
+  "REGSVR32.EXE", "MSBuild.exe", "InstallUtil.exe", "RegAsm.exe", "wmic.exe", "CMSTP.EXE", "wuauclt.exe", "CertUtil.exe") or
+
+  /* programs unsigned or with untrusted code signature status running from users home folder */
+  (process.code_signature.trusted != true and process.executable : "?:\\Users\\*") or
+
+  /* suspicious paths */
+   process.executable : ("?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\*", "?:\\Windows\\Microsoft.NET\\*")
+  )
+
+  /* false positives */
+  and not (process.code_signature.subject_name == "YANDEX LLC" and process.code_signature.trusted == true)
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1197"
+name = "BITS Jobs"
+reference = "https://attack.mitre.org/techniques/T1197/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

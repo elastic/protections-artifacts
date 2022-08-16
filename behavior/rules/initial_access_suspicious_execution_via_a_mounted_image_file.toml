@@ -7,7 +7,7 @@ id = "9401d27c-200a-4d72-ad36-f7051c4b3dcb"
 license = "Elastic License v2"
 name = "Suspicious Execution via a Mounted Image File"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -19,6 +19,7 @@ process where event.action == "start" and
  not (process.parent.name : "setup.exe" and process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\setup.tmp")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

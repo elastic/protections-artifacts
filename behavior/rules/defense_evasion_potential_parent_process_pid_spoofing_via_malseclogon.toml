@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Parent Process PID Spoofing via MalSecLogon"
 os_list = ["windows"]
 reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=1m
@@ -22,7 +22,8 @@ sequence with maxspan=1m
     /* common secLogon Clients running from trusted directories */
     not (process.parent.executable : "?:\\WINDOWS\\Explorer.EXE" and process.name : "rundll32.exe" and process.command_line : "*SHELL32.dll,RunAsNewUser_RunDLL*") and
 
-    not (process.parent.executable : ("?:\\Windows\\System32\\runas.exe", "?:\\WINDOWS\\system32\\ShellRunas.exe") and process.parent.args_count >= 2) and
+    not (process.parent.executable : ("?:\\Windows\\System32\\runas.exe", "?:\\WINDOWS\\system32\\ShellRunas.exe", "?:\\Windows\\SysWOW64\\runas.exe") and
+        process.parent.args_count >= 2) and
 
     not (process.parent.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.parent.args : "WdiServiceHost" and
          process.name : "rundll32.exe" and process.command_line : "*winethc.dll*ForceProxyDetectionOnNextRun*") and
@@ -48,9 +49,18 @@ sequence with maxspan=1m
     not (process.pe.original_file_name == "OffCATcmd.exe" and process.code_signature.subject_name == "Microsoft Corporation" and
          process.code_signature.trusted == true and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe") and 
 	 
-    not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc")] by process.parent.Ext.real.entity_id
+    not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc") and
+
+    not (process.code_signature.subject_name in ("Articulate Global, Inc.", "Samsung Electronics CO., LTD.", "SCHNEIDER ELECTRIC USA, INC.") and
+         process.code_signature.trusted == true) and
+    not process.executable : ("?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNet.exe", "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\SamsungSystemSupportOSD.exe") and
+    not (process.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe" and process.parent.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe") and
+
+    not process.parent.executable : "?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNetLauncher.exe"
+    ] by process.parent.Ext.real.entity_id
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

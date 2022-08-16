@@ -7,12 +7,13 @@ id = "a4862afb-1292-4f65-a15f-8d6a8019b5e2"
 license = "Elastic License v2"
 name = "Control Panel Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
  process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
- process.command_line :
+ (
+  process.command_line :
           ("*.jpg*",
            "*.png*",
            "*.gif*",
@@ -25,7 +26,13 @@ process where event.action == "start" and
            "*..\\..\\*",
            "*/AppData/Local/*",
            "*:\\Users\\Public\\*",
-           "*\\AppData\\Local\\*") and
+           "*\\AppData\\Local\\*") or
+
+  (process.args_count == 1 and
+   not process.parent.executable : ("?:\\Windows\\Explorer.exe", "?:\\Windows\\System32\\Sihost.exe") and
+   process.parent.executable != null)
+
+  ) and
 
  /* excluding FPs where /name arg is used to specify a control by name */
  not (process.args : "/name" and process.args_count >= 2) and
@@ -33,6 +40,7 @@ process where event.action == "start" and
  not process.Ext.token.integrity_level_name == "system"
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -42,7 +50,7 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.002"

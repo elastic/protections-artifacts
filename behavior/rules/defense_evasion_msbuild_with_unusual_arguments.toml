@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "MSBuild with Unusual Arguments"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msbuild/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -32,6 +32,7 @@ process where event.action == "start" and
                            "msaccess.exe"))
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

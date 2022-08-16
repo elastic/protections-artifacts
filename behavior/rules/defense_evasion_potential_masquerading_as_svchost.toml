@@ -7,7 +7,7 @@ id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
 license = "Elastic License v2"
 name = "Potential Masquerading as SVCHOST"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -23,6 +23,8 @@ process where event.action == "start" and
     "?:\\Windows\\System32\\MRT-*.exe",
     "?:\\Program Files*\\Unity Client\\Unity.exe",
     "?:\\Windows\\System32\\wermgr.exe",
+    "?:\\Windows\\System32\\svchost.exe",
+    "\\Device\\VhdHardDisk*\\Windows\\System32\\services.exe",
 
 	"\\Device\\HarddiskVolume?\\Windows\\System32\\services.exe",
 	"\\Device\\HarddiskVolume?\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
@@ -45,6 +47,7 @@ process where event.action == "start" and
        process.parent.args : "ClipboardSvcGroup" and process.executable : "?:\\Windows\\System32\\svchost.exe")
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

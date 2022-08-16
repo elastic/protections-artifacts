@@ -7,7 +7,7 @@ id = "7615ca4b-c291-4f05-9488-114b6bf99157"
 license = "Elastic License v2"
 name = "Delayed Execution via Ping"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -40,10 +40,13 @@ sequence by process.parent.entity_id with maxspan=1m
     not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
     not (process.name : ("openssl.exe", "httpcfg.exe", "certutil.exe") and process.parent.command_line : "*ScreenConnectConfigurator.cmd*") and
     not (process.pe.original_file_name : "DPInst.exe" and process.command_line : "driver\\DPInst_x64  /f ") and
-    not (process.name : "powershell.exe" and process.args : "Write-Host ======*")
+    not (process.name : "powershell.exe" and process.args : "Write-Host ======*") and
+    not (process.name : "wscript.exe" and process.args : "launchquiet_args.vbs" and process.parent.args : "?:\\Windows\\TempInst\\7z*") and
+    not (process.name : "regsvr32.exe" and process.args : ("?:\\windows\\syswow64\\msxml?.dll", "msxml?.dll", "?:\\Windows\\SysWOW64\\mschrt20.ocx"))
     ]
 '''
 
+optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -75,12 +78,12 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1216"
-name = "Signed Script Proxy Execution"
+name = "System Script Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1216/"
 
 [[threat.technique]]
 id = "T1218"
-name = "Signed Binary Proxy Execution"
+name = "System Binary Proxy Execution"
 reference = "https://attack.mitre.org/techniques/T1218/"
 [[threat.technique.subtechnique]]
 id = "T1218.003"

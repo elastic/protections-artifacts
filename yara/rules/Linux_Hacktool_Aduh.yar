@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Aduh_6cae7c78 {
     meta:
+        author = "Elastic Security"
         id = "6cae7c78-a4b4-4096-9f7c-746b1e5a1e38"
         fingerprint = "8d7b0c1a95ec15c7d1ede5670ccd448b166467ed8eb2b4f38ebbb2c8bc323cdc"
         creation_date = "2021-04-06"

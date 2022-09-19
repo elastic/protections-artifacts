@@ -1,5 +1,6 @@
 rule Multi_AttackSimulation_Blindspot_d93f54c5 {
     meta:
+        author = "Elastic Security"
         id = "d93f54c5-6574-4999-a3c0-39ef688b28dc"
         fingerprint = "4ec38f841aa4dfe32b1f6b6cd2e361c7298839ef1e983061cb90827135f34a58"
         creation_date = "2022-05-23"

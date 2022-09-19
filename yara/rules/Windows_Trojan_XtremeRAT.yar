@@ -1,5 +1,6 @@
 rule Windows_Trojan_XtremeRAT_cd5b60be {
     meta:
+        author = "Elastic Security"
         id = "cd5b60be-4685-425a-8fe1-8366c0e5b84a"
         fingerprint = "2ee35d7c34374e9f5cffceb36fe1912932288ea4e8211a8b77430b98a9d41fb2"
         creation_date = "2022-03-15"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Dnsamp_c31eebd4 {
     meta:
+        author = "Elastic Security"
         id = "c31eebd4-7709-440d-95d1-f9a3071cc5ca"
         fingerprint = "220b656a51b3041ede4ffe8f509657c393ff100c88b401c802079aae5804dacd"
         creation_date = "2021-01-12"

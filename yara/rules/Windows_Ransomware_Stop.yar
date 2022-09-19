@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Stop_1e8d48ff {
     meta:
+        author = "Elastic Security"
         id = "1e8d48ff-e0ab-478d-8268-a11f2e87ab79"
         fingerprint = "715888e3e13aaa33f2fd73beef2c260af13e9726cb4b43d349333e3259bf64eb"
         creation_date = "2021-06-10"

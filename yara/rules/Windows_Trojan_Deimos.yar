@@ -1,5 +1,6 @@
 rule Windows_Trojan_Deimos_f53aee03 {
     meta:
+        author = "Elastic Security"
         id = "f53aee03-74c3-4b40-8ae4-4f1bf35f88c8"
         fingerprint = "12a6d7f9e4f9a937bf1416443dd0d5ee556ac1f67d2b56ad35f9eac2ee6aac74"
         creation_date = "2021-09-18"
@@ -21,6 +22,7 @@ rule Windows_Trojan_Deimos_f53aee03 {
 
 rule Windows_Trojan_Deimos_c70677b4 {
     meta:
+        author = "Elastic Security"
         id = "c70677b4-f5ba-440b-ba31-31e80caee2fe"
         fingerprint = "ffe0dec3585da9cbb9f8a0fac1bb6fd43d5d6e20a6175aaa889ae13ef2ed101f"
         creation_date = "2021-09-18"

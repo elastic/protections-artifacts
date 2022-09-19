@@ -1,5 +1,6 @@
 rule Windows_Wiper_DoubleZero_65ec0c50 {
     meta:
+        author = "Elastic Security"
         id = "65ec0c50-4038-46a7-879b-fbb4aab18725"
         fingerprint = "2441bcdf7bc48df098f4ef68231fb15fc5c8f96af2e170de77f1718487b945b2"
         creation_date = "2022-03-22"

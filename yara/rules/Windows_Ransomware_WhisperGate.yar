@@ -1,5 +1,6 @@
 rule Windows_Ransomware_WhisperGate_c80f3b4b {
     meta:
+        author = "Elastic Security"
         id = "c80f3b4b-f91b-4b8d-908e-f64c2c5d4b30"
         fingerprint = "e8ad6a7cfabf96387deee56f38b0f0ba6d8fe85e7be9f153ccf72d69ee5db1c9"
         creation_date = "2022-01-17"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_WhisperGate_c80f3b4b {
 
 rule Windows_Ransomware_WhisperGate_3476008e {
     meta:
+        author = "Elastic Security"
         id = "3476008e-1c98-4606-b60b-7fef0e360711"
         fingerprint = "0b8caff8cf9342bd50053712bf4c9aeab68532e340cc5e6cf400105afc150e39"
         creation_date = "2022-01-18"

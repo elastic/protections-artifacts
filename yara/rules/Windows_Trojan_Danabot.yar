@@ -1,5 +1,6 @@
 rule Windows_Trojan_Danabot_6f3dadb2 {
     meta:
+        author = "Elastic Security"
         id = "6f3dadb2-3283-4333-8143-1265721d2221"
         fingerprint = "387e3fb3c3f625c8b5e42052c126ce4dbb7de3a7de6b68addf0a0777b9d3b504"
         creation_date = "2021-08-15"

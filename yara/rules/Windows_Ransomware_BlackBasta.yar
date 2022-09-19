@@ -1,5 +1,6 @@
 rule Windows_Ransomware_BlackBasta_494d3c54 {
     meta:
+        author = "Elastic Security"
         id = "494d3c54-4690-4334-b64d-ebeeb305de0e"
         fingerprint = "27602cb05c054a1aa9e27b91675d57707f4a63fa91badc83ad86229839778f4e"
         creation_date = "2022-08-06"

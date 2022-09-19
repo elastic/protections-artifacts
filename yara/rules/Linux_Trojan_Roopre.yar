@@ -1,5 +1,6 @@
 rule Linux_Trojan_Roopre_b6b9e71d {
     meta:
+        author = "Elastic Security"
         id = "b6b9e71d-7f1c-4827-b659-f9dad5667d69"
         fingerprint = "1a87cccd06b99e0375ffef17d4b3c5fd8957013ab8de7507e9b8d1174573a6cf"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Roopre_b6b9e71d {
 
 rule Linux_Trojan_Roopre_05f7f237 {
     meta:
+        author = "Elastic Security"
         id = "05f7f237-dcc5-4f0d-8baa-290137eea9c5"
         fingerprint = "2f1d7fd2d0104be63180003ae225eafa95f9d967154d3972782502742bbedf43"
         creation_date = "2021-01-12"

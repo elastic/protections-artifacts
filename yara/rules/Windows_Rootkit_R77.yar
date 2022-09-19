@@ -1,5 +1,6 @@
 rule Windows_Rootkit_R77_5bab748b {
     meta:
+        author = "Elastic Security"
         id = "5bab748b-8576-4967-9b50-a3778db1dd71"
         fingerprint = "2523d25c46bbb9621f0eceeda10aff31e236ed0bf03886de78524bdd2d39cfaa"
         creation_date = "2022-03-04"

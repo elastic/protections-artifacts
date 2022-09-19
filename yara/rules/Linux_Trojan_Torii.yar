@@ -1,5 +1,6 @@
 rule Linux_Trojan_Torii_fa253f2a {
     meta:
+        author = "Elastic Security"
         id = "fa253f2a-d1a5-48b0-a3d6-aba06231e1ed"
         fingerprint = "fddf2a12f09add31fffc6b11bb3fe9e0666dae57ac8cef4dbbdee58f66df2c0a"
         creation_date = "2022-01-05"

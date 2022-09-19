@@ -1,5 +1,6 @@
 rule Multi_Ransomware_BlackCat_aaf312c3 {
     meta:
+        author = "Elastic Security"
         id = "aaf312c3-47b4-4dab-b7fc-8a2ac9883772"
         fingerprint = "a836eca69ee7ae0afa2ed7035c699065482958700c3e9a9624c7d720e8551654"
         creation_date = "2022-02-02"
@@ -19,6 +20,7 @@ rule Multi_Ransomware_BlackCat_aaf312c3 {
 
 rule Multi_Ransomware_BlackCat_00e525d7 {
     meta:
+        author = "Elastic Security"
         id = "00e525d7-a8a6-475f-89ad-607c452aea1e"
         fingerprint = "631e30b8b51a5c0a0e91e8c09968663192569005b8bffff9f0474749788e9d57"
         creation_date = "2022-02-02"

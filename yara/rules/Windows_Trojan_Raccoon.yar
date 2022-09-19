@@ -1,5 +1,6 @@
 rule Windows_Trojan_Raccoon_af6decc6 {
     meta:
+        author = "Elastic Security"
         id = "af6decc6-f917-4a80-b96d-1e69b8f8ebe0"
         fingerprint = "f9314a583040e4238aab7712ac16d7638a3b7c9194cbcf2ea9b4516c228c546b"
         creation_date = "2021-06-28"
@@ -20,6 +21,7 @@ rule Windows_Trojan_Raccoon_af6decc6 {
 
 rule Windows_Trojan_Raccoon_58091f64 {
     meta:
+        author = "Elastic Security"
         id = "58091f64-2118-47f8-bcb2-407a3c62fa33"
         fingerprint = "ea819b46ec08ba6b33aa19dcd6b5ad27d107a8e37f3f9eb9ff751fe8e1612f88"
         creation_date = "2021-06-28"
@@ -39,6 +41,7 @@ rule Windows_Trojan_Raccoon_58091f64 {
 
 rule Windows_Trojan_Raccoon_deb6325c {
     meta:
+        author = "Elastic Security"
         id = "deb6325c-5556-44ce-a184-6369105485d5"
         fingerprint = "17c34b5b9a0211255a93f9662857361680e72a45135d6ea9b5af8d77b54583b9"
         creation_date = "2022-06-28"

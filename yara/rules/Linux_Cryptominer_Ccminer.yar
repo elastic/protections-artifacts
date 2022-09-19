@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Ccminer_18fc60e5 {
     meta:
+        author = "Elastic Security"
         id = "18fc60e5-680c-4ff6-8a76-12cc3ae9cd3d"
         fingerprint = "461e942fcaf5faba60c3dc39d8089f9d506ff2daacb2a22573fb35bcfee9b6f1"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Cryptominer_Ccminer_18fc60e5 {
 
 rule Linux_Cryptominer_Ccminer_3c593bc3 {
     meta:
+        author = "Elastic Security"
         id = "3c593bc3-cb67-41da-bef1-aad9e73c34f7"
         fingerprint = "0a382ef73d3b5d1b1ad223c66fc367cc5b6f2b23a9758002045076234f257dfe"
         creation_date = "2021-01-12"

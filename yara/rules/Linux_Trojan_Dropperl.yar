@@ -1,5 +1,6 @@
 rule Linux_Trojan_Dropperl_b97baf37 {
     meta:
+        author = "Elastic Security"
         id = "b97baf37-48db-4eb7-85c7-08e75054bea7"
         fingerprint = "0852f1afa6162d14b076a3fc1f56e4d365b5d0e8932bae6ab055000cca7d1fba"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Dropperl_b97baf37 {
 
 rule Linux_Trojan_Dropperl_e2443be5 {
     meta:
+        author = "Elastic Security"
         id = "e2443be5-da15-4af2-b090-bf5accf2a844"
         fingerprint = "e49acaa476bd669b40ccc82a7d3a01e9c421e6709ecbfe8d0e24219677c96339"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Dropperl_e2443be5 {
 
 rule Linux_Trojan_Dropperl_683c2ba1 {
     meta:
+        author = "Elastic Security"
         id = "683c2ba1-fe4a-44e4-b176-8d5d5788e1a4"
         fingerprint = "42dcea472417140d0f7768e8189ac3a8a46aaeff039be1efd36f8d50f81e347c"
         creation_date = "2021-04-06"
@@ -57,6 +60,7 @@ rule Linux_Trojan_Dropperl_683c2ba1 {
 
 rule Linux_Trojan_Dropperl_8bca73f6 {
     meta:
+        author = "Elastic Security"
         id = "8bca73f6-c3ec-45a3-a5ae-67c871aaf9df"
         fingerprint = "36df2fd9746da80697ef675f84f47efb3cb90e9757677e4f565a7576966eb169"
         creation_date = "2021-04-06"
@@ -76,6 +80,7 @@ rule Linux_Trojan_Dropperl_8bca73f6 {
 
 rule Linux_Trojan_Dropperl_c4018572 {
     meta:
+        author = "Elastic Security"
         id = "c4018572-a8af-4204-bc19-284a2a27dfdd"
         fingerprint = "f2ede50ea639af593211c9ef03ee2847a32cf3eb155db4e2ca302f3508bf2a45"
         creation_date = "2021-04-06"
@@ -95,6 +100,7 @@ rule Linux_Trojan_Dropperl_c4018572 {
 
 rule Linux_Trojan_Dropperl_733c0330 {
     meta:
+        author = "Elastic Security"
         id = "733c0330-3163-48f3-a780-49be80a3387f"
         fingerprint = "ee233c875dd3879b4973953a1f2074cd77abf86382019eeb72da069e1fd03e1c"
         creation_date = "2021-04-06"
@@ -114,6 +120,7 @@ rule Linux_Trojan_Dropperl_733c0330 {
 
 rule Linux_Trojan_Dropperl_39f4cd0d {
     meta:
+        author = "Elastic Security"
         id = "39f4cd0d-4261-4d62-a527-f403edadbd0c"
         fingerprint = "e1cdd678a1f46a3c6d26d53dd96ba6c6a45f97e743765c534f644af7c6450f8e"
         creation_date = "2021-04-06"

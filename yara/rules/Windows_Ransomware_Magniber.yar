@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Magniber_ea0140a1 {
     meta:
+        author = "Elastic Security"
         id = "ea0140a1-b745-47f1-871f-5b703174a049"
         fingerprint = "b3c17024097af846f800a843da404dccb6d33eebb90a8524f2f2ec8a5c5df776"
         creation_date = "2021-08-03"
@@ -19,6 +20,7 @@ rule Windows_Ransomware_Magniber_ea0140a1 {
 
 rule Windows_Ransomware_Magniber_97d7575b {
     meta:
+        author = "Elastic Security"
         id = "97d7575b-8fc7-4c6b-8371-b62842d90613"
         fingerprint = "78253be69d9715892ec725918c3c856040323b83aeab8b84c4aac47355876207"
         creation_date = "2021-08-03"

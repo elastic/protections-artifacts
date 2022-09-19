@@ -1,5 +1,6 @@
 rule Windows_Trojan_MicroBackdoor_903e33c3 {
     meta:
+        author = "Elastic Security"
         id = "903e33c3-d8f1-4c3b-900b-7503edb11951"
         fingerprint = "06b3c0164c2d06f50d1e6ae0a9edf823ae1fef53574e0d20020aada8721dfee0"
         creation_date = "2022-03-07"
@@ -19,6 +20,7 @@ rule Windows_Trojan_MicroBackdoor_903e33c3 {
 
 rule Windows_Trojan_MicroBackdoor_46f2e5fd {
     meta:
+        author = "Elastic Security"
         id = "46f2e5fd-edea-4321-b38c-7478b47f054b"
         fingerprint = "d4e410b9c36c1d5206f5d17190ef4e5fd4b4e4d40acad703775aed085a08ef7c"
         creation_date = "2022-03-07"

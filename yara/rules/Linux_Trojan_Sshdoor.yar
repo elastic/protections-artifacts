@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sshdoor_97f92ff7 {
     meta:
+        author = "Elastic Security"
         id = "97f92ff7-b14f-4cdf-aef7-d1ca3e46ae48"
         fingerprint = "4ad5b6b259655bf1bf58d662cf3daf3fec6ba61fcff36e24e8d239e99a8bd36f"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Sshdoor_97f92ff7 {
 
 rule Linux_Trojan_Sshdoor_5b78aa01 {
     meta:
+        author = "Elastic Security"
         id = "5b78aa01-c5d4-4281-9a2e-e3f0d3df31d3"
         fingerprint = "19369c825bc8052bfc234a457ee4029cf48bf3b5b9a008a1a6c2680b97ae6284"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Sshdoor_5b78aa01 {
 
 rule Linux_Trojan_Sshdoor_1b443a9b {
     meta:
+        author = "Elastic Security"
         id = "1b443a9b-2bd2-4b63-baaa-d66ca43ba521"
         fingerprint = "ff44d7b3c8db5cd0d12a99c2aafb1831f63c6253fe0e63fb7d2503bc74e6fca9"
         creation_date = "2021-01-12"
@@ -57,6 +60,7 @@ rule Linux_Trojan_Sshdoor_1b443a9b {
 
 rule Linux_Trojan_Sshdoor_7c36d3dd {
     meta:
+        author = "Elastic Security"
         id = "7c36d3dd-734f-4485-85c5-906c5ecade77"
         fingerprint = "a644708905c97c784f394ebbd0020dd3b20b52b4f536c844ca860dabea36ceb7"
         creation_date = "2021-01-12"
@@ -76,6 +80,7 @@ rule Linux_Trojan_Sshdoor_7c36d3dd {
 
 rule Linux_Trojan_Sshdoor_3e81b1b7 {
     meta:
+        author = "Elastic Security"
         id = "3e81b1b7-71bd-4876-a616-ca49ce73c2da"
         fingerprint = "7849bb7283adb25c2ee492efd8d9b2c63de7ae701a69e1892cdc25175996b227"
         creation_date = "2021-01-12"
@@ -95,6 +100,7 @@ rule Linux_Trojan_Sshdoor_3e81b1b7 {
 
 rule Linux_Trojan_Sshdoor_cde7cfd4 {
     meta:
+        author = "Elastic Security"
         id = "cde7cfd4-a664-481d-8865-d44332c7f243"
         fingerprint = "65bf31705755b19b1c01bd2bcc00525469c8cd35eaeff51d546a1d0667d8a615"
         creation_date = "2022-01-05"

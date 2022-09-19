@@ -1,5 +1,6 @@
 rule Linux_Trojan_Truncpx_894d60f8 {
     meta:
+        author = "Elastic Security"
         id = "894d60f8-bea6-4b09-b8ab-526308575a01"
         fingerprint = "440ce5902642aeef56b6989df4462d01faadc479f1362c0ed90d1011e8737bc3"
         creation_date = "2021-04-06"

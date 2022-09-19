@@ -1,5 +1,6 @@
 rule Windows_Trojan_ServHelper_f4dee200 {
     meta:
+        author = "Elastic Security"
         id = "f4dee200-5471-472b-a017-bfcc9c291cbe"
         fingerprint = "24e49a0c72e665a03cea66614481665eea962a0c6b0a2f9d459866d8070ab456"
         creation_date = "2022-03-22"
@@ -20,6 +21,7 @@ rule Windows_Trojan_ServHelper_f4dee200 {
 
 rule Windows_Trojan_ServHelper_370c5287 {
     meta:
+        author = "Elastic Security"
         id = "370c5287-0e2f-4113-95b6-53d31671fa46"
         fingerprint = "a66134e9344cc5ba403fe0aad70e8a991c61582d6a5640c3b9e4a554374176a2"
         creation_date = "2022-03-24"

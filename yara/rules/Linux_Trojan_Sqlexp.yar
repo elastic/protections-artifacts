@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sqlexp_1aa5001e {
     meta:
+        author = "Elastic Security"
         id = "1aa5001e-0609-4830-9c6f-675985fa50cf"
         fingerprint = "afce33f5bf064afcbd8b1639755733c99171074457272bf08f0c948d67427808"
         creation_date = "2021-04-06"

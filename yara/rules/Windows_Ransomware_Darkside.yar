@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Darkside_d7fc4594 {
     meta:
+        author = "Elastic Security"
         id = "d7fc4594-185c-4afb-986e-5718c0beabf1"
         fingerprint = "90444cd2d3a38296b4979f91345a9999b0032f6c0abee6ff7c15d149b59e5e88"
         creation_date = "2021-05-20"
@@ -19,6 +20,7 @@ rule Windows_Ransomware_Darkside_d7fc4594 {
 
 rule Windows_Ransomware_Darkside_aceac5d9 {
     meta:
+        author = "Elastic Security"
         id = "aceac5d9-fb38-4dca-ab1f-44ee40005d37"
         fingerprint = "521b0f574b27151ad03fc7693fd692e1a13e81a28e39d04d3f7ea149a0da59b9"
         creation_date = "2021-05-20"

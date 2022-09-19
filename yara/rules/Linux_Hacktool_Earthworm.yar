@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Earthworm_4de7b584 {
     meta:
+        author = "Elastic Security"
         id = "4de7b584-d25f-414b-bdd5-45f3672a62d8"
         fingerprint = "af2dc166ad5bbd3e312338a3932134c33c33c124551e7828eeef299d89419d21"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Hacktool_Earthworm_4de7b584 {
 
 rule Linux_Hacktool_Earthworm_e3da43e2 {
     meta:
+        author = "Elastic Security"
         id = "e3da43e2-1737-4c51-af6c-7c64d9cbfb07"
         fingerprint = "fdf19096c6afc1c3be75fe4bb2935aca8ac915c97ad0ab3c2b87e803347cc460"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Hacktool_Earthworm_e3da43e2 {
 
 rule Linux_Hacktool_Earthworm_a6e229b5 {
     meta:
+        author = "Elastic Security"
         id = "a6e229b5-d43c-4ff5-b604-761b906f1d2b"
         fingerprint = "ff59695e5146703990a2e16945393532cc14c201248c79fbb015063d4838a761"
         creation_date = "2021-01-12"
@@ -57,6 +60,7 @@ rule Linux_Hacktool_Earthworm_a6e229b5 {
 
 rule Linux_Hacktool_Earthworm_82d5c4cf {
     meta:
+        author = "Elastic Security"
         id = "82d5c4cf-ab96-4644-b1f3-2e95f1b49e7c"
         fingerprint = "400342ab702de1a7ec4dd7e9b415b8823512f74a9abe578f08f7d79265bef385"
         creation_date = "2021-01-12"
@@ -76,6 +80,7 @@ rule Linux_Hacktool_Earthworm_82d5c4cf {
 
 rule Linux_Hacktool_Earthworm_4ec2ec63 {
     meta:
+        author = "Elastic Security"
         id = "4ec2ec63-6b22-404f-a217-4e7d32bfbe9f"
         fingerprint = "1dfb594e369ca92a9e3f193499708c4992f6497ff1aa74ae0d6c2475a7e87641"
         creation_date = "2021-01-12"

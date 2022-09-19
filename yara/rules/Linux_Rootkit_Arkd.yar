@@ -1,5 +1,6 @@
 rule Linux_Rootkit_Arkd_bbd56917 {
     meta:
+        author = "Elastic Security"
         id = "bbd56917-aeab-4e73-b85b-adc41fc7ffe4"
         fingerprint = "73c8b2685b6b568575afca3c3c2fe2095d94f2040f4a1207974fe77bbb657163"
         creation_date = "2021-01-12"

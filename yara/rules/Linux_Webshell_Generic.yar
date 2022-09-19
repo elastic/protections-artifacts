@@ -1,5 +1,6 @@
 rule Linux_Webshell_Generic_e80ff633 {
     meta:
+        author = "Elastic Security"
         id = "e80ff633-990e-4e2e-ac80-2e61685ab8b0"
         fingerprint = "dcca52dce2d50b0aa6cf0132348ce9dc234b985ae683b896d9971d409f109849"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Webshell_Generic_e80ff633 {
 
 rule Linux_Webshell_Generic_41a5fa40 {
     meta:
+        author = "Elastic Security"
         id = "41a5fa40-a4e7-4c97-a3b9-3700743265df"
         fingerprint = "49e0d55579453ec37c6757ddb16143d8e86ad7c7c4634487a1bd2215cd22df83"
         creation_date = "2021-06-28"

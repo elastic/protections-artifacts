@@ -1,5 +1,6 @@
 rule Linux_Trojan_Backconnect_c6803b39 {
     meta:
+        author = "Elastic Security"
         id = "c6803b39-e2e0-4ab8-9ead-e53eab26bb53"
         fingerprint = "1dfb097c90b0cf008dc9d3ae624e08504755222f68ee23ed98d0fa8803cff91a"
         creation_date = "2021-01-12"

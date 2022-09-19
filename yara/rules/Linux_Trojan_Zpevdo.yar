@@ -1,5 +1,6 @@
 rule Linux_Trojan_Zpevdo_7f563544 {
     meta:
+        author = "Elastic Security"
         id = "7f563544-4ef3-460f-9a36-23d086f9c421"
         fingerprint = "a2113b38c27ee7e22313bd0ffbcabadfbf7f3f33d241a97db2dc86299775afd6"
         creation_date = "2021-01-12"

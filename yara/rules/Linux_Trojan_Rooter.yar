@@ -1,5 +1,6 @@
 rule Linux_Trojan_Rooter_c8d08d3a {
     meta:
+        author = "Elastic Security"
         id = "c8d08d3a-ff9c-4545-9f09-45fbe5b534f3"
         fingerprint = "2a09f9fabfefcf44c71ee17b823396991940bedd7a481198683ee3e88979edf4"
         creation_date = "2021-04-06"

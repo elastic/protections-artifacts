@@ -1,5 +1,6 @@
 rule Linux_Trojan_Pornoasset_927f314f {
     meta:
+        author = "Elastic Security"
         id = "927f314f-2cbb-4f87-b75c-9aa5ef758599"
         fingerprint = "7214d3132fc606482e3f6236d291082a3abc0359c80255048045dba6e60ec7bf"
         creation_date = "2021-01-12"

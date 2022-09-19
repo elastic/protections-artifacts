@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Snake_550e0265 : beta {
     meta:
+        author = "Elastic Security"
         id = "550e0265-fca9-46df-9d5a-cf3ef7efc7ff"
         fingerprint = "f2796560ddc85ad98a5ef4f0d7323948d57116813c8a26ab902fdfde849704e0"
         creation_date = "2020-06-30"
@@ -24,6 +25,7 @@ rule Windows_Ransomware_Snake_550e0265 : beta {
 
 rule Windows_Ransomware_Snake_119f9c83 : beta {
     meta:
+        author = "Elastic Security"
         id = "119f9c83-4b55-47ce-8c0d-3799a7b46369"
         fingerprint = "13ffd63c31df2cbaa6988abcaff3b0a3518437f1d37dcd872817b9cbdb61576f"
         creation_date = "2020-06-30"
@@ -45,6 +47,7 @@ rule Windows_Ransomware_Snake_119f9c83 : beta {
 
 rule Windows_Ransomware_Snake_0cfc8ef3 : beta {
     meta:
+        author = "Elastic Security"
         id = "0cfc8ef3-d8cc-4fc0-9ca2-8e84dbcb45bd"
         fingerprint = "4dd2565c42d52f20b9787a6ede9be24837f6df19dfbbd4e58e5208894741ba26"
         creation_date = "2020-06-30"
@@ -66,6 +69,7 @@ rule Windows_Ransomware_Snake_0cfc8ef3 : beta {
 
 rule Windows_Ransomware_Snake_20bc5abc : beta {
     meta:
+        author = "Elastic Security"
         id = "20bc5abc-c519-47d2-a6de-5108071a9144"
         fingerprint = "e7f1be2bd7e1f39b79ac89cf58c90abdb537ff54cbf161192d997e054d3f0883"
         creation_date = "2020-06-30"

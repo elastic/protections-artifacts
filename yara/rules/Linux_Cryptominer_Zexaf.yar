@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Zexaf_b90e7683 {
     meta:
+        author = "Elastic Security"
         id = "b90e7683-84bf-4c07-b6ef-54c631280217"
         fingerprint = "4ca9fad98bdde19f71c117af9cb87007dc46494666e7664af111beded1100ae4"
         creation_date = "2021-01-12"

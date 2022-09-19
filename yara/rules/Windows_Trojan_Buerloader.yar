@@ -1,5 +1,6 @@
 rule Windows_Trojan_Buerloader_c8a60f46 {
     meta:
+        author = "Elastic Security"
         id = "c8a60f46-d49a-4566-845b-675fb55c201c"
         fingerprint = "346233f4b1306eb574b4063d3b47f90e65a81ad7fe1c74d2a68640d99d456c4c"
         creation_date = "2021-08-16"

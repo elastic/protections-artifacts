@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Ransomexx_fabff49c {
     meta:
+        author = "Elastic Security"
         id = "fabff49c-8e1a-4020-b081-2f432532e529"
         fingerprint = "a7a1e6d5fafdddc7d4699710edf407653968ffd40747c50f26ef63a6cb623bbe"
         creation_date = "2021-08-07"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_Revcoderat_8e6d4182 {
     meta:
+        author = "Elastic Security"
         id = "8e6d4182-4ea8-4d4c-ad3a-d16b42e387f4"
         fingerprint = "bc259d888e913dffb4272e2f871592238eb78922989d30ac4dc23cdeb988cc78"
         creation_date = "2021-09-02"

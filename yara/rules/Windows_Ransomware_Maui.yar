@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Maui_266dea64 {
     meta:
+        author = "Elastic Security"
         id = "266dea64-2ed2-4bfc-977b-5ddb68ab05ac"
         fingerprint = "6f6451b7a972924b2efe339b8793c30409123df37d3d64802037a5af8cb4b5f3"
         creation_date = "2022-07-08"

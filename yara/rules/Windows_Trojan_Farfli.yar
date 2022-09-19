@@ -1,5 +1,6 @@
 rule Windows_Trojan_Farfli_85d1bcc9 {
     meta:
+        author = "Elastic Security"
         id = "85d1bcc9-c3c7-454c-a77f-0e0de933c4c3"
         fingerprint = "56a5e4955556d08b80849ea5775f35f5a32999d6b5df92357ab142a4faa74ac3"
         creation_date = "2022-02-17"

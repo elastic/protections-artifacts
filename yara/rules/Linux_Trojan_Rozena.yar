@@ -1,5 +1,6 @@
 rule Linux_Trojan_Rozena_56651c1d {
     meta:
+        author = "Elastic Security"
         id = "56651c1d-548e-4a51-8f1c-e4add55ec14f"
         fingerprint = "a86abe550b5c698a244e1c0721cded8df17d2c9ed0ee764d6dea36acf62393de"
         creation_date = "2021-01-12"

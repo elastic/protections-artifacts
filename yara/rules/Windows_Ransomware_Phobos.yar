@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Phobos_a5420148 : beta {
     meta:
+        author = "Elastic Security"
         id = "a5420148-2f80-4a14-8a0d-98943fcbe784"
         fingerprint = "2b3937dbecb9a12e5e276c681eb40cb3884411a048175fcfe1bd4be3f7611aca"
         creation_date = "2020-06-25"
@@ -22,6 +23,7 @@ rule Windows_Ransomware_Phobos_a5420148 : beta {
 
 rule Windows_Ransomware_Phobos_ff55774d : beta {
     meta:
+        author = "Elastic Security"
         id = "ff55774d-4425-4243-8156-ce029c1d5860"
         fingerprint = "d8016c9be4a8e5b5ac32b7108542fee8426d65b4d37e2a9c5ad57284abb3781e"
         creation_date = "2020-06-25"
@@ -42,6 +44,7 @@ rule Windows_Ransomware_Phobos_ff55774d : beta {
 
 rule Windows_Ransomware_Phobos_11ea7be5 : beta {
     meta:
+        author = "Elastic Security"
         id = "11ea7be5-7aac-41d7-8d09-45131a9c656e"
         fingerprint = "a264f93e085134e5114c5d72e1bf93e70935e33756a79f1021e9c1e71d6c8697"
         creation_date = "2020-06-25"

@@ -1,5 +1,6 @@
 rule Multi_Ransomware_Luna_8614d3d7 {
     meta:
+        author = "Elastic Security"
         id = "8614d3d7-7fd2-4cf9-aa97-48a8d9333f38"
         fingerprint = "90c97ecfce451e1373af0d7538cf12991cc844d05c99ee18570e176143ccd899"
         creation_date = "2022-08-02"

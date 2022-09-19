@@ -1,5 +1,6 @@
 rule Windows_Trojan_Phoreal_66e91de3 {
     meta:
+        author = "Elastic Security"
         id = "66e91de3-a510-4a64-b03d-5385ceb32360"
         fingerprint = "36c9150137b3d65ea6127abe54571f7346c5ebffd1966bf0a9ff99406fe5aa24"
         creation_date = "2022-02-16"

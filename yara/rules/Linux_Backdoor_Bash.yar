@@ -1,5 +1,6 @@
 rule Linux_Backdoor_Bash_e427876d {
     meta:
+        author = "Elastic Security"
         id = "e427876d-c7c5-447a-ad6d-5cbc12d9dacf"
         fingerprint = "6cc13bb2591d896affc58f4a22b3463a72f6c9d896594fe1714b825e064b0956"
         creation_date = "2021-01-12"

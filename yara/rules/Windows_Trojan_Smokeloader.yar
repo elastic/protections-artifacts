@@ -1,5 +1,6 @@
 rule Windows_Trojan_Smokeloader_4e31426e {
     meta:
+        author = "Elastic Security"
         id = "4e31426e-d62e-4b6d-911b-4223e1f6adef"
         fingerprint = "cf6d8615643198bc53527cb9581e217f8a39760c2e695980f808269ebe791277"
         creation_date = "2021-07-21"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Smokeloader_4e31426e {
 
 rule Windows_Trojan_Smokeloader_3687686f {
     meta:
+        author = "Elastic Security"
         id = "3687686f-8fbf-4f09-9afa-612ee65dc86c"
         fingerprint = "0f483f9f79ae29b944825c1987366d7b450312f475845e2242a07674580918bc"
         creation_date = "2021-07-21"
@@ -38,6 +40,7 @@ rule Windows_Trojan_Smokeloader_3687686f {
 
 rule Windows_Trojan_Smokeloader_4ee15b92 {
     meta:
+        author = "Elastic Security"
         id = "4ee15b92-c62f-42d2-bbba-1dac2fa5644f"
         fingerprint = "5d2ed385c76dbb4c1c755ae88b68306086a199a25a29317ae132bc874b253580"
         creation_date = "2022-02-17"

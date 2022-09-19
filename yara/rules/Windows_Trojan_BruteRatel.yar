@@ -1,5 +1,6 @@
 rule Windows_Trojan_BruteRatel_1916686d {
     meta:
+        author = "Elastic Security"
         id = "1916686d-4821-4e5a-8290-58336d01997f"
         fingerprint = "a9924347d324c3455d4e50cbbae940c5af36b41bcd2d9f28dd6b3af6d6489484"
         creation_date = "2022-06-23"
@@ -24,6 +25,7 @@ rule Windows_Trojan_BruteRatel_1916686d {
 
 rule Windows_Trojan_BruteRatel_9b267f96 {
     meta:
+        author = "Elastic Security"
         id = "9b267f96-11b3-48e6-9d38-ecfd72cb7e3e"
         fingerprint = "f20cbaf39dc68460a2612298a5df9efdf5bdb152159d38f4696aedf35862bbb6"
         creation_date = "2022-06-23"

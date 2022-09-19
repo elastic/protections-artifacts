@@ -1,5 +1,6 @@
 rule Windows_Trojan_ProtectS_9f6eaa90 {
     meta:
+        author = "Elastic Security"
         id = "9f6eaa90-b3d4-4f0f-a81e-8010be0a6d36"
         fingerprint = "46bf59901876794dcc338923076939d765d3ce7f14d784b9687fbc05461ed6b4"
         creation_date = "2022-04-04"

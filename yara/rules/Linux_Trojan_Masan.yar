@@ -1,5 +1,6 @@
 rule Linux_Trojan_Masan_5369c678 {
     meta:
+        author = "Elastic Security"
         id = "5369c678-9a74-42fe-a4b3-b4d48126bb22"
         fingerprint = "5fd243bf05cafd7db33d6c0167f77148ae53983906e917e174978130ae08062a"
         creation_date = "2021-04-06"

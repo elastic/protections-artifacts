@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Hellokitty_8859e8e8 {
     meta:
+        author = "Elastic Security"
         id = "8859e8e8-f94c-4853-b296-1fc801486c57"
         fingerprint = "f9791409d2a058dd68dc09df5e4b597c6c6a1f0da9801d7ab9e678577b621730"
         creation_date = "2021-05-03"
@@ -32,6 +33,7 @@ rule Windows_Ransomware_Hellokitty_8859e8e8 {
 
 rule Windows_Ransomware_Hellokitty_4b668121 {
     meta:
+        author = "Elastic Security"
         id = "4b668121-cc21-4f0b-b0fc-c2b5b4cb53e8"
         fingerprint = "834316ce0f3225b1654b3c4bccb673c9ad815e422276f61e929d5440ca51a9fa"
         creation_date = "2021-05-03"
@@ -58,6 +60,7 @@ rule Windows_Ransomware_Hellokitty_4b668121 {
 
 rule Windows_Ransomware_Hellokitty_d9391a1a {
     meta:
+        author = "Elastic Security"
         id = "d9391a1a-78d3-4ae6-8e45-630ceec8bade"
         fingerprint = "4b9c96561163f925df6b2300c9e34c9572c1fe14ec3a55da4d4876ce467f6d6e"
         creation_date = "2021-05-03"

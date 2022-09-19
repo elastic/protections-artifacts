@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Mespinoza_3adb59f5 {
     meta:
+        author = "Elastic Security"
         id = "3adb59f5-a4af-48f2-8029-874a62b23651"
         fingerprint = "f44a79048427e79d339d3b0ccaeb85ba6731d5548256a2615f32970dcf67578f"
         creation_date = "2021-08-05"

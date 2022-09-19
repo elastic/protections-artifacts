@@ -1,5 +1,6 @@
 rule Linux_Trojan_Kaiji_253c44de {
     meta:
+        author = "Elastic Security"
         id = "253c44de-3f48-49f9-998d-1dec2981108c"
         fingerprint = "f390a16ca4270dc38ce1a52bbdc1ac57155f369a74005ff2a4e46c6d043b869e"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Kaiji_253c44de {
 
 rule Linux_Trojan_Kaiji_535f07ac {
     meta:
+        author = "Elastic Security"
         id = "535f07ac-d727-4866-aaed-74d297a1092c"
         fingerprint = "8853b2a1d5852e436cab2e3402a5ca13839b3cae6fbb56a74b047234b8c1233b"
         creation_date = "2021-01-12"

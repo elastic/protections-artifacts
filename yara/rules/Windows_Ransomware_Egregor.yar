@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Egregor_f24023f3 : beta {
     meta:
+        author = "Elastic Security"
         id = "f24023f3-c887-42fc-8927-cdbd04b5f84f"
         fingerprint = "3a82a548658e0823678ec9d633774018ddc6588f5e2fbce74826a46ce9c43c40"
         creation_date = "2020-10-15"
@@ -25,6 +26,7 @@ rule Windows_Ransomware_Egregor_f24023f3 : beta {
 
 rule Windows_Ransomware_Egregor_4ec2b90c : beta {
     meta:
+        author = "Elastic Security"
         id = "4ec2b90c-b2de-463d-a9c6-478c255c2352"
         fingerprint = "6ae13632f50af11626250c30f570370da23deb265ff6c1fefd2e294c8c170998"
         creation_date = "2020-10-15"

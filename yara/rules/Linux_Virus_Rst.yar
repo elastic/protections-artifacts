@@ -1,5 +1,6 @@
 rule Linux_Virus_Rst_1214e2ae {
     meta:
+        author = "Elastic Security"
         id = "1214e2ae-90e4-425e-b47f-0a0981623236"
         fingerprint = "a13a9825815a417be991db57f80dac4d0c541e303e4a4e6bd03c46ece73703ea"
         creation_date = "2021-04-06"

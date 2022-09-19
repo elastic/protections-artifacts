@@ -1,5 +1,6 @@
 rule Windows_Trojan_DCRat_1aeea1ac {
     meta:
+        author = "Elastic Security"
         id = "1aeea1ac-69b9-4cc6-91af-18b7a79f35ce"
         fingerprint = "fc67d76dc916b7736de783aa245483381a8fe071c533f3761e550af80a873fe9"
         creation_date = "2022-01-15"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_Gozi_fd494041 {
     meta:
+        author = "Elastic Security"
         id = "fd494041-3fe8-4ffa-9ab8-6798032f1d66"
         fingerprint = "faabcdfb3402a5951ff1fde4f994dcb00ec9a71fb815b80dc1da9b577bf92ec2"
         creation_date = "2021-03-22"
@@ -32,6 +33,7 @@ rule Windows_Trojan_Gozi_fd494041 {
 
 rule Windows_Trojan_Gozi_261f5ac5 {
     meta:
+        author = "Elastic Security"
         id = "261f5ac5-7800-4580-ac37-80b71c47c270"
         fingerprint = "cbc8fec8fbaa809cfc7da7db72aeda43d4270f907e675016cbbc2e28e7b8553c"
         creation_date = "2019-08-02"

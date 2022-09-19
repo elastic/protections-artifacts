@@ -1,5 +1,6 @@
 rule Linux_Trojan_Xpmmap_7dcc3534 {
     meta:
+        author = "Elastic Security"
         id = "7dcc3534-e94c-4c92-ac9b-a82b00fb045b"
         fingerprint = "397618543390fb8fd8b198f63034fe88b640408d75b769fb337433138dafcf66"
         creation_date = "2021-04-06"

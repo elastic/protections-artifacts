@@ -1,5 +1,6 @@
 rule Linux_Trojan_Setag_351eeb76 {
     meta:
+        author = "Elastic Security"
         id = "351eeb76-ccca-40d5-8ee3-e8daf6494dda"
         fingerprint = "c6edc7ae898831e9cc3c92fcdce4cd5b4412de061575e6da2f4e07776e0885f5"
         creation_date = "2021-01-12"
@@ -18,6 +19,7 @@ rule Linux_Trojan_Setag_351eeb76 {
 
 rule Linux_Trojan_Setag_01e2f79b {
     meta:
+        author = "Elastic Security"
         id = "01e2f79b-fcbc-41d0-a68b-3a692b893f26"
         fingerprint = "4ea87a6ccf907babdebbbb07b9bc32a5437d0213f1580ea4b4b3f44ce543a5bd"
         creation_date = "2021-01-12"

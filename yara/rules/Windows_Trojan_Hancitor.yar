@@ -1,5 +1,6 @@
 rule Windows_Trojan_Hancitor_6738d84a {
     meta:
+        author = "Elastic Security"
         id = "6738d84a-7393-4db2-97cc-66f471b5699a"
         fingerprint = "44a4dd7c35e0b4f3f161b82463d8f0ee113eaedbfabb7d914ce9486b6bd3a912"
         creation_date = "2021-06-17"

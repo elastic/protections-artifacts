@@ -1,5 +1,6 @@
 rule Linux_Ransomware_Hive_bdc7de59 {
     meta:
+        author = "Elastic Security"
         id = "bdc7de59-bf12-461f-99e0-ec2532ace4e9"
         fingerprint = "415ef589a1c2da6b16ab30fb68f938a9ee7917f5509f73aa90aeec51c10dc1ff"
         creation_date = "2022-01-05"

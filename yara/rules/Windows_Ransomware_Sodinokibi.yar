@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Sodinokibi_83f05fbe : beta {
     meta:
+        author = "Elastic Security"
         id = "83f05fbe-65d1-423f-98df-21692167a1d6"
         fingerprint = "8c32ca099c9117e394379c0cc4771a15e5e4cfb1a98210c288e743a6d9cc9967"
         creation_date = "2020-06-18"
@@ -33,6 +34,7 @@ rule Windows_Ransomware_Sodinokibi_83f05fbe : beta {
 
 rule Windows_Ransomware_Sodinokibi_182b2cea : beta {
     meta:
+        author = "Elastic Security"
         id = "182b2cea-5aae-443a-9a2e-b3121a0ac8c7"
         fingerprint = "b71d862f6d45b388a106bf694e2bf5b4e4d78649c396e89bda46eab4206339fe"
         creation_date = "2020-06-18"
@@ -59,6 +61,7 @@ rule Windows_Ransomware_Sodinokibi_182b2cea : beta {
 
 rule Windows_Ransomware_Sodinokibi_a282ba44 : beta {
     meta:
+        author = "Elastic Security"
         id = "a282ba44-b8bf-4fcc-a1c4-795675a928de"
         fingerprint = "07f1feb22f8b9de0ebd5c4649545eb4823a274b49b2c61a44d3eed4739ecd572"
         creation_date = "2020-06-18"

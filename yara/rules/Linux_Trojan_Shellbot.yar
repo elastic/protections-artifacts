@@ -1,5 +1,6 @@
 rule Linux_Trojan_Shellbot_65aa6568 {
     meta:
+        author = "Elastic Security"
         id = "65aa6568-491a-4a51-b921-c6c228cfca11"
         fingerprint = "2cd606ecaf17322788a5ee3b6bd663bed376cef131e768bbf623c402664e9270"
         creation_date = "2021-01-12"

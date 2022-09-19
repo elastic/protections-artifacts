@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Avoslocker_7ae4d4f2 {
     meta:
+        author = "Elastic Security"
         id = "7ae4d4f2-be5f-4aad-baaa-4182ff9cf996"
         fingerprint = "0e5ff268ed2b62f9d31df41192135145094849a4e6891407568c3ea27ebf66bb"
         creation_date = "2021-07-28"

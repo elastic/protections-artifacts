@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Portscan_a40c7ef0 {
     meta:
+        author = "Elastic Security"
         id = "a40c7ef0-627c-4965-b4d3-b05b79586170"
         fingerprint = "bf686c3c313936a144265cbf75850c8aee3af3ae36cb571050c7fceed385451d"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Hacktool_Portscan_a40c7ef0 {
 
 rule Linux_Hacktool_Portscan_6c6000c2 {
     meta:
+        author = "Elastic Security"
         id = "6c6000c2-7e9a-457c-a745-00a3ac83a4bc"
         fingerprint = "3c893aebe688d70aebcb15fdc0d2780d2ec0589084c915ff71519ec29e5017f1"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Hacktool_Portscan_6c6000c2 {
 
 rule Linux_Hacktool_Portscan_e191222d {
     meta:
+        author = "Elastic Security"
         id = "e191222d-633a-4408-9a54-a70bb9e89cc0"
         fingerprint = "5580dd8b9180b8ff36c7d08a134b1b3782b41054d8b29b23fc5a79e7b0059fd1"
         creation_date = "2021-01-12"
@@ -57,6 +60,7 @@ rule Linux_Hacktool_Portscan_e191222d {
 
 rule Linux_Hacktool_Portscan_e57b0a0c {
     meta:
+        author = "Elastic Security"
         id = "e57b0a0c-66b8-488b-b19d-ae06623645fd"
         fingerprint = "829c7d271ae475ef06d583148bbdf91af67ce4c7a831da73cc52e8406e7e8f9e"
         creation_date = "2021-01-12"

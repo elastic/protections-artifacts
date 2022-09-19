@@ -1,5 +1,6 @@
 rule Linux_Ransomware_BlackBasta_96eb3f20 {
     meta:
+        author = "Elastic Security"
         id = "96eb3f20-9c40-4d40-8a6c-568a51c52d4d"
         fingerprint = "5146ad9def7ccaba4b4896f345b0950c587ad5f96a106ec461caeb028d809ead"
         creation_date = "2022-08-06"

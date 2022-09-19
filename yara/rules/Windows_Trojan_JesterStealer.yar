@@ -1,5 +1,6 @@
 rule Windows_Trojan_JesterStealer_b35c6f4b {
     meta:
+        author = "Elastic Security"
         id = "b35c6f4b-995f-4336-94bf-fc6dc8c124f4"
         fingerprint = "d91c26a06ba7c9330e38a4744299223d3b28a96f131bce5198c4ef7c74b7d2ff"
         creation_date = "2022-02-28"
@@ -25,6 +26,7 @@ rule Windows_Trojan_JesterStealer_b35c6f4b {
 
 rule Windows_Trojan_JesterStealer_8f657f58 {
     meta:
+        author = "Elastic Security"
         id = "8f657f58-57e0-4e5f-9223-00bfade16605"
         fingerprint = "aabf8633e853f623b75e8a354378d110442e724425f623b8c553d3522ca5dad6"
         creation_date = "2022-02-28"

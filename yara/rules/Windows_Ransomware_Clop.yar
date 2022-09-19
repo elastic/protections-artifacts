@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Clop_6a1670aa : beta {
     meta:
+        author = "Elastic Security"
         id = "6a1670aa-7f78-455b-9e28-f39ed4c6476e"
         fingerprint = "7c24cc6a519922635a519dad412d1a07728317b91f90a120ccc1c7e7e2c8a002"
         creation_date = "2020-05-03"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_Clop_6a1670aa : beta {
 
 rule Windows_Ransomware_Clop_e04959b5 : beta {
     meta:
+        author = "Elastic Security"
         id = "e04959b5-f3da-428d-8b56-8a9817fdebe0"
         fingerprint = "7367b90772ce6db0d639835a0a54a994ef8ed351b6dadff42517ed5fbc3d0d1a"
         creation_date = "2020-05-03"
@@ -49,6 +51,7 @@ rule Windows_Ransomware_Clop_e04959b5 : beta {
 
 rule Windows_Ransomware_Clop_9ac9ea3e : beta {
     meta:
+        author = "Elastic Security"
         id = "9ac9ea3e-72e1-4151-a2f8-87869f5f98e3"
         fingerprint = "1cb0adb36e94ef8f8d74862250205436ed3694ed7719d8e639cfdd0c8632fd6c"
         creation_date = "2020-05-03"
@@ -69,6 +72,7 @@ rule Windows_Ransomware_Clop_9ac9ea3e : beta {
 
 rule Windows_Ransomware_Clop_606020e7 : beta {
     meta:
+        author = "Elastic Security"
         id = "606020e7-ce1a-4a48-b801-100fd22b3791"
         fingerprint = "5ec4e00ddf2cb1315ec7d62dd228eee0d9c15fafe4712933d42e868f83f13569"
         creation_date = "2020-05-03"

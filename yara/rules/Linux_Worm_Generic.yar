@@ -1,5 +1,6 @@
 rule Linux_Worm_Generic_920d273f {
     meta:
+        author = "Elastic Security"
         id = "920d273f-5b2b-4eec-a2b3-8d411f2ea181"
         fingerprint = "3d4dd13b715249710bc2a02b1628fb68bcccebab876ff6674cad713e93ac53d2"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Worm_Generic_920d273f {
 
 rule Linux_Worm_Generic_98efcd38 {
     meta:
+        author = "Elastic Security"
         id = "98efcd38-d579-46f7-a8f8-360f799a5078"
         fingerprint = "d6cec73bb6093dbc6d26566c174d0d0f6448f431429edef0528c9ec1c83177fa"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Worm_Generic_98efcd38 {
 
 rule Linux_Worm_Generic_bd64472e {
     meta:
+        author = "Elastic Security"
         id = "bd64472e-92a2-4d64-8008-b82d7ca33b1d"
         fingerprint = "1978baa7ff5457e06433fd45db098aefd39ea53d3f29e541eef54890a25a9dce"
         creation_date = "2021-04-06"
@@ -57,6 +60,7 @@ rule Linux_Worm_Generic_bd64472e {
 
 rule Linux_Worm_Generic_3ff8f75b {
     meta:
+        author = "Elastic Security"
         id = "3ff8f75b-619e-4090-8ea4-aedc8bdf61a4"
         fingerprint = "011f0cd72ebb428775305c84eac69c5ff4800de6e1d8b4d2110d5445b1aae10f"
         creation_date = "2021-01-12"

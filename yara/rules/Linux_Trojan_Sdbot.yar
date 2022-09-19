@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sdbot_98628ea1 {
     meta:
+        author = "Elastic Security"
         id = "98628ea1-40d8-4a05-835f-a5a5f83637cb"
         fingerprint = "15cf6b916dd87915738f3aa05a2955c78a357935a183c0f88092d808535625a5"
         creation_date = "2021-01-12"

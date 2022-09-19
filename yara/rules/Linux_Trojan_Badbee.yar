@@ -1,5 +1,6 @@
 rule Linux_Trojan_Badbee_231cb054 {
     meta:
+        author = "Elastic Security"
         id = "231cb054-36a9-434f-8254-17fee38e5275"
         fingerprint = "ebe789fc467daf9276f72210f94e87b7fa79fc92a72740de49e47b71f123ed5c"
         creation_date = "2021-01-12"

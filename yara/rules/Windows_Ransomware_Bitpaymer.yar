@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Bitpaymer_d74273b3 : beta {
     meta:
+        author = "Elastic Security"
         id = "d74273b3-d109-4b5d-beff-dffee9a984b1"
         fingerprint = "4f913f06f7c7decbeb78187c566674f91ebbf929ad7057641659bb756cf2991b"
         creation_date = "2020-06-25"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_Bitpaymer_d74273b3 : beta {
 
 rule Windows_Ransomware_Bitpaymer_bca25ac6 : beta {
     meta:
+        author = "Elastic Security"
         id = "bca25ac6-e351-4823-be75-b0661c89588a"
         fingerprint = "2ecc7884d47ca7dbba30ba171b632859914d6152601ea7b463c0f52be79ebb8c"
         creation_date = "2020-06-25"

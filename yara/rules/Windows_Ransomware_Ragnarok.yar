@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Ragnarok_1cab7ea1 : beta {
     meta:
+        author = "Elastic Security"
         id = "1cab7ea1-8d26-4478-ab41-659c193b5baa"
         fingerprint = "e2a8eabb08cb99c4999e05a06d0d0dce46d7e6375a72a6a5e69d718c3d54a3ad"
         creation_date = "2020-05-03"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_Ragnarok_1cab7ea1 : beta {
 
 rule Windows_Ransomware_Ragnarok_7e802f95 : beta {
     meta:
+        author = "Elastic Security"
         id = "7e802f95-964e-4dd9-a5d1-13a6cd73d750"
         fingerprint = "c62b3706a2024751f1346d0153381ac28057995cf95228e43affc3d1e4ad0fad"
         creation_date = "2020-05-03"
@@ -41,6 +43,7 @@ rule Windows_Ransomware_Ragnarok_7e802f95 : beta {
 
 rule Windows_Ransomware_Ragnarok_efafbe48 : beta {
     meta:
+        author = "Elastic Security"
         id = "efafbe48-7740-4c21-b585-467f7ad76f8d"
         fingerprint = "a1535bc01756ac9e986eb564d712b739df980ddd61cfde5a7b001849a6b07b57"
         creation_date = "2020-05-03"
@@ -69,6 +72,7 @@ rule Windows_Ransomware_Ragnarok_efafbe48 : beta {
 
 rule Windows_Ransomware_Ragnarok_5625d3f6 : beta {
     meta:
+        author = "Elastic Security"
         id = "5625d3f6-7071-4a09-8ddf-faa2d081b539"
         fingerprint = "5c0a4e2683991929ff6307855bf895e3f13a61bbcc6b3c4b47d895f818d25343"
         creation_date = "2020-05-03"

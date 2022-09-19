@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Miancha_646803ef {
     meta:
+        author = "Elastic Security"
         id = "646803ef-e8a5-46e2-94a5-dcc6cb41cead"
         fingerprint = "b22f87b60c19855c3ac622bc557655915441f5e12c7d7c27c51c05e12c743ee5"
         creation_date = "2021-01-12"

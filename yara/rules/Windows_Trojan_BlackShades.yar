@@ -1,5 +1,6 @@
 rule Windows_Trojan_BlackShades_9d095c44 {
     meta:
+        author = "Elastic Security"
         id = "9d095c44-5047-453e-8435-f30de94565e6"
         fingerprint = "be7d4c8200c293c3c8046d9f87b0d127ff051679ae1caeab12c533ea4309a1fc"
         creation_date = "2022-02-28"
@@ -26,6 +27,7 @@ rule Windows_Trojan_BlackShades_9d095c44 {
 
 rule Windows_Trojan_BlackShades_be382dac {
     meta:
+        author = "Elastic Security"
         id = "be382dac-6a6f-43e4-86bb-c62f0db9b43a"
         fingerprint = "e7031c42e51758358db32d8eba95f43be7dd5c4b57e6f9a76f0c3b925eae4e43"
         creation_date = "2022-02-28"

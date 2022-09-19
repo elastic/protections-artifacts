@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Lockbit_89e64044 {
     meta:
+        author = "Elastic Security"
         id = "89e64044-74e4-4679-b6ad-bfb9b264330c"
         fingerprint = "ec45013d3ecbc39ffce5ac18d5bf8b0d18bcadd66659975b0a9f26bcae0a5b49"
         creation_date = "2021-08-06"
@@ -21,6 +22,7 @@ rule Windows_Ransomware_Lockbit_89e64044 {
 
 rule Windows_Ransomware_Lockbit_a1c60939 {
     meta:
+        author = "Elastic Security"
         id = "a1c60939-e257-420d-87ed-f31f30f2fc2a"
         fingerprint = "a41fb21e82ee893468393428d655b03ce251d23f34acb54bbf01ae0eb86817bf"
         creation_date = "2021-08-06"
@@ -40,6 +42,7 @@ rule Windows_Ransomware_Lockbit_a1c60939 {
 
 rule Windows_Ransomware_Lockbit_369e1e94 {
     meta:
+        author = "Elastic Security"
         id = "369e1e94-3fbb-4828-bb78-89d26e008105"
         fingerprint = "9cf4c112c0ee708ae64052926681e8351f1ccefeb558c41e875dbd9e4bdcb5f2"
         creation_date = "2022-07-05"

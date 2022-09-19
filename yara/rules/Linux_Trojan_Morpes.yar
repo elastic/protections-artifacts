@@ -1,5 +1,6 @@
 rule Linux_Trojan_Morpes_d2ae1edf {
     meta:
+        author = "Elastic Security"
         id = "d2ae1edf-7dd3-4506-96e0-039c8f00d688"
         fingerprint = "a4cedb0ef6c9c5121ee63c0c8f6bb8072f62b5866c916c7000d94999cd61b9b5"
         creation_date = "2021-01-12"

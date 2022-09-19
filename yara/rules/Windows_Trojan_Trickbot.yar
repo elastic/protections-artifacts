@@ -1,5 +1,6 @@
 rule Windows_Trojan_Trickbot_01365e46 {
     meta:
+        author = "Elastic Security"
         id = "01365e46-c769-4c6e-913a-4d1e42948af2"
         fingerprint = "98505c3418945c10bf4f50a183aa49bdbc7c1c306e98132ae3d0fc36e216f191"
         creation_date = "2021-03-28"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Trickbot_01365e46 {
 
 rule Windows_Trojan_Trickbot_06fd4ac4 {
     meta:
+        author = "Elastic Security"
         id = "06fd4ac4-1155-4068-ae63-4d83db2bd942"
         fingerprint = "ece49004ed1d27ef92b3b1ec040d06e90687d4ac5a89451e2ae487d92cb24ddd"
         creation_date = "2021-03-28"
@@ -38,6 +40,7 @@ rule Windows_Trojan_Trickbot_06fd4ac4 {
 
 rule Windows_Trojan_Trickbot_ce4305d1 {
     meta:
+        author = "Elastic Security"
         id = "ce4305d1-8a6f-4797-afaf-57e88f3d38e6"
         fingerprint = "ae606e758b02ccf2a9a313aebb10773961121f79a94c447e745289ee045cf4ee"
         creation_date = "2021-03-28"
@@ -56,6 +59,7 @@ rule Windows_Trojan_Trickbot_ce4305d1 {
 
 rule Windows_Trojan_Trickbot_1e56fad7 {
     meta:
+        author = "Elastic Security"
         id = "1e56fad7-383f-4ee0-9f8f-a0b3dcceb691"
         fingerprint = "a0916134f47df384bbdacff994970f60d3613baa03c0a581b7d1dd476af3121b"
         creation_date = "2021-03-28"
@@ -74,6 +78,7 @@ rule Windows_Trojan_Trickbot_1e56fad7 {
 
 rule Windows_Trojan_Trickbot_93c9a2a4 {
     meta:
+        author = "Elastic Security"
         id = "93c9a2a4-a07a-4ed4-a899-b160d235bf50"
         fingerprint = "0ff82bf9e70304868ff033f0d96e2a140af6e40c09045d12499447ffb94ab838"
         creation_date = "2021-03-28"
@@ -92,6 +97,7 @@ rule Windows_Trojan_Trickbot_93c9a2a4 {
 
 rule Windows_Trojan_Trickbot_5340afa3 {
     meta:
+        author = "Elastic Security"
         id = "5340afa3-ff90-4f61-a1ac-aba1f32dd375"
         fingerprint = "7da4726ccda6a76d2da773d41f012763802d586f64a313c1c37733905ae9da81"
         creation_date = "2021-03-28"
@@ -110,6 +116,7 @@ rule Windows_Trojan_Trickbot_5340afa3 {
 
 rule Windows_Trojan_Trickbot_e7932501 {
     meta:
+        author = "Elastic Security"
         id = "e7932501-66bf-4713-b10e-bcda29f4b901"
         fingerprint = "ae31b49266386a6cf42289a08da4a20fc1330096be1dae793de7b7230225bfc7"
         creation_date = "2021-03-28"
@@ -128,6 +135,7 @@ rule Windows_Trojan_Trickbot_e7932501 {
 
 rule Windows_Trojan_Trickbot_cd0868d5 {
     meta:
+        author = "Elastic Security"
         id = "cd0868d5-42d8-437f-8c1a-303526c08442"
         fingerprint = "2f777285a90fce20cd4eab203f3ec7ed1c62e09fc2dfdce09b57e0802f49628f"
         creation_date = "2021-03-28"
@@ -146,6 +154,7 @@ rule Windows_Trojan_Trickbot_cd0868d5 {
 
 rule Windows_Trojan_Trickbot_515504e2 {
     meta:
+        author = "Elastic Security"
         id = "515504e2-6b7f-4398-b89b-3af2b46c78a7"
         fingerprint = "8eb741e1b3bd760e2cf511ad6609ac6f1f510958a05fb093eae26462f16ee1d0"
         creation_date = "2021-03-28"
@@ -164,6 +173,7 @@ rule Windows_Trojan_Trickbot_515504e2 {
 
 rule Windows_Trojan_Trickbot_a0fc8f35 {
     meta:
+        author = "Elastic Security"
         id = "a0fc8f35-cbeb-43a8-b00d-7a0f981e84e4"
         fingerprint = "033ff4f47fece45dfa7e3ba185df84a767691e56f0081f4ed96f9e2455a563cb"
         creation_date = "2021-03-28"
@@ -182,6 +192,7 @@ rule Windows_Trojan_Trickbot_a0fc8f35 {
 
 rule Windows_Trojan_Trickbot_cb95dc06 {
     meta:
+        author = "Elastic Security"
         id = "cb95dc06-6383-4487-bf10-7fd68d61e37a"
         fingerprint = "0d28f570db007a1b91fe48aba18be7541531cceb7f11a6a4471e92abd55b3b90"
         creation_date = "2021-03-28"
@@ -200,6 +211,7 @@ rule Windows_Trojan_Trickbot_cb95dc06 {
 
 rule Windows_Trojan_Trickbot_9d4d3fa4 {
     meta:
+        author = "Elastic Security"
         id = "9d4d3fa4-4e37-40d7-8399-a49130b7ef49"
         fingerprint = "b06c3c7ba1f5823ce381971ed29554e5ddbe327b197de312738165ee8bf6e194"
         creation_date = "2021-03-28"
@@ -218,6 +230,7 @@ rule Windows_Trojan_Trickbot_9d4d3fa4 {
 
 rule Windows_Trojan_Trickbot_34f00046 {
     meta:
+        author = "Elastic Security"
         id = "34f00046-8938-4103-91ec-4a745a627d4a"
         fingerprint = "5c6f11e2a040ae32336f4b4c4717e0f10c73359899302b77e1803f3a609309c0"
         creation_date = "2021-03-28"
@@ -236,6 +249,7 @@ rule Windows_Trojan_Trickbot_34f00046 {
 
 rule Windows_Trojan_Trickbot_f2a18b09 {
     meta:
+        author = "Elastic Security"
         id = "f2a18b09-f7b3-4d1a-87ab-3018f520b69c"
         fingerprint = "3e4474205efe22ea0185c49052e259bc08de8da7c924372f6eb984ae36b91a1c"
         creation_date = "2021-03-28"
@@ -254,6 +268,7 @@ rule Windows_Trojan_Trickbot_f2a18b09 {
 
 rule Windows_Trojan_Trickbot_d916ae65 {
     meta:
+        author = "Elastic Security"
         id = "d916ae65-c97b-495c-89c2-4f1ec90081d2"
         fingerprint = "2e109ed59a1e759ef089e04c21016482bf70228da30d8b350fc370b4e4d120e0"
         creation_date = "2021-03-28"
@@ -272,6 +287,7 @@ rule Windows_Trojan_Trickbot_d916ae65 {
 
 rule Windows_Trojan_Trickbot_52722678 {
     meta:
+        author = "Elastic Security"
         id = "52722678-afbe-43ec-a39b-6848b7d49488"
         fingerprint = "e67dda5227be74424656957843777ea533b6800576fd85f978fd8fb50504209c"
         creation_date = "2021-03-28"
@@ -290,6 +306,7 @@ rule Windows_Trojan_Trickbot_52722678 {
 
 rule Windows_Trojan_Trickbot_28a60148 {
     meta:
+        author = "Elastic Security"
         id = "28a60148-2efb-4cd2-ada1-dd2ae2699adf"
         fingerprint = "c857aa792ef247bfcf81e75fb696498b1ba25c09fc04049223a6dfc09cc064b1"
         creation_date = "2021-03-28"
@@ -308,6 +325,7 @@ rule Windows_Trojan_Trickbot_28a60148 {
 
 rule Windows_Trojan_Trickbot_997b25a0 {
     meta:
+        author = "Elastic Security"
         id = "997b25a0-aeac-4f74-aa87-232c4f8329b6"
         fingerprint = "0bba1c5284ed0548f51fdfd6fb96e24f92f7f4132caefbf0704efb0b1a64b7c4"
         creation_date = "2021-03-28"
@@ -326,6 +344,7 @@ rule Windows_Trojan_Trickbot_997b25a0 {
 
 rule Windows_Trojan_Trickbot_b17b33a1 {
     meta:
+        author = "Elastic Security"
         id = "b17b33a1-1021-4980-8ffd-2e7aa4ca2ae4"
         fingerprint = "753d15c1ff0cc4cf75250761360bb35280ff0a1a4d34320df354e0329dd35211"
         creation_date = "2021-03-28"
@@ -344,6 +363,7 @@ rule Windows_Trojan_Trickbot_b17b33a1 {
 
 rule Windows_Trojan_Trickbot_23d77ae5 {
     meta:
+        author = "Elastic Security"
         id = "23d77ae5-80de-4bb0-8701-ddcaff443dcc"
         fingerprint = "d382a99e5eed87cf2eab5e238e445ca0bf7852e40b0dd06a392057e76144699f"
         creation_date = "2021-03-28"
@@ -377,6 +397,7 @@ rule Windows_Trojan_Trickbot_23d77ae5 {
 
 rule Windows_Trojan_Trickbot_5574be7d {
     meta:
+        author = "Elastic Security"
         id = "5574be7d-7502-4357-8110-2fb4a661b2bd"
         fingerprint = "23d9b89917a0fc5aad903595b89b650f6dbb0f82ce28ce8bcc891904f62ccf1b"
         creation_date = "2021-03-29"
@@ -412,6 +433,7 @@ rule Windows_Trojan_Trickbot_5574be7d {
 
 rule Windows_Trojan_Trickbot_1473f0b4 {
     meta:
+        author = "Elastic Security"
         id = "1473f0b4-a6b5-4b19-a07e-83d32a7e44a0"
         fingerprint = "15438ae141a2ac886b1ba406ba45119da1a616c3b2b88da3f432253421aa8e8b"
         creation_date = "2021-03-29"
@@ -438,6 +460,7 @@ rule Windows_Trojan_Trickbot_1473f0b4 {
 
 rule Windows_Trojan_Trickbot_dcf25dde {
     meta:
+        author = "Elastic Security"
         id = "dcf25dde-36c4-4a24-aa2b-0b3f42324918"
         fingerprint = "4088ae29cb3b665ccedf69e9d02c1ff58620d4b589343cd4077983b25c5b479f"
         creation_date = "2021-03-29"
@@ -480,6 +503,7 @@ rule Windows_Trojan_Trickbot_dcf25dde {
 
 rule Windows_Trojan_Trickbot_46dc12dd {
     meta:
+        author = "Elastic Security"
         id = "46dc12dd-d81a-43a6-b7c3-f59afa1c863e"
         fingerprint = "997fe1c5a06bfffb754051436c48a0538ff2dcbfddf0d865c3a3797252247946"
         creation_date = "2021-03-29"
@@ -505,6 +529,7 @@ rule Windows_Trojan_Trickbot_46dc12dd {
 
 rule Windows_Trojan_Trickbot_78a26074 {
     meta:
+        author = "Elastic Security"
         id = "78a26074-dc4b-436d-8188-2a3cfdabf6db"
         fingerprint = "f0446c7e1a497b93720824f4a5b72f23f00d0ee9a1607bc0c1b097109ec132a8"
         creation_date = "2021-03-29"
@@ -540,6 +565,7 @@ rule Windows_Trojan_Trickbot_78a26074 {
 
 rule Windows_Trojan_Trickbot_217b9c97 {
     meta:
+        author = "Elastic Security"
         id = "217b9c97-a637-49b8-a652-5a42ea19ee8e"
         fingerprint = "7d5dcb60526a80926bbaa7e3cd9958719e326a160455095ff9f0315e85b8adf6"
         creation_date = "2021-03-29"
@@ -576,6 +602,7 @@ rule Windows_Trojan_Trickbot_217b9c97 {
 
 rule Windows_Trojan_Trickbot_d2110921 {
     meta:
+        author = "Elastic Security"
         id = "d2110921-b957-49b7-8a26-4c0b7d1d58ad"
         fingerprint = "55dbbcbc77ec51a378ad2ba8d56cb0811d23b121cacd037503fd75d08529c5b5"
         creation_date = "2021-03-29"
@@ -606,6 +633,7 @@ rule Windows_Trojan_Trickbot_d2110921 {
 
 rule Windows_Trojan_Trickbot_0114d469 {
     meta:
+        author = "Elastic Security"
         id = "0114d469-8731-4f4f-8657-49cded5efadb"
         fingerprint = "4f1fa072f4ba577d590bb8946ea9b9774aa291cb2406f13be5932e97e8e760c6"
         creation_date = "2021-03-29"
@@ -640,6 +668,7 @@ rule Windows_Trojan_Trickbot_0114d469 {
 
 rule Windows_Trojan_Trickbot_07239dad {
     meta:
+        author = "Elastic Security"
         id = "07239dad-7f9e-4b20-a691-d9538405b931"
         fingerprint = "32d63b8db4307fd67e2c9068e22f843f920f19279c4a40e17cd14943577e7c81"
         creation_date = "2021-03-29"
@@ -675,6 +704,7 @@ rule Windows_Trojan_Trickbot_07239dad {
 
 rule Windows_Trojan_Trickbot_fd7a39af {
     meta:
+        author = "Elastic Security"
         id = "fd7a39af-c6ea-4682-a00a-01f775c3bb8d"
         fingerprint = "3f2e654f2ffdd940c27caec3faeb4bda24c797a17d0987378e36c1e16fadc772"
         creation_date = "2021-03-29"
@@ -710,6 +740,7 @@ rule Windows_Trojan_Trickbot_fd7a39af {
 
 rule Windows_Trojan_Trickbot_2d89e9cd {
     meta:
+        author = "Elastic Security"
         id = "2d89e9cd-2941-4b20-ab4e-a487d329ff76"
         fingerprint = "e6eea38858cfbbe5441b1f69c5029ff9279e7affa51615f6c91981fe656294fc"
         creation_date = "2021-03-29"
@@ -755,6 +786,7 @@ rule Windows_Trojan_Trickbot_2d89e9cd {
 
 rule Windows_Trojan_Trickbot_32930807 {
     meta:
+        author = "Elastic Security"
         id = "32930807-30bb-4c57-8e17-0da99a816405"
         fingerprint = "0aeb68977f4926272f27d5fba44e66bdbb9d6a113da5d7b4133a379b06df4474"
         creation_date = "2021-03-30"
@@ -777,6 +809,7 @@ rule Windows_Trojan_Trickbot_32930807 {
 
 rule Windows_Trojan_Trickbot_618b27d2 {
     meta:
+        author = "Elastic Security"
         id = "618b27d2-22ad-4542-86ed-7148f17971da"
         fingerprint = "df4336e5cbca495dac4fe110bd7a727e91bb3d465f76d3f3796078332c13633c"
         creation_date = "2021-03-30"
@@ -811,6 +844,7 @@ rule Windows_Trojan_Trickbot_618b27d2 {
 
 rule Windows_Trojan_Trickbot_6eb31e7b {
     meta:
+        author = "Elastic Security"
         id = "6eb31e7b-9dc3-48ff-91fe-8c584729c415"
         fingerprint = "d145b7c95bca0dc0c46a8dff60341a21dce474edd169dd0ee5ea2396dad60b92"
         creation_date = "2021-03-30"
@@ -839,6 +873,7 @@ rule Windows_Trojan_Trickbot_6eb31e7b {
 
 rule Windows_Trojan_Trickbot_91516cf4 {
     meta:
+        author = "Elastic Security"
         id = "91516cf4-c826-4d5d-908f-e1c0b3bccec5"
         fingerprint = "2667c7181fb4db3f5765369fc2ec010b807a7bf6e2878fc42af410f036c61cbe"
         creation_date = "2021-03-30"
@@ -862,6 +897,7 @@ rule Windows_Trojan_Trickbot_91516cf4 {
 
 rule Windows_Trojan_Trickbot_be718af9 {
     meta:
+        author = "Elastic Security"
         id = "be718af9-5995-4ae2-ba55-504e88693c96"
         fingerprint = "047b1c64b8be17d4a6030ab2944ad715380f53a8a6dd9c8887f198693825a81d"
         creation_date = "2021-03-30"
@@ -886,6 +922,7 @@ rule Windows_Trojan_Trickbot_be718af9 {
 
 rule Windows_Trojan_Trickbot_f8dac4bc {
     meta:
+        author = "Elastic Security"
         id = "f8dac4bc-2ea1-4733-a260-59f3cae2eba8"
         fingerprint = "256daf823f6296ae02103336817dec565129a11f37445b791b2f8e3163f0c17f"
         creation_date = "2021-03-30"
@@ -918,6 +955,7 @@ rule Windows_Trojan_Trickbot_f8dac4bc {
 
 rule Windows_Trojan_Trickbot_9c0fa8fe {
     meta:
+        author = "Elastic Security"
         id = "9c0fa8fe-8d5f-4581-87a0-92a4ed1b32b3"
         fingerprint = "bd49ed2ee65ff0cfa95efc9887ed24de3882c5b5740d0efc6b9690454ca3f5dc"
         creation_date = "2021-07-13"

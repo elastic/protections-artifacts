@@ -1,5 +1,6 @@
 rule Windows_Trojan_StormKitty_6256031a {
     meta:
+        author = "Elastic Security"
         id = "6256031a-e7dd-423b-a83f-4db428cb3d1b"
         fingerprint = "6f0463de42c97701b0f3b8172e7e461501357921a3d11e6ca467bd1ca397d0b6"
         creation_date = "2022-03-21"

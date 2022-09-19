@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ircbot_bb204b81 {
     meta:
+        author = "Elastic Security"
         id = "bb204b81-db58-434f-b834-672cdc25e56c"
         fingerprint = "66f9a8a31653a5e480f427d2d6a25b934c2c53752308eedb57eaa7b7cb7dde2e"
         creation_date = "2021-04-06"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Ircbot_bb204b81 {
 
 rule Linux_Trojan_Ircbot_7c60454d {
     meta:
+        author = "Elastic Security"
         id = "7c60454d-8290-4e91-9b0a-2392aebe1bec"
         fingerprint = "4f14dcca5704c2ef32caaed1c048a5fb14095f31be8630676c07cbc8b22e6c4d"
         creation_date = "2022-01-05"

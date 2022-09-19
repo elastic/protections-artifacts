@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Cleanlog_c2907d77 {
     meta:
+        author = "Elastic Security"
         id = "c2907d77-6ea9-493f-a7b3-4a0795da0a1d"
         fingerprint = "131c71086c30ab22ca16b3020470561fa3d32c7ece9a8faa399a733e8894da30"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Hacktool_Cleanlog_c2907d77 {
 
 rule Linux_Hacktool_Cleanlog_3eb725d1 {
     meta:
+        author = "Elastic Security"
         id = "3eb725d1-24de-427a-b6ed-3ca03c0716df"
         fingerprint = "54d3c59ba5ca16fbe99a4629f4fe7464d13f781985a7f35d05604165f9284483"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Hacktool_Cleanlog_3eb725d1 {
 
 rule Linux_Hacktool_Cleanlog_400b7595 {
     meta:
+        author = "Elastic Security"
         id = "400b7595-c3c4-4999-b3b9-dcfe9b5df3f6"
         fingerprint = "4423f1597b199046bfc87923e3e229520daa2da68c4c4a3ac69127ace518f19a"
         creation_date = "2021-01-12"

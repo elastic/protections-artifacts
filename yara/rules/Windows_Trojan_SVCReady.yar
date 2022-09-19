@@ -1,5 +1,6 @@
 rule Windows_Trojan_SVCReady_af498d39 {
     meta:
+        author = "Elastic Security"
         id = "af498d39-6ae8-46de-ad6c-81b346d80139"
         fingerprint = "6e30d9977698c7864a8c264a7fe8c9a558f6e51dda9c887bda94261ce187645f"
         creation_date = "2022-06-12"

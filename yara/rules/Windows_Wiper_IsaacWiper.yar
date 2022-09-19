@@ -1,5 +1,6 @@
 rule Windows_Wiper_IsaacWiper_239cd2dc {
     meta:
+        author = "Elastic Security"
         id = "239cd2dc-6f93-43fa-98e8-ad7a0edb8a8a"
         fingerprint = "a9c193d7c60b0c793c299b23f672d6428ceb229f2ceb2acbfc1124387954b244"
         creation_date = "2022-03-04"

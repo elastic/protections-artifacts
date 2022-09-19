@@ -1,5 +1,6 @@
 rule Windows_Trojan_Beam_e41b243a {
     meta:
+        author = "Elastic Security"
         id = "e41b243a-020f-485e-b4bc-4db9d593e7af"
         fingerprint = "0863f858fcc03d9b5994e73ee3b9daf64b57b0eecd67b718eafa2ed162cf7878"
         creation_date = "2021-12-07"
@@ -22,6 +23,7 @@ rule Windows_Trojan_Beam_e41b243a {
 
 rule Windows_Trojan_Beam_5a951d13 {
     meta:
+        author = "Elastic Security"
         id = "5a951d13-9568-4a5f-bda3-645143bc16a1"
         fingerprint = "e3de6b47e563ebfd735cdd56f5b4077a8923026520ecca0628c5704272ea52bb"
         creation_date = "2021-12-07"

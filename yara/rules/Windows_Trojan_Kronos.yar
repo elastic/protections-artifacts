@@ -1,5 +1,6 @@
 rule Windows_Trojan_Kronos_cdd2e2c5 {
     meta:
+        author = "Elastic Security"
         id = "cdd2e2c5-17fc-4cec-aece-0b19c54faccf"
         fingerprint = "0e124d42a6741a095b66928303731e7060788bc1035b98b729ca91e4f7b6bc44"
         creation_date = "2021-02-07"

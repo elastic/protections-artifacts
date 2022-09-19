@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Bscope_348b7fa0 {
     meta:
+        author = "Elastic Security"
         id = "348b7fa0-e226-4350-8697-345ae39fa0f6"
         fingerprint = "caae9d3938f9269f8bc30e4837021513ca6e4e2edd1117d235b0d25474df5357"
         creation_date = "2021-01-12"

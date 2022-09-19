@@ -1,5 +1,6 @@
 rule Linux_Backdoor_Tinyshell_67ee6fae {
     meta:
+        author = "Elastic Security"
         id = "67ee6fae-304b-47f5-93b6-4086a864d433"
         fingerprint = "f71ce364fb607ee6f4422864674ae3d053453b488c139679aa485466893c563d"
         creation_date = "2021-10-12"

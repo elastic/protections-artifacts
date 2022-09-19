@@ -1,5 +1,6 @@
 rule Linux_Trojan_Xorddos_2aef46a6 {
     meta:
+        author = "Elastic Security"
         id = "2aef46a6-6daf-4f02-b1b4-e512cea12e53"
         fingerprint = "e583729c686b80e5da8e828a846cbd5218a4d787eff1fb2ce84a775ad67a1c4d"
         creation_date = "2021-01-12"
@@ -18,6 +19,7 @@ rule Linux_Trojan_Xorddos_2aef46a6 {
 
 rule Linux_Trojan_Xorddos_a6572d63 {
     meta:
+        author = "Elastic Security"
         id = "a6572d63-f9f3-4dfb-87e6-3b0bafd68a79"
         fingerprint = "fd32a773785f847cdd59d41786a8d8a7ba800a71d40d804aca51286d9bb1e1f0"
         creation_date = "2021-01-12"
@@ -37,6 +39,7 @@ rule Linux_Trojan_Xorddos_a6572d63 {
 
 rule Linux_Trojan_Xorddos_e41143e1 {
     meta:
+        author = "Elastic Security"
         id = "e41143e1-52d9-45c7-b19f-a5475b18a510"
         fingerprint = "f621a2e8c289772990093762f371bb6d5736085695881e728a0d2c013c2ad1d4"
         creation_date = "2021-01-12"
@@ -55,6 +58,7 @@ rule Linux_Trojan_Xorddos_e41143e1 {
 
 rule Linux_Trojan_Xorddos_0eb147ca {
     meta:
+        author = "Elastic Security"
         id = "0eb147ca-ec6d-4a6d-b807-4de8c1eff875"
         fingerprint = "6a1667f585a7bee05d5aece397a22e376562d2b264d3f287874e5a1843e67955"
         creation_date = "2021-01-12"
@@ -74,6 +78,7 @@ rule Linux_Trojan_Xorddos_0eb147ca {
 
 rule Linux_Trojan_Xorddos_884cab60 {
     meta:
+        author = "Elastic Security"
         id = "884cab60-214f-4879-aa51-c00de1a5ffc4"
         fingerprint = "47895e9c8acf66fc853c7947dc53730967d5a4670ef59c96569c577e1a260a72"
         creation_date = "2021-01-12"
@@ -92,6 +97,7 @@ rule Linux_Trojan_Xorddos_884cab60 {
 
 rule Linux_Trojan_Xorddos_ba961ed2 {
     meta:
+        author = "Elastic Security"
         id = "ba961ed2-b410-4da5-8452-a03cf5f59808"
         fingerprint = "fff4804164fb9ff1f667d619b6078b00a782b81716e217ad2c11df80cb8677aa"
         creation_date = "2021-01-12"
@@ -111,6 +117,7 @@ rule Linux_Trojan_Xorddos_ba961ed2 {
 
 rule Linux_Trojan_Xorddos_2084099a {
     meta:
+        author = "Elastic Security"
         id = "2084099a-1df6-4481-9d13-3a5bd6a53817"
         fingerprint = "dfb813a5713f0e7bdb5afd500f1e84c6f042c8b1a1d27dd6511dca7f2107c13b"
         creation_date = "2021-01-12"

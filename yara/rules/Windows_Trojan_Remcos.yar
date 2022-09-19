@@ -1,5 +1,6 @@
 rule Windows_Trojan_Remcos_b296e965 {
     meta:
+        author = "Elastic Security"
         id = "b296e965-a99e-4446-b969-ba233a2a8af4"
         fingerprint = "a5267bc2dee28a3ef58beeb7e4a151699e3e561c16ce0ab9eb27de33c122664d"
         creation_date = "2021-06-10"

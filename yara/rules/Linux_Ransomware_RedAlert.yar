@@ -1,5 +1,6 @@
 rule Linux_Ransomware_RedAlert_39642d52 {
     meta:
+        author = "Elastic Security"
         id = "39642d52-0a4b-48d5-bb62-8f37beb4dc6a"
         fingerprint = "744524ee2ae9e3e232f15b0576cdab836ac0fe3c9925eab66ed8c6b0be3f23d7"
         creation_date = "2022-07-06"

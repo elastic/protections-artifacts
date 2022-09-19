@@ -1,5 +1,6 @@
 rule Linux_Trojan_Patpooty_e2e0dff1 {
     meta:
+        author = "Elastic Security"
         id = "e2e0dff1-bb01-437e-b138-7da3954dc473"
         fingerprint = "275ff92c5de2d2183ea8870b7353d24f026f358dc7d30d1a35d508a158787719"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Patpooty_e2e0dff1 {
 
 rule Linux_Trojan_Patpooty_f90c7e43 {
     meta:
+        author = "Elastic Security"
         id = "f90c7e43-0c32-487f-a7c2-8290b341019c"
         fingerprint = "b0b0fd8da224bcd1c048c5578ed487d119f9bff4fb465f77d3043cf77d904f3d"
         creation_date = "2021-01-12"

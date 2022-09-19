@@ -1,5 +1,6 @@
 rule Windows_Trojan_Generic_a681f24a {
     meta:
+        author = "Elastic Security"
         id = "a681f24a-7054-4525-bcf8-3ee64a1d8413"
         fingerprint = "6323ed5b60e728297de19c878cd96b429bfd6d82157b4cf3475f3a3123921ae0"
         creation_date = "2021-06-10"
@@ -21,6 +22,7 @@ rule Windows_Trojan_Generic_a681f24a {
 
 rule Windows_Trojan_Generic_ae824b13 : ref1296 {
     meta:
+        author = "Elastic Security"
         id = "ae824b13-eaae-49e6-a965-ff10379f3c41"
         fingerprint = "8658996385aac060ebe9eab45bbea8b05b9008926bb3085e5589784473bc3086"
         creation_date = "2022-02-03"
@@ -42,6 +44,7 @@ rule Windows_Trojan_Generic_ae824b13 : ref1296 {
 
 rule Windows_Trojan_Generic_eb47e754 : ref1296 {
     meta:
+        author = "Elastic Security"
         id = "eb47e754-9b4d-45e7-b76c-027d03326c6c"
         fingerprint = "b71d13a34e5f791612ed414b8b0e993b1f476a8398a1b0be39046914ac5ac21d"
         creation_date = "2022-02-03"
@@ -63,6 +66,7 @@ rule Windows_Trojan_Generic_eb47e754 : ref1296 {
 
 rule Windows_Trojan_Generic_c7fd8d38 {
     meta:
+        author = "Elastic Security"
         id = "c7fd8d38-eaba-424d-b91a-098c439dab6b"
         fingerprint = "dc14cd519b3bbad7c2e655180a584db0a4e2ad4eea073a52c94b0a88152b37ba"
         creation_date = "2022-02-17"
@@ -86,6 +90,7 @@ rule Windows_Trojan_Generic_c7fd8d38 {
 
 rule Windows_Trojan_Generic_a160ca52 {
     meta:
+        author = "Elastic Security"
         id = "a160ca52-8911-4649-a1fa-ac8f6f75e18d"
         fingerprint = "06eca9064ca27784b61994844850f05c47c07ba6c4242a2572d6d0c484a920f0"
         creation_date = "2022-02-17"
@@ -105,6 +110,7 @@ rule Windows_Trojan_Generic_a160ca52 {
 
 rule Windows_Trojan_Generic_bbe6c282 {
     meta:
+        author = "Elastic Security"
         id = "bbe6c282-e92d-4021-bdaf-189337e4abf0"
         fingerprint = "e004d77440a86c23f23086e1ada6d1453178b9c2292782c1c88a7b14151c10fe"
         creation_date = "2022-03-02"
@@ -124,6 +130,7 @@ rule Windows_Trojan_Generic_bbe6c282 {
 
 rule Windows_Trojan_Generic_889b1248 {
     meta:
+        author = "Elastic Security"
         id = "889b1248-a694-4c9b-8792-c04e582e814c"
         fingerprint = "a5e0c2bbd6a297c01f31eccabcbe356730f50f074587f679da6caeca99e54bc1"
         creation_date = "2022-03-11"
@@ -146,6 +153,7 @@ rule Windows_Trojan_Generic_889b1248 {
 
 rule Windows_Trojan_Generic_02a87a20 {
     meta:
+        author = "Elastic Security"
         id = "02a87a20-a5b4-44c6-addc-c70b327d7b2c"
         fingerprint = "fb25a522888efa729ee6d43a3eec7ade3d08dba394f3592d1c3382a5f7a813c8"
         creation_date = "2022-03-04"

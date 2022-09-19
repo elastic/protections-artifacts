@@ -1,5 +1,6 @@
 rule Windows_Trojan_Guloader_8f10fa66 {
     meta:
+        author = "Elastic Security"
         id = "8f10fa66-a24b-4cc2-b9e0-11be14aba9af"
         fingerprint = "5841d70a38d4620c446427c80ca12b5e918f23e90c5288854943b0240958bcfb"
         creation_date = "2021-08-17"
@@ -23,6 +24,7 @@ rule Windows_Trojan_Guloader_8f10fa66 {
 
 rule Windows_Trojan_Guloader_c4d9dd33 {
     meta:
+        author = "Elastic Security"
         id = "c4d9dd33-b7e7-4ff4-a2f3-62316d064f5a"
         fingerprint = "53a2d6f895cdd1a6384a55756711d9d758b3b20dd0b87d62a89111fd1a20d1d6"
         creation_date = "2021-08-17"

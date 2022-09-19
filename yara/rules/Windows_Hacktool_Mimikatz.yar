@@ -1,5 +1,6 @@
 rule Windows_Hacktool_Mimikatz_1388212a {
     meta:
+        author = "Elastic Security"
         id = "1388212a-2146-4565-b93d-4555a110364f"
         fingerprint = "dbbdc492c07e3b95d677044751ee4365ec39244e300db9047ac224029dfe6ab7"
         creation_date = "2021-04-13"
@@ -43,6 +44,7 @@ rule Windows_Hacktool_Mimikatz_1388212a {
 
 rule Windows_Hacktool_Mimikatz_674fd079 {
     meta:
+        author = "Elastic Security"
         id = "674fd079-f7fe-4d89-87e7-ac11aa21c9ed"
         fingerprint = "b8f71996180e5f03c10e39eb36b2084ecaff78d7af34bd3d0d75225d2cfad765"
         creation_date = "2021-04-14"
@@ -76,6 +78,7 @@ rule Windows_Hacktool_Mimikatz_674fd079 {
 
 rule Windows_Hacktool_Mimikatz_355d5d3a {
     meta:
+        author = "Elastic Security"
         id = "355d5d3a-e50e-4614-9a84-0da668c40852"
         fingerprint = "9a23845ec9852d2490171af111612dc257a6b21ad7fdfd8bf22d343dc301d135"
         creation_date = "2021-04-14"
@@ -106,5 +109,47 @@ rule Windows_Hacktool_Mimikatz_355d5d3a {
         $c10 = "#If a remote process to inject in to is specified, get a handle to it" fullword
     condition:
         (1 of ($a*) or 2 of ($b*)) or 5 of ($c*)
+}
+
+rule Windows_Hacktool_Mimikatz_71fe23d9 {
+    meta:
+        author = "Elastic Security"
+        id = "71fe23d9-ee1a-47fb-a99f-2be2eb9ccb1a"
+        fingerprint = "9532aba703cb5a2a37d753e073f5f8711fba5da44ca0f34f524d75eab66f2ac8"
+        creation_date = "2022-04-07"
+        last_modified = "2022-04-07"
+        description = "Subject: Benjamin Delpy"
+        threat_name = "Windows.Hacktool.Mimikatz"
+        reference_sample = "856687718b208341e7caeea2d96da10f880f9b5a75736796a1158d4c8755f678"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 42 65 6E 6A 61 6D 69 6E 20 44 65 6C 70 79 }
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name in (filesize - 50KB .. filesize)
+}
+
+rule Windows_Hacktool_Mimikatz_b393864f {
+    meta:
+        author = "Elastic Security"
+        id = "b393864f-a9b0-47e7-aea4-0fc5a4a22a82"
+        fingerprint = "8818641bc901dde426f121fa4c8ff4d8001c31e4312da1c9f7fae8d3bc69d7b8"
+        creation_date = "2022-04-07"
+        last_modified = "2022-04-07"
+        description = "Subject: Open Source Developer, Benjamin Delpy"
+        threat_name = "Windows.Hacktool.Mimikatz"
+        reference_sample = "8206ce9c42582ac980ff5d64f8e3e310bc2baa42d1a206dd831c6ab397fbd8fe"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4F 70 65 6E 20 53 6F 75 72 63 65 20 44 65 76 65 6C 6F 70 65 72 2C 20 42 65 6E 6A 61 6D 69 6E 20 44 65 6C 70 79 }
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name in (filesize - 50KB .. filesize)
 }
 

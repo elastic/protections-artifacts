@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Conti_89f3f6fa {
     meta:
+        author = "Elastic Security"
         id = "89f3f6fa-492c-40e3-a4aa-a526004197b2"
         fingerprint = "a82331eba3cbd52deb4bed5e11035ac1e519ec27931507f582f2985865c0fb1a"
         creation_date = "2021-08-05"

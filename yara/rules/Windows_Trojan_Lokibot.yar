@@ -1,5 +1,6 @@
 rule Windows_Trojan_Lokibot_1f885282 {
     meta:
+        author = "Elastic Security"
         id = "1f885282-b60e-491e-ae1b-d26825e5aadb"
         fingerprint = "a7519bb0751a6c928af7548eaed2459e0ed26128350262d1278f74f2ad91331b"
         creation_date = "2021-06-22"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Lokibot_1f885282 {
 
 rule Windows_Trojan_Lokibot_0f421617 {
     meta:
+        author = "Elastic Security"
         id = "0f421617-df2b-4cb5-9d10-d984f6553012"
         fingerprint = "9ff5d594428e4a5de84f0142dfa9f54cb75489192461deb978c70f1bdc88acda"
         creation_date = "2021-07-20"

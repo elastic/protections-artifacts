@@ -1,5 +1,6 @@
 rule Windows_Trojan_Xpertrat_ce03c41d {
     meta:
+        author = "Elastic Security"
         id = "ce03c41d-d5c3-43f5-b3ca-f244f177d710"
         fingerprint = "8aa4336ba6909c820f1164c78453629959e28cb619fda45dbe46291f9fbcbec4"
         creation_date = "2021-08-06"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Nuker_12f26779 {
     meta:
+        author = "Elastic Security"
         id = "12f26779-bda5-45b1-925f-75c620d7d840"
         fingerprint = "9093a96321ad912f2bb953cce460d0945c1c4e5aacd8431f343498203b85bb9b"
         creation_date = "2021-04-06"

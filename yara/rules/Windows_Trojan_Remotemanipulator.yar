@@ -1,5 +1,6 @@
 rule Windows_Trojan_Remotemanipulator_9ec52153 {
     meta:
+        author = "Elastic Security"
         id = "9ec52153-3b62-432d-b87c-895035df1a46"
         fingerprint = "02220e8af70ecffb3a7585f756c59ef5d9e17e6690c36d6bffc458e1d17dbd0c"
         creation_date = "2021-09-02"

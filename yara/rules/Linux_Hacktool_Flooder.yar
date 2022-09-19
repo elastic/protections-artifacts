@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Flooder_825b6808 {
     meta:
+        author = "Elastic Security"
         id = "825b6808-9b23-4a55-9f26-a34cab6ea92b"
         fingerprint = "e2db86e614b9bc0de06daf626abe652cc6385cca8ba96a2f2e394cf82be7a29b"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Hacktool_Flooder_825b6808 {
 
 rule Linux_Hacktool_Flooder_a44ab8cd {
     meta:
+        author = "Elastic Security"
         id = "a44ab8cd-c45e-4fe8-b96d-d4fe227f3107"
         fingerprint = "0d77547064aeca6714ede98df686011c139ca720a71bcac23e40b0c02d302d6a"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Hacktool_Flooder_a44ab8cd {
 
 rule Linux_Hacktool_Flooder_7026f674 {
     meta:
+        author = "Elastic Security"
         id = "7026f674-83b7-432b-9197-2d71abdb9579"
         fingerprint = "acf93628ecbda544c6c5d88388ac85bb2755c71544a0980ee1b2854c6bdb7c77"
         creation_date = "2021-01-12"
@@ -57,6 +60,7 @@ rule Linux_Hacktool_Flooder_7026f674 {
 
 rule Linux_Hacktool_Flooder_761ad88e {
     meta:
+        author = "Elastic Security"
         id = "761ad88e-1667-4253-81f6-52c92e0ccd68"
         fingerprint = "14e701abdef422dcde869a2278ec6e1fb7889dcd9681a224b29a00bcb365e391"
         creation_date = "2021-01-12"
@@ -76,6 +80,7 @@ rule Linux_Hacktool_Flooder_761ad88e {
 
 rule Linux_Hacktool_Flooder_b93655d3 {
     meta:
+        author = "Elastic Security"
         id = "b93655d3-1d3f-42f4-a47f-a69624e90da5"
         fingerprint = "55119467cb5f9789b74064e63c1e7d905457b54f6e4da1a83c498313d6c90b5b"
         creation_date = "2021-01-12"
@@ -94,6 +99,7 @@ rule Linux_Hacktool_Flooder_b93655d3 {
 
 rule Linux_Hacktool_Flooder_af9f75e6 {
     meta:
+        author = "Elastic Security"
         id = "af9f75e6-9a9b-4e03-9c76-8c0c9f07c8b1"
         fingerprint = "f6e7d6e9c03c8ce3e14b214fe268e7aab2e15c1b4378fe253021497fb9a884e6"
         creation_date = "2021-01-12"
@@ -113,6 +119,7 @@ rule Linux_Hacktool_Flooder_af9f75e6 {
 
 rule Linux_Hacktool_Flooder_1bf0e994 {
     meta:
+        author = "Elastic Security"
         id = "1bf0e994-2648-4dbb-9b9c-b86b9a347700"
         fingerprint = "1f844c349b47dd49a75d50e43b6664e9d2b95c362efb730448934788b6bddb79"
         creation_date = "2021-01-12"
@@ -132,6 +139,7 @@ rule Linux_Hacktool_Flooder_1bf0e994 {
 
 rule Linux_Hacktool_Flooder_d710a5da {
     meta:
+        author = "Elastic Security"
         id = "d710a5da-26bf-4f6a-bf51-9cdac1f83aa3"
         fingerprint = "e673aa8785c7076f4cced9f12b284a2927b762fe1066aba8d6a5ace775f3480c"
         creation_date = "2021-01-12"
@@ -151,6 +159,7 @@ rule Linux_Hacktool_Flooder_d710a5da {
 
 rule Linux_Hacktool_Flooder_f434a3fb {
     meta:
+        author = "Elastic Security"
         id = "f434a3fb-e5fd-4749-8e53-fc6c80ee5406"
         fingerprint = "b74e55c56a063e14608f7e8f578cc3c74ec57954df39e63e49b60c0055725d51"
         creation_date = "2021-01-12"
@@ -170,6 +179,7 @@ rule Linux_Hacktool_Flooder_f434a3fb {
 
 rule Linux_Hacktool_Flooder_a2795a4c {
     meta:
+        author = "Elastic Security"
         id = "a2795a4c-16c0-4237-a014-3570d1edb287"
         fingerprint = "7c8bf248b159f3a140f10cd40d182fa84f334555b92306e6f44e746711b184cc"
         creation_date = "2021-01-12"
@@ -189,6 +199,7 @@ rule Linux_Hacktool_Flooder_a2795a4c {
 
 rule Linux_Hacktool_Flooder_678c1145 {
     meta:
+        author = "Elastic Security"
         id = "678c1145-cc41-4e83-bc88-30f64da46dd3"
         fingerprint = "f4f66668b45f520bc107b7f671f8c7f42073d7ff28863e846a74fbd6cac03e87"
         creation_date = "2021-01-12"
@@ -208,6 +219,7 @@ rule Linux_Hacktool_Flooder_678c1145 {
 
 rule Linux_Hacktool_Flooder_3cbdfb1f {
     meta:
+        author = "Elastic Security"
         id = "3cbdfb1f-6c66-48be-931e-3ae609c46ff4"
         fingerprint = "c7f5d7641ea6e780bc3045181c929be73621acfe6aec4d157f6a9e0334ba7fb9"
         creation_date = "2021-01-12"
@@ -227,6 +239,7 @@ rule Linux_Hacktool_Flooder_3cbdfb1f {
 
 rule Linux_Hacktool_Flooder_8b63ff02 {
     meta:
+        author = "Elastic Security"
         id = "8b63ff02-be86-4c63-8f7b-4c70fbd8a83a"
         fingerprint = "af7a4df7e707c1b70fb2b29efe2492e6f77cdde5e8d1e6bfdf141acabc8759eb"
         creation_date = "2021-01-12"
@@ -246,6 +259,7 @@ rule Linux_Hacktool_Flooder_8b63ff02 {
 
 rule Linux_Hacktool_Flooder_30973084 {
     meta:
+        author = "Elastic Security"
         id = "30973084-60d2-494d-a3c6-2a015a9459a0"
         fingerprint = "44fc236199ccf53107f1a617ac872f51d58a99ec242fe97b913e55b3ec9638e2"
         creation_date = "2021-01-12"
@@ -265,6 +279,7 @@ rule Linux_Hacktool_Flooder_30973084 {
 
 rule Linux_Hacktool_Flooder_1cfa95dd {
     meta:
+        author = "Elastic Security"
         id = "1cfa95dd-e768-4071-9038-389c580741f9"
         fingerprint = "6ec21acb987464613830b3bbe1e2396093d269dae138c68fe77f35d88796001e"
         creation_date = "2021-01-12"
@@ -284,6 +299,7 @@ rule Linux_Hacktool_Flooder_1cfa95dd {
 
 rule Linux_Hacktool_Flooder_25c48456 {
     meta:
+        author = "Elastic Security"
         id = "25c48456-2f83-41a8-ba37-b557014d1d86"
         fingerprint = "0c79f8eaacd2aa1fa60d5bfb7b567a9fc3e65068be1516ca723cb1394bb564ce"
         creation_date = "2021-01-12"
@@ -303,6 +319,7 @@ rule Linux_Hacktool_Flooder_25c48456 {
 
 rule Linux_Hacktool_Flooder_b1ca2abd {
     meta:
+        author = "Elastic Security"
         id = "b1ca2abd-b8ab-435d-85b6-a1c93212e492"
         fingerprint = "214c9dedf34b2c8502c6ef14aff5727ac5a2941e1a8278a48d34fea14d584a1a"
         creation_date = "2021-01-12"
@@ -322,6 +339,7 @@ rule Linux_Hacktool_Flooder_b1ca2abd {
 
 rule Linux_Hacktool_Flooder_8f25995c {
     meta:
+        author = "Elastic Security"
         id = "8f25995c-a1d1-454d-8210-4c929c8a1f3b"
         fingerprint = "0ab165b98a31375e089f212b26cbe919657fb402f7be9bf10024ca57ea14924f"
         creation_date = "2021-01-12"
@@ -341,6 +359,7 @@ rule Linux_Hacktool_Flooder_8f25995c {
 
 rule Linux_Hacktool_Flooder_cce8c792 {
     meta:
+        author = "Elastic Security"
         id = "cce8c792-ef3e-43c2-b4ad-343de6a69cc7"
         fingerprint = "03541eb8a293e88c0b8e6509310f8c57f2cd16b5ff76783a73bde2b614b607fc"
         creation_date = "2021-01-12"
@@ -360,6 +379,7 @@ rule Linux_Hacktool_Flooder_cce8c792 {
 
 rule Linux_Hacktool_Flooder_4bcea1c4 {
     meta:
+        author = "Elastic Security"
         id = "4bcea1c4-de08-4526-8d31-89c5512f07af"
         fingerprint = "e859966e8281e024c82dedd5bd237ab53af28a0cb21d24daa456e5cd1186c352"
         creation_date = "2021-01-12"
@@ -379,6 +399,7 @@ rule Linux_Hacktool_Flooder_4bcea1c4 {
 
 rule Linux_Hacktool_Flooder_ab561a1b {
     meta:
+        author = "Elastic Security"
         id = "ab561a1b-d8dd-4768-9b4c-07ef4777b252"
         fingerprint = "081dd5eb061c8023756e413420241e20a2c86097f95859181ca5d6b1d24fdd76"
         creation_date = "2021-01-12"
@@ -398,6 +419,7 @@ rule Linux_Hacktool_Flooder_ab561a1b {
 
 rule Linux_Hacktool_Flooder_1a4eb229 {
     meta:
+        author = "Elastic Security"
         id = "1a4eb229-a194-46a5-8e93-370a40ba999b"
         fingerprint = "de076ef23c2669512efc00ddfe926ef04f8ad939061c69131a0ef9a743639371"
         creation_date = "2021-01-12"
@@ -417,6 +439,7 @@ rule Linux_Hacktool_Flooder_1a4eb229 {
 
 rule Linux_Hacktool_Flooder_51ef0659 {
     meta:
+        author = "Elastic Security"
         id = "51ef0659-2691-4558-bff8-fce614f10ab9"
         fingerprint = "41f517a19a3c4dc412200b683f4902a656f3dcfdead8b8292e309413577c3850"
         creation_date = "2021-01-12"
@@ -436,6 +459,7 @@ rule Linux_Hacktool_Flooder_51ef0659 {
 
 rule Linux_Hacktool_Flooder_d90c4cbe {
     meta:
+        author = "Elastic Security"
         id = "d90c4cbe-4d0a-4341-a58b-a472b67282d6"
         fingerprint = "64796aa7faa2e945b5c856c1c913cb62175413dc1df88505dececcfbd2878cb1"
         creation_date = "2021-01-12"
@@ -455,6 +479,7 @@ rule Linux_Hacktool_Flooder_d90c4cbe {
 
 rule Linux_Hacktool_Flooder_63d14795 {
     meta:
+        author = "Elastic Security"
         id = "63d14795-59c9-4387-aeca-400dcc4a9063"
         fingerprint = "89a32efdd6e39ec16988e4f64ff6b6ee4090dd05f005bf7ac1ebcded97955835"
         creation_date = "2021-01-12"
@@ -474,6 +499,7 @@ rule Linux_Hacktool_Flooder_63d14795 {
 
 rule Linux_Hacktool_Flooder_c680c9fd {
     meta:
+        author = "Elastic Security"
         id = "c680c9fd-34ad-4d92-b8d6-1b511c7c07a3"
         fingerprint = "5cb5b36d3ae5525b992a9d395b54429f52b11ea229e0cecbd62317af7b5faf84"
         creation_date = "2021-01-12"
@@ -493,6 +519,7 @@ rule Linux_Hacktool_Flooder_c680c9fd {
 
 rule Linux_Hacktool_Flooder_e63396f4 {
     meta:
+        author = "Elastic Security"
         id = "e63396f4-a297-4d99-b341-34cb22498078"
         fingerprint = "269285d03ea1a3b41ff134ab2cf5e22502626c72401b83add6c1e165f4dd83f8"
         creation_date = "2021-04-06"
@@ -512,6 +539,7 @@ rule Linux_Hacktool_Flooder_e63396f4 {
 
 rule Linux_Hacktool_Flooder_7d5355da {
     meta:
+        author = "Elastic Security"
         id = "7d5355da-5fbd-46c0-8bd2-33a27cbcca63"
         fingerprint = "52882595f28e1778ee3b0e6bda94319f5c348523f16566833281f19912360270"
         creation_date = "2021-06-28"
@@ -531,6 +559,7 @@ rule Linux_Hacktool_Flooder_7d5355da {
 
 rule Linux_Hacktool_Flooder_a9e8a90f {
     meta:
+        author = "Elastic Security"
         id = "a9e8a90f-5d95-4f4e-a9e0-c595be3729dd"
         fingerprint = "a06bbcbc09e5e44447b458d302c47e4f18438be8d57687700cb4bf3f3630fba8"
         creation_date = "2021-06-28"
@@ -550,6 +579,7 @@ rule Linux_Hacktool_Flooder_a9e8a90f {
 
 rule Linux_Hacktool_Flooder_a598192a {
     meta:
+        author = "Elastic Security"
         id = "a598192a-c804-4c57-9cc3-c2205cb431d3"
         fingerprint = "61cb72180283746ebbd82047baffc4bf2384658019970c4dceadfb5c946abcd2"
         creation_date = "2021-06-28"
@@ -569,6 +599,7 @@ rule Linux_Hacktool_Flooder_a598192a {
 
 rule Linux_Hacktool_Flooder_53bf4e37 {
     meta:
+        author = "Elastic Security"
         id = "53bf4e37-e043-4cf2-ad2a-bc63d69585ae"
         fingerprint = "83e804640b0848caa532dadc33923c226a34e0272457bde00325069ded55f256"
         creation_date = "2021-06-28"
@@ -588,6 +619,7 @@ rule Linux_Hacktool_Flooder_53bf4e37 {
 
 rule Linux_Hacktool_Flooder_50158a6e {
     meta:
+        author = "Elastic Security"
         id = "50158a6e-d412-4e37-a8b5-c7c79a2a5393"
         fingerprint = "f6286d1fd84aad72cdb8c655814a9df1848fae94ae931ccf62187c100b27a349"
         creation_date = "2021-06-28"
@@ -607,6 +639,7 @@ rule Linux_Hacktool_Flooder_50158a6e {
 
 rule Linux_Hacktool_Flooder_f454ec10 {
     meta:
+        author = "Elastic Security"
         id = "f454ec10-7a67-4717-9e95-fecb7c357566"
         fingerprint = "2ae5e2c3190a4ce5d238efdb10ac0520987425fb7af52246b6bf948abd0259da"
         creation_date = "2022-01-05"
@@ -626,6 +659,7 @@ rule Linux_Hacktool_Flooder_f454ec10 {
 
 rule Linux_Hacktool_Flooder_9417f77b {
     meta:
+        author = "Elastic Security"
         id = "9417f77b-190b-4834-b57a-08a7cbfac884"
         fingerprint = "d321ea7aeb293f8f50236bddeee99802225b70e8695bb3527a89beea51e3ffb3"
         creation_date = "2022-01-05"

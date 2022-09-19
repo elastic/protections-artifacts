@@ -1,5 +1,6 @@
 rule Linux_Trojan_Azeela_aad9d6cc {
     meta:
+        author = "Elastic Security"
         id = "aad9d6cc-32ff-431a-9914-01c7adc80877"
         fingerprint = "3b7c73a378157350344d52acd6c210d5924cf55081b386d0d60345e4c44c5921"
         creation_date = "2021-01-12"

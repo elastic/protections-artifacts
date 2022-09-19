@@ -1,5 +1,6 @@
 rule Windows_Trojan_Emotet_18379a8d {
     meta:
+        author = "Elastic Security"
         id = "18379a8d-f1f2-49cc-8edf-58a3ba77efe7"
         fingerprint = "b7650b902a1a02029e28c88dd7ff91d841136005b0246ef4a08aaf70e57df9cc"
         creation_date = "2021-11-17"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Emotet_18379a8d {
 
 rule Windows_Trojan_Emotet_5528b3b0 {
     meta:
+        author = "Elastic Security"
         id = "5528b3b0-d4cb-485e-bc0c-96415ec3a795"
         fingerprint = "717ed656d1bd4ba0e4dae8e47268e2c068dad3e3e883ff6da2f951d61f1be642"
         creation_date = "2021-11-17"
@@ -38,6 +40,7 @@ rule Windows_Trojan_Emotet_5528b3b0 {
 
 rule Windows_Trojan_Emotet_1943bbf2 {
     meta:
+        author = "Elastic Security"
         id = "1943bbf2-56c0-443e-9208-cd8fc3b02d79"
         fingerprint = "df8b73d83a50a58ed8332b7580c970c2994aa31d2ac1756cff8e0cd1777fb8fa"
         creation_date = "2021-11-18"
@@ -57,6 +60,7 @@ rule Windows_Trojan_Emotet_1943bbf2 {
 
 rule Windows_Trojan_Emotet_db7d33fa {
     meta:
+        author = "Elastic Security"
         id = "db7d33fa-e50c-4c59-ab92-edb74aac87c9"
         fingerprint = "eac196154ab1ad636654c966e860dcd5763c50d7b8221dbbc7769c879daf02fd"
         creation_date = "2022-05-09"
@@ -83,6 +87,7 @@ rule Windows_Trojan_Emotet_db7d33fa {
 
 rule Windows_Trojan_Emotet_d6ac1ea4 {
     meta:
+        author = "Elastic Security"
         id = "d6ac1ea4-b0a8-4023-b712-9f4f2c7146a3"
         fingerprint = "7e6224c58c283765b5e819eb46814c556ae6b7b5931cd1e3e19ca3ec8fa31aa2"
         creation_date = "2022-05-24"

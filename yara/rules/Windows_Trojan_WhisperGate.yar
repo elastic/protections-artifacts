@@ -1,5 +1,6 @@
 rule Windows_Trojan_WhisperGate_9192618b {
     meta:
+        author = "Elastic Security"
         id = "9192618b-4f3e-4503-a97f-3c4420fb79e0"
         fingerprint = "21f2a5b730a86567e68491a0d997fc52ba37f28b2164747240a74c225be3c661"
         creation_date = "2022-01-17"

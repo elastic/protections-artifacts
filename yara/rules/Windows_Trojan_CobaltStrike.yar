@@ -1,5 +1,6 @@
 rule Windows_Trojan_CobaltStrike_c851687a {
     meta:
+        author = "Elastic Security"
         id = "c851687a-aac6-43e7-a0b6-6aed36dcf12e"
         fingerprint = "70224e28a223d09f2211048936beb9e2d31c0312c97a80e22c85e445f1937c10"
         creation_date = "2021-03-23"
@@ -37,6 +38,7 @@ rule Windows_Trojan_CobaltStrike_c851687a {
 
 rule Windows_Trojan_CobaltStrike_0b58325e {
     meta:
+        author = "Elastic Security"
         id = "0b58325e-2538-434d-9a2c-26e2c32db039"
         fingerprint = "8ecd5bdce925ae5d4f90cecb9bc8c3901b54ba1c899a33354bcf529eeb2485d4"
         creation_date = "2021-03-23"
@@ -76,6 +78,7 @@ rule Windows_Trojan_CobaltStrike_0b58325e {
 
 rule Windows_Trojan_CobaltStrike_2b8cddf8 {
     meta:
+        author = "Elastic Security"
         id = "2b8cddf8-ca7a-4f85-be9d-6d8534d0482e"
         fingerprint = "0d7d28d79004ca61b0cfdcda29bd95e3333e6fc6e6646a3f6ba058aa01bee188"
         creation_date = "2021-03-23"
@@ -112,6 +115,7 @@ rule Windows_Trojan_CobaltStrike_2b8cddf8 {
 
 rule Windows_Trojan_CobaltStrike_59b44767 {
     meta:
+        author = "Elastic Security"
         id = "59b44767-c9a5-42c0-b177-7fe49afd7dfb"
         fingerprint = "882886a282ec78623a0d3096be3d324a8a1b8a23bcb88ea0548df2fae5e27aa5"
         creation_date = "2021-03-23"
@@ -139,6 +143,7 @@ rule Windows_Trojan_CobaltStrike_59b44767 {
 
 rule Windows_Trojan_CobaltStrike_7efd3c3f {
     meta:
+        author = "Elastic Security"
         id = "7efd3c3f-1104-4b46-9d1e-dc2c62381b8c"
         fingerprint = "9e7c7c9a7436f5ee4c27fd46d6f06e7c88f4e4d1166759573cedc3ed666e1838"
         creation_date = "2021-03-23"
@@ -164,6 +169,7 @@ rule Windows_Trojan_CobaltStrike_7efd3c3f {
 
 rule Windows_Trojan_CobaltStrike_6e971281 {
     meta:
+        author = "Elastic Security"
         id = "6e971281-3ee3-402f-8a72-745ec8fb91fb"
         fingerprint = "62d97cf73618a1b4d773d5494b2761714be53d5cda774f9a96eaa512c8d5da12"
         creation_date = "2021-03-23"
@@ -196,6 +202,7 @@ rule Windows_Trojan_CobaltStrike_6e971281 {
 
 rule Windows_Trojan_CobaltStrike_09b79efa {
     meta:
+        author = "Elastic Security"
         id = "09b79efa-55d7-481d-9ee0-74ac5f787cef"
         fingerprint = "04ef6555e8668c56c528dc62184331a6562f47652c73de732e5f7c82779f2fd8"
         creation_date = "2021-03-23"
@@ -226,6 +233,7 @@ rule Windows_Trojan_CobaltStrike_09b79efa {
 
 rule Windows_Trojan_CobaltStrike_6e77233e {
     meta:
+        author = "Elastic Security"
         id = "6e77233e-7fb4-4295-823d-f97786c5d9c4"
         fingerprint = "cef2949eae78b1c321c2ec4010749a5ac0551d680bd5eb85493fc88c5227d285"
         creation_date = "2021-03-23"
@@ -262,6 +270,7 @@ rule Windows_Trojan_CobaltStrike_6e77233e {
 
 rule Windows_Trojan_CobaltStrike_de42495a {
     meta:
+        author = "Elastic Security"
         id = "de42495a-0002-466e-98b9-19c9ebb9240e"
         fingerprint = "dab3c25809ec3af70df5a8a04a2efd4e8ecb13a4c87001ea699e7a1512973b82"
         creation_date = "2021-03-23"
@@ -293,6 +302,7 @@ rule Windows_Trojan_CobaltStrike_de42495a {
 
 rule Windows_Trojan_CobaltStrike_72f68375 {
     meta:
+        author = "Elastic Security"
         id = "72f68375-35ab-49cc-905d-15302389a236"
         fingerprint = "ecc28f414b2c347722b681589da8529c6f3af0491845453874f8fd87c2ae86d7"
         creation_date = "2021-03-23"
@@ -319,6 +329,7 @@ rule Windows_Trojan_CobaltStrike_72f68375 {
 
 rule Windows_Trojan_CobaltStrike_15f680fb {
     meta:
+        author = "Elastic Security"
         id = "15f680fb-a04f-472d-a182-0b9bee111351"
         fingerprint = "0ecb8e41c01bf97d6dea4cf6456b769c6dd2a037b37d754f38580bcf561e1d2c"
         creation_date = "2021-03-23"
@@ -350,6 +361,7 @@ rule Windows_Trojan_CobaltStrike_15f680fb {
 
 rule Windows_Trojan_CobaltStrike_5b4383ec {
     meta:
+        author = "Elastic Security"
         id = "5b4383ec-3c93-4e91-850e-d43cc3a86710"
         fingerprint = "283d3d2924e92b31f26ec4fc6b79c51bd652fb1377b6985b003f09f8c3dba66c"
         creation_date = "2021-03-23"
@@ -381,6 +393,7 @@ rule Windows_Trojan_CobaltStrike_5b4383ec {
 
 rule Windows_Trojan_CobaltStrike_91e08059 {
     meta:
+        author = "Elastic Security"
         id = "91e08059-46a8-47d0-91c9-e86874951a4a"
         fingerprint = "d8baacb58a3db00489827275ad6a2d007c018eaecbce469356b068d8a758634b"
         creation_date = "2021-03-23"
@@ -409,6 +422,7 @@ rule Windows_Trojan_CobaltStrike_91e08059 {
 
 rule Windows_Trojan_CobaltStrike_ee756db7 {
     meta:
+        author = "Elastic Security"
         id = "ee756db7-e177-41f0-af99-c44646d334f7"
         fingerprint = "e589cc259644bc75d6c4db02a624c978e855201cf851c0d87f0d54685ce68f71"
         creation_date = "2021-03-23"
@@ -478,6 +492,7 @@ rule Windows_Trojan_CobaltStrike_ee756db7 {
 
 rule Windows_Trojan_CobaltStrike_9c0d5561 {
     meta:
+        author = "Elastic Security"
         id = "9c0d5561-5b09-44ae-8e8c-336dee606199"
         fingerprint = "01d53fcdb320f0cd468a2521c3e96dcb0b9aa00e7a7a9442069773c6b3759059"
         creation_date = "2021-03-23"
@@ -509,6 +524,7 @@ rule Windows_Trojan_CobaltStrike_9c0d5561 {
 
 rule Windows_Trojan_CobaltStrike_59ed9124 {
     meta:
+        author = "Elastic Security"
         id = "59ed9124-bc20-4ea6-b0a7-63ee3359e69c"
         fingerprint = "7823e3b98e55a83bf94b0f07e4c116dbbda35adc09fa0b367f8a978a80c2efff"
         creation_date = "2021-03-23"
@@ -545,6 +561,7 @@ rule Windows_Trojan_CobaltStrike_59ed9124 {
 
 rule Windows_Trojan_CobaltStrike_8a791eb7 {
     meta:
+        author = "Elastic Security"
         id = "8a791eb7-dc0c-4150-9e5b-2dc21af0c77d"
         fingerprint = "4967886ba5e663f2e2dc0631939308d7d8f2194a30590a230973e1b91bd625e1"
         creation_date = "2021-03-23"
@@ -581,6 +598,7 @@ rule Windows_Trojan_CobaltStrike_8a791eb7 {
 
 rule Windows_Trojan_CobaltStrike_d00573a3 {
     meta:
+        author = "Elastic Security"
         id = "d00573a3-db26-4e6b-aabf-7af4a818f383"
         fingerprint = "b6fa0792b99ea55f359858d225685647f54b55caabe53f58b413083b8ad60e79"
         creation_date = "2021-03-23"
@@ -608,6 +626,7 @@ rule Windows_Trojan_CobaltStrike_d00573a3 {
 
 rule Windows_Trojan_CobaltStrike_7bcd759c {
     meta:
+        author = "Elastic Security"
         id = "7bcd759c-8e3d-4559-9381-1f4fe8b3dd95"
         fingerprint = "553085f1d1ca8dcd797360b287951845753eee7370610a1223c815a200a5ed20"
         creation_date = "2021-03-23"
@@ -630,6 +649,7 @@ rule Windows_Trojan_CobaltStrike_7bcd759c {
 
 rule Windows_Trojan_CobaltStrike_a56b820f {
     meta:
+        author = "Elastic Security"
         id = "a56b820f-0a20-4054-9c2d-008862646a78"
         fingerprint = "5418e695bcb1c37e72a7ff24a39219dc12b3fe06c29cedefd500c5e82c362b6d"
         creation_date = "2021-03-23"
@@ -666,6 +686,7 @@ rule Windows_Trojan_CobaltStrike_a56b820f {
 
 rule Windows_Trojan_CobaltStrike_92f05172 {
     meta:
+        author = "Elastic Security"
         id = "92f05172-f15c-4077-a958-b8490378bf08"
         fingerprint = "09b1f7087d45fb4247a33ae3112910bf5426ed750e1e8fe7ba24a9047b76cc82"
         creation_date = "2021-03-23"
@@ -696,6 +717,7 @@ rule Windows_Trojan_CobaltStrike_92f05172 {
 
 rule Windows_Trojan_CobaltStrike_417239b5 {
     meta:
+        author = "Elastic Security"
         id = "417239b5-cf2d-4c85-a022-7a8459c26793"
         fingerprint = "292afee829e838f9623547f94d0561e8a9115ce7f4c40ae96c6493f3cc5ffa9b"
         creation_date = "2021-03-23"
@@ -743,6 +765,7 @@ rule Windows_Trojan_CobaltStrike_417239b5 {
 
 rule Windows_Trojan_CobaltStrike_29374056 {
     meta:
+        author = "Elastic Security"
         id = "29374056-03ce-484b-8b2d-fbf75be86e27"
         fingerprint = "4cd7552a499687ac0279fb2e25722f979fc5a22afd1ea4abba14a2ef2002dd0f"
         creation_date = "2021-03-23"
@@ -763,6 +786,7 @@ rule Windows_Trojan_CobaltStrike_29374056 {
 
 rule Windows_Trojan_CobaltStrike_949f10e3 {
     meta:
+        author = "Elastic Security"
         id = "949f10e3-68c9-4600-a620-ed3119e09257"
         fingerprint = "34e04901126a91c866ebf61a61ccbc3ce0477d9614479c42d8ce97a98f2ce2a7"
         creation_date = "2021-03-25"
@@ -783,6 +807,7 @@ rule Windows_Trojan_CobaltStrike_949f10e3 {
 
 rule Windows_Trojan_CobaltStrike_8751cdf9 {
     meta:
+        author = "Elastic Security"
         id = "8751cdf9-4038-42ba-a6eb-f8ac579a4fbb"
         fingerprint = "0988386ef4ba54dd90b0cf6d6a600b38db434e00e569d69d081919cdd3ea4d3f"
         creation_date = "2021-03-25"
@@ -803,6 +828,7 @@ rule Windows_Trojan_CobaltStrike_8751cdf9 {
 
 rule Windows_Trojan_CobaltStrike_8519072e {
     meta:
+        author = "Elastic Security"
         id = "8519072e-3e43-470b-a3cf-18f92b3f31a2"
         fingerprint = "9fc88b798083adbcf25f9f0b35fbb5035a98cdfe55377de96fa0353821de1cc8"
         creation_date = "2021-03-25"
@@ -825,6 +851,7 @@ rule Windows_Trojan_CobaltStrike_8519072e {
 
 rule Windows_Trojan_CobaltStrike_663fc95d {
     meta:
+        author = "Elastic Security"
         id = "663fc95d-2472-4d52-ad75-c5d86cfc885f"
         fingerprint = "d0f781d7e485a7ecfbbfd068601e72430d57ef80fc92a993033deb1ddcee5c48"
         creation_date = "2021-04-01"
@@ -844,6 +871,7 @@ rule Windows_Trojan_CobaltStrike_663fc95d {
 
 rule Windows_Trojan_CobaltStrike_b54b94ac {
     meta:
+        author = "Elastic Security"
         id = "b54b94ac-6ef8-4ee9-a8a6-f7324c1974ca"
         fingerprint = "2344dd7820656f18cfb774a89d89f5ab65d46cc7761c1f16b7e768df66aa41c8"
         creation_date = "2021-10-21"
@@ -868,6 +896,7 @@ rule Windows_Trojan_CobaltStrike_b54b94ac {
 
 rule Windows_Trojan_CobaltStrike_f0b627fc {
     meta:
+        author = "Elastic Security"
         id = "f0b627fc-97cd-42cb-9eae-1efb0672762d"
         fingerprint = "fbc94bedd50b5b943553dd438a183a1e763c098a385ac3a4fc9ff24ee30f91e1"
         creation_date = "2021-10-21"
@@ -892,6 +921,7 @@ rule Windows_Trojan_CobaltStrike_f0b627fc {
 
 rule Windows_Trojan_CobaltStrike_dcdcdd8c {
     meta:
+        author = "Elastic Security"
         id = "dcdcdd8c-7395-4453-a74a-60ab8e251a5a"
         fingerprint = "8aed1ae470d06a7aac37896df22b2f915c36845099839a85009212d9051f71e9"
         creation_date = "2021-10-21"
@@ -917,6 +947,7 @@ rule Windows_Trojan_CobaltStrike_dcdcdd8c {
 
 rule Windows_Trojan_CobaltStrike_a3fb2616 {
     meta:
+        author = "Elastic Security"
         id = "a3fb2616-b03d-4399-9342-0fc684fb472e"
         fingerprint = "c15cf6aa7719dac6ed21c10117f28eb4ec56335f80a811b11ab2901ad36f8cf0"
         creation_date = "2021-10-21"
@@ -940,6 +971,7 @@ rule Windows_Trojan_CobaltStrike_a3fb2616 {
 
 rule Windows_Trojan_CobaltStrike_8ee55ee5 {
     meta:
+        author = "Elastic Security"
         id = "8ee55ee5-67f1-4f94-ab93-62bb5cfbeee9"
         fingerprint = "7e7ed4f00d0914ce0b9f77b6362742a9c8b93a16a6b2a62b70f0f7e15ba3a72b"
         creation_date = "2021-10-21"

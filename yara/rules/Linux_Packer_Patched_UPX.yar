@@ -1,5 +1,6 @@
 rule Linux_Packer_Patched_UPX_62e11c64 {
     meta:
+        author = "Elastic Security"
         id = "62e11c64-fc7d-4a0a-9d72-ad53ec3987ff"
         fingerprint = "3297b5c63e70c557e71b739428b453039b142e1e04c2ab15eea4627d023b686d"
         creation_date = "2021-06-08"

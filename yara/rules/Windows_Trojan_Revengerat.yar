@@ -1,5 +1,6 @@
 rule Windows_Trojan_Revengerat_db91bcc6 {
     meta:
+        author = "Elastic Security"
         id = "db91bcc6-024d-42da-8d0a-bd69374bf622"
         fingerprint = "9c322655f50c32b9be23accd2b38fbda43c280284fbf05a5a5c98458c2bab666"
         creation_date = "2021-09-02"

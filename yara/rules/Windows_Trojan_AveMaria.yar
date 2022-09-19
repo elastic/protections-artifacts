@@ -1,5 +1,6 @@
 rule Windows_Trojan_AveMaria_31d2bce9 {
     meta:
+        author = "Elastic Security"
         id = "31d2bce9-3266-447b-9a2d-57cf11a0ff1f"
         fingerprint = "8f75e2d8308227a42743168deb021de18ad485763fd257991c5e627c025c30c0"
         creation_date = "2021-05-30"

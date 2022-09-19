@@ -1,5 +1,6 @@
 rule Windows_AttackSimulation_Hovercraft_f5c7178f {
     meta:
+        author = "Elastic Security"
         id = "f5c7178f-9a3f-463d-96a7-0a82cbed9ba2"
         fingerprint = "8965ab173fd09582c9e77e7c54c9722b91b71ecbe42c4f8a8cc87d9a780ffe8c"
         creation_date = "2022-05-23"

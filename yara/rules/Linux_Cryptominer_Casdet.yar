@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Casdet_5d0d33be {
     meta:
+        author = "Elastic Security"
         id = "5d0d33be-e53e-4188-9957-e1af2a802867"
         fingerprint = "2d584f6815093d37bd45a01146034d910b95be51462f01f0d4fc4a70881dfda6"
         creation_date = "2021-01-12"

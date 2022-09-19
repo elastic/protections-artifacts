@@ -1,5 +1,6 @@
 rule Windows_Trojan_Amadey_7abb059b {
     meta:
+        author = "Elastic Security"
         id = "7abb059b-4001-4eec-8185-1e0497e15062"
         fingerprint = "686ae7cf62941d7db051fa8c45f0f7a27440fa0fdc5f0919c9667dfeca46ca1f"
         creation_date = "2021-06-28"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Amadey_7abb059b {
 
 rule Windows_Trojan_Amadey_c4df8d4a {
     meta:
+        author = "Elastic Security"
         id = "c4df8d4a-01f4-466f-8225-7c7f462b29e7"
         fingerprint = "4623c591ea465e23f041db77dc68ddfd45034a8bde0f20fd5fbcec060851200c"
         creation_date = "2021-06-28"

@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Grief_9953339a {
     meta:
+        author = "Elastic Security"
         id = "9953339a-2c67-4ebd-be51-d1055e341abc"
         fingerprint = "d7d70c3681c4d4103d9ff52c3bdd174ccbdb49343c34407e90abb5a83a8422f4"
         creation_date = "2021-08-04"

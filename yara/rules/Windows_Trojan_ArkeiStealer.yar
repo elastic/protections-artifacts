@@ -1,5 +1,6 @@
 rule Windows_Trojan_ArkeiStealer_84c7086a {
     meta:
+        author = "Elastic Security"
         id = "84c7086a-abc3-4b97-b325-46a078b90a95"
         fingerprint = "f1d701463b0001de8996b30d2e36ddecb93fe4ca2a1a26fc4fcdaeb0aa3a3d6d"
         creation_date = "2022-02-17"

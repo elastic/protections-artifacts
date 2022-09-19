@@ -1,5 +1,6 @@
 rule Linux_Trojan_Pnscan_20e34e35 {
     meta:
+        author = "Elastic Security"
         id = "20e34e35-8639-4a0d-bfe3-6bfa1570f14d"
         fingerprint = "07678bd23ae697d42e2c7337675f7a50034b10ec7a749a8802820904a943641a"
         creation_date = "2021-01-12"

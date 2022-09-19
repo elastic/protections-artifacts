@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Generic_99f5a632 {
     meta:
+        author = "Elastic Security"
         id = "99f5a632-8562-4321-b707-c5f583b14511"
         fingerprint = "84ab8d177e50bce1a3eceb99befcf05c7a73ebde2f7ea4010617bf4908257fdb"
         creation_date = "2022-02-24"

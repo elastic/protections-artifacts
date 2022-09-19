@@ -1,5 +1,6 @@
 rule Windows_Trojan_Azorult_38fce9ea {
     meta:
+        author = "Elastic Security"
         id = "38fce9ea-a94e-49d3-8eef-96fe06ad27f8"
         fingerprint = "0655018fc803469c6d89193b75b4967fd02400fae07364ffcd11d1bc6cbbe74a"
         creation_date = "2021-08-05"

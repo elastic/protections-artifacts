@@ -1,5 +1,6 @@
 rule Windows_Trojan_SysJoker_1ef19a12 {
     meta:
+        author = "Elastic Security"
         id = "1ef19a12-ee26-47da-8d65-272f6749b476"
         fingerprint = "9123af8b8b27ebfb9199e70eb34d43378b1796319186d5d848d650a8be02d5d5"
         creation_date = "2022-02-17"
@@ -22,6 +23,7 @@ rule Windows_Trojan_SysJoker_1ef19a12 {
 
 rule Windows_Trojan_SysJoker_34559bcd {
     meta:
+        author = "Elastic Security"
         id = "34559bcd-661a-4213-b896-2d7f882a16ef"
         fingerprint = "b1e01d0b94a60f6f5632a14d3d32f78bbe3049886ea3a3e838a29fb790a45918"
         creation_date = "2022-02-21"

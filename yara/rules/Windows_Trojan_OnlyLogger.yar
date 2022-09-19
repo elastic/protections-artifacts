@@ -1,5 +1,6 @@
 rule Windows_Trojan_OnlyLogger_b9e88336 {
     meta:
+        author = "Elastic Security"
         id = "b9e88336-9719-4f43-afc9-b0e6c7d72b6f"
         fingerprint = "5c8c98b250252d178c8dbad60bf398489d9396968e33b3e004219a4f323eeed8"
         creation_date = "2022-03-22"
@@ -22,6 +23,7 @@ rule Windows_Trojan_OnlyLogger_b9e88336 {
 
 rule Windows_Trojan_OnlyLogger_ec14d5f2 {
     meta:
+        author = "Elastic Security"
         id = "ec14d5f2-5716-47f3-a7fb-98ec2d8679d1"
         fingerprint = "c69da3dfe0a464665759079207fbc0c82e690d812b38c83d3f4cd5998ecee1ff"
         creation_date = "2022-03-22"

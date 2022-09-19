@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Minertr_9901e275 {
     meta:
+        author = "Elastic Security"
         id = "9901e275-3053-47ea-8c36-6c9271923b64"
         fingerprint = "f27e404d545f3876963fd6174c4235a4fe4f69d53fe30a2d29df9dad6d97b7f7"
         creation_date = "2021-01-12"

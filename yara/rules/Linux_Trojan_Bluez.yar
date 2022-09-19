@@ -1,5 +1,6 @@
 rule Linux_Trojan_Bluez_50e87fa9 {
     meta:
+        author = "Elastic Security"
         id = "50e87fa9-f053-4507-ae10-b5d33b693bb3"
         fingerprint = "67855d65973d0bbdad90299f1432e7f0b4b8b1e6dfd0737ee5bee89161f2a890"
         creation_date = "2021-06-28"

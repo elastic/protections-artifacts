@@ -1,5 +1,6 @@
 rule Windows_Trojan_Formbook_1112e116 {
     meta:
+        author = "Elastic Security"
         id = "1112e116-dee0-4818-a41f-ca5c1c41b4b8"
         fingerprint = "b8b88451ad8c66b54e21455d835a5d435e52173c86e9b813ffab09451aff7134"
         creation_date = "2021-06-14"
@@ -22,8 +23,9 @@ rule Windows_Trojan_Formbook_1112e116 {
 
 rule Windows_Trojan_Formbook_772cc62d {
     meta:
+        author = "Elastic Security"
         id = "772cc62d-345c-42d8-97ab-f67e447ddca4"
-        fingerprint = "b8343b5d02d74791ba2d5d52d19a759f761de2b5470d935000bc27ea6c0633f5"
+        fingerprint = "3d732c989df085aefa1a93b38a3c078f9f0c3ee214292f6c1e31a9fc1c9ae50e"
         creation_date = "2022-05-23"
         last_modified = "2022-07-18"
         threat_name = "Windows.Trojan.Formbook"
@@ -34,13 +36,10 @@ rule Windows_Trojan_Formbook_772cc62d {
         os = "windows"
     strings:
         $a1 = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; rv:11.0) like Gecko"
-        $a2 = "pass"
-        $a3 = "email"
-        $a4 = "login"
-        $a5 = "signin"
-        $a6 = "persistent"
+        $a2 = "signin"
+        $a3 = "persistent"
         $r1 = /.\:\\Users\\[^\\]{1,50}\\AppData\\Roaming\\[a-zA-Z0-9]{8}\\[a-zA-Z0-9]{3}log\.ini/ wide
     condition:
-        4 of ($a*) and $r1
+        2 of ($a*) and $r1
 }
 

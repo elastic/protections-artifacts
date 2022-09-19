@@ -1,5 +1,6 @@
 rule Linux_Trojan_Banload_d5e1c189 {
     meta:
+        author = "Elastic Security"
         id = "d5e1c189-7d19-4f03-a4f3-a0aaf6d499dc"
         fingerprint = "4aa04f08005b1b7ed941dbfc563737728099e35e3f0f025532921b91b79c967c"
         creation_date = "2021-01-12"

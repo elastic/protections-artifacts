@@ -1,5 +1,6 @@
 rule Linux_Trojan_Shark_b918ab75 {
     meta:
+        author = "Elastic Security"
         id = "b918ab75-0701-4865-b798-521fdd2ffc28"
         fingerprint = "15205d58af99b8eae14de2d5762fdc710ef682839967dd56f6d65bd3deaa7981"
         creation_date = "2021-01-12"

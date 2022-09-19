@@ -1,5 +1,6 @@
 rule Windows_Trojan_Nanocore_d8c4e3c5 {
     meta:
+        author = "Elastic Security"
         id = "d8c4e3c5-8bcc-43d2-9104-fa3774282da5"
         fingerprint = "e5c284f14c1c650ef8ddd7caf314f5318e46a811addc2af5e70890390c7307d4"
         creation_date = "2021-06-13"

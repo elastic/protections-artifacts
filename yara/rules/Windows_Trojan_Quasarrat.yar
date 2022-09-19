@@ -1,5 +1,6 @@
 rule Windows_Trojan_Quasarrat_e52df647 {
     meta:
+        author = "Elastic Security"
         id = "e52df647-c197-4790-b051-8951fba80c3b"
         fingerprint = "c888f0856c6568b83ab60193f8144a61e758e6ff53f6ead8565282ae8b3a9815"
         creation_date = "2021-06-27"

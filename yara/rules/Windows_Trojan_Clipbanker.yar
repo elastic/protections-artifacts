@@ -1,5 +1,6 @@
 rule Windows_Trojan_Clipbanker_7efaef9f {
     meta:
+        author = "Elastic Security"
         id = "7efaef9f-51cd-4fea-a48d-fa9d39cb735e"
         fingerprint = "fe0ec44f8707cd03f845dbea4ff5bb1b699db1b69b75f0365168a75cc8bb68a3"
         creation_date = "2022-02-28"
@@ -23,6 +24,7 @@ rule Windows_Trojan_Clipbanker_7efaef9f {
 
 rule Windows_Trojan_Clipbanker_b60a50b8 {
     meta:
+        author = "Elastic Security"
         id = "b60a50b8-91a4-49a7-bd05-fa4cc1dee1ac"
         fingerprint = "097bb88d8482a4915c19affc82750c7ee225b89f2611ea654cfc3c044aae0738"
         creation_date = "2022-02-28"
@@ -42,6 +44,7 @@ rule Windows_Trojan_Clipbanker_b60a50b8 {
 
 rule Windows_Trojan_Clipbanker_f9f9e79d {
     meta:
+        author = "Elastic Security"
         id = "f9f9e79d-ce71-4b6c-83e0-ac6e06252c25"
         fingerprint = "ec985e1273d8ff52ea7f86271a96db01633402facf8d140d11b82e5539e4b5fd"
         creation_date = "2022-04-23"
@@ -61,6 +64,7 @@ rule Windows_Trojan_Clipbanker_f9f9e79d {
 
 rule Windows_Trojan_Clipbanker_787b130b {
     meta:
+        author = "Elastic Security"
         id = "787b130b-6382-42f0-8822-fce457fa940d"
         fingerprint = "15f3c7d5f25982a02a6bca0b550b3b65e1e21efa5717a1ea0c13dfe46b8f2699"
         creation_date = "2022-04-24"

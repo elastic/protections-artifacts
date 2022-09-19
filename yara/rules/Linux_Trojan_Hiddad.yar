@@ -1,5 +1,6 @@
 rule Linux_Trojan_Hiddad_e35bff7b {
     meta:
+        author = "Elastic Security"
         id = "e35bff7b-1a93-4cfd-a4b6-1e994c0afa98"
         fingerprint = "0ed46ca8a8bd567acf59d8a15a9597d7087975e608f42af57d36c31e777bb816"
         creation_date = "2021-01-12"

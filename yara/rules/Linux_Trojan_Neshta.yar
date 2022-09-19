@@ -1,5 +1,6 @@
 rule Linux_Trojan_Neshta_e856e9fb {
     meta:
+        author = "Elastic Security"
         id = "e856e9fb-24b6-47bc-9e38-db50ff091aa9"
         fingerprint = "be36444e7cf3911d52960e28f83a04979b4669f56bc9fa7129ab852a1f17739b"
         creation_date = "2021-01-12"

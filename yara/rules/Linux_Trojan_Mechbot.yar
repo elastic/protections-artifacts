@@ -1,5 +1,6 @@
 rule Linux_Trojan_Mechbot_f2e1c5aa {
     meta:
+        author = "Elastic Security"
         id = "f2e1c5aa-3318-4665-bee4-34a4afcf60bd"
         fingerprint = "4b663b0756f2ae9b43eae29cd0225ad75517ef345982e8fdafa61f3c3db2d9f5"
         creation_date = "2021-01-12"

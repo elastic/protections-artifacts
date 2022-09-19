@@ -1,5 +1,6 @@
 rule Windows_Trojan_Vidar_9007feb2 {
     meta:
+        author = "Elastic Security"
         id = "9007feb2-6ad1-47b6-bae2-3379d114e4f1"
         fingerprint = "8416b14346f833264e32c63253ea0b0fe28e5244302b2e1b266749c543980fe2"
         creation_date = "2021-06-28"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Vidar_9007feb2 {
 
 rule Windows_Trojan_Vidar_114258d5 {
     meta:
+        author = "Elastic Security"
         id = "114258d5-f05e-46ac-914b-1a7f338ccf58"
         fingerprint = "9b4f7619e15398fcafc622af821907e4cf52964c55f6a447327738af26769934"
         creation_date = "2021-06-28"

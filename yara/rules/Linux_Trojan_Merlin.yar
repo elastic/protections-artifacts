@@ -1,5 +1,6 @@
 rule Linux_Trojan_Merlin_55beddd3 {
     meta:
+        author = "Elastic Security"
         id = "55beddd3-735b-4e0c-a387-e6a981cd42a3"
         fingerprint = "54e03337930d74568a91e797cfda3b7bfbce3aad29be2543ed58c51728d8e185"
         creation_date = "2022-01-05"

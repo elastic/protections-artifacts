@@ -1,5 +1,6 @@
 rule Windows_Trojan_Pingpull_09dd9559 {
     meta:
+        author = "Elastic Security"
         id = "09dd9559-ce77-4f55-9e81-3b90add40103"
         fingerprint = "b471e0f40780523bf396323a3b70fd285944fef2960ae43a36068eaf2f2fea4f"
         creation_date = "2022-06-16"

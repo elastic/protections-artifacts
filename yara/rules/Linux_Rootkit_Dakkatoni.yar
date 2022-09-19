@@ -1,5 +1,6 @@
 rule Linux_Rootkit_Dakkatoni_010d3ac2 {
     meta:
+        author = "Elastic Security"
         id = "010d3ac2-0bb2-4966-bf5f-fd040ba07311"
         fingerprint = "2c7935079dc971d2b8a64c512ad677e946ff45f7f1d1b62c3ca011ebde82f13b"
         creation_date = "2021-01-12"

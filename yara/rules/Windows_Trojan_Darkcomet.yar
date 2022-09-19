@@ -1,5 +1,6 @@
 rule Windows_Trojan_Darkcomet_1df27bcc {
     meta:
+        author = "Elastic Security"
         id = "1df27bcc-9f18-48d4-bd7f-73bdc7cb1e63"
         fingerprint = "63b77999860534b71b7b4e7b3da9df175ccd0009f4c13215a59c6b83e0e95b3b"
         creation_date = "2021-08-16"

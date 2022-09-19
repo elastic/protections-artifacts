@@ -1,5 +1,6 @@
 rule Windows_Wiper_HermeticWiper_7206a969 {
     meta:
+        author = "Elastic Security"
         id = "7206a969-bbd6-4c2d-a19d-380b71a4ab08"
         fingerprint = "e3486c785f99f4376d4161704afcaf61e8a5ab6101463a76d134469f8a5581bf"
         creation_date = "2022-02-24"

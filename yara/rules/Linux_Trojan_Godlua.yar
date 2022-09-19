@@ -1,5 +1,6 @@
 rule Linux_Trojan_Godlua_ed8e6228 {
     meta:
+        author = "Elastic Security"
         id = "ed8e6228-d5be-4b8e-8dc2-7072b1236bfa"
         fingerprint = "9b73c2bbbe1bc43ae692f03b19cd23ad701f0120dff0201dd2a6722c44ea51ed"
         creation_date = "2021-01-12"

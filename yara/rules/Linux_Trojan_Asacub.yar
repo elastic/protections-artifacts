@@ -1,5 +1,6 @@
 rule Linux_Trojan_Asacub_d3c4aa41 {
     meta:
+        author = "Elastic Security"
         id = "d3c4aa41-faae-4c85-bdc5-9e09483e92fb"
         fingerprint = "4961023c719599bd8da6b8a17dbe409911334c21b45d62385dd02a6dd35fd2be"
         creation_date = "2021-01-12"

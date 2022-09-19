@@ -1,5 +1,6 @@
 rule Windows_Trojan_Hawkeye_77c36ace {
     meta:
+        author = "Elastic Security"
         id = "77c36ace-3857-43f8-a6de-596ba7964b6f"
         fingerprint = "c9a1c61b4fa78c46d493e1b307e9950bd714ba4e5a6249f15a3b86a74b7638e5"
         creation_date = "2021-08-16"

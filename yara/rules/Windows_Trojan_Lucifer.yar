@@ -1,5 +1,6 @@
 rule Windows_Trojan_Lucifer_ce9d4cc8 {
     meta:
+        author = "Elastic Security"
         id = "ce9d4cc8-8f16-4272-a54b-e500d4edea9b"
         fingerprint = "77c86dfbbd4fb113dabf6016f22d879322357de8ea4a8a598ce9fba761419c55"
         creation_date = "2022-02-17"

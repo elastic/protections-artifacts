@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Tcpscan_334d0ca5 {
     meta:
+        author = "Elastic Security"
         id = "334d0ca5-d143-4a32-8632-9fbdd2d96987"
         fingerprint = "1f8fc064770bd76577b9455ae858d8a98b573e01a199adf2928d8433d990eaa7"
         creation_date = "2021-04-06"

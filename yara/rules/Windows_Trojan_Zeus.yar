@@ -1,5 +1,6 @@
 rule Windows_Trojan_Zeus_e51c60d7 {
     meta:
+        author = "Elastic Security"
         id = "e51c60d7-3afa-4cf5-91d8-7782e5026e46"
         fingerprint = "813e2ee2447fcffdde6519dc6c52369a5d06c668b76c63bb8b65809805ecefba"
         creation_date = "2021-02-07"

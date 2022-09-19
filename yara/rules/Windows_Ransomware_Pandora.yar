@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Pandora_bca8ce23 {
     meta:
+        author = "Elastic Security"
         id = "bca8ce23-6722-4cda-b5fa-623eda4fca1b"
         fingerprint = "0da732f6bdf24f35dee3c1bf85435650a5ce9b5c6a93f01176659943c01ad711"
         creation_date = "2022-03-14"

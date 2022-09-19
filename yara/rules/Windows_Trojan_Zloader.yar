@@ -1,5 +1,6 @@
 rule Windows_Trojan_Zloader_5dd0a0bf {
     meta:
+        author = "Elastic Security"
         id = "5dd0a0bf-20e4-4c52-b9d9-c157e871b06b"
         fingerprint = "06545df6c556adf8a6844724e77d005c0299b544f21df2ea44bb9679964dbb9f"
         creation_date = "2022-03-03"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Zloader_5dd0a0bf {
 
 rule Windows_Trojan_Zloader_4fe0f7f1 {
     meta:
+        author = "Elastic Security"
         id = "4fe0f7f1-93c6-4397-acd5-1557608efaf4"
         fingerprint = "f340f41cc69930d24ffdae484d1080cd9ce5cb5e7720868c956923a5b8e6c9b1"
         creation_date = "2022-03-03"
@@ -38,6 +40,7 @@ rule Windows_Trojan_Zloader_4fe0f7f1 {
 
 rule Windows_Trojan_Zloader_363c65ed {
     meta:
+        author = "Elastic Security"
         id = "363c65ed-e394-4a40-9c2a-a6f6fd284ed3"
         fingerprint = "33ae4cee122269f4342a3fd829236cbd303d8821b548ab93bbebc9dee3eb67f2"
         creation_date = "2022-03-03"
@@ -57,6 +60,7 @@ rule Windows_Trojan_Zloader_363c65ed {
 
 rule Windows_Trojan_Zloader_79535191 {
     meta:
+        author = "Elastic Security"
         id = "79535191-59df-4c78-9f62-b8614ef992d3"
         fingerprint = "ee3c4cf0d694119acfdc945a964e4fc0f51355eabca900ffbcc21aec0b3e1e3c"
         creation_date = "2022-03-03"

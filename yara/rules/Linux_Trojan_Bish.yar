@@ -1,5 +1,6 @@
 rule Linux_Trojan_Bish_974b4b47 {
     meta:
+        author = "Elastic Security"
         id = "974b4b47-38cf-4460-8ff3-e066e5c8a5fc"
         fingerprint = "8858f99934e367b7489d60bfaa74ab57e2ae507a8c06fb29693197792f6f5069"
         creation_date = "2021-04-06"

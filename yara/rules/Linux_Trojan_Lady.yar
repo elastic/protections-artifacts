@@ -1,5 +1,6 @@
 rule Linux_Trojan_Lady_75f6392c {
     meta:
+        author = "Elastic Security"
         id = "75f6392c-fc13-4abb-a391-b5f1ea1039d8"
         fingerprint = "da6d4dff230120eed94e04b0e6060713c2bc17da54c098e9a9f3ec7a8200b9bf"
         creation_date = "2022-01-05"

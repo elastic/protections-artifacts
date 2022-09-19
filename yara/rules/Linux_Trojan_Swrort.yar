@@ -1,5 +1,6 @@
 rule Linux_Trojan_Swrort_5ad1a4f9 {
     meta:
+        author = "Elastic Security"
         id = "5ad1a4f9-bfe5-4e5f-94e9-4983c93a1c1f"
         fingerprint = "a91458dd4bcd082506c554ca8479e1b0d23598e0e9a0e44ae1afb2651ce38dce"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Swrort_5ad1a4f9 {
 
 rule Linux_Trojan_Swrort_4cb5b116 {
     meta:
+        author = "Elastic Security"
         id = "4cb5b116-5e90-4e5f-a62f-bfe616cab5db"
         fingerprint = "cb783f69b4074264a75894dd85459529a172404a6901a1f5753a2f9197bfca58"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Swrort_4cb5b116 {
 
 rule Linux_Trojan_Swrort_22c2d6b6 {
     meta:
+        author = "Elastic Security"
         id = "22c2d6b6-d100-4310-87c4-3912a86bdd40"
         fingerprint = "d2b16da002cb708cb82f8b96c7d31f15c9afca69e89502b1970758294e91f9a4"
         creation_date = "2021-01-12"

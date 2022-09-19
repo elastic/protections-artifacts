@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ipstorm_3c43d4a7 {
     meta:
+        author = "Elastic Security"
         id = "3c43d4a7-185a-468b-a73d-82f579de98c1"
         fingerprint = "cf6812f8f0ee7951a70bec3839b798a574d536baae4cf37cda6eebf570cab0be"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Ipstorm_3c43d4a7 {
 
 rule Linux_Trojan_Ipstorm_f9269f00 {
     meta:
+        author = "Elastic Security"
         id = "f9269f00-4664-47a4-9148-fa74e2cfee7c"
         fingerprint = "509de41454bcc60dad0d96448592aa20fb997ce46ad8fed5d4bbdbe2ede588d6"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Ipstorm_f9269f00 {
 
 rule Linux_Trojan_Ipstorm_08bcf61c {
     meta:
+        author = "Elastic Security"
         id = "08bcf61c-baef-4320-885c-8f8949684dde"
         fingerprint = "348295602b1582839f6acc603832f09e9afab71731bc21742d1a638e41df6e7c"
         creation_date = "2021-01-12"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_AgentTesla_d3ac2b2f {
     meta:
+        author = "Elastic Security"
         id = "d3ac2b2f-14fc-4851-8a57-41032e386aeb"
         fingerprint = "cbbb56fe6cd7277ae9595a10e05e2ce535a4e6bf205810be0bbce3a883b6f8bc"
         creation_date = "2021-03-22"
@@ -57,6 +58,7 @@ rule Windows_Trojan_AgentTesla_d3ac2b2f {
 
 rule Windows_Trojan_AgentTesla_e577e17e {
     meta:
+        author = "Elastic Security"
         id = "e577e17e-5c42-4431-8c2d-0c1153128226"
         fingerprint = "009cb27295a1aa0dde84d29ee49b8fa2e7a6cec75eccb7534fec3f5c89395a9d"
         creation_date = "2022-03-11"
@@ -76,6 +78,7 @@ rule Windows_Trojan_AgentTesla_e577e17e {
 
 rule Windows_Trojan_AgentTesla_f2a90d14 {
     meta:
+        author = "Elastic Security"
         id = "f2a90d14-7212-41a5-a2cd-a6a6dedce96e"
         fingerprint = "829c827069846ba1e1378aba8ee6cdc801631d769dc3dce15ccaacd4068a88a6"
         creation_date = "2022-03-11"

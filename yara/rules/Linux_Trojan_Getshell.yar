@@ -1,5 +1,6 @@
 rule Linux_Trojan_Getshell_98d002bf {
     meta:
+        author = "Elastic Security"
         id = "98d002bf-63b7-4d11-98ef-c3127e68d59c"
         fingerprint = "b7bfec0a3cfc05b87fefac6b10673491b611400edacf9519cbcc1a71842e9fa3"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Getshell_98d002bf {
 
 rule Linux_Trojan_Getshell_213d4d69 {
     meta:
+        author = "Elastic Security"
         id = "213d4d69-5660-468d-a98c-ff3eef604b1e"
         fingerprint = "60e385e4c5eb189785bc14d39bf8a22c179e4be861ce3453fbcf4d367fc87c90"
         creation_date = "2021-06-28"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Getshell_213d4d69 {
 
 rule Linux_Trojan_Getshell_3cf5480b {
     meta:
+        author = "Elastic Security"
         id = "3cf5480b-bb21-4a6e-a078-4b145d22c79f"
         fingerprint = "3ef0817445c54994d5a6792ec0e6c93f8a51689030b368eb482f5ffab4761dd2"
         creation_date = "2021-06-28"
@@ -57,6 +60,7 @@ rule Linux_Trojan_Getshell_3cf5480b {
 
 rule Linux_Trojan_Getshell_8a79b859 {
     meta:
+        author = "Elastic Security"
         id = "8a79b859-654c-4082-8cfc-61a143671457"
         fingerprint = "5a95d1df94791c8484d783da975bec984fb11653d1f81f6397efd734a042272b"
         creation_date = "2021-06-28"

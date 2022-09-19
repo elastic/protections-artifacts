@@ -1,5 +1,6 @@
 rule Windows_Trojan_SystemBC_5e883723 {
     meta:
+        author = "Elastic Security"
         id = "5e883723-7eaa-4992-91de-abb0ffbba54e"
         fingerprint = "add95c1f4bb279c8b189c3d64a0c2602c73363ebfad56a4077119af148dd2d87"
         creation_date = "2022-03-22"

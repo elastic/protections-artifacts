@@ -1,5 +1,6 @@
 rule Linux_Trojan_Malxmr_7054a0d0 {
     meta:
+        author = "Elastic Security"
         id = "7054a0d0-11d4-4671-a88d-ea933e73fe11"
         fingerprint = "9661cc2b7a1d7b882ca39307adc927f5fb73d59f3771a8b456c2cf2ff3d801e9"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Malxmr_7054a0d0 {
 
 rule Linux_Trojan_Malxmr_144994a5 {
     meta:
+        author = "Elastic Security"
         id = "144994a5-1e37-4913-b7aa-deed638b1a79"
         fingerprint = "473e686a74e76bb879b3e34eb207d966171f3e11cf68bde364316c2ae5cd3dc3"
         creation_date = "2021-01-12"

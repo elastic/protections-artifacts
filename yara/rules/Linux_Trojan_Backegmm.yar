@@ -1,5 +1,6 @@
 rule Linux_Trojan_Backegmm_b59712e6 {
     meta:
+        author = "Elastic Security"
         id = "b59712e6-d14d-4a57-a3d6-2dc323bf840d"
         fingerprint = "61b2f0c7cb98439b05776edeaf06b114d364119ebe733d924158792110c5e21c"
         creation_date = "2021-01-12"

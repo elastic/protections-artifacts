@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Hive_55619cd0 {
     meta:
+        author = "Elastic Security"
         id = "55619cd0-6013-45e2-b15e-0dceff9571ab"
         fingerprint = "04df3169c50fbab4e2b495de5500c62ddf5e76aa8b4a7fc8435f39526f69c52b"
         creation_date = "2021-08-26"
@@ -21,6 +22,7 @@ rule Windows_Ransomware_Hive_55619cd0 {
 
 rule Windows_Ransomware_Hive_3ed67fe6 {
     meta:
+        author = "Elastic Security"
         id = "3ed67fe6-6347-4aef-898d-4cb267bcbfc7"
         fingerprint = "a15acde0841f08fc44fdc1fea01c140e9e8af6275a65bec4a7b762494c9e6185"
         creation_date = "2021-08-26"
@@ -44,6 +46,7 @@ rule Windows_Ransomware_Hive_3ed67fe6 {
 
 rule Windows_Ransomware_Hive_b97ec33b {
     meta:
+        author = "Elastic Security"
         id = "b97ec33b-d4cf-4b70-8ce8-8a5d20448643"
         fingerprint = "7f2c2d299942390d953599b180ed191d9db999275545a7ba29059fd49b858087"
         creation_date = "2021-08-26"

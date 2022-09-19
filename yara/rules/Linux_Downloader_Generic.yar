@@ -1,5 +1,6 @@
 rule Linux_Downloader_Generic_0bd15ae0 {
     meta:
+        author = "Elastic Security"
         id = "0bd15ae0-e4fe-48a9-84a6-f8447b467651"
         fingerprint = "67e14ea693baee8437157f6e450ac5e469b1bab7d9ff401493220575aae9bc91"
         creation_date = "2021-01-12"

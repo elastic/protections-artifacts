@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Nightsky_a7f19411 {
     meta:
+        author = "Elastic Security"
         id = "a7f19411-4c28-4cc7-b60c-ef51cb10b905"
         fingerprint = "0f2aac3a538a921b78f7c2521adf65678830abab8ec8b360ac3dddae5fbc4756"
         creation_date = "2022-01-11"
@@ -22,6 +23,7 @@ rule Windows_Ransomware_Nightsky_a7f19411 {
 
 rule Windows_Ransomware_Nightsky_253c4d0d {
     meta:
+        author = "Elastic Security"
         id = "253c4d0d-157f-4929-9f0e-5830ebc377dc"
         fingerprint = "739529dfb1f8c8ab2a7f6a4b2b18b27dd2fcc38eda0f110897fc6cb5d64b1c92"
         creation_date = "2022-03-14"

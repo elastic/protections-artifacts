@@ -1,5 +1,6 @@
 rule Linux_Trojan_Chinaz_a2140ca1 {
     meta:
+        author = "Elastic Security"
         id = "a2140ca1-0a72-4dcb-bf7c-2f51e84a996b"
         fingerprint = "ac620f3617ea448b2ad62f06490c37200fa0af8a6fe75a6a2a294a7b5b4a634a"
         creation_date = "2021-01-12"

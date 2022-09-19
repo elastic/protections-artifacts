@@ -1,5 +1,6 @@
 rule Windows_Trojan_Jupyter_56152e31 {
     meta:
+        author = "Elastic Security"
         id = "56152e31-77c6-49fa-bbc5-c3630f11e633"
         fingerprint = "9cccc2e3d4cfe9ff090d02b143fa837f4da0c229426435b4e097f902e8c5fb01"
         creation_date = "2021-07-22"

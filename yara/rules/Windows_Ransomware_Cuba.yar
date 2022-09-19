@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Cuba_e64a16b1 {
     meta:
+        author = "Elastic Security"
         id = "e64a16b1-262c-4835-bd95-4dde89dd75f4"
         fingerprint = "840f2ebe2664db9a0918acf7d408ca8060ee0d3c330ad08b36e5be7f7e2cf069"
         creation_date = "2021-08-04"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_Cuba_e64a16b1 {
 
 rule Windows_Ransomware_Cuba_95a98e69 {
     meta:
+        author = "Elastic Security"
         id = "95a98e69-ce6c-40c6-a05b-2366c663ad6e"
         fingerprint = "05cfd7803692149a55d9ced84828422b66e8b301c8c2aae9ca33c6b68e29bcf8"
         creation_date = "2021-08-04"

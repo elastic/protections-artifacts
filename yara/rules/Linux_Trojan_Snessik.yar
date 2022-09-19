@@ -1,5 +1,6 @@
 rule Linux_Trojan_Snessik_d166f98c {
     meta:
+        author = "Elastic Security"
         id = "d166f98c-0fa3-4a1b-a6d2-7fbe4e338fc7"
         fingerprint = "6247d59326ea71426862e1b242c7354ee369fbe6ea766e40736e2f5a6410c8d7"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Snessik_d166f98c {
 
 rule Linux_Trojan_Snessik_e435a79c {
     meta:
+        author = "Elastic Security"
         id = "e435a79c-4b8e-42de-8d78-51b684eba178"
         fingerprint = "bd9f81d03812e49323b86b2ea59bf5f08021d0b43f7629eb4d59e75eccb7dcf1"
         creation_date = "2021-01-12"

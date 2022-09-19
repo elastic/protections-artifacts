@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sshdkit_18a0b82a {
     meta:
+        author = "Elastic Security"
         id = "18a0b82a-94ff-4328-bfa7-25034f170522"
         fingerprint = "9bd28a490607b75848611389b39cf77229cfdd1e885f23c5439d49773924ce16"
         creation_date = "2021-04-06"

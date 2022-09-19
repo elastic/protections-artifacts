@@ -1,5 +1,6 @@
 rule Linux_Trojan_Winnti_61215d98 {
     meta:
+        author = "Elastic Security"
         id = "61215d98-f52d-45d3-afa2-4bd25270aa99"
         fingerprint = "20ee92147edbf91447cca2ee0c47768a50ec9c7aa7d081698953d3bdc2a25320"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Winnti_61215d98 {
 
 rule Linux_Trojan_Winnti_2a2d0b81 {
     meta:
+        author = "Elastic Security"
         id = "2a2d0b81-9055-4b78-bbcf-c9f43598bf1a"
         fingerprint = "6a775740f8816c7c684515bc776cd82cee541d2a850633ac1dbd9b719df97c57"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Trojan_Winnti_2a2d0b81 {
 
 rule Linux_Trojan_Winnti_4c5a1865 {
     meta:
+        author = "Elastic Security"
         id = "4c5a1865-ff41-445b-8616-c83b87498c2b"
         fingerprint = "685fe603e04ff123b3472293d3d83e2dc833effd1a7e6c616ff17ed61df0004c"
         creation_date = "2021-06-28"
@@ -57,6 +60,7 @@ rule Linux_Trojan_Winnti_4c5a1865 {
 
 rule Linux_Trojan_Winnti_6f4ca425 {
     meta:
+        author = "Elastic Security"
         id = "6f4ca425-5cd2-4c22-b017-b5fc02b3abc2"
         fingerprint = "dec25af33fc004de3a1f53e0c3006ff052f7c51c95f90be323b281590da7d924"
         creation_date = "2022-01-05"
@@ -76,6 +80,7 @@ rule Linux_Trojan_Winnti_6f4ca425 {
 
 rule Linux_Trojan_Winnti_de4b0f6e {
     meta:
+        author = "Elastic Security"
         id = "de4b0f6e-0183-4ea8-9c03-f716a25f1884"
         fingerprint = "c72eddc2d72ea979ad4f680d060aac129f1cd61dbdf3b0b5a74f5d35a9fe69d7"
         creation_date = "2022-01-05"

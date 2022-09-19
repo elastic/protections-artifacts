@@ -1,5 +1,6 @@
 rule Windows_Trojan_Pony_d5516fe8 {
     meta:
+        author = "Elastic Security"
         id = "d5516fe8-3b25-4c46-9e5b-111ca312a824"
         fingerprint = "9d4d847f55a693a45179a904efe20afd05a92650ac47fb19ef523d469a33795f"
         creation_date = "2021-08-14"

@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Ryuk_25d3c5ba : beta {
     meta:
+        author = "Elastic Security"
         id = "25d3c5ba-8f80-4af0-8a5d-29c974fb016a"
         fingerprint = "18e70599e3a187e77697844fa358dd150e7e25ac74060e8c7cf2707fb7304efd"
         creation_date = "2020-04-30"
@@ -20,6 +21,7 @@ rule Windows_Ransomware_Ryuk_25d3c5ba : beta {
 
 rule Windows_Ransomware_Ryuk_878bae7e : beta {
     meta:
+        author = "Elastic Security"
         id = "878bae7e-1e53-4648-93aa-b4075eef256d"
         fingerprint = "93a501463bb2320a9ab824d70333da2b6f635eb5958d6f8de43fde3a21de2298"
         creation_date = "2020-04-30"
@@ -41,6 +43,7 @@ rule Windows_Ransomware_Ryuk_878bae7e : beta {
 
 rule Windows_Ransomware_Ryuk_6c726744 : beta {
     meta:
+        author = "Elastic Security"
         id = "6c726744-acdb-443a-b683-b11f8b657f7a"
         fingerprint = "d0a4608907e48d02d78ff40a59d47cad1b9258df31b7312dd1a85f8fee2a28d5"
         creation_date = "2020-04-30"
@@ -65,6 +68,7 @@ rule Windows_Ransomware_Ryuk_6c726744 : beta {
 
 rule Windows_Ransomware_Ryuk_1a4ad952 : beta {
     meta:
+        author = "Elastic Security"
         id = "1a4ad952-cc99-4653-932b-290381e7c871"
         fingerprint = "d8c5162850e758e27439e808e914df63f42756c0b8f7c2b5f9346c0731d3960c"
         creation_date = "2020-04-30"
@@ -85,6 +89,7 @@ rule Windows_Ransomware_Ryuk_1a4ad952 : beta {
 
 rule Windows_Ransomware_Ryuk_72b5fd9d : beta {
     meta:
+        author = "Elastic Security"
         id = "72b5fd9d-23db-4f18-88d9-a849ec039135"
         fingerprint = "7c394aa283336013b74a8aaeb56e8363033958b4a1bd8011f3b32cfe2d37e088"
         creation_date = "2020-04-30"
@@ -105,6 +110,7 @@ rule Windows_Ransomware_Ryuk_72b5fd9d : beta {
 
 rule Windows_Ransomware_Ryuk_8ba51798 : beta {
     meta:
+        author = "Elastic Security"
         id = "8ba51798-15d7-4f02-97fa-1844465ae9d8"
         fingerprint = "8e284bc6015502577a6ddd140b9cd110fd44d4d2cb55d0fdec5bebf3356fd7b3"
         creation_date = "2020-04-30"
@@ -132,6 +138,7 @@ rule Windows_Ransomware_Ryuk_8ba51798 : beta {
 
 rule Windows_Ransomware_Ryuk_88daaf8e : beta {
     meta:
+        author = "Elastic Security"
         id = "88daaf8e-0bfe-46c4-9a75-2527d0e10538"
         fingerprint = "b1f218a9bc6bf5f3ec108a471de954988e7692de208e68d7d4ee205194cbbb40"
         creation_date = "2020-04-30"

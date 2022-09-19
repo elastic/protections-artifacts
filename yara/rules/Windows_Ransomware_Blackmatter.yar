@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Blackmatter_b548d151 {
     meta:
+        author = "Elastic Security"
         id = "b548d151-5dde-459b-9d4a-b4a48c1b5545"
         fingerprint = "351658f8fe3f9c956634e3cf7a03b272c55359f069c5200e948d817c6b554c87"
         creation_date = "2021-08-03"
@@ -19,6 +20,7 @@ rule Windows_Ransomware_Blackmatter_b548d151 {
 
 rule Windows_Ransomware_Blackmatter_8394f6d5 {
     meta:
+        author = "Elastic Security"
         id = "8394f6d5-4761-4df6-974d-eaa0a25353da"
         fingerprint = "3825f59ffe9b2adc1f9dd175f4d57c9aa3dd6ff176616ecbe7c673b5b4d414f8"
         creation_date = "2021-08-03"

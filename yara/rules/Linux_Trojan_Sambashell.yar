@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sambashell_f423755d {
     meta:
+        author = "Elastic Security"
         id = "f423755d-60ec-4442-beb1-0820df0fe00b"
         fingerprint = "ea13320c358cadc8187592de73ceb260a00f28907567002d4f093be21f111f74"
         creation_date = "2021-01-12"

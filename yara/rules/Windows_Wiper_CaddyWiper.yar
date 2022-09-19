@@ -1,5 +1,6 @@
 rule Windows_Wiper_CaddyWiper_484bd98a {
     meta:
+        author = "Elastic Security"
         id = "484bd98a-543f-42de-a58c-fe9c7b5605a3"
         fingerprint = "de16515a72cd1f7b4d7ee46a4fafde07cf224c2b6df9037bcd20ab4d39181fa8"
         creation_date = "2022-03-14"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sysrv_85097f24 {
     meta:
+        author = "Elastic Security"
         id = "85097f24-2e2e-41e4-8769-dca7451649cc"
         fingerprint = "1cad651c92a163238f8d60d2e3670f229b4aafd6509892b9dcefe014b39c6f7d"
         creation_date = "2021-06-28"

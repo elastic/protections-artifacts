@@ -1,5 +1,6 @@
 rule Windows_Trojan_Asyncrat_11a11ba1 {
     meta:
+        author = "Elastic Security"
         id = "11a11ba1-c178-4415-9c09-45030b500f50"
         fingerprint = "715ede969076cd413cebdfcf0cdda44e3a6feb5343558f18e656f740883b41b8"
         creation_date = "2021-08-05"

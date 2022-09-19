@@ -1,5 +1,6 @@
 rule Linux_Backdoor_Generic_babf9101 {
     meta:
+        author = "Elastic Security"
         id = "babf9101-1e6e-4268-a530-e99e2c905b0d"
         fingerprint = "a578b052910962523f26f14f0d0494481fe0777c01d9f6816c7ab53083a47adc"
         creation_date = "2021-04-06"
@@ -19,6 +20,7 @@ rule Linux_Backdoor_Generic_babf9101 {
 
 rule Linux_Backdoor_Generic_5776ae49 {
     meta:
+        author = "Elastic Security"
         id = "5776ae49-64e9-46a0-a0bb-b0226eb9a8bd"
         fingerprint = "2d36fbe1820805c8fd41b2b34a2a2b950fc003ae4f177042dc0d2568925c5b76"
         creation_date = "2021-04-06"

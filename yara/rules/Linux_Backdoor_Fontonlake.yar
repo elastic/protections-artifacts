@@ -1,5 +1,6 @@
 rule Linux_Backdoor_Fontonlake_fe916a45 {
     meta:
+        author = "Elastic Security"
         id = "fe916a45-75cc-40e4-94ad-6ac0f5d815b9"
         fingerprint = "85f16dd4a127737501863ccba006a444d899c6edc6ab03af5dddef2d39edc483"
         creation_date = "2021-10-12"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Sckit_a244328f {
     meta:
+        author = "Elastic Security"
         id = "a244328f-1e12-4ae6-b583-ecf14a4b9d82"
         fingerprint = "eca152c730ecabbc9fe49173273199cb37b343d038084965ad880ddba3173f50"
         creation_date = "2021-04-06"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Orbit_57c23178 {
     meta:
+        author = "Elastic Security"
         id = "57c23178-1345-47b7-97b1-aa2075d9d69d"
         fingerprint = "0bb1c74f872ea8778a442aafc2c6f3f04e331b7f743ba726257e36b09ef33da4"
         creation_date = "2022-07-20"

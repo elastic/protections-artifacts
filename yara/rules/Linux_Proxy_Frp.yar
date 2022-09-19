@@ -1,5 +1,6 @@
 rule Linux_Proxy_Frp_4213778f {
     meta:
+        author = "Elastic Security"
         id = "4213778f-d05e-4af8-9650-2d813d5a64e5"
         fingerprint = "70bb186a9719767a9a60786fbe10bf4cc2f04c19ea58aaaa90018ec89a9f9b84"
         creation_date = "2021-10-20"

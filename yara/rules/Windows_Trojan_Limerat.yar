@@ -1,5 +1,6 @@
 rule Windows_Trojan_Limerat_24269a79 {
     meta:
+        author = "Elastic Security"
         id = "24269a79-0172-4da5-9b4d-f61327072bf0"
         fingerprint = "cb714cd787519216d25edaad9f89a9c0ce1b8fbbbcdf90bda4c79f5d85fdf381"
         creation_date = "2021-08-17"

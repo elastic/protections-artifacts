@@ -9,7 +9,7 @@ id = "2fbbd139-3919-4b6b-9c50-9452b0aef005"
 license = "Elastic License v2"
 name = "Unexpected SMB Connection from User-mode Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -40,7 +40,8 @@ sequence by process.entity_id with maxspan=1m
                   "?:\\Windows\\ProPatches\\Installation\\InstallationSandbox*\\stdeploy.exe",
                   "?:\\Windows\\System32\\ctfmon.exe",
                   "?:\\Windows\\SysWOW64\\ctfmon.exe",
-                  "?:\\Windows\\System32\\OpenSSH\\ssh.exe")]
+                  "?:\\Windows\\System32\\OpenSSH\\ssh.exe",
+                  "?:\\Windows\\LTSvc\\packages\\RFT\\NDDC\\nddc.exe")]
 '''
 
 optional_actions = []

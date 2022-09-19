@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ebury_7b13e9b6 {
     meta:
+        author = "Elastic Security"
         id = "7b13e9b6-ce96-4bd3-8196-83420280bd1f"
         fingerprint = "a891724ce36e86637540f722bc13b44984771f709219976168f12fe782f08306"
         creation_date = "2021-01-12"

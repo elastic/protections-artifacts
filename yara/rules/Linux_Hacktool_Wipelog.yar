@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Wipelog_daea1aa4 {
     meta:
+        author = "Elastic Security"
         id = "daea1aa4-0df7-4308-83e1-0707dcda2e54"
         fingerprint = "93f899e14e6331c2149ba5c0c1e9dd8def5a7d1b6d2a7af66eade991dea77b3c"
         creation_date = "2022-03-17"

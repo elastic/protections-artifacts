@@ -1,5 +1,6 @@
 rule Linux_Trojan_Skidmap_aa7b661d {
     meta:
+        author = "Elastic Security"
         id = "aa7b661d-0ecc-4171-a0c2-a6c0c91b6d27"
         fingerprint = "0bd6bec14d4b0205b04c6b4f34988ad95161f954a1f0319dd33513cb2c7e5f59"
         creation_date = "2021-01-12"

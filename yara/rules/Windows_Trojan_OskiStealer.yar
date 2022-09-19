@@ -1,5 +1,6 @@
 rule Windows_Trojan_OskiStealer_a158b1e3 {
     meta:
+        author = "Elastic Security"
         id = "a158b1e3-21b7-4009-9646-6bee9bde98ad"
         fingerprint = "3996a89d37494b118654f3713393f415c662850a5a76afa00e83f9611aee3221"
         creation_date = "2022-03-21"

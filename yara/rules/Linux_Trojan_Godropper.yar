@@ -1,5 +1,6 @@
 rule Linux_Trojan_Godropper_bae099bd {
     meta:
+        author = "Elastic Security"
         id = "bae099bd-c19a-4893-96e8-63132dabce39"
         fingerprint = "5a7b0906ebc47130aefa868643e1e0a40508fe7a25bc55e5c41ff284ca2751e5"
         creation_date = "2021-04-06"

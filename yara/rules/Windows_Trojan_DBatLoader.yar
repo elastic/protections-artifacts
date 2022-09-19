@@ -1,5 +1,6 @@
 rule Windows_Trojan_DBatLoader_f93a8e90 {
     meta:
+        author = "Elastic Security"
         id = "f93a8e90-10ac-44de-ac3b-c0e976628e98"
         fingerprint = "81b87663fbad9854430e5c4dcade464a15b995e645f9993a3e234593ee4df901"
         creation_date = "2022-03-11"

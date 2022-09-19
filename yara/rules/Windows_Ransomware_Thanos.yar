@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Thanos_c3522fd0 : beta {
     meta:
+        author = "Elastic Security"
         id = "c3522fd0-90e2-4dd9-82f1-4502689270dd"
         fingerprint = "6d9d6131fd0e3a8585900f4966cb2d1b32e7f5d71b9a65b7a47d80e94bd9f89a"
         creation_date = "2020-11-03"
@@ -22,6 +23,7 @@ rule Windows_Ransomware_Thanos_c3522fd0 : beta {
 
 rule Windows_Ransomware_Thanos_a6c09942 : beta {
     meta:
+        author = "Elastic Security"
         id = "a6c09942-0733-40d7-87b7-eb44dd472a35"
         fingerprint = "4abcf47243bebc281566ba4929b20950e3f1bfac8976ae5bc6b8ffda85468ec0"
         creation_date = "2020-11-03"
@@ -43,6 +45,7 @@ rule Windows_Ransomware_Thanos_a6c09942 : beta {
 
 rule Windows_Ransomware_Thanos_e19feca1 : beta {
     meta:
+        author = "Elastic Security"
         id = "e19feca1-b131-4045-be0c-d69d55f9a83e"
         fingerprint = "d6654d0b3155d9c64fd4e599ba34d51f110d9dfda6fa1520b686602d9f608f92"
         creation_date = "2020-11-03"

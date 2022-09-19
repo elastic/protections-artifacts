@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Helloxd_0c50f01b {
     meta:
+        author = "Elastic Security"
         id = "0c50f01b-5f3d-4112-9930-ca1150fc12fa"
         fingerprint = "462d8c231d608e28e66d810b811f9fdf82d0b3770d21267a4375669a26bbaafd"
         creation_date = "2022-06-14"

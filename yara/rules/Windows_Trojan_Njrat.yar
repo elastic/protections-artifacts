@@ -1,5 +1,6 @@
 rule Windows_Trojan_Njrat_30f3c220 {
     meta:
+        author = "Elastic Security"
         id = "30f3c220-b8dc-45a1-bcf0-027c2f76fa63"
         fingerprint = "d15e131bca6beddcaecb20fffaff1784ad8a33a25e7ce90f7450d1a362908cc4"
         creation_date = "2021-06-13"

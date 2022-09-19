@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Presenoker_3bb5533d {
     meta:
+        author = "Elastic Security"
         id = "3bb5533d-4722-4801-9fbb-dd2c916cffc6"
         fingerprint = "a3005a07901953ae8def7bd9d9ec96874da0a8aedbebde536504abed9d4191fd"
         creation_date = "2021-01-12"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_CaesarKbd_32bb198b {
     meta:
+        author = "Elastic Security"
         id = "32bb198b-ec03-4628-8e9b-bc36c2525ec7"
         fingerprint = "54ed92761bb619ae4dcec9c27127d6c2a74a575916249cd5db24b8deb2ee0588"
         creation_date = "2022-04-04"

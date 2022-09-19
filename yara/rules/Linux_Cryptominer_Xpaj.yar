@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Xpaj_fdbd614e {
     meta:
+        author = "Elastic Security"
         id = "fdbd614e-e628-43ff-86d4-1057f9d544ac"
         fingerprint = "456b69d4035aa2d682ba081c2f7b24c696f655ec164645f83c9aef5bd262f510"
         creation_date = "2021-01-12"

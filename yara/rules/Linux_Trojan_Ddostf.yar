@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ddostf_e4874cd4 {
     meta:
+        author = "Elastic Security"
         id = "e4874cd4-50e3-4a4c-b14c-976e29aaaaae"
         fingerprint = "dfbf7476794611718a1cd2c837560423e3a6c8b454a5d9eecb9c6f9d31d01889"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Ddostf_e4874cd4 {
 
 rule Linux_Trojan_Ddostf_32c35334 {
     meta:
+        author = "Elastic Security"
         id = "32c35334-f264-4509-b5c4-b07e477bd07d"
         fingerprint = "f71d1e9188f67147de8808d65374b4e34915e9d60ff475f7fc519c8918c75724"
         creation_date = "2021-01-12"
@@ -37,6 +39,7 @@ rule Linux_Trojan_Ddostf_32c35334 {
 
 rule Linux_Trojan_Ddostf_6dc1caab {
     meta:
+        author = "Elastic Security"
         id = "6dc1caab-be84-4f27-a059-2acffc20ca2c"
         fingerprint = "43bcb29d92e0ed2dfd0ff182991864f8efabd16a0f87e8c3bb453b47bd8e272b"
         creation_date = "2021-01-12"
@@ -56,6 +59,7 @@ rule Linux_Trojan_Ddostf_6dc1caab {
 
 rule Linux_Trojan_Ddostf_dc47a873 {
     meta:
+        author = "Elastic Security"
         id = "dc47a873-65a0-430d-a598-95be7134f207"
         fingerprint = "f103490a9dedc0197f50ca2b412cf18d2749c8d6025fd557f1686bc38f32db52"
         creation_date = "2021-01-12"
@@ -75,6 +79,7 @@ rule Linux_Trojan_Ddostf_dc47a873 {
 
 rule Linux_Trojan_Ddostf_cb0358a0 {
     meta:
+        author = "Elastic Security"
         id = "cb0358a0-5303-4860-89ac-7dae037f5f0b"
         fingerprint = "f97c96d457532f2af5fb0e1b40ad13dcfba2479c651266b4bdd1ab2a01c0360f"
         creation_date = "2021-01-12"

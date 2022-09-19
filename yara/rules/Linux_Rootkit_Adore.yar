@@ -1,5 +1,6 @@
 rule Linux_Rootkit_Adore_fe3fd09f {
     meta:
+        author = "Elastic Security"
         id = "fe3fd09f-d170-4bb0-bc8d-6d61bdc22164"
         fingerprint = "2bab2a4391359c6a7148417b010887d0754b91ac99820258e849e81f7752069f"
         creation_date = "2021-04-06"

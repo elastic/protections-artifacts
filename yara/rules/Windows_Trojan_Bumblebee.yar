@@ -1,5 +1,6 @@
 rule Windows_Trojan_Bumblebee_35f50bea {
     meta:
+        author = "Elastic Security"
         id = "35f50bea-c497-4cc6-b915-8ad3aca7bee6"
         fingerprint = "f2e07a9b7d143ca13852f723e7d0bd55365d6f8b5d9315b7e24b7f1101010820"
         creation_date = "2022-04-28"
@@ -20,6 +21,7 @@ rule Windows_Trojan_Bumblebee_35f50bea {
 
 rule Windows_Trojan_Bumblebee_70bed4f3 {
     meta:
+        author = "Elastic Security"
         id = "70bed4f3-f515-4186-ac6c-e9db72b8a95a"
         fingerprint = "016477598ce022cc75f591d1c72535a3353ecc4e888642e72aa29476464a8c2f"
         creation_date = "2022-04-28"

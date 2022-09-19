@@ -1,5 +1,6 @@
 rule Windows_Trojan_SnakeKeylogger_af3faa65 {
     meta:
+        author = "Elastic Security"
         id = "af3faa65-b19d-4267-ac02-1a3b50cdc700"
         fingerprint = "15f4ef2a03c6f5c6284ea6a9013007e4ea7dc90a1ba9c81a53a1c7407d85890d"
         creation_date = "2021-04-06"

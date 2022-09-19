@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Maze_61254061 : beta {
     meta:
+        author = "Elastic Security"
         id = "61254061-e8af-47ab-9cce-96debd99a80a"
         fingerprint = "670d9abbdea153ca66f24ef6806f97e9af3efb73f621167e95606da285627d1b"
         creation_date = "2020-04-18"
@@ -21,6 +22,7 @@ rule Windows_Ransomware_Maze_61254061 : beta {
 
 rule Windows_Ransomware_Maze_46f40c40 : beta {
     meta:
+        author = "Elastic Security"
         id = "46f40c40-05a4-4163-a62d-675882149781"
         fingerprint = "efe1e0d23fbfd72fd2843a9c8d5e62394ef8c75b9a7bd03fdbb36e2cf97bf12e"
         creation_date = "2020-04-18"
@@ -43,6 +45,7 @@ rule Windows_Ransomware_Maze_46f40c40 : beta {
 
 rule Windows_Ransomware_Maze_20caee5b : beta {
     meta:
+        author = "Elastic Security"
         id = "20caee5b-cf7f-4db7-8c3b-67baf63bfc32"
         fingerprint = "47525839e0800f6edec6ad4580682a336e36f7d13bd9e7214eca0f16941016b8"
         creation_date = "2020-04-18"
@@ -69,6 +72,7 @@ rule Windows_Ransomware_Maze_20caee5b : beta {
 
 rule Windows_Ransomware_Maze_f88f136f : beta {
     meta:
+        author = "Elastic Security"
         id = "f88f136f-755c-46d6-9dbe-243342ae315a"
         fingerprint = "3fa065d28d864868e49b394e895207c8be2252a9e211ac4bacce10d9ff04607e"
         creation_date = "2020-04-18"

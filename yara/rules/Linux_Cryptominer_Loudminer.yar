@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Loudminer_581f57a9 {
     meta:
+        author = "Elastic Security"
         id = "581f57a9-36e0-4b95-9a1e-837bdd4aceab"
         fingerprint = "1013e6e11ea2a30ecf9226ea2618a59fb08588cdc893053430e969fbdf6eb675"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Cryptominer_Loudminer_581f57a9 {
 
 rule Linux_Cryptominer_Loudminer_f2298a50 {
     meta:
+        author = "Elastic Security"
         id = "f2298a50-7bd4-43d8-ac84-b36489405f2e"
         fingerprint = "8eafc1c995c0efb81d9ce6bcc107b102551371f3fb8efdf8261ce32631947e03"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Cryptominer_Loudminer_f2298a50 {
 
 rule Linux_Cryptominer_Loudminer_851fc7aa {
     meta:
+        author = "Elastic Security"
         id = "851fc7aa-6514-4f47-b6b5-a1e730b5d460"
         fingerprint = "e4d78229c1877a023802d7d99eca48bffc55d986af436c8a1df7c6c4e5e435ba"
         creation_date = "2021-01-12"

@@ -1,5 +1,6 @@
 rule Windows_Hacktool_Dcsyncer_425579c5 {
     meta:
+        author = "Elastic Security"
         id = "425579c5-496f-4e08-a7e3-bf56e622aa21"
         fingerprint = "f6a0c028323be41f6ec90af8a7ea8587fee6985ddefdbcdd24351cb615f756a2"
         creation_date = "2021-09-15"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_MassLogger_511b001e {
     meta:
+        author = "Elastic Security"
         id = "511b001e-dc67-4e45-9096-0b01101ca0ab"
         fingerprint = "14ec9c32af7c1dd4a1f73e37ef9e042c18d9e0179b0e5732752767f93be6d4e2"
         creation_date = "2022-03-02"

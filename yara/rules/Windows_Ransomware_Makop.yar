@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Makop_3ac2c13c {
     meta:
+        author = "Elastic Security"
         id = "3ac2c13c-45f0-4108-81fb-e57c3cc0e622"
         fingerprint = "4658a5b34ecb2a7432b7ab48041cc064d917b88a4673f21aa6c3c44b115c9b8c"
         creation_date = "2021-08-05"
@@ -19,6 +20,7 @@ rule Windows_Ransomware_Makop_3ac2c13c {
 
 rule Windows_Ransomware_Makop_3e388338 {
     meta:
+        author = "Elastic Security"
         id = "3e388338-83c7-453c-b865-13f3bd059515"
         fingerprint = "7920469120a69fed191c5068739ed922dcf67aa26d68e44708a1d63dc0931bc3"
         creation_date = "2021-08-05"

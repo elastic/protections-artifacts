@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ladvix_db41f9d2 {
     meta:
+        author = "Elastic Security"
         id = "db41f9d2-aa5c-4d26-b8ba-cece44eddca8"
         fingerprint = "d0aaa680e81f44cc555bf7799d33fce66f172563788afb2ad0fb16d3e460e8c6"
         creation_date = "2021-01-12"
@@ -18,6 +19,7 @@ rule Linux_Trojan_Ladvix_db41f9d2 {
 
 rule Linux_Trojan_Ladvix_77d184fd {
     meta:
+        author = "Elastic Security"
         id = "77d184fd-a15e-40e5-ac7e-0d914cc009fe"
         fingerprint = "21361ca7c26c98903626d1167747c6fd11a5ae0d6298d2ef86430ce5be0ecd1a"
         creation_date = "2021-01-12"
@@ -37,6 +39,7 @@ rule Linux_Trojan_Ladvix_77d184fd {
 
 rule Linux_Trojan_Ladvix_c9888edb {
     meta:
+        author = "Elastic Security"
         id = "c9888edb-0f82-4c7a-b501-4e4d3c9c64e3"
         fingerprint = "e0e0d75a6de7a11b2391f4a8610a6d7c385df64d43fa1741d7fe14b279e1a29a"
         creation_date = "2021-01-12"
@@ -56,6 +59,7 @@ rule Linux_Trojan_Ladvix_c9888edb {
 
 rule Linux_Trojan_Ladvix_81fccd74 {
     meta:
+        author = "Elastic Security"
         id = "81fccd74-465d-4f2e-b879-987bc47828dd"
         fingerprint = "0e983107f38a6b2a739a44ab4d37c35c5a7d8217713b280a1786511089084a95"
         creation_date = "2021-06-28"

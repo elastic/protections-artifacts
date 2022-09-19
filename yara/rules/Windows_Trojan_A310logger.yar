@@ -1,5 +1,6 @@
 rule Windows_Trojan_A310logger_520cd7ec {
     meta:
+        author = "Elastic Security"
         id = "520cd7ec-840c-4d45-961b-8bc5e329c52f"
         fingerprint = "f4ee88e555b7bd0102403cc804372f5376debc59555e8e7b4a16e18b04d1b314"
         creation_date = "2022-01-11"

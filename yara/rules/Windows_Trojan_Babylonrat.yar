@@ -1,5 +1,6 @@
 rule Windows_Trojan_Babylonrat_0f66e73b {
     meta:
+        author = "Elastic Security"
         id = "0f66e73b-7824-46b6-a9e6-5abf018c9ffa"
         fingerprint = "3998824e381f51aaa2c81c12d4c05157c642d8aef39982e35fa3e124191640ea"
         creation_date = "2021-09-02"

@@ -1,5 +1,6 @@
 rule Windows_Cryptominer_Generic_dd1e4d1a {
     meta:
+        author = "Elastic Security"
         id = "dd1e4d1a-2e2f-4af0-bd66-2e12367dd064"
         fingerprint = "a00e3e08e11d10a7a4bf1110a5110e4d0a4d2acf0974aca9dfc1ad5f21c80df7"
         creation_date = "2021-01-12"

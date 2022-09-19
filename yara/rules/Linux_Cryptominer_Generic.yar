@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Generic_d7bd0e5d {
     meta:
+        author = "Elastic Security"
         id = "d7bd0e5d-3528-4648-aaa5-6cf44d22c0d5"
         fingerprint = "fbc06c7603aa436df807ad3f77d5ba783c4d33f61b06a69e8641741068f3a543"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Cryptominer_Generic_d7bd0e5d {
 
 rule Linux_Cryptominer_Generic_69e1a763 {
     meta:
+        author = "Elastic Security"
         id = "69e1a763-1e0d-4448-9bc4-769f3a36ac10"
         fingerprint = "9007ab73902ef9bfa69e4ddc29513316cb6aa7185986cdb10fd833157cd7d434"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Cryptominer_Generic_69e1a763 {
 
 rule Linux_Cryptominer_Generic_397a86bd {
     meta:
+        author = "Elastic Security"
         id = "397a86bd-6d66-4db0-ad41-d0ae3dbbeb21"
         fingerprint = "0bad343f28180822bcb45b0a84d69b40e26e5eedb650db1599514020b6736dd0"
         creation_date = "2021-01-12"
@@ -57,6 +60,7 @@ rule Linux_Cryptominer_Generic_397a86bd {
 
 rule Linux_Cryptominer_Generic_37c3f8d3 {
     meta:
+        author = "Elastic Security"
         id = "37c3f8d3-9d79-434c-b0e8-252122ebc62a"
         fingerprint = "6ba0bae987db369ec6cdadf685b8c7184e6c916111743f1f2b43ead8d028338c"
         creation_date = "2021-01-12"
@@ -76,6 +80,7 @@ rule Linux_Cryptominer_Generic_37c3f8d3 {
 
 rule Linux_Cryptominer_Generic_28a80546 {
     meta:
+        author = "Elastic Security"
         id = "28a80546-ae74-4616-8896-50f54da66650"
         fingerprint = "7f49f04ba36e7ff38d313930c469d64337203a60792f935a3548cee176ae9523"
         creation_date = "2021-01-12"
@@ -95,6 +100,7 @@ rule Linux_Cryptominer_Generic_28a80546 {
 
 rule Linux_Cryptominer_Generic_9d531f70 {
     meta:
+        author = "Elastic Security"
         id = "9d531f70-c42f-4e1a-956a-f9ac43751e73"
         fingerprint = "2c6019f7bc2fc47d7002e0ba6e35513950260b558f1fdc732d3556dabbaaa93d"
         creation_date = "2021-01-12"
@@ -114,6 +120,7 @@ rule Linux_Cryptominer_Generic_9d531f70 {
 
 rule Linux_Cryptominer_Generic_23a5c29a {
     meta:
+        author = "Elastic Security"
         id = "23a5c29a-6a8f-46f4-87ba-2a60139450ce"
         fingerprint = "1a7a86ff6e1666c2da6e6f65074bb1db2fe1c97d1ad42d1f670dd5c88023eecf"
         creation_date = "2021-01-12"
@@ -133,6 +140,7 @@ rule Linux_Cryptominer_Generic_23a5c29a {
 
 rule Linux_Cryptominer_Generic_ea5703ce {
     meta:
+        author = "Elastic Security"
         id = "ea5703ce-4ad4-46cc-b253-8d022ca385a3"
         fingerprint = "a58a41ab4602380c0989659127d099add042413f11e3815a5e1007a44effaa68"
         creation_date = "2021-01-12"
@@ -152,6 +160,7 @@ rule Linux_Cryptominer_Generic_ea5703ce {
 
 rule Linux_Cryptominer_Generic_6a4f4255 {
     meta:
+        author = "Elastic Security"
         id = "6a4f4255-d202-48b7-96ae-cb7211dcbea3"
         fingerprint = "0ed37d7eccd4e36b954824614b976e1371c3b2ffe318345d247198d387a13de6"
         creation_date = "2021-01-12"
@@ -171,6 +180,7 @@ rule Linux_Cryptominer_Generic_6a4f4255 {
 
 rule Linux_Cryptominer_Generic_9088d00b {
     meta:
+        author = "Elastic Security"
         id = "9088d00b-622a-4cbf-9600-6dfcf2fc0c2c"
         fingerprint = "85cbe86b9f96fc1b6899b35cc4aa16b66a91dc1239ed5f5cf3609322cec30f30"
         creation_date = "2021-01-12"
@@ -190,6 +200,7 @@ rule Linux_Cryptominer_Generic_9088d00b {
 
 rule Linux_Cryptominer_Generic_71024c4a {
     meta:
+        author = "Elastic Security"
         id = "71024c4a-e8da-44fc-9cf9-c71829dfe87a"
         fingerprint = "dbbb74ec687e8e9293dfa2272d55b81ef863a50b0ff87daf15aaf6cee473efe6"
         creation_date = "2021-01-12"
@@ -209,6 +220,7 @@ rule Linux_Cryptominer_Generic_71024c4a {
 
 rule Linux_Cryptominer_Generic_d81368a3 {
     meta:
+        author = "Elastic Security"
         id = "d81368a3-00ca-44cf-b009-718272d389eb"
         fingerprint = "dd463df2c03389af3e7723fda684b0f42342817b3a76664d131cf03542837b8a"
         creation_date = "2021-01-12"
@@ -228,6 +240,7 @@ rule Linux_Cryptominer_Generic_d81368a3 {
 
 rule Linux_Cryptominer_Generic_97e9cebe {
     meta:
+        author = "Elastic Security"
         id = "97e9cebe-d30b-49f6-95f4-fd551e7a42e4"
         fingerprint = "61bef39d174d97897ac0820b624b1afbfe73206208db420ae40269967213ebed"
         creation_date = "2021-01-12"
@@ -247,6 +260,7 @@ rule Linux_Cryptominer_Generic_97e9cebe {
 
 rule Linux_Cryptominer_Generic_98ff0f36 {
     meta:
+        author = "Elastic Security"
         id = "98ff0f36-5faf-417a-9431-8a44e9f088f4"
         fingerprint = "b25420dfc32522a060dc8470315409280e3c03de0b347e92a5bc6c1a921af94a"
         creation_date = "2021-01-12"
@@ -266,6 +280,7 @@ rule Linux_Cryptominer_Generic_98ff0f36 {
 
 rule Linux_Cryptominer_Generic_1512cf40 {
     meta:
+        author = "Elastic Security"
         id = "1512cf40-ae62-40cf-935d-589be4fe3d93"
         fingerprint = "f9800996d2e6d9ea8641d51aedc554aa732ebff871f0f607bb3fe664914efd5a"
         creation_date = "2021-04-06"
@@ -285,6 +300,7 @@ rule Linux_Cryptominer_Generic_1512cf40 {
 
 rule Linux_Cryptominer_Generic_0d6005a1 {
     meta:
+        author = "Elastic Security"
         id = "0d6005a1-a481-4679-a214-f1e3ef8bf1d0"
         fingerprint = "435040ec452d337c60435b07622d3a8af8e3b7e8eb6ec2791da6aae504cc2266"
         creation_date = "2021-01-12"
@@ -304,6 +320,7 @@ rule Linux_Cryptominer_Generic_0d6005a1 {
 
 rule Linux_Cryptominer_Generic_e1ff020a {
     meta:
+        author = "Elastic Security"
         id = "e1ff020a-446c-4537-8cc3-3bcc56ba5a99"
         fingerprint = "363872fe6ef89a0f4c920b1db4ac480a6ae70e80211200b73a804b43377fff01"
         creation_date = "2021-04-06"
@@ -323,6 +340,7 @@ rule Linux_Cryptominer_Generic_e1ff020a {
 
 rule Linux_Cryptominer_Generic_102d6f7c {
     meta:
+        author = "Elastic Security"
         id = "102d6f7c-0e77-4b23-9e84-756aba929d83"
         fingerprint = "037b1da31ffe66015c959af94d89eef2f7f846e1649e4415c31deaa81945aea9"
         creation_date = "2021-01-12"
@@ -342,6 +360,7 @@ rule Linux_Cryptominer_Generic_102d6f7c {
 
 rule Linux_Cryptominer_Generic_9c8f3b1a {
     meta:
+        author = "Elastic Security"
         id = "9c8f3b1a-0273-4164-ba48-b0bc090adf9e"
         fingerprint = "a35efe6bad4e0906032ab2fd7c776758e71caed8be402948f39682cf1f858005"
         creation_date = "2021-01-12"
@@ -361,6 +380,7 @@ rule Linux_Cryptominer_Generic_9c8f3b1a {
 
 rule Linux_Cryptominer_Generic_76cb94a9 {
     meta:
+        author = "Elastic Security"
         id = "76cb94a9-5a3f-483c-91f3-aa0e3c27f7ba"
         fingerprint = "623a33cc95af46b8f0d557c69f8bf72db7c57fe2018b7a911733be4ddd71f073"
         creation_date = "2021-01-12"
@@ -380,6 +400,7 @@ rule Linux_Cryptominer_Generic_76cb94a9 {
 
 rule Linux_Cryptominer_Generic_616afaa1 {
     meta:
+        author = "Elastic Security"
         id = "616afaa1-7679-4198-9e80-c3f044b3c07d"
         fingerprint = "fd6afad9f318ce00b0f0f8be3a431a2c7b4395dd69f82328f4555b3715a8b298"
         creation_date = "2021-01-12"
@@ -399,6 +420,7 @@ rule Linux_Cryptominer_Generic_616afaa1 {
 
 rule Linux_Cryptominer_Generic_18af74b2 {
     meta:
+        author = "Elastic Security"
         id = "18af74b2-99fe-42fc-aacd-7887116530a8"
         fingerprint = "07a6b44ff1ba6143c76e7ccb3885bd04e968508e93c5f8bff9bc5efc42a16a96"
         creation_date = "2021-01-12"
@@ -418,6 +440,7 @@ rule Linux_Cryptominer_Generic_18af74b2 {
 
 rule Linux_Cryptominer_Generic_1b76c066 {
     meta:
+        author = "Elastic Security"
         id = "1b76c066-463c-46e5-8a08-ccfc80e3f399"
         fingerprint = "e33937322a1a2325539d7cdb1df13295e5ca041a513afe1d5e0941f0c66347dd"
         creation_date = "2021-01-12"
@@ -437,6 +460,7 @@ rule Linux_Cryptominer_Generic_1b76c066 {
 
 rule Linux_Cryptominer_Generic_b6ea5ee1 {
     meta:
+        author = "Elastic Security"
         id = "b6ea5ee1-ede5-4fa3-a065-99219b3530da"
         fingerprint = "07c2f1fcb50ce5bcdebfc03fca4aaacdbabab42a857d7cc8f008712ca576b871"
         creation_date = "2021-01-12"
@@ -456,6 +480,7 @@ rule Linux_Cryptominer_Generic_b6ea5ee1 {
 
 rule Linux_Cryptominer_Generic_050ac14c {
     meta:
+        author = "Elastic Security"
         id = "050ac14c-9aef-4212-97fd-e2a21c2f62e2"
         fingerprint = "6f0a5a5d3cece7ae8db47ef5e1bbbea02b886e865f23b0061c2d346feb351663"
         creation_date = "2021-01-12"
@@ -475,6 +500,7 @@ rule Linux_Cryptominer_Generic_050ac14c {
 
 rule Linux_Cryptominer_Generic_df937caa {
     meta:
+        author = "Elastic Security"
         id = "df937caa-ca6c-4a80-a68c-c265dab7c02c"
         fingerprint = "963642e141db6c55bd8251ede57b38792278ded736833564ae455cc553ab7d24"
         creation_date = "2021-01-12"
@@ -494,6 +520,7 @@ rule Linux_Cryptominer_Generic_df937caa {
 
 rule Linux_Cryptominer_Generic_e9ff82a8 {
     meta:
+        author = "Elastic Security"
         id = "e9ff82a8-b8ca-45fb-9738-3ce0c452044f"
         fingerprint = "91e78b1777a0580f25f7796aa6d9bcbe2cbad257576924aecfe513b1e1206915"
         creation_date = "2021-01-12"
@@ -513,6 +540,7 @@ rule Linux_Cryptominer_Generic_e9ff82a8 {
 
 rule Linux_Cryptominer_Generic_a5267ea3 {
     meta:
+        author = "Elastic Security"
         id = "a5267ea3-b98c-49e9-8051-e33a101f12d3"
         fingerprint = "8391a4dbc361eec2877852acdc77681b3a15922d9a047d7ad12d06271d53f540"
         creation_date = "2021-01-12"
@@ -532,6 +560,7 @@ rule Linux_Cryptominer_Generic_a5267ea3 {
 
 rule Linux_Cryptominer_Generic_4e9075e6 {
     meta:
+        author = "Elastic Security"
         id = "4e9075e6-3ca9-459e-9f5f-3e614fd4f1c8"
         fingerprint = "70d8c4ecb185b8817558ad9d26a47c340c977abb6abfca8efe1ff99efb43c579"
         creation_date = "2021-01-12"
@@ -551,6 +580,7 @@ rule Linux_Cryptominer_Generic_4e9075e6 {
 
 rule Linux_Cryptominer_Generic_3a8d0974 {
     meta:
+        author = "Elastic Security"
         id = "3a8d0974-384e-4d62-9aa8-0bd8f7d50206"
         fingerprint = "60cb81033461e73fcb0fb8cafd228e2c9478c132f49e115c5e55d5579500caa2"
         creation_date = "2021-06-28"
@@ -570,6 +600,7 @@ rule Linux_Cryptominer_Generic_3a8d0974 {
 
 rule Linux_Cryptominer_Generic_b9e6ffdf {
     meta:
+        author = "Elastic Security"
         id = "b9e6ffdf-4b2b-4052-9c91-a06f43a2e7b8"
         fingerprint = "fdd91d5802d5807d52f4c9635e325fc0765bb54cf51305c7477d2b791f393f3e"
         creation_date = "2021-04-06"
@@ -589,6 +620,7 @@ rule Linux_Cryptominer_Generic_b9e6ffdf {
 
 rule Linux_Cryptominer_Generic_7ef74003 {
     meta:
+        author = "Elastic Security"
         id = "7ef74003-cd1f-4f2f-9c96-4dbcabaa36e4"
         fingerprint = "187fd82b91ae6eadc786cadac75de5d919a2b8a592037a5bf8da2efa2539f507"
         creation_date = "2021-01-12"
@@ -608,6 +640,7 @@ rule Linux_Cryptominer_Generic_7ef74003 {
 
 rule Linux_Cryptominer_Generic_1d0700b8 {
     meta:
+        author = "Elastic Security"
         id = "1d0700b8-1bc0-4da2-a903-9d78e79e71d8"
         fingerprint = "19853be803f82e6758554a57981e1b52c43a017ab88242c42a7c39f6ead01cf3"
         creation_date = "2021-01-12"
@@ -627,6 +660,7 @@ rule Linux_Cryptominer_Generic_1d0700b8 {
 
 rule Linux_Cryptominer_Generic_55beb2ee {
     meta:
+        author = "Elastic Security"
         id = "55beb2ee-7306-4134-a512-840671cc4490"
         fingerprint = "707a1478f86da2ec72580cfe4715b466e44c345deb6382b8dc3ece4e3935514d"
         creation_date = "2021-01-12"
@@ -646,6 +680,7 @@ rule Linux_Cryptominer_Generic_55beb2ee {
 
 rule Linux_Cryptominer_Generic_fdd7340f {
     meta:
+        author = "Elastic Security"
         id = "fdd7340f-49d6-4770-afac-24104a3c2f86"
         fingerprint = "cc302eb6c133901cc3aa78e6ca0af16a620eb4dabb16b21d9322c4533f11d25f"
         creation_date = "2021-01-12"
@@ -665,6 +700,7 @@ rule Linux_Cryptominer_Generic_fdd7340f {
 
 rule Linux_Cryptominer_Generic_2627921e {
     meta:
+        author = "Elastic Security"
         id = "2627921e-6c0d-4515-a09a-b2c99a59598d"
         fingerprint = "2551ece438a09700c825faa63caa3e21ced94c85bdaa5b1b0dd63603d4fa9bb6"
         creation_date = "2021-01-12"
@@ -684,6 +720,7 @@ rule Linux_Cryptominer_Generic_2627921e {
 
 rule Linux_Cryptominer_Generic_e36a35b0 {
     meta:
+        author = "Elastic Security"
         id = "e36a35b0-cb38-4d2d-bca2-f3734637faa8"
         fingerprint = "0ee42ff704c82ee6c2bc0408cccb77bcbae8d4405bb1f405ee09b093e7a626c0"
         creation_date = "2021-01-12"
@@ -703,6 +740,7 @@ rule Linux_Cryptominer_Generic_e36a35b0 {
 
 rule Linux_Cryptominer_Generic_6dad0380 {
     meta:
+        author = "Elastic Security"
         id = "6dad0380-7771-4fb9-a7e5-176eeb6fcfd7"
         fingerprint = "ffe022f42e98c9c1eeb3aead0aca9d795200b4b22f89e7f3b03baf96f18c9473"
         creation_date = "2021-01-12"
@@ -722,6 +760,7 @@ rule Linux_Cryptominer_Generic_6dad0380 {
 
 rule Linux_Cryptominer_Generic_e73f501e {
     meta:
+        author = "Elastic Security"
         id = "e73f501e-019c-4281-ae93-acde7ad421af"
         fingerprint = "bd9e6f2548c918b2c439a047410b6b239c3993a3dbd85bfd70980c64d11a6c5c"
         creation_date = "2021-12-13"
@@ -741,6 +780,7 @@ rule Linux_Cryptominer_Generic_e73f501e {
 
 rule Linux_Cryptominer_Generic_5e56d076 {
     meta:
+        author = "Elastic Security"
         id = "5e56d076-0d6d-4979-8ebc-52607dcdb42d"
         fingerprint = "e9ca9b9faee091afed534b89313d644a52476b4757663e1cdfbcbca379857740"
         creation_date = "2022-01-05"
@@ -760,6 +800,7 @@ rule Linux_Cryptominer_Generic_5e56d076 {
 
 rule Linux_Cryptominer_Generic_54357231 {
     meta:
+        author = "Elastic Security"
         id = "54357231-23d8-44f5-94d7-71da02a8ba38"
         fingerprint = "8bbba49c863bc3d53903b1a204851dc656f3e3d68d3c8d5a975ed2dc9e797e13"
         creation_date = "2022-01-05"
@@ -779,6 +820,7 @@ rule Linux_Cryptominer_Generic_54357231 {
 
 rule Linux_Cryptominer_Generic_467c4d46 {
     meta:
+        author = "Elastic Security"
         id = "467c4d46-3272-452c-9251-3599d16fc916"
         fingerprint = "cbde94513576fdb7cabf568bd8439f0194d6800373c3735844e26d262c8bc1cc"
         creation_date = "2022-01-05"
@@ -798,6 +840,7 @@ rule Linux_Cryptominer_Generic_467c4d46 {
 
 rule Linux_Cryptominer_Generic_e0cca9dc {
     meta:
+        author = "Elastic Security"
         id = "e0cca9dc-0f3e-42d8-bb43-0625f4f9bfe1"
         fingerprint = "e7bc17ba356774ed10e65c95a8db3b09d3b9be72703e6daa9b601ea820481db7"
         creation_date = "2022-01-05"
@@ -817,6 +860,7 @@ rule Linux_Cryptominer_Generic_e0cca9dc {
 
 rule Linux_Cryptominer_Generic_36e404e2 {
     meta:
+        author = "Elastic Security"
         id = "36e404e2-be7c-40dc-b861-8ab929cad019"
         fingerprint = "7268b94d67f586ded78ad3a52b23a81fd4edb866fedd0ab1e55997f1bbce4c72"
         creation_date = "2022-01-05"

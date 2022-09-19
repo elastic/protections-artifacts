@@ -1,5 +1,6 @@
 rule Windows_Backdoor_Goldbackdoor_91902940 {
     meta:
+        author = "Elastic Security"
         id = "91902940-a291-4fc6-81c5-2cde2328e8d9"
         fingerprint = "83a404a24e54bd05319d3df3a830f1ffe51d30f71ca55d63ca152d5169511df4"
         creation_date = "2022-04-29"
@@ -26,6 +27,7 @@ rule Windows_Backdoor_Goldbackdoor_91902940 {
 
 rule Windows_Backdoor_Goldbackdoor_f11d57df {
     meta:
+        author = "Elastic Security"
         id = "f11d57df-8dd4-481c-a557-f83ae05d53fe"
         fingerprint = "fed0317d43910d962908604812c2cd1aff6e67f7e245c82b39f2ac6dc14b6edb"
         creation_date = "2022-04-29"

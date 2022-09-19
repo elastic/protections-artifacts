@@ -1,5 +1,6 @@
 rule Linux_Ransomware_Sodinokibi_2883d7cd {
     meta:
+        author = "Elastic Security"
         id = "2883d7cd-fd3b-47a5-9283-a40335172c62"
         fingerprint = "d6570a8e9358cef95388a72b2e7f747ee5092620c4f92a4b4e6c1bb277e1cb36"
         creation_date = "2022-01-05"

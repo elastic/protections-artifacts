@@ -1,5 +1,6 @@
 rule Linux_Backdoor_Python_00606bac {
     meta:
+        author = "Elastic Security"
         id = "00606bac-83eb-4a58-82d2-e4fd16d30846"
         fingerprint = "cce1d0e7395a74c04f15ff95f6de7fd7d5f46ede83322b832df74133912c0b17"
         creation_date = "2021-01-12"

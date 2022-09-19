@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Fontonlake_68ad8568 {
     meta:
+        author = "Elastic Security"
         id = "68ad8568-2b00-4680-a83f-1689eff6099c"
         fingerprint = "81936e696a525cf02070fa7cfa27574cdad37e1b3d8f278950390a1945c21611"
         creation_date = "2021-10-12"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Cerbu_69d5657e {
     meta:
+        author = "Elastic Security"
         id = "69d5657e-1fe9-4367-b478-218c278c7fbc"
         fingerprint = "7dfaebc6934c8fa97509831e0011f2befd0dbc24a68e4a07bc1ee0decae45a42"
         creation_date = "2021-01-12"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_Carberp_d6de82ae {
     meta:
+        author = "Elastic Security"
         id = "d6de82ae-9846-40cb-925d-e0a371e1c44c"
         fingerprint = "7ce34f1000749a938b78508c93371d3339cd49f73eeec36b25da13c9d129b85c"
         creation_date = "2021-02-07"

@@ -1,5 +1,6 @@
 rule Linux_Trojan_Mumblehard_523450aa {
     meta:
+        author = "Elastic Security"
         id = "523450aa-6bb4-4863-9656-81a6e6cb7d88"
         fingerprint = "783f07e4f4625c061309af2d89e9ece0ba4a8ce21a7d93ce19cd32bcd6ad38e9"
         creation_date = "2021-01-12"

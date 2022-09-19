@@ -1,5 +1,6 @@
 rule Windows_Shellcode_Generic_8c487e57 {
     meta:
+        author = "Elastic Security"
         id = "8c487e57-4b8c-488e-a1d9-786ff935fd2c"
         fingerprint = "834caf96192a513aa93ac48fb8d2f3326bf9f08acaf7a27659f688b26e3e57e4"
         creation_date = "2022-05-23"

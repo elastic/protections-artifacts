@@ -1,5 +1,6 @@
 rule Windows_Trojan_Glupteba_70557305 {
     meta:
+        author = "Elastic Security"
         id = "70557305-3d11-4dde-b53b-94f1ecc0380b"
         fingerprint = "bac7daa5c491de8f8a75b203cdb1cdab2c10633aa45a82e6b04d2f577e3e8415"
         creation_date = "2021-08-08"
@@ -24,6 +25,7 @@ rule Windows_Trojan_Glupteba_70557305 {
 
 rule Windows_Trojan_Glupteba_4669dcd6 {
     meta:
+        author = "Elastic Security"
         id = "4669dcd6-8e04-416d-91c0-f45816430869"
         fingerprint = "5b598640f42a99b00d481031f5fcf143ffcc32ef002eac095a14edb18d5b02c9"
         creation_date = "2021-08-08"

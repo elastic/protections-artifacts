@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Rook_ee21fa67 {
     meta:
+        author = "Elastic Security"
         id = "ee21fa67-bd82-40fb-9c6d-bab5abfe14b3"
         fingerprint = "8ef731590e73f79a13d04db39e58b03d0a29fd8e46a0584b0fcaf57ac0efe473"
         creation_date = "2022-01-14"

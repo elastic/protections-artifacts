@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Doppelpaymer_6660d29f : beta {
     meta:
+        author = "Elastic Security"
         id = "6660d29f-aca9-4156-90a0-ce64fded281a"
         fingerprint = "8bf4d098b8ce9da99a2ca13fa0759a7185ade1b3ab3b281cd15749d68546d130"
         creation_date = "2020-06-28"
@@ -21,6 +22,7 @@ rule Windows_Ransomware_Doppelpaymer_6660d29f : beta {
 
 rule Windows_Ransomware_Doppelpaymer_0b9b75b5 : beta {
     meta:
+        author = "Elastic Security"
         id = "0b9b75b5-f521-4414-8216-cde5de6b8ff7"
         fingerprint = "4fe2f648afa0031c2a4807ae882ddf19302ce6a6d26b04341950e84dbf6c1374"
         creation_date = "2020-06-28"
@@ -41,6 +43,7 @@ rule Windows_Ransomware_Doppelpaymer_0b9b75b5 : beta {
 
 rule Windows_Ransomware_Doppelpaymer_6ab188da : beta {
     meta:
+        author = "Elastic Security"
         id = "6ab188da-4e73-4669-816c-554b2f04ee65"
         fingerprint = "6c33e09e66b337064a1feae5c162f72dc5f6caecaa9829e4ad9fffb10ef3e576"
         creation_date = "2020-06-28"
@@ -61,6 +64,7 @@ rule Windows_Ransomware_Doppelpaymer_6ab188da : beta {
 
 rule Windows_Ransomware_Doppelpaymer_4fb1a155 : beta {
     meta:
+        author = "Elastic Security"
         id = "4fb1a155-6448-41e9-829a-e765b7c2570e"
         fingerprint = "f7c1bb3e9d1ad02e7c4edf8accf326330331f92a0f1184bbc19c5bde7505e545"
         creation_date = "2020-06-28"

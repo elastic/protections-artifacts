@@ -1,5 +1,6 @@
 rule Windows_Trojan_Merlin_e8ecb3be {
     meta:
+        author = "Elastic Security"
         id = "e8ecb3be-edba-4617-b4df-9d5b6275d310"
         fingerprint = "54e03337930d74568a91e797cfda3b7bfbce3aad29be2543ed58c51728d8e185"
         creation_date = "2022-01-05"

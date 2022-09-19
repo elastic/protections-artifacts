@@ -1,5 +1,6 @@
 rule Linux_Trojan_Bedevil_a1a72c39 {
     meta:
+        author = "Elastic Security"
         id = "a1a72c39-c8a3-4372-bd1d-de6360c9c19e"
         fingerprint = "ea4762d6ba0b88017feda1ed68d70bedd1438bb853b8ee1f83cbca2276bfbd1e"
         creation_date = "2021-01-12"

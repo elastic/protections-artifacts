@@ -1,5 +1,6 @@
 rule Linux_Virus_Staffcounter_d2d608a8 {
     meta:
+        author = "Elastic Security"
         id = "d2d608a8-2d65-4b10-be71-0a0a6a027920"
         fingerprint = "a791024dc3064ed2e485e5c57d7ab77fc1ec14665c9302b8b572ac4d9d5d2f93"
         creation_date = "2021-06-28"

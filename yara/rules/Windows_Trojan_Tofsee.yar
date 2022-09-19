@@ -1,5 +1,6 @@
 rule Windows_Trojan_Tofsee_26124fe4 {
     meta:
+        author = "Elastic Security"
         id = "26124fe4-f2a1-4fc9-8155-585b581476de"
         fingerprint = "dc7ada5c6341e98bc41182a5698527b1649c4e80924ba0405f1b94356f63ff31"
         creation_date = "2022-03-31"

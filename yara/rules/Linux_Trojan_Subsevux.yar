@@ -1,5 +1,6 @@
 rule Linux_Trojan_Subsevux_e9e80c1e {
     meta:
+        author = "Elastic Security"
         id = "e9e80c1e-c064-47cf-91f2-0561dd5c9bcd"
         fingerprint = "bbd7a2d80e545d0cae7705a53600f6b729918a3d655bc86b2db83f15d4e550e3"
         creation_date = "2021-04-06"

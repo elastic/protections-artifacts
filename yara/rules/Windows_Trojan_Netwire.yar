@@ -1,5 +1,6 @@
 rule Windows_Trojan_Netwire_6a7df287 {
     meta:
+        author = "Elastic Security"
         id = "6a7df287-1656-4779-9a96-c0ab536ae86a"
         fingerprint = "85051a0b94da4388eaead4c4f4b2d16d4a5eb50c3c938b3daf5c299c9c12f1e6"
         creation_date = "2021-06-28"
@@ -19,6 +20,7 @@ rule Windows_Trojan_Netwire_6a7df287 {
 
 rule Windows_Trojan_Netwire_1b43df38 {
     meta:
+        author = "Elastic Security"
         id = "1b43df38-886e-4f58-954a-a09f30f19907"
         fingerprint = "4142ea14157939dc23b8d1f5d83182aef3a5877d2506722f7a2706b7cb475b76"
         creation_date = "2021-06-28"

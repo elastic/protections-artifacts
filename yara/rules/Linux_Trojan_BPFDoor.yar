@@ -1,5 +1,6 @@
 rule Linux_Trojan_BPFDoor_59e029c3 {
     meta:
+        author = "Elastic Security"
         id = "59e029c3-a57c-44ad-a554-432efc6b591a"
         fingerprint = "cc9b75b1f1230e3e2ed289ef5b8fa2deec51197e270ec5d64ff73722c43bb4e8"
         creation_date = "2022-05-10"
@@ -23,6 +24,7 @@ rule Linux_Trojan_BPFDoor_59e029c3 {
 
 rule Linux_Trojan_BPFDoor_0f768f60 {
     meta:
+        author = "Elastic Security"
         id = "0f768f60-1d6c-4af9-8ae3-c1c8fbbd32f4"
         fingerprint = "55097020a70d792e480542da40b91fd9ab0cc23f8736427f398998962e22348e"
         creation_date = "2022-05-10"
@@ -47,6 +49,7 @@ rule Linux_Trojan_BPFDoor_0f768f60 {
 
 rule Linux_Trojan_BPFDoor_8453771b {
     meta:
+        author = "Elastic Security"
         id = "8453771b-a78f-439d-be36-60439051586a"
         fingerprint = "b9d07bda8909e7afb1a1411a3bad1e6cffec4a81eb47d42f2292a2c4c0d97fa7"
         creation_date = "2022-05-10"
@@ -73,6 +76,7 @@ rule Linux_Trojan_BPFDoor_8453771b {
 
 rule Linux_Trojan_BPFDoor_f690fe3b {
     meta:
+        author = "Elastic Security"
         id = "f690fe3b-1b3f-4101-931b-10932596f546"
         fingerprint = "504bfe57dcc3689881bdd0af55aab9a28dcd98e44b5a9255d2c60d9bc021130b"
         creation_date = "2022-05-10"
@@ -92,6 +96,7 @@ rule Linux_Trojan_BPFDoor_f690fe3b {
 
 rule Linux_Trojan_BPFDoor_1a7d804b {
     meta:
+        author = "Elastic Security"
         id = "1a7d804b-9d39-4855-abe9-47b72bd28f07"
         fingerprint = "e7f92df3e3929b8296320300bb341ccc69e00d89e0d503a41190d7c84a29bce2"
         creation_date = "2022-05-10"
@@ -118,6 +123,7 @@ rule Linux_Trojan_BPFDoor_1a7d804b {
 
 rule Linux_Trojan_BPFDoor_e14b0b79 {
     meta:
+        author = "Elastic Security"
         id = "e14b0b79-a6f3-4fb3-a314-0ec20dcd242c"
         fingerprint = "1c4cb6c8a255840c5a2cb7674283678686e228dc2f2a9304fa118bb5bdc73968"
         creation_date = "2022-05-10"

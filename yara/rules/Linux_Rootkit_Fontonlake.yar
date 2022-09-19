@@ -1,5 +1,6 @@
 rule Linux_Rootkit_Fontonlake_8fa41f5e {
     meta:
+        author = "Elastic Security"
         id = "8fa41f5e-d03d-4647-86fb-335e056c1c0d"
         fingerprint = "187aae8e659061a06b44e0d353e35e22ada9076c78d8a7e4493e1e4cc600bc9d"
         creation_date = "2021-10-12"

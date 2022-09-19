@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Bruteforce_bad95bd6 {
     meta:
+        author = "Elastic Security"
         id = "bad95bd6-94a9-4abf-9d3b-781f0b79c5ce"
         fingerprint = "10698122ff9fe06b398307ec15ad4f5bb519285e1eaad97011abf0914f1e7afd"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Hacktool_Bruteforce_bad95bd6 {
 
 rule Linux_Hacktool_Bruteforce_66a14c03 {
     meta:
+        author = "Elastic Security"
         id = "66a14c03-f4a3-4b24-a5db-5a9235334e37"
         fingerprint = "255c1a2e781ff7f330c09b3c82f08db110579f77ccef8780d03e9aa3eec86607"
         creation_date = "2021-01-12"
@@ -38,6 +40,7 @@ rule Linux_Hacktool_Bruteforce_66a14c03 {
 
 rule Linux_Hacktool_Bruteforce_eb83b6aa {
     meta:
+        author = "Elastic Security"
         id = "eb83b6aa-d7b5-4d10-9258-4bf619fc6582"
         fingerprint = "7767bf57c57d398f27646f5ae2bcda07d6c62959becb31a5186ff0b027ff02b4"
         creation_date = "2021-01-12"

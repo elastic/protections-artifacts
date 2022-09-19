@@ -1,5 +1,6 @@
 rule Linux_Trojan_Gognt_50c3d9da {
     meta:
+        author = "Elastic Security"
         id = "50c3d9da-0392-4379-aafe-cfe63ade3314"
         fingerprint = "a4b7e0c7c2f1b0634f82106ec0625bcdde02296b3e72c9c3aa9c16e40d770b43"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Gognt_50c3d9da {
 
 rule Linux_Trojan_Gognt_05b10f4b {
     meta:
+        author = "Elastic Security"
         id = "05b10f4b-7434-457a-9e8e-d898bb839dce"
         fingerprint = "fdf7b65f812c17c7f30b3095f237173475cdfb0c10a4b187f751c0599f6b5729"
         creation_date = "2021-01-12"

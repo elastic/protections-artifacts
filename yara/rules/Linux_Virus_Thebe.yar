@@ -1,5 +1,6 @@
 rule Linux_Virus_Thebe_1eb5985a {
     meta:
+        author = "Elastic Security"
         id = "1eb5985a-2b35-434f-81d9-f502dff25397"
         fingerprint = "5cf9aa9a31c36028025d5038c98d56aef32c9e8952aa5cd4152fbd811231769e"
         creation_date = "2021-04-06"

@@ -1,5 +1,6 @@
 rule Windows_Trojan_Diceloader_b32c6b99 {
     meta:
+        author = "Elastic Security"
         id = "b32c6b99-f634-4c6f-98f4-39954ef15afa"
         fingerprint = "15d4bc57c03a560608ae69551aa46d1786072b3d78d747512f8ac3e6822a7b93"
         creation_date = "2021-04-23"
@@ -25,6 +26,7 @@ rule Windows_Trojan_Diceloader_b32c6b99 {
 
 rule Windows_Trojan_Diceloader_15eeb7b9 {
     meta:
+        author = "Elastic Security"
         id = "15eeb7b9-311f-477b-8ae1-b8f689a154b7"
         fingerprint = "4cc70bec5d241c6f84010fbfe2eafbc6ec6d753df2bb3f52d9498b54b11fc8cb"
         creation_date = "2021-04-23"

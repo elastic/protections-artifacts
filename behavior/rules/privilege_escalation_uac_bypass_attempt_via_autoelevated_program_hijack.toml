@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -151,7 +151,9 @@ process where event.action == "start" and
              ("?:\\Program Files\\Common Files\\McAfee\\*.exe",
               "?:\\Program Files (x86)\\Common Files\\McAfee\\*.exe",
               "?:\\Program Files\\McAfee\\*.exe",
-              "?:\\Program Files (x86)\\McAfee\\*.exe")
+              "?:\\Program Files (x86)\\McAfee\\*.exe") and 
+   not (process.pe.original_file_name == "DismHost.exe" and 
+        process.parent.executable : "?:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\InspectorOfficeGadget.exe")
 '''
 
 optional_actions = []

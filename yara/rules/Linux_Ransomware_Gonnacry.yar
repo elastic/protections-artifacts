@@ -1,5 +1,6 @@
 rule Linux_Ransomware_Gonnacry_53c3832d {
     meta:
+        author = "Elastic Security"
         id = "53c3832d-ceff-407d-920b-7b6442688fa9"
         fingerprint = "7d93c26c9e069af5cef964f5747104ba6d1d0d030a1f6b1c377355223c5359a1"
         creation_date = "2021-01-12"

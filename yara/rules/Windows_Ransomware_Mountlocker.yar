@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Mountlocker_126a76e2 {
     meta:
+        author = "Elastic Security"
         id = "126a76e2-8a97-4347-ac36-9437a512e16c"
         fingerprint = "08213f4474c7c8fd7a6e59c9ff139fb45f224109ad4e6162c12cff5ac85cb10c"
         creation_date = "2021-06-10"

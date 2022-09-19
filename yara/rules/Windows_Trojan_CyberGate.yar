@@ -1,5 +1,6 @@
 rule Windows_Trojan_CyberGate_517aac7d {
     meta:
+        author = "Elastic Security"
         id = "517aac7d-2737-4917-9aa1-c0bd1c3e9801"
         fingerprint = "3d998bda8e56de6fd6267abdacffece8bcf1c62c2e06540a54244dc6ea816825"
         creation_date = "2022-02-28"
@@ -23,6 +24,7 @@ rule Windows_Trojan_CyberGate_517aac7d {
 
 rule Windows_Trojan_CyberGate_9996d800 {
     meta:
+        author = "Elastic Security"
         id = "9996d800-a833-4535-972b-3ee320215bb6"
         fingerprint = "eb39d2ff211230aedcf1b5ec0d1dfea108473cc7cba68f5dc1a88479734c02b0"
         creation_date = "2022-02-28"

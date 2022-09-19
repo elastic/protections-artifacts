@@ -1,5 +1,6 @@
 rule Windows_Trojan_Bitrat_34bd6c83 {
     meta:
+        author = "Elastic Security"
         id = "34bd6c83-9a71-43d5-b0b1-1646a8fb66e8"
         fingerprint = "bc4a5fad1810ad971277a455030eed3377901a33068bb994e235346cfe5a524f"
         creation_date = "2021-06-13"

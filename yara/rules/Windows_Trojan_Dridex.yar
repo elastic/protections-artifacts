@@ -1,5 +1,6 @@
 rule Windows_Trojan_Dridex_63ddf193 {
     meta:
+        author = "Elastic Security"
         id = "63ddf193-31a6-4139-b452-960fe742da93"
         fingerprint = "7b4c5fde8e107a67ff22f3012200e56ec452e0a57a49edb2e06ee225ecfe228c"
         creation_date = "2021-08-07"
@@ -20,6 +21,7 @@ rule Windows_Trojan_Dridex_63ddf193 {
 
 rule Windows_Trojan_Dridex_c6f01353 {
     meta:
+        author = "Elastic Security"
         id = "c6f01353-cf55-4eac-9f25-6f9cce3b7990"
         fingerprint = "fbdb230032e3655448d26a679afc612c79d33ac827bcd834e54fe5c05f04d828"
         creation_date = "2021-08-07"

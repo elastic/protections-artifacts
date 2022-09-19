@@ -1,5 +1,6 @@
 rule Windows_Trojan_Fickerstealer_cc02e75e {
     meta:
+        author = "Elastic Security"
         id = "cc02e75e-2049-4ee4-9302-e491e7dad696"
         fingerprint = "022088764645d85dd20d1ce201395b4e79e3e716723715687eaecfcbe667615e"
         creation_date = "2021-07-22"
@@ -20,6 +21,7 @@ rule Windows_Trojan_Fickerstealer_cc02e75e {
 
 rule Windows_Trojan_Fickerstealer_f2159bec {
     meta:
+        author = "Elastic Security"
         id = "f2159bec-a3ce-47a9-91ad-43b8a19ac172"
         fingerprint = "0671691c6d5c7177fe155e4076ab39bf5f909ed300f32c1530e80d471dff0296"
         creation_date = "2021-07-22"

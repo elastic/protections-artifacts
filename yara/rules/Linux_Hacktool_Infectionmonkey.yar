@@ -1,5 +1,6 @@
 rule Linux_Hacktool_Infectionmonkey_6c84537b {
     meta:
+        author = "Elastic Security"
         id = "6c84537b-6aa1-40d5-b14c-f78d7e67823d"
         fingerprint = "e9275f5fd8df389a4c99f69c09df1e3e515d8b958616e6d4d2c82d693deb4908"
         creation_date = "2022-01-05"

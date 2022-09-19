@@ -1,5 +1,6 @@
 rule Linux_Trojan_Connectback_bf194c93 {
     meta:
+        author = "Elastic Security"
         id = "bf194c93-92d8-4eba-99c4-326a5ea76d0d"
         fingerprint = "6e72b14be0a0a6e42813fa82ee77d057246ccba4774897b38acf2dc30c894023"
         creation_date = "2021-01-12"

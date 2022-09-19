@@ -1,5 +1,6 @@
 rule Windows_Trojan_DoubleBack_d2246a35 {
     meta:
+        author = "Elastic Security"
         id = "d2246a35-e582-4707-acd0-f04bb66df722"
         fingerprint = "949f8d30125fad133f4b897c945c6aa0eccda5456dc887bde4c0a5affece5195"
         creation_date = "2022-05-29"

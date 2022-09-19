@@ -1,5 +1,6 @@
 rule Windows_Ransomware_Lockfile_74185716 {
     meta:
+        author = "Elastic Security"
         id = "74185716-e79d-4d63-b6ae-9480f24dcd4f"
         fingerprint = "849a0fb5a2e08b2d32db839a7fdbde03a184a48726678e65e7f8452b354a3ca8"
         creation_date = "2021-08-31"

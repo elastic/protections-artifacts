@@ -1,5 +1,6 @@
 rule Windows_Trojan_DiamondFox_18bc11e3 {
     meta:
+        author = "Elastic Security"
         id = "18bc11e3-5872-40b0-a3b7-cef4b32fac15"
         fingerprint = "6f908d11220e218a7b59239ff3cc00c7e273fb46ec99ef7ae37e4aceb4de7831"
         creation_date = "2022-03-02"

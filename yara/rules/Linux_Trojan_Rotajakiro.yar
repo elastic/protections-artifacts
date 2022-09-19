@@ -1,5 +1,6 @@
 rule Linux_Trojan_Rotajakiro_fb24f399 {
     meta:
+        author = "Elastic Security"
         id = "fb24f399-d2bc-4cca-a3b8-4d924f11c83e"
         fingerprint = "6b19a49c93a0d3eb380c78ca21ce4f4d2991c35e68d2b75e173dc25118ba2c20"
         creation_date = "2021-06-28"

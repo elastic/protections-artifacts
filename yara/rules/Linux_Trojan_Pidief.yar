@@ -1,5 +1,6 @@
 rule Linux_Trojan_Pidief_635667d1 {
     meta:
+        author = "Elastic Security"
         id = "635667d1-4b51-4e18-9e6b-5873194ce4f1"
         fingerprint = "29e1795f941990ca18fbe61154d3cfe23d43d13af298e763cd40fb9c40d7204e"
         creation_date = "2021-01-12"

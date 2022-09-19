@@ -1,5 +1,6 @@
 rule Windows_Trojan_Squirrelwaffle_88033ff1 {
     meta:
+        author = "Elastic Security"
         id = "88033ff1-f9b1-4cdc-bb68-bd3a10027584"
         fingerprint = "94c0d8ce3e06cf02a6fb57c074ff0ef60346babcde43c61371d099b011d9fcf9"
         creation_date = "2021-09-20"
@@ -22,6 +23,7 @@ rule Windows_Trojan_Squirrelwaffle_88033ff1 {
 
 rule Windows_Trojan_Squirrelwaffle_d3b685a1 {
     meta:
+        author = "Elastic Security"
         id = "d3b685a1-2d1c-44a3-8d83-ff661d491a52"
         fingerprint = "15df7efab9cc40ff57070d18ae67b549c55595d7cbf3ca02963336e4297156c4"
         creation_date = "2021-09-21"

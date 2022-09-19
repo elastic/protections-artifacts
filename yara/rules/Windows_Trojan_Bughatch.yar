@@ -1,5 +1,6 @@
 rule Windows_Trojan_Bughatch_21269be4 {
     meta:
+        author = "Elastic Security"
         id = "21269be4-cff1-42b9-be6b-f6a6bde40bff"
         fingerprint = "1ff55288554133690d96161c05a047ffba47778ff27d32ff656b3a194d6c26e0"
         creation_date = "2022-05-09"
@@ -21,6 +22,7 @@ rule Windows_Trojan_Bughatch_21269be4 {
 
 rule Windows_Trojan_Bughatch_98f3c0be {
     meta:
+        author = "Elastic Security"
         id = "98f3c0be-1327-4ba2-9320-c1a9ce90b4a4"
         fingerprint = "1ac6b1285e1925349e4e578de0b2f1cf8a008cddbb1a20eb8768b1fcc4b0c8d3"
         creation_date = "2022-05-09"

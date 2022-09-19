@@ -1,5 +1,6 @@
 rule Linux_Trojan_Ganiw_99349371 {
     meta:
+        author = "Elastic Security"
         id = "99349371-644e-4954-9b7d-f2f579922565"
         fingerprint = "6b0cbea419915567c2ecd84bfcb2c7f7301435ee953f16c6dcba826802637551"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Trojan_Ganiw_99349371 {
 
 rule Linux_Trojan_Ganiw_b9f045aa {
     meta:
+        author = "Elastic Security"
         id = "b9f045aa-99fa-47e9-b179-ac62158b3fe2"
         fingerprint = "0aaec92ca1c622df848bba80a2f1e4646252625d58e28269965b13d65158f238"
         creation_date = "2021-01-12"

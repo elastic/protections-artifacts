@@ -1,5 +1,6 @@
 rule Linux_Cryptominer_Pgminer_ccf88a37 {
     meta:
+        author = "Elastic Security"
         id = "ccf88a37-2a58-40f9-8c13-f1ce218a2ec4"
         fingerprint = "dc82b841a7e72687921c9b14bc86218c3377f939166d11a7cccd885dad4a06e7"
         creation_date = "2021-01-12"
@@ -19,6 +20,7 @@ rule Linux_Cryptominer_Pgminer_ccf88a37 {
 
 rule Linux_Cryptominer_Pgminer_5fb2efd5 {
     meta:
+        author = "Elastic Security"
         id = "5fb2efd5-4adc-4285-bef1-6e4987066944"
         fingerprint = "8ac56b60418e3f3f4d1f52c7a58d0b7c1f374611d45e560452c75a01c092a59b"
         creation_date = "2021-01-12"

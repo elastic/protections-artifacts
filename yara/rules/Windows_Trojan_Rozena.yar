@@ -5,7 +5,7 @@ rule Linux_Trojan_Rozena_56651c1d {
         fingerprint = "a86abe550b5c698a244e1c0721cded8df17d2c9ed0ee764d6dea36acf62393de"
         creation_date = "2021-01-12"
         last_modified = "2021-09-16"
-        threat_name = "Linux.Trojan.Rozena"
+        threat_name = "Windows.Trojan.Rozena"
         reference_sample = "997684fb438af3f5530b0066d2c9e0d066263ca9da269d6a7e160fa757a51e04"
         severity = 100
         arch_context = "x86"

@@ -225,3 +225,65 @@ rule Windows_Trojan_Metasploit_91bc5d7d {
         all of them
 }
 
+rule Windows_Trojan_Metasploit_a91a6571 {
+    meta:
+        author = "Elastic Security"
+        id = "a91a6571-ae2d-4ab4-878b-38b455f42c01"
+        fingerprint = "e372484956eab80e4bf58f4ae1031de705cb52eaefa463aa77af7085c463638d"
+        creation_date = "2022-06-08"
+        last_modified = "2022-09-29"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "ff7795edff95a45b15b03d698cbdf70c19bc452daf4e2d5e86b2bbac55494472"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { FC 48 83 E4 F0 E8 CC 00 00 00 41 51 41 50 52 48 31 D2 51 56 65 48 8B 52 60 48 8B 52 18 48 8B 52 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Metasploit_b29fe355 {
+    meta:
+        author = "Elastic Security"
+        id = "b29fe355-b7f8-4325-bf06-7975585f3888"
+        fingerprint = "a943325b7a227577ccd45748b4e705288c5b7d91d0e0b2a115daeea40e1a2148"
+        creation_date = "2022-06-08"
+        last_modified = "2022-09-29"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "4f0ab4e42e6c10bc9e4a699d8d8819b04c17ed1917047f770dc6980a0a378a68"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = "%04x-%04x:%s" fullword
+        $a2 = "\\\\%s\\pipe\\%s" fullword
+        $a3 = "PACKET TRANSMIT" fullword
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Metasploit_66140f58 {
+    meta:
+        author = "Elastic Security"
+        id = "66140f58-1815-4e21-8544-24fed74194f1"
+        fingerprint = "79879b2730e98f3eddeca838dff438d75a43ac20c0da6a4802474ff05f9cc7a3"
+        creation_date = "2022-08-15"
+        last_modified = "2022-09-29"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "01a0c5630fbbfc7043d21a789440fa9dadc6e4f79640b370f1a21c6ebf6a710a"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { FC 48 83 E4 F0 E8 CC 00 00 00 41 51 41 50 52 48 31 D2 51 65 48 8B 52 60 48 8B 52 18 48 8B 52 20 }
+    condition:
+        all of them
+}
+

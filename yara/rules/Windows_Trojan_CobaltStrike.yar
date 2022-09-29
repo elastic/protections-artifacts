@@ -991,3 +991,48 @@ rule Windows_Trojan_CobaltStrike_8ee55ee5 {
         1 of ($a*)
 }
 
+rule Windows_Trojan_CobaltStrike_8d5963a2 {
+    meta:
+        author = "Elastic Security"
+        id = "8d5963a2-54a9-4705-9f34-0d5f8e6345a2"
+        fingerprint = "228cd65380cf4b04f9fd78e8c30c3352f649ce726202e2dac9f1a96211925e1c"
+        creation_date = "2022-08-10"
+        last_modified = "2022-09-29"
+        threat_name = "Windows.Trojan.CobaltStrike"
+        reference_sample = "9fe43996a5c4e99aff6e2a1be743fedec35e96d1e6670579beb4f7e7ad591af9"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 D8 48 81 EC 28 01 00 00 45 33 F6 48 8B D9 48 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_CobaltStrike_1787eef5 {
+    meta:
+        author = "Elastic Security"
+        id = "1787eef5-ff00-4e19-bd22-c5dfc9488c7b"
+        fingerprint = "292f15bdc978fc29670126f1bdc72ade1e7faaf1948653f70b6789a82dbee67f"
+        creation_date = "2022-08-29"
+        last_modified = "2022-09-29"
+        description = "CS shellcode variants"
+        threat_name = "Windows.Trojan.CobaltStrike"
+        reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 89 E5 83 EC ?? A1 ?? ?? ?? ?? C7 04 24 ?? ?? ?? ?? 89 44 24 ?? E8 ?? ?? ?? ?? 31 C0 C9 C3 55 }
+        $a2 = { 55 89 E5 83 EC ?? A1 ?? ?? ?? ?? 89 04 24 E8 ?? ?? ?? ?? 31 C0 C9 C3 55 89 E5 83 EC ?? 83 7D ?? ?? }
+        $a3 = { 55 89 E5 8B 45 ?? 5D FF E0 55 8B 15 ?? ?? ?? ?? 89 E5 8B 45 ?? 85 D2 7E ?? 83 3D ?? ?? ?? ?? ?? }
+        $a4 = { 55 89 E5 8B 45 ?? 5D FF E0 55 89 E5 83 EC ?? 8B 15 ?? ?? ?? ?? 8B 45 ?? 85 D2 7E ?? 83 3D ?? ?? ?? ?? ?? }
+        $a5 = { 4D 5A 41 52 55 48 89 E5 48 81 EC ?? ?? ?? ?? 48 8D 1D ?? ?? ?? ?? 48 89 DF 48 81 C3 ?? ?? ?? ?? }
+    condition:
+        1 of ($a*)
+}
+

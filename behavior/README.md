@@ -17,7 +17,6 @@ Another example of our commitment to openness in security is our existing public
 
 ### Rules Summary per Tactic
 
-<!-- python -m endpoint_rules rule-stats-summary --release-version latest 1.0.10 -->
 Note: New Production Rules since last version ('latest', '1.0.10') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |

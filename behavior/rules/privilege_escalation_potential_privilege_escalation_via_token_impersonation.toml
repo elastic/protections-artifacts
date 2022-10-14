@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies the creation of a process running as SYSTEM and impersonating a Windows core binary privileges. Adversaries
+may create a new process with a different token to escalate privileges and bypass access controls.
+"""
+id = "46de65b8-b873-4ae7-988d-12dcdc6fa605"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Token Impersonation"
+os_list = ["windows"]
+reference = [
+    "https://lengjibo.github.io/token/",
+    "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
+]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+
+ /* process creation via seclogon */
+ process.parent.Ext.real.pid > 0 and
+
+ /* CreateProcessWithToken and effective parent is a privileged MS native binary used as a target for token theft */
+ user.id : "S-1-5-18"  and
+ process.Ext.effective_parent.executable :
+                ("?:\\Windows\\system32\\*.exe",
+                 "?:\\Windows\\SysWOW64\\*.exe",
+                 "?:\\Windows\\Microsoft.Net\\*.exe",
+                 "?:\\Windows\\servicing\\TrustedInstaller.exe",
+                 "?:\\Program Files\\Microsoft\\*.exe",
+                 "?:\\Program Files (x86)\\Microsoft\\*.exe") and 
+                 
+ not (process.Ext.effective_parent.executable : "?:\\Windows\\System32\\Utilman.exe" and 
+      process.parent.executable : "?:\\Windows\\System32\\Utilman.exe" and process.parent.args : "/debug") and 
+      
+ not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", 
+                            "?:\\Windows\\SysWOW64\\WerFault.exe", 
+                            "?:\\Windows\\System32\\WerFaultSecure.exe",
+                            "?:\\Windows\\SysWOW64\\WerFaultSecure.exe") and process.args : "-u" and process.args : "-p") and 
+                            
+ not process.parent.executable : "?:\\Windows\\System32\\AtBroker.exe" and 
+ not (process.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe" and 
+      process.parent.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe") and 
+ not (process.code_signature.subject_name in ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.", "TeamViewer GmbH", "Cisco WebEx LLC") and
+      process.code_signature.trusted == true) and
+ not (process.executable : "?:\\windows\\system32\\WerMgr.exe" and process.args : "-datacollectorcreate")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.4.0"

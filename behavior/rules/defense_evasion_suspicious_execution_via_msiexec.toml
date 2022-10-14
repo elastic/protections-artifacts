@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -41,7 +41,9 @@ process where event.action == "start" and
   not (process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\*" and process.parent.args_count >= 2 and
        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\*\\*.msi") and
 
-  not process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*")
+  not process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and 
+  
+  not (process.parent.name : "msiexec.exe" and process.parent.args : "-Embedding")
 '''
 
 optional_actions = []

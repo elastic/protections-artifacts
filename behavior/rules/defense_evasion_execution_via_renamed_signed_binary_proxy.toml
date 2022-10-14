@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Renamed Signed Binary Proxy"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -55,15 +55,16 @@ process where event.action == "start" and
           "\\Device\\HarddiskVolume*\\Program Files (x86)\\*.exe",
           "\\Device\\HarddiskVolume*\\Program Files\\*.exe"
         ) and
-  not (process.pe.original_file_name in ("RegAsm.exe", "REGSVR32.EXE") and process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and
-       process.parent.executable : "?:\\WINDOWS\\system32\\msiexec.exe")
+  not (process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and process.parent.name : "msiexec.exe")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Payload Downloaded by Process Running in Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://objective-see.com/blog/blog_0x69.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -22,7 +22,7 @@ sequence by process.entity_id with maxspan=5s
         )
     ] and
     process.name == "curl" and
-    not process.args : "https://omahaproxy.appspot.com/history"
+    not process.args : ("https://omahaproxy.appspot.com/history", "https://console.jumpcloud.com/api/systems/*", "https://zoom.us/client/*")
   ]
   [network where event.action == "connection_attempted"]
 '''

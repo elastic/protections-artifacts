@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies the execution of a Script via VbsEdit Script Launcher utility and from unusual path. Malware may abuse this
+legit utility to bypass security solutions monitoring malicious scripts execution via the Windows built-in Script
+interpreters (cscript or wscript).
+"""
+id = "d4715380-5857-4062-980d-c44052ff5180"
+license = "Elastic License v2"
+name = "Suspicious Script Execution via VBSEdit Launcher"
+os_list = ["windows"]
+reference = ["https://www.vbsedit.com/", "https://malpedia.caad.fkie.fraunhofer.de/details/win.vjw0rm"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and
+ (process.pe.original_file_name == "launcher.exe" and process.code_signature.subject_name : "Adersoft") and
+ not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+ not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

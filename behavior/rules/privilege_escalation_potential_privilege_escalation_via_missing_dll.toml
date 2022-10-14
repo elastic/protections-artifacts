@@ -17,7 +17,7 @@ reference = [
     "http://waleedassar.blogspot.com/2013/01/wow64logdll.html",
     "https://github.com/rapid7/metasploit-framework/blob/5863ff7e357af1634f5b370e811d647a9c999158/modules/exploits/windows/local/cve_2020_17136.rb#L192",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -68,11 +68,13 @@ sequence with maxspan=5m
      not dll.path : "?:\\Windows\\System32\\prntvpt.dll"] by dll.name
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

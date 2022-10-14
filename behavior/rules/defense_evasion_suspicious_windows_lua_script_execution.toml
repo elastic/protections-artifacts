@@ -7,7 +7,7 @@ id = "8f237d98-1825-4c27-a5cd-e38bde70882a"
 license = "Elastic License v2"
 name = "Suspicious Windows LUA Script Execution"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -17,11 +17,13 @@ sequence by process.entity_id with maxspan=1m
  [network where event.action == "connection_attempted"]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

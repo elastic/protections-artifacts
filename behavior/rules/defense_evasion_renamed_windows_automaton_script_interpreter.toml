@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -47,14 +47,17 @@ process where event.action == "start" and
    not (process.pe.original_file_name == "KIX32.EXE" and process.parent.command_line : "*\\netlogon\\*") and
    not (process.pe.original_file_name == "KIX32.EXE" and process.executable : ("C:\\kworking\\Bin\\RMMKSE.EXE", "C:\\kworking\\Bin\\RMMSSE.EXE")) and
    not (process.pe.original_file_name == "AutoHotkey.exe" and process.executable : "C:\\TCPU73\\Programm\\ClockTC\\ClockTC.exe" and
-        process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE")
+        process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE") and
+   not process.executable : "?:\\Program Files\\AutoHotkey\\SciTE\\InternalAHK.exe"
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

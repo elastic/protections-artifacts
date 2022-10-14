@@ -1,0 +1,93 @@
+[rule]
+description = """
+Identifies when the Microsoft HTML Help Executable (hh.exe) spawn a suspicious child process or open a compiled HTM file
+from a suspicious location. Adversaries may conceal malicious code in a CHM file and deliver it to a victim for
+execution.
+"""
+id = "e2554e2b-7333-4379-88af-67e5bfac677a"
+license = "Elastic License v2"
+name = "Suspicious Execution via Compiled HTML File"
+os_list = ["windows"]
+reference = [
+    "https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/higaisa-or-winnti-apt-41-backdoors-old-and-new/",
+]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ (
+  (process.parent.executable : "?:\\Windows\\hh.exe" and
+   process.name : ("cmd.exe",
+                  "powershell.exe",
+                  "MSHTA.EXE",
+                  "CertUtil.exe",
+                  "CertReq.exe",
+                  "rundll32.exe",
+                  "regsvr32.exe",
+                  "MSbuild.exe",
+                  "cscript.exe",
+                  "wscript.exe",
+                  "installutil.exe",
+                  "schtasks.exe",
+                  "msiexec.exe")) or
+
+  (process.parent.executable : "?:\\Windows\\hh.exe" and (process.code_signature.trusted == false or process.code_signature.exists == false)) or
+
+  (process.executable : "?:\\Windows\\hh.exe" and
+   process.args : ("?:\\Users\\*\\Downloads\\*",
+                   "?:\\Users\\*\\Content.Outlook\\*",
+                   "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+                   "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+                   "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*",
+                   "*.application*",
+                   "http*")) or
+
+   (process.executable : "?:\\Windows\\hh.exe" and process.working_directory : "?:\\" and not process.working_directory : "C:\\")
+  )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.001"
+name = "Compiled HTML File"
+reference = "https://attack.mitre.org/techniques/T1218/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies execution of the Apple script interpreter (osascript) without a password prompt with administrator privileges
+and from unsigned or untrusted parent process.
+"""
+id = "f17c8dcf-d65f-479a-b047-3558233f774e"
+license = "Elastic License v2"
+name = "Elevated Apple Script Execution via Unsigned Parent"
+os_list = ["macos"]
+reference = ["https://discussions.apple.com/thread/2266150"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+
+ [process where event.action == "exec" and
+  (process.code_signature.trusted == false or process.code_signature.exists == false)] by process.entity_id
+
+ [process where event.action == "exec" and process.name : ("osascript", "sh", "bash", "zsh") and
+  process.command_line : "*osascript*with administrator privileges*"] by process.parent.entity_id
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.1.0"

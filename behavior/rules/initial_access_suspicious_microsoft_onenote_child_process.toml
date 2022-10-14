@@ -1,0 +1,88 @@
+[rule]
+description = """
+Identifies suspicious child processes of the Microsoft OneNote application. This may indicate an attempt to execute
+malicious embedded objects from a .one file.
+"""
+id = "28297d1e-c2a9-442c-9e48-98fe8ce36fab"
+license = "Elastic License v2"
+name = "Suspicious Microsoft OneNote Child Process"
+os_list = ["windows"]
+reference = ["https://blog.sevagas.com/IMG/pdf/redteam_with_onenote.pdf"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "ONENOTE.EXE" and
+  (
+		process.pe.original_file_name : (
+		    "rundll32.exe",
+		    "regsvr32.exe",
+		    "bitsadmin.exe",
+		    "certutil.exe",
+		    "installutil.exe",
+		    "schtasks.exe",
+		    "wmic.exe",
+		    "cscript.exe",
+		    "wscript.exe",
+		    "cmstp.exe",
+		    "Microsoft.Workflow.Compiler.exe",
+		    "regasm.exe",
+		    "regsvcs.exe",
+		    "mshta.exe",
+		    "msxsl.exe",
+		    "ieexec.exe",
+		    "cmd.exe",
+		    "powershell.exe",
+		    "hh.exe",
+		    "javaw.exe",
+		    "pcalua.exe",
+		    "curl.exe",
+		    "ScriptRunner.exe",
+		    "CertOC.exe",
+		    "Workfolders.exe",
+		    "odbcconf.exe",
+		    "msiexec.exe",
+		    "msdt.exe")
+		 or
+
+		(process.name : "explorer.exe" and
+		 process.args : ("*.hta*", "*.vb*", "*.wsh*", "*.js*", "*.ps*", "*.scr*", "*.pif*", "*bat*", "*.cmd*")) or
+
+		process.executable : ("?:\\Users\\*\\AppData\\*",
+		                      "?:\\Users\\Public\\",
+		                      "?:\\ProgramData\\*",
+		                      "?:\\Windows\\Tasks\\*",
+		                      "?:\\Windows\\Temp\\*",
+		                      "?:\\Windows\\System32\\Tasks\\*")
+  ) and
+
+  /* many FPs like browsers and chat desktop apps */
+  not (process.executable : "?:\\Users\\*\\AppData\\*" and process.code_signature.trusted == true)
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

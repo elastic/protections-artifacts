@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
@@ -99,11 +99,12 @@ process where event.action == "start" and
     (process.name : "rundll32.exe" and
      process.command_line : ("*cryptext.dll*",
                              "*:\\Users\\*\\Documents\\DocuShare\\*",
-                             "*dfshim.dll*ShOpenVerbShortcut*",
+                             "*dfshim.dll*ShOpenVerb*",
                              "*dvpack.dll,LaunchINFSection*\\Windows\\INF\\*",
                              "*PhotoViewer.dll*ImageView_Fu*",
                              "*GeneralTel.dll,RunGeneralTelemetry*",
-                             "*setupapi,InstallHinfSection*")) and not
+                             "*setupapi,InstallHinfSection*",
+                             "*mshtml.dll*PrintHTML*")) and not
     (process.name : "cscript.exe" and process.command_line : "*PerfLogs\\*\\ServerManager*") and not
     (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and
      process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe",

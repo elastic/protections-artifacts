@@ -7,7 +7,7 @@ id = "df9cc41e-4686-4aa0-8f79-60055dd01812"
 license = "Elastic License v2"
 name = "Execution from a Downloaded ISO File"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5m
@@ -25,7 +25,10 @@ sequence with maxspan=5m
   process.working_directory : "?:\\" and 
 
   /* execution from mounted ISO file */
-  (process.executable : "\\Device\\CdRom*" or (process.executable : "?:\\*" and not process.executable : "?:\\*\\*"))]
+  (process.executable : "\\Device\\CdRom*" or (process.executable : "?:\\*" and not process.executable : "?:\\*\\*")) and
+
+  not (process.pe.original_file_name : ("setup.exe", "SqlSetupBootstrapper.exe") and process.code_signature.trusted == true)
+  ]
 '''
 
 optional_actions = []

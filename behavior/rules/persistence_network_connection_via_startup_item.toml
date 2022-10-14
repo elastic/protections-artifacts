@@ -7,21 +7,27 @@ id = "0b33141a-3f73-4414-ba90-d8410e6ab176"
 license = "Elastic License v2"
 name = "Network Connection via Startup Item"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and
-  // unsigned program starting from startup folder
-  (process.executable : (
-   "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
-   "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")  and
-   not process.code_signature.trusted == true) or
-  // Scripts starting from startup folder
-  (process.name : ("cscript.exe", "wscript.exe", "mshta.exe", "powershell.exe") and
-   process.command_line : (
-  "*:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
-  "*:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*") )]
+  (
+   // unsigned program starting from startup folder
+   (process.executable : (
+    "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+    "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")  and
+    not process.code_signature.trusted == true) or
+
+    // Scripts starting from startup folder
+   (process.name : ("cscript.exe", "wscript.exe", "mshta.exe", "powershell.exe") and
+    process.command_line : (
+        "*:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+        "*:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*"))
+  ) and
+
+  /* ConnectWiseManage - unsigned */
+  not process.hash.sha256 : "cac904da410372bcd0797b4bfa402c8f8663040f26e80a435d98d12bd2fa6659"]
  [network where true]
 '''
 

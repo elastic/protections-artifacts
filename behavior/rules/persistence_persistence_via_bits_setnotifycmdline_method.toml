@@ -12,7 +12,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/api/bits1_5/nf-bits1_5-ibackgroundcopyjob2-setnotifycmdline",
     "https://blog.menasec.net/2021/05/hunting-for-suspicious-usage-of.html",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -34,6 +34,8 @@ process where event.action == "start" and
 
   /* false positives */
   and not (process.code_signature.subject_name == "YANDEX LLC" and process.code_signature.trusted == true)
+
+  and not (process.name : "wmic.exe" and process.args : "MSFT_MpComputerStatus" and process.args : "get")
 '''
 
 optional_actions = []

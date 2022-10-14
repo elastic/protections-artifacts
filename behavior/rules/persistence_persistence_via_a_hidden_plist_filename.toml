@@ -1,0 +1,86 @@
+[rule]
+description = """
+Identifies the creation of a hidden launch agent or daemon property list file. An adversary may establish persistence by
+installing a new launch agent or daemon which executes at login.
+"""
+id = "4090fed3-8ac4-45bf-8545-bae448fd38d4"
+license = "Elastic License v2"
+name = "Persistence via a Hidden Plist Filename"
+os_list = ["macos"]
+reference = [
+    "https://www.welivesecurity.com/2022/07/19/i-see-what-you-did-there-look-cloudmensis-macos-spyware/",
+    "https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html",
+]
+version = "1.0.2"
+
+query = '''
+file where event.type != "deletion" and
+
+  /* plist file name starts with dot char */
+  file.path :
+  (
+    "/System/Library/LaunchAgents/.*.plist",
+    "/Library/LaunchAgents/.*.plist",
+    "/Users/*/Library/LaunchAgents/.*.plist",
+    "/System/Library/LaunchDaemons/.*.plist",
+    "/Library/LaunchDaemons/.*.plist"
+  ) and
+
+  /* FPs */
+  not (file.name : ".chef-com*.plist" and process.executable : "/opt/chef/embedded/bin/ruby") and
+  not (process.executable : ("/usr/bin/sed", "/bin/bash") and file.name : ".!*!*.plist")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.001"
+name = "Hidden Files and Directories"
+reference = "https://attack.mitre.org/techniques/T1564/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

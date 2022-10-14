@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies attempts to execute JavaScript using the Node.js module and with suspicious commandline value. Adversaries
+may abuse this utility to execute malicious JavaScript.
+"""
+id = "a34c5dc0-a353-4c1f-9b08-6f0aca4f1f45"
+license = "Elastic License v2"
+name = "Suspicious JavaScript Execution via Node.js"
+os_list = ["windows"]
+reference = ["https://nodejs.org"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+ (process.name : "node.exe" or process.pe.original_file_name : "node.exe") and
+  process.args : ("-e", "eval(*", "*require*child_process*", "?:\\Users\\Public\\*") and
+
+  /* noisy FP patterns */
+  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+  not process.Ext.token.integrity_level_name == "system" and
+  not process.parent.executable : "?:\\*\\.metadata\\.plugins\\org.eclipse.wildwebdeveloper.embedder.node\\node-v*\node.exe" and
+  not process.args :
+          ("try{require('./_postinstall')}catch(e){}",
+           "try{require('./postinstall')}catch(e){}",
+           "--package",
+           "?:\\Program Files\\*",
+           "?:\\Program Files (x86)\\*") and
+  not (process.args : "--input" and process.args : "--output")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,97 @@
+[rule]
+description = """
+Identifies when the macOS Script Editor utility spawns an unusual child process, this may indicate an attempt to execute
+a malicious Apple Script via a malicious applescript URL handler.
+"""
+id = "8713c19e-6167-494b-9dc9-9ad74bc9b0d7"
+license = "Elastic License v2"
+name = "Suspicious Execution via macOS Script Editor"
+os_list = ["macos"]
+reference = ["https://wojciechregula.blog/post/macos-red-teaming-initial-access-via-applescript-url/"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "exec" and
+
+ process.parent.executable : "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor" and
+
+ // Suspicious processes spawned by the Script Editor
+ (process.name : ("curl", "bash", "sh", "zsh", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "popen") or
+
+  // Process masquerading as Apple but has an invalid signature
+  (process.name : "com.apple.*" and not process.code_signature.signing_id : "com.apple.*")
+ )
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

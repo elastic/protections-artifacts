@@ -11,19 +11,22 @@ reference = [
     "https://elastic.github.io/security-research/intelligence/2022/03/01.hermeticwiper-targets-ukraine/article/",
     "https://docs.microsoft.com/en-us/troubleshoot/windows-server/performance/memory-dump-file-options",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 registry where registry.value : "CrashDumpEnabled" and registry.data.strings : "0" and
  not (user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
-      process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\msiexec.exe"))
+      process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\msiexec.exe")) and
+ not process.executable : "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe"
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

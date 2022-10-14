@@ -11,7 +11,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection",
     "https://secret.club/2020/04/23/directory-deletion-shell.html",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 library where user.id : "S-1-5-18" and
@@ -27,11 +27,13 @@ library where user.id : "S-1-5-18" and
                 "?:\\Program Files\\Microsoft\\*")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

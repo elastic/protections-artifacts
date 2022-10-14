@@ -13,13 +13,15 @@ license = "Elastic License v2"
 name = "Process Executable Image Tampering Attempt"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and 
   process.Ext.defense_evasions : "Process Tampering: Image is locked for access" and
   not (process.code_signature.subject_name in ("Arcserve (USA) LLC", "CA") and process.code_signature.trusted == true and
-       process.executable : "?:\\Program Files\\CA\\*.exe")
+       process.executable : "?:\\Program Files\\CA\\*.exe") and
+  not (process.executable : "?:\\Windows\\System32\\esentutl.exe" and process.args : "/K" and
+       process.parent.executable : "?:\\Program Files\\CA\\SharedComponents\\ARCserve Backup\\UniAgent\\caagstart.exe")
 '''
 
 optional_actions = []

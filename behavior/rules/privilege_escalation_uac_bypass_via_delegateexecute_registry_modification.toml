@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://medium.com/cybersecpadawan/utilizing-a-common-windows-binary-to-escalate-to-system-privileges-c16482cced4b",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,20 +24,24 @@ sequence by process.entity_id with maxspan=1m
    not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
      process.code_signature.trusted == true) and
 
-   not (process.code_signature.subject_name == "Stanislav Zinukhov" and process.code_signature.trusted == true)
+   not (process.code_signature.subject_name in ("Stanislav Zinukhov", "Google Inc") and process.code_signature.trusted == true)
    ]
   [registry where registry.data.strings != null and
    registry.value : "DelegateExecute" and registry.hive : "HKEY_USERS" and
    not (process.executable : "?:\\Windows\\explorer.exe" and
-        registry.path : "HKEY_USERS\\S-1-5-21-*_Classes\\CLSID\\{2cc5ca98-6485-489a-920e-b3e88a6ccce3}\\shell\\Spotlight*t\\command\\DelegateExecute")
+        registry.path : "HKEY_USERS\\S-1-5-21-*_Classes\\CLSID\\{2cc5ca98-6485-489a-920e-b3e88a6ccce3}\\shell\\Spotlight*t\\command\\DelegateExecute") and
+
+   not (process.executable : "?:\\Windows\\regedit.exe" and registry.path : "HKEY_USERS\\S-1-5-21-*_Classes\\AppX*\\Shell\\open\\command\\DelegateExecute")
    ]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

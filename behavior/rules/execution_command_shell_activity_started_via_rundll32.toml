@@ -4,7 +4,7 @@ id = "b8a0a3aa-0345-4035-b41d-f758a6c59a78"
 license = "Elastic License v2"
 name = "Command Shell Activity Started via RunDLL32"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and
@@ -22,7 +22,8 @@ process where event.type == "start" and
     not (process.args : ("launchalpsdelltouchpad://Mainpage/path2?param=start", "alpsdelltouchpadsettings://Mainpage/path2?param=start") and
          process.parent.args : "?:\\WINDOWS\\System32\\main.cpl") and
     not (process.command_line : "*REG QUERY HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography*" and
-         process.parent.args : "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask")
+         process.parent.args : "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask") and
+    not (process.args : "launchalpsdelltouchpad://Mainpage/path2?param=start" and process.parent.args : "Vxd_launch_UI")
 '''
 
 optional_actions = []

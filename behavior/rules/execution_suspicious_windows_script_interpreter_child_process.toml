@@ -7,7 +7,7 @@ id = "83da4fac-563a-4af8-8f32-5a3797a9068e"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and
@@ -31,14 +31,27 @@ process where event.type == "start" and
      ) and
      not (process.parent.name : "mshta.exe" and process.parent.args : "?:\\Program Files\\HP\\*\\HPSolutionsPortal.hta") and
      not (process.name : "regsvr32.exe" and process.parent.name : "wscript.exe" and process.parent.command_line : ("*LiteTouch.wsf*", "*LTICleanup.wsf*")) and
-     not (process.pe.original_file_name == "acslaunch" and process.executable : "?:\\Users\\Public\\IBM\\*.exe")
+     not (process.pe.original_file_name == "acslaunch" and process.executable : "?:\\Users\\Public\\IBM\\*.exe") and
+     not (process.name : ("rundll32.exe", "regsvr32.exe") and
+          process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile", "?:\\Windows\\sysWOW64\\*.ocx")) and
+     not process.executable : ("?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\caspol.exe", "?:\\Windows\\System32\\Vmw.exe") and
+     not (process.name : "rundll32.exe" and process.args : "UpdatePerUserSystemParameters" and process.args : "user32.dll,") and
+     not (process.executable : "?:\\Windows\\System32\\Vmw.exe" and process.parent.args : "kms_host.vbs") and
+     not (process.name : "regsvr32.exe" and process.args : "C:\\nondefault\\System\\*.exe" and process.args : "/u") and 
+     not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+     not process.executable : ("?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\caspol.exe", "?:\\Windows\\System32\\Vmw.exe") and
+     not (process.name : "rundll32.exe" and process.args : "printui.dll,PrintUIEntry") and
+     not (process.name : "regsvr32.exe" and process.args : "?:\\Windows\\sysWOW64\\*.ocx") and
+     not (process.code_signature.subject_name : "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true)
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

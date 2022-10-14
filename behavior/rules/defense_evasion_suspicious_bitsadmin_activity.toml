@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Bitsadmin Activity"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -79,7 +79,8 @@ process where event.action == "start" and
       "powershell.exe",
       "pwsh.exe",
       "cmd.exe"
-    )])
+    )]) and
+    not (process.args : "https://dl.duosecurity.com/*" and process.parent.args : "?:\\ProgramData\\NinjaRMMAgent\\scripting\\*")
 '''
 
 optional_actions = []

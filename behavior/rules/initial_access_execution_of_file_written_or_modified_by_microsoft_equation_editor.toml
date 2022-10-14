@@ -13,7 +13,7 @@ reference = [
     "https://nvd.nist.gov/vuln/detail/CVE-2017-11882",
     "https://nvd.nist.gov/vuln/detail/CVE-2018-0798",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5m
@@ -22,11 +22,13 @@ sequence with maxspan=5m
   [process where event.action == "start"] by process.executable
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

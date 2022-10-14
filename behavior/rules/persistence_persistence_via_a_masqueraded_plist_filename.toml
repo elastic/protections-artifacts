@@ -1,0 +1,86 @@
+[rule]
+description = """
+Identifies the creation or modification of a Launch agent or deamon property list file that masquerade as a Legitimate
+software such as Apple or Microsoft Plist filename but performed by an untrusted or unsigned macho executable.
+"""
+id = "3da48cdd-262a-42a9-af2f-c82ef639b9e3"
+license = "Elastic License v2"
+name = "Persistence via a Masqueraded Plist Filename"
+os_list = ["macos"]
+reference = [
+    "https://www.virustotal.com/gui/file/68438dcb296b4aeada2be505d4907c9f6066ceb40737a99d36e35d81a8a08235",
+]
+version = "1.0.2"
+
+query = '''
+file where event.type != "deletion" and 
+file.name : 
+      ("*com.apple*.plist",
+       "*com.microsoft*.plist", 
+       "*com.google*.plist", 
+       "*com.adobe*.plist", 
+       "*com.java*.plist", 
+       "*com.mozilla*.plist",
+       "*com.dropbox*.plist") and
+  file.path :
+       ("/System/Library/LaunchAgents/*", 
+        "/Library/LaunchAgents/*",
+        "/Users/*/Library/LaunchAgents/*",
+        "/System/Library/LaunchDaemons/*",
+        "/Library/LaunchDaemons/*") and
+(process.code_signature.trusted == false or process.code_signature.exists == false)
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

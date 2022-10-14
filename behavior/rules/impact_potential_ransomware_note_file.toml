@@ -8,7 +8,7 @@ id = "5dba1130-72df-46f1-b581-18d9c866cb23"
 license = "Elastic License v2"
 name = "Potential Ransomware Note File"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=60s
@@ -46,7 +46,8 @@ sequence with maxspan=60s
        /* ransom file name keywords */      
     file.name : ("*read*me*", "*unlock*", "*@*", "*RECOVER*", "*decrypt*", "*restore*file*", "*FILES_BACK*")
   ) and
-  not (process.executable : "?:\\Program Files\\TortoiseSVN\\bin\\TSVNCache.exe" and file.name : "README.txt")
+  not (process.executable : "?:\\Program Files\\TortoiseSVN\\bin\\TSVNCache.exe" and file.name : "README.txt") and
+  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20"))
   ]
 '''
 

@@ -7,7 +7,7 @@ id = "3f1cbf09-dba1-428d-8c84-a86db573889e"
 license = "Elastic License v2"
 name = "Driver Dropped by Untrusted Executable"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5m
@@ -19,7 +19,8 @@ sequence with maxspan=5m
                             "?:\\Program Files (x86)\\SimHub\\SimHubWPF.exe",
                             "?:\\Program Files (x86)\\SCCA\\ePass3000GM_SCCA\\ePass3000_drv\\InstDrvAction.exe",
                             "?:\\Program Files\\Amazon Web Services, Inc\\Amazon WorkSpaces\\pcoipusb\\bin\\USB\\pcoip_hub_filter_installer.exe") and
-  not process.code_signature.status : ("errorTimeStamp", "errorChaining", "errorCode_endpoint*", "errorExpired")] by file.path
+  not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired") and 
+  not (process.executable : "?:\\Windows\\Temp\\*\\NIC_Intel_Firmware\\nvmupdatew64e.exe" and file.path : "?:\\Windows\\System32\\drivers\\iqvw64e.sys")] by file.path
  [library where process.pid == 4 and
   not dll.pe.imphash :
           ("0109bf02bbd845b03c84c9676bdd8869",
@@ -32,12 +33,18 @@ sequence with maxspan=5m
            "bfc88c1c5b6d829a4bab7a165d25d83f",
            "d0b73a9defa3459abe55bae4cd1f844f",
            "e54cb614fcaa06fed22c681d4526d8bf",
-           "55db306bc2be3ff71a6b91fd9db051b8",
            "f86759bb4de4320918615dc06e998a39",
            "b8022367f73cdbdb08bb0667e4088757",
            "dc8acd7d20149d09a6c261c7a5f609c4",
            "db4408247c447c666c12863d8fa61ff5",
-           "b05ee5c816a30bc52378c759486af0b9")] by dll.path
+           "b05ee5c816a30bc52378c759486af0b9",
+           "861b526e8a3269e3024aa5d3f5adbe82",
+           "8d447341046e42fa55c9bee87728e772",
+           "4ecb36c0b2723d787fab469707d85651",
+           "c51e532cddc815f09d5892bba99352e2",
+           "596983b0a04a95e4261a4f893103c16e",
+           "5f4d38669edea237e4e569abdfb7a2e5",
+           "26d49feec51abdaa0b95edec8a8754b9")] by dll.path
 '''
 
 optional_actions = []

@@ -4,7 +4,7 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -67,14 +67,17 @@ process where event.action == "start" and
    /* third party installation related FPs */
    not process.parent.args : "?:\\Windows\\system32\\gatherNetworkInfo.vbs" and
    not (process.parent.args : "Microsoft.SystemCenter.ICMPProbe.WithConsecutiveSamples.vbs" and process.args : "Get-SCOMAgent") and
-   not (process.command_line : "*WEBLOGIC_ARGS_CURRENT_1.DATA*" and process.parent.command_line : "*Impact360*")
+   not (process.command_line : "*WEBLOGIC_ARGS_CURRENT_1.DATA*" and process.parent.command_line : "*Impact360*") and
+   not process.args :  "$package = Get-AppxPackage Microsoft.Office.Desktop -allUsers;*"
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -4,7 +4,7 @@ id = "b707de5c-8e4d-4d2c-be22-b09a7e82b73f"
 license = "Elastic License v2"
 name = "Renamed Third Party Administrator Tools"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -21,11 +21,13 @@ process where event.action == "start" and
 	 "?:\\Program Files\\*.exe")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

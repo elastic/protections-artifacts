@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via Control Panel Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m
@@ -21,11 +21,13 @@ sequence with maxspan=1m
    process.parent.name : "control.exe" and process.parent.command_line : "*Microsoft.BackupAndRestoreCenter*"]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 2
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

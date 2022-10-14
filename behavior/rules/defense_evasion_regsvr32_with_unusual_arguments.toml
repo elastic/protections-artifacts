@@ -7,7 +7,7 @@ id = "5db08297-bf72-49f4-b426-f405c2b01326"
 license = "Elastic License v2"
 name = "Regsvr32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and process.name : "regsvr32.exe" and
@@ -50,14 +50,25 @@ process where event.action == "start" and process.name : "regsvr32.exe" and
               "*BarTender Suite\\Codejock.DockingPane.x64.v15.3.1.ocx*") and
  not process.parent.executable : "?:\\Eaglesoft\\Shared Files\\OcxReg.exe" and
  not process.args : ("?:\\windows\\system32\\ChartFX.ClientServer.Data.dll", "?:\\Windows\\SysWOW64\\ChartFX.ClientServer.Data.dll") and
- not (process.args : "?:\\Users\\*\\AppData\\Local\\Microsoft\\TeamsMeetingAddin\\*\\Microsoft.Teams.AddinLoader.dll" and process.args : "/i:user")
+ not (process.args : "?:\\Users\\*\\AppData\\Local\\Microsoft\\TeamsMeetingAddin\\*\\Microsoft.Teams.AddinLoader.dll" and process.args : "/i:user") and
+ not (process.args : "..\\*.dll" and process.working_directory : "?:\\Program Files\\LANDesk\\ManagementSuite\\Install Only Files\\") and
+ not (process.args : "..\\*.dll" and
+      descendant of
+       [process where event.action == "start" and
+        process.executable : ("?:\\Program Files\\LANDesk\\ManagementSuite\\Install Only Files\\LaunchApp.exe",
+                              "?:\\Program Files (x86)\\LANDesk\\ManagementSuite\\Install Only Files\\LaunchApp.exe")]) and
+ not (process.parent.name : "msiexec.exe" and process.parent.args : "-Embedding") and
+ not process.parent.executable : "C:\\Program Files\\LANDesk\\ManagementSuite\\Install Only Files\\LaunchApp.exe" and
+ not (process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SSM*.tmp\\REGSVR32.EXE" and process.args : "?:\\WINDOWS\\system32\\*.dll")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

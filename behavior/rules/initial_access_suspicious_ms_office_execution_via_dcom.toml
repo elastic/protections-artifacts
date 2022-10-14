@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/blog/playing-defense-against-gamaredon-group",
     "https://stigviewer.com/stig/microsoft_powerpoint_2007/2014-04-03/finding/V-17522",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -27,11 +27,13 @@ sequence by user.id with maxspan=1m
     not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true)]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

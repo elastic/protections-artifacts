@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies when a built-in utility is used to decode and decrypt a payload after a macOS disk image (DMG) is executed.
+Malware authors may attempt to evade detection and trick users into executing malicious code by encoding and encrypting
+their payload and placing it in a disk image file. This behavior is consistent with adware or malware families such as
+Bundlore and Shlayer.
+"""
+id = "5dce3865-838f-4773-9781-87226af1fc12"
+license = "Elastic License v2"
+name = "Payload Decoded and Decrypted via Built-In Utilities"
+os_list = ["macos"]
+reference = ["https://attack.mitre.org/software/S0482/", "https://attack.mitre.org/software/S0402/"]
+version = "1.0.7"
+
+query = '''
+process where event.action == "exec" and process.name == "openssl" and
+ process.args : "/Volumes/*" and process.args : "enc" and
+    // openssl base64-decoding data
+    process.args : "-base64" and
+    // openssl decrypting input data
+    process.args : "-d"
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

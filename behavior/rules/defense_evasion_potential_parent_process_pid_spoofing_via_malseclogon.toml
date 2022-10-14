@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Parent Process PID Spoofing via MalSecLogon"
 os_list = ["windows"]
 reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -56,7 +56,8 @@ sequence with maxspan=1m
     not process.executable : ("?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\*.exe", "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\SamsungSystemSupportOSD.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe" and process.parent.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe") and
 
-    not process.parent.executable : "?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNetLauncher.exe"
+    not process.parent.executable : "?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNetLauncher.exe" and
+    not process.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe"
     ] by process.parent.Ext.real.entity_id
 '''
 

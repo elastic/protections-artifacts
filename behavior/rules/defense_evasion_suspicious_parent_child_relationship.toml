@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -21,18 +21,16 @@ process where event.action == "start" and
     */
    (process.name : "autochk.exe" and not process.parent.name : "smss.exe") or
 
-   (process.name : ("consent.exe", "RuntimeBroker.exe", "TiWorker.exe") and not process.parent.name : ("svchost.exe", "RuntimeBroker.exe") and
+   (process.name : ("consent.exe", "RuntimeBroker.exe") and not process.parent.name : ("svchost.exe", "RuntimeBroker.exe") and
     not process.parent.executable : "?:\\Program Files\\ThreatLocker\\threatlockerconsent.exe") or
-   (process.name : "SearchIndexer.exe" and not process.parent.name : "services.exe") or
-   (process.name : "dllhost.exe" and not process.parent.name : ("services.exe", "svchost.exe") and
-    not process.parent.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*")) or
-   (process.name : "smss.exe" and not process.parent.name : ("System", "smss.exe")) or
+   (process.name : "SearchIndexer.exe" and not process.parent.name : ("services.exe", "SearchIndexer.exe")) or
+   (process.name : "smss.exe" and not process.parent.name : ("System", "smss.exe", "sihost.exe")) or
    (process.name : "wininit.exe" and not process.parent.name : "smss.exe") or
-   (process.name : ("lsass.exe", "LsaIso.exe") and not process.parent.name : "wininit.exe") or
+   (process.name : ("lsass.exe", "LsaIso.exe") and not process.parent.name : ("wininit.exe", "lsass.exe")) or
    (process.name : "services.exe" and not process.parent.name : "wininit.exe") or
    (process.name : "spoolsv.exe" and not process.parent.name : ("services.exe", "spoolsv.exe")) or
    (process.name : "taskhost.exe" and not process.parent.name : ("services.exe", "svchost.exe")) or
-   (process.name : "taskhostw.exe" and not process.parent.name : ("services.exe", "svchost.exe")) or
+   (process.name : "taskhostw.exe" and not process.parent.name : ("services.exe", "svchost.exe", "taskhostw.exe")) or
    (process.name : ("wmiprvse.exe", "wsmprovhost.exe", "winrshost.exe") and not process.parent.name : "svchost.exe") or
    (process.name : "sihost.exe" and not process.parent.name : ("svchost.exe", "sihost.exe")) or
    (process.name : ("winlogon.exe", "csrss.exe", "SearchProtocolHost.exe", "fontdrvhost.exe", "userinit.exe", "dwm.exe", "LogonUI.exe", "taskhostw.exe") and
@@ -54,14 +52,19 @@ process where event.action == "start" and
                     "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\*\\AcroCEF.exe",
                     "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe",
                     "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe") and 
-   not (process.name : "dwm.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true)
+   not (process.name : "dwm.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true) and
+   not (process.name : "SearchProtocolHost.exe" and process.parent.name : "rundll32.exe" and process.parent.args : "AppXDeploymentExtensions.OneCore.dll,ShellRefresh") and
+   not (process.parent.executable : "?:\\Windows\\System32\\smss.exe" and process.parent.args : "-SpecialSession") and
+   not (process.parent.executable : "?:\\Program Files\\Sandboxie\\SandboxieDcomLaunch.exe" and process.name : "RuntimeBroker.exe")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

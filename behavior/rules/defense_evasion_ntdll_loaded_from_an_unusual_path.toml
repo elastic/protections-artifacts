@@ -7,7 +7,7 @@ id = "3205274e-7eb0-4765-a712-5783361091ae"
 license = "Elastic License v2"
 name = "NTDLL Loaded from an Unusual Path"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 library where dll.pe.original_file_name : "ntdll.dll" and
@@ -16,16 +16,19 @@ library where dll.pe.original_file_name : "ntdll.dll" and
                  "?:\\Windows\\System32\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\amd64_microsoft-windows-ntdll_*\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\wow64_microsoft-windows-ntdll_*\\ntdll.dll",
+                 "?:\\Windows\\WinSxS\\Temp\\InFlight\\*\\amd64_microsoft-windows-ntdll_*\\ntdll.dll",
                  /* vsmbSharePrefix */
                  "\\Device\\vmsmb\\VSMB-{*}\\os\\windows\\*\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

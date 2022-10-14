@@ -10,19 +10,22 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/privilege-escalation/windows-namedpipes-privilege-escalation",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
    process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE") and process.command_line : "*echo*>*\\\\.\\pipe\\*" and
-   not (process.command_line : "*chrome-extension://*" and process.parent.executable : "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
+   not process.parent.executable :
+           ("?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

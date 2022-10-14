@@ -13,7 +13,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys",
     "https://thedfirreport.com/2021/03/29/sodinokibi-aka-revil-ransomware/",
 ]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 registry where registry.data.strings != null and
@@ -31,10 +31,12 @@ registry where registry.data.strings != null and
   /* Issue #318 */
   not (process.name : "Lmi_*.exe" and registry.value : "*LogMeInRescue*") and
   not (process.name : "G2AC_LauncherCustomer.exe" and registry.value : "*GoToAssist*") and
+  not (process.name : "G2AC_SessionControl.exe" and registry.value : "*GoToAssist") and
   not process.executable :
            ("?:\\Windows\\System32\\mmc.exe",
             "?:\\WINDOWS\\system32\\rstrui.exe",
             "?:\\Program Files (x86)\\*.exe",
+            "?:\\WINDOWS\\System32\\dllhost.exe",
             "?:\\Program Files\\*.exe")
 '''
 

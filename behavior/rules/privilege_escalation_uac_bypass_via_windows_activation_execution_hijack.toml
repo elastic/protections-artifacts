@@ -11,7 +11,7 @@ reference = [
     "https://github.com/hfiref0x/UACME",
     "https://medium.com/@mattharr0ey/privilege-escalation-uac-bypass-in-changepk-c40b92818d1b",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=60s
@@ -29,11 +29,13 @@ sequence with maxspan=60s
             "?:\\WINDOWS\\system32\\slui.exe")]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

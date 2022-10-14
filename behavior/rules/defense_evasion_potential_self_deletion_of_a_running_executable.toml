@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Self Deletion of a Running Executable"
 os_list = ["windows"]
 reference = ["https://github.com/LloydLabs/delete-self-poc"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,11 +20,13 @@ sequence by process.entity_id with maxspan=1m
      file.name : "*:*" and not file.Ext.original.name : "*:*"  and file.size == 0] by file.Ext.original.name
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

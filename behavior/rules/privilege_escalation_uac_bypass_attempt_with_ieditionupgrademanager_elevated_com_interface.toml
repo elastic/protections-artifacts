@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt with IEditionUpgradeManager Elevated COM Interface"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -21,11 +21,13 @@ process where event.action == "start" and
       process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true)
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

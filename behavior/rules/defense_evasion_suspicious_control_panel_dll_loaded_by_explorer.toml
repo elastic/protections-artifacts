@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies DLL load of an unsigned or untrusted Control Panel Item by the Explorer process. Adversaries may load a
+malicious DLL when Control Panel is executed via setting the CPLs subkey to the payload path.
+"""
+id = "1dbf6ac3-540a-4214-8173-9aa93232da38"
+license = "Elastic License v2"
+name = "Suspicious Control Panel DLL Loaded by Explorer"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
+version = "1.0.3"
+
+query = '''
+sequence  with maxspan = 5s
+
+ [library where process.name : "explorer.exe" and
+  (dll.code_signature.trusted == false or dll.code_signature.exists == false) and
+  not dll.path :
+          ("?:\\Program Files\\*",
+           "?:\\Program Files (x86)\\*",
+           "?:\\Windows\\System32\\*",
+           "?:\\Windows\\SysWOW64\\*",
+           "?:\\Windows\\assembly\\*")] by process.entity_id
+
+ [process where event.action == "start" and process.parent.name : "explorer.exe" and
+
+  /* CLSID_ControlPanelProcessExplorerHost */
+  process.parent.args : "/factory,{5BD95610-9434-43C2-886C-57852CC8A120}" and
+
+  /* false positives */
+  not (process.name : "rundll32.exe" and
+       process.args :
+            ("printui.dll,PrintUIEntryDPIAware",
+             "?:\\WINDOWS\\system32\\spool\\DRIVERS\\*PrintJobStatus",
+             "fdprint,InvokeTask")) and
+  not (process.name : "mmc.exe" and process.args : "?:\\windows\\system32\\devmgmt.msc") and
+  not process.executable : ("?:\\windows\\system32\\DevicePairingWizard.exe", "?:\\Windows\\System32\\spool\\drivers\\x64\\3\\E_YARNYWE.EXE")
+  ] by process.parent.entity_id
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.002"
+name = "Control Panel"
+reference = "https://attack.mitre.org/techniques/T1218/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

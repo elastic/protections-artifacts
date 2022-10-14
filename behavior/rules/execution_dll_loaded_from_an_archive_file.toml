@@ -8,7 +8,7 @@ id = "08fba401-b76f-4c7b-9a88-4f3b17fe00c1"
 license = "Elastic License v2"
 name = "DLL Loaded from an Archive File"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -23,7 +23,8 @@ sequence by process.entity_id with maxspan=5s
    ) and
    not process.pe.original_file_name : ("java.exe", "javaw.exe", "HPDiagnosticCoreUI.exe", "MirrorOp.exe", "SetupFrontEnd.dll", "HP-DQEX5.exe", "KmInstall.exe",
                                         "7z.exe", "EasyInst.exe", "KmInstCm.exe", "hpbcsiInstaller.exe", "BradyInstallerSetup.exe", "ProgressWebInstaller.exe",
-                                        "InstallShield Setup.exe") and
+                                        "InstallShield Setup.exe", "Setup*.exe", "Prezi.exe*", "Luma Video Player.EXE", "DfuSeDemo.exe", "GenericSetup.exe",
+                                        "DeviceUpdate.Exe", "H2OFFT-W.EXE", "riswitch.exe", "FlsHook.exe") and
    not (process.name : "7z.exe" and process.args : "x") and
    not (process.code_signature.subject_name in ("Autodesk, Inc.",  "HIKVISION DIGITAL TECHNOLOGY CO.,LTD.", "BlueStack Systems, Inc.") and
         process.code_signature.trusted == true)

@@ -7,7 +7,7 @@ id = "cd886776-8790-4724-9484-3f0008b87da7"
 license = "Elastic License v2"
 name = "Managed .NET Code Execution via PowerShell"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and
@@ -22,7 +22,9 @@ process where event.type == "start" and
    "*set *set *set *", "*;iex*", "*IEX (*", "*FromBase64String*")
 
    ) and
-   not process.parent.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*")
+   not process.parent.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "visualstudio20??-workload-vctools;") and
+   not process.args : "@?:\\Windows\\TEMP\\*.cmdline" and
+   not (process.parent.args : "-ExecutionPolicy" and process.parent.command_line : "*.vscode\\extensions*")
 '''
 
 optional_actions = []

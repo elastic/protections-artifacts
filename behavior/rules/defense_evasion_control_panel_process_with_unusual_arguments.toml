@@ -7,12 +7,11 @@ id = "a4862afb-1292-4f65-a15f-8d6a8019b5e2"
 license = "Elastic License v2"
 name = "Control Panel Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
  process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
- (
   process.command_line :
           ("*.jpg*",
            "*.png*",
@@ -26,14 +25,8 @@ process where event.action == "start" and
            "*..\\..\\*",
            "*/AppData/Local/*",
            "*:\\Users\\Public\\*",
-           "*\\AppData\\Local\\*") or
-
-  (process.args_count == 1 and
-   not process.parent.executable : ("?:\\Windows\\Explorer.exe", "?:\\Windows\\System32\\Sihost.exe") and
-   process.parent.executable != null)
-
-  ) and
-
+           "*\\AppData\\Local\\*") and 
+           
  /* excluding FPs where /name arg is used to specify a control by name */
  not (process.args : "/name" and process.args_count >= 2) and
  /* excluding system IL to minimize risk of killing system critical execution */

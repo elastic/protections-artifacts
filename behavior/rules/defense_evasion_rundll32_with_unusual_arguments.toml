@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -42,7 +42,10 @@ process where event.action == "start" and process.name : "rundll32.exe" and
            "*\\M?-*.dll,_run@*",
            "*%TEMP%\\*.cpl*",
            "*\\Users\\*\\Downloads\\*.cpl*",
-           "*\\appdata\\roaming\\microsoft\\templates\\*,*") or
+           "*\\appdata\\roaming\\microsoft\\templates\\*,*",
+           
+           /* DLL exec by ordinal */
+           "* #*", "*,#*") or
     process.command_line like "*rUNdlL32.eXe*" or
 
     /* fake Control_RunDLL export */
@@ -56,7 +59,8 @@ process where event.action == "start" and process.name : "rundll32.exe" and
 
     /* suspicious parent powershell args */
     (process.parent.name : "powershell.exe" and
-     process.parent.args : ("-enc", "IEX", "*wp-content*", "*wp-admin*", "*wp-includes*", "*$*$*$*$*$*", "*^*^*^*^*^*^*^*^*^*", "*.replace*"))
+     process.parent.args : ("-enc", "IEX", "*wp-content*", "*wp-admin*", "*wp-includes*", "*$*$*$*$*$*", "*^*^*^*^*^*^*^*^*^*", "*.replace*") and
+     not (process.args : "UpdatePerUserSystemParameters" and process.args : "USER32.DLL"))
     )
 
    /* False Positives */
@@ -65,7 +69,7 @@ process where event.action == "start" and process.name : "rundll32.exe" and
   process.command_line :
            ("*JOBID=*",
             "*davclnt.dll,DavSetCookie*",
-            "*PhotoViewer.dll*ImageView_Fu*",
+            "*PhotoViewer*ImageView_Fu*",
             "*url.dll,FileProtocolHandler*",
             "*zzzzInvokeManagedCustomActionOutOfProc*",
             "*,DeferredDelete*",
@@ -73,7 +77,7 @@ process where event.action == "start" and process.name : "rundll32.exe" and
             "*:\\Program Files (x86)\\*",
             "*:\\Program Files\\*",
             /* Issue #282 - FP */
-            "*cryptext.dll,CryptExtAddPFX*",
+            "*cryptext*CryptExt*",
             "*dfshim.dll*ShOpenVerbShortcut*",
             "*\\Documents\\DocuShare\\*",
 
@@ -81,21 +85,37 @@ process where event.action == "start" and process.name : "rundll32.exe" and
             "*ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile*",
             "*FirewallControlPanel.dll,ShowNotificationDialog*",
             "*--type=renderer*--log-file=*",
-            "*--lang=*--log-file=*") and not
+            "*--lang=*--log-file=*",
+            
+            "*shell32*OpenAs_RunDLL*",
+            "*dfshim*ShOpenVerbExtension*",
+            "*printui*PrintUIEntry*",
+            "*mshtml*PrintHTML*",
+            "*shell32*#44*",
+            "*shell32.dll*ShellExec_RunDLL*#*",
+            "*EDGEHTML*#*"
+            ) and not
+            
    (process.command_line : "*.tmp*" and
-    process.parent.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\System32\\msiexec.exe") and
+    process.parent.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\SysWOW64\\msiexec.exe") and
     process.parent.args : "-Embedding") and
   not process.args : "?:\\ProgramData\\Parallels\\RASLogs\\tmp*.tmp,StopMemshell" and
   not (process.args : "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acsnative.dll*" and
        process.parent.executable : "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acslaunch_*.exe") and
-  not process.parent.executable : ("?:\\Program Files\\Common Files\\BullGuardInstall\\BullGuard*.exe", "?:\\Program Files (x86)\\Intuit\\QuickBooks 20??\\QBW??.EXE")
+  not process.parent.executable :
+              ("?:\\Program Files\\Common Files\\BullGuardInstall\\BullGuard*.exe",
+               "?:\\Program Files (x86)\\Intuit\\QuickBooks 20??\\QBW??.EXE",
+               "?:\\Program Files\\Intuit\\QuickBooks 2022\\QBW.EXE") and
+  not (user.name : "user" and process.args : "file.dll,#*")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

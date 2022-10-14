@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "exec" and
@@ -54,7 +54,8 @@ process where event.action == "exec" and
       "open -a Safari *",
       "defaults read *",
       "sysctl hw.model*",
-      "ioreg -d2 -c IOPlatformExpertDevice *"
+      "ioreg -d2 -c IOPlatformExpertDevice *",
+      "ps aux | grep 'ToDesk_Desktop' | grep -v grep"
     ) and
 
    not process.parent.executable :

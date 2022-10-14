@@ -7,21 +7,28 @@ id = "f60d4c82-2de5-4c70-95f5-cde9f3ad41a7"
 license = "Elastic License v2"
 name = "Execution of a Windows Script Downloaded via a LOLBIN"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
  [process where event.type == "start" and
   process.pe.original_file_name : ("certutil.exe", "bitsadmin.exe", "CertReq.exe", "curl.exe") and
   process.command_line : ("*download*", "*transfer*", "*-decode*", "*http*", "* -o*", "* --output*")]
- [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "cscript.exe", "mshta.exe")]
+ [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "cscript.exe", "mshta.exe") and
+  not (process.working_directory : "E:\\*" and process.name : "cscript.exe" and process.args : ("loadpromo.vbs", "LoadMasterStocks.vbs")) and
+  not (process.parent.name : "cmd.exe" and
+       process.parent.args :
+            ("C:\\ProgramData\\NinjaRMMAgent\\scripting\\customscript_gen_?.bat-ninjascript.bat",
+             "C:\\Storage\\VisualStudioProjects\\connect_wise_script\\install_speerity.bat"))]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -7,7 +7,7 @@ id = "a0a82ad6-98ed-4426-abd8-52e7b052e297"
 license = "Elastic License v2"
 name = "Microsoft Office Loaded a Dropped Executable File"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -23,9 +23,19 @@ sequence by process.entity_id with maxspan=1m
         file.Ext.header_bytes : "4d5a*"
       )] by file.path
   [ library where
-    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and 
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    dll.hash.sha256 != null and
     not (dll.code_signature.trusted == true and dll.path : "?:\\Users\\*\\appdata\\local\\assembly\\*.dll") and
-    not (dll.code_signature.subject_name == "Bloomberg L.P." and dll.code_signature.trusted == true) ] by dll.path
+    not (dll.code_signature.subject_name == "Bloomberg L.P." and dll.code_signature.trusted == true) and
+    not dll.hash.sha256 : ("8f66789803adb34bdce7dd6686c6d53a0d1089ebf998ec3ab2b455da2828fd3c",
+                           "464266dd5656b82acaac189406983e1c9427be6578f6617360c613e5911c2b06",
+                           "2ce237db9ba8d32db3e1fb7301b407e66cf101cc8f37efa32e5e97d40032f75a",
+                           "aa6fd3c1caf2a53d1fba496564dff15d89779bbdf8f132917eec30049adc9678",
+                           "077e534918a6d0ce90ad91b26168d6b838a854f3899ddf0720a38ca31d15102b",
+                           "26815ae316c6fdeb699b722ba9663089590a5aeaee1ec10375d21d814c5f3aec",
+                           "e464f82e4a44064dc00e997b18fb55c22e0f39182dc22e150ef081cd13af01fe",
+                           "b0680c48dd70da998844bb34fb4bb70d95cc7698ebb7443c36be0d393adc14d5") and
+    not dll.path : "?:\\Windows\\assembly\\NativeImages_*.dll"] by dll.path
 '''
 
 optional_actions = []

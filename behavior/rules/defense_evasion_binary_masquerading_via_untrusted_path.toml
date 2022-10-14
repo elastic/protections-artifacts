@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
@@ -49,11 +49,9 @@ process where event.action == "start" and
     "qprocess.exe",
     "quser.exe",
     "qwinsta.exe",
-    "reg.exe",
     "regasm.exe",
     "regsvcs.exe",
     "regsvr32.exe",
-    "runas.exe",
     "rundll32.exe",
     "schtasks.exe",
     "sdclt.exe",
@@ -62,13 +60,11 @@ process where event.action == "start" and
     "svchost.exe",
     "taskhost.exe",
     "taskhostw.exe",
-    "tasklist.exe",
     "userinit.exe",
     "vaultcmd.exe",
     "vssadmin.exe",
     "wininit.exe",
     "winlogon.exe",
-    "whoami.exe",
     "wmic.exe",
     "wevtutil.exe",
     "wscript.exe",
@@ -85,6 +81,7 @@ process where event.action == "start" and
     "?:\\Windows\\Microsoft.NET\\*.exe",
     "?:\\Program Files (x86)\\*.exe",
     "?:\\Program Files\\*.exe",
+    "?:\\Windows\\WinSxS\\*.exe",
 
     /* Issue # 295 */
     "?:\\Users\\*\\AppData\\Local\\Programs\\Git\\usr\\bin\\hostname.exe",
@@ -152,11 +149,13 @@ process where event.action == "start" and
   not (process.parent.executable : "?:\\apps\\sage300\\Programs\\runtime\\a4wcontainerXP.exe" and process.name : "regsvr32.exe")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

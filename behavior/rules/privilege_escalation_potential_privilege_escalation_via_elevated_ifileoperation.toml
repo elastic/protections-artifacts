@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via Elevated IFileOperation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileoperation"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=1m
@@ -38,11 +38,13 @@ sequence with maxspan=1m
   not (dll.code_signature.subject_name : "Microsoft *" and dll.code_signature.trusted == true)] by dll.path
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

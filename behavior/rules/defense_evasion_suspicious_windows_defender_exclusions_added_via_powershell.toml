@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=1m
@@ -34,11 +34,13 @@ sequence with maxspan=1m
    process.args : ("-ExclusionPath", "-DisableRealtimeMonitoring", "-DisableScriptScanning", "-DisableArchiveScanning")] by process.parent.entity_id
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

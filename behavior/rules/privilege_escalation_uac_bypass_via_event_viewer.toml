@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via Event Viewer"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME", "https://twitter.com/orange_8361/status/1518970259868626944"]
-version = "1.0.8"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -29,14 +29,26 @@ process where event.action == "start" and
             "?:\\Windows\\System32\\WerFault.exe",
             "?:\\Windows\\SysWOW64\\WerFault.exe",
             "?:\\Windows\\System32\\wermgr.exe",
-            "?:\\Windows\\SysWOW64\\wermgr.exe")
+            "?:\\Windows\\SysWOW64\\wermgr.exe",
+            "?:\\Program Files (x86)\\*.exe",
+            "?:\\Program Files\\*.exe",
+            "?:\\Windows\\System32\\DWWIN.EXE",
+            "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+            "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+            "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
+            "?:\\Program Files\\Internet Explorer\\iexplore.exe",
+            "?:\\Program Files (x86)\\Tencent\\QQPinyin\\*\\QQPYUserCenter.exe") and
+ not (process.name : "rundll32.exe" and process.args : "cryptext.dll,CryptExtOpenCRL")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

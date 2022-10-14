@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution of Commonly Abused Utilities via Explorer Trampoline"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Explorer/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -26,15 +26,19 @@ process where event.action == "start" and
   not
      (
       process.name : "rundll32.exe" and
-      process.command_line : ("rundll32.exe*\\Users\\*\\AppData\\Local\\Cognitas\\CrossLink6\\csathl32.dll*",
-                              /* Issue #340 */
-                              "*dfshim.dll*ShOpenVerbApplication*",
-                              "?:\\WINDOWS\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
-                              "cryptext.dll,CryptExtOpenCER",
-                              "cryptext.dll,CryptExtAddCER",
-                              "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile",
-                              "shwebsvc.dll,AddNetPlaceRunDll")
-     )
+      process.args : ("rundll32.exe*\\Users\\*\\AppData\\Local\\Cognitas\\CrossLink6\\csathl32.dll*",
+                      /* Issue #340 */
+                      "*dfshim.dll*ShOpenVerbApplication*",
+                      "?:\\WINDOWS\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
+                      "cryptext.dll,CryptExtOpenCER",
+                      "cryptext.dll,CryptExtAddCER",
+                      "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile",
+                      "shwebsvc.dll,AddNetPlaceRunDll",
+                      "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
+                      "?:\\Windows\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
+                      "devmgr.dll,DeviceProperties_RunDLL",
+                      "printui.dll,PrintUIEntryDPIAware")
+      )
 '''
 
 optional_actions = []

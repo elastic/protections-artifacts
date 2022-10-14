@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via WOW64 Logger DLL Side-Loading"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME", "http://waleedassar.blogspot.com/2013/01/wow64logdll.html"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=60s
@@ -26,11 +26,13 @@ sequence with maxspan=60s
             "?:\\Windows\\SysWOW64\\conhost.exe")] by process.parent.entity_id
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

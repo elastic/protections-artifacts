@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and process.args_count <= 5 and
@@ -26,11 +26,13 @@ process where event.action == "start" and process.args_count <= 5 and
   not process.Ext.token.integrity_level_name == "system"
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

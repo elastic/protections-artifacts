@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://bsodtutorials.wordpress.com/2014/07/31/windows-integrity-levels-process-explorer-and-windbg/",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -21,8 +21,11 @@ sequence with maxspan=5m
   process.Ext.token.integrity_level_name == "system" and user.id : "S-1-5-18" and
   /* limiting rule scope to processes created via seclogon to avoid some weird FPs */
   process.parent.Ext.real.pid > 0 and
-  not (process.executable : "?:\\Windows\\System32\\wermgr.exe" and
-       process.parent.executable : "?:\\Windows\\Sys*\\WerFault.exe")] by process.parent.entity_id
+  not process.executable :
+            ("?:\\Windows\\System32\\wermgr.exe",
+             "?:\\Windows\\System32\\WerFault.exe",
+             "?:\\Windows\\SysWOW64\\WerFault.exe",
+             "?:\\Windows\\System32\\WerFaultSecure.exe")] by process.parent.entity_id
 '''
 
 optional_actions = []

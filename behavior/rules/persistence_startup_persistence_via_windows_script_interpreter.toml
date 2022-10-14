@@ -8,12 +8,16 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
  [process where event.action : "start" and
-  process.pe.original_file_name : ("wscript.exe", "cscript.exe", "powershell.exe", "mshta.exe", "pwsh.exe") and
+  (
+   process.pe.original_file_name : ("wscript.exe", "cscript.exe", "powershell.exe", "mshta.exe", "pwsh.exe") or
+   process.parent.name : ("wscript.exe", "cscript.exe", "powershell.exe", "mshta.exe", "pwsh.exe")
+   ) and
+   /* noisy patterns */
   not process.Ext.token.integrity_level_name == "system" and
   not process.command_line : ("*:\\Program Files\\*.exe", "*:\\Program Files (x86)\\*.exe", "*\\\\*\\SYSVOL\\*")
   ]
@@ -37,11 +41,13 @@ sequence by process.entity_id with maxspan=2m
   ]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

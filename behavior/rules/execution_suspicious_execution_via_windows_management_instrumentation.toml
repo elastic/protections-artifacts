@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -58,7 +58,8 @@ process where event.action == "start" and
 
 not (process.name : ("powershell.exe", "cmd.exe") and
      process.command_line : ("*Windows\\CCM\\*", "*WINDOWS\\TEMP\\nessus_*", "*%SystemRoot%\\TEMP\\nessus_*",
-     "*Get-NetFirewallProfile*", "*windows\\temp\\netstatcache_*", "*$ErrorActionPreference*", "*D:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1*",
+     "*\\admin$\\temp\\cotportal_EAS_SP-SNOW*", "*/latest/dynamic/instance-identity/*", "*Get-NetFirewallProfile*",
+     "*windows\\temp\\netstatcache_*", "*$ErrorActionPreference*", "*D:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1*",
      "*app360edatabase\\Install-360DB.ps1*", "*CgAgACAAIAAgAHQAcgBhAHAAIA*", "*Cert:LocalMachine -Recurse*")) and
 
 not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
@@ -79,7 +80,9 @@ not (process.pe.original_file_name == "360se.exe" and process.code_signature.tru
 
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 
-not (process.name : "cmd.exe" and process.args : "\\\\127.0.0.1\\ADMIN$\\__*")
+not (process.name : "cmd.exe" and process.args : "\\\\127.0.0.1\\ADMIN$\\__*") and 
+
+not process.hash.sha256 : "0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f"
 '''
 
 optional_actions = []

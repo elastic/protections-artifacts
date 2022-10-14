@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies the execution of the Windows Command Shell process (cmd.exe) with suspicious argument values. This behavior
+is often observed during malware installation.
+"""
+id = "8dd7588d-fc28-40c0-adfb-14789c763984"
+license = "Elastic License v2"
+name = "Suspicious Windows Command Shell Execution"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+ (process.name : "cmd.exe" or process.pe.original_file_name ==  "Cmd.Exe") and not user.id : "S-1-5-18" and
+ (
+
+  process.command_line : ("*^*^*^*^*^*^*", "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
+  "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*") or
+
+  (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
+
+  (process.args : "echo" and process.parent.name : ("wscript.exe", "mshta.exe")) or
+
+  process.args : ("1>?:\\*.vbs", "1>?:\\*.js")
+  ) and
+
+  /* false positives */
+  not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
+  not process.parent.executable :
+                ("?:\\Perl64\\bin\\perl.exe",
+                 "?:\\Program Files\\nodejs\\node.exe",
+                 "E:\\eGov\\eGovXtract.exe",
+                 "?:\\Program Files\\HP\\RS\\pgsql\\bin\\pg_dumpall.exe",
+                 "?:\\Program Files (x86)\\PRTG Network Monitor\\64 bit\\PRTG Server.exe",
+                 "?:\\Program Files (x86)\\Spiceworks\\bin\\spiceworks-finder.exe",
+                 "?:\\Program Files (x86)\\Zuercher Suite\\production\\leds\\leds.exe",
+                 "?:\\Program Files\\Tripwire\\Agent\\Plugins\\twexec\\twexec.exe",
+                 "D:\\Agents\\?\\_work\\_tasks\\*\\SonarScanner.MSBuild.exe",
+                 "?:\\reps\\inventory\\.nodejs\\node\\node.exe",
+                 "?:\\Program Files\\Microsoft VS Code\\Code.exe",
+                 "?:\\Users\\*\\node.exe",
+                 "?:\\*\\.nodejs\\node\\node.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Zuercher Suite\\production\\leds\\leds.exe") and
+  not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
+  not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
+  not (process.parent.name : "wscript.exe" and process.parent.args : "D:\\intersystems\\hsfoundation\\databases\\data\\ELSAInfoServer.vbs") and
+  not (process.parent.name : ("pwsh.exe", "powershell.exe") and process.args : "start" and
+       process.args : "https://login.microsoftonline.com/*")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

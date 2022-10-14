@@ -7,7 +7,7 @@ id = "b2409cd4-3b23-4b2d-82e4-bbb25594999a"
 license = "Elastic License v2"
 name = "Shadow Copy Service Disabled via Registry Modification"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 registry where
@@ -15,11 +15,13 @@ registry where
  not process.executable : "?:\\Windows\\System32\\services.exe" and process.executable : "?*"
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

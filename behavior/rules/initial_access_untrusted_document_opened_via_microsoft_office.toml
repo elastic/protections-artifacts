@@ -1,0 +1,98 @@
+[rule]
+description = """
+Identifies the execution of Microsoft Office processes to open a document from unknown sources fro MS SmartScreen and
+subsequently Microsoft Office spawns an unusual child processes.
+"""
+id = "2887ca7c-40b9-4d04-ab9c-65a5c0428ab8"
+license = "Elastic License v2"
+name = "Untrusted Document Opened via Microsoft Office"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and
+  process.name : ("EXCEL.EXE", "WINWORD.EXE", "POWERPNT.EXE") and
+
+  /* probably unknown or potentially unsafe to smartscreen files classification */
+  process.Ext.token.security_attributes : "SMARTLOCKER://SMARTSCREENORIGINCLAIM"] by process.entity_id
+
+ [process where event.action == "start" and
+  process.parent.name : ("EXCEL.EXE", "WINWORD.EXE", "POWERPNT.EXE") and
+
+  /* unknow office doc spawns an unusual child */
+  not process.executable :
+              ("?:\\Program Files\\*.exe",
+               "?:\\Program Files (x86)\\*.exe",
+               "?:\\Windows\\System32\\WerFault.exe",
+               "?:\\Windows\\SysWOW64\\WerFault.exe",
+               "?:\\windows\\splwow64.exe",
+               "?:\\Windows\\system32\\dwwin.exe",
+               "?:\\Windows\\SysWOW64\\DWWIN.EXE",
+               "?:\\Windows\\Microsoft.NET\\*\\csc.exe",
+               "?:\\Windows\\system32\\verclsid.exe",
+               "?:\\Windows\\SysWOW64\\verclsid.exe") and
+  not (process.code_signature.subject_name :
+          ("Zhuhai Kingsoft Office Software Co., Ltd.",
+           "Poll Everywhere, Inc.",
+           "Xerox Corporation",
+           "Mozilla Corporation",
+           "Vivaldi Technologies AS",
+           "成都艾斯莱德网络科技有限公司",
+           "Tencent Technology(Shenzhen) Company Limited",
+           "Beijing Sogou Technology Development Co., Ltd.",
+           "Beijing Yundong Zhixiao Network Technology Co. , Ltd.",
+           "Dell Incorporated",
+           "sli.do s. r. o.",
+           "CANON INC.",
+           "TEAMDEV LTD.",
+           "Canon Inc.",
+           "HP Inc.",
+           "SEIKO EPSON CORPORATION",
+           "FOXIT SOFTWARE INC.",
+           "Google LLC",
+           "Brave Software, Inc.",
+           "Opera Norway AS",
+           "Microsoft Windows Hardware Compatibility Publisher") and
+       process.code_signature.trusted == true) and
+  not (process.name : "rundll32.exe" and
+       process.args : ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*,MonitorPrintJobStatus", "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile")) and
+  not (process.pe.original_file_name == "msedge.exe" and process.code_signature.trusted == true) and
+  not process.hash.sha256 : 
+             ("e68d9768f1d1c2ef2e614dec47e5f0719030073373533603f3e9a914b5607d85", 
+              "ded86974860dd9802db04d92409c05e2ff8b3de7f172c957c34861bbad6a9af3",
+              "4a21f9b556046a31878a3f44e1d210baee7663cc5f9d8e980f67e180a6dd3592")
+  ] by process.parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.16.0"

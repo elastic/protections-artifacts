@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious ImageLoad via Windows Update Auto Update Client"
 os_list = ["windows"]
 reference = ["https://dtm.uk/wuauclt/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -27,11 +27,13 @@ sequence by process.entity_id with maxspan=1m
                   "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*.dll"))]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

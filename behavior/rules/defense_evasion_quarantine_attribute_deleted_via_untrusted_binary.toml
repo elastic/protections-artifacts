@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies a potential Gatekeeper bypass from an unsigned or untrusted binary. In macOS, when applications or programs
+are downloaded from the internet, there is a quarantine flag set on the file. This attribute is read by Apple's
+Gatekeeper defense program at execution time. An adversary may disable this attribute to evade defenses.
+"""
+id = "6e47b750-72c4-4af9-ad7b-0fc846df64d3"
+license = "Elastic License v2"
+name = "Quarantine Attribute Deleted via Untrusted Binary"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "exec" and
+  (process.code_signature.trusted == false or process.code_signature.exists == false)] by process.entity_id
+ [process where event.action == "exec" and
+  process.args : "xattr" and
+  process.name : ("bash", "sh", "zsh", "xattr") and
+  (
+    (process.args : "com.apple.quarantine" and process.args : ("-d", "-w", "-?d", "-?w")) or
+    (process.args : "-c" and process.command_line :
+      (
+        "/bin/bash -c xattr -c *",
+        "/bin/zsh -c xattr -c *",
+        "/bin/sh -c xattr -c *"
+      )
+    )
+  )
+  ] by process.parent.entity_id
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+[[threat.technique.subtechnique]]
+id = "T1553.001"
+name = "Gatekeeper Bypass"
+reference = "https://attack.mitre.org/techniques/T1553/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

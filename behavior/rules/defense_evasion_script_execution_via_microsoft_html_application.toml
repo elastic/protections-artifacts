@@ -7,7 +7,7 @@ id = "f0630213-c4c4-4898-9514-746395eb9962"
 license = "Elastic License v2"
 name = "Script Execution via Microsoft HTML Application"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -52,14 +52,20 @@ process where event.action == "start" and
      /* Execution of HTA file from mounted ISO files */
      (process.pe.original_file_name : "mshta.exe" and
       process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and process.working_directory : "?:\\")
-   )
+   ) and
+
+  /* FPs */
+  not (process.parent.executable : "C:\\Windows\\SysWOW64\\runonce.exe" and
+       process.args : "\"& 'C:\\System.sav\\util\\HpseuHostLauncher.ps1'\"\", 0 : window.close)")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

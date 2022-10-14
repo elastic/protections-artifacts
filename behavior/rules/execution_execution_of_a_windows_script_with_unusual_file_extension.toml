@@ -7,7 +7,7 @@ id = "b76c0a04-b504-4a2f-a0cf-b4175a2f3eea"
 license = "Elastic License v2"
 name = "Execution of a Windows Script with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -16,14 +16,23 @@ process where event.action == "start" and
  not process.command_line : ("*.js*", "*.vb*", "*.wsf*", "*.wsh*", "*.wsc*", "*.tmp*") and
  /* Issue #286 */
  not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and 
- not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "*\\Windows\\system32\\spool\\DRIVERS\\*")
+ not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "*\\Windows\\system32\\spool\\DRIVERS\\*") and
+ not (process.name : "cscript.exe" and process.args : "C:\\PGM_TC~1\\DHL_FR~1\\xls2csv.bat") and
+ not (process.parent.name : "cmd.exe" and
+       process.parent.args :
+            ("C:\\ProgramData\\NinjaRMMAgent\\scripting\\customscript_gen_?.bat-ninjascript.bat",
+             "C:\\Storage\\VisualStudioProjects\\connect_wise_script\\install_speerity.bat",
+             "C:\\PGM_TC~1\\DHL_FR~1\\xls2csv.bat",
+             "M:\\sendkeys.bat Mayer"))
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

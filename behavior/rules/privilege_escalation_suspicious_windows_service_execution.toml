@@ -7,7 +7,7 @@ id = "cd25c529-73b4-4a9d-84a9-e24c4a3540d1"
 license = "Elastic License v2"
 name = "Suspicious Windows Service Execution"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -16,11 +16,13 @@ process where event.action == "start" and
   process.executable : ("\\\\127.0.0.1\\*", "\\Device\\Mup\\*\\c$\\*", "\\Device\\Mup\\*\\ADMIN$\\*")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

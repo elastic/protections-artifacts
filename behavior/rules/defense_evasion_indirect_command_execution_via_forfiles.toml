@@ -1,0 +1,43 @@
+[rule]
+description = """
+Identifies the use of native Windows tool, forfiles to execute a file. Adversaries may abuse utilities that allow for
+command execution to bypass security restrictions that limit the use of command-line interpreters.
+"""
+id = "78afa378-d1c4-4b83-a261-ce1c90f1cbf9"
+license = "Elastic License v2"
+name = "Indirect Command Execution via ForFiles"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Forfiles/"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "forfiles.exe" and process.parent.args : "/c" and
+  process.parent.args : "/p" and process.parent.args : "/m" and
+
+  not process.executable : "?:\\Windows\\System32\\conhost.exe" and
+  not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+  not (process.name : "cmd.exe" and process.args: ("del", "xcopy", "cmd /c del @PATH", "move"))
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1202"
+name = "Indirect Command Execution"
+reference = "https://attack.mitre.org/techniques/T1202/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

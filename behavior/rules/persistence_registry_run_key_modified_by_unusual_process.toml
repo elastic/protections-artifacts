@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Registry Run Key Modified by Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -56,10 +56,13 @@ sequence by process.entity_id with maxspan=1m
               "?:\\Windows\\System32\\PrintIsolationHost.exe",
               "?:\\windows\\syswow64\\d3con.exe",
               "?:\\Windows\\Xerox\\PanelMgr\\SSMMgr.exe",
+              "?:\\Windows\\Dell\\PanelMgr\\SSMMgr.exe",
               "?:\\Windows\\System32\\ZXPPlvAsyncUIClient.exe",
               "?:\\Windows\\System32\\wsmprovhost.exe",
               "?:\\Windows\\System32\\wmiprvse.exe",
-              "?:\\Windows\\System32\\userinit.exe") and
+              "?:\\Windows\\System32\\userinit.exe",
+              "?:\\Windows\\System32\\mmc.exe",
+              "?:\\Windows\\System32\\wiawow64.exe") and
    not (process.name : "rundll32.exe" and process.command_line : ("*\\Windows\\Downloaded Program Files\\*", "*zzzzInvokeManagedCustomActionOutOfProc*")) and
    not (process.name : ("powershell.exe", "cscript.exe", "wscript.exe") and process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")) and
    not (process.pe.original_file_name == "NKHlp.exe" and process.code_signature.subject_name == "DBS AG" and process.code_signature.trusted == true) and
@@ -69,7 +72,8 @@ sequence by process.entity_id with maxspan=1m
         process.code_signature.subject_name : "DBS AG" and process.code_signature.trusted == true) and
    not (process.code_signature.subject_name : "Microsoft Windows Hardware Compatibility Publisher" and process.code_signature.trusted == true) and
    not (process.executable : "?:\\WINDOWS\\system32\\wsl.exe" and process.args : "--install") and
-   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\Speech\\SpeechUX\\sapi.cpl")
+   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\Speech\\SpeechUX\\sapi.cpl") and
+   not (process.name : "regsvr32.exe" and process.args : "?:\\WINDOWS\\system32\\bit4upki-store.dll")
    ]
   [registry where registry.data.strings != null and
     registry.path : (
@@ -94,15 +98,22 @@ sequence by process.entity_id with maxspan=1m
       "*%ProgramFiles%*",
       "rundll32.exe ?:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher",
       "*:\\Program Files (x86)\\*",
-      "*:\\Program Files\\*"
+      "*:\\Program Files\\*",
+      "* --no-startup-window *",
+      "*bit4upki-store.dll*,RunImportServer*",
+      "?:\\Windows\\HideIcon.exe /hideapp",
+      "*Microsoft\\Teams\\Update.exe --processStart *Teams.exe*",
+      "*\\Windows\\system32\\hkcmd.exe*"
     )]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

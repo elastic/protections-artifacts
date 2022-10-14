@@ -1,0 +1,62 @@
+[rule]
+description = """
+Adversaries may use binary padding to add junk data and change the on-disk representation of malware. This can be done
+without affecting the functionality or behavior of a binary, but can increase the size of the binary beyond what some
+security tools are capable of handling due to file size limitations
+"""
+id = "65a402ff-904b-4d14-b7aa-fa0c5ae575f8"
+license = "Elastic License v2"
+name = "Potential Evasion via Oversized Image Load"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1027/001/"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [file where event.action != "deletion" and
+   /* over 100MB in size */
+   file.size >= 100000000 and file.Ext.header_bytes : "4d5a*" and not file.extension : "exe" and
+   not user.id : "S-1-5-18"] by file.path
+ [library where
+    (
+     process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe") or
+     process.executable :
+               ("?:\\Users\\Public\\*",
+                "?:\\ProgramData\\*",
+                "?:\\Windows\\Temp\\*",
+                "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+                "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+                "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
+                "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*")
+     )
+    and not dll.code_signature.trusted == true and
+    not dll.code_signature.status : "errorExpired" and
+    not user.id : "S-1-5-18"] by dll.path
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.001"
+name = "Binary Padding"
+reference = "https://attack.mitre.org/techniques/T1027/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

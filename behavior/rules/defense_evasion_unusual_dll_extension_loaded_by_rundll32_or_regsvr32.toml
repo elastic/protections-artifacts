@@ -7,7 +7,7 @@ id = "76da5dca-ffe5-4756-85ba-3ac2e6ccf623"
 license = "Elastic License v2"
 name = "Unusual DLL Extension Loaded by Rundll32 or Regsvr32"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
@@ -17,23 +17,31 @@ sequence by process.entity_id with maxspan=1s
   not (process.name : "regsvr32.exe" and process.args : "?:\\Program Files (x86)\\DesktopCentral_Agent\\bin\\BSPHelperObject.dll")
   ]
  [library where process.name : ("rundll32.exe", "regsvr32.exe") and
-  not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb") and
+  not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb", "*.scr", "*.dll.mui", "*.ime", "*.tsp", "*.rbf") and
   not (dll.name : ("*.ocx", "*.ax") and process.name : "regsvr32.exe") and
   not dll.code_signature.trusted == true and
   not dll.path : ("?:\\Windows\\System32\\winspool.drv",
                   "?:\\Windows\\SysWOW64\\winspool.drv",
-                  "?:\\Windows\\System32\\liunt.ime",
-                  "?:\\Windows\\SysWOW64\\liunt.ime",
+                  "?:\\Windows\\System32\\*.ime",
+                  "?:\\Windows\\SysWOW64\\*.ime",
                   "?:\\Windows\\System32\\spool\\drivers\\*",
                   "?:\\Program Files (x86)\\*",
-                  "?:\\Program Files\\*")]
+                  "?:\\Program Files\\*",
+                  "?:\\Windows\\SysWOW64\\*.bpl") and
+  not dll.hash.sha256 : ("cfd375eb124d1fba73f2d46705a43ed30e8aaadca7627bab7718f674fb82df38",
+                         "4af03da6cda5d673725b671dbb3fccfc4badc0651af9065216bdcddb0fef7adf",
+                         "bf03c44224a2932e4c12ce02e12059f5c37b7d7ebfbbe4f2603b324c368ba2b9",
+                         "9e318b33d7ae4ece36cdcd345ff6815816f9efcaf9a9b943999c6d80ae043e91")
+  ]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

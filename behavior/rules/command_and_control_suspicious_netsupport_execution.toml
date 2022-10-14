@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious NetSupport Execution"
 os_list = ["windows"]
 reference = ["https://www.netsupportsoftware.com/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -19,11 +19,13 @@ sequence by process.entity_id with maxspan=1m
  [dns where not dns.question.name : "*.netsupportsoftware.com"]
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Windows Command Shell Spawned via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://github.com/danielbohannon/Invoke-DOSfuscation"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -42,11 +42,13 @@ process where event.action == "start" and
   not process.command_line : ("*:\\Program Files\\Tableau\\*--server*http://tableau*", "*:\\Program Files (x86)\\Tableau\\*--server*http://tableau*")
 '''
 
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
 
 [[threat]]
 framework = "MITRE ATT&CK"

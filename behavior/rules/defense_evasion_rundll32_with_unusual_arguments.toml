@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -106,7 +106,8 @@ process where event.action == "start" and process.name : "rundll32.exe" and
               ("?:\\Program Files\\Common Files\\BullGuardInstall\\BullGuard*.exe",
                "?:\\Program Files (x86)\\Intuit\\QuickBooks 20??\\QBW??.EXE",
                "?:\\Program Files\\Intuit\\QuickBooks 2022\\QBW.EXE") and
-  not (user.name : "user" and process.args : "file.dll,#*")
+  not (user.name : "user" and process.args : "file.dll,#*") and
+  not (process.name : "rundll32.exe" and process.args : "uxtheme.dll,#64" and process.args : "?:\\WINDOWS\\Resources\\Themes\\*")
 '''
 
 [[actions]]

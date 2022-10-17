@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution of Commonly Abused Utilities via Explorer Trampoline"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Explorer/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -37,7 +37,8 @@ process where event.action == "start" and
                       "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
                       "?:\\Windows\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
                       "devmgr.dll,DeviceProperties_RunDLL",
-                      "printui.dll,PrintUIEntryDPIAware")
+                      "printui.dll,PrintUIEntryDPIAware",
+                      "?:\\windows\\System32\\srchadmin.dll")
       )
 '''
 

@@ -11,11 +11,12 @@ reference = [
     "https://twitter.com/orange_8361/status/1518970259868626944",
     "https://github.com/CsEnox/EventViewer-UACBypass",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 file where event.action != "deletion" and file.name : "RecentViews" and
  file.path : "?:\\Users\\*\\AppData\\*\\Microsoft\\Event Viewer\\RecentViews" and
+ process.executable != null and
  not process.executable :
             ("?:\\Windows\\System32\\mmc.exe",
              "?:\\Windows\\SysWOW64\\mmc.exe",

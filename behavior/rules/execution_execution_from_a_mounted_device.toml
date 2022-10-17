@@ -7,21 +7,33 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Execution from a Mounted Device"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=3m
- [file where event.action == "mount"] as event0
+ [file where event.action == "mount" and
+  not (process.executable : "/usr/libexec/lsd" and file.path : "/private/var/folders/*/AppTranslocation/*")] as event0
  [process where event.action == "exec" and 
   (startswith (process.args, event0.file.path) or 
    startswith (process.parent.args, event0.file.path)) and 
   
    /* FPs */ 
   not process.executable :
-           ("/sbin/mount_apfs",
+           ("/bin/ls",
+            "/usr/bin/find",
+            "/usr/bin/dirname",
+            "/usr/bin/macbinary",
+            "/usr/bin/arch",
+            "/sbin/mount_apfs",
             "/sbin/umount",
             "/sbin/mount",
             "/usr/libexec/lsd",
+            "/usr/bin/ditto",
+            "/sbin/quotacheck",
+            "/usr/bin/hdiutil",
+            "/usr/sbin/vsdbutil",
+            "/sbin/mount_smbfs",
+            "/System/Library/CoreServices/backupd.bundle/Contents/Resources/brtool",
             "/System/Library/Filesystems/*/Contents/Resources/umount*",
             "/System/Library/Filesystems/*/Contents/Resources/mount*",
             "/Library/Filesystems/*/Contents/Resources/umount*",
@@ -31,7 +43,11 @@ sequence with maxspan=3m
             "/System/Library/Filesystems/hfs.fs/Contents/Resources/mount_hfs",
             "/System/Library/CoreServices/NetAuthAgent.app/Contents/MacOS/NetAuthSysAgent",
             "/System/Library/PrivateFrameworks/MobileSoftwareUpdate.framework/Versions/A/XPCServices/com.apple.MobileSoftwareUpdate.CleanupPreparePathService.xpc/Contents/MacOS/com.apple.MobileSoftwareUpdate.CleanupPreparePathService",
-            "/Library/Application Support/Paragon Software/com.paragon-software.ntfs.notification-agent.app/Contents/MacOS/NotificationAgent")]
+            "/Library/Application Support/Paragon Software/com.paragon-software.ntfs.notification-agent.app/Contents/MacOS/NotificationAgent") and
+
+   /* Slack, Dropbox, Firefox, Teamviewer and many more legit installs - BYOV is a gap that will be covered by other rules */
+   not (process.code_signature.subject_name : "Developer ID Application*" and process.code_signature.trusted == true)
+   ]
 '''
 
 optional_actions = []

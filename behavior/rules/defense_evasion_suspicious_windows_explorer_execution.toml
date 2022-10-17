@@ -7,7 +7,7 @@ id = "f8ec5b76-53cf-4989-b451-7d16abec7298"
 license = "Elastic License v2"
 name = "Suspicious Windows Explorer Execution"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -44,7 +44,10 @@ process where event.action == "start" and
      /* Indirect Command Execution via Explorer */
     (process.name : "explorer.exe" and process.command_line : "*.exe *.exe*" and not process.args : "*/select*" and not process.command_line : "*:\\Program Files*") and
 
-    not process.parent.executable : "?:\\Program Files (x86)\\BleachBit\\bleachbit.exe"
+    not process.parent.executable : "?:\\Program Files (x86)\\BleachBit\\bleachbit.exe" and
+
+    not (process.args : "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}" and process.parent.executable : "?:\\Program Files (x86)\\Realtek\\*\\RIconBoy.exe") and
+    not (process.args : "shell:::{3080F90D-D7AD-11D9-BD98-0000947B0257}" and process.parent.executable : "?:\\Windows\\Explorer.EXE")
     )
 '''
 

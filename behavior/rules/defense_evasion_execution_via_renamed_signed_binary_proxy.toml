@@ -60,6 +60,7 @@ process where event.action == "start" and
   not (process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and process.parent.name : "msiexec.exe")
 '''
 
+min_endpoint_version = "7.15.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

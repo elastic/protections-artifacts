@@ -15,6 +15,7 @@ process where event.action == "start" and
   (process.pe.original_file_name == "CertOC.exe" or process.name : "certoc.exe") and process.args : "-LoadDLL"
 '''
 
+min_endpoint_version = "7.15.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

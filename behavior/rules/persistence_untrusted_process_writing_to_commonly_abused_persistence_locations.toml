@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Untrusted Process Writing to Commonly Abused Persistence Locations"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
   [registry where
-   user.id : "S-1-5-21*" and
+   user.id : ("S-1-5-21*", "S-1-12-*") and
    registry.path :
             ("H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
              "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",

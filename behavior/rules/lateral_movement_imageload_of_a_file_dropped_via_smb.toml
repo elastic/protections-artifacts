@@ -7,13 +7,13 @@ id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
 license = "Elastic License v2"
 name = "ImageLoad of a File dropped via SMB"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5m
   [ file where event.action != "deletion" and
    /* library dropped via SMB */
-   process.pid == 4 and user.id : "S-1-5-21*" and
+   process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
    (file.extension : ("dll", "cpl", "ocx") or file.Ext.header_bytes : "4d5a*")] by file.path
   [ library where
     (process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe", "lsass.exe") or process.executable : "?:\\Windows\\Microsoft.NET\\*.exe") and

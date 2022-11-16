@@ -9,12 +9,14 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via MMC DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=60s
  [registry where
-   registry.path : "HKEY_USERS\\S-1-5-21*\\Environment\\COR_PROFILER_PATH" and
+   registry.path :
+         ("HKEY_USERS\\S-1-5-21*\\Environment\\COR_PROFILER_PATH",
+          "HKEY_USERS\\S-1-12-1-*\\Environment\\COR_PROFILER_PATH") and
    registry.data.strings : "*.dll"]
  [process where event.action == "start" and process.name : "mmc.exe"]
  [process where event.action == "start" and

@@ -4,10 +4,10 @@ id = "49e47c2a-307f-4591-939a-dfdae6e5156c"
 license = "Elastic License v2"
 name = "Execution of a File Written by Windows Script Host"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-sequence with maxspan=1m
+sequence with maxspan=5m
   [file where event.action != "deletion" and
    process.name : ("cscript.exe", "wscript.exe") and
    not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] by file.path

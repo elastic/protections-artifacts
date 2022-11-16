@@ -1,0 +1,41 @@
+[rule]
+description = """
+Identifies registry write modifications to hide an encoded portable executable. This could be indicative of adversary
+defense evasion by avoiding the storing of malicious content directly on disk.
+"""
+id = "38386f44-1e2b-4c03-9d3b-d3bc63482616"
+license = "Elastic License v2"
+name = "Potential Executable Stored in the Registry"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+registry where registry.data.strings : ("TVqQ*", "4d5a90000*") and not length(registry.data.strings) <= 100
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

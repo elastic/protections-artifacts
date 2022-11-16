@@ -1,0 +1,122 @@
+[rule]
+description = """
+Identifies instances of Internet Explorer being started via the Component Object Model (COM) from an unusual caller such
+as scripting interpreters or RunDLL32. Adversaries could abuse Internet Explorer via COM to avoid suspicious processes
+making network connections and bypass host-based firewall restrictions.
+"""
+id = "5e9fdd8b-5412-483c-a2e6-58de59990ae6"
+license = "Elastic License v2"
+name = "Suspicious Command and Control via Internet Explorer"
+os_list = ["windows"]
+reference = ["https://www.fortinet.com/blog/threat-research/new-variant-of-ursnif-continuously-targeting-italy"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+
+ [process where event.action == "start" and
+  (
+   process.name : ("regsvr32.exe", "rundll32.exe", "wscript.exe", "cscript.exe", "powershell.exe", "mshta.exe",
+                   "msbuild.exe", "installutil.exe") or
+   process.pe.original_file_name : ("regsvr32.exe", "rundll32.exe", "wscript.exe", "cscript.exe", "powershell.exe",
+                                    "mshta.exe", "msbuild.exe", "installutil.exe")
+  )] by process.entity_id
+
+ [process where event.action == "start" and process.name : "ielowutil.exe" and
+
+  /* ProgId - InternetExplorer.Application.1 */
+  process.args : "-CLSID:{0002DF01-0000-0000-C000-000000000046}"] by process.Ext.effective_parent.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+[[threat.technique]]
+id = "T1559"
+name = "Inter-Process Communication"
+reference = "https://attack.mitre.org/techniques/T1559/"
+[[threat.technique.subtechnique]]
+id = "T1559.001"
+name = "Component Object Model"
+reference = "https://attack.mitre.org/techniques/T1559/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

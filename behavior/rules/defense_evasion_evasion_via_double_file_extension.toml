@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via Double File Extension"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -35,7 +35,8 @@ process where event.action == "start" and
               "fbd43f9a3567a19427894e61052d1b46f70b7474357ef50de9dc8749fc950509",
               "96234bb98b3266e49ef74ac7accd4644b709355057d5a34b2966e9fa56aadcf3") and
  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true) and
- not (process.code_signature.subject_name : ("AVANQUEST SOFTWARE S.A.S", "Jernej Simončič") and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name : ("AVANQUEST SOFTWARE S.A.S", "Jernej Simončič") and process.code_signature.trusted == true) and 
+ not process.executable : ("?:\\Program Files (x86)\\PlotSoft\\PDFill_PDF_Tools\\PlotSoft_PDF.exe", "?:\\Program Files\\Ab Initio\\Ab Initio GDE 4.1.4.0\\Program Files\\ab_zip.exe")
 '''
 
 [[actions]]

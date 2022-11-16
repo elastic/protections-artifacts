@@ -11,12 +11,14 @@ reference = [
     "https://www.elastic.co/blog/playing-defense-against-gamaredon-group",
     "https://stigviewer.com/stig/microsoft_powerpoint_2007/2014-04-03/finding/V-17522",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by user.id with maxspan=1m
    [registry where event.type == "change" and
-    registry.path : "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM" and
+    registry.path :
+          ("HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+           "HKEY_USERS\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM") and
     registry.data.strings == "1"]
    [process where event.action == "start" and
     (process.parent.name :("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and

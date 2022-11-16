@@ -8,12 +8,15 @@ license = "Elastic License v2"
 name = "UAC Bypass via WSReset Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=60s
  [registry where
-  registry.path : ("HKEY_USERS\\S-1-5-21-*Classes\\*\\Shell\\open\\command\\DelegateExecute", "*\\ms-windows-store*")]
+  registry.path :
+      ("HKEY_USERS\\S-1-5-21-*Classes\\*\\Shell\\open\\command\\DelegateExecute",
+       "HKEY_USERS\\S-1-12-1-*Classes\\*\\Shell\\open\\command\\DelegateExecute",
+       "*\\ms-windows-store*")]
  [process where event.action == "start" and process.parent.name : "WSReset.exe" and
   process.Ext.token.integrity_level_name == "high" and
   not process.executable :

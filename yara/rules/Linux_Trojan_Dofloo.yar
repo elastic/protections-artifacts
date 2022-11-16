@@ -58,23 +58,3 @@ rule Linux_Trojan_Dofloo_29c12775 {
         all of them
 }
 
-rule Linux_Trojan_Dofloo_ac3333d1 {
-    meta:
-        author = "Elastic Security"
-        id = "ac3333d1-df88-459b-a411-00b4fc947f3f"
-        fingerprint = "a8f360e2a545e65b5f9f2273715c1a5008a0fe4f88f6e14becd6e69158aab409"
-        creation_date = "2022-01-05"
-        last_modified = "2022-01-26"
-        threat_name = "Linux.Trojan.Dofloo"
-        reference = "04664dc5ea14ddff5301e66c46d6795f1582c148b5cb621248424d015245c95e"
-        severity = "100"
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "linux"
-    strings:
-        $a = { 76 77 78 95 5C C9 95 79 7A C9 95 5C C9 41 42 43 5C C9 95 5C 44 45 }
-    condition:
-        all of them
-}
-

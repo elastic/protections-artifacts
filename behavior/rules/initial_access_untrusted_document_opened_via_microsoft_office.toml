@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m
@@ -56,11 +56,12 @@ sequence with maxspan=1m
            "Google LLC",
            "Brave Software, Inc.",
            "Opera Norway AS",
+           "Bloomberg LP",
            "Microsoft Windows Hardware Compatibility Publisher") and
        process.code_signature.trusted == true) and
   not (process.name : "rundll32.exe" and
        process.args : ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*,MonitorPrintJobStatus", "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile")) and
-  not (process.pe.original_file_name == "msedge.exe" and process.code_signature.trusted == true) and
+  not (process.pe.original_file_name : ("msedge.exe", "FileCoAuth.exe") and process.code_signature.trusted == true) and
   not process.hash.sha256 : 
              ("e68d9768f1d1c2ef2e614dec47e5f0719030073373533603f3e9a914b5607d85", 
               "ded86974860dd9802db04d92409c05e2ff8b3de7f172c957c34861bbad6a9af3",

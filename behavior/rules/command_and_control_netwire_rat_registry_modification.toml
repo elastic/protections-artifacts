@@ -8,13 +8,16 @@ license = "Elastic License v2"
 name = "NetWire RAT Registry Modification"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/software/S0198/", "https://any.run/malware-trends/netwire"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 registry where
    registry.path : (
       "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\NetWire\\HostId",
-      "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\NetWire\\Install Date")
+      "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\NetWire\\Install Date",
+      "HKEY_USERS\\S-1-12-1-*\\SOFTWARE\\NetWire\\HostId",
+      "HKEY_USERS\\S-1-12-1-*\\SOFTWARE\\NetWire\\Install Date"
+      )
 '''
 
 [[actions]]

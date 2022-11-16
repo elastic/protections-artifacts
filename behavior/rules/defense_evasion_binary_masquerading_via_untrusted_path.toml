@@ -8,11 +8,12 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
-  process.name : (
+  (
+   process.name : (
     "at.exe",
     "atbroker.exe",
     "arp.exe",
@@ -73,7 +74,10 @@ process where event.action == "start" and
     "systeminfo.exe",
     "VsJITDebugger.exe",
     "extexport.exe",
-    "extexport.exe") and
+    "extexport.exe") or
+    (process.pe.original_file_name == "bsdtar" and process.name : "tar.exe" and process.code_signature.subject_name == "Microsoft Windows")
+    )
+    and
     
   not process.executable : (
     "?:\\Windows\\System32\\*.exe",

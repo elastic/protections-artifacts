@@ -1879,3 +1879,123 @@ rule Linux_Trojan_Mirai_8aa7b5d3 {
         all of them
 }
 
+rule Linux_Trojan_Mirai_76908c99 {
+    meta:
+        author = "Elastic Security"
+        id = "76908c99-e350-4dbb-9559-27cbe05f55f9"
+        fingerprint = "1741b0c2121e3f73bf7e4f505c4661c95753cbf7e0b7a1106dc4ea4d4dd73d6c"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "533a90959bfb337fd7532fb844501fd568f5f4a49998d5d479daf5dfbd01abb2"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { 64 24 F8 48 89 04 24 48 8B C6 48 8B 34 24 48 87 CF 48 8B 4C }
+    condition:
+        all of them
+}
+
+rule Linux_Trojan_Mirai_1538ce1a {
+    meta:
+        author = "Elastic Security"
+        id = "1538ce1a-7078-4be3-bd69-7e692a1237f5"
+        fingerprint = "f3d82cae74db83b7a49c5ec04d1a95c3b17ab1b935de24ca5c34e9b99db36803"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "2382996a8fd44111376253da227120649a1a94b5c61739e87a4e8acc1130e662"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { FD 00 00 00 FD 34 FD FD 04 40 FD 04 FD FD 7E 14 FD 78 14 1F 0F }
+    condition:
+        all of them
+}
+
+rule Linux_Trojan_Mirai_07b1f4f6 {
+    meta:
+        author = "Elastic Security"
+        id = "07b1f4f6-9324-48ab-9086-b738fdaf47c3"
+        fingerprint = "bebafc3c8e68b36c04dc9af630b81f9d56939818d448759fdd83067e4c97e87a"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "2382996a8fd44111376253da227120649a1a94b5c61739e87a4e8acc1130e662"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { FD 08 FD 5C 24 48 66 FD 07 66 FD 44 24 2E 66 FD FD 08 66 FD 47 }
+    condition:
+        all of them
+}
+
+rule Linux_Trojan_Mirai_feaa98ff {
+    meta:
+        author = "Elastic Security"
+        id = "feaa98ff-6cd9-40bb-8c4f-ea7c79b272f3"
+        fingerprint = "0bc8ba390a11e205624bc8035b1d1e22337a5179a81d354178fa2546c61cdeb0"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "2382996a8fd44111376253da227120649a1a94b5c61739e87a4e8acc1130e662"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { 0F FD FD FD FD FD FD 7A 03 41 74 5E 42 31 FD FD 6E FD FD FD FD }
+    condition:
+        all of them
+}
+
+rule Linux_Trojan_Mirai_3acd6ed4 {
+    meta:
+        author = "Elastic Security"
+        id = "3acd6ed4-6d62-47af-8d80-d5465abce38a"
+        fingerprint = "e787989c37c26d4bb79c235150a08bbf3c4c963e2bc000f9a243a09bbf1f59cb"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "2644447de8befa1b4fe39b2117d49754718a2f230d6d5f977166386aa88e7b84"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { E5 7E 44 4C 89 E3 31 FF 48 C1 E3 05 48 03 5D 38 48 89 2B 44 88 }
+    condition:
+        all of them
+}
+
+rule Linux_Trojan_Mirai_eb940856 {
+    meta:
+        author = "Elastic Security"
+        id = "eb940856-60d2-4148-9126-aac79a24828e"
+        fingerprint = "01532c6feda3487829ad005232d30fe7dde5e37fd7cecd2bb9586206554c90a7"
+        creation_date = "2022-09-12"
+        last_modified = "2022-10-18"
+        threat_name = "Linux.Trojan.Mirai"
+        reference_sample = "fbf814c04234fc95b6a288b62fb9513d6bbad2e601b96db14bb65ab153e65fef"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { 84 24 80 00 00 00 31 C9 EB 23 48 89 4C 24 38 48 8D 84 24 C8 00 }
+    condition:
+        all of them
+}
+

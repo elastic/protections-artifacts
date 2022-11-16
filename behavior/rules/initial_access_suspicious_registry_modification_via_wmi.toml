@@ -1,0 +1,217 @@
+[rule]
+description = """
+Identifies use of the Windows Management Instrumentation StdRegProv provider to modify a certain registry key and from
+an unusual WMI client process. Adversaries may abuse WMI to proxy registry modification via WmiPrvSE.exe and evade
+defenses monitoring registry modification by suspicious processes.
+"""
+id = "5679047e-6a60-47eb-88c8-6bd3421d5d34"
+license = "Elastic License v2"
+name = "Suspicious Registry Modification via WMI"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/regprov/stdregprov"]
+version = "1.0.2"
+
+query = '''
+registry where event.action== "modification" and
+ process.name :"WmiPrvSE.exe" and
+   (
+     Effective_process.name :
+                    ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "winword.exe", "excel.exe", "powerpnt.exe",
+                     "powershell.exe") or
+
+     Effective_process.executable :
+         ("?:\\Users\\Public\\*",
+          "?:\\Users\\*\\AppData\\Roaming\\*",
+          "?:\\ProgramData\\*",
+          "?:\\Windows\\Microsoft.NET\\*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
+          "\\Device\\CdRom*",
+          "\\Device\\Mup\\*",
+          "\\\\*")
+   ) and
+   
+   registry.path : (
+      /* Persistence */
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+     "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+     "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\\*",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell\\*", 
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\Install\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\*",  
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\Install\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Runonce\\*", 
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Run",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\IconServiceLib",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\AppSetup",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Taskman",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Userinit",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\VmApplet",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+     "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+     "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+     "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+     "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+     "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+     "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+     "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+     "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+     "HKLM\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components\\*\\ShellComponent",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows CE Services\\AutoStartOnConnect\\MicrosoftActiveSync",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows CE Services\\AutoStartOnDisconnect\\MicrosoftActiveSync",
+     "HKLM\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+     "HKLM\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+     "HKLM\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Script",
+     "HKLM\\SOFTWARE\\Microsoft\\Command Processor\\Autorun",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Script",
+     "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\*\\VerifierDlls",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\GpExtensions\\*\\DllName",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\SafeBoot\\AlternateShell",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Terminal Server\\Wds\\rdpwd\\StartupPrograms",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Terminal Server\\WinStations\\RDP-Tcp\\InitialProgram",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Session Manager\\BootExecute",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Session Manager\\SetupExecute",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Session Manager\\Execute",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\Session Manager\\S0InitialCommand",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\ServiceControlManagerExtension",
+     "HKLM\\SYSTEM\\ControlSet*\\Control\\BootVerificationProgram\\ImagePath",
+     "HKLM\\SYSTEM\\Setup\\CmdLine",
+     "HKEY_USERS\\*\\Environment\\UserInitMprLogonScript", 
+     "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ServiceDLL", 
+     "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath", 
+     "HKEY_USERS\\*Classes\\*\\InprocServer32\\", 
+     "HKEY_USERS\\*Classes\\*\\LocalServer32\\", 
+     "HKEY_USERS\\*Classes\\*\\DelegateExecute\\", 
+     "HKEY_USERS\\*Classes\\*\\TreatAs\\", 
+     
+     /* Evasion */ 
+     "HK*\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM", 
+     "HK*\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings",
+     "HK*\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\AccessVBOM",
+     "HK*\\S-1-12-1-*\\SOFTWARE\\Microsoft\\Office\\*\\Security\\VbaWarnings",
+     "HKEY_USERS\\*\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable", 
+     "HK*\\*\\Software\\Microsoft\\Windows Script\\Settings\\AmsiEnable", 
+     "HKEY_USERS\\*Classes\\CLSID\\*\\ScriptletURL\\", 
+     "HKEY_USERS\\S-1-5-21-*_Classes\\CLSID\\*\\LocalServer32\\",
+     "HKEY_USERS\\S-1-12-1-*_Classes\\CLSID\\*\\LocalServer32\\",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
+     "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA"
+     )
+'''
+
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.004"
+name = "InstallUtil"
+reference = "https://attack.mitre.org/techniques/T1218/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.009"
+name = "Regsvcs/Regasm"
+reference = "https://attack.mitre.org/techniques/T1218/009/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

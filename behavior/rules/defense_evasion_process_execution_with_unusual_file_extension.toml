@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies the creation of a process with an unusual file extension (3 to 3 chars) and from the most commonly abused
+Windows processes for initial access. Attackers may attempt to evade detection by masquerading files using the file
+extension values used by image, logs, or document file types.
+"""
+id = "6daf97b0-8e29-476b-998a-c3d168d98506"
+license = "Elastic License v2"
+name = "Process Execution with Unusual File Extension"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+
+ /* 3 to 4 chars to match on common file extensions length */
+ process.name regex~ """.+\.[a-z]{3,4}""" and
+
+ /* excluding common or noisy file extensions */
+  not process.name regex~ """.+\.(exe|scr|pif|com|tmp|bin|dll|sys|dat|upd|cgi|out|pro|ngn|dep|cxp|axp|srv)""" and
+
+ /* most common parents observed in malware behavior */
+  process.parent.name : ("cmd.exe", "powershell.exe", "WmiPrvSe.exe", "winword.exe", "excel.exe", "wscript.exe", "cscript.exe", "mshta.exe")
+'''
+
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.007"
+name = "Double File Extension"
+reference = "https://attack.mitre.org/techniques/T1036/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

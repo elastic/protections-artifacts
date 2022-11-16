@@ -1,0 +1,92 @@
+[rule]
+description = """
+Identifies the creation of a scheduled task by an unusual process such as script interpreters or recently dropped
+unsigned executables. This behavior is consistent with an adversary attempting to establish persistence.
+"""
+id = "cb5fdbe3-84fa-4277-a967-1ffc0e8d3d25"
+license = "Elastic License v2"
+name = "Scheduled Task Creation by an Unusual Process"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+   [process where event.action == "start" and
+    (
+     /* common initial access processes */
+     process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "winword.exe", "excel.exe", "powerpnt.exe",
+                     "powershell.exe")  or
+
+    /* unsigned or untrusted codesign */
+    ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+      (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300)) or
+
+    /* common abused paths */
+    process.executable :
+         ("?:\\Users\\Public\\*",
+          "?:\\Users\\*\\AppData\\Roaming\\*",
+          "?:\\ProgramData\\*",
+          "?:\\Windows\\Microsoft.NET\\*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
+          "\\Device\\CdRom*",
+          "\\Device\\Mup\\*",
+          "\\\\*") or
+
+    /* execution from a mounted device */
+    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")
+    ) and
+
+    /* known FPs */
+    not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and process.parent.name : "msiexec.exe") and
+    not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+    not (process.code_signature.trusted == true and process.executable : ("?:\\Users\\*\\AppData\\Roaming\\*", "?:\\ProgramData\\*")) and
+    not (process.name : "rundll32.exe" and process.args : "tsworkspace,TaskUpdateWorkspaces")
+   ] by process.entity_id
+   [file where event.action : "creation" and process.name : "svchost.exe" and
+    file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and
+
+    /* excluding via Powershell cmdline is also vulnerable to evasion */
+    not (Effective_process.name : "powershell.exe" and
+          file.path :
+             ("?:\\WINDOWS\\System32\\Tasks\\PSWindowsUpdate",
+              "?:\\Windows\\System32\\Tasks\\npcapwatchdog",
+              "?:\\Windows\\System32\\Tasks\\ChocoUpgrade",
+              "?:\\Windows\\System32\\Tasks\\ansible-ansible.windows.win_updates",
+              "?:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\PowerShell\\ScheduledJobs\\ansible-win-updates"))
+    ] by Effective_process.entity_id
+'''
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.005"
+name = "Scheduled Task"
+reference = "https://attack.mitre.org/techniques/T1053/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

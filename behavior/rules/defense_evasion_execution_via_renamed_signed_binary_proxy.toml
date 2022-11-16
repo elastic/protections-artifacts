@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Renamed Signed Binary Proxy"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -40,7 +40,9 @@ process where event.action == "start" and
        (process.pe.original_file_name == "VsJITDebugger.exe" and not process.name : "VsJITDebugger.exe") or
        (process.pe.original_file_name == "xwizard.exe" and not process.name : "xwizard.exe") or
        (process.pe.original_file_name == "extexport.exe" and not process.name : "extexport.exe") or
-       (process.pe.original_file_name == "CertReq.exe" and not process.name : "CertReq.exe")
+       (process.pe.original_file_name == "CertReq.exe" and not process.name : "CertReq.exe") or
+       (process.pe.original_file_name == "bsdtar" and not process.name : "tar.exe" and
+        process.code_signature.subject_name == "Microsoft Windows")
      ) and
  /* some third party programs tend to include renamed binaries, still often run from trusted paths */
  not process.executable :

@@ -12,14 +12,14 @@ reference = [
     "https://www.ired.team/offensive-security/persistence/hijacking-default-file-extension",
     "https://www.binarydefense.com/mars-deimos-solarmarker-jupyter-infostealer-part-1/",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and 
    process.name : ("reg.exe", "powershell.exe", "msiexec.exe")]
  [registry where
-  registry.path : "HKEY_USERS\\S-1-5-21-*Classes\\*\\shell\\open\\command*" and
+  registry.path : ("HKEY_USERS\\S-1-5-21-*Classes\\*\\shell\\open\\command*", "HKEY_USERS\\S-1-12-1-*Classes\\*\\shell\\open\\command*") and
 
   /* Command value contains PowerShell and its length is greater or equal than 200 chars */
   registry.data.strings : "*PowerShell*" and length(registry.data.strings) >= 200]

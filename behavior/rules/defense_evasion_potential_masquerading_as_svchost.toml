@@ -7,7 +7,7 @@ id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
 license = "Elastic License v2"
 name = "Potential Masquerading as SVCHOST"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -36,7 +36,9 @@ process where event.action == "start" and
 	"\\Device\\HarddiskVolume?\\Windows\\*\\rpcnet*.exe",
 	"\\Device\\HarddiskVolume?\\Windows\\system32\\MRT.exe",
 	"\\Device\\HarddiskVolume?\\Program Files*\\Unity Client\\Unity.exe",
-	"\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe"
+	"\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe",
+	"?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe",
+	"?:\\Program Files (x86)\\Microsoft Security Client\\Antimalware\\MsMpEng.exe"
 	) and
   not (process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.executable : "?:\\Windows\\syswow64\\svchost.exe") and
   not (process.parent.executable :

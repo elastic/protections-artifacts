@@ -1,5 +1,6 @@
 rule MacOS_Backdoor_Useragent_1a02fc3a {
     meta:
+        author = "Elastic Security"
         id = "1a02fc3a-a394-457b-8af5-99f7f22b0a3b"
         fingerprint = "22afa14a3dc6f8053b93bf3e971d57808a9cc19e676f9ed358ba5f1db9292ba4"
         creation_date = "2021-11-11"

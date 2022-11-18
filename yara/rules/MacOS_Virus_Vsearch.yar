@@ -1,5 +1,6 @@
 rule MacOS_Virus_Vsearch_0dd3ec6f {
     meta:
+        author = "Elastic Security"
         id = "0dd3ec6f-815f-40e1-bd53-495e0eae8196"
         fingerprint = "8adbd06894e81dc09e46d8257d4e5fcd99e714f54ffb36d5a8d6268ea25d0bd6"
         creation_date = "2021-10-05"
@@ -18,6 +19,7 @@ rule MacOS_Virus_Vsearch_0dd3ec6f {
 
 rule MacOS_Virus_Vsearch_2a0419f8 {
     meta:
+        author = "Elastic Security"
         id = "2a0419f8-95b2-4f87-a37a-ee0b65e344e9"
         fingerprint = "2da9f0fc05bc8e23feb33b27142f46fb437af77766e39889a02ea843d52d17eb"
         creation_date = "2021-10-05"

@@ -1,5 +1,6 @@
 rule Multi_EICAR_ac8f42d6 {
     meta:
+        author = "Elastic Security"
         id = "ac8f42d6-52da-46ec-8db1-5a5f69222a38"
         fingerprint = "bb0e0bdf70ec65d98f652e2428e3567013d5413f2725a2905b372fd18da8b9dd"
         creation_date = "2021-01-21"

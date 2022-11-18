@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Amcleaner_445bb666 {
     meta:
+        author = "Elastic Security"
         id = "445bb666-1707-4ad9-a409-4a21de352957"
         fingerprint = "355c7298a4148be3b80fd841b483421bde28085c21c00d5e4a42949fd8026f5b"
         creation_date = "2021-10-05"
@@ -19,6 +20,7 @@ rule MacOS_Trojan_Amcleaner_445bb666 {
 
 rule MacOS_Trojan_Amcleaner_a91d3907 {
     meta:
+        author = "Elastic Security"
         id = "a91d3907-5e24-46c0-90ef-ed7f46ad8792"
         fingerprint = "c020567fde77a72d27c9c06f6ebb103f910321cc7a1c3b227e0965b079085b49"
         creation_date = "2021-10-05"
@@ -38,6 +40,7 @@ rule MacOS_Trojan_Amcleaner_a91d3907 {
 
 rule MacOS_Trojan_Amcleaner_8ce3fea8 {
     meta:
+        author = "Elastic Security"
         id = "8ce3fea8-3cc7-4c59-b07c-a6dda0bb6b85"
         fingerprint = "e156d3c7a55cae84481df644569d1c5760e016ddcc7fd05d0f88fa8f9f9ffdae"
         creation_date = "2021-10-05"

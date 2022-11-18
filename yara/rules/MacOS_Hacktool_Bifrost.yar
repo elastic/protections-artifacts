@@ -1,5 +1,6 @@
 rule MacOS_Hacktool_Bifrost_39bcbdf8 {
     meta:
+        author = "Elastic Security"
         id = "39bcbdf8-86dc-480e-8822-dc9832bb9b55"
         fingerprint = "e11f6f3a847817644d40fee863e168cd2a18e8e0452482c1e652c11fe8dd769e"
         creation_date = "2021-10-12"

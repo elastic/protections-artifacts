@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Eggshell_ddacf7b9 {
     meta:
+        author = "Elastic Security"
         id = "ddacf7b9-8479-47ef-9df2-17060578a8e5"
         fingerprint = "2e6284c8e44809d5f88781dcf7779d1e24ce3aedd5e8db8598e49c01da63fe62"
         creation_date = "2021-09-30"

@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Generic_a829d361 {
     meta:
+        author = "Elastic Security"
         id = "a829d361-ac57-4615-b8e9-16089c44d7af"
         fingerprint = "5dba43dbc5f4d5ee295e65d66dd4e7adbdb7953232faf630b602e6d093f69584"
         creation_date = "2021-10-05"

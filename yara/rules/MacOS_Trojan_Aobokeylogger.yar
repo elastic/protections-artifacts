@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Aobokeylogger_bd960f34 {
     meta:
+        author = "Elastic Security"
         id = "bd960f34-1932-41be-ac0a-f45ada22c560"
         fingerprint = "ae26a03d1973669cbeaabade8f3fd09ef2842b9617fa38e7b66dc4726b992a81"
         creation_date = "2021-10-18"

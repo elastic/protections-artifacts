@@ -1,5 +1,6 @@
 rule MacOS_Virus_Pirrit_271b8ed0 {
     meta:
+        author = "Elastic Security"
         id = "271b8ed0-937a-4be6-aecb-62535b5aeda7"
         fingerprint = "12b09b2e3a43905db2cfe96d0fd0e735cfc7784ee7b03586c5d437d7c6a1b422"
         creation_date = "2021-10-05"

@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Thiefquest_9130c0f3 {
     meta:
+        author = "Elastic Security"
         id = "9130c0f3-5926-4153-87d8-85a591eed929"
         fingerprint = "38916235c68a329eea6d41dbfba466367ecc9aad2b8ae324da682a9970ec4930"
         creation_date = "2021-09-30"
@@ -22,6 +23,7 @@ rule MacOS_Trojan_Thiefquest_9130c0f3 {
 
 rule MacOS_Trojan_Thiefquest_fc2e1271 {
     meta:
+        author = "Elastic Security"
         id = "fc2e1271-3c96-4c93-9e3d-212782928e6e"
         fingerprint = "195e8f65e4ea722f0e1ba171f2ad4ded97d4bc97da38ef8ac8e54b8719e4c5ae"
         creation_date = "2021-10-05"
@@ -41,6 +43,7 @@ rule MacOS_Trojan_Thiefquest_fc2e1271 {
 
 rule MacOS_Trojan_Thiefquest_86f9ef0c {
     meta:
+        author = "Elastic Security"
         id = "86f9ef0c-832e-4e4a-bd39-c80c1d064dbe"
         fingerprint = "e8849628ee5449c461f1170c07b6d2ebf4f75d48136f26b52bee9bcf4e164d5b"
         creation_date = "2021-10-05"
@@ -60,6 +63,7 @@ rule MacOS_Trojan_Thiefquest_86f9ef0c {
 
 rule MacOS_Trojan_Thiefquest_40f9c1c3 {
     meta:
+        author = "Elastic Security"
         id = "40f9c1c3-29f8-4699-8f66-9b7ddb08f92d"
         fingerprint = "27ec200781541d5b1abc96ffbb54c428b773bffa0744551bbacd605c745b6657"
         creation_date = "2021-10-05"
@@ -79,6 +83,7 @@ rule MacOS_Trojan_Thiefquest_40f9c1c3 {
 
 rule MacOS_Trojan_Thiefquest_0f9fe37c {
     meta:
+        author = "Elastic Security"
         id = "0f9fe37c-77df-4d3d-be8a-c62ea0f6863c"
         fingerprint = "2e809d95981f0ff813947f3be22ab3d3c000a0d348131d5d6c8522447818196d"
         creation_date = "2021-10-05"
@@ -98,6 +103,7 @@ rule MacOS_Trojan_Thiefquest_0f9fe37c {
 
 rule MacOS_Trojan_Thiefquest_1f4bac78 {
     meta:
+        author = "Elastic Security"
         id = "1f4bac78-ef2b-49cd-8852-e84d792f6e57"
         fingerprint = "e7d1e2009ff9b33d2d237068e2af41a8aa9bd44a446a2840c34955594f060120"
         creation_date = "2021-10-05"

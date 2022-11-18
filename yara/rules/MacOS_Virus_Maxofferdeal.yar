@@ -1,5 +1,6 @@
 rule MacOS_Virus_Maxofferdeal_53df500f {
     meta:
+        author = "Elastic Security"
         id = "53df500f-3add-4d3d-aec3-35b7b5aa5b35"
         fingerprint = "2f41de7b8e55ef8db39bf84c0f01f8d34d67b087769b84381f2ccc3778e13b08"
         creation_date = "2021-10-05"
@@ -19,6 +20,7 @@ rule MacOS_Virus_Maxofferdeal_53df500f {
 
 rule MacOS_Virus_Maxofferdeal_f4681eba {
     meta:
+        author = "Elastic Security"
         id = "f4681eba-20f5-4e92-9f99-00cd57412c45"
         fingerprint = "b6663c326e9504510b804bd9ff0e8ace5d98826af2bb2fa2429b37171b7f399d"
         creation_date = "2021-10-05"
@@ -38,6 +40,7 @@ rule MacOS_Virus_Maxofferdeal_f4681eba {
 
 rule MacOS_Virus_Maxofferdeal_4091e373 {
     meta:
+        author = "Elastic Security"
         id = "4091e373-c3a9-41c8-a1d8-3a77585ff850"
         fingerprint = "3d8e7db6c39286d9626c6be8bfb5da177a6a4f8ffcec83975a644aaac164a8c7"
         creation_date = "2021-10-05"
@@ -57,6 +60,7 @@ rule MacOS_Virus_Maxofferdeal_4091e373 {
 
 rule MacOS_Virus_Maxofferdeal_20a0091e {
     meta:
+        author = "Elastic Security"
         id = "20a0091e-a3ef-4a13-ba92-700f3583e06d"
         fingerprint = "1629b34b424816040066122592e56e317b204f3d5de2f5e7f68114c7a48d99cb"
         creation_date = "2021-10-05"

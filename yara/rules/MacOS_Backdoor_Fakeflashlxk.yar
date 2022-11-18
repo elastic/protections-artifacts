@@ -1,5 +1,6 @@
 rule MacOS_Backdoor_Fakeflashlxk_06fd8071 {
     meta:
+        author = "Elastic Security"
         id = "06fd8071-0370-4ae8-819a-846fa0a79b3d"
         fingerprint = "a0e6763428616b46536c6a4eb080bae0cc58ef27678616aa432eb43a3d9c77a1"
         creation_date = "2021-11-11"

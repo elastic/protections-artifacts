@@ -1,5 +1,6 @@
 rule MacOS_Backdoor_Applejeus_31872ae2 {
     meta:
+        author = "Elastic Security"
         id = "31872ae2-f6df-4079-89c2-866cb2e62ec8"
         fingerprint = "24b78b736f691e6b84ba88b0bb47aaba84aad0c0e45cf70f2fa8c455291517df"
         creation_date = "2021-10-18"

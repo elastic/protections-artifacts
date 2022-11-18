@@ -1,5 +1,6 @@
 rule MacOS_Cryptominer_Xmrig_241780a1 {
     meta:
+        author = "Elastic Security"
         id = "241780a1-ad50-4ded-b85a-26339ae5a632"
         fingerprint = "be9c56f18e0f0bdc8c46544039b9cb0bbba595c1912d089b2bcc7a7768ac04a8"
         creation_date = "2021-09-30"

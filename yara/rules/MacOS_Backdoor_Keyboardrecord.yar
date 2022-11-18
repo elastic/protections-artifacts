@@ -1,5 +1,6 @@
 rule MacOS_Backdoor_Keyboardrecord_832f7bac {
     meta:
+        author = "Elastic Security"
         id = "832f7bac-3896-4934-b05f-8215a41cca74"
         fingerprint = "27aa4380bda0335c672e957ba2ce6fd1f42ccf0acd2eff757e30210c3b4fb2fa"
         creation_date = "2021-11-11"

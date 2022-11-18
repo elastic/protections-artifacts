@@ -1,5 +1,6 @@
 rule MacOS_Trojan_Getshell_f339d74c {
     meta:
+        author = "Elastic Security"
         id = "f339d74c-36f1-46e5-bf7d-22f49a0948a5"
         fingerprint = "fad5ca4f345c2c01a3d222f59bac8d5dacf818d4e018c8d411d86266a481a1a1"
         creation_date = "2021-10-05"

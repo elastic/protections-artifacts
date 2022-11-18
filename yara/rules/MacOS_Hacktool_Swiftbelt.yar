@@ -1,5 +1,6 @@
 rule MacOS_Hacktool_Swiftbelt_bc62ede6 {
     meta:
+        author = "Elastic Security"
         id = "bc62ede6-e6f1-4c9e-bff2-ef55a5d12ba1"
         fingerprint = "98d14dba562ad68c8ecc00780ab7ee2ecbe912cd00603fff0eb887df1cd12fdb"
         creation_date = "2021-10-12"

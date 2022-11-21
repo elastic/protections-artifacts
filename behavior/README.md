@@ -17,33 +17,34 @@ Another example of our commitment to openness in security is our existing public
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.13', '1.0.12') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.16', '1.0.13') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |         1 |       0 |       2 |                 3 |
-| Defense Evasion      |         9 |       0 |       3 |                12 |
-| Execution            |         3 |       0 |       1 |                 4 |
-| Initial Access       |         4 |       0 |       1 |                 5 |
-| Persistence          |         1 |       0 |       2 |                 3 |
-| Privilege Escalation |         1 |       0 |       1 |                 2 |
-| Total by OS          |        19 |       0 |      10 |                29 |
+| Command and Control  |         1 |       0 |       0 |                 1 |
+| Credential Access    |         1 |       0 |       0 |                 1 |
+| Defense Evasion      |         3 |       0 |       0 |                 3 |
+| Execution            |         1 |       0 |       0 |                 1 |
+| Initial Access       |         1 |       0 |       0 |                 1 |
+| Persistence          |         3 |       0 |       1 |                 4 |
+| Privilege Escalation |         1 |       0 |       0 |                 1 |
+| Total by OS          |        11 |       0 |       1 |                12 |
 
-Latest Total Production Rules by OS/MITRE Tactic (1.0.13)
+Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |        10 |       0 |       4 |                14 |
-| Credential Access    |        24 |       0 |       4 |                28 |
-| Defense Evasion      |        62 |       0 |      10 |                72 |
+| Command and Control  |        11 |       0 |       4 |                15 |
+| Credential Access    |        25 |       0 |       4 |                29 |
+| Defense Evasion      |        65 |       0 |      10 |                75 |
 | Discovery            |         2 |       1 |       2 |                 5 |
-| Execution            |        28 |       4 |      10 |                42 |
+| Execution            |        29 |       4 |       9 |                42 |
 | Impact               |        13 |       1 |       1 |                15 |
-| Initial Access       |        30 |       0 |       2 |                32 |
+| Initial Access       |        31 |       0 |       2 |                33 |
 | Lateral Movement     |         5 |       0 |       1 |                 6 |
-| Persistence          |        18 |       0 |       6 |                24 |
-| Privilege Escalation |        37 |       2 |       5 |                44 |
-| Total by OS          |       229 |       8 |      45 |               282 |
+| Persistence          |        21 |       0 |       7 |                28 |
+| Privilege Escalation |        38 |       2 |       5 |                45 |
+| Total by OS          |       240 |       8 |      45 |               293 |
 
 ### Licensing
 These rules are licensed under the Elastic License v2. All rules have been designed to be used in the context of the Elastic Endpoint within the Elastic Security application.

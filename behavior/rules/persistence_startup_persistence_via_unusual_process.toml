@@ -7,7 +7,7 @@ id = "95d13ce1-ffb2-4be8-a56e-cc9a891e81e2"
 license = "Elastic License v2"
 name = "Startup Persistence via Unusual Process"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 file where event.action != "deletion" and
@@ -46,6 +46,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

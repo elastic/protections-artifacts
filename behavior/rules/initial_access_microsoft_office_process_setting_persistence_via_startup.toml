@@ -7,7 +7,7 @@ id = "2b8ea430-897d-486c-85a8-add9d7072ff3"
 license = "Elastic License v2"
 name = "Microsoft Office Process Setting Persistence via Startup"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 file where event.action != "deletion" and
@@ -24,6 +24,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

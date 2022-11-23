@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via Control Panel Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=1m
@@ -29,6 +29,8 @@ state = 2
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 2
 
 [[threat]]
 framework = "MITRE ATT&CK"

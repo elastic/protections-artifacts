@@ -12,7 +12,7 @@ reference = [
     "https://www.ired.team/offensive-security/persistence/hijacking-default-file-extension",
     "https://www.binarydefense.com/mars-deimos-solarmarker-jupyter-infostealer-part-1/",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -33,6 +33,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

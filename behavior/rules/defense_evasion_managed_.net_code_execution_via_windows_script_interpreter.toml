@@ -12,7 +12,7 @@ reference = [
     "https://github.com/med0x2e/GadgetToJScript",
     "https://github.com/mdsecactivebreach/SharpShooter",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -46,6 +46,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

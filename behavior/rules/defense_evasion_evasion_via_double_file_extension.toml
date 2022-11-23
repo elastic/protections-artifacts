@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via Double File Extension"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -47,6 +47,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

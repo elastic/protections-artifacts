@@ -4,7 +4,7 @@ id = "32ab2977-2932-4172-9117-36e382591818"
 license = "Elastic License v2"
 name = "Attempt to Disable Windows Defender Services"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -25,6 +25,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.parent.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

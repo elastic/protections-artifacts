@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shell Execution via Windows Shortcut File"
 os_list = ["windows"]
 reference = ["https://docs.google.com/presentation/d/13SsBd0wI0PpyH5C8WlnE_DsJjy1KxAjZ5Dmke9FHfRE/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=1m
@@ -39,6 +39,8 @@ state = 1
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

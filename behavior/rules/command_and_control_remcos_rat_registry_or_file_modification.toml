@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remcos RAT Registry or File Modification"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/software/S0332/", "https://any.run/malware-trends/remcos"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 any where event.category : ("registry", "file") and
@@ -33,6 +33,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

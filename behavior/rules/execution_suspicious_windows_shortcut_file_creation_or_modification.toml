@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious Windows Shortcut File Creation or Modification"
 os_list = ["windows"]
 reference = ["https://docs.google.com/presentation/d/13SsBd0wI0PpyH5C8WlnE_DsJjy1KxAjZ5Dmke9FHfRE/"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 file where event.action == "creation" and
@@ -59,6 +59,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

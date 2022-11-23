@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious String Value Written to Registry Run Key"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 registry where registry.data.strings != null and
@@ -119,6 +119,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

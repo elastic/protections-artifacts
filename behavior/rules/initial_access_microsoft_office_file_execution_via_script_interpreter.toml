@@ -7,7 +7,7 @@ id = "54aabea0-3687-4ef1-b70c-015ca588e563"
 license = "Elastic License v2"
 name = "Microsoft Office File Execution via Script Interpreter"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -28,6 +28,8 @@ state = 1
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

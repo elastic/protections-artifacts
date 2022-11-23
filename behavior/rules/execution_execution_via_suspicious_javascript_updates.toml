@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Suspicious JavaScript Updates"
 os_list = ["windows"]
 reference = ["https://malpedia.caad.fkie.fraunhofer.de/details/js.fakeupdates"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -45,6 +45,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

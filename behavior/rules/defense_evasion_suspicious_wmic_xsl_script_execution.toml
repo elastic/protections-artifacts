@@ -8,7 +8,7 @@ id = "18371ec4-ee2f-465b-8757-ee726914006c"
 license = "Elastic License v2"
 name = "Suspicious WMIC XSL Script Execution"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -39,6 +39,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

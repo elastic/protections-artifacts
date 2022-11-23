@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Initial Access via DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.action != "deletion" and
@@ -33,6 +33,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -7,7 +7,7 @@ id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
 license = "Elastic License v2"
 name = "Unusual File Written or Modified in Startup Folder"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 file where event.action != "deletion" and
@@ -58,6 +58,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

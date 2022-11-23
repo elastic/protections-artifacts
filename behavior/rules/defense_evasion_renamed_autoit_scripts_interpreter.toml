@@ -7,7 +7,7 @@ id = "99f2327e-871f-4b8a-ae75-d1c4697aefe4"
 license = "Elastic License v2"
 name = "Renamed AutoIt Scripts Interpreter"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -22,6 +22,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

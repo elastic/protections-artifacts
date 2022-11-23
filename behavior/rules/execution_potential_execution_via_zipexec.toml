@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Execution via ZIPExec"
 os_list = ["windows"]
 reference = ["https://github.com/Tylous/ZipExec"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=5m
@@ -33,6 +33,8 @@ state = 2
 
 [[optional_actions]]
 action = "rollback"
+field = "process.parent.entity_id"
+state = 2
 
 [[threat]]
 framework = "MITRE ATT&CK"

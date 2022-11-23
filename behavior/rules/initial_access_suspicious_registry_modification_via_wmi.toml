@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Registry Modification via WMI"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/regprov/stdregprov"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 registry where event.action== "modification" and
@@ -124,6 +124,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "Effective_process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

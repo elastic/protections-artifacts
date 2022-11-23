@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via MMC DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=60s
@@ -34,6 +34,8 @@ state = 2
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 2
 
 [[threat]]
 framework = "MITRE ATT&CK"

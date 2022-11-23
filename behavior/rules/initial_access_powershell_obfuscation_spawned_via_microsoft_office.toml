@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "PowerShell Obfuscation Spawned via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://github.com/danielbohannon/Invoke-Obfuscation"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.action == "start" and
@@ -74,6 +74,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.parent.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

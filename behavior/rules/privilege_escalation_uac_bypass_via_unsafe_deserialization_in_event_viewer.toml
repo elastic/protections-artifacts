@@ -11,7 +11,7 @@ reference = [
     "https://twitter.com/orange_8361/status/1518970259868626944",
     "https://github.com/CsEnox/EventViewer-UACBypass",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 file where event.action != "deletion" and file.name : "RecentViews" and
@@ -37,6 +37,8 @@ state = 0
 
 [[optional_actions]]
 action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -115,7 +115,7 @@ rule Windows_Hacktool_Mimikatz_71fe23d9 {
     meta:
         author = "Elastic Security"
         id = "71fe23d9-ee1a-47fb-a99f-2be2eb9ccb1a"
-        fingerprint = "9532aba703cb5a2a37d753e073f5f8711fba5da44ca0f34f524d75eab66f2ac8"
+        fingerprint = "22b1f36e82e604fc3a80bb5abf87aef59957b1ceeb050eea3c9e85fb0b937db1"
         creation_date = "2022-04-07"
         last_modified = "2022-04-07"
         description = "Subject: Benjamin Delpy"
@@ -129,14 +129,14 @@ rule Windows_Hacktool_Mimikatz_71fe23d9 {
     strings:
         $subject_name = { 06 03 55 04 03 [2] 42 65 6E 6A 61 6D 69 6E 20 44 65 6C 70 79 }
     condition:
-        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name in (filesize - 50KB .. filesize)
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name
 }
 
 rule Windows_Hacktool_Mimikatz_b393864f {
     meta:
         author = "Elastic Security"
         id = "b393864f-a9b0-47e7-aea4-0fc5a4a22a82"
-        fingerprint = "8818641bc901dde426f121fa4c8ff4d8001c31e4312da1c9f7fae8d3bc69d7b8"
+        fingerprint = "bfd497290db97b7578d59e8d43a28ee736a3d7d23072eb67d28ada85cac08bd3"
         creation_date = "2022-04-07"
         last_modified = "2022-04-07"
         description = "Subject: Open Source Developer, Benjamin Delpy"
@@ -150,6 +150,6 @@ rule Windows_Hacktool_Mimikatz_b393864f {
     strings:
         $subject_name = { 06 03 55 04 03 [2] 4F 70 65 6E 20 53 6F 75 72 63 65 20 44 65 76 65 6C 6F 70 65 72 2C 20 42 65 6E 6A 61 6D 69 6E 20 44 65 6C 70 79 }
     condition:
-        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name in (filesize - 50KB .. filesize)
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name
 }
 

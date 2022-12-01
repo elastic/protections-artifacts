@@ -337,26 +337,6 @@ rule Linux_Hacktool_Flooder_b1ca2abd {
         all of them
 }
 
-rule Linux_Hacktool_Flooder_8f25995c {
-    meta:
-        author = "Elastic Security"
-        id = "8f25995c-a1d1-454d-8210-4c929c8a1f3b"
-        fingerprint = "0ab165b98a31375e089f212b26cbe919657fb402f7be9bf10024ca57ea14924f"
-        creation_date = "2021-01-12"
-        last_modified = "2021-09-16"
-        threat_name = "Linux.Hacktool.Flooder"
-        reference_sample = "1d88971f342e4bc4e6615e42080a3b6cec9f84912aa273c36fc46aaf86ff6771"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "linux"
-    strings:
-        $a = { 50 0C 83 E2 0F 83 CA 50 88 50 0C 48 8B 45 F8 0F B6 50 0D 83 }
-    condition:
-        all of them
-}
-
 rule Linux_Hacktool_Flooder_cce8c792 {
     meta:
         author = "Elastic Security"

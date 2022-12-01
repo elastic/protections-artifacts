@@ -4,7 +4,7 @@ id = "49e47c2a-307f-4591-939a-dfdae6e5156c"
 license = "Elastic License v2"
 name = "Execution of a File Written by Windows Script Host"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=5m
@@ -24,7 +24,8 @@ sequence with maxspan=5m
    not process.pe.original_file_name : ("CCCLauncher.exe", "Bginfo.exe") and
    not process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
    not (process.pe.original_file_name == "cognosrcp.exe" and
-        process.code_signature.subject_name == "IBM Canada Ltd." and process.code_signature.trusted == true)
+        process.code_signature.subject_name == "IBM Canada Ltd." and process.code_signature.trusted == true) and
+   not (process.code_signature.subject_name == "The Qt Company Oy" and process.code_signature.trusted == true)
    ] by process.executable
 '''
 

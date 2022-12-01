@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies binaries that are loaded and with an invalid code signature. This may indicate an attempt to masquerade as a
+signed binary.
+"""
+id = "fed47f78-d104-44fa-82c0-f965f895ceef"
+license = "Elastic License v2"
+name = "Image Loaded with Invalid Signature"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+library where
+  dll.code_signature.status : ("errorUntrustedRoot", "errorBadDigest", "errorUntrustedRoot", "errorCode_endpoint*") and
+  (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
+  not startswith~(dll.name, process.name) and
+  not dll.path : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*" and
+  not process.executable : ("?:\\Program Files\\TrueConf\\Client\\TrueConf.exe", "?:\\Program Files\\AntiCheatExpert\\SGuard\\*.exe") and
+  not (process.code_signature.subject_name : ("Mega Limited", "Waves Inc", "CLO Virtual Fashion Inc.") and process.code_signature.trusted == true)
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.004"
+name = "Masquerade Task or Service"
+reference = "https://attack.mitre.org/techniques/T1036/004/"
+
+
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+[[threat.technique.subtechnique]]
+id = "T1553.002"
+name = "Code Signing"
+reference = "https://attack.mitre.org/techniques/T1553/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

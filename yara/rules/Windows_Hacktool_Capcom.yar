@@ -2,7 +2,7 @@ rule Windows_Hacktool_Capcom_7abae448 {
     meta:
         author = "Elastic Security"
         id = "7abae448-0ebc-433f-b368-0b8560da7197"
-        fingerprint = "b054cd3d991b13ac08202dc30ea1bfc71d9fbdd5d04f4e90894fdc5848b107c9"
+        fingerprint = "965e85fc3b2a21aef84c7c2bd59708b121d9635ce6bab177014b28fb00102884"
         creation_date = "2022-04-07"
         last_modified = "2022-04-07"
         description = "Subject: CAPCOM Co.,Ltd."
@@ -16,6 +16,6 @@ rule Windows_Hacktool_Capcom_7abae448 {
     strings:
         $subject_name = { 06 03 55 04 03 [2] 43 41 50 43 4F 4D 20 43 6F 2E 2C 4C 74 64 2E }
     condition:
-        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name in (filesize - 50KB .. filesize)
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name
 }
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Uncommon Persistence via Registry Modification"
 os_list = ["windows"]
 reference = ["https://www.microsoftpressstore.com/articles/article.aspx?p=2762082&seqNum=2"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 registry where event.action== "modification" and
@@ -24,7 +24,7 @@ registry where event.action== "modification" and
   and
 
   registry.path : (
-                 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+          "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Run",
 		 "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
@@ -37,7 +37,9 @@ registry where event.action== "modification" and
 		 "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
-		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun")
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun") and
+
+  not process.executable : "?:\\Program Files (x86)\\ASUS\\OOBERegBackup\\OOBERegBackup.exe"
 '''
 
 min_endpoint_version = "8.0.0"

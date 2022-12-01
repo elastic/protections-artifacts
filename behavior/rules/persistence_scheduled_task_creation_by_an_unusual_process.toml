@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5m
@@ -23,7 +23,7 @@ sequence with maxspan=5m
     /* unsigned or untrusted codesign */
     ((process.code_signature.trusted == false or process.code_signature.exists == false) and
       (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
-      not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired")) or
+      not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired", "errorChaining")) or
 
     /* common abused paths */
     process.executable :
@@ -48,7 +48,10 @@ sequence with maxspan=5m
     not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.code_signature.trusted == true and process.executable : ("?:\\Users\\*\\AppData\\Roaming\\*", "?:\\ProgramData\\*")) and
     not (process.name : "rundll32.exe" and process.args : "tsworkspace,TaskUpdateWorkspaces") and
-    not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS")
+    not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS") and
+    not (process.name : "rundll32.exe" and process.command_line : "*PWMTR32V.dll,InitializeSettingsDuringInstallation*") and
+    not (process.name : "powershell.exe" and
+         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Registry Run Key Modified by Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -73,7 +73,8 @@ sequence by process.entity_id with maxspan=1m
    not (process.code_signature.subject_name : "Microsoft Windows Hardware Compatibility Publisher" and process.code_signature.trusted == true) and
    not (process.executable : "?:\\WINDOWS\\system32\\wsl.exe" and process.args : "--install") and
    not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\Speech\\SpeechUX\\sapi.cpl") and
-   not (process.name : "regsvr32.exe" and process.args : "?:\\WINDOWS\\system32\\bit4upki-store.dll")
+   not (process.name : "regsvr32.exe" and process.args : "?:\\WINDOWS\\system32\\bit4upki-store.dll") and
+   not (process.name : "wscript.exe" and process.command_line : "*Program Files\\Nextech\\NxTSAddin\\*")
    ]
   [registry where registry.data.strings != null and
     registry.path : (
@@ -103,7 +104,8 @@ sequence by process.entity_id with maxspan=1m
       "*bit4upki-store.dll*,RunImportServer*",
       "?:\\Windows\\HideIcon.exe /hideapp",
       "*Microsoft\\Teams\\Update.exe --processStart *Teams.exe*",
-      "*\\Windows\\system32\\hkcmd.exe*"
+      "*\\Windows\\system32\\hkcmd.exe*",
+      "%SystemRoot%\\system32\\dmwappushsvc.dll"
     )]
 '''
 

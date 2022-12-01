@@ -1,0 +1,53 @@
+[rule]
+description = """
+Adversaries may use binary padding to add junk data and change the on-disk representation of malware. This can be done
+without affecting the functionality or behavior of a binary, but can increase the size of the binary beyond what some
+security tools are capable of handling due to file size limitations
+"""
+id = "b58a6662-cc72-4c1c-a24e-703427f3b725"
+license = "Elastic License v2"
+name = "Rundll32 or Regsvr32 Executing an OverSized File"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1027/001/"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action != "deletion" and
+  file.Ext.header_bytes : "4d5a*" and not user.id : "S-1-5-18" and
+
+  /* size more or equal to 50MB */
+   file.size >= 50000000] as event0
+ [process where
+  process.name : ("rundll32.exe", "regsvr32.exe", "control.exe") and process.args_count >= 2 and
+  startswith~(process.args, event0.file.path) and
+  not (process.name : "rundll32.exe" and process.command_line : "*FirewallControlPanel*ShowNotificationDialog*")]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.001"
+name = "Binary Padding"
+reference = "https://attack.mitre.org/techniques/T1027/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

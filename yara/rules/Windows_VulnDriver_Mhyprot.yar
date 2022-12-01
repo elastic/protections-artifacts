@@ -2,7 +2,7 @@ rule Windows_VulnDriver_Mhyprot_26214176 {
     meta:
         author = "Elastic Security"
         id = "26214176-1565-4b10-bd7a-901206ef6b29"
-        fingerprint = "692a33fceb631e9f5233b18a6d466a8d5969dc85925653993ca6904ac2725afe"
+        fingerprint = "368c818c0052192c73f078a0ea314e3d2f5d08bc4ef32a27d7e01a40eba68940"
         creation_date = "2022-08-25"
         last_modified = "2022-08-25"
         description = "Subject: miHoYo Co.,Ltd., Version: 1.0.0.0"
@@ -18,6 +18,6 @@ rule Windows_VulnDriver_Mhyprot_26214176 {
         $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}(([\x00-\x00][\x00-\x00])([\x00-\x01][\x00-\x00])([\x00-\x00][\x00-\x00])([\x00-\x00][\x00-\x00])|([\x00-\xff][\x00-\xff])([\x00-\x00][\x00-\x00])([\x00-\xff][\x00-\xff])([\x00-\xff][\x00-\xff]))/
         $str1 = "\\Device\\mhyprot2" wide fullword
     condition:
-        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name in (filesize - 50KB .. filesize) and $version in (filesize - 50KB .. filesize) and $str1
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $version and $str1
 }
 

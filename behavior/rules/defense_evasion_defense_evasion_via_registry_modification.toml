@@ -1,0 +1,68 @@
+[rule]
+description = """
+Identifies modifications to some Windows security related configurations settings via registry changes to disable
+certain protection or hardening features and performed by a suspicious process.
+"""
+id = "e3938d6e-8f66-4871-88c7-442a530f8119"
+license = "Elastic License v2"
+name = "Defense Evasion via Registry Modification"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+
+ (process.code_signature.exists == false or
+  process.name : ("powershell.exe", "reg.exe", "cscript.exe", "wscript.exe", "mshta.exe", "winword.exe", "excel.exe") or
+  process.executable : ("?:\\Windows\\Microsoft.NET\\*", "?:\\Users\\Public\\*", "?:\\Users\\*\\AppData\\*")) and
+
+ registry.path : ("HK*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\*") and
+
+ (
+   (registry.value : ("EnableUA", "ConsentPromptBehaviorAdmin", "PromptOnSecureDesktop") and registry.data.strings : "0") or
+
+   (registry.value : ("DisableTaskMgr", "DisableRegistryTools", "DisableArchiveScanning") and registry.data.strings : "1") or
+
+    registry.value : ("FilterAdministratorToken", "DisableCMD") or
+
+    (registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.SecurityAndMaintenance\\Enabled" and
+     registry.data.strings : "0")
+ )
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

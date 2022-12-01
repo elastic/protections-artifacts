@@ -7,7 +7,7 @@ id = "a0a82ad6-98ed-4426-abd8-52e7b052e297"
 license = "Elastic License v2"
 name = "Microsoft Office Loaded a Dropped Executable File"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -35,7 +35,8 @@ sequence by process.entity_id with maxspan=1m
                            "26815ae316c6fdeb699b722ba9663089590a5aeaee1ec10375d21d814c5f3aec",
                            "e464f82e4a44064dc00e997b18fb55c22e0f39182dc22e150ef081cd13af01fe",
                            "b0680c48dd70da998844bb34fb4bb70d95cc7698ebb7443c36be0d393adc14d5") and
-    not dll.path : "?:\\Windows\\assembly\\NativeImages_*.dll"] by dll.path
+    not dll.path : "?:\\Windows\\assembly\\NativeImages_*.dll" and
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")] by dll.path
 '''
 
 min_endpoint_version = "7.16.0"

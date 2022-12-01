@@ -1,0 +1,198 @@
+[rule]
+description = """
+Identifies DNS queries to commonly abused legit web services by a process running from a mounted virtual disk (.iso,
+.vhd).
+"""
+id = "3bc98de7-3349-43ac-869c-58357ae2aac0"
+license = "Elastic License v2"
+name = "Suspicious DNS Query from Mounted Virtual Disk"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")]
+ [dns where
+  dns.question.name :
+       (
+        /* common ddns */
+        "*.no-ip.com",
+        "*.no-ip.org",
+        "*.no-ip.biz",
+        "*.no-ip.info",
+        "*.noip.com",
+        "*.afraid.org",
+        "*.changeip.com",
+        "*.ddns.net",
+        "*.dyndns.org",
+        "*.hopto.org",
+        "*.zapto.org",
+        "*.servehttp.com",
+        "*.sytes.net",
+        "*.myftp.biz",
+        "*.myftp.org",
+        "*.ddnsfree.com",
+        "*.duckdns.org",
+        "*.000webhostapp.com",
+        "*.myddns.me",
+        "*.dlinkddns.com",
+        "*.chickenkiller.com",
+        "*.thddns.net",
+        "*.linkpc.net",
+        "*.gotdns.ch",
+        "*.ydns.eu",
+
+
+        /* common websvc */
+        "raw.githubusercontent.*",
+        "github.com",
+        "pastebin.*",
+        "paste4btc.com",
+        "paste.ee",
+        "ghostbin.com",
+        "drive.google.com",
+        "?.docs.live.net",
+        "api.dropboxapi.*",
+        "content.dropboxapi.*",
+        "dl.dropboxusercontent.*",
+        "api.onedrive.com",
+        "*.onedrive.org",
+        "onedrive.live.com",
+        "filebin.net",
+        "?.tcp.ngrok.io",
+        "ngrok.com",
+        "*.portmap.*",
+        "*serveo.net",
+        "*localtunnel.me",
+        "*pagekite.me",
+        "*localxpose.io",
+        "*notabug.org",
+        "rawcdn.githack.*",
+        "paste.nrecom.net",
+        "zerobin.net",
+        "controlc.com",
+        "requestbin.net",
+        "slack.com",
+        "api.slack.com",
+        "slack-redir.net",
+        "slack-files.com",
+        "cdn.discordapp.com",
+        "discordapp.com",
+        "discord.com",
+        "apis.azureedge.net",
+        "cdn.sql.gg",
+        "?.top4top.io",
+        "top4top.io",
+        "www.uplooder.net",
+        "*.cdnmegafiles.com",
+        "transfer.sh",
+        "updates.peer2profit.com",
+        "api.telegram.org",
+        "meacz.gq",
+        "rwrd.org",
+        "*.publicvm.com",
+        "*.blogspot.com",
+        "api.mylnikov.org",
+        "file.io",
+        "stackoverflow.com",
+        "*files.1drv.com",
+        "api.anonfile.com",
+        "*hosting-profi.de",
+        "ipbase.com",
+        "ipfs.io",
+        "*up.freeo*.space",
+        "mail.*",
+        "smtp.*",
+        "api.mylnikov.org",
+        "script.google.com",
+        "script.googleusercontent.com",
+
+        /* public IP discovery */
+        "ip-api.com",
+        "checkip.dyndns.org",
+        "api.ipify.org",
+        "whatismyip.akamai.com",
+        "bot.whatismyipaddress.com",
+        "ifcfg.me",
+        "ident.me",
+        "ipof.in",
+        "ip.tyk.nu",
+        "icanhazip.com",
+        "curlmyip.com",
+        "wgetip.com",
+        "eth0.me",
+        "ipecho.net",
+        "ip.appspot.com",
+        "api.myip.com",
+        "geoiptool.com",
+        "api.2ip.ua",
+        "api.ip.sb",
+        "ipinfo.io",
+        "checkip.amazonaws.com",
+        "wtfismyip.com",
+        "iplogger.org",
+        "freegeoip.net",
+        "freegeoip.app",
+        "ipinfo.io",
+        "geoplugin.net",
+        "myip.dnsomatic.com",
+        "www.geoplugin.net",
+        "api64.ipify.org",
+        "ip4.seeip.org",
+        "*.geojs.io",
+        "*portmap.io",
+        "*mediafire.com",
+        "filetransfer.io",
+
+        /* other */
+        "*.lencr.org",
+        "*.cloudfront.net",
+        "*azureedge.net",
+        "*azure.com",
+        "graph.microsoft.com")]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

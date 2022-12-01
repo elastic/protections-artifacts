@@ -7,7 +7,7 @@ id = "cd886776-8790-4724-9484-3f0008b87da7"
 license = "Elastic License v2"
 name = "Managed .NET Code Execution via PowerShell"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and
@@ -24,7 +24,8 @@ process where event.type == "start" and
    ) and
    not process.parent.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "visualstudio20??-workload-vctools;") and
    not process.args : "@?:\\Windows\\TEMP\\*.cmdline" and
-   not (process.parent.args : "-ExecutionPolicy" and process.parent.command_line : "*.vscode\\extensions*")
+   not (process.parent.args : "-ExecutionPolicy" and process.parent.command_line : "*.vscode\\extensions*") and
+   not process.parent.command_line : "*http://localhost:9900/CaptureManager?wsdl*"
 '''
 
 min_endpoint_version = "7.15.0"

@@ -18,26 +18,6 @@ rule Linux_Trojan_Winnti_61215d98 {
         all of them
 }
 
-rule Linux_Trojan_Winnti_2a2d0b81 {
-    meta:
-        author = "Elastic Security"
-        id = "2a2d0b81-9055-4b78-bbcf-c9f43598bf1a"
-        fingerprint = "6a775740f8816c7c684515bc776cd82cee541d2a850633ac1dbd9b719df97c57"
-        creation_date = "2021-01-12"
-        last_modified = "2021-09-16"
-        threat_name = "Linux.Trojan.Winnti"
-        reference_sample = "cc1455e3a479602581c1c7dc86a0e02605a3c14916b86817960397d5a2f41c31"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "linux"
-    strings:
-        $a = { 55 48 89 E5 48 83 EC 20 C7 45 FC FF FF FF FF C7 45 F8 FF FF }
-    condition:
-        all of them
-}
-
 rule Linux_Trojan_Winnti_4c5a1865 {
     meta:
         author = "Elastic Security"

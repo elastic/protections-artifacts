@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -55,7 +55,10 @@ process where event.action == "start" and
    not (process.name : "dwm.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true) and
    not (process.name : "SearchProtocolHost.exe" and process.parent.name : "rundll32.exe" and process.parent.args : "AppXDeploymentExtensions.OneCore.dll,ShellRefresh") and
    not (process.parent.executable : "?:\\Windows\\System32\\smss.exe" and process.parent.args : "-SpecialSession") and
-   not (process.parent.executable : "?:\\Program Files\\Sandboxie\\SandboxieDcomLaunch.exe" and process.name : "RuntimeBroker.exe")
+   not (process.parent.executable : ("?:\\Program Files\\Sandboxie\\SandboxieDcomLaunch.exe", "?:\\Program Files\\Sandboxie-Plus\\SandboxieDcomLaunch.exe") and process.name : "RuntimeBroker.exe") and
+   not (process.name : ("winlogon.exe", "csrss.exe") and
+        process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe" and
+        process.parent.args : "/client=Personal" and process.parent.args : "/background")
 '''
 
 min_endpoint_version = "7.15.0"

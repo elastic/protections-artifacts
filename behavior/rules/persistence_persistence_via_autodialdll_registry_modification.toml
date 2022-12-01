@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies the modification of the WinSock2 AutoDial registry value to potentially maintain persistence via a malicious
+DLL that get loaded by any processes invoking the Winsock 2 library (ws2_32.dll).
+"""
+id = "2ffc3943-8100-4f77-9c8f-e8f9e185604b"
+license = "Elastic License v2"
+name = "Persistence via AutodialDLL Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://www.hexacorn.com/blog/2015/01/13/beyond-good-ol-run-key-part-24/",
+    "https://decoded.avast.io/luigicamastra/operation-dragon-castling-apt-group-targeting-betting-companies/",
+]
+version = "1.0.4"
+
+query = '''
+registry where registry.data.strings != null and
+    registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\WinSock2\\Parameters\\AutodialDLL*" and
+    not registry.data.strings : "?:\\Windows\\System32\\rasadhlp.dll"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

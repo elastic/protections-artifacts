@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies attempts to load an unsigned DLL from a mounted virtual disk (.iso, .vhd) and by a renamed signed binary.
+This may indicate an attempt to sideload a malicious DLL to stealthily execute code for initial access.
+"""
+id = "b117a187-3677-4891-ac4c-12677b5773a7"
+license = "Elastic License v2"
+name = "Potential DLL SideLoad via a Renamed Signed Binary"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+/* Signed PE with OriginalFileName different than process.name as potential target from a malicious ISO/DMG/VHD archive */
+
+sequence by process.entity_id with maxspan=1m
+
+ [process where event.action == "start" and process.pe.original_file_name != null and
+  process.code_signature.trusted == true and
+  not startswith~(process.name, process.pe.original_file_name) and
+  process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and
+
+  /* ba802fb2-f183-420e-947b-da5ce0c74dd3 */
+  not process.code_signature.subject_name : "Microsoft *"]
+ [library where
+  dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and
+  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining")]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

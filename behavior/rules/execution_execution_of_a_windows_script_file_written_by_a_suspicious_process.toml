@@ -1,0 +1,98 @@
+[rule]
+description = """
+Identifies the execution of a script file written by a suspicious application. Script interpreters are often launched
+during exploitation of Office applications or from documents containing malicious macros.
+"""
+id = "dc9c8c7c-f398-401f-804a-325570a5f167"
+license = "Elastic License v2"
+name = "Execution of a Windows Script File Written by a Suspicious Process"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by user.id with maxspan=5m
+
+ [file where event.action != "deletion" and
+
+   file.extension : ("hta", "vbs", "js", "wsf", "vbe", "jse") and not user.id : "S-1-5-18" and
+
+   not (process.code_signature.subject_name :
+            ("AUTO/MATE, INC.", "TeamViewer*", "KOBIL Systems GmbH", "Ratiborus MSFree Inc.",
+             "Canon Electronics Inc.", "Johannes Schindelin") and
+        process.code_signature.trusted == true) and
+   not process.executable : "?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*.exe" and
+
+   (
+     process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe",
+                     "mspub.exe", "msaccess.exe", "certutil.exe", "tar.exe", "CertReq.exe", "xcopy.exe", 
+                     "cmd.exe", "powershell.exe", "mshta.exe", "curl.exe", "pwsh.exe", "rundll32.exe", 
+                     "regsvr32.exe", "msiexec.exe") or
+
+     (process.code_signature.trusted == false or process.code_signature.exists == false) or
+
+     process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\ProgramData\\*", "?:\\Users\\Public\\*")
+   )] as event0
+
+ [process where event.action == "start" and
+  process.name : ("cscript.exe", "wscript.exe", "mshta.exe") and
+  startswith~(process.args, event0.file.path) and
+  not (process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and process.args_count <= 3) and
+  not (process.name : ("wscript.exe", "cscript.exe") and process.parent.name : "cmd.exe" and
+       process.parent.command_line : ("*Desktop\\PROTECTAgentInstaller.bat*", "*cleanupSetup.vbs Shell_*.log*"))
+  ]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

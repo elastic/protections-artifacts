@@ -1,0 +1,82 @@
+[rule]
+description = """
+Adversaries may create or modify shortcuts that can execute a program during system boot or user login. Shortcuts are
+used to reference other files or programs that will be opened or executed when the shortcut is clicked or executed by a
+system startup process.
+"""
+id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
+license = "Elastic License v2"
+name = "Suspicious Shortcut Modification"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
+ not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+ process.executable : "?:\\*" and
+ not process.executable : 
+           ("?:\\Windows\\Explorer.exe", 
+            "?:\\Windows\\System32\\svchost.exe", 
+            "?:\\Windows\\System32\\msiexec.exe",
+            "?:\\Windows\\SysWOW64\\msiexec.exe",
+            "?:\\Windows\\System32\\dllhost.exe",
+            "?:\\Windows\\SysWOW64\\dllhost.exe",
+            "?:\\Windows\\System32\\RuntimeBroker.exe",
+            "?:\\Program Files*\\Microsoft Office\\*\\OUTLOOK.EXE",
+            "?:\\Program Files*\\Microsoft\\Edge\\*.exe", 
+            "?:\\Program Files*\\Microsoft\\EdgeUpdate\\*.exe",
+            "?:\\Config.Msi\\*.rbf",
+            "?:\\Windows\\System32\\svchost.exe") and
+  file.path :
+     ("?:\\Users\\*\\Desktop\\*.lnk",
+      "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",
+      "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk",
+      "?:\\Users\\*\\Start Menu\\Programs\\Startup\\*.lnk",
+      "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk") and
+  file.Ext.header_bytes : "4c000000*" and
+  file.name : ("Google Chrome.lnk", "Outlook.lnk", "Microsoft Outlook.lnk","Microsoft Edge.lnk",
+               "Mozilla Thunderbird.lnk", "Firefox.lnk", "Word.lnk", "Excel.lnk", "Notepad++.lnk",
+               "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk") and
+  not (process.code_signature.subject_name :
+          ("Google*",
+           "Notepad*",
+           "Slack*",
+           "Mozilla*",
+           "Zoom*",
+           "Discord*") and
+       process.code_signature.trusted == true) and
+  not (process.executable : "?:\\Users\\*\\Microsoft\\EdgeUpdate\\Install\\*\\setup.exe" and
+       process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true)
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.009"
+name = "Shortcut Modification"
+reference = "https://attack.mitre.org/techniques/T1547/009/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.1.0"

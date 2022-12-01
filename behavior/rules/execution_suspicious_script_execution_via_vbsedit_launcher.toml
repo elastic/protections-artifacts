@@ -9,13 +9,14 @@ license = "Elastic License v2"
 name = "Suspicious Script Execution via VBSEdit Launcher"
 os_list = ["windows"]
 reference = ["https://www.vbsedit.com/", "https://malpedia.caad.fkie.fraunhofer.de/details/win.vjw0rm"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and
  (process.pe.original_file_name == "launcher.exe" and process.code_signature.subject_name : "Adersoft") and
  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
- not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")
+ not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+ not process.executable : "?:\\RANOCCHI\\GiDesk\\Gis\\System\\Rtf\\Doc\\RCbase64.exe"
 '''
 
 min_endpoint_version = "7.15.0"

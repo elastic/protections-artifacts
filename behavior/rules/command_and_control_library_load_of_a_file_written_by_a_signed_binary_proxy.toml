@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies the image load of a DLL file written or modified by a signed Microsoft binary proxy utility such as
+MSHTA.exe, CertReq.exe or CertUtil.exe. Adversaries may bypass process and/or signature-based defenses by proxying
+execution of malicious content with signed binaries.
+"""
+id = "7b5a1c52-12ff-4c1b-b1f1-2226ceb11c9a"
+license = "Elastic License v2"
+name = "Library Load of a File Written by a Signed Binary Proxy"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+   [file where
+    process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe", "tar.exe", "curl.exe", "xcopy.exe")
+    and file.Ext.header_bytes : "4d5a*" and process.executable : "?:\\Windows\\Sys*\\*.exe"] by file.path
+   [library where not startswith~(process.executable, dll.path) and
+    process.code_signature.subject_name : "Microsoft*" and
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+    not (process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe" and dll.path : "C:\\oracle12\\*.dll")] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "Evasion via Double File Extension"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
  (
   /* double extension in process.name */
-  process.name regex~ """.+(\.|\,|\_|\-)(pdf|doc|docx|xls|xlsx|png|jpg|html|txt|zip|rar|ppt|pptx|rtf|htm|GIF)\.(scr|exe|com|pif)""" or
+  process.name regex~ """.+(\.|\,|\_|\-)(pdf|doc|docx|xls|xlsx|png|jpg|html|txt|rar|ppt|pptx|htm|GIF)\.(scr|exe|com|pif)""" or
 
   /* fake extension via Unicode Right-To-Left-Override technique */
   process.name : "*\u{202E}*"

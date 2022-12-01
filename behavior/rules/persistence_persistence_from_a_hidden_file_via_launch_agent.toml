@@ -9,7 +9,7 @@ id = "c6037fad-ad13-46a6-9f7f-4deeef5ac69b"
 license = "Elastic License v2"
 name = "Persistence from a Hidden File via Launch Agent"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 any where event.action == "launch_daemon" and Persistence.runatload == true and
@@ -19,7 +19,7 @@ any where event.action == "launch_daemon" and Persistence.runatload == true and
  not (Persistence.args :  "/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service" and
       Persistence.path : "/Library/LaunchDaemons/net.Printix.Service.plist") and
 
- not (process.code_signature.signing_id : "com.bomgar.bomgar-scc" and process.code_signature.trusted == true)
+ not (process.code_signature.signing_id : ("com.bomgar.bomgar-scc", "com.apple.shove") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.3.0"

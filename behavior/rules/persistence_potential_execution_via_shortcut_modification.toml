@@ -1,0 +1,75 @@
+[rule]
+description = """
+Adversaries may create or modify shortcuts that can execute a program during system boot or user login. Shortcuts are
+used to reference other files or programs that will be opened or executed when the shortcut is clicked or executed by a
+system startup process.
+"""
+id = "6b045c74-157d-4f05-b08f-620ce9ea96e9"
+license = "Elastic License v2"
+name = "Potential Execution via Shortcut Modification"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+process where event.action : "start" and
+
+ process.name : ("cmd.exe", "powershell.exe") and process.parent.executable : "?:\\Windows\\Explorer.exe" and
+
+ process.working_directory :
+       ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Users\\*\\AppData\\Roaming\\Zoom\\bin\\*",
+        "?:\\Users\\*\\AppData\\Local\\slack\\*", "?:\\Users\\*\\AppData\\Local\\Discord\\*") and
+
+ process.command_line : ("*chrome.exe*", "*firefox.exe*", "*outlook.exe*", "msedge.exe", "*thunderbird.exe*",
+                         "*slack.exe*", "*notepad++.exe*", "*discord.exe*", "*winword.exe*", "*excel.exe*", "*powerpnt*",
+                         "*Teams*", "*zoom.exe*", "*update.exe*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.009"
+name = "Shortcut Modification"
+reference = "https://attack.mitre.org/techniques/T1547/009/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

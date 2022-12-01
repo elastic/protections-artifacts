@@ -7,7 +7,7 @@ id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
 license = "Elastic License v2"
 name = "ImageLoad of a File dropped via SMB"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -20,7 +20,8 @@ sequence with maxspan=5m
 
     /* signed FPs */
     not (dll.code_signature.subject_name in ("Veeam Software Group GmbH", "Veeam Software AG", "Lansweeper", "Microsoft Windows",
-                                             "Microsoft Corporation", "GOVERLAN, LLC", "Cisco WebEx LLC", "PDQ.COM CORPORATION", "SolarWinds, Inc.") and
+                                             "Microsoft Corporation", "GOVERLAN, LLC", "Cisco WebEx LLC", "PDQ.COM CORPORATION",
+                                             "SolarWinds, Inc.", "Solarwinds Worldwide, LLC") and
          dll.code_signature.trusted == true) and
     not (dll.path : "?:\\oracle\\client\\product\\*\\ora*.dll" and dll.pe.original_file_name : "Ora*.dll" and process.name : "regsvr32.exe") and
     not (dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\System32\\spool\\drivers\\*.dll", "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and

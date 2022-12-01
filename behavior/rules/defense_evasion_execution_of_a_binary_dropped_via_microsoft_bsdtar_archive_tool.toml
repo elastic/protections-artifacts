@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies the execution of a PE File that was written by the Windows native TAR utility. Adversaries may compress
+malicious content to bypass existing ingress tool transfer restrictions.
+"""
+id = "5b856290-d3f5-4b2f-9f49-e753ce4ade28"
+license = "Elastic License v2"
+name = "Execution of a Binary Dropped via Microsoft BSDTAR Archive Tool"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+   [file where process.executable : "?:\\Windows\\Sys*\\tar.exe" and file.Ext.header_bytes : "4d5a*"] by file.path
+   [process where event.action == "start" and not process.code_signature.trusted == true] by process.executable
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

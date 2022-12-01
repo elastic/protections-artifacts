@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious JavaScript Execution via Node.js"
 os_list = ["windows"]
 reference = ["https://nodejs.org"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -25,7 +25,8 @@ process where event.action == "start" and
            "--package",
            "?:\\Program Files\\*",
            "?:\\Program Files (x86)\\*") and
-  not (process.args : "--input" and process.args : "--output")
+  not (process.args : "--input" and process.args : "--output") and
+  not (process.args : "-e" and process.args : "json")
 '''
 
 min_endpoint_version = "7.15.0"

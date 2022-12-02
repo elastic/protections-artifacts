@@ -7,11 +7,11 @@ id = "fed47f78-d104-44fa-82c0-f965f895ceef"
 license = "Elastic License v2"
 name = "Image Loaded with Invalid Signature"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 library where
-  dll.code_signature.status : ("errorUntrustedRoot", "errorBadDigest", "errorUntrustedRoot", "errorCode_endpoint*") and
+  dll.code_signature.status : "errorBadDigest" and
   (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
   not startswith~(dll.name, process.name) and
   not dll.path : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*" and

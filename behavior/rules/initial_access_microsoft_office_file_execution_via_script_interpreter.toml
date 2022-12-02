@@ -7,7 +7,7 @@ id = "54aabea0-3687-4ef1-b70c-015ca588e563"
 license = "Elastic License v2"
 name = "Microsoft Office File Execution via Script Interpreter"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -17,7 +17,8 @@ sequence by user.id with maxspan=1m
       file.Ext.header_bytes : "4d5a*") and
     process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE")] by file.path
   [process where event.action == "start" and
-    process.parent.name : ("powershell.exe", "pwsh.exe", "cmd.exe", "cscript.exe", "wscript.exe")] by process.executable
+    process.parent.name : ("powershell.exe", "pwsh.exe", "cmd.exe", "cscript.exe", "wscript.exe") and
+    not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")] by process.executable
 '''
 
 min_endpoint_version = "7.15.0"

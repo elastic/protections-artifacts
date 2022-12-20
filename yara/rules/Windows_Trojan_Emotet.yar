@@ -108,3 +108,53 @@ rule Windows_Trojan_Emotet_d6ac1ea4 {
         #calc1 >= 10 and #pre >= 5 and #setup >= 5 and #post >= 5
 }
 
+rule Windows_Trojan_Emotet_77c667b9 {
+    meta:
+        author = "Elastic Security"
+        id = "77c667b9-6895-428f-8735-ba5853d9484d"
+        fingerprint = "f8fac966f77cd8d6654b8abffbf63d884bd9f0b5d51bfc252004a0d9bd569068"
+        creation_date = "2022-11-07"
+        last_modified = "2022-12-20"
+        threat_name = "Windows.Trojan.Emotet"
+        reference_sample = "ffac0120c3ae022b807559e8ed7902fde0fa5f7cb9c5c8d612754fa498288572"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $c2_list_1 = { 8B 4B ?? 8B 85 ?? ?? ?? ?? 48 FF C1 48 C1 E1 ?? 89 04 19 8B 43 ?? 8B 8D ?? ?? ?? ?? 48 C1 E0 ?? C1 E9 ?? 66 89 4C 18 ?? }
+        $c2_list_2 = { 8B 43 ?? 48 8D 0C 80 8B 44 24 ?? 89 44 CB ?? 8B 43 ?? 8B 54 24 ?? 48 8D 0C 80 C1 EA ?? 66 89 54 CB ?? 8B 43 ?? 0F B7 54 24 ?? 48 8D 0C 80 89 54 CB ?? FF 43 ?? }
+        $c2_list_3 = { 8B 43 ?? 48 FF C0 48 8D 0C 40 8B 85 ?? ?? ?? ?? 48 03 C9 89 04 CB 8B 43 ?? 8B 95 ?? ?? ?? ?? 48 8D 0C 40 C1 EA ?? 48 03 C9 66 89 54 CB ?? 8B 43 ?? 0F B7 95 ?? ?? ?? ?? 48 8D 0C 40 B8 ?? ?? ?? ?? 48 03 C9 89 54 CB ?? FF 43 ?? }
+        $c2_list_4 = { 8B 43 ?? 48 FF C0 48 8D 0C 40 8B 44 24 ?? 89 04 CB 8B 43 ?? 8B 54 24 ?? 48 8D 0C 40 C1 EA ?? 66 89 54 CB ?? 8B 43 ?? 0F B7 54 24 ?? 48 8D 0C 40 89 54 CB ?? FF 43 ?? }
+        $c2_list_5 = { 8B 83 ?? ?? ?? ?? 48 8D 0C 80 8B 44 24 ?? 89 44 CB ?? 8B 83 ?? ?? ?? ?? 8B 54 24 ?? 48 8D 0C 80 C1 EA ?? 66 89 54 CB ?? 8B 83 ?? ?? ?? ?? 0F B7 54 24 ?? 48 8D 0C 80 89 14 CB FF 83 ?? ?? ?? ?? }
+        $c2_list_a = { 8B 83 ?? ?? ?? ?? 83 F8 ?? 73 ?? 48 8D 4C 24 ?? FF 54 C4 ?? 83 7C 24 ?? ?? 74 ?? 83 7C 24 ?? ?? 74 ?? B8 ?? ?? ?? ?? E9 ?? ?? ?? ?? }
+        $string_w_1 = { 8B 0B 49 FF C3 48 8D 5B ?? 33 CD 0F B6 C1 66 41 89 00 0F B7 C1 C1 E9 ?? 66 C1 E8 ?? 4D 8D 40 ?? 66 41 89 40 ?? 0F B6 C1 66 C1 E9 ?? 66 41 89 40 ?? 66 41 89 48 ?? 4D 3B D9 72 ?? }
+        $string_w_2 = { 8B CD 49 FF C3 33 0B 48 8D 5B ?? 0F B6 C1 66 41 89 00 0F B7 C1 C1 E9 ?? 66 C1 E8 ?? 4D 8D 40 ?? 66 41 89 40 ?? 0F B6 C1 66 C1 E9 ?? 66 41 89 40 ?? 66 41 89 48 ?? 4D 3B D9 72 ?? }
+        $string_a_1 = { 8B 0B 49 FF C3 48 8D 5B ?? 33 CD 41 88 08 0F B7 C1 C1 E9 ?? 66 C1 E8 ?? 4D 8D 40 ?? 41 88 40 ?? 41 88 48 ?? 66 C1 E9 ?? 41 88 48 ?? 4D 3B D9 72 ?? }
+        $key_1 = { 45 33 C9 4C 8B D0 48 85 C0 74 ?? 48 8D ?? ?? 4C 8B ?? 48 8B ?? 48 2B ?? 48 83 ?? ?? 48 C1 ?? ?? 48 3B ?? 49 0F 47 ?? 48 85 ?? 74 ?? 48 2B D8 42 8B 04 03 }
+    condition:
+        (1 of ($string_*)) and (($key_1 or (1 of ($c2_list*))) or (1 of ($c2_list*)))
+}
+
+rule Windows_Trojan_Emotet_8b9449c1 {
+    meta:
+        author = "Elastic Security"
+        id = "8b9449c1-41a3-4f4d-b654-6921f2742b9a"
+        fingerprint = "ff15cec5eb41bb9637b570d717151cdc076e88a7b4c3d1c31157d41fe7569318"
+        creation_date = "2022-11-09"
+        last_modified = "2022-12-20"
+        threat_name = "Windows.Trojan.Emotet"
+        reference_sample = "ffac0120c3ae022b807559e8ed7902fde0fa5f7cb9c5c8d612754fa498288572"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $hash_1 = { 8B CB 41 8B D0 D3 E2 41 8B CB D3 E0 03 D0 41 0F BE ?? 03 D0 41 2B D0 49 FF ( C1 | C2 ) }
+        $hash_2 = { 44 8B ?? 44 8B ?? 41 8B CB 41 D3 ?? 8B CB D3 E0 8B C8 8D 42 ?? 66 83 F8 ?? 0F B7 C2 77 ?? 83 C0 ?? 41 2B ?? 41 03 ?? 03 C1 49 83 ?? ?? 41 0F B7 }
+    condition:
+        any of them
+}
+

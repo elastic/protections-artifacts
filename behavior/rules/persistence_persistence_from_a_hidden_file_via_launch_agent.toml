@@ -9,14 +9,17 @@ id = "c6037fad-ad13-46a6-9f7f-4deeef5ac69b"
 license = "Elastic License v2"
 name = "Persistence from a Hidden File via Launch Agent"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 any where event.action == "launch_daemon" and Persistence.runatload == true and
 
  Persistence.args : "*/.*" and
 
- not (Persistence.args :  "/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service" and
+ not (Persistence.args :  
+         ("/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service", 
+          "/Users/*/.docker/run/docker.sock", 
+          "/Library/Bitdefender/AVP/product/bin/bdredline") and
       Persistence.path : "/Library/LaunchDaemons/net.Printix.Service.plist") and
 
  not (process.code_signature.signing_id : ("com.bomgar.bomgar-scc", "com.apple.shove") and process.code_signature.trusted == true)

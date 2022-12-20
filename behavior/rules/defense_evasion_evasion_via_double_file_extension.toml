@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via Double File Extension"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -33,7 +33,9 @@ process where event.action == "start" and
               "8d0434610280c8f94a0e9c29e4c33b97804fab4ab6fc29531ba76acebd2f5518",
               "7e59dec861a2a9ad68bd2758407c256dedb233cab225683db677ab2d2fbec258",
               "fbd43f9a3567a19427894e61052d1b46f70b7474357ef50de9dc8749fc950509",
-              "96234bb98b3266e49ef74ac7accd4644b709355057d5a34b2966e9fa56aadcf3") and
+              "96234bb98b3266e49ef74ac7accd4644b709355057d5a34b2966e9fa56aadcf3",
+              "0ec0ebc7c71ee139ee29fca1e2447b5cc5ec79cb797deb8b560cb05fee3ca3a6",
+              "f4e3e2798fe830eac6990d83f568f6cfbba3a194a7787fe224aa1ba90976eaa7") and
  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true) and
  not (process.code_signature.subject_name : ("AVANQUEST SOFTWARE S.A.S", "Jernej Simončič") and process.code_signature.trusted == true) and 
  not process.executable : ("?:\\Program Files (x86)\\PlotSoft\\PDFill_PDF_Tools\\PlotSoft_PDF.exe", "?:\\Program Files\\Ab Initio\\Ab Initio GDE 4.1.4.0\\Program Files\\ab_zip.exe")

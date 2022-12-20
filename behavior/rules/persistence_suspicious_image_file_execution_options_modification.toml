@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://oddvar.moe/2018/04/10/persistence-using-globalflags-in-image-file-execution-options-hidden-from-autoruns-exe/",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 registry where registry.data.strings != null and
@@ -24,7 +24,10 @@ registry where registry.data.strings != null and
            "*\\PSAppDeployToolkit\\*",
            "%windir%\\System32\\taskkill.exe",
            "ntsd -d",
-           "?:\\Program Files (x86)\\Siemens\\WinCC\\bin\\CCHelpStarter.exe") and
+           "%1",
+           "?:\\Program Files (x86)\\Siemens\\WinCC\\bin\\CCHelpStarter.exe",
+           "SppExtComObjPatcher.exe",
+           "rundll32.exe SppExtComObjHook.dll,PatcherMain") and
  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and registry.data.strings : "svchost.exe") and
  not process.executable :
              ("?:\\Program Files\\KMSpico\\AutoPico.exe",

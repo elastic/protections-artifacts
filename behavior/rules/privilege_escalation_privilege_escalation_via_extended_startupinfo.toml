@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -42,7 +42,12 @@ process where event.action == "start" and
             "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation") and process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and
-      process.args : "CgAgACAAIAAg*" and process.parent.args : "JgBjAGgAYwBwAC4AYwBvAG0AIAA2ADUAMAAwADEAIAA+ACAA*")
+      process.args : "CgAgACAAIAAg*" and process.parent.args : "JgBjAGgAYwBwAC4AYwBvAG0AIAA2ADUAMAAwADEAIAA+ACAA*") and 
+      
+ not process.hash.sha256 : ("3e541100c869dba06ee62252a9661e5a06c2e685a7ddd5288ea1358703412385", "29c977845e4822efe15cc0e44ede3a03e30030d108d2ae9932e34a1c3840283a") and 
+ 
+ not (process.name : "rundll32.exe" and process.command_line : "*winethc*ForceProxyDetectionOnNextRun*" and 
+      process.parent.args : "WdiServiceHost" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
 '''
 
 min_endpoint_version = "7.15.0"

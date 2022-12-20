@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Bitsadmin Activity"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
@@ -80,7 +80,9 @@ process where event.action == "start" and
       "pwsh.exe",
       "cmd.exe"
     )]) and
-    not (process.args : "https://dl.duosecurity.com/*" and process.parent.args : "?:\\ProgramData\\NinjaRMMAgent\\scripting\\*")
+    not (process.args : "https://dl.duosecurity.com/*" and process.parent.args : "?:\\ProgramData\\NinjaRMMAgent\\scripting\\*") and
+    not process.command_line : "bitsadmin  /RawReturn /GetBytesTransferred mingw" and
+    not process.args : "https://opalrtwebsitedata.blob.core.windows.net/software/mingw/*"
 '''
 
 min_endpoint_version = "7.15.0"

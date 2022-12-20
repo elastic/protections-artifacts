@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/higaisa-or-winnti-apt-41-backdoors-old-and-new/",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -31,18 +31,7 @@ process where event.action == "start" and
                   "schtasks.exe",
                   "msiexec.exe")) or
 
-  (process.parent.executable : "?:\\Windows\\hh.exe" and (process.code_signature.trusted == false or process.code_signature.exists == false)) or
-
-  (process.executable : "?:\\Windows\\hh.exe" and
-   process.args : ("?:\\Users\\*\\Downloads\\*",
-                   "?:\\Users\\*\\Content.Outlook\\*",
-                   "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
-                   "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
-                   "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*",
-                   "*.application*",
-                   "http*")) or
-
-   (process.executable : "?:\\Windows\\hh.exe" and process.working_directory : "?:\\" and not process.working_directory : "C:\\")
+  (process.parent.executable : "?:\\Windows\\hh.exe" and (process.code_signature.trusted == false or process.code_signature.exists == false))
   )
 '''
 

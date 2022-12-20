@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -152,7 +152,10 @@ process where event.action == "start" and
   not (process.name : "certutil.exe" and process.args : "-addstore") and
   not (process.parent.executable : "?:\\apps\\sage300\\Programs\\runtime\\a4wcontainerXP.exe" and process.name : "regsvr32.exe") and
   not process.executable : "\\Device\\Mup\\*" and
-  not process.executable : ("?:\\*Visual*Studio\\*\\MSBuild.exe", "?:\\CAMS\\Enterprise\\CAMSServices\\ServiceBroker\\RegAsm.exe")
+  not process.executable : ("?:\\*Visual*Studio\\*\\MSBuild.exe",
+                            "?:\\CAMS\\Enterprise\\CAMSServices\\ServiceBroker\\RegAsm.exe",
+                            "?:\\Witron\\wms\\rt\\axl\\runtime\\bin\\system\\tools\\RegAsm.exe",
+                            "?:\\SpearTrayApplication\\Tray\\regsvr32.exe")
 '''
 
 min_endpoint_version = "7.15.0"

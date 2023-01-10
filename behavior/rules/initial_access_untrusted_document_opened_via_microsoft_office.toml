@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m
@@ -34,7 +34,12 @@ sequence with maxspan=1m
                "?:\\Windows\\SysWOW64\\DWWIN.EXE",
                "?:\\Windows\\Microsoft.NET\\*\\csc.exe",
                "?:\\Windows\\system32\\verclsid.exe",
-               "?:\\Windows\\SysWOW64\\verclsid.exe") and
+               "?:\\Windows\\SysWOW64\\verclsid.exe",
+               "D:\\Microsoft office 2016\\office2016\\Office16\\*.EXE",
+               "D:\\Programs\\Foxit Software\\Foxit PhantomPDF\\Plugins\\Creator\\FoxitProxyServer_Socket_PH.exe",
+               "\\\\*",
+               "\\Device\\Mup\\*") and
+  not (process.name : "BrowserSubprocess.exe" and process.command_line : "*--type=gpu-process*--no-sandbox*") and
   not (process.code_signature.subject_name :
           ("Zhuhai Kingsoft Office Software Co., Ltd.",
            "Poll Everywhere, Inc.",
@@ -65,7 +70,9 @@ sequence with maxspan=1m
   not process.hash.sha256 : 
              ("e68d9768f1d1c2ef2e614dec47e5f0719030073373533603f3e9a914b5607d85", 
               "ded86974860dd9802db04d92409c05e2ff8b3de7f172c957c34861bbad6a9af3",
-              "4a21f9b556046a31878a3f44e1d210baee7663cc5f9d8e980f67e180a6dd3592")
+              "4a21f9b556046a31878a3f44e1d210baee7663cc5f9d8e980f67e180a6dd3592",
+              "bc1ec9584f749b1d264cf1ce040e98f96de680efd74a1dab2de53e8d481c5b79",
+              "b72b18af7ed446db1630a2263c76fc3cbde6c189f88ea7ba4e42ecf61cb0ee8b")
   ] by process.parent.entity_id
 '''
 

@@ -1,0 +1,42 @@
+[rule]
+description = """
+Identifies Microsoft Local Bridge executable with suspicious arguments that may indicate an attempt to exploit Microsoft
+ms-officecmd URL handler via an argument injection vulnerability.
+"""
+id = "12e6ac2e-a429-4f54-abb2-eaa5713a4d06"
+license = "Elastic License v2"
+name = "Suspicious Execution via Microsoft OfficeCmd URL Handler"
+os_list = ["windows"]
+reference = ["https://positive.security/blog/ms-officecmd-rce"]
+version = "1.0.11"
+
+query = '''
+process where event.action == "start" and
+ (process.name : "LocalBridge.exe" and process.command_line : "*ms-officecmd*LaunchOfficeAppForResult*--gpu-launcher*") or
+ (process.parent.name : "LocalBridge.exe" and process.parent.command_line : "*ms-officecmd*LaunchOfficeAppForResult*--gpu-launcher*") or
+ /* generic condition to capture abuses of Electron Apps --gpu-launcher switch for proxy execution */
+ (process.parent.command_line : "*--disable-gpu-sandbox*--gpu-launcher=*" and not process.parent.name : "LocalBridge.exe")
+'''
+
+min_endpoint_version = "7.14.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1189"
+name = "Drive-by Compromise"
+reference = "https://attack.mitre.org/techniques/T1189/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.14.0"

@@ -1,0 +1,71 @@
+[rule]
+description = """
+Identifies the modification of the Extensible Firmware Interface (EFI) files. Advanced adversaries may abuse Pre-OS Boot
+mechanisms as a way to establish persistence in a system.
+"""
+id = "22fbd47a-8c72-4117-9355-f07fdcd9c0f4"
+license = "Elastic License v2"
+name = "Persistence via Extensible Firmware Modification"
+os_list = ["windows"]
+reference = [
+    "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
+    "https://securelist.com/finspy-unseen-findings/104322/",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id
+ [process where event.action == "start" and
+  not (process.pe.original_file_name :
+         ("SetupHost.exe", "wbengine.exe", "BitLockerWizardElev.exe", "BitLockerDeviceEncryption.exe",
+          "omadmclient.exe", "TSManager.exe") and process.code_signature.subject_name : "Microsoft *" and
+          process.code_signature.trusted == true) and
+
+  not process.hash.sha256 : 
+             ("07abbd7cd2693bc7b99c030ca86767d14e89a4c834cf9b5ae40ccf322ca81280", 
+              "eee7c0e92277ada0e4d57a0a2ef30f102bf6b311ba0a891f3db28fa0d5ee8f56", 
+              "ffac39846b01ad8d9b1074108ace1e148b8d1805b7790e15fe8975f1a4dac5df", 
+              "e9373fdb8824e4431aba0c1df68ccc6ae098dab635f3504f7ee6efdfd97462da") and
+
+  not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 
+  
+  not process.parent.executable : "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe" and 
+  
+  not (process.executable : "?:\\Windows\\HP\\Installer.exe" and process.args : "-bestsize" and process.args : "-uefisupport") and 
+
+  not (process.pe.original_file_name : ("rufus*.exe", "HPFirmwareUPDREC.exe", "HpHwDiagA.dll", "Deployer.exe", "beremote.exe") and
+       process.code_signature.subject_name: ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC") and
+       process.code_signature.trusted == true) and
+
+  not (process.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.args : "BDESVC" and process.parent.name : "services.exe")] as event0
+ [file where event.action != "deletion" and file.path :"\\Device\\HarddiskVolume*\\EFI\\*" and
+
+  not (process.name : "PowerShell.exe" and file.path : "\\Device\\HarddiskVolume1\\EFI\\HP\\DEVFW\\Firmware.BIN" and
+       event0.process.args : "?:\\WINDOWS\\IMECache\\HealthScripts\\*.ps1") and
+
+  not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\*.log")]
+ until [process where event.action : "end"]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1542"
+name = "Pre-OS Boot"
+reference = "https://attack.mitre.org/techniques/T1542/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

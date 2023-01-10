@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -21,7 +21,9 @@ sequence by process.entity_id with maxspan=2m
   not process.Ext.token.integrity_level_name == "system" and
   not process.command_line : ("*:\\Program Files\\*.exe", "*:\\Program Files (x86)\\*.exe", "*\\\\*\\SYSVOL\\*") and
   not process.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe" and
-  not (process.name : "powershell.exe" and process.command_line : ("*$env:APPDATA*Browser Assistant*", "*MicrosoftEdgeAutoLaunch*GoogleChromeAutoLaunch*"))
+  not (process.name : "powershell.exe" and process.command_line : ("*$env:APPDATA*Browser Assistant*", "*MicrosoftEdgeAutoLaunch*GoogleChromeAutoLaunch*")) and
+  not (process.pe.original_file_name : "Teams.exe" and process.code_signature.trusted == true) and
+  not (process.name : "cscript.exe" and process.args : "?:\\Program Files\\Nextech\\NxTSAddin\\InstallNXTSAddinForCurrentUser.vbs")
   ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (

@@ -5,27 +5,31 @@ extension handler which runs a PowerShell command when a file with a matching ex
 """
 id = "f7e6d239-9af5-42e3-8d23-91e7188a5cb0"
 license = "Elastic License v2"
-name = "SolarMarker Backdoor Registry Modification"
+name = "Suspicious Shell Extension Handler Registry Modification"
 os_list = ["windows"]
 reference = [
     "https://blog.morphisec.com/new-jupyter-evasive-delivery-through-msi-installer",
     "https://www.ired.team/offensive-security/persistence/hijacking-default-file-extension",
     "https://www.binarydefense.com/mars-deimos-solarmarker-jupyter-infostealer-part-1/",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and 
-   process.name : ("reg.exe", "powershell.exe", "msiexec.exe")]
+   (
+    process.name : ("reg.exe", "powershell.exe", "msiexec.exe", "rundll32.exe", "regsvr32.exe") or
+    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") or
+    (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300)
+    )]
  [registry where
   registry.path : ("HKEY_USERS\\S-1-5-21-*Classes\\*\\shell\\open\\command*", "HKEY_USERS\\S-1-12-1-*Classes\\*\\shell\\open\\command*") and
 
   /* Command value contains PowerShell and its length is greater or equal than 200 chars */
-  registry.data.strings : "*PowerShell*" and length(registry.data.strings) >= 200]
+  registry.data.strings : ("*PowerShell*", "*SyncAppvPublishingServer*", "*cmd.exe *", "*FromBase64String*") and length(registry.data.strings) >= 200]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"
@@ -67,4 +71,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"

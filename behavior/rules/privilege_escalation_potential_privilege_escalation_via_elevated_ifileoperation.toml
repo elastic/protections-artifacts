@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via Elevated IFileOperation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileoperation"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=1m
@@ -35,7 +35,8 @@ sequence with maxspan=1m
                 "?:\\Windows\\syswow64\\*",
                 "?:\\Program Files (x86)\\Microsoft\\*",
                 "?:\\Program Files\\Microsoft\\*") and
-  not (dll.code_signature.subject_name : "Microsoft *" and dll.code_signature.trusted == true)] by dll.path
+  not (dll.code_signature.subject_name : "Microsoft *" and dll.code_signature.trusted == true) and
+  not dll.hash.sha256 : "5177f7b0d88bf122b2b7e94293513cefee82970d8b5697e12821ccbe091c8e15"] by dll.path
 '''
 
 min_endpoint_version = "7.16.0"

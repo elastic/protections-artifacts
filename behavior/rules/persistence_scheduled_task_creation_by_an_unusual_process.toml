@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5m
@@ -63,7 +63,10 @@ sequence with maxspan=5m
               "?:\\Windows\\System32\\Tasks\\npcapwatchdog",
               "?:\\Windows\\System32\\Tasks\\ChocoUpgrade",
               "?:\\Windows\\System32\\Tasks\\ansible-ansible.windows.win_updates",
-              "?:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\PowerShell\\ScheduledJobs\\ansible-win-updates"))
+              "?:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\PowerShell\\ScheduledJobs\\ansible-win-updates")) and
+
+    not (file.name : "Microsoft Office 1? Sync Maintenance for *" and file.size >= 5200 and file.size <= 5300 and
+         Effective_process.name : ("winword.exe", "excel.exe", "powerpnt.exe"))
     ] by Effective_process.entity_id
 '''
 

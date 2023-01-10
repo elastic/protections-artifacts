@@ -1,0 +1,199 @@
+[rule]
+description = """
+Identifies the instantiation of a registered COM object by classID via DllHost and by an unusual process such as Windows
+scripts interpreters, recently dropped unsigned executables and common signed proxy binaries like Rundll32. Adversaries
+may use the Windows Component Object Model (COM) for local code execution, evasion or persistence.
+"""
+id = "f678ec9a-c348-485c-ac9e-84b0923ff5f5"
+license = "Elastic License v2"
+name = "Suspicious Windows Component Object Model via DLLHOST"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=5m
+ [process where event.action == "start" and
+    (
+     /* common initial access processes */
+     process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
+                     "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "winword.exe", "excel.exe", "powerpnt.exe",
+                     "powershell.exe")  or
+
+    /* unsigned or untrusted codesign */
+    ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+      (process.Ext.relative_file_creation_time <= 500 or process.Ext.relative_file_name_modify_time <= 500) and
+      not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) or
+
+    /* common abused paths */
+    process.executable :
+         ("?:\\Users\\Public\\*",
+          "?:\\Users\\*\\AppData\\Roaming\\*",
+          "?:\\Windows\\Microsoft.NET\\*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
+          "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
+          "\\Device\\CdRom*",
+          "\\Device\\Mup\\*",
+          "\\\\*") or
+
+    /* execution from a mounted device */
+    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")
+    ) and
+
+    /* known FPs */
+    not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and process.parent.name : "msiexec.exe") and
+    not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+    not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and process.code_signature.trusted == true) and
+    not (process.name : "rundll32.exe" and process.args : ("shell32.dll,Control_RunDLL", "printui.dll,PrintUIEntryDPIAware"))
+   ] by process.entity_id
+ [process where event.action == "start" and
+   process.name : "dllhost.exe" and
+   process.Ext.effective_parent.name regex~ ".+"  and
+
+   /* excluding common noisy COM objects by classid */
+   not process.args :
+          (
+            /* Wininet */
+            "/Processid:{3EB3C877-1F16-487C-9050-104DBCD66683}",
+
+            /* Thumbnail Cache Class Factory via Explorer.exe */
+            "/Processid:{AB8902B4-09CA-4BB6-B78D-A8F59079A8D5}",
+
+            /* Web Platform Storage COM object */
+            "/Processid:{973D20D7-562D-44B9-B70B-5A0F49CCDF3F}",
+
+            /* SPP Class - diverse third party spp.dll */
+            "/Processid:{F32D97DF-E3E5-4CB9-9E3E-0EB5B4E49801}",
+
+            /* Shell Create Object Task Server - Taskhostw */
+            "/Processid:{133EAC4F-5891-4D04-BADA-D84870380A80}",
+
+            /* COpenControlPanel via Explorer.exe */
+            "/Processid:{06622D85-6856-4460-8DE1-A81921B41C4B}",
+
+            /* UIAutomationCrossBitnessHook32 Class */
+            "/Processid:{60A90A2F-858D-42AF-8929-82BE9D99E8A1}",
+
+            /* Adobe-Reader - Acrobat.exe */
+            "/Processid:{FD2C8897-2BE8-459C-B8E4-0D2FCFD341F0}",
+
+            /* SCCM related */
+            "/Processid:{7DBDD3CA-11BD-406C-9EE4-B0AAE170EE2E}",
+            "/Processid:{9967A433-A640-4A56-8C3D-D8E8F95FF8F3}",
+
+            /* PSIProfileNotify - UserEnv.dll */
+            "/Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
+
+            /* Microsoft.GroupPolicy.Reporting.ReportFactory */
+            "/Processid:{7F9BBC82-BA5F-4448-8622-EF76B8D007E6}",
+
+            /* Photoviewer.dll */
+            "/Processid:{76D0CB12-7604-4048-B83C-1005C7DDC503}",
+
+            /* PrintTicket */
+            "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}",
+
+            /* Virtual Factory for Windows Defender */
+            "/Processid:{A4B07E49-6567-4FB8-8D39-01920E3B2357}",
+
+            /* ScanSnap */
+            "/Processid:{01F2A744-DEB2-471C-A883-0105FF8BFF2D}",
+
+            /* Shell Indexer Admin Object */
+            "/Processid:{3F4D7BB8-4F38-4526-8CD3-C44D68689C5F}",
+
+            /* RemoteProxyFactory32 */
+            "/Processid:{53362C32-A296-4F2D-A2F8-FD984D08340B}",
+
+            /* Region and Language */
+            "/Processid:{514B5E31-5596-422F-BE58-D804464683B5}",
+
+            /* Network and Sharing Center */
+            "/Processid:{7A076CE1-4B31-452A-A4F1-0304C8738100}",
+
+            /* Virtual Factory for Power Options */
+            "/Processid:{BBD8C065-5E6C-4E88-BFD7-BE3E6D1C063B}",
+
+            /* IIS Config */
+            "/Processid:{9FA5C497-F46D-447F-8011-05D03D7D7DDC}",
+
+            /* Shortcut */
+            "/Processid:{00021401-0000-0000-C000-000000000046}")] by process.Ext.effective_parent.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+[[threat.technique]]
+id = "T1559"
+name = "Inter-Process Communication"
+reference = "https://attack.mitre.org/techniques/T1559/"
+[[threat.technique.subtechnique]]
+id = "T1559.001"
+name = "Component Object Model"
+reference = "https://attack.mitre.org/techniques/T1559/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

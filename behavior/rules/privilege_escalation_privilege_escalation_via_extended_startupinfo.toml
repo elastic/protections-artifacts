@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -33,13 +33,15 @@ process where event.action == "start" and
                            "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
                            "?:\\Program Files\\*.exe",
                            "?:\\Program Files (x86)\\*.exe",
+                           "?:\\Windows\\System32\\osk.exe",
                            "?:\\Windows\\System32\\Narrator.exe") and
 
  not process.parent.executable : ("?:\\Windows\\System32\\AtBroker.exe", "?:\\Windows\\System32\\Utilman.exe") and
 
  not (process.code_signature.subject_name in
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
-            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation") and process.code_signature.trusted == true) and
+            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation", "Samsung Electronics CO., LTD.") and
+       process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and
       process.args : "CgAgACAAIAAg*" and process.parent.args : "JgBjAGgAYwBwAC4AYwBvAG0AIAA2ADUAMAAwADEAIAA+ACAA*") and 

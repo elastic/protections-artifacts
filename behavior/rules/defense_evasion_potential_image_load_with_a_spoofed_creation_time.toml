@@ -1,0 +1,94 @@
+[rule]
+description = """
+Identifies the load of a library with a modified file creation time. Adversaries may modify file time attributes to
+blend malicious content with existing files. Timestomping is a technique that modifies the timestamps of a file often to
+mimic files that are in trusted directories.
+"""
+id = "69b2dd59-13ba-4bda-8d0d-cf0e28eb1323"
+license = "Elastic License v2"
+name = "Potential Image Load with a Spoofed Creation Time"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1070/006/",
+    "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action == "creation" and file.Ext.header_bytes : "4d5a*" and
+
+  not user.id : "S-1-5-18" and
+
+  file.path : ("?:\\Windows\\system32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files\\Microsoft\\*",
+               "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*",
+               "?:\\Program Files\\Google\\Chrome\\*.dll", "?:\\Program Files\\Internet Explorer\\*.dll",
+               "?:\\Program Files\\Mozilla Firefox\\*.dll") and
+
+  not process.executable :
+             ("?:\\Windows\\system32\\msiexec.exe",
+              "?:\\Windows\\SysWOW64\\msiexec.exe",
+              "?:\\windows\\system32\\drvinst.exe",
+              "?:\\windows\\SysWOW64\\drvinst.exe",
+              "?:\\Program Files (x86)\\*.exe",
+              "?:\\Program Files\\*.exe",
+              "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe")] by file.path as event0
+ [library where
+
+  /* set to 6months, malwares often spoof creation times to at least 1 years */
+  dll.Ext.relative_file_creation_time >= 15778476 and
+
+  /* 5m */
+  dll.Ext.relative_file_name_modify_time <= 300 and
+
+  not (dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and process.pid != 4) and
+
+  dll.path : ("?:\\Windows\\system32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files\\Microsoft\\*",
+               "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*",
+               "?:\\Program Files\\Google\\Chrome\\*.dll", "?:\\Program Files\\Internet Explorer\\*.dll",
+               "?:\\Program Files\\Mozilla Firefox\\*.dll") and
+
+  not startswith~(dll.name, process.name) and
+
+  event0.process.executable != process.executable and
+
+  not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+       not process.executable : ("?:\\Program Files*\\Microsoft\\*.exe", "?:\\Program Files*\\Google\\Chrome\\*.exe",
+                                 "?:\\Program Files*\\Internet Explorer\\*.exe", "?:\\Program Files*\\Mozilla Firefox\\*.exe")) and
+
+  not dll.hash.sha256 : "9ac63dcf5a2437ed43cb143479ec4a810915017d8eb138a7fede88867e2a8121" and
+  not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true)
+  ] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.006"
+name = "Timestomp"
+reference = "https://attack.mitre.org/techniques/T1070/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

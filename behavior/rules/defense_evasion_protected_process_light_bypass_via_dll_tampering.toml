@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -37,7 +37,8 @@ sequence by process.entity_id with maxspan=3s
   not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe") and
   not dll.path : "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*" and
   not (dll.path : "?:\\Program Files\\BackupClient\\DeviceLock\\DLDrvUserMode64.dll" and
-       dll.hash.sha256 : "ab813df167f8b6afe13f67231328f28fa3b0efeed8460f8b5e8a4228a8cded4e")
+       dll.hash.sha256 : "ab813df167f8b6afe13f67231328f28fa3b0efeed8460f8b5e8a4228a8cded4e") and
+  not dll.hash.sha256 : "6f8761d35b531dde2e8fd60bdcfd16cee46d48b84a2e0c28fecd1b66675faf48"
   ]
 '''
 

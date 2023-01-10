@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies suspicious execution from an installer via Managed Custom Action. Adversaries may abuse msiexec.exe
+installers with malicious custom actions to install malware.
+"""
+id = "68c8d90f-6cec-44bd-af40-d0082c49db0b"
+license = "Elastic License v2"
+name = "Execution via Windows Installer Managed Action"
+os_list = ["windows"]
+reference = [
+    "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
+    "https://learn.microsoft.com/en-us/windows/win32/msi/custom-actions",
+]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and not user.id : "S-1-5-18" and
+ process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and
+  (
+   process.name : ("rundll32.exe", "regsvr32.exe", "cmd.exe", "powershell.exe", "msbuild.exe", "mshta.exe", "wscript.exe", "cscript.exe") or
+   (process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\ProgramData\\*", "?:\\Users\\Public\\*") and process.code_signature.exists == false) or
+   (process.executable : "?:\\Windows\\Microsoft.NET\\*" and not process.name : "csc.exe")
+  ) and
+  not (process.name : "powershell.exe" and process.command_line : "* -Version * -s -NoLogo -NoProfile*") and
+  not (process.name : "cmd.exe" and
+       process.command_line : ("\"cmd.exe\" /C Ver",
+                               "\"cmd.exe\"",
+                               "\"cmd\" /c dotnet --list-runtimes",
+                               "\"cmd.exe\" /c pnputil /enum-drivers",
+                               "*:\\Program Files (x86)\\*",
+                               "*:\\Program Files\\*",
+                               "*sc.exe delete*",
+                               "*/c pnputil*",
+                               "*?:\\WINDOWS\\system32\\drivers*")) and
+  not (process.name : "regasm.exe" and process.parent.args : "Smartbar.Installer.CustomActions!Linkury.Installer.CustomActions.CustomActions.InstallationComplete") and 
+  not (process.name : "powershell.exe" and process.command_line : "\"powershell\" Set-NetIPInterface \"Twingate\" -InterfaceMetric 1")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "3f1cbf09-dba1-428d-8c84-a86db573889e"
 license = "Elastic License v2"
 name = "Driver Dropped by Untrusted Executable"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=5m
@@ -15,11 +15,12 @@ sequence with maxspan=5m
   (file.extension : "sys" or file.Ext.header_bytes : "4d5a*") and
   (process.code_signature.trusted == false or process.code_signature.exists == false) and
   not process.executable : ("?:\\Windows\\System32\\drvinst.exe",
-                            "?:\\ProgramData\\Lenovo\\SystemUpdate\\sessionSE\\Repository\\*\\WINUPTP.EXE",
-                            "?:\\Program Files (x86)\\SimHub\\SimHubWPF.exe",
-                            "?:\\Program Files (x86)\\SCCA\\ePass3000GM_SCCA\\ePass3000_drv\\InstDrvAction.exe",
-                            "?:\\Program Files\\Amazon Web Services, Inc\\Amazon WorkSpaces\\pcoipusb\\bin\\USB\\pcoip_hub_filter_installer.exe") and
-  not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired") and 
+                            "?:\\ProgramData\\Lenovo\\*.EXE",
+                            "?:\\Program Files (x86)\\*.exe",
+                            "?:\\Program Files\\*.exe",
+                            "?:\\Windows\\System32\\msiexec.exe",
+                            "?:\\Windows\\SoftwareDistribution\\Download\\*") and
+  not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired", "errorUntrustedRoot", "errorChaining") and
   not (process.executable : "?:\\Windows\\Temp\\*\\NIC_Intel_Firmware\\nvmupdatew64e.exe" and file.path : "?:\\Windows\\System32\\drivers\\iqvw64e.sys")] by file.path
  [library where process.pid == 4 and
   not dll.pe.imphash :
@@ -44,7 +45,8 @@ sequence with maxspan=5m
            "c51e532cddc815f09d5892bba99352e2",
            "596983b0a04a95e4261a4f893103c16e",
            "5f4d38669edea237e4e569abdfb7a2e5",
-           "26d49feec51abdaa0b95edec8a8754b9") and
+           "26d49feec51abdaa0b95edec8a8754b9",
+           "55db306bc2be3ff71a6b91fd9db051b8") and
    not (dll.code_signature.subject_name : ("FinalWire Kft.", "Musaruba US LLC") and dll.code_signature.trusted == true)] by dll.path
 '''
 

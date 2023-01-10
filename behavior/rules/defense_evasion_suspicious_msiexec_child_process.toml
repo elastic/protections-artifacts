@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -49,7 +49,8 @@ process where event.action == "start" and
                 "*\\AppData\\Roaming\\BBWC\\*",
                 "*$env:APPDATA*/Browser Extension/*")) and 
                 
-    not (process.name : "regsvr32.exe" and process.args :  "/i:user" and process.args : "/n")
+    not (process.name : "regsvr32.exe" and process.args :  "/i:user" and process.args : "/n") and
+    not (process.executable : "?:\\ProgramData\\*\\*\\*" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "7.15.0"

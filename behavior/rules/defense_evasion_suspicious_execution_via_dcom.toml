@@ -1,0 +1,151 @@
+[rule]
+description = """
+Identifies suspicious execution via the Distributed Component Object Model service. This may indicate an attempt to
+evade detection via suspicious process tree.
+"""
+id = "8f3b570f-afe6-4974-8842-b6ac71cd9ea9"
+license = "Elastic License v2"
+name = "Suspicious Execution via DCOM"
+os_list = ["windows"]
+reference = [
+    "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
+    "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
+]
+version = "1.0.9"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and 
+  process.parent.name : "svchost.exe" and
+  (
+   process.Ext.effective_parent.executable : 
+                ("?:\\Users\\*",
+                 "?:\\Windows\\Temp\\*",
+                 "?:\\Windows\\Tasks\\*",
+                 "?:\\ProgramData\\*",
+                 "?:\\Windows\\Microsoft.NET\\*") or
+
+   process.Ext.effective_parent.name : ("powershell.exe", "cscript.exe", "wscript.exe", "rundll32.exe", "regsvr32.exe",
+                                         "mshta.exe", "msbuild.exe", "winword.exe",  "excel.exe", "powerpnt.exe", "outlook.exe",
+                                         "InstallUtil.exe", "Microsoft.Workflow.Compiler.exe", "ScriptRunner.exe", "pwsh.exe", "cmd.exe")
+   ) and
+
+   /* excluding AppInfo WerFault Openwith and Dllhost */
+   not process.executable :
+            ("?:\\Windows\\System32\\WerFault.exe",
+             "?:\\Windows\\SysWOW64\\WerFault.exe",
+             "?:\\Windows\\system32\\OpenWith.exe",
+             "?:\\Windows\\System32\\prevhost.exe",
+             "?:\\Windows\\SysWOW64\\prevhost.exe",
+             "?:\\Windows\\System32\\vdsldr.exe",
+             "?:\\Windows\\SysWOW64\\vdsldr.exe",
+             "?:\\Windows\\System32\\CredentialUIBroker.exe",
+             "?:\\WINDOWS\\System32\\DriverStore\\FileRepository\\*.exe") and 
+   /* excluding AppInfo */
+   not process.parent.Ext.real.pid > 0 and 
+   /* noisy FPs */
+   not (process.name : "rundll32.exe" and process.args : ("?:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie", "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141")) and
+
+   not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09"
+   ] by process.entity_id
+  [process where event.action : "start" and
+
+   not process.executable :
+               ("?:\\Program Files (x86)\\*.exe",
+                "?:\\Program Files\\*.exe",
+                "?:\\WINDOWS\\splwow64.exe",
+                "?:\\Windows\\System32\\IESettingSync.exe",
+                "?:\\WINDOWS\\system32\\srtasks.exe",
+                "?:\\Windows\\System32\\WerFault.exe",
+                "?:\\Windows\\SysWOW64\\WerFault.exe",
+                "?:\\Windows\\System32\\DWWIN.EXE",
+                "?:\\Windows\\SysWOW64\\DWWIN.EXE",
+                "?:\\Windows\\system32\\msiexec.exe",
+                "?:\\Windows\\SysWOW64\\msiexec.exe",
+                "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",
+                "?:\\Windows\\SysWOW64\\unregmp2.exe",
+                "?:\\WINDOWS\\system32\\verclsid.exe",
+                "?:\\Windows\\system32\\dllhost.exe",
+                "?:\\Windows\\SysWOW64\\dllhost.exe",
+                "?:\\Windows\\System32\\mspaint.exe",
+                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and
+
+   not process.parent.executable :
+               ("?:\\Program Files (x86)\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",
+                "?:\\Program Files\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe") and
+
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name :
+                                    ("Google LLC",
+                                     "CASERIS GmbH",
+                                     "Black Ice Software LLC",
+                                     "Citrix Systems, Inc.",
+                                     "Dropbox, Inc",
+                                     "Hidden Reflex",
+                                     "TEAMDEV LTD.",
+                                     "CANON INC.",
+                                     "Cisco WebEx LLC",
+                                     "Avast Software s.r.o.",
+                                     "Brave Software, Inc.",
+                                     "FOXIT SOFTWARE INC.",
+                                     "Daishin Securities Co., LTD",
+                                     "AVG Technologies USA, LLC")) and
+
+   not (process.executable :
+              ("?:\\Users\\*",
+               "?:\\Windows\\System32\\spool\\drivers\\*",
+               "?:\\ProgramData\\") and process.code_signature.trusted == true) and
+
+   not (process.name : "rundll32.exe" and
+        process.command_line :
+                ("*windows\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus*",
+                 "*WINDOWS\\system32\\inetcpl*ClearMyTracksByProcess*")) and
+
+   not (process.name : "regsvr32.exe" and process.parent.name : "dllhost.exe" and
+        process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and
+
+   not process.hash.sha256 :
+               ("4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
+                "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d")
+   ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.003"
+name = "Distributed Component Object Model"
+reference = "https://attack.mitre.org/techniques/T1021/003/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.4.0"

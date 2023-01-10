@@ -1,0 +1,100 @@
+[rule]
+description = """
+Adversaries may use access tokens to operate under a different user or system security context to elevate privileges and
+evade detection. For example, an attacker can create a new process that runs under the security context of another user
+in order to perform actions they would not normally have privileges for.
+"""
+id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
+license = "Elastic License v2"
+name = "Access Token Manipulation via Child Process"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence
+ [process where event.action == "start" and
+  process.Ext.token.integrity_level_name in ("low", "medium", "high") and user.id != null and
+  (
+    /* limit to recently created files or */
+    process.Ext.relative_file_creation_time < 500 or
+
+    /* commonly abused lolbins */
+    process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe", "wscript.exe", "cscript.exe", "msbuild.exe")
+   ) and
+
+  not (process.executable : "C:\\Windows\\System32\\rundll32.exe" and process.parent.name : "explorer.exe" and
+       process.args : ("printui.dll,PrintUIEntryDPIAware", "cryptext.dll,CryptExtAddPFX")) and
+
+  not (process.code_signature.trusted == true and
+       process.executable :
+              ("?:\\Program Files\\*",
+               "?:\\Program Files (x86)\\*",
+               "?:\\Users\\*",
+               "?:\\ProgramData\\*",
+               "?:\\Windows\\Temp\\*")) and
+
+  not (process.name : ("wscript.exe", "cscript.exe", "powershell.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+
+   ] by process.entity_id as event0
+ [process where event.action == "start" and user.id != null and
+  not process.Ext.token.integrity_level_name : "system" and
+
+  /* running as a different user than its parent process */
+  user.id != event0.user.id and
+
+  /* common FP patterns */
+  not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\System32\\SHELL32.dll,RunAsNewUser_RunDLL") and
+
+  /* non MS signed FPs */
+  not (process.code_signature.subject_name :
+                   ("Lenovo", "Adobe Inc.", "Brave Software, Inc.", "HP Inc.", "Splashtop Inc.", "GN AUDIO A/S",
+                    "Oracle America, Inc.", "Brother Industries, Ltd.") and process.code_signature.trusted == true) and
+
+  not process.executable :
+            ("?:\\Windows\\System32\\ntprint.exe",
+             "?:\\Windows\\System32\\timeout.exe",
+             "?:\\Windows\\System32\\printui.exe",
+             "?:\\Program Files\\*",
+             "?:\\Program Files (x86)\\*") and
+
+  not (process.pe.original_file_name : ("Bootstrapper.exe") and process.code_signature.trusted == true) and
+
+  not process.hash.sha256 :
+            ("b2b8a7156ec0079a1801db1647d6dbc4206345689772495eac311e0e6afcad57",
+             "2c476f212dc61977ae3deb9319fa21242524f3b6dd30803715659a9618316089",
+             "b2f6de33dc0dfd256f9708a09b853a96d5cf5bffcaf52aa1331b3b4242421667",
+             "a02e0984d790393aea56252f45dd58d25cdfa4501efb40efadecd90145717c35") and
+
+  not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*")
+  ] by process.parent.entity_id
+
+  until [process where event.action:"end"] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.4.0"

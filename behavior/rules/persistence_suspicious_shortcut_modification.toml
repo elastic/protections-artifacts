@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
@@ -31,7 +31,11 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
             "?:\\Windows\\System32\\audiodg.exe",
             "?:\\Program Files*\\Google\\Update\\GoogleUpdate.exe",
             "?:\\Program Files*\\Sophos\\Live Query\\SophosOsquery.exe",
-            "?:\\Program Files*\\independenceIT\\Cloud Workspace Client\\ApplicationServices.exe") and
+            "?:\\Program Files*\\independenceIT\\Cloud Workspace Client\\ApplicationServices.exe",
+            "?:\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.Outlook_*\\OUTLOOK.EXE",
+            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe",
+            "?:\\Windows\\servicing\\TrustedInstaller.exe",
+            "?:\\Windows\\System32\\VSSVC.exe") and
   file.path :
      ("?:\\Users\\*\\Desktop\\*.lnk",
       "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",

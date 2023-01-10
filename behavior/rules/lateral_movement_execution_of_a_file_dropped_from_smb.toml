@@ -1,0 +1,161 @@
+[rule]
+description = """
+Identifies the execution of a file that was created by the virtual system process and subsequently executed. This may
+indicate lateral movement via network file shares.
+"""
+id = "be55434a-ae96-437e-aaaf-9fb60cd7dff4"
+license = "Elastic License v2"
+name = "Execution of a File Dropped from SMB"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=5m
+  [file where event.action != "deletion" and
+   /* library dropped via SMB */
+   process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+   (file.extension : "exe" or file.Ext.header_bytes : "4d5a*")] by file.path
+  [process where event.action == "start" and
+    process.parent.name : ("wmiprvse.exe", "wsmprovhost.exe", "RemComSvc*.exe", "psexesvc*.exe", "KaseyaEndpoint.exe", "powershell.exe") and
+
+    /* Signed False Positives */
+
+	 not (process.code_signature.subject_name :
+	                                  ("RAPIDFIRE TOOLS INC.",
+					   "Arcserve (USA) LLC",
+					   "PDQ.COM CORPORATION",
+					   "Veeam Software Group GmbH",
+					   "Veeam Software AG",
+					   "LANDesk Software, Inc.",
+					   "Cynet Security LTD",
+					   "CyberArk Software Ltd.",
+					   "Barracuda Networks, Inc.",
+					   "AVG Technologies Canada, Inc.",
+					   "ConnectWise, Inc.",
+					   "Ivanti, Inc.",
+					   "FUJITSU LIMITED",
+					   "Shavlik Technologies",
+					   "Kaspersky Lab JSC",
+					   "Netalytics Security Inc",
+					   "Elasticsearch, Inc.",
+					   "Netwrix Corporation",
+					   "Power Admin LLC",
+					   "Notepad++",
+					   "The Apache Software Foundation",
+					   "HashInclude Computech Pvt. Ltd.",
+					   "DIGITAL DEFENSE, INC",
+					   "Snow Software AB",
+					   "GOVERLAN, LLC",
+					   "Veritas Technologies LLC",
+					   "Bitdefender SRL",
+					   "Kaseya Corporation",
+					   "Insecure.Com LLC",
+					   "ZOHO Corporation Private Limited",
+					   "VMware, Inc.",
+					   "Medical Information Technology, Inc.",
+					   "baramundi software AG",
+					   "ServiceNow, Inc.",
+					   "Panda Security, S.L.",
+					   "CoSoSys SRL",
+					   "N-ABLE TECHNOLOGIES LTD",
+					   "CISCO SYSTEMS, INC.",
+					   "TeamViewer Germany GmbH",
+					   "SysAid Technologies LTD",
+					   "Sophos Ltd",
+					   "Ericsson",
+					   "Quest Software Inc.",
+					   "Commvault Systems, Inc.",
+					   "Red Gate Software Ltd",
+					   "itelio GmbH",
+					   "Cocobolo Software, LLC",
+					   "Tenable Network Security Inc.",
+					   "CS.NIWC-ATLANTIC.001",
+					   "Lansweeper",
+					   "Lenovo",
+					   "Acronis International GmbH",
+					   "Cisco WebEx LLC",
+					   "Helge Klein GmbH",
+					   "FireEye, Inc.",
+					   "Oracle America, Inc.",
+					   "Chocolatey Software, Inc.",
+					   "Micro Focus Group Limited",
+					   "Solarwinds Worldwide, LLC",
+					   "Cyberark Software Ltd.",
+					   "AO Kaspersky Lab",
+					   "Symantec Corporation") and process.code_signature.trusted == true) and
+
+	not (process.code_signature.subject_name in ("Medical Information Technology, Inc.", "CyberArk Software Ltd.", "VMware, Inc.", "Veritas Technologies LLC") and
+	       process.code_signature.status in ("errorTimeStamp", "errorChaining")) and
+
+    not (process.code_signature.subject_name : "Microsoft *" and
+	       process.code_signature.trusted == true and
+	       process.pe.original_file_name in ("MOMAgentInstaller.exe", "dotnet-hosting-*-win.exe", "dpmac.exe", "PushClient.exe",
+	                                         "migrate.exe", "Ms.Dsp.Do.Inc.Installer.exe", "OpenHandleCollector.exe", "VC_redist*.exe")) and
+
+    /* fart-it.sourceforge.net, IseExecSvc, OCS Inventory Agent,Tenable MW Scanner and HPCmdSvc */
+    not process.hash.sha256 in
+	         ("c9ef35bed70ffa0981bafd0071185b56fdad8f9c97f3582a4dae9b420959fb97",
+	          "18dc098895ccc8246d417445a36d933c5f8487419b848ebe651fd0e11cb22afa",
+	          "ea98309a35f92443b9c50736ce208656ec72af114ec8aceeb02dfa041ec2d6bc",
+	          "bcf07679ea026f1dfba6f9ab63251e4834dc007bd2c5b9039deb9d900fe1c5e6",
+	          "1c6af94b26f369e2c10819eefb869f873e5540e2c1b7bf4c7c632fc03d67368a",
+	          "6dfc3a0733f427779b250913811baa429002042cb8e7732ea7d334bf725b8bd0",
+	          "ae0fb4bf4a6faa4b808794b6e6ccbdf9f10c1ce01a86ccece002ac63cf09ff29",
+	          "cd5ff596b7bacb117f90893f94fd8c542b659cc58f90ed1fbd0471fe85148bff",
+	          "5e7785fede192d69e408c8c41ba14aead2f4b297c9faecc991e061b093b91f70",
+	          "08d019e46a8755c33ad9ff9b96b5409a9005d87ba4e3cc58bdd8cf10eb0cd987",
+	          "81e6e6feaac8b3267608af98667d3ccf78a15e540e6a5d18858d9147aacd1e16",
+	          "a07b0b72bb00d9e9debd38c2b4bd770beb7d6cf6148d2f7fba50d7a7078deb04",
+	          "bc10fdc46d17765c619db70ef19cd3755a3270692481d8417bfff3fceb4eba10",
+	          "bb53243baeb4e4cc204e5b9981cc0c671e0855f56293df5106b9b3beac30cc15",
+	          "c5593f5d965994a50985b529e77b97c348c7af084dbbaba270d83b1b06302d2c",
+	          "7f8e465edd27cdcd1d28292c35440d745b8bd528e21d6f56eb683b65d922eaed",
+	          "ef7dbfe3a3910ddb93989f0d5d8f1fb4d39e0df7e53f55d042f4ccd80699c81f",
+	          "bb53243baeb4e4cc204e5b9981cc0c671e0855f56293df5106b9b3beac30cc15",
+	          "bc10fdc46d17765c619db70ef19cd3755a3270692481d8417bfff3fceb4eba10",
+	          "ef7dbfe3a3910ddb93989f0d5d8f1fb4d39e0df7e53f55d042f4ccd80699c81f",
+	          "39b3ae96186b7e62b9176e6d2ae27db3e164a7c8c52c094c811dd19d651577f2",
+	          "5e7785fede192d69e408c8c41ba14aead2f4b297c9faecc991e061b093b91f70",
+	          "b9fc7dea50ce1e0637a3628abc89f96d8cfaad1b7c6ad33dd8bb17028ed3eaee",
+	          "5e81eaedc6bba9c9b475f990cdc31ee3c48962fffb63d65afc1447ea6b95f910",
+	          "ec7d2582c06d28191b2efaf6780cdfa5c1319f3081bd001d4572cbeea0068b48",
+	          "68591e82d0091f12e15f3c21cbf643793bc2b5a14ef46408bb06f794669f7f0b",
+	          "156f567b058b5e067a64f3d5736a78bbf9669c822fc5f95620a759c288e2224b",
+	          "e659b5a7045bd1820a0efd3e324ebd4a72ecebd0981deb6cbe1899c95351dc91",
+	          "84633fd9a39188ca937188decdeb746a0be3476d68f7ccde4d742fa8ca5dc1f6",
+	          "4208e349ff97a2dc6100ee9e5e61e23ab650b316e62dd4a25d1119a08a59f298") and
+
+   not (process.code_signature.subject_name == "CyberArk Software Ltd." and
+	    process.executable : "?:\\Windows\\CAInvokerService.exe" and process.pe.original_file_name == "PSMWinAgentInvoker.exe") and
+
+   not (process.parent.name : "powershell.exe" and process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*"))
+  ] by process.executable
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

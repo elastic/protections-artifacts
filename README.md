@@ -1,3 +1,4 @@
+[![ATT&CK navigator coverage](https://img.shields.io/badge/ATT&CK-Navigator-red.svg)](https://ela.st/protections-artifacts-navigator)
 <h1><img src="https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt786d938064f8c8be/5e0e7b96fb35e665aed32798/logo-endpoint-32-color.svg"/>  Protections Artifacts</h1>
 
 

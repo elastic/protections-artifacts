@@ -201,7 +201,8 @@ rule Windows_Trojan_IcedID_56459277 {
         id = "56459277-432c-437c-9350-f5efaa60ffca"
         fingerprint = "9947beba82e6bfa053912e691982e32063251491ff18c002e060cf53574e098c"
         creation_date = "2022-08-21"
-        last_modified = "2022-09-29"
+        last_modified = "2022-12-20"
+        description = "IcedID Gzip Variant Core"
         threat_name = "Windows.Trojan.IcedID"
         reference_sample = "21b1a635db2723266af4b46539f67253171399830102167c607c6dbf83d6d41c"
         severity = 100

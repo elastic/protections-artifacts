@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m
@@ -106,7 +106,12 @@ sequence with maxspan=1m
 
    not process.hash.sha256 :
                ("4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
-                "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d")
+                "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d") and
+
+   not (process.pe.original_file_name == "Teams.exe" and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and
+
+   not (process.executable : "?:\\Windows\\System32\\conhost.exe" and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe")
    ] by process.parent.entity_id
 '''
 

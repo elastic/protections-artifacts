@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5s
@@ -18,7 +18,8 @@ sequence with maxspan=5s
     process.parent.name : ("cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe") or
     (process.name : "rundll32.exe" and process.args : "FileProtocolHandler") or
     (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*") and process.code_signature.trusted != true) or
-    (process.name : "cmd.exe" and process.working_directory : "?:\\" and not process.working_directory : "C:\\")
+    (process.name : "cmd.exe" and process.working_directory : "?:\\" and not process.working_directory : "C:\\") or 
+    (process.name : "cmd.exe" and process.command_line : "*\\Temp\\7ZipSfx*")
   ) and 
   not process.executable : "?:\\Program Files (x86)\\SmartAdvocate\\SADocumentLauncher\\SADocumentLauncher.exe"
   ] by process.entity_id

@@ -62,9 +62,9 @@ rule Windows_Ransomware_Hellokitty_d9391a1a {
     meta:
         author = "Elastic Security"
         id = "d9391a1a-78d3-4ae6-8e45-630ceec8bade"
-        fingerprint = "4b9c96561163f925df6b2300c9e34c9572c1fe14ec3a55da4d4876ce467f6d6e"
+        fingerprint = "8779a926a237af0a966534931b60acd54f5d6d65063c070a3621ec604e280ff8"
         creation_date = "2021-05-03"
-        last_modified = "2021-08-23"
+        last_modified = "2023-01-04"
         threat_name = "Windows.Ransomware.Hellokitty"
         reference_sample = "10887d13dba1f83ef34e047455a04416d25a83079a7f3798ce3483e0526e3768"
         severity = 100
@@ -73,10 +73,8 @@ rule Windows_Ransomware_Hellokitty_d9391a1a {
         license = "Elastic License v2"
         os = "windows"
     strings:
-        $a1 = { 83 6D 08 01 75 DF 89 47 FC 8B 45 F8 5F 5E 5B 8B E5 5D C3 89 }
-        $a2 = { 8D 76 04 03 D0 3B D0 1B C0 03 14 BB F7 D8 3B 14 BB 89 56 FC }
-        $a3 = { 83 C4 04 85 DB 75 12 0F 10 45 D4 83 C7 10 0F 11 06 83 C6 10 83 }
-        $a4 = { 89 45 F8 3B 5D F4 75 25 3B C6 75 21 6A FF FF 75 14 8B D1 83 }
+        $a1 = { 83 C4 04 85 DB 75 12 0F 10 45 D4 83 C7 10 0F 11 06 83 C6 10 83 }
+        $a2 = { 89 45 F8 3B 5D F4 75 25 3B C6 75 21 6A FF FF 75 14 8B D1 83 }
     condition:
         any of them
 }

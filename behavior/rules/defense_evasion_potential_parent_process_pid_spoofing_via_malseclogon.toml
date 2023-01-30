@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Parent Process PID Spoofing via MalSecLogon"
 os_list = ["windows"]
 reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=1m
@@ -59,7 +59,8 @@ sequence with maxspan=1m
     not process.parent.executable : "?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNetLauncher.exe" and
     not process.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe" and
     not (process.code_signature.subject_name : ("TeamViewer*", "Schneider Electric") and process.code_signature.trusted == true) and
-    not (process.pe.original_file_name : "VCPkgSrv.exe" and process.code_signature.trusted == true)
+    not (process.pe.original_file_name : "VCPkgSrv.exe" and process.code_signature.trusted == true) and
+    not process.executable : "?:\\Program Files (x86)\\Varian\\OCS\\*\\VMS.Varis.Vishnu.exe"
     ] by process.parent.Ext.real.entity_id
 '''
 

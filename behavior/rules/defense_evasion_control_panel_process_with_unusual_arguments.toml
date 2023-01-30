@@ -7,11 +7,13 @@ id = "a4862afb-1292-4f65-a15f-8d6a8019b5e2"
 license = "Elastic License v2"
 name = "Control Panel Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
- process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
+(
+
+ (process.executable : ("?:\\Windows\\SysWOW64\\control.exe", "?:\\Windows\\System32\\control.exe") and
   process.command_line :
           ("*.jpg*",
            "*.png*",
@@ -27,10 +29,21 @@ process where event.action == "start" and
            "*:\\Users\\Public\\*",
            "*\\AppData\\Local\\*") and 
            
- /* excluding FPs where /name arg is used to specify a control by name */
- not (process.args : "/name" and process.args_count >= 2) and
- /* excluding system IL to minimize risk of killing system critical execution */
- not process.Ext.token.integrity_level_name == "system"
+  /* excluding FPs where /name arg is used to specify a control by name */
+  not (process.args : "/name" and process.args_count >= 2) and
+  /* excluding system IL to minimize risk of killing system critical execution */
+  not process.Ext.token.integrity_level_name == "system") or
+
+  (process.name : "rundll32.exe" and process.command_line : "*shell32*#*44*" and
+   not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*Shell32*Control_RunDLL*")) or
+
+  (process.name : "rundll32.exe" and process.command_line : "*shell32*#*44*" and
+   not process.command_line : "*.cpl*" and process.args_count >= 3) or
+
+  (process.name : "rundll32.exe" and process.command_line : "*shell32*#*44*" and process.args_count >= 3 and
+   (process.command_line : ("*/AppData/Local/*", "*:\\Users\\Public\\*", "*\\AppData\\Local\\*", "*:\\ProgramData\\*") or
+    process.working_directory : ("?:\\Users\\*\\AppData\\Local\\*", "?:\\Users\\Public\\*")))
+)
 '''
 
 min_endpoint_version = "7.15.0"

@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -40,7 +40,8 @@ process where event.action == "start" and
  not process.parent.executable : "?:\\Windows\\System32\\AtBroker.exe" and
  not (process.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe" and 
       process.parent.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe") and 
- not (process.code_signature.subject_name in ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.", "TeamViewer GmbH", "Cisco WebEx LLC") and
+ not (process.code_signature.subject_name in ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH",
+                                              "Projector.is, Inc.", "TeamViewer GmbH", "Cisco WebEx LLC", "TeamViewer") and
       process.code_signature.trusted == true) and
  not (process.executable : "?:\\windows\\system32\\WerMgr.exe" and process.args : "-datacollectorcreate") and
  not process.executable : "?:\\Program Files (x86)\\Dolphin\\SnovaMag*\\dol_logon.exe"

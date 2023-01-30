@@ -7,7 +7,7 @@ id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
 license = "Elastic License v2"
 name = "Potential Masquerading as SVCHOST"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -42,7 +42,9 @@ process where event.action == "start" and
 	"?:\\Program Files\\Cisco\\AMP\\*\\sfc.exe",
 	"?:\\Program Files (x86)\\Cisco\\AMP\\*\\sfc.exe",
 	"?:\\Program Files (x86)\\AlibabaProtect\\*\\AlibabaProtect.exe",
-	"?:\\Program Files\\AlibabaProtect\\*\\AlibabaProtect.exe"
+	"?:\\Program Files\\AlibabaProtect\\*\\AlibabaProtect.exe",
+	"?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe",
+	"?:\\Program Files (x86)\\Tencent\\QQ\\Bin\\QQExternal.exe"
 	) and
   not (process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.executable : "?:\\Windows\\syswow64\\svchost.exe") and
   not (process.parent.executable :

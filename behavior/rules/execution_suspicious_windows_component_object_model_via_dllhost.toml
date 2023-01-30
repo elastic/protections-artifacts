@@ -8,7 +8,7 @@ id = "f678ec9a-c348-485c-ac9e-84b0923ff5f5"
 license = "Elastic License v2"
 name = "Suspicious Windows Component Object Model via DLLHOST"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=5m
@@ -39,7 +39,7 @@ sequence with maxspan=5m
           "\\\\*") or
 
     /* execution from a mounted device */
-    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")
+    (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")
     ) and
 
     /* known FPs */
@@ -120,7 +120,14 @@ sequence with maxspan=5m
             "/Processid:{9FA5C497-F46D-447F-8011-05D03D7D7DDC}",
 
             /* Shortcut */
-            "/Processid:{00021401-0000-0000-C000-000000000046}")] by process.Ext.effective_parent.entity_id
+            "/Processid:{00021401-0000-0000-C000-000000000046}",
+
+            /* RemoteProxyFactory32 - AccessibleProxyFromWindow */
+            "/Processid:{53362C64-A296-4F2D-A2F8-FD984D08340B}",
+
+            /* third party registered clsid */
+            "/Processid:{86607BF8-8BC5-11D0-BA55-0080C74F0C94}")
+            ] by process.Ext.effective_parent.entity_id
 '''
 
 min_endpoint_version = "8.4.0"

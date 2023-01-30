@@ -11,7 +11,7 @@ reference = [
     "https://cedowens.medium.com/remotely-dumping-chrome-cookies-revisited-b25343257209",
     "https://github.com/cedowens/Dump-Chrome-Cookies",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "exec" and process.name in ("Google Chrome", "Brave Browser", "Microsoft Edge") and process.args : "--load-extension=/*" and
@@ -23,7 +23,10 @@ process where event.action == "exec" and process.name in ("Google Chrome", "Brav
                                   "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
                                   "/Applications/Cypress.app/Contents/MacOS/Cypress",
                                   "/Users/*/Projects/accessibility-dev/node_modules/chromedriver/lib/chromedriver/chromedriver",
-                                  "/opt/homebrew/Caskroom/chromedriver/*/chromedriver") and
+                                  "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
+                                  "/Applications/Katalon Studio.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
+                                  "/Applications/Katalon Studio PE.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
+                                  "/Users/*/Katalon Studio Engine.app/Contents/Eclipse/configuration/resources/temp/webdriver/chromedriver") and
  not process.args : "--app=https://app2.atera.com"
 '''
 

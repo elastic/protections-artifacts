@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
   (
      /* renamed */
-   (process.pe.original_file_name : "AutoHotkey.exe" and not process.name : "AutoHotkey*.exe") or 
+   (process.pe.original_file_name : "AutoHotkey.exe" and not process.name : ("AutoHotkey*.exe", "InternalAHK.exe")) or
    (process.pe.original_file_name : "KIX32.EXE" and not process.name : "KIX*.EXE") or 
    (process.name : "rebol-view*.exe" and process.parent.name : "msiexec.exe") or 
    (process.name : ("AutoHotkey*.exe", "KIX32.EXE", "rebol-view*.exe") and 
@@ -45,7 +45,8 @@ process where event.action == "start" and
         process.parent.executable : "?:\\ProgramData\\chocolatey\\choco.exe") and
    not (process.pe.original_file_name == "KIX32.EXE" and process.command_line : "*\\NETLOGON\\*") and
    not (process.pe.original_file_name == "KIX32.EXE" and process.parent.command_line : "*\\netlogon\\*") and
-   not (process.pe.original_file_name == "KIX32.EXE" and process.executable : ("C:\\kworking\\Bin\\RMMKSE.EXE", "C:\\kworking\\Bin\\RMMSSE.EXE")) and
+   not (process.pe.original_file_name == "KIX32.EXE" and
+        process.executable : ("C:\\kworking\\Bin\\RMMKSE.EXE", "C:\\kworking\\Bin\\RMMSSE.EXE", "?:\\ProgramData\\MSPB\\Bin\\RMMSSE.EXE")) and
    not (process.pe.original_file_name == "AutoHotkey.exe" and process.executable : "C:\\TCPU73\\Programm\\ClockTC\\ClockTC.exe" and
         process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE") and
    not process.executable : "?:\\Program Files\\AutoHotkey\\SciTE\\InternalAHK.exe"

@@ -8,11 +8,13 @@ id = "6d9b4bb0-1262-4cc1-8e65-3f4758ceaaad"
 license = "Elastic License v2"
 name = "Executable File Creation in a Removable Media"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 file where event.action != "deletion" and process.name != null and
+
  (file.Ext.device.bus_type : "usb" or file.Ext.device.product_id : "USB *") and
+
  not process.executable :
          ("?:\\Windows\\explorer.exe",
           "?:\\Program files\\*.exe",
@@ -22,7 +24,11 @@ file where event.action != "deletion" and process.name != null and
           "?:\\$Windows.~WS\\Sources\\SetupHost.exe",
           "\\Device\\Mup\\*",
           "?:\\temp\\EstimatingInstallerUpdate_*\\Prerequisites\\DotNet\\ndp*-allos-enu.exe",
-          "?:\\Autodesk\\Autodesk_Navisworks_Freedom_*\\3rdParty\\x64\\VCRedist\\*\\vcredist_x64.exe") and
+          "?:\\Autodesk\\Autodesk_Navisworks_Freedom_*\\3rdParty\\x64\\VCRedist\\*\\vcredist_x64.exe",
+          "?:\\Windows\\SoftwareDistribution\\Download\\Install\\SQLServer*.exe",
+          "?:\\Windows\\System32\\RecoveryDrive.exe",
+          "?:\\Windows\\System32\\dllhost.exe") and
+
  (file.Ext.header_bytes : "4d5a*" or
   file.extension : ("exe", "scr", "pif", "com", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe", "lnk", "iqy", "slk", "iqy",
                     "cmd", "bat", "library-ms", "glk", "url", "scf", "chm")) and
@@ -37,13 +43,13 @@ file where event.action != "deletion" and process.name != null and
                 "Lenovo",
                 "ClevX LLC",
                 "Buhl Data Service GmbH",
-                "Super Flexible Software Ltd. & Co. KG") and
+                "Super Flexible Software Ltd. & Co. KG",
+                "InfoCert SpA") and
        process.code_signature.trusted == true) and
   not (process.name : "powershell.exe" and file.path : "?:\\KAPE_UofUDev\\KAPE\\KAPE\\Modules\\bin\\RECmd\\Plugins\\*") and
   not (process.executable : "?:\\Windows\\System32\\svchost.exe" and file.path : "?:\\FileHistory\\*") and
   not (process.name : "YUMI-*.exe" and file.path : ("?:\\multiboot\\wimboot", "?:\\multiboot\\grub.exe")) and
-  not (process.name : "CRS600.exe" and file.path : "?:\\NFTA *\\Rev100\\USERDATA\\DR700_UPDATE.EXE") and
-  not (process.executable : "?:\\Windows\\System32\\dllhost.exe" and event.action : "overwrite")
+  not (process.name : "CRS600.exe" and file.path : "?:\\NFTA *\\Rev100\\USERDATA\\DR700_UPDATE.EXE")
 '''
 
 min_endpoint_version = "8.4.0"

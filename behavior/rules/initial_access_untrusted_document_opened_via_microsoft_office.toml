@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -18,7 +18,10 @@ sequence with maxspan=1m
   process.name : ("EXCEL.EXE", "WINWORD.EXE", "POWERPNT.EXE") and
 
   /* probably unknown or potentially unsafe to smartscreen files classification */
-  process.Ext.token.security_attributes : "SMARTLOCKER://SMARTSCREENORIGINCLAIM"] by process.entity_id
+  process.Ext.token.security_attributes : "SMARTLOCKER://SMARTSCREENORIGINCLAIM" and
+
+  /* Docs opened from file shares */
+  not process.args : "\\\\*"] by process.entity_id
 
  [process where event.action == "start" and
   process.parent.name : ("EXCEL.EXE", "WINWORD.EXE", "POWERPNT.EXE") and
@@ -62,17 +65,31 @@ sequence with maxspan=1m
            "Brave Software, Inc.",
            "Opera Norway AS",
            "Bloomberg LP",
-           "Microsoft Windows Hardware Compatibility Publisher") and
+           "Microsoft Windows Hardware Compatibility Publisher",
+           "Orpheus Technology Ltd",
+           "Foxit Software Incorporated",
+           "Samsung Electronics CO., LTD.",
+           "REFINITIV US LLC") and
        process.code_signature.trusted == true) and
   not (process.name : "rundll32.exe" and
-       process.args : ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*,MonitorPrintJobStatus", "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile")) and
+       process.args :
+           ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*,MonitorPrintJobStatus",
+            "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile",
+            "?:\\windows\\system32\\spool\\DRIVERS\\x64\\3\\*.DLL,CheckDevice",
+            "?:\\Program Files\\*",
+            "?:\\Program Files (x86)\\*")) and
   not (process.pe.original_file_name : ("msedge.exe", "FileCoAuth.exe") and process.code_signature.trusted == true) and
   not process.hash.sha256 : 
              ("e68d9768f1d1c2ef2e614dec47e5f0719030073373533603f3e9a914b5607d85", 
               "ded86974860dd9802db04d92409c05e2ff8b3de7f172c957c34861bbad6a9af3",
               "4a21f9b556046a31878a3f44e1d210baee7663cc5f9d8e980f67e180a6dd3592",
               "bc1ec9584f749b1d264cf1ce040e98f96de680efd74a1dab2de53e8d481c5b79",
-              "b72b18af7ed446db1630a2263c76fc3cbde6c189f88ea7ba4e42ecf61cb0ee8b")
+              "b72b18af7ed446db1630a2263c76fc3cbde6c189f88ea7ba4e42ecf61cb0ee8b",
+              "28c69f2b353a8df70abef0e5f09e1d390ef88e79b08465bc21c0d9fdb3b61f0d",
+              "4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb") and
+  not (process.pe.original_file_name : ("Teams.exe", "msedgewebview2.exe", "BDEUNLOCK.EXE") and process.code_signature.trusted == true) and
+  not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\RegAsm.exe" and process.args : "?:\\Program Files (x86)\\Thomson Reuters\\*") and
+  not (process.name : "cmd.exe" and process.command_line : "\"CMD.exe\" /C dotnet --list-runtimes")
   ] by process.parent.entity_id
 '''
 

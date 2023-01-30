@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "PowerShell Obfuscation Spawned via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://github.com/danielbohannon/Invoke-Obfuscation"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
@@ -55,7 +55,9 @@ process where event.action == "start" and
               "*iwr*",
               "*Reflection.Assembly*",
               "*Assembly.GetType*",
-              "*.Sockets.*") and
+              "*.Sockets.*",
+              "*PromptForCredential*",
+              "*nslookup*-q=txt*") and
   /* Issue #263 */
   not process.parent.executable :
                  ("?:\\ProgramData\\CentraStage\\AEMAgent\\AEMAgent.exe",

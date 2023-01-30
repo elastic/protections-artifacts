@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -50,7 +50,20 @@ process where event.action == "start" and
                 "*$env:APPDATA*/Browser Extension/*")) and 
                 
     not (process.name : "regsvr32.exe" and process.args :  "/i:user" and process.args : "/n") and
-    not (process.executable : "?:\\ProgramData\\*\\*\\*" and process.code_signature.trusted == true)
+    not (process.executable : "?:\\ProgramData\\*\\*\\*" and process.code_signature.trusted == true) and
+    not (process.name : "cscript.exe" and process.command_line : "cscript IsHTTPSListenerPresent.vbs") and
+    not process.hash.sha256 :
+                 ("d09e299150f4a9904cfbedff7a2478ce16b9c1ea6a5bc2fba0bcb2b1f7a845d0",
+                  "73634c154e121ea172dce96da629f50aa8eb69f72922f5ff14d1331ea281f105",
+                  "7f7635389553b7441a27a2b44988a56155f79320445923e73e59c91ea521f8d2",
+                  "2fd626d4ade59166e3db27ee6f24b24040498928840d88e293edd92c503aca8d",
+                  "530e754c40d38fab5e3f802380f202ca7e1c675ea25b32dfe6d419403d7b0e5b",
+                  "dd1854024eb375e23c42745b1a5848734a262aa5c31571112a0b824c3729a638",
+                  "525b993f89500abc33cab311e453beb2841d2335eb787a3753f7ff092cca195a",
+                  "ba8c1a434b2cc355fc2f005639af36729f32fc91ff1f278bcded65428cad0126",
+                  "7c33270e54646ba7cbda98157a052586812d004670b02f920b285e4eb42507b5",
+                  "3f59a2799dc6aa6cdddbc62e169fad7e7dd282bffba3538ed2594e3a8d6c1a05") and
+   not (process.name : "rundll32.exe" and process.args : "printui.dll,PrintUIEntry")
 '''
 
 min_endpoint_version = "7.15.0"

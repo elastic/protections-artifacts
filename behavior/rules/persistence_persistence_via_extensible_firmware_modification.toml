@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id
@@ -25,7 +25,8 @@ sequence by process.entity_id
              ("07abbd7cd2693bc7b99c030ca86767d14e89a4c834cf9b5ae40ccf322ca81280", 
               "eee7c0e92277ada0e4d57a0a2ef30f102bf6b311ba0a891f3db28fa0d5ee8f56", 
               "ffac39846b01ad8d9b1074108ace1e148b8d1805b7790e15fe8975f1a4dac5df", 
-              "e9373fdb8824e4431aba0c1df68ccc6ae098dab635f3504f7ee6efdfd97462da") and
+              "e9373fdb8824e4431aba0c1df68ccc6ae098dab635f3504f7ee6efdfd97462da",
+              "c4207f4d040a7588a45e76aef8e1cc9d8499e35f199a31c838ee4867a6d25870") and
 
   not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 
   
@@ -33,7 +34,7 @@ sequence by process.entity_id
   
   not (process.executable : "?:\\Windows\\HP\\Installer.exe" and process.args : "-bestsize" and process.args : "-uefisupport") and 
 
-  not (process.pe.original_file_name : ("rufus*.exe", "HPFirmwareUPDREC.exe", "HpHwDiagA.dll", "Deployer.exe", "beremote.exe") and
+  not (process.pe.original_file_name : ("rufus*.exe", "HPFirmwareUPDREC.exe", "HpHwDiagA.dll", "Deployer.exe", "beremote.exe", "DellOSRecoveryTool.exe") and
        process.code_signature.subject_name: ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC") and
        process.code_signature.trusted == true) and
 

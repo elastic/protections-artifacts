@@ -8,7 +8,7 @@ id = "6b3aa7d9-08c6-4091-aa03-715d25b34000"
 license = "Elastic License v2"
 name = "Microsoft Office Fetching Remote Content"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=60s
@@ -23,7 +23,10 @@ sequence with maxspan=60s
              "?:\\Windows\\SysWOW64\\DWWIN.EXE",
              "?:\\Windows\\System32\\WerFault.exe",
              "?:\\Windows\\SysWOW64\\WerFault.exe",
-             "?:\\windows\\splwow64.exe")] by process.parent.entity_id
+             "?:\\windows\\splwow64.exe",
+             "?:\\Program Files*\\Microsoft Office\\root\\Office*\\WINWORD.EXE",
+             "?:\\Program Files*\\Microsoft Office\\root\\Office*\\EXCEL.EXE",
+             "?:\\Program Files*\\Microsoft Office\\root\\Office*\\POWERPNT.EXE")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"

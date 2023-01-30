@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=5m
@@ -40,7 +40,7 @@ sequence with maxspan=5m
           "\\\\*") or
 
     /* execution from a mounted device */
-    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")
+    (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")
     ) and
 
     /* known FPs */
@@ -51,7 +51,7 @@ sequence with maxspan=5m
     not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS") and
     not (process.name : "rundll32.exe" and process.command_line : "*PWMTR32V.dll,InitializeSettingsDuringInstallation*") and
     not (process.name : "powershell.exe" and
-         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*"))
+         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*", "*:\\WINDOWS\\ccmcache\\*"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

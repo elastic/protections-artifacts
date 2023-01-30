@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -40,8 +40,8 @@ process where event.action == "start" and
 
  not (process.code_signature.subject_name in
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
-            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation", "Samsung Electronics CO., LTD.") and
-       process.code_signature.trusted == true) and
+            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
+            "Samsung Electronics CO., LTD.", "TeamViewer") and process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and
       process.args : "CgAgACAAIAAg*" and process.parent.args : "JgBjAGgAYwBwAC4AYwBvAG0AIAA2ADUAMAAwADEAIAA+ACAA*") and 

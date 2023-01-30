@@ -7,7 +7,7 @@ id = "be55434a-ae96-437e-aaaf-9fb60cd7dff4"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from SMB"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence with maxspan=5m
@@ -21,7 +21,7 @@ sequence with maxspan=5m
     /* Signed False Positives */
 
 	 not (process.code_signature.subject_name :
-	                                  ("RAPIDFIRE TOOLS INC.",
+	                  ("RAPIDFIRE TOOLS INC.",
 					   "Arcserve (USA) LLC",
 					   "PDQ.COM CORPORATION",
 					   "Veeam Software Group GmbH",
@@ -123,12 +123,16 @@ sequence with maxspan=5m
 	          "156f567b058b5e067a64f3d5736a78bbf9669c822fc5f95620a759c288e2224b",
 	          "e659b5a7045bd1820a0efd3e324ebd4a72ecebd0981deb6cbe1899c95351dc91",
 	          "84633fd9a39188ca937188decdeb746a0be3476d68f7ccde4d742fa8ca5dc1f6",
-	          "4208e349ff97a2dc6100ee9e5e61e23ab650b316e62dd4a25d1119a08a59f298") and
+	          "4208e349ff97a2dc6100ee9e5e61e23ab650b316e62dd4a25d1119a08a59f298",
+	          "52b196bbe9016488c735e7b41805b651261ffa5d7aa86eb6a1d0095be83687b2",
+	          "85640066a45c1fd934f3faf2a8db926ed77b622be7cfcce15a25707abf604d55") and
 
    not (process.code_signature.subject_name == "CyberArk Software Ltd." and
 	    process.executable : "?:\\Windows\\CAInvokerService.exe" and process.pe.original_file_name == "PSMWinAgentInvoker.exe") and
 
-   not (process.parent.name : "powershell.exe" and process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*"))
+   not (process.parent.name : "powershell.exe" and process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*")) and
+
+   not (process.executable : "?:\\Program Files\\BearingPoint\\*\\KRS.CorrespondenceJobService.exe" and process.parent.name : "wsmprovhost.exe")
   ] by process.executable
 '''
 

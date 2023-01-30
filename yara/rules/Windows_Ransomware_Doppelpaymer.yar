@@ -20,27 +20,6 @@ rule Windows_Ransomware_Doppelpaymer_6660d29f : beta {
         2 of ($a*)
 }
 
-rule Windows_Ransomware_Doppelpaymer_0b9b75b5 : beta {
-    meta:
-        author = "Elastic Security"
-        id = "0b9b75b5-f521-4414-8216-cde5de6b8ff7"
-        fingerprint = "4fe2f648afa0031c2a4807ae882ddf19302ce6a6d26b04341950e84dbf6c1374"
-        creation_date = "2020-06-28"
-        last_modified = "2021-08-23"
-        description = "Identifies DOPPELPAYMER ransomware"
-        threat_name = "Windows.Ransomware.Doppelpaymer"
-        reference = "https://www.crowdstrike.com/blog/doppelpaymer-ransomware-and-dridex-2/"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $b1 = { 8B D8 BA FF FF FF 7F 8B 4B }
-    condition:
-        1 of ($b*)
-}
-
 rule Windows_Ransomware_Doppelpaymer_6ab188da : beta {
     meta:
         author = "Elastic Security"

@@ -7,11 +7,12 @@ id = "3bc98de7-3349-43ac-869c-58357ae2aac0"
 license = "Elastic License v2"
 name = "Suspicious DNS Query from Mounted Virtual Disk"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
- [process where event.action == "start" and process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk")]
+ [process where event.action == "start" and
+  (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")]
  [dns where
   dns.question.name :
        (

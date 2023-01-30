@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.action == "start" and
@@ -78,11 +78,15 @@ not (process.name : "cmd.exe" and process.working_directory : "?:\\tmp\\smartche
 not (process.pe.original_file_name == "360se.exe" and process.code_signature.trusted == true and
      process.code_signature.subject_name == "Beijing Qihu Technology Co., Ltd.") and
 
+not (process.code_signature.subject_name : "Synology Inc." and process.code_signature.trusted == true) and
+
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 
 not (process.name : "cmd.exe" and process.args : "\\\\127.0.0.1\\ADMIN$\\__*") and 
 
-not process.hash.sha256 : "0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f" and
+not process.hash.sha256 :
+                ("0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f",
+                 "4402920c711aba26297de5ea39fcb58448ade9df77e978f1d8cd326fd810c62d") and
 
 not process.executable : "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\WMISSH\\*.exe"
 '''

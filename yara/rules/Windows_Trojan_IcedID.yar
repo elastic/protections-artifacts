@@ -226,3 +226,58 @@ rule Windows_Trojan_IcedID_56459277 {
         5 of ($str*) or 2 of ($seq_*)
 }
 
+rule Windows_Trojan_IcedID_7c1619e3 {
+    meta:
+        author = "Elastic Security"
+        id = "7c1619e3-f94a-4a46-8a81-d5dd7a58c754"
+        fingerprint = "ae21deaad74efaff5bec8c9010dc340118ac4c79e3bec190a7d3c3672a5a8583"
+        creation_date = "2022-12-20"
+        last_modified = "2023-02-01"
+        description = "IcedID Injector Variant Loader "
+        threat_name = "Windows.Trojan.IcedID"
+        reference_sample = "4f6de748628b8b06eeef3a5fabfe486bfd7aaa92f50dc5a8a8c70ec038cd33b1"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { C1 C9 0D 0F BE C0 03 C8 46 8A 06 84 C0 75 ?? 8B 74 24 ?? 81 F1 [4] 39 16 76 }
+        $a2 = { D1 C8 F7 D0 D1 C8 2D 20 01 00 00 D1 C0 F7 D0 2D 01 91 00 00 }
+        $a3 = { 8B 4E ?? FF 74 0B ?? 8B 44 0B ?? 03 C1 50 8B 44 0B ?? 03 46 ?? 50 E8 [4] 8B 46 ?? 8D 5B ?? 83 C4 0C 47 3B 78 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_IcedID_d8b23cd6 {
+    meta:
+        author = "Elastic Security"
+        id = "d8b23cd6-c20c-40c9-a8e9-80d68e709764"
+        creation_date = "2023-01-03"
+        last_modified = "2023-02-01"
+        description = "IcedID VNC server"
+        threat_name = "Windows.Trojan.IcedID"
+        reference_sample = "bd4da2f84c29437bc7efe9599a3a41f574105d449ac0d9b270faaca8795153ab"
+        severity = 100
+        fingerprint = "d47af2b50d0fb07858538fdb9f53fee008b49c9b1d015e4593199407673e0e21"
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = "User idle %u sec / Locked: %s / ScreenSaver: %s" wide
+        $a2 = "No VNC HOOK" wide
+        $a3 = "Webcam %u" wide
+        $a4 = "rundll32.exe shell32.dll,#61"
+        $a5 = "LAP WND"
+        $a6 = "FG WND"
+        $a7 = "CAP WND"
+        $a8 = "HDESK Tmp" wide
+        $a9 = "HDESK Bot" wide
+        $a10 = "HDESK bot" wide
+        $a11 = "CURSOR: %u, %u"
+        $b1 = { 83 7C 24 ?? 00 75 ?? 83 7C 24 ?? 00 75 ?? [1] 8B 0D [4] 8B 44 24 }
+    condition:
+        6 of them
+}
+

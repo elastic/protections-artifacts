@@ -7,14 +7,16 @@ id = "76da5dca-ffe5-4756-85ba-3ac2e6ccf623"
 license = "Elastic License v2"
 name = "Unusual DLL Extension Loaded by Rundll32 or Regsvr32"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
  [process where event.action == "start" and process.name : ("rundll32.exe", "regsvr32.exe") and
   not (process.parent.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoBatteryGaugePackage\\*\\BGHelper.exe" and
        process.args : "ShowBatteryGauge" and process.args : "updatestatus") and
-  not (process.name : "regsvr32.exe" and process.args : "?:\\Program Files (x86)\\DesktopCentral_Agent\\bin\\BSPHelperObject.dll")
+  not (process.name : "regsvr32.exe" and
+       process.args : ("?:\\Program Files (x86)\\DesktopCentral_Agent\\bin\\BSPHelperObject.dll",
+                       "\\\\*\\FullCase\\pegasusimaging.activex.imagxpress*.dll"))
   ]
  [library where process.name : ("rundll32.exe", "regsvr32.exe") and
   not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb", "*.scr", "*.dll.mui", "*.ime", "*.tsp", "*.rbf") and

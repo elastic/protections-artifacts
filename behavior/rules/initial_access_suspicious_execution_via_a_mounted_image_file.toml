@@ -7,7 +7,7 @@ id = "9401d27c-200a-4d72-ad36-f7051c4b3dcb"
 license = "Elastic License v2"
 name = "Suspicious Execution via a Mounted Image File"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,10 @@ process where event.action == "start" and
  not process.code_signature.trusted == true and
  not (process.parent.name : "setup.exe" and process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\setup.tmp") and 
  not process.executable : "?:\\WINDOWS\\regtlib.exe" and 
- not process.hash.sha256 : "632c8f0313f35fc45daa4471f9c8c32075156bc696fb20cd19a33a8c760b1297"
+ not process.hash.sha256 :
+            ("632c8f0313f35fc45daa4471f9c8c32075156bc696fb20cd19a33a8c760b1297",
+             "5b82b27da9bbaae1abc32095942c60017b275e002cbb2c0cb44580131f4789b4",
+             "dafb5d89135fa565080c9c6beafbdeb7611089e946a520001a7ef02facb002d3")
 '''
 
 min_endpoint_version = "7.15.0"

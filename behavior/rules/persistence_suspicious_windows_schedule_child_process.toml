@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
@@ -67,7 +67,8 @@ process where event.action == "start" and
                "15eaff644e9a34e49997d57c4c21ce18dab4714321a62eae4252bd8eca1f3f9d",
                "fe0ecd844393d78026fd41a5b5bb9ab577a483ec1c290566a3fbdbf52fb24fc5",
                "053c6a0f59672b06e9ebccff18f2517780ff4c77ada25ac3eee1f2c4a24e8aea",
-               "1a6b98956fb92a8a57b56feeef6fedc26b95c809526374f6e7c22acd8e3925c3") and
+               "1a6b98956fb92a8a57b56feeef6fedc26b95c809526374f6e7c22acd8e3925c3",
+               "554fa8a3bf2e233f64d9e000bf30f197159406fbfa9920adca0901a265e45379") and
 
   not process.executable :
              ("?:\\Users\\*\\AppData\\Local\\GoToMeeting\\*\\g2mupload.exe",
@@ -76,7 +77,8 @@ process where event.action == "start" and
               "?:\\Users\\*\\AppData\\Local\\Google\\Update\\GoogleUpdate.exe") and
 
   not (process.name : "powershell.exe" and process.args : ("Invoke-WebRequest http://sms.revize.com/*", "Import-Module PSScheduledJob; $jobDef*")) and
-  not (process.name : "rundll32.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+  not (process.name : ("rundll32.exe", "regsvr32.exe") and
+       process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,"))
 '''
 
 min_endpoint_version = "8.4.0"

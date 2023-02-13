@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=5m
@@ -51,7 +51,13 @@ sequence with maxspan=5m
     not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS") and
     not (process.name : "rundll32.exe" and process.command_line : "*PWMTR32V.dll,InitializeSettingsDuringInstallation*") and
     not (process.name : "powershell.exe" and
-         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*", "*:\\WINDOWS\\ccmcache\\*"))
+         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*", "*:\\WINDOWS\\ccmcache\\*")) and
+    not (process.name : "powershell.exe" and
+         process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
+                                      "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
+                                      "?:\\Program Files (x86)\\ITSPlatform\\plugin\\scripting\\platform-scripting-plugin.exe",
+                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
+    not (process.name : "powershell.exe" and user.id : "S-1-5-18")
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

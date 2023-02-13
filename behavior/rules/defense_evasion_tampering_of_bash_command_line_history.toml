@@ -1,0 +1,54 @@
+[rule]
+description = """
+Adversaries may attempt to clear or disable the Bash command-line history in an attempt to evade detection or forensic
+investigations.
+"""
+id = "31da6564-b3d3-4fc8-9a96-75ad0b364363"
+license = "Elastic License v2"
+name = "Tampering of Bash Command-Line History"
+os_list = ["linux", "macos"]
+version = "1.0.8"
+
+query = '''
+process where event.type in ("start", "process_started") and
+ (
+  ((process.args : ("rm", "echo") or
+    (process.args : "ln" and process.args : "-sf" and process.args : "/dev/null") or
+    (process.args : "truncate" and process.args : "-s0"))
+    and process.args : (".bash_history", "/root/.bash_history", "/home/*/.bash_history","/Users/.bash_history",
+                        "/Users/*/.bash_history",".zsh_history", "/root/.zsh_history", "/home/*/.zsh_history",
+                        "/Users/.zsh_history", "/Users/*/.zsh_history")) or
+  (process.name : "history" and process.args : "-c") or
+  (process.args : "export" and process.args : ("HISTFILE=/dev/null", "HISTFILESIZE=0")) or
+  (process.args : "unset" and process.args : "HISTFILE") or
+  (process.args : "set" and process.args : "history" and process.args : "+o")
+ )
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.003"
+name = "Clear Command History"
+reference = "https://attack.mitre.org/techniques/T1070/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

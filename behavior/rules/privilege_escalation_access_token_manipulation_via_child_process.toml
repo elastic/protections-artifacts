@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence
@@ -48,7 +48,9 @@ sequence
   /* non MS signed FPs */
   not (process.code_signature.subject_name :
                    ("Lenovo", "Adobe Inc.", "Brave Software, Inc.", "HP Inc.", "Splashtop Inc.", "GN AUDIO A/S",
-                    "Oracle America, Inc.", "Brother Industries, Ltd.") and process.code_signature.trusted == true) and
+                    "Oracle America, Inc.", "Brother Industries, Ltd.", "Bosch Automotive Service Solutions Ltd",
+                    "OpenShot Studios, LLC", "CISCO SYSTEMS, INC.", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS (SERPRO)") and
+                    process.code_signature.trusted == true) and
 
   not process.executable :
             ("?:\\Windows\\System32\\ntprint.exe",

@@ -11,7 +11,7 @@ reference = [
     "https://www.winhelponline.com/blog/vbscripts-and-uac-elevation/",
     "https://github.com/S3cur3Th1sSh1t/OffensiveVBA/blob/main/src/ShellApplication_ShellExecute_privileged.vba",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=5m
@@ -36,7 +36,7 @@ sequence with maxspan=5m
   not (process.pe.original_file_name == "Acrobat.exe" and
        process.code_signature.subject_name == "Adobe Inc." and process.code_signature.trusted == true) and
 
-  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
+  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe", "?:\\Windows\\System32\\ntprint.exe") and
   not (process.executable : "?:\\ProgramData\\chocolatey\\bin\\choco.exe" and process.parent.name : "cscript.exe" and
        process.parent.args : "?:\\ProgramData\\chocolatey\\lib\\Sudo\\bin\\sudo.vbs")
   ] by process.parent.entity_id

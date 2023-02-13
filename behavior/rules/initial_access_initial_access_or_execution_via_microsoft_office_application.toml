@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "exec" and
@@ -55,7 +55,8 @@ process where event.action == "exec" and
       "defaults read *",
       "sysctl hw.model*",
       "ioreg -d2 -c IOPlatformExpertDevice *",
-      "ps aux | grep 'ToDesk_Desktop' | grep -v grep"
+      "ps aux | grep 'ToDesk_Desktop' | grep -v grep",
+      "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*"
     ) and
 
    not process.parent.executable :

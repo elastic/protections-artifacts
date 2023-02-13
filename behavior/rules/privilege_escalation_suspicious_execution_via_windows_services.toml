@@ -1,0 +1,171 @@
+[rule]
+description = """
+Identifies the execution of commonly abused Windows programs and suspicious execution paths via a Windows service. This
+may indicate an attempt to elevate privileges via Windows services.
+"""
+id = "84595d39-df78-49d6-a999-48792482b255"
+license = "Elastic License v2"
+name = "Suspicious Execution via Windows Services"
+os_list = ["windows"]
+version = "1.0.12"
+
+query = '''
+process where event.action == "start" and
+  process.parent.executable : "?:\\Windows\\System32\\services.exe" and
+  (
+    /* Lolbas */
+    process.name : ("mshta.exe", "msbuild.exe", "installutil.exe", "rundll32.exe", "regsvr32.exe", "regasm.exe",
+                    "wuauclt.exe", "cscript.exe", "wscript.exe", "wmic.exe") or
+
+    /* Suspicious Paths */
+    (process.executable : ("?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\*",
+                           "?:\\Users\\*\\Pictures\\*", "?:\\Users\\*\\Music\\*", "?:\\Windows\\Tasks\\*",
+                           "?:\\Windows\\System32\\tasks\\*", "?:\\Windows\\Temp\\*") and
+
+     /* noisy - excluding subdirs of ProgramData  */
+     not process.executable : "?:\\ProgramData\\*\\*") or
+
+    /* Shell Command Interpreters */
+    (
+     process.name : ("cmd.exe", "powershell.exe") and
+     process.command_line : ("*http*://*", "* -enc *", "* -e *", "*/c *powershell*", "*/c *rundll32*", "*lsass*",
+                             "*/c *Microsoft.NET*", "*-exec bypass*", "*Windows\\INF\\*", "*\\Users\\Public\\*")
+     ) or
+
+     /* programfiles unquoted Service path hijack */
+     process.executable : ("?:\\Program", "?:\\Program.exe", "?:\\Program.scr", "?:\\Program.com", "?:\\Program:*") or
+
+     /* Exec from Alternate DataStream */
+     process.name : "*:*" or
+
+     /* known malware patterns */
+     /* ZenPack */
+     (process.executable : "?:\\Windows\\SysWOW64\\*.exe" and process.command_line : "*.exe /d\"?:\\*") or
+
+     /* DirtyMoe */
+     (process.executable : "?:\\Windows\\*.exe" and process.args : ("-a", "-auto") and
+      process.args_count == 2 and process.code_signature.exists == false) or
+
+     /* execution from windir currentdir and unsigned*/
+     (process.executable : "?:\\Windows\\*" and not process.executable : "?:\\Windows\\*\\*" and
+      process.code_signature.exists == false and
+      not process.pe.original_file_name in ("VPDAgent_x64.exe", "PAExec.exe") and
+      not process.executable : "?:\\Windows\\tenable_mw_scan_*.exe"
+      ) or
+
+     /* execution from systemdir currentdir and untrusted codesign */
+     (process.executable : ("?:\\Windows\\System32\\*", "?:\\Windows\\SysWOW64\\*") and
+      not process.executable :("?:\\Windows\\System32\\*\\*", "?:\\Windows\\SysWOW64\\*\\*") and
+      process.code_signature.trusted == false) or
+
+     /* rogue Ammyy Admin */
+     (process.args : "-service" and process.args : "-lunch" and process.code_signature.exists == false and
+      not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
+   )
+   and
+   not process.hash.sha256 :
+	         ("c9ef35bed70ffa0981bafd0071185b56fdad8f9c97f3582a4dae9b420959fb97",
+	          "18dc098895ccc8246d417445a36d933c5f8487419b848ebe651fd0e11cb22afa",
+	          "ea98309a35f92443b9c50736ce208656ec72af114ec8aceeb02dfa041ec2d6bc",
+	          "bcf07679ea026f1dfba6f9ab63251e4834dc007bd2c5b9039deb9d900fe1c5e6",
+	          "1c6af94b26f369e2c10819eefb869f873e5540e2c1b7bf4c7c632fc03d67368a",
+	          "7f8e465edd27cdcd1d28292c35440d745b8bd528e21d6f56eb683b65d922eaed",
+	          "ff361a79111795eabf24b7a8789347f1d043dac814cd6ff6531d47f268b72651",
+	          "0c85d3e19ca3303a36187fba963235a03c36af61336a5a95d8b55ef05817b9d3",
+	          "ae0fb4bf4a6faa4b808794b6e6ccbdf9f10c1ce01a86ccece002ac63cf09ff29",
+	          "5859b114d96800a2b98ef9d19eaa573a786a422dad324547ef25be181389df01",
+	          "f2949996bcd03858627fb196fc6751c0a88f1a2fa1a082c885a3be4b94e7f5b1",
+	          "eabf1a97222db3a85269ef36c82f2ff44c91b18e6459b9e411e198b51fd9cef2",
+	          "cd5ff596b7bacb117f90893f94fd8c542b659cc58f90ed1fbd0471fe85148bff",
+	          "d99ae6b2da11fb89672906ccdb3ef2dde4534ca1406219285784c275af5e7014",
+	          "e2bfdefbafe2445693f85af28c825c2aacba769c18393fd640386abde587498f",
+	          "08d019e46a8755c33ad9ff9b96b5409a9005d87ba4e3cc58bdd8cf10eb0cd987",
+	          "693c6c0f54bf5a2c14dc6e4e0cef3562c735b584c01204ff56d70e5d90502382",
+	          "8a203d0dd4821b42ca399140e093919348b60ac43140e92f88d047263e2c57b4",
+	          "e68743f3a0c299024e1540add1bcd9d3658ebbdbf172d74e1bf8fcd8c8c0406b",
+	          "685a30cfd98e7636f145e1bfd7616d63a8a99e0d5c9bdb3a1171665bfc53491d",
+	          "769603162b93de2d11888c1a820f0eef385b3a2c113f1bb24f939c79edc1ce62",
+	          "422aa4268713b6c99581365985d403a62f6ccd9f0b5a23f9d963d1947dc77aee",
+	          "c71ddd9aeaed18b6a3e6c80119504ececdfa329328e4a814913be6113c8efb1d",
+	          "c4c6b0db707020364cd398d2a7a3eb2516cfeb0a011557dce3393e25eaa90be4",
+	          "4208e349ff97a2dc6100ee9e5e61e23ab650b316e62dd4a25d1119a08a59f298",
+	          "8850f6c649bd4d69d7ddb1f817865d67ee1de340e8c397f587a67fbcbba35cdd",
+	          "2b25e0331289460dbaed2d851b92f43e6999f694bf17964a8786f3a4cce602a6",
+	          "99b3e6d71329624cb75a88bb66e3249510f6008a38de5535ca5ccb8f580519e0",
+	          "9dbd07d864d31d13b96f1bd61bf83dcd04b43f5266019c99592671cd819968e6",
+	          "9dbd07d864d31d13b96f1bd61bf83dcd04b43f5266019c99592671cd819968e6",
+	          "70da895606ecde4b0ceaee6d19ddcc42be35ec32fa3667f3efbe2f79457de9c4",
+	          "a74dd36806499b164906b0b9a7b7118fb19a02562a7229c544d77dd946449881",
+	          "9860f515da98b85f61d2ee816271717b77245a1163ba498d5253974d9f7c78b3",
+	          "5205617f86113f84df0c6d750f06e8284a58d4c781ba3993175a5f68b00600de",
+	          "d68553c0525323e804344a4cb77b8bf0b35ce5f2349a2340ba482380d785e19b",
+	          "dac28f4a11429f99705bfbf0e49f586c3c3a43a5535c387f6ab01cfea3386dff",
+	          "8db84b45c31f64f03ffef9728a39eae8e32c9b3fd21cc4fa914aab22c0104de1") and
+
+  not (process.pe.original_file_name :
+                ("OneDriveStandaloneUpdater.exe",
+                 "Microsoft.SharePoint.Migration.ClientService.exe",
+                 "process.pe.original_file_name") and
+       process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") and process.code_signature.trusted == true) and
+
+  not (process.code_signature.subject_name in ("Practical Dental Solutions LLC", "ISL Online Ltd.", "Nanosystems S.r.l.",
+   "Opera Software AS", "Kaspersky Lab JSC", "AO Kaspersky Lab", "LogMeIn, Inc.", "Bright Data Ltd", "Malwarebytes Inc",
+   "SEIKO EPSON CORPORATION", "Nanosystems S.r.l.", "KOINO Co., Ltd.", "Panda Security S.L.", "Endgame, Inc.", "Bright Data Ltd",
+   "Acrosync LLC", "Midassoft Corporation Limted", "ForensiT Limited", "ConnectWise, LLC", "ScreenConnect Software",
+   "Beijing Duyou Science and Technology Co.,Ltd.", "N-ABLE TECHNOLOGIES LTD", "Icona S.R.L.", "Dropbox, Inc", "ISL Online",
+   "CodeLathe, LLC", "Google LLC", "Connectwise, LLC", "Mozilla Corporation", "Huawei Technologies Co., Ltd.", "Icona srl",
+   "Plarium Global LTD", "Trend Micro, Inc.", "HeroSpeed Digital Technology Co.,Ltd", "IDrive, Inc.", "Secure By Design Inc.",
+   "SecureLink, Inc.", "Google Inc", "Wondershare Technology Group Co.,Ltd", "Malwarebytes Inc.", "Suse LLC", "FLEXTECH INC.",
+   "DameWare Development, LLC.") and
+   process.code_signature.trusted == true) and
+
+   not (process.pe.original_file_name == "RUNDLL32.EXE" and
+        process.args : ("aepdu.dll,AePduRunUpdate",
+                        "Windows.Storage.ApplicationData.dll,CleanupTemporaryState",
+                        "srrstr.dll,ExecuteScheduledSPPCreation",
+                        "WSClient.dll,WSpTLR",
+                        "WSClient.dll,RefreshBannedAppsList",
+                        "acproxy.dll,PerformAutochkOperations",
+                        "invagent.dll,RunUpdate",
+                        "Startupscan.dll,SusRunTask",
+                        "dfdts.dll,DfdGetDefaultPolicyAndSMART",
+                        "appraiser.dll,DoScheduledTelemetryRun",
+                        "?:\\Windows\\system32\\pla.dll,PlaHost",
+                        "?:\\Windows\\system32\\invagent.dll,RunUpdate",
+                        "tsworkspace,TaskUpdateWorkspaces2",
+                        "tsworkspace,WorkspaceStatusNotify2",
+                        "sysmain.dll,PfSvWsSwapAssessmentTask")) and
+
+   not (process.pe.original_file_name in ("wscript.exe", "cscript.exe") and
+        process.args : ("?:\\Program Files\\Intel\\SUR\\QUEENCREEK\\x64\\task.vbs", "?:\\Windows\\system32\\calluxxprovider.vbs")) and
+   not (process.executable : "?:\\Windows\\*.exe" and process.code_signature.status : ("errorExpired", "errorCode_endpoint*", "errorChaining")) and
+   not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

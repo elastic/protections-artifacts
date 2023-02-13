@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Registry Run Key Modified by Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -75,7 +75,10 @@ sequence by process.entity_id with maxspan=1m
    not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\Speech\\SpeechUX\\sapi.cpl") and
    not (process.name : "regsvr32.exe" and process.args : "?:\\WINDOWS\\system32\\bit4upki-store.dll") and
    not (process.name : "wscript.exe" and process.command_line : "*Program Files\\Nextech\\NxTSAddin\\*") and
-   not (process.name : "cscript.exe" and process.args : "?:\\Users\\*\\AppData\\Roaming\\Nextech\\NxTSAddin\\ContingencyUninstallNXTSForCurrentUser.vbs")
+   not (process.name : "cscript.exe" and
+        process.args : ("?:\\Users\\*\\AppData\\Roaming\\Nextech\\NxTSAddin\\ContingencyUninstallNXTSForCurrentUser.vbs",
+                        "?:\\Program Files*\\Nextech\\NxTSAddin\\InstallNXTSAddinForCurrentUser.vbs")) and
+   not (process.code_signature.subject_name : "Windows Client Management AG" and process.code_signature.trusted == true)
    ]
   [registry where registry.data.strings != null and
     registry.path : (

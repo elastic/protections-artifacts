@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://learn.microsoft.com/en-us/windows/win32/msi/custom-actions",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -32,12 +32,25 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                                "*sc.exe delete*",
                                "*/c pnputil*",
                                "*?:\\WINDOWS\\system32\\drivers*",
-                               "\"cmd.exe\" /c set")) and
+                               "\"cmd.exe\" /c set",
+                               "* sc failure *",
+                               "* sc start *",
+                               "* sc config *",
+                               "*BlueJeans\\BlueJeans.Detector.exe*",
+                               "*rewrite_amd64_en-US.msi *")) and
   not (process.name : "regasm.exe" and process.parent.args : "Smartbar.Installer.CustomActions!Linkury.Installer.CustomActions.CustomActions.InstallationComplete") and 
   not (process.name : "powershell.exe" and process.command_line : "\"powershell\" Set-NetIPInterface \"Twingate\" -InterfaceMetric 1") and
-  not process.hash.sha256 : "8ecaaf20c18ab003723fa8a7c6a899fc46b0b1a34eb748b07ab8a0c2fe9fc35d" and
+  not process.hash.sha256 :
+            ("8ecaaf20c18ab003723fa8a7c6a899fc46b0b1a34eb748b07ab8a0c2fe9fc35d",
+             "1106b9f8fe6f7d68cd1c35006aba4add4dc204c9c960afd698f150a63bde5c7f",
+             "4afd03745958fc80b12086faf92cfd198236f7f99c462a3fdf35bd8249cffbd8") and
   not (process.name : "cmd.exe" and process.parent.args : "RestoreScheduledTasks!RestoreScheduledTasks.CustomActions.GetTaskStatus") and
-  not (process.name : "rundll32.exe" and process.command_line : "\"?:\\Windows\\System32\\rundll32.exe\" dfshim CleanOnlineAppCache")
+  not (process.name : "rundll32.exe" and process.command_line : "\"?:\\Windows\\System32\\rundll32.exe\" dfshim CleanOnlineAppCache") and
+  not process.executable :
+             ("?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\aspnet_regiis.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\ServiceModelReg.exe") and
+  not (process.name : ("regsvr32.exe", "regasm.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
 '''
 
 min_endpoint_version = "7.15.0"

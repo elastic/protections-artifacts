@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Initial Access via DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 file where event.action != "deletion" and
@@ -22,7 +22,9 @@ file where event.action != "deletion" and
          "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\*") and
  process.name : ("winword.exe", "excel.exe", "powerpnt.exe", "MSACCESS.EXE", "MSPUB.EXE", "fltldr.exe", "cmd.exe",
                  "certutil.exe", "mshta.exe", "cscript.exe", "wscript.exe", "curl.exe", "powershell.exe", "pwsh.exe") and 
- not (process.name : "cmd.exe" and file.path :"?:\\Users\\*\\AppData\\*\\Microsoft\\OneDrive\\*\\api-ms-win-core-*.dll")
+ not (process.name : "cmd.exe" and
+      file.path : ("?:\\Users\\*\\AppData\\*\\Microsoft\\OneDrive\\*\\api-ms-win-core-*.dll",
+                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\qml\\Qt*.dll"))
 '''
 
 min_endpoint_version = "7.15.0"

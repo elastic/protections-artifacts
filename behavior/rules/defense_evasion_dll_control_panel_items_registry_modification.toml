@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "DLL Control Panel Items Registry Modification"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 registry where
@@ -20,10 +20,11 @@ registry where
               ("?:\\Windows\\System32\\svchost.exe",
                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe",
                "?:\\Windows\\System32\\drvinst.exe",
-               "?:\\Windows\\System32\\msiexec.exe") and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20"))
+               "?:\\Windows\\System32\\msiexec.exe") and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20")) and
+  not (process.code_signature.subject_name : "Wacom Co., Ltd." and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -49,4 +50,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

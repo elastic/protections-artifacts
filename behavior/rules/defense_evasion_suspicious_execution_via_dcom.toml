@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -46,7 +46,8 @@ sequence with maxspan=1m
    /* noisy FPs */
    not (process.name : "rundll32.exe" and process.args : ("?:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie", "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141")) and
 
-   not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09"
+   not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09" and
+   not (process.code_signature.subject_name : "F5 Networks Inc" and process.code_signature.trusted == true)
    ] by process.entity_id
   [process where event.action : "start" and
 
@@ -68,7 +69,8 @@ sequence with maxspan=1m
                 "?:\\Windows\\system32\\dllhost.exe",
                 "?:\\Windows\\SysWOW64\\dllhost.exe",
                 "?:\\Windows\\System32\\mspaint.exe",
-                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and
+                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                "?:\\Windows\\System32\\TokenBrokerCookies.exe") and
 
    not process.parent.executable :
                ("?:\\Program Files (x86)\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",
@@ -99,14 +101,16 @@ sequence with maxspan=1m
    not (process.name : "rundll32.exe" and
         process.command_line :
                 ("*windows\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus*",
-                 "*WINDOWS\\system32\\inetcpl*ClearMyTracksByProcess*")) and
+                 "*WINDOWS\\system32\\inetcpl*ClearMyTracksByProcess*",
+                 "*PhotoViewer.dll*ImageView_Fullscreen*")) and
 
    not (process.name : "regsvr32.exe" and process.parent.name : "dllhost.exe" and
         process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and
 
    not process.hash.sha256 :
                ("4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
-                "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d") and
+                "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d",
+                "ef7d80e4cc017ba0b8ca0cef2956ed762f4a3e8053d2569785bfaf735e9aecb9") and
 
    not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and

@@ -1,0 +1,68 @@
+[rule]
+description = """
+Identifies the creation of a scheduled task by a descendant of a browser or compression utility. This behavior is
+consistent with an adversary attempting to establish persistence after initial access via malicious user execution.
+"""
+id = "21cd57eb-b211-4f06-8e4e-cdafa4fdb8ca"
+license = "Elastic License v2"
+name = "Scheduled Task from a Browser or Compression Utility Descendant"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+  [process where event.action == "start" and
+ (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
+ (process.code_signature.trusted == false or process.code_signature.exists==false) and
+ not process.code_signature.status : ("errorExpired", "errorCode_endpoint*") and
+
+ /* Direct Child */
+ (
+  (process.executable : ("?:\\Users\\*\\Downloads\\*", "*\\AppData\\Local\\Temp\\*") and
+   process.parent.name: ("explorer.exe", "chrome.exe", "msedge.exe", "firefox.exe", "7zFM.exe", "iexplore.exe", "winrar.exe")) or
+
+ /* Descendant */
+  descendant of [
+  process where event.action == "start" and
+  (process.code_signature.trusted == false or process.code_signature.exists==false)
+  and process.parent.name: ("explorer.exe", "chrome.exe", "msedge.exe", "firefox.exe", "7zFM.exe", "iexplore.exe", "winrar.exe") and
+  process.executable: ("*\\Downloads\\*", "*\\AppData\\Local\\Temp\\*")
+  ]
+ )
+ ] by process.entity_id
+ [file where event.action : "creation" and process.name : "svchost.exe" and
+  file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*")] by Effective_process.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.005"
+name = "Scheduled Task"
+reference = "https://attack.mitre.org/techniques/T1053/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

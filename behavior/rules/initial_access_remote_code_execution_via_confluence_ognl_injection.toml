@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the exploitation of an unauthenticated Remote Code Execution vulnerability that affects Atlassian Confluence
+Server (CVE-2022-26134) via OGNL Injection. The attacker exploits a vulnerable server by sending a malicious HTTP GET
+request with an OGNL payload in the URI. The successful exploitation allows the attacker to execute commands remotely in
+the context of the Confluence application user.
+"""
+id = "8fff17c6-f0ba-4996-bcc3-342a9ebd0ef3"
+license = "Elastic License v2"
+name = "Remote Code Execution via Confluence OGNL Injection"
+os_list = ["linux"]
+reference = [
+    "https://www.volexity.com/blog/2022/06/02/zero-day-exploitation-of-atlassian-confluence/",
+    "https://blog.qualys.com/vulnerabilities-threat-research/2022/06/29/atlassian-confluence-ognl-injection-remote-code-execution-rce-vulnerability-cve-2022-26134",
+    "https://cve.mitre.org/cgi-bin/cvename.cgi?name=2022-26134",
+    "https://nvd.nist.gov/vuln/detail/CVE-2022-26134",
+]
+version = "1.0.9"
+
+query = '''
+process where event.action == "exec" and process.parent.executable : "/*/confluence/jre/*/java"
+  and process.name in ("sh", "bash", "python*", "perl*") and
+  not process.command_line : "bash -c ulimit -u"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

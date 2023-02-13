@@ -7,7 +7,7 @@ id = "816e1e39-e1a3-4935-9b7b-18395d244670"
 license = "Elastic License v2"
 name = "Windows Script Execution from Archive File"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,10 @@ process where event.action == "start" and
   /* execution from mounted ISO or IMG  */
    (process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and process.working_directory : "?:\\" and
     not process.args : "?:\\Windows\\System32\\winrm.vbs" and not process.working_directory : "C:\\")
-  )
+  ) and
+  not (process.name : "cscript.exe" and process.command_line : "cscript  C:\\splitwindow.vbs" and
+      process.parent.args : "C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*.bat") and
+  not (process.args : "?:\\Program Files\\nodejs" and process.args : "rmdir" and process.name : "wscript.exe")
 '''
 
 min_endpoint_version = "7.15.0"

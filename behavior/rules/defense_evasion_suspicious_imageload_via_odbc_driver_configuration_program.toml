@@ -8,12 +8,13 @@ license = "Elastic License v2"
 name = "Suspicious ImageLoad via ODBC Driver Configuration Program"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Odbcconf/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
   (process.pe.original_file_name == "odbcconf.exe" or process.name : "odbcconf.exe") and
-   process.args : ("-a", "-f", "/a", "/f")
+   process.args : ("-a", "-f", "/a", "/f") and
+   not (process.args : "?:\\Windows\\SysWOW64\\ODBCCONF.RSP" and process.parent.name : "InstallManager.exe")
 '''
 
 min_endpoint_version = "7.15.0"

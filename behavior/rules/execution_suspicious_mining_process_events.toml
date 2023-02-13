@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies attempts to disable common mining services by name, which is a common pattern adopted by some mining malware
+droppers to remove competitors during installation time.
+"""
+id = "fbf9342e-3d1e-4fba-a828-92fa0fb4d21b"
+license = "Elastic License v2"
+name = "Suspicious Mining Process Events"
+os_list = ["linux"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "exec" and 
+
+      ((process.name=="service" and process.args=="stop") or
+       (process.name=="chkconfig" and process.args=="off") or
+       (process.name=="systemctl" and process.args in ("disable", "stop", "kill", "start", "reload", "restart"))) and
+	   
+	 process.args in ("aliyun.service", "moneroocean_miner.service", "c3pool_miner.service", "pnsd.service", "apache4.service", "pastebin.service", "xvf.service") and
+	 /* exec via interactive shell */
+	 not process.parent.command_line : ("bash", "-bash", "sh") and
+	 
+	 not process.parent.executable : "/usr/local/share/aliyun-assist/*/update_install"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

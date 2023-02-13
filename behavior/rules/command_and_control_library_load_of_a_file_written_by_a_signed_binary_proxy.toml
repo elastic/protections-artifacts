@@ -8,7 +8,7 @@ id = "7b5a1c52-12ff-4c1b-b1f1-2226ceb11c9a"
 license = "Elastic License v2"
 name = "Library Load of a File Written by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -18,7 +18,8 @@ sequence with maxspan=5m
    [library where not startswith~(process.executable, dll.path) and
     process.code_signature.subject_name : "Microsoft*" and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
-    not (process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe" and dll.path : "C:\\oracle12\\*.dll")] by dll.path
+    not (process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe" and dll.path : "C:\\oracle12\\*.dll") and
+    not dll.path : "?:\\Program Files\\Common Files\\PerkinElmer Life Sciences\\*.ocx"] by dll.path
 '''
 
 min_endpoint_version = "8.4.0"

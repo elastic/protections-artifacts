@@ -10,17 +10,19 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=1m
-  [process where event.action == "exec" and process.name : ("Installer", "package_script_service")]
+  [process where event.action == "exec" and process.name : ("Installer", "package_script_service") and not 
+    process.args : "/Library/Application Support/JAMF/Downloads/*"]
   [process where event.action : ("exec", "fork") and
 
     // Descendant of macOS installer process
     descendant of [
         process where event.action == "exec" and
-        process.name : ("Installer", "package_script_service")
+        process.name : ("Installer", "package_script_service") and not
+        process.args : "/Library/Application Support/JAMF/Downloads/*"
         ] and
 
     (

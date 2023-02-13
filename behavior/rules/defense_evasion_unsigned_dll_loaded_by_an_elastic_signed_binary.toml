@@ -1,0 +1,57 @@
+[rule]
+description = """
+Identifies the load of an unsigned or untrusted DLL by an Elastic signed binary. This may indicate a potential DLL
+sideloading attempt.
+"""
+id = "b3edbd4f-d829-49fe-a638-8ef2dc56e8fd"
+license = "Elastic License v2"
+name = "Unsigned DLL Loaded by an Elastic Signed Binary"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+library where
+
+ process.code_signature.subject_name == "Elasticsearch, Inc." and
+
+ (dll.code_signature.exists == false or
+  (dll.code_signature.trusted == false and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))) and
+
+  /* loaded from current dir */
+  endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
+
+  not startswith~(dll.name, process.name)
+'''
+
+min_endpoint_version = "8.0.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.0.0"

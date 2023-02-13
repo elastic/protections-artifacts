@@ -1,0 +1,61 @@
+[rule]
+description = """
+Detects the manual loading of a Chromium extension from an unusual parent process. This activity is suspicious and could
+be indicative of a malware loading a malicious extension to persist or collect browsing secrets such as cookies,
+browsing history.
+"""
+id = "d7fda3d7-fe77-49c2-8b50-d28a6da206c4"
+license = "Elastic License v2"
+name = "Chromium Extension Loaded from Unusual Parent"
+os_list = ["windows"]
+reference = [
+    "https://redcanary.com/blog/chromeloader/",
+    "https://blogs.vmware.com/security/2022/09/the-evolution-of-the-chromeloader-malware.html",
+]
+version = "1.0.6"
+
+query = '''
+sequence with maxspan=5m
+ [process where event.action == "start" and
+  (
+   (process.Ext.relative_file_creation_time <= 600 or process.Ext.relative_file_name_modify_time <= 600) or
+   process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Windows\\Microsoft.Net\\*") or
+   process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "regsvr32.exe", "rundll32.exe", "cmd.exe")
+  ) and
+  not (process.code_signature.subject_name : ("Cypress.io, Inc.", "PortSwigger Ltd", "Scalehat Technologies Ltd") and
+       process.code_signature.trusted == true) and
+  not process.hash.sha256 :
+              ("a064743886dc4068db7e4143a2eba14d1cdf80f5dd28d8057c6087a30ca7f3b4",
+               "7d95b4e26859620738a31dbbafbf019da42f2378821e2bb49b748956ef50b3e3",
+               "fcc098d6a5df5a302c4fc635203bf28868a92d2469465551f6cf7e5c93a1719a",
+               "e4244190024bdd0ffed267b47f897cca054a4762c76b93cb34ae2d7925589956")
+  ] by process.entity_id
+ [process where event.action == "start" and process.command_line : "*--load-extension*"] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1176"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

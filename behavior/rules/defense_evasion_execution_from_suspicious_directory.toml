@@ -1,0 +1,132 @@
+[rule]
+description = """
+Identifies process execution from directories that are often abused by malware such as roaming, public and programdata
+folders followed by a DNS lookup request.
+"""
+id = "9ba39516-651e-489f-8b6a-f5501e0c492d"
+license = "Elastic License v2"
+name = "Execution from Suspicious Directory"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+/* NB - this rule is only for threats viz - do not deprecate */
+
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  process.Ext.relative_file_name_modify_time < 500 and
+  (
+   process.executable :
+         ("?:\\Users\\Public\\*",
+          "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\*",
+          "?:\\Windows\\System32\\Tasks\\*",
+          "?:\\Windows\\Tasks\\*",
+          "?:\\PerfLogs\\*",
+          "?:\\Users\\Default\\*",
+          "?:\\Windows\\Logs\\*",
+          "?:\\windows\\Help\\*",
+          "?:\\Windows\\INF\\*") or
+
+   (process.executable : "?:\\Users\\*\\AppData\\Roaming\\*" and not process.executable : "?:\\Users\\*\\AppData\\Roaming\\*\\*") or
+
+   (process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\RarSFX*" and process.code_signature.exists == false) or
+
+   /* process name minus extension composed of numbers only */
+   (process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Windows\\Temp\\*", "?:\\ProgramData\\*") and process.name regex~ """[0-9\.]+\.(exe|pif)""") or 
+
+   (process.executable : "?:\\ProgramData\\*" and not process.executable : "?:\\ProgramData\\*\\*")
+   ) and
+
+   not process.executable :
+              ("?:\\Users\\Public\\CSC\\WIC\\bin\\*.exe",
+               "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\*.exe") and
+
+   /* excluding code_sign trusted, can get noisy in certain env */
+   not (process.executable : "?:\\Users\\*\\AppData\\Roaming\\*" and (process.code_signature.trusted == true or process.code_signature.status : ("errorExpired"))) and
+
+   not process.hash.sha256 :
+              ("4fbcc89b12101ed24053fec6a87b13bfdd48db0ff99a2d50d7a22e34fbd08374",
+               "e967350e6ef2cfae1108e5b5c4357527d7046ad39d269b038d58f4e2f27534c9",
+               "5d93774785807f0ad3890d6fa283ff78f3f98a980c8c3fc7e6bed6fa7fb8fd38",
+               "997f113af57788b31020247bfda16cf204a0604aac9147aebf5d9ee49a50a522",
+               "0c7a6fd57afcb8903e4d1b24fdcacd4777657a1cd7a49f418e17f055bf8def42",
+               "8423445ee2bd12f9c450252b2b178f6065218328dffa43e6f6ef08482cd19251",
+               "4337adaa6b26ea9ad6d7bd0871d49531442ba3d8a24aecc1a5a0f26378de4f78",
+               "f97caae8172e3204538e855ee9a32f04fc41be0d67ff7e54c0c903e6dc1dbc26",
+               "849b4a0d01c53a4c5f9d3eef9bc5ad2f2ffa6613b763b257a7f654596a5bbc33",
+               "e0fb6d51e3a8de0e8db04d0e91517cc46f4d83a55c986b313fb333dc9e5bce83",
+               "422aa4268713b6c99581365985d403a62f6ccd9f0b5a23f9d963d1947dc77aee")]
+ [dns where
+   dns.question.name : "*.*" and
+   process.executable :
+         ("?:\\Users\\Public\\*",
+          "?:\\Users\\*\\AppData\\Roaming\\*",
+          "?:\\Windows\\System32\\Tasks\\*",
+          "?:\\Windows\\Tasks\\*",
+          "?:\\ProgramData\\*",
+          "?:\\PerfLogs\\*",
+          "?:\\Users\\Default\\*",
+          "?:\\Windows\\Logs\\*",
+          "?:\\windows\\Help\\*",
+          "?:\\Windows\\INF\\*") and
+
+   not dns.question.name :
+              ("*.in-addr.arpa.",
+               "www.google-analytics.com",
+               "fonts.googleapis.com",
+               "update.googleapis.com",
+               "www.google.com",
+               "ocsp.*.com",
+               "ocsp.*.net",
+               "dl.dell.com",
+               "*.symcd.com",
+               "www.hpsmart.com",
+               "*.liquidnet.biz",
+               "stats.norton.com",
+               "ctldl.windowsupdate.com",
+               "datapipeline.logitech.io")]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

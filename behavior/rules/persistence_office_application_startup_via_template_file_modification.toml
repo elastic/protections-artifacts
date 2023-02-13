@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Office Application Startup via Template File Modification"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1137/001/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 file where event.action : ("creation", "overwrite") and process.pid != 4 and
@@ -20,7 +20,9 @@ file where event.action : ("creation", "overwrite") and process.pid != 4 and
                             "?:\\Windows\\explorer.exe",
                             "?:\\Program Files\\Citrix\\User Profile Manager\\UserProfileManager.exe",
                             "?:\\Program Files (x86)\\Citrix\\User Profile Manager\\UserProfileManager.exe",
-                            "?:\\Program Files (x86)\\Ivanti\\Workspace Control\\pfwsmgr.exe") and
+                            "?:\\Program Files (x86)\\Ivanti\\Workspace Control\\pfwsmgr.exe",
+                            "?:\\ProgramData\\ForensiT\\Transwiz\\Deployment Files\\Transwiz.exe",
+                            "?:\\Windows\\System32\\xcopy.exe") and
   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20")
 '''
 

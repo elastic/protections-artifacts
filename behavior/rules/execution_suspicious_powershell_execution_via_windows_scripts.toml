@@ -4,7 +4,7 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
@@ -69,7 +69,8 @@ process where event.action == "start" and
    not (process.parent.args : "Microsoft.SystemCenter.ICMPProbe.WithConsecutiveSamples.vbs" and process.args : "Get-SCOMAgent") and
    not (process.command_line : "*WEBLOGIC_ARGS_CURRENT_1.DATA*" and process.parent.command_line : "*Impact360*") and
    not process.args :  "$package = Get-AppxPackage Microsoft.Office.Desktop -allUsers;*" and
-   not process.command_line : "*.Access.IdentityReference*win32_SID.SID*"
+   not process.command_line : "*.Access.IdentityReference*win32_SID.SID*" and
+   not (process.parent.args : "?:\\Users\\Prestige\\AppData\\Local\\Temp\\Rar$*\\KMS_VL_ALL_AIO.cmd  -elevated" and process.command_line : "*KMS_VL_ALL_AIO.cmd*")
 '''
 
 min_endpoint_version = "7.15.0"

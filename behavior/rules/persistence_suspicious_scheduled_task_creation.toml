@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Creation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,10 @@ process where event.action == "start" and
    process.command_line : ("*comspec*", "*cmd.exe*/c*", "*^*^*^*", "*powershell*", "*http*://*", "*mshta*", "* curl.exe*")
   ) and 
   
-  not process.command_line : "*\\bmx\\* shutdown.exe *"
+  not process.command_line : ("*\\bmx\\* shutdown.exe *", "*powershell.exe*Task*rubrik_vmware*") and
+  not (process.parent.args : "C:\\ProgramData\\Prognos_Scripts\\OneDriveMapper\\OneDriveMapper.ps1" and process.command_line : "*powershell*") and
+  not process.args :  ("'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' -NonInteractive -WindowStyle Hidden -ExecutionPolicy RemoteSigned -File C:\\Windows\\TEMP\\rubrik_vmware*\\post-restore.ps1 ",
+                       "'C:\\ProWin22\\32bit\\ProSeriesBackgroundUpdater.exe' -p 'C:\\ProWin22' -y 22 -s Core")
 '''
 
 min_endpoint_version = "7.15.0"

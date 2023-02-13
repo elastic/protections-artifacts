@@ -7,7 +7,7 @@ id = "e3938d6e-8f66-4871-88c7-442a530f8119"
 license = "Elastic License v2"
 name = "Defense Evasion via Registry Modification"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
@@ -27,7 +27,11 @@ registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
 
     (registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.SecurityAndMaintenance\\Enabled" and
      registry.data.strings : "0")
- )
+ ) and
+ not (registry.value : "DisableTaskMgr" and
+      process.executable : ("?:\\Program Files (x86)\\Green's MCI\\MCI.exe",
+                            "?:\\Program Files (x86)\\Green's NV-MSVT\\NV-MSVT.exe",
+                            "?:\\Program Files (x86)\\Green's MSVT\\MSVT.exe"))
 '''
 
 min_endpoint_version = "8.1.0"

@@ -7,7 +7,7 @@ id = "f57505bb-a1d2-4d3b-b7b5-1d81d7bdb80e"
 license = "Elastic License v2"
 name = "Unusual PowerShell Engine ImageLoad"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -34,7 +34,8 @@ sequence by process.entity_id with maxspan=1m
   not (process.name : ("RuntimeBroker.exe", "smartscreen.exe") and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
   not (process.name : "RegAsm.exe" and process.args : "?:\\Program Files\\CloudBackup\\DS-Client\\\\System.Management.Automation.dll") and
   not (process.name : "WerFault.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "WerSvcGroup") and
-  not (process.name : "dllhost.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch")]
+  not (process.name : "dllhost.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+  not (process.name : "regsvr32.exe" and process.args : ("?:\\Windows\\Microsoft.NET\\*", "?:\\Windows\\assembly\\NativeImages*", "?:\\Windows\\Installer\\MSI*"))]
  [library where dll.name : ("System.Management.Automation.ni.dll", "System.Management.Automation.dll") and not
   process.name :
    (

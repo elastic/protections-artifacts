@@ -1,0 +1,71 @@
+[rule]
+description = """
+The Installer tool is a command-line utility that allows you to install and uninstall server resources by executing the
+installer components in specified assemblies. Adversaries may abuse this utility to run malicious code.
+"""
+id = "7558b740-a23a-4c73-a060-12ed4e1ddc14"
+license = "Elastic License v2"
+name = "Potential Evasion via dotNET Framework Installation Utility"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Installutil/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ (
+   ((process.name : "installutil.exe" or process.pe.original_file_name == "InstallUtil.exe") and process.command_line :  ("*/LogFile*", "*http*")) or
+
+   descendant of [process where event.action == "start" and
+                  (process.name : "installutil.exe" or process.pe.original_file_name == "InstallUtil.exe") and process.command_line :  "*/LogFile*"]
+ ) and
+ not (process.executable : "?:\\Windows\\System32\\conhost.exe" and process.args : "0xffffffff" and process.args : "-ForceV1") and
+ not (process.name : "installutil.exe" and
+      process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "PFU.PaperStream.Capture.FiScannerEventService.exe", "PFU.PaperStream.Capture.ReleaseService.exe")) and
+ not (process.parent.name : "installutil.exe" and process.parent.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+ not process.executable : ("?:\\Program Files\\*exe", "?:\\Program Files (x86)\\*.exe") and
+ not process.parent.executable :
+              ("?:\\Program Files\\SolarWinds\\Orion\\ConfigurationWizard.exe",
+               "?:\\Program Files\\Rescue and Smart Assistant\\InstallUtil64.exe",
+               "?:\\Program Files (x86)\\Rescue and Smart Assistant\\*.exe") and
+ not (process.executable : "?:\\Windows\\System32\\sc.exe" and process.args : "delete")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.004"
+name = "InstallUtil"
+reference = "https://attack.mitre.org/techniques/T1218/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

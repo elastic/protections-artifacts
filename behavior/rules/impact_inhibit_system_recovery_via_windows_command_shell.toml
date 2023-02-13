@@ -8,14 +8,17 @@ id = "d3588fad-43ae-4f2d-badd-15a27df72133"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Windows Command Shell"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "start" and process.name : "cmd.exe" and
     not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
     not (process.args : "\\\\*\\SysVol\\*\\Policies\\{*}\\*" and process.parent.executable : "?:\\Windows\\System32\\gpscript.exe") and
-    not process.command_line : ("*\\\\*\\NETLOGON\\bitlocker-enable.cmd*", "*\\\\*\\EnablingBitLocker.bat*")
+    not process.command_line : ("*\\\\*\\*.cmd*", "*\\\\*\\*.bat*") and 
+    not descendant of [process where event.action == "start" and process.executable : "?:\\Windows\\System32\\gpscript.exe"] and
+    not (process.parent.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and
+         user.id : "S-1-5-18" and process.args : "BOOTSTATUSPOLICY")
   ] by process.entity_id
   [process where event.action == "start" and
     (
@@ -34,9 +37,13 @@ sequence with maxspan=1m
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 1
 

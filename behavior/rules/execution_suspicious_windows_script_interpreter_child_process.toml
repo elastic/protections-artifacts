@@ -7,7 +7,7 @@ id = "83da4fac-563a-4af8-8f32-5a3797a9068e"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and
@@ -38,9 +38,9 @@ process where event.type == "start" and
      not (process.name : "rundll32.exe" and process.args : "UpdatePerUserSystemParameters" and process.args : "user32.dll,") and
      not (process.executable : "?:\\Windows\\System32\\Vmw.exe" and process.parent.args : "kms_host.vbs") and
      not (process.name : "regsvr32.exe" and process.args : "C:\\nondefault\\System\\*.exe" and process.args : "/u") and 
-     not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+     not (process.name : ("rundll32.exe", "regsvr32.exe", "regasm.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
      not process.executable : ("?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\caspol.exe", "?:\\Windows\\System32\\Vmw.exe") and
-     not (process.name : "rundll32.exe" and process.args : "printui.dll,PrintUIEntry") and
+     not (process.name : "rundll32.exe" and process.args : ("printui.dll,PrintUIEntry", "user32.dll,UpdatePerUserSystemParameters")) and
      not (process.name : "regsvr32.exe" and process.args : "?:\\Windows\\sysWOW64\\*.ocx") and
      not (process.code_signature.subject_name : "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true)
 '''

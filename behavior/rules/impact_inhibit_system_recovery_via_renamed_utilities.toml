@@ -8,7 +8,7 @@ id = "153f52e2-2fe5-420b-8691-ddb8562b99d7"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Renamed Utilities"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -27,9 +27,13 @@ process where event.action == "start" and
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

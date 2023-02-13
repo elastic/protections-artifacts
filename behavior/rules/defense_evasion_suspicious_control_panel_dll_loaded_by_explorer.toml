@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Control Panel DLL Loaded by Explorer"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence  with maxspan = 5s
@@ -20,7 +20,9 @@ sequence  with maxspan = 5s
            "?:\\Program Files (x86)\\*",
            "?:\\Windows\\System32\\*",
            "?:\\Windows\\SysWOW64\\*",
-           "?:\\Windows\\assembly\\*")] by process.entity_id
+           "?:\\Windows\\assembly\\*") and
+   not dll.hash.sha256 : "35fb376fac5bbd83843958df8c3bf941681db116f1f500396ce813efd13d76b0"
+   ] by process.entity_id
 
  [process where event.action == "start" and process.parent.name : "explorer.exe" and
 

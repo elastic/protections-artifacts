@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the execution of a recently created file that is unsigned or untrusted and from a remote network logon. This
+may indicate lateral movement via remote services.
+"""
+id = "642b43ad-67bf-476b-9581-a434535395f2"
+license = "Elastic License v2"
+name = "Unsigned File Execution via Network Logon"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ process.Ext.relative_file_creation_time <= 600 and
+ process.Ext.session_info.logon_type == "Network" and
+ process.Ext.session_info.relative_logon_time <= 5 and
+ (process.code_signature.exists == false or process.code_signature.trusted == false) and
+ not process.hash.sha256 : "f1d3489e0af0c498103df0433cee9f36f5d28d34dfe94aac510f7d32d0da5495"
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.6.0"

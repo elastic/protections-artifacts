@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id
@@ -26,16 +26,24 @@ sequence by process.entity_id
               "eee7c0e92277ada0e4d57a0a2ef30f102bf6b311ba0a891f3db28fa0d5ee8f56", 
               "ffac39846b01ad8d9b1074108ace1e148b8d1805b7790e15fe8975f1a4dac5df", 
               "e9373fdb8824e4431aba0c1df68ccc6ae098dab635f3504f7ee6efdfd97462da",
-              "c4207f4d040a7588a45e76aef8e1cc9d8499e35f199a31c838ee4867a6d25870") and
+              "c4207f4d040a7588a45e76aef8e1cc9d8499e35f199a31c838ee4867a6d25870",
+              "4ab2db239193ff9578bcc781779b0d43a3aa5262bb217699009f4190cab216a7",
+              "0d0f9f92a8117090d710f28bd26753d4127a1b241b42fb0cc3688bc70a073965",
+              "7519024820f8575d20cf2c14e573ba48049dc5766e3d5714c5f7a6c790c505a3",
+              "4ab2db239193ff9578bcc781779b0d43a3aa5262bb217699009f4190cab216a7",
+              "4342faa5ba84fd6a2142f7d3797cf301b6d73894ab49138eb83497498c06910c",
+              "8c128cfd25a5d3c5b1f47da3f4d4964144af22b9fc76ffe7c67c1f5d0817b5ee",
+              "a6f0f7ceae685165ac142231215d8c1ee196d61723e26597b3eed65931f2296d") and
 
   not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 
   
-  not process.parent.executable : "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe" and 
+  not process.parent.executable :
+           ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
+            "?:\\Program Files (x86)\\ISO to USB\\isotousb.exe") and
   
   not (process.executable : "?:\\Windows\\HP\\Installer.exe" and process.args : "-bestsize" and process.args : "-uefisupport") and 
 
-  not (process.pe.original_file_name : ("rufus*.exe", "HPFirmwareUPDREC.exe", "HpHwDiagA.dll", "Deployer.exe", "beremote.exe", "DellOSRecoveryTool.exe") and
-       process.code_signature.subject_name: ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC") and
+  not (process.code_signature.subject_name : ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC") and
        process.code_signature.trusted == true) and
 
   not (process.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.args : "BDESVC" and process.parent.name : "services.exe")] as event0

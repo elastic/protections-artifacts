@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies the execution of an MsiExec service child process followed by network or dns lookup activity. Adversaries may
+abuse Windows Installers for initial access and delivery of malware.
+"""
+id = "739cdfd9-d316-46aa-9400-4a1e535188bb"
+license = "Elastic License v2"
+name = "MsiExec Service Child Process With Network Connection"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+ [process where event.action : "start" and
+  process.parent.name : "msiexec.exe" and process.parent.args : "/v" and
+
+  not process.executable :
+        ("?:\\Windows\\System32\\msiexec.exe",
+         "?:\\Windows\\sysWOW64\\msiexec.exe",
+         "?:\\Windows\\system32\\srtasks.exe",
+         "?:\\Windows\\syswow64\\srtasks.exe",
+         "?:\\Windows\\sys*\\taskkill.exe",
+         "?:\\Program Files\\*.exe",
+         "?:\\Program Files (x86)\\*.exe",
+         "?:\\Windows\\Installer\\MSI*.tmp",
+         "?:\\Windows\\Microsoft.NET\\Framework*\\RegSvcs.exe") and
+
+ not (process.name : ("rundll32.exe", "regsvr32.exe") and
+      process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+
+ not user.id : "S-1-5-18" and
+
+ not (process.code_signature.trusted == true and
+      process.code_signature.subject_name : ("Clevercontrol LLC", "Box, Inc.", "Citrix Systems, Inc.", "VMware, Inc.")) and
+
+ not process.hash.sha256 :
+            ("0dd52218872229c6cca07f62048a46eabd08b2af9ed7365c48220b3724a09a92",
+             "9e17ac250e74e3a647158784eb9250607651e96e04c9da9c0d099c13643835ad",
+             "0c02457d992a30cad6896844ab38fc57d3199abd744a2a905fe769e44630c989")]
+[any where event.category : ("network", "dns")]
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

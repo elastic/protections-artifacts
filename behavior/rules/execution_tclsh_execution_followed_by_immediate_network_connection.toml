@@ -1,0 +1,42 @@
+[rule]
+description = """
+Detects the execution of the tclsh binary followed by an immediate network connection by tclsh linked by the
+process.entity_id value. Tclsh is a shell-like application that reads Tcl commands from its standard input or from a
+file and evaluates them. Tcl is a high-level programming language. It is still a default installation as of macOS 12
+Monterey, making it an ideal candidate for payload execution.
+"""
+id = "ac1eaed8-2aee-48d7-9824-2be1f00eda0e"
+license = "Elastic License v2"
+name = "Tclsh execution followed by immediate network connection"
+os_list = ["macos"]
+reference = ["https://posts.specterops.io/dylib-loads-that-tickle-your-fancy-d25196addd8c"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and process.name : "tclsh*"]
+[network where event.type == "start" and process.name : "tclsh*"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
@@ -78,7 +78,9 @@ process where event.action == "start" and
 
   not (process.name : "powershell.exe" and process.args : ("Invoke-WebRequest http://sms.revize.com/*", "Import-Module PSScheduledJob; $jobDef*")) and
   not (process.name : ("rundll32.exe", "regsvr32.exe") and
-       process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,"))
+       process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", 
+                       "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,", 
+                       "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL"))
 '''
 
 min_endpoint_version = "8.4.0"

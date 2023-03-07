@@ -17,7 +17,7 @@ reference = [
     "http://waleedassar.blogspot.com/2013/01/wow64logdll.html",
     "https://github.com/rapid7/metasploit-framework/blob/5863ff7e357af1634f5b370e811d647a9c999158/modules/exploits/windows/local/cve_2020_17136.rb#L192",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=5m
@@ -40,7 +40,9 @@ sequence with maxspan=5m
          "wlanhlp.dll",
          "healthapi.dll",
          "prntvpt.dll",
-         "oci.dll")] by file.name
+         "oci.dll",
+         "SprintCSP.dll",
+         "PrintConfig.dll")] by file.name
   [library where
    user.id : "S-1-5-18" and
      (
@@ -58,13 +60,28 @@ sequence with maxspan=5m
           "diagtrack_win.dll",
           "wlanhlp.dll",
           "healthapi.dll",
-          "prntvpt.dll") or
+          "prntvpt.dll",
+          "SprintCSP.dll") or
        dll.path : ("?:\\Windows\\System32\\wbem\\wbemcomn.dll", "?:\\Windows\\SysWOW64\\wbem\\wbemcomn.dll") or
        dll.path : ("?:\\Windows\\System32\\Ualapi.dll",
                    "?:\\Windows\\SysWOW64\\Ualapi.dll",
                    "?:\\Windows\\System\\Ualapi.dll",
                    "?:\\Windows\\Ualapi.dll",
-                   "?:\\Windows\\System32\\oci.dll")
+                   "?:\\Windows\\System32\\oci.dll",
+                   "?:\\Windows\\System32\\spool\\drivers\\x64\\PrintConfig.dll",
+                   "?:\\windows\\Ualapi.dll",
+                   "?:\\windows\\wbemcomn.dll",
+                   "?:\\Windows\\oci.dll",
+                   "?:\\windows\\System32\\Wbem\\Ualapi.dll",
+                   "?:\\windows\\System32\\WindowsPowerShell\\v1.0\\wbemcomn.dll",
+                   "?:\\windows\\System32\\WindowsPowerShell\\v1.0\\Ualapi.dll",
+                   "?:\\windows\\System32\\WindowsPowerShell\\v1.0\\oci.dll",
+                   "?:\\Python??\\wbemcomn.dll",
+                   "?:\\Python??\\Ualapi.dll",
+                   "?:\\Python??\\oci.dll",
+                   "?:\\windows\\System32\\OpenSSH\\wbemcomn.dll",
+                   "?:\\windows\\System32\\OpenSSH\\oci.dll",
+                   "?:\\windows\\System32\\OpenSSH\\Ualapi.dll")
      ) and
      not (dll.code_signature.subject_name : "Microsoft*" and dll.code_signature.trusted == true) and
      not dll.path : "?:\\Windows\\System32\\prntvpt.dll"] by dll.name

@@ -7,7 +7,7 @@ id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
 license = "Elastic License v2"
 name = "ImageLoad of a File dropped via SMB"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence with maxspan=5m
@@ -34,7 +34,9 @@ sequence with maxspan=5m
     not dll.hash.sha256 :
              ("ca329f3db5479be602c2d456f0dafc023c5e744b1454a4215b45761371ffd857",
               "880fe8b7e7e0276ca9f010a30aad003accc1b3f12e0ac50e2f12b3774b8c2aac",
-              "a28d2f62629b6926211a2f8245ce2d0ab47d64f6680e6494720e04a13ab6ee1e") and
+              "a28d2f62629b6926211a2f8245ce2d0ab47d64f6680e6494720e04a13ab6ee1e", 
+              "ad46d50fdd0764ee0626beb9720d9b1a00266404189dd99cf18eaf1545d7b43b", 
+              "f9ff91b05b5e705464d364226ba5e40b9256f4720f3f9281247c7ce19f311f12") and
     not (dll.path : "?:\\LifecareMALL\\mmm\\*" and process.name : "regsvr32.exe" and user.id : "S-1-5-18")
     ] by dll.path
 '''

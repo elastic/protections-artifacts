@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
@@ -100,7 +100,13 @@ process where event.action == "start" and
 	          "5205617f86113f84df0c6d750f06e8284a58d4c781ba3993175a5f68b00600de",
 	          "d68553c0525323e804344a4cb77b8bf0b35ce5f2349a2340ba482380d785e19b",
 	          "dac28f4a11429f99705bfbf0e49f586c3c3a43a5535c387f6ab01cfea3386dff",
-	          "8db84b45c31f64f03ffef9728a39eae8e32c9b3fd21cc4fa914aab22c0104de1") and
+	          "8db84b45c31f64f03ffef9728a39eae8e32c9b3fd21cc4fa914aab22c0104de1",
+	          "f689ee9af94b00e9e3f0bb072b34caaf207f32dcb4f5782fc9ca351df9a06c97",
+	          "c0cfeb9b627dddd81f403d8848e70e54e4fe5c67da07e3ed1b16c1bb665b5e42",
+	          "84c073bfc86cf51aa8c33fa91b43ef2091a6e41482fa9c257204547955dcb4ca",
+	          "f94d16f63262ea3999997d35a5fa84a1863f889f1d2a429ce0d4faf7bb79825c",
+	          "afd293b75c5adfbff1183b08033d36fc0845c554e5ba41f0c1c647eb78a5952e",
+	          "f52c72a3c8c4592cbb6552c076a225f5956e287b096ae8b000da333ad8773b13") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -108,7 +114,7 @@ process where event.action == "start" and
                  "process.pe.original_file_name") and
        process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") and process.code_signature.trusted == true) and
 
-  not (process.code_signature.subject_name in ("Practical Dental Solutions LLC", "ISL Online Ltd.", "Nanosystems S.r.l.",
+  not (process.code_signature.subject_name : ("Practical Dental Solutions LLC", "ISL Online Ltd.", "Nanosystems S.r.l.",
    "Opera Software AS", "Kaspersky Lab JSC", "AO Kaspersky Lab", "LogMeIn, Inc.", "Bright Data Ltd", "Malwarebytes Inc",
    "SEIKO EPSON CORPORATION", "Nanosystems S.r.l.", "KOINO Co., Ltd.", "Panda Security S.L.", "Endgame, Inc.", "Bright Data Ltd",
    "Acrosync LLC", "Midassoft Corporation Limted", "ForensiT Limited", "ConnectWise, LLC", "ScreenConnect Software",
@@ -116,10 +122,12 @@ process where event.action == "start" and
    "CodeLathe, LLC", "Google LLC", "Connectwise, LLC", "Mozilla Corporation", "Huawei Technologies Co., Ltd.", "Icona srl",
    "Plarium Global LTD", "Trend Micro, Inc.", "HeroSpeed Digital Technology Co.,Ltd", "IDrive, Inc.", "Secure By Design Inc.",
    "SecureLink, Inc.", "Google Inc", "Wondershare Technology Group Co.,Ltd", "Malwarebytes Inc.", "Suse LLC", "FLEXTECH INC.",
-   "DameWare Development, LLC.") and
+   "DameWare Development, LLC.", "Acronis International GmbH", "Broadcom Inc", "Symantec Corporation", "Ivanti, Inc.", 
+   "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
+   "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED") and
    process.code_signature.trusted == true) and
 
-   not (process.pe.original_file_name == "RUNDLL32.EXE" and
+   not (process.name : "RUNDLL32.EXE" and
         process.args : ("aepdu.dll,AePduRunUpdate",
                         "Windows.Storage.ApplicationData.dll,CleanupTemporaryState",
                         "srrstr.dll,ExecuteScheduledSPPCreation",
@@ -134,12 +142,14 @@ process where event.action == "start" and
                         "?:\\Windows\\system32\\invagent.dll,RunUpdate",
                         "tsworkspace,TaskUpdateWorkspaces2",
                         "tsworkspace,WorkspaceStatusNotify2",
-                        "sysmain.dll,PfSvWsSwapAssessmentTask")) and
+                        "sysmain.dll,PfSvWsSwapAssessmentTask", 
+			"ndfapi.dll,NdfRunDllDuplicateIPDefendingSystem")) and
 
    not (process.pe.original_file_name in ("wscript.exe", "cscript.exe") and
         process.args : ("?:\\Program Files\\Intel\\SUR\\QUEENCREEK\\x64\\task.vbs", "?:\\Windows\\system32\\calluxxprovider.vbs")) and
    not (process.executable : "?:\\Windows\\*.exe" and process.code_signature.status : ("errorExpired", "errorCode_endpoint*", "errorChaining")) and
-   not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*")
+   not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*") and 
+   not (process.executable : "?:\\Windows\\Temp\\*" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "7.15.0"

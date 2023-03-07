@@ -7,7 +7,7 @@ id = "c8776070-eca6-4370-8438-f2b6282615ef"
 license = "Elastic License v2"
 name = "Potential Data wiping Attack Behavior"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
@@ -22,9 +22,11 @@ sequence by process.entity_id with maxspan=1s
              "?:\\Program Files (x86)\\*.exe",
              "?:\\Windows\\System32\\spoolsv.exe",
              "?:\\Windows\\System32\\svchost.exe",
-             "?:\\Windows\\Explorer.exe") and
+             "?:\\Windows\\Explorer.exe",
+             "?:\\Program Files (x86)\\Steam\\steamapps\\*.exe") and
   not (process.name : "steam.exe" and file.path : "?:\\Users\\*\\steamapps\\downloading\\*.txt") and
-  not (process.code_signature.subject_name : "Valve Corp." and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : "Valve Corp." and process.code_signature.trusted == true) and
+  not file.path : "?:\\Program Files (x86)\\Steam\\steamapps\\downloading\\*"
   ]
  [file where event.action == "modification" and
   file.Ext.entropy == 0 and file.Ext.header_bytes : "0000000*" and

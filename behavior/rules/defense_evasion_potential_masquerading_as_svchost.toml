@@ -7,7 +7,7 @@ id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
 license = "Elastic License v2"
 name = "Potential Masquerading as SVCHOST"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
@@ -28,24 +28,30 @@ process where event.action == "start" and
     "?:\\Windows\\System32\\svchost.exe",
     "?:\\WINDOWS\\SysWOW64\\svchost.exe",
     "\\Device\\VhdHardDisk*\\Windows\\System32\\services.exe",
-
-	"\\Device\\HarddiskVolume?\\Windows\\System32\\services.exe",
-	"\\Device\\HarddiskVolume?\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
-	"\\Device\\HarddiskVolume?\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
-	"\\Device\\HarddiskVolume?\\Program Files*\\Windows Defender\\MsMpEng.exe",
-	"\\Device\\HarddiskVolume?\\Windows\\*\\rpcnet*.exe",
-	"\\Device\\HarddiskVolume?\\Windows\\system32\\MRT.exe",
-	"\\Device\\HarddiskVolume?\\Program Files*\\Unity Client\\Unity.exe",
-	"\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe",
-	"?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe",
-	"?:\\Program Files (x86)\\Microsoft Security Client\\Antimalware\\MsMpEng.exe",
-	"?:\\Program Files\\Cisco\\AMP\\*\\sfc.exe",
-	"?:\\Program Files (x86)\\Cisco\\AMP\\*\\sfc.exe",
-	"?:\\Program Files (x86)\\AlibabaProtect\\*\\AlibabaProtect.exe",
-	"?:\\Program Files\\AlibabaProtect\\*\\AlibabaProtect.exe",
-	"?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe",
-	"?:\\Program Files (x86)\\Tencent\\QQ\\Bin\\QQExternal.exe"
-	) and
+    "\\Device\\HarddiskVolume?\\Windows\\System32\\services.exe", 
+    "\\Device\\HarddiskVolume?\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe", 
+    "\\Device\\HarddiskVolume?\\Program Files\\Microsoft Security Client\\MsMpEng.exe", 
+    "\\Device\\HarddiskVolume?\\Program Files*\\Windows Defender\\MsMpEng.exe", 
+    "\\Device\\HarddiskVolume?\\Windows\\*\\rpcnet*.exe", 
+    "\\Device\\HarddiskVolume?\\Windows\\system32\\MRT.exe", 
+    "\\Device\\HarddiskVolume?\\Program Files*\\Unity Client\\Unity.exe", 
+    "\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe", 
+    "?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe", 
+    "?:\\Program Files (x86)\\Microsoft Security Client\\Antimalware\\MsMpEng.exe", 
+    "?:\\Program Files\\Cisco\\AMP\\*\\sfc.exe", 
+    "?:\\Program Files (x86)\\Cisco\\AMP\\*\\sfc.exe", 
+    "?:\\Program Files (x86)\\AlibabaProtect\\*\\AlibabaProtect.exe", 
+    "?:\\Program Files\\AlibabaProtect\\*\\AlibabaProtect.exe", 
+    "?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe", 
+    "?:\\Program Files (x86)\\Tencent\\QQ\\Bin\\QQExternal.exe", 
+    "\\\\?\\Volume{*}\\Windows\\System32\\services.exe", 
+    "\\\\?\\Volume{*}\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe", 
+    "\\\\?\\Volume{*}\\Program Files\\Microsoft Security Client\\MsMpEng.exe", 
+    "\\\\?\\Volume{*}\\Program Files*\\Windows Defender\\MsMpEng.exe", 
+    "\\\\?\\Volume{*}\\Windows\\*\\rpcnet*.exe", 
+    "\\\\?\\Volume{*}\\Windows\\system32\\MRT.exe", 
+    "\\\\?\\Volume{*}\\Program Files*\\Unity Client\\Unity.exe", 
+    "\\\\?\\Volume{*}\\Windows\\System32\\wermgr.exe") and
   not (process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.executable : "?:\\Windows\\syswow64\\svchost.exe") and
   not (process.parent.executable :
                    ("?:\\Windows\\System32\\svchost.exe",

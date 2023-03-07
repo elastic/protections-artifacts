@@ -7,7 +7,7 @@ id = "3f1cbf09-dba1-428d-8c84-a86db573889e"
 license = "Elastic License v2"
 name = "Driver Dropped by Untrusted Executable"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=5m
@@ -46,7 +46,11 @@ sequence with maxspan=5m
            "596983b0a04a95e4261a4f893103c16e",
            "5f4d38669edea237e4e569abdfb7a2e5",
            "26d49feec51abdaa0b95edec8a8754b9",
-           "55db306bc2be3ff71a6b91fd9db051b8") and
+           "55db306bc2be3ff71a6b91fd9db051b8", 
+           "cb86059f4b291991e735becbd4c669cb", 
+           "ce753744099dc03f568621989387593a", 
+           "3990ca8c997ab070d46f7721f45f3cb0", 
+           "c8859630c2336b43f2c02654dfdc5aea") and
    not (dll.code_signature.subject_name : ("FinalWire Kft.", "Musaruba US LLC") and dll.code_signature.trusted == true)] by dll.path
 '''
 

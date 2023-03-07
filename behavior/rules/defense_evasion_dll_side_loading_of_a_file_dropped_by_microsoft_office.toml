@@ -1,0 +1,90 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process creates an executable file (DLL) and the file is subsequently loaded by a
+trusted binary. An adversary may deliver a weaponized Office document to their target that writes and loads malicious
+modules.
+"""
+id = "68218637-3940-42cb-b2b7-0610fc1dde56"
+license = "Elastic License v2"
+name = "DLL Side Loading of a file dropped by Microsoft Office"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=5m
+  [ file where event.action != "deletion" and
+      process.name :
+          ("WINWORD.EXE",
+           "EXCEL.EXE",
+           "POWERPNT.EXE",
+           "MSACCESS.EXE",
+           "MSPUB.EXE") and
+      (
+        file.extension : ("dll", "cpl", "ocx") or
+        // Match Windows PE files by header data (MZ)
+        file.Ext.header_bytes : "4d5a*"
+      ) ] by file.path
+  [ library where
+   (dll.code_signature.exists == false or
+   (dll.code_signature.trusted == false and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))) and
+    process.code_signature.trusted == true and
+    not process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "ONENOTE.EXE") and
+    not startswith~(dll.name, process.name) and
+    not dll.path : "?:\\Windows\\assembly\\NativeImages_*" and
+    not (process.executable : "?:\\Windows\\System32\\spoolsv.exe" and user.id : "S-1-5-18")
+    ] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

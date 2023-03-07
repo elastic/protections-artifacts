@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects the suspicious execution of a shell script from a volume mount path and outside of the standard macOS binary
+execution path (/Volumes/name.app/Contents/MacOS/binary). This activity is highly abnormal and should indicate
+potentially malicious activity. Threat actors have used shell scripts like this in order to download additional
+tools/payloads and prepare the system for post-infection actions by establishing persistence, altering file attributes
+and creating necessary directories.
+"""
+id = "87def154-004d-4d3a-8224-591e41804454"
+license = "Elastic License v2"
+name = "Shell Script Execution from abnormal Volume Mount Path"
+os_list = ["macos"]
+reference = ["https://objective-see.org/blog/blog_0x71.html"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+process.name : ("bash", "sh", "zsh", "tclsh*") and 
+process.args : "/Volumes/*" and 
+process.args_count <= 3 and
+process.parent.executable : "/Volumes/*" and not 
+process.args : "/Volumes/*/Contents/MacOS/*"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

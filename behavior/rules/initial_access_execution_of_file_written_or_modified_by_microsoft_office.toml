@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process creates a portable executable (PE) file and the file is subsequently
+executed. An adversary may deliver a weaponized Office document to their target that writes and executes a malicious PE
+file.
+"""
+id = "901f0c30-a7c5-40c5-80e3-a50c6744632f"
+license = "Elastic License v2"
+name = "Execution of File Written or Modified by Microsoft Office"
+os_list = ["windows"]
+version = "1.0.16"
+
+query = '''
+sequence with maxspan=2m
+  [ file where event.action != "deletion" and
+      process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+      // Match Windows PE files by header data (MZ)
+      file.Ext.header_bytes : "4d5a*" and
+      not file.extension : ("exe", "com") ] by file.path
+  [ process where event.action == "start" ] by process.executable
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

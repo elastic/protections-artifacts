@@ -8,30 +8,30 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5m
  [process where event.action == "start" and
   process.parent.executable != null and
   /* FP - AppInfo */
-  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+  not (process.executable : "*\\windows\\system32\\svchost.exe" and
        user.id == "S-1-5-18" and process.command_line : "* -k netsvcs*") and
 
   /* FP - Windows Errors Reporting */
-  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+  not (process.executable : "*\\windows\\system32\\svchost.exe" and
        user.id == "S-1-5-18" and process.command_line : "*WerSvcGroup*") and
 
    /* FP - Secondary Logon */
-  not (process.executable : "?:\\windows\\system32\\svchost.exe" and
+  not (process.executable : "*\\windows\\system32\\svchost.exe" and
        user.id == "S-1-5-18" and process.command_line : "*seclogon*") and
 
    /* FP - Application Brokers */
-  not (process.executable : ("?:\\Windows\\System32\\RuntimeBroker.exe",
-                             "?:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe")) and
+  not (process.executable : ("*\\Windows\\System32\\RuntimeBroker.exe",
+                             "*\\Windows\\ImmersiveControlPanel\\SystemSettings.exe")) and
 
    /* FP - Third Party Programs except MS Office */
-  not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
+  not (process.executable : ("*\\Program Files (x86)\\*.exe", "*\\Program Files\\*.exe") and
        process.code_signature.trusted == true and
        not process.name : ("winword.exe",
                            "excel.exe",
@@ -44,14 +44,14 @@ sequence with maxspan=5m
 
    /* FP Issue #488 - WerFaultSecure ProtectedCrash  */
   not (
-       process.executable : ("?:\\Windows\\System32\\WerFaultSecure.exe", "?:\\WINDOWS\\SysWOW64\\WerFaultSecure.exe") and
+       process.executable : ("*\\Windows\\System32\\WerFaultSecure.exe", "*\\WINDOWS\\SysWOW64\\WerFaultSecure.exe") and
        user.id == "S-1-5-18" and process.parent.command_line != null and
-       ((process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.command_line : "*WerSvcGroup*") or
-         process.parent.executable : "?:\\Windows\\System32\\dxgiadaptercache.exe")
+       ((process.parent.executable : "*\\Windows\\System32\\svchost.exe" and process.parent.command_line : "*WerSvcGroup*") or
+         process.parent.executable : "*\\Windows\\System32\\dxgiadaptercache.exe")
        ) and
 
    /* FP Issue #488 - File Picker UI Host is real parent of Authentication Broker AuthHost.exe */
-  not (process.executable : "?:\\Windows\\System32\\PickerHost.Exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+  not (process.executable : "*\\Windows\\System32\\PickerHost.Exe" and process.parent.executable : "*\\Windows\\System32\\svchost.exe") and
 
    /* FP Issue #488 - Roblox Game Client */
   not (process.pe.original_file_name : "RobloxApp.exe" and
@@ -59,8 +59,8 @@ sequence with maxspan=5m
         (process.code_signature.trusted == true or process.code_signature.status == "errorTimeStamp")) and
 
    /* FP OpenWith handles unknown file handlers via GUI popup */
-  not (process.executable : ("?:\\WINDOWS\\system32\\OpenWith.exe", "?:\\WINDOWS\\syswow64\\OpenWith.exe") and process.args: "-Embedding" and
-       process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+  not (process.executable : ("*\\WINDOWS\\system32\\OpenWith.exe", "*\\WINDOWS\\syswow64\\OpenWith.exe") and process.args: "-Embedding" and
+       process.parent.executable : "*\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
   not (process.pe.original_file_name : ("notification_helper.exe", "cpptools.exe") and process.code_signature.subject_name == "Microsoft Corporation" and
        process.code_signature.trusted == true) and
@@ -68,16 +68,16 @@ sequence with maxspan=5m
   not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name in ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "?:\\Windows\\SystemApps\\Microsoft.MicrosoftEdge_*\\MicrosoftEdge.exe" and
-       process.Ext.token.integrity_level_name == "low" and process.parent.executable : "?:\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+  not (process.executable : "*\\Windows\\SystemApps\\Microsoft.MicrosoftEdge_*\\MicrosoftEdge.exe" and
+       process.Ext.token.integrity_level_name == "low" and process.parent.executable : "*\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
   not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and process.Ext.token.integrity_level_name == "low" and process.parent.name : "svchost.exe") and
+  not (process.executable : "*\\Windows\\System32\\backgroundTaskHost.exe" and process.Ext.token.integrity_level_name == "low" and process.parent.name : "svchost.exe") and
 
-  not (process.executable : "?:\\Windows\\System32\\SystemSettingsBroker.exe" and process.parent.args : "DcomLaunch" and
-       process.parent.executable :  "?:\\Windows\\System32\\svchost.exe") and
+  not (process.executable : "*\\Windows\\System32\\SystemSettingsBroker.exe" and process.parent.args : "DcomLaunch" and
+       process.parent.executable :  "*\\Windows\\System32\\svchost.exe") and
 
   not (process.pe.original_file_name == "tailscale-ipn.exe" and
         process.code_signature.subject_name == "Tailscale Inc." and
@@ -85,15 +85,15 @@ sequence with maxspan=5m
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
-  not process.executable :  "?:\\Windows\\system32\\AuthHost.exe" and
-  not (process.parent.executable : "?:\\Windows\\System32\\sihost.exe" and
+  not process.executable :  "*\\Windows\\system32\\AuthHost.exe" and
+  not (process.parent.executable : "*\\Windows\\System32\\sihost.exe" and
         process.pe.original_file_name : ("chrome.exe", "msedge.exe") and process.args_count >= 2 and
         process.code_signature.subject_name : ("Google LLC", "Microsoft Corporation")) and
-  not (process.executable : "?:\\Windows\\System32\\fsutil.exe" and process.args : "file" and
-       process.parent.executable : "?:\\Users\\*\\.vscode\\extensions\\ms-vscode.cpptools-*\\bin\\cpptools.exe") and
+  not (process.executable : "*\\Windows\\System32\\fsutil.exe" and process.args : "file" and
+       process.parent.executable : "*\\Users\\*\\.vscode\\extensions\\ms-vscode.cpptools-*\\bin\\cpptools.exe") and
 
   /* noisy with variable patterns for the parent and real parent process */
-  not (process.executable : "?:\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system")
+  not (process.executable : "*\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system")
   ] by process.parent.Ext.real.entity_id
 '''
 

@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -49,7 +49,14 @@ process where event.action == "start" and
  not process.hash.sha256 : ("3e541100c869dba06ee62252a9661e5a06c2e685a7ddd5288ea1358703412385", "29c977845e4822efe15cc0e44ede3a03e30030d108d2ae9932e34a1c3840283a") and 
  
  not (process.name : "rundll32.exe" and process.command_line : "*winethc*ForceProxyDetectionOnNextRun*" and 
-      process.parent.args : "WdiServiceHost" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
+      process.parent.args : "WdiServiceHost" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
+ not (process.executable : "?:\\Windows\\System32\\browser_broker.exe" and 
+      process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "PlugPlay") and 
+ not (process.name : "cmd.exe" and 
+      process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch" and 
+      process.args : "?:\\Windows\\System32\\wscript.exe ?:\\windows\\system32\\gathernetworkinfo.vbs") and 
+ not (process.parent.executable : "?:\\Program Files (x86)\\SubPrint\\subprint_temp\\nircmdc.exe" and 
+      process.name : "cmd.exe" and process.args : "?:\\Program Files (x86)\\SubPrint/subprint_temp/configure.bat")
 '''
 
 min_endpoint_version = "7.15.0"

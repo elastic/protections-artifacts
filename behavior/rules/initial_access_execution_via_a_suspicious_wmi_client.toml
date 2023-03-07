@@ -7,7 +7,7 @@ id = "b0a0d293-f85e-4994-97e6-95541c0bc181"
 license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -19,7 +19,10 @@ process where event.action == "start" and
     process.Ext.effective_parent.executable : ("?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\*", "?:\\Windows\\Microsoft.NET\\*")
     ) and 
   not (user.id : "S-1-5-18" and process.name : "powershell.exe") and 
-  not process.hash.sha256 : ("0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f", "8ee339af3ce1287066881147557dc3b57d1835cbba56b2457663068ed25b7840") and
+  not process.hash.sha256 : 
+             ("0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f", 
+              "8ee339af3ce1287066881147557dc3b57d1835cbba56b2457663068ed25b7840", 
+              "f27cb78f44fc8f70606be883bbed705bd1dd2c2f8a84a596e5f4924e19068f22") and
   not (process.name : "powershell.exe" and process.args : "C:\\Windows\\TEMP\\RestartHealthService.ps1" and
        process.args : "60" and process.args : "1" and
        not process.Ext.effective_parent.name : ("excel.exe", "powerpnt.exe", "winword.exe")) and

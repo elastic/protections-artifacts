@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects the execution of a process in a suspicious location by the Terminal application. Terminal will, often times, be
+granted full disk access by users and administrators who use it. Threat actors are aware of this and will abuse it in
+order to get their payloads to execute with the same context as Terminal, providing their payload full disk access. They
+do this by modifying shell profiles (e.g .zshrc, bashrc, etc.) that point to and execute their payload then when
+Terminal initiates those profiles the payload gets executed within the same context as Terminal.
+"""
+id = "8e88d216-af7a-4f5c-8155-fa7d2be03987"
+license = "Elastic License v2"
+name = "Suspicious Terminal Child Process Execution"
+os_list = ["macos"]
+reference = ["https://cedowens.medium.com/give-me-some-macos-context-c13aecbd4c5b"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+user.name == "root" and 
+process.parent.name : "terminal" and
+process.name : ("terminal", "zsh", "bash", "sh", "tclsh*") and 
+process.args : "-c" and 
+process.args : ("/private/tmp/*", 
+                "/var/tmp/*", 
+                "/tmp/*", 
+                "/var/folders/*", 
+                "/Users/Shared/*", 
+                "/Library/Containers/*", 
+                "/var/root/*", 
+                "/Library/WebServer/*", 
+                "/Library/Fonts/*", 
+                "/usr/local/bin/*", 
+                "/Users/*/Library/*", 
+                "/Users/*/Applications/*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

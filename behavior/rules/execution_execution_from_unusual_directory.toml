@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
@@ -123,7 +123,8 @@ process where event.action == "start" and
                      "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acsnative.dll*",
                      "?:\\WINDOWS\\System32\\shimgvw.dll,*",
                      "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
-                     "?:\\Program Files\\CopyTrans HEIC for Windows\\CopyTransHEICforWindows.dll*")) and not
+                     "?:\\Program Files\\CopyTrans HEIC for Windows\\CopyTransHEICforWindows.dll*",
+                     "?:\\WINDOWS\\system32\\ieframe.dll,OpenURL")) and not
      /* MS Visual Studio */
      process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
 

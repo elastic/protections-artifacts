@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies when a screensaver plist file is modified by an unexpected process. An adversary can maintain persistence on
+a macOS endpoint by creating a malicious screensaver (.saver) file and configuring the screensaver plist file to execute
+code each time the screensaver is activated.
+"""
+id = "ebae5222-71ba-4b73-afe9-8e034f8b4a04"
+license = "Elastic License v2"
+name = "Screensaver Plist File Modified by Unexpected Process"
+os_list = ["macos"]
+reference = [
+    "https://posts.specterops.io/saving-your-access-d562bf5bf90b",
+    "https://github.com/D00MFist/PersistentJXA",
+]
+version = "1.0.13"
+
+query = '''
+sequence with maxspan=30s
+  [file where event.action != "deletion" and
+    file.name: "com.apple.screensaver.*.plist" and
+    file.path : (
+      "/Users/*/Library/Preferences/ByHost/*",
+      "/Library/Managed Preferences/*",
+      "/System/Library/Preferences/*"
+      ) and
+    /* Filter OS processes modifying screensaver plist files */
+    not process.executable : (
+      "/usr/sbin/cfprefsd",
+      "/usr/libexec/xpcproxy",
+      "/System/Library/CoreServices/ManagedClient.app/Contents/Resources/MCXCompositor",
+      "/System/Library/CoreServices/ManagedClient.app/Contents/MacOS/ManagedClient"
+      )]
+  [process where event.action == "exec" and
+    process.name == "killall" and process.args : "cfprefsd"]
+'''
+
+min_endpoint_version = "7.14.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.14.0"

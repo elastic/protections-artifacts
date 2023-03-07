@@ -1,0 +1,74 @@
+[rule]
+description = """
+Identifies the execution of commands via Windows PowerShell with a pattern specific to the Sliver pentesting framework.
+Sliver is an open source cross-platform adversary emulation and red team framework.
+"""
+id = "14626cac-eb09-4e52-81f1-f87975e8f5ae"
+license = "Elastic License v2"
+name = "Potential Execution via Sliver Framework"
+os_list = ["windows"]
+reference = [
+    "https://github.com/BishopFox/sliver/blob/master/implant/sliver/shell/shell_windows.go#L39",
+    "https://github.com/BishopFox/sliver",
+]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+
+  /* Silver default shell cmd */
+ (process.name : "powershell.exe" and
+  process.command_line : "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell.exe -NoExit -Command [Console]::OutputEncoding=[Text.UTF8Encoding]::UTF8") or
+
+ (process.parent.name : "powershell.exe" and
+  process.parent.command_line : "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell.exe -NoExit -Command [Console]::OutputEncoding=[Text.UTF8Encoding]::UTF8") or
+
+  descendant of [process where event.action == "start" and
+                 process.name : "powershell.exe" and
+                 process.command_line : "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell.exe -NoExit -Command [Console]::OutputEncoding=[Text.UTF8Encoding]::UTF8"] or
+
+   /* getsystem default to injecting spoolsv.exe and for diverse cmds default to spawn a notepad.exe instance */
+  (process.executable : "?:\\Windows\\System32\\notepad.exe" and process.parent.executable : "?:\\Windows\\system32\\spoolsv.exe") or
+
+   /* Silver spawns_as a child process with extra quotes after the process image */
+  (process.args_count == 2 and process.command_line : "?:\\*.exe \"\"" and process.args : "?:\\Windows\\*.exe")
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.16.0"

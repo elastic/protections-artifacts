@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -35,7 +35,7 @@ process where event.action == "start" and
    (process.name : "sihost.exe" and not process.parent.name : ("svchost.exe", "sihost.exe")) or
    (process.name : ("winlogon.exe", "csrss.exe", "SearchProtocolHost.exe", "fontdrvhost.exe", "userinit.exe", "dwm.exe", "LogonUI.exe", "taskhostw.exe") and
     (process.parent.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\Users\\*\\Downloads\\*", "?:\\ProgramData\\*",
-                                 "?:\\Windows\\Temp\\*", "?:\\Users\\*\\Desktop\\*", "\\Device\\CdRom*", "\\Device\\Mup\\*", "\\\\*") or
+                                 "?:\\Windows\\Temp\\*", "?:\\Users\\*\\Desktop\\*", "\\Device\\CdRom*", "\\Device\\Mup\\*") or
      process.parent.name : ("python*", "powershell.exe", "rundll32.exe", "regsvr32.exe"))) or
 
    /* suspicious child processes */

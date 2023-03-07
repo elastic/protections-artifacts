@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.action == "start" and
@@ -106,7 +106,14 @@ process where event.action == "start" and
     "\\Device\\VhdHardDisk*\\Windows\\SysWOW64\\*.exe",
     "\\Device\\VhdHardDisk*\\Windows\\Microsoft.NET\\*.exe",
     "\\Device\\VhdHardDisk*\\Program Files (x86)\\*.exe",
-    "\\Device\\VhdHardDisk*\\Program Files\\*.exe"
+    "\\Device\\VhdHardDisk*\\Program Files\\*.exe",
+    
+    "\\\\?\\Volume{*}\\Windows\\System32\\*.exe", 
+    "\\\\?\\Volume{*}\\Windows\\SysWOW64\\*.exe", 
+    "\\\\?\\Volume{*}\\Windows\\Microsoft.NET\\*.exe",
+    "\\\\?\\Volume{*}\\Program Files (x86)\\*.exe",
+    "\\\\?\\Volume{*}\\Program Files\\*.exe", 
+    "\\\\?\\Volume{*}\\Windows\\WinSxS\\*.exe"
     ) and
 
   not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\Netskope\\STAgent\\stAgentUI.exe" and process.code_signature.subject_name: "netSkope Inc") and

@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -91,16 +91,22 @@ process where event.action == "start" and process.name : "powershell.exe" and
 
       (process.args : "-c" and process.args : "&{'*") or
 
-      (process.args : "-Outfile" and process.args : "Start*") or
+      (process.args : "-Outfile" and process.args : "Start*") or 
+      
+      (process.args : "-bxor" and process.args : "0x*") or 
 
       process.args : "$*$*;set-alias"
      )
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

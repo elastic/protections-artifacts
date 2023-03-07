@@ -9,12 +9,12 @@ license = "Elastic License v2"
 name = "Suspicious Execution via ShellBrowserWindow/ShellWindow COM"
 os_list = ["windows"]
 reference = ["https://blog.f-secure.com/dechaining-macros-and-evading-edr/"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by user.id with maxspan=5s
   [registry where event.action == "query" and
-    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE") and
+    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "wscript.exe", "mshta.exe", "cscript.exe", "hh.exe") and
     /* COM - ShellWindows and ShellBrowserWindows can be used to exec a
      process via Explorer and avoid susp process tree */
     registry.key :
@@ -41,7 +41,8 @@ sequence by user.id with maxspan=5s
                "iexpress.exe",
                "installutil.exe",
                "RegSvcs.exe",
-               "RegAsm.exe") and
+               "RegAsm.exe",
+               "AddInProcess.exe") and
 
      not (process.name : "wscript.exe" and process.args :  "\\\\DC\\netlogon\\*.vbs")]
 '''

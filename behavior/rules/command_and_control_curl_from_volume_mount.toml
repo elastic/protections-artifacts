@@ -1,0 +1,42 @@
+[rule]
+description = """
+Detects curl process execution from a volume mount. This activity is highly abnormal and indicates potential malicious
+activity. Threat actors will disguise their malware as legitimate dmg installer applications, like Adobe Reader or
+popular Cryptocurrency apps, and use curl to download a second stage payload or establish initial C2. This activity has
+been observed recently in various malware samples.
+"""
+id = "ddc6cd73-f081-4b28-baed-abf36f15c17e"
+license = "Elastic License v2"
+name = "Curl from Volume Mount"
+os_list = ["macos"]
+reference = ["https://objective-see.org/blog/blog_0x71.html"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
+process.parent.name : ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and 
+process.Ext.effective_parent.executable : "/Volumes/*"
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.5.0"

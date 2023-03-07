@@ -11,14 +11,14 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id
  [process where event.action == "start" and
   not (process.pe.original_file_name :
          ("SetupHost.exe", "wbengine.exe", "BitLockerWizardElev.exe", "BitLockerDeviceEncryption.exe",
-          "omadmclient.exe", "TSManager.exe") and process.code_signature.subject_name : "Microsoft *" and
+          "omadmclient.exe", "TSManager.exe", "SETUPPLATFORM.EXE") and process.code_signature.subject_name : "Microsoft *" and
           process.code_signature.trusted == true) and
 
   not process.hash.sha256 : 
@@ -33,17 +33,20 @@ sequence by process.entity_id
               "4ab2db239193ff9578bcc781779b0d43a3aa5262bb217699009f4190cab216a7",
               "4342faa5ba84fd6a2142f7d3797cf301b6d73894ab49138eb83497498c06910c",
               "8c128cfd25a5d3c5b1f47da3f4d4964144af22b9fc76ffe7c67c1f5d0817b5ee",
-              "a6f0f7ceae685165ac142231215d8c1ee196d61723e26597b3eed65931f2296d") and
+              "a6f0f7ceae685165ac142231215d8c1ee196d61723e26597b3eed65931f2296d", 
+              "ee2317208b909c46b7c73b74f07f5be68717dc704398ec3434e8ba353e2cdd04", 
+              "a62316c113c92f88a042cf84ed589f8eab1ec9de99e3e2da65ad982a9653103e") and
 
   not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 
   
   not process.parent.executable :
            ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
-            "?:\\Program Files (x86)\\ISO to USB\\isotousb.exe") and
+            "?:\\Program Files (x86)\\ISO to USB\\isotousb.exe", 
+            "?:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe") and
   
   not (process.executable : "?:\\Windows\\HP\\Installer.exe" and process.args : "-bestsize" and process.args : "-uefisupport") and 
 
-  not (process.code_signature.subject_name : ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC") and
+  not (process.code_signature.subject_name : ("Akeo Consulting", "HP Inc.", "Dell Inc", "Veritas Technologies LLC", "Insyde Software Corp.") and
        process.code_signature.trusted == true) and
 
   not (process.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.args : "BDESVC" and process.parent.name : "services.exe")] as event0

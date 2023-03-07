@@ -7,28 +7,31 @@ id = "89c9c5a0-a136-41e9-8cc8-f21ef5ad894b"
 license = "Elastic License v2"
 name = "Suspicious Microsoft IIS Worker Descendant"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
 (
-   process.parent.name : "w3wp.exe" and
-   (
-    (process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE") and
-     (process.command_line : ("*/c powershell*", "*&cd&echo*", "*certutil*", "*bitsadmin*", "*/c cd /d *",
-     "*http*", "*.replace*", "*Reflection.Assembly*", "*$*$*$*$*$*", "*^*^*^*^*^*^*",  "*set *set *set *", "* wget*") or
-      process.args : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\Windows\\Temp\\*", "?:\\windows\\help\\*"))) or
+  (
+    process.parent.name : "w3wp.exe" and
+    (
+      (process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE") and
+        (process.command_line : ("*/c powershell*", "*&cd&echo*", "*certutil*", "*bitsadmin*", "*/c cd /d *",
+                                "*http*", "*.replace*", "*Reflection.Assembly*", "*$*$*$*$*$*", "*^*^*^*^*^*^*",
+                                "*set *set *set *", "* wget*") or
+        process.args : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\Windows\\Temp\\*", "?:\\windows\\help\\*"))) or
 
-     (process.pe.original_file_name == "PowerShell.EXE" and length(process.parent.command_line) >= 150 and
-      process.parent.command_line : ("* -enc*", "* -e *", "* bypass*")) or
+      (process.pe.original_file_name == "PowerShell.EXE" and length(process.parent.command_line) >= 150 and
+        process.parent.command_line : ("* -enc*", "* -e *", "* bypass*")) or
 
-     (process.parent.args : ("MSExchange*", "SharePoint*") and
-      process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE", "CertUtil.exe", "CertReq.exe", "curl.exe", "RUNDLL32.EXE", "REGSVR32.EXE")) or
+      (process.parent.args : ("MSExchange*", "SharePoint*") and
+        process.pe.original_file_name in ("Cmd.Exe", "PowerShell.EXE", "CertUtil.exe", "CertReq.exe", "curl.exe", "RUNDLL32.EXE", "REGSVR32.EXE")) or
 
-     (process.pe.original_file_name == "Cmd.Exe" and process.args_count ==1)
-   ) or
+      (process.pe.original_file_name == "Cmd.Exe" and process.args_count ==1)
+    )
+  ) or
 
- (descendant of [process where process.name : "w3wp.exe"] and
+  (descendant of [process where process.name : "w3wp.exe"] and
   (
     (process.name : ("net.exe", "net1.exe") and process.command_line : ("*administrators*", "*remote desktop*", "*use \\* /user*")) or
     (process.pe.original_file_name in ("CertUtil.exe", "CertReq.exe", "curl.exe", "bitsadmin.exe"))
@@ -36,9 +39,9 @@ process where event.action == "start" and
   ) or
 
   (descendant of [process where process.parent.name : "w3wp.exe" and
-    process.pe.original_file_name == "Cmd.Exe" and process.command_line : ("*/c powershell*", "*&cd&echo*")])
+    process.pe.original_file_name == "Cmd.Exe" and process.command_line : ("*/c powershell*", "*&cd&echo*")]
+  )
 )
-
 /* False Positives */
 and not (process.name : "cmd.exe" and process.parent.args : "Icims" and process.command_line : "*vault.azure.net*" and process.parent.name : "w3wp.exe")
 '''

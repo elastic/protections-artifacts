@@ -1,0 +1,48 @@
+[rule]
+description = """
+Detects the creation or modification of the StartupParameters.plist file indicating the presence of a Startup Item on
+the system. StartupItems have been deprecated on modern MacOS systems (post Mavericks) in favor of Launch Daemons but
+they still work. The creation of a StartupItem should be highly suspicious as the vast majority of applications no
+longer use this method to persist.
+"""
+id = "eaf68cce-b250-4a17-a3c3-3c9c4cf1ec14"
+license = "Elastic License v2"
+name = "Suspicious StartupItem Plist Creation or Modification"
+os_list = ["macos"]
+reference = ["https://www.virusbulletin.com/uploads/pdf/conference/vb2014/VB2014-Wardle.pdf"]
+version = "1.0.11"
+
+query = '''
+file where event.type != "deletion" and 
+file.path : ("/System/Library/StartupItems/*/StartupParameters.plist", 
+             "/Library/StartupItems/*/StartupParameters.plist") and 
+not process.code_signature.signing_id : "com.apple.shove"
+'''
+
+min_endpoint_version = "8.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+[[threat.technique.subtechnique]]
+id = "T1037.005"
+name = "Startup Items"
+reference = "https://attack.mitre.org/techniques/T1037/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.1.0"

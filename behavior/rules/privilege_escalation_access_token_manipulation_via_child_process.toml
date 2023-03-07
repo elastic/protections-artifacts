@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence
@@ -67,7 +67,8 @@ sequence
              "b2f6de33dc0dfd256f9708a09b853a96d5cf5bffcaf52aa1331b3b4242421667",
              "a02e0984d790393aea56252f45dd58d25cdfa4501efb40efadecd90145717c35") and
 
-  not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*")
+  not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*") and 
+  not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*"
   ] by process.parent.entity_id
 
   until [process where event.action:"end"] by process.parent.entity_id

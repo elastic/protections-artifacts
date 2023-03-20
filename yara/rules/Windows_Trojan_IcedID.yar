@@ -159,9 +159,9 @@ rule Windows_Trojan_IcedID_2086aecb {
     meta:
         author = "Elastic Security"
         id = "2086aecb-161b-4102-89c7-580fb9ac3759"
-        fingerprint = "c80ba4185d671811d8ea74fbe4e79353d3fa71d7ef29fa385a713bb7d565c13b"
+        fingerprint = "a8b6cbb3140ff3e1105bb32a2da67831917caccc4985c485bbfdb0aa50016d86"
         creation_date = "2022-04-06"
-        last_modified = "2022-06-09"
+        last_modified = "2022-03-02"
         threat_name = "Windows.Trojan.IcedID"
         reference_sample = "b9fb0a4c28613c556fb67a0b0e7c9d4c1236b60a161ad935e7387aec5911413a"
         severity = 100
@@ -170,7 +170,7 @@ rule Windows_Trojan_IcedID_2086aecb {
         license = "Elastic License v2"
         os = "windows"
     strings:
-        $a = { 4C 8D 05 ?? ?? ?? ?? 42 8A 44 01 ?? 42 32 04 01 88 44 0D ?? 48 FF C1 48 83 F9 20 72 ?? }
+        $a = { 4C 8D 05 [4] 42 8A 44 01 ?? 42 32 04 01 88 44 0D ?? 48 FF C1 48 83 F9 20 72 ?? }
     condition:
         all of them
 }
@@ -199,9 +199,9 @@ rule Windows_Trojan_IcedID_56459277 {
     meta:
         author = "Elastic Security"
         id = "56459277-432c-437c-9350-f5efaa60ffca"
-        fingerprint = "9947beba82e6bfa053912e691982e32063251491ff18c002e060cf53574e098c"
+        fingerprint = "503bfa6800e0f4ff1a0b56eb8a145e67fa0f387c84aee7bd2eca3cf7074be709"
         creation_date = "2022-08-21"
-        last_modified = "2022-12-20"
+        last_modified = "2023-03-02"
         description = "IcedID Gzip Variant Core"
         threat_name = "Windows.Trojan.IcedID"
         reference_sample = "21b1a635db2723266af4b46539f67253171399830102167c607c6dbf83d6d41c"
@@ -218,10 +218,10 @@ rule Windows_Trojan_IcedID_56459277 {
         $str5 = "{0ccac395-7d1d-4641-913a-7558812ddea2}" ascii fullword
         $str6 = "mail_vault" wide fullword
         $seq_decrypt_payload = { 42 0F B6 04 32 48 FF C2 03 C8 C1 C1 ?? 48 3B D7 72 ?? 44 33 F9 45 33 C9 44 89 3C 3B 48 85 FF 74 ?? 41 0F B6 D1 44 8D 42 01 83 E2 03 41 83 E0 03 }
-        $seq_compute_hash = { 0F B6 4C 14 ?? 48 FF C2 8B C1 83 E1 ?? 48 C1 E8 ?? 41 0F B7 04 41 66 89 03 48 8D 5B ?? 41 0F B7 0C 49 66 89 4B ?? 48 83 FA ?? 72 ?? 66 44 89 03 B8 ?? ?? ?? ?? }
-        $seq_format_string = { C1 E8 ?? 44 0B D8 41 0F B6 D0 8B C1 C1 E2 ?? C1 E1 ?? 25 ?? ?? ?? ?? 0B C1 41 C1 E8 ?? 41 0F B6 CA 41 0B D0 44 8B 44 24 ?? C1 E0 ?? C1 E1 ?? 41 C1 EB ?? 44 0B D8 41 C1 EA ?? 0F B7 44 24 ?? 41 0B CA }
-        $seq_custom_ror = { 41 8A C0 41 8A D0 02 C0 0F B6 C8 8A C1 44 8B C1 34 ?? 84 D2 0F B6 C8 44 0F 48 C1 49 83 EB ?? }
-        $seq_string_decrypt = { 0F B7 44 24 ?? 0F B7 4C 24 ?? 3B C1 7D ?? 8B 4C 24 ?? E8 ?? ?? ?? ?? 89 44 24 ?? 0F B7 44 24 ?? 48 8B 4C 24 ?? 0F B6 04 01 0F B6 4C 24 ?? 33 C1 0F B7 4C 24 ?? 48 8B 54 24 ?? 88 04 0A EB ?? }
+        $seq_compute_hash = { 0F B6 4C 14 ?? 48 FF C2 8B C1 83 E1 ?? 48 C1 E8 ?? 41 0F B7 04 41 66 89 03 48 8D 5B ?? 41 0F B7 0C 49 66 89 4B ?? 48 83 FA ?? 72 ?? 66 44 89 03 B8 }
+        $seq_format_string = { C1 E8 ?? 44 0B D8 41 0F B6 D0 8B C1 C1 E2 ?? C1 E1 ?? 25 [4] 0B C1 41 C1 E8 ?? 41 0F B6 CA 41 0B D0 44 8B 44 24 ?? C1 E0 ?? C1 E1 ?? 41 C1 EB ?? 44 0B D8 41 C1 EA ?? 0F B7 44 24 ?? 41 0B CA }
+        $seq_custom_ror = { 41 8A C0 41 8A D0 02 C0 0F B6 C8 8A C1 44 8B C1 34 ?? 84 D2 0F B6 C8 44 0F 48 C1 49 83 EB }
+        $seq_string_decrypt = { 0F B7 44 24 ?? 0F B7 4C 24 ?? 3B C1 7D ?? 8B 4C 24 ?? E8 [4] 89 44 24 ?? 0F B7 44 24 ?? 48 8B 4C 24 ?? 0F B6 04 01 0F B6 4C 24 ?? 33 C1 0F B7 4C 24 ?? 48 8B 54 24 ?? 88 04 0A EB }
     condition:
         5 of ($str*) or 2 of ($seq_*)
 }
@@ -253,13 +253,13 @@ rule Windows_Trojan_IcedID_d8b23cd6 {
     meta:
         author = "Elastic Security"
         id = "d8b23cd6-c20c-40c9-a8e9-80d68e709764"
+        fingerprint = "d47af2b50d0fb07858538fdb9f53fee008b49c9b1d015e4593199407673e0e21"
         creation_date = "2023-01-03"
-        last_modified = "2023-02-01"
+        last_modified = "2023-01-03"
         description = "IcedID VNC server"
         threat_name = "Windows.Trojan.IcedID"
         reference_sample = "bd4da2f84c29437bc7efe9599a3a41f574105d449ac0d9b270faaca8795153ab"
         severity = 100
-        fingerprint = "d47af2b50d0fb07858538fdb9f53fee008b49c9b1d015e4593199407673e0e21"
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"

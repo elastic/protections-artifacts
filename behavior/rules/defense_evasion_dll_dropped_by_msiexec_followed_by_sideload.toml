@@ -1,0 +1,107 @@
+[rule]
+description = """
+Identifies the creation of an unsigned or untrusted DLL and subsequently loaded by a trusted binary. This behavior is
+consistent with some malwares leveraging malicious Windows installers to sideload malicious DLLs.
+"""
+id = "1543ed0b-2d7b-42f9-93d2-bf9bfd8759e3"
+license = "Elastic License v2"
+name = "DLL Dropped by MSIEXEC followed by SideLoad"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence by user.id with maxspan=1m
+[file where event.action == "creation" and file.extension : "dll" and process.name : "msiexec.exe"] by file.path
+[library where
+
+   (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000) and
+
+   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+   dll.hash.sha256 != null and
+   not dll.path : ("?:\\Windows\\Installer\\*",
+                   "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                   "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                   "?:\\Program Files\\*", "?:\\Program Files (x86)\\*",
+                   "?:\\Windows\\assembly\\*",
+                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\*") and
+   not dll.hash.sha256 : 
+                ("8dc562cda7217a3a52db898243de3e2ed68b80e62ddcb8619545ed0b4e7f65a8", 
+                 "06cad1e73c3e0976d3b85df7299891a6bf3fadd166972af431e74673305ea12a", 
+                 "4cb634e37c2622afbcddf706868f4e992db59b7bbb6f99820ec636307f833c32", 
+                 "1da5bf4f88d663f11c110c191dc56b0970c4fce5cb80b8e094f0023478e0995b", 
+                 "273bd97fc9c42a07a7e44a285243f0ee38f8668c2a22f095c99d8a3f44146843", 
+                 "4bf70e90594a6d3fbc042747bb314f541e84c0d5f7ec1cf82beac0afd94b5348") and
+   not dll.pe.imphash : "c1c7505e1e6e929ebb6b9100e55b050a" and
+   not process.executable :
+             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
+              "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and
+
+   /* DLL loaded from the process.executable current directory */
+   endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
+
+    not (process.code_signature.subject_name:
+                        ("Johannes Schindelin",
+                         "Datto Inc",
+                         "IFS World Operations AB",
+                         "RingCentral, Inc.", "Net Health Systems, Inc.",
+                         "Mobatek",
+                         "Red Gate Software Ltd",
+                         "Signal Messenger, LLC",
+                         "KYLIN INC.",
+                         "Cricut, Inc.",
+                         "Clevercontrol LLC",
+                         "VNG CORPORATION",
+                         "Citrix Systems, Inc.",
+                         "Reincubate Ltd",
+                         "Google LLC",
+                         "Corsair Memory, Inc.",
+                         "PreVeil, Inc",
+                         "Blue Jeans Network, Inc.",
+                         "Fortinet Technologies*") and process.code_signature.trusted == true) and
+    not dll.pe.imphash :
+               ("dae02f32a21e03ce65412f6e56942daa",
+                "d41d8cd98f00b204e9800998ecf8427e",
+                "f0abbc6494af9b08bf997ec9670d9ede")] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

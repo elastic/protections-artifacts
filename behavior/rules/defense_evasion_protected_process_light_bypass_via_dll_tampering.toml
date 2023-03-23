@@ -11,17 +11,14 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
-sequence by process.entity_id with maxspan=3s
+sequence by process.entity_id
  [process where event.action == "start" and process.Ext.protection != null and
   process.Ext.protection != "PsProtectedSignerAntimalware-Light" and
-  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and process.args == "WaaSMedicSvc" and
-       process.parent.executable : "?:\\Windows\\System32\\services.exe") and
- not (process.executable : "?:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe" and
- process.parent.executable : "?:\\Windows\\System32\\services.exe")
- ]
+  not (process.executable : "?:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe" and
+       process.parent.executable : "?:\\Windows\\System32\\services.exe")]
  [library where dll.Ext.defense_evasions : "Process Tampering: Code integrity violation" and
   not (dll.code_signature.trusted == true and
        dll.code_signature.subject_name :
@@ -31,18 +28,23 @@ sequence by process.entity_id with maxspan=3s
                   "Veeam Software Group GmbH",
                   "Trend Micro, Inc.",
                   "Sophos Ltd",
-                  "DeviceLock, Inc")) and
+                  "DeviceLock, Inc",
+                  "Cynet Security LTD")) and
   not process.executable : "?:\\Program Files (x86)\\Common Files\\BattlEye\\BEService.exe" and
   /* potential services child processes */
   not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe") and
-  not dll.path : "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*" and
+  not (dll.path : "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*" and
+       dll.pe.original_file_name : "ntdll.dll" and
+       dll.code_signature.subject_name : "Microsoft Windows" and
+       dll.code_signature.trusted == true) and
   not (dll.path : "?:\\Program Files\\BackupClient\\DeviceLock\\DLDrvUserMode64.dll" and
        dll.hash.sha256 : "ab813df167f8b6afe13f67231328f28fa3b0efeed8460f8b5e8a4228a8cded4e") and
   not dll.hash.sha256 : "6f8761d35b531dde2e8fd60bdcfd16cee46d48b84a2e0c28fecd1b66675faf48"
   ]
+  until [process where event.action == "end"]
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.0.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -68,4 +70,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.0.0"

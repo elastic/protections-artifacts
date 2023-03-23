@@ -8,7 +8,7 @@ id = "68218637-3940-42cb-b2b7-0610fc1dde56"
 license = "Elastic License v2"
 name = "DLL Side Loading of a file dropped by Microsoft Office"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=5m
@@ -31,7 +31,8 @@ sequence with maxspan=5m
     not process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "ONENOTE.EXE") and
     not startswith~(dll.name, process.name) and
     not dll.path : "?:\\Windows\\assembly\\NativeImages_*" and
-    not (process.executable : "?:\\Windows\\System32\\spoolsv.exe" and user.id : "S-1-5-18")
+    not (process.executable : "?:\\Windows\\System32\\spoolsv.exe" and user.id : "S-1-5-18") and
+    not process.executable : ("?:\\Windows\\SysWOW64\\msiexec.exe", "?:\\Windows\\system32\\msiexec.exe")
     ] by dll.path
 '''
 

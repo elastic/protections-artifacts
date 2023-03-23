@@ -1,0 +1,84 @@
+[rule]
+description = """
+Identifies execution from an unsigned or untrusted browser native messaging application. Adversaries may install a rogue
+browser native messaging host to maintain persistence via malicious browser extension.
+"""
+id = "e83880c5-1d82-4dbd-9816-34e4c32caf27"
+license = "Elastic License v2"
+name = "Execution via Untrusted Browser Native Messaging Application"
+os_list = ["windows"]
+reference = [
+    "https://developer.chrome.com/docs/apps/nativeMessaging/",
+    "https://www.trendmicro.com/en_us/research/23/b/earth-kitsune-delivers-new-whiskerspy-backdoor.html",
+]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+
+ (
+  (process.parent.name : "cmd.exe" and process.parent.args : "\\\\.\\pipe\\*.nativeMessaging.*" and
+   (process.code_signature.trusted == false or process.code_signature.exists == false) and
+   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+   not process.parent.args :
+              (
+               "chrome-extension://aicmkgpgakddgnaphhhpliifpcfhicfo/",
+               "chrome-extension://aeblfdkhhhdcdjpifhhbdiojplfjncoa/",
+               "chrome-extension://dgpgholdldjjbcmpeckiephjigdpikan/",
+               "chrome-extension://dhcpobccjkdnmibckgpejmbpmpembgco/",
+               "chrome-extension://mhmphnocemakkjdampibehejoaleebpo/",
+               "chrome-extension://dppgmdbiimibapkepcbdbmkaabgiofem/",
+               "chrome-extension://gfgmdlpkjanpmiikhnkldcjmpnfidnco/",
+               "chrome-extension://kfkoineenohoofaigpoafaadfigmabld/",
+               "chrome-extension://kbgcmngfhjmmpkepmbcacbkmaeilfmno/"
+              )) or
+
+  (descendant of [process where event.action == "start" and
+                  process.parent.name : "cmd.exe" and process.parent.args : "\\\\.\\pipe\\*.nativeMessaging.*" and
+                  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+                  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+                  not process.parent.args :
+                                    (
+                                     "chrome-extension://aicmkgpgakddgnaphhhpliifpcfhicfo/",
+                                     "chrome-extension://aeblfdkhhhdcdjpifhhbdiojplfjncoa/",
+                                     "chrome-extension://dgpgholdldjjbcmpeckiephjigdpikan/",
+                                     "chrome-extension://dhcpobccjkdnmibckgpejmbpmpembgco/",
+                                     "chrome-extension://mhmphnocemakkjdampibehejoaleebpo/",
+                                     "chrome-extension://dppgmdbiimibapkepcbdbmkaabgiofem/",
+                                     "chrome-extension://gfgmdlpkjanpmiikhnkldcjmpnfidnco/",
+                                     "chrome-extension://kfkoineenohoofaigpoafaadfigmabld/",
+                                     "chrome-extension://kbgcmngfhjmmpkepmbcacbkmaeilfmno/"
+                                     )])
+ ) and 
+  
+  not process.executable :
+                ("?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe",
+                 "?:\\Program Files\\*.exe", 
+                 "?:\\Program Files (x86)\\*", 
+                 "?:\\Windows\\System32\\conhost.exe") and
+  not process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe" and 
+  not process.hash.sha256 : "af0a5a9d2b22c2e440f24b2a75f7a064b8855ff0989b577b7cca0bb8e5b26d62"
+'''
+
+min_endpoint_version = "8.0.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1176"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.0.0"

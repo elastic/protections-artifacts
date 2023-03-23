@@ -12,7 +12,7 @@ reference = [
     "https://redcanary.com/blog/chromeloader/",
     "https://blogs.vmware.com/security/2022/09/the-evolution-of-the-chromeloader-malware.html",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -28,7 +28,8 @@ sequence with maxspan=5m
               ("a064743886dc4068db7e4143a2eba14d1cdf80f5dd28d8057c6087a30ca7f3b4",
                "7d95b4e26859620738a31dbbafbf019da42f2378821e2bb49b748956ef50b3e3",
                "fcc098d6a5df5a302c4fc635203bf28868a92d2469465551f6cf7e5c93a1719a",
-               "e4244190024bdd0ffed267b47f897cca054a4762c76b93cb34ae2d7925589956")
+               "e4244190024bdd0ffed267b47f897cca054a4762c76b93cb34ae2d7925589956") and
+  not (process.name : "cmd.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Programs\\GoLogin\\GoLogin.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.command_line : "*--load-extension*"] by process.parent.entity_id
 '''

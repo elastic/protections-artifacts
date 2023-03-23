@@ -7,7 +7,7 @@ id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
 license = "Elastic License v2"
 name = "Unusual File Written or Modified in Startup Folder"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 file where event.action != "deletion" and
@@ -17,7 +17,7 @@ file where event.action != "deletion" and
                "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
   (
    /* file extensions rarely written to Startup folder by legit installers */
-   file.extension : ("exe", "com", "scr", "dll", "hta", "bat", "ps1", "cmd", "url", "wsh", "wsf", "vbe", "jse", "sick", "png", "jpg", "manifest") or
+   file.extension : ("exe", "com", "scr", "dll", "hta", "ps1", "cmd", "url", "wsh", "wsf", "vbe", "jse", "sick", "png", "jpg", "manifest") or
 
    /* suspicious file names */
    length(file.name) <= 6 or

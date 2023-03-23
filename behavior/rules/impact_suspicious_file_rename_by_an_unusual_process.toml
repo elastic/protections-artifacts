@@ -8,11 +8,11 @@ id = "df874d7e-6639-44ce-b47d-96254022ccd5"
 license = "Elastic License v2"
 name = "Suspicious File Rename by an Unusual Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
- [process where event.action == "start" and process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe")]
+ [process where event.action == "start" and process.name : ("rundll32.exe", "regsvr32.exe")]
  [file where event.action : "rename" and
   file.extension != null and file.Ext.entropy >= 7 and
   file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and

@@ -7,7 +7,7 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -41,7 +41,9 @@ sequence by user.id with maxspan=5m
        process.parent.command_line : ("*Desktop\\PROTECTAgentInstaller.bat*", "*cleanupSetup.vbs Shell_*.log*")) and
   not process.parent.executable : "?:\\Program Files (x86)\\Virus Chaser\\pcms\\patch\\_incomming_files\\KDB_Trellix_Agent_BG.sfx.exe" and
   not (process.parent.args : "-no_selfdeleter" and process.parent.args : "-IS_temp") and
-  not (process.parent.args : "-removeonly" and process.parent.args : "-runfromtemp")
+  not (process.parent.args : "-removeonly" and process.parent.args : "-runfromtemp") and
+  not (process.name : "wscript.exe" and process.parent.name : "cmd.exe" and
+       process.parent.args : ("?:\\PROGRA~2\\Baxter\\*\\REGIST~1.BAT", "PrepStation\\registerCameraStand.bat", "?:\\Program Files (x86)\\Baxter\\*"))
   ]
 '''
 

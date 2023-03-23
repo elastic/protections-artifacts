@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -60,7 +60,11 @@ process where event.action == "start" and
         process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe" and
         process.parent.args : "/client=Personal" and process.parent.args : "/background") and
    not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and process.args : "/regserver" and
-        process.Ext.token.integrity_level_name : "system")
+        process.Ext.token.integrity_level_name : "system") and
+   not (process.name : "consent.exe" and
+        process.parent.executable : "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\CRWindowsClientService.exe") and
+   not (process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\*\\MicrosoftEdgeUpdateCore.exe" and
+        process.executable : "?:\\WINDOWS\\system32\\SearchProtocolHost.exe" and process.command_line : "*UsGthrFltPipeMssGthrPipe*")
 '''
 
 min_endpoint_version = "7.15.0"

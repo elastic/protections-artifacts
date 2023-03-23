@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1070/006/",
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5m
@@ -32,7 +32,10 @@ sequence with maxspan=5m
               "?:\\windows\\SysWOW64\\drvinst.exe",
               "?:\\Program Files (x86)\\*.exe",
               "?:\\Program Files\\*.exe",
-              "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe")] by file.path as event0
+              "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe") and
+
+  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and process.code_signature.trusted == true)
+  ] by file.path as event0
  [library where
 
   /* set to 6months, malwares often spoof creation times to at least 1 years */
@@ -41,7 +44,7 @@ sequence with maxspan=5m
   /* 5m */
   dll.Ext.relative_file_name_modify_time <= 300 and
 
-  not (dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and process.pid != 4) and
+  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
 
   dll.path : ("?:\\Windows\\system32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files\\Microsoft\\*",
                "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*",
@@ -57,7 +60,8 @@ sequence with maxspan=5m
                                  "?:\\Program Files*\\Internet Explorer\\*.exe", "?:\\Program Files*\\Mozilla Firefox\\*.exe")) and
 
   not dll.hash.sha256 : "9ac63dcf5a2437ed43cb143479ec4a810915017d8eb138a7fede88867e2a8121" and
-  not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true) and
+  not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true)
   ] by dll.path
 '''
 

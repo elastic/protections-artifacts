@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -108,7 +108,7 @@ process where event.action == "start" and process.name : "rundll32.exe" and
                "?:\\Program Files\\Intuit\\QuickBooks 2022\\QBW.EXE") and
   not (user.name : "user" and process.args : "file.dll,#*") and
   not (process.name : "rundll32.exe" and process.args : "uxtheme.dll,#64" and process.args : "?:\\WINDOWS\\Resources\\Themes\\*") and 
-  not process.parent.executable : "?:\\Program Files\\NVIDIA Corporation\\*.exe" and
+  not process.parent.executable : ("?:\\Program Files\\NVIDIA Corporation\\*.exe", "?:\\Program Files (x86)\\Windows Media Components\\Encoder\\wmstypelib.exe") and
   not (process.name : "rundll32.exe" and
        process.args : ("dfshim.dll,ShArpMaintain",
                        "?:\\WINDOWS\\SYSTEM32\\MSHTML.dll,#125",

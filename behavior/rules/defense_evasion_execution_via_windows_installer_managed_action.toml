@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://learn.microsoft.com/en-us/windows/win32/msi/custom-actions",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -37,7 +37,8 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                                "* sc start *",
                                "* sc config *",
                                "*BlueJeans\\BlueJeans.Detector.exe*",
-                               "*rewrite_amd64_en-US.msi *")) and
+                               "*rewrite_amd64_en-US.msi *",
+                               "*\\Argus3\\Tools\\configure_pdfprinter.cmd*")) and
   not (process.name : "regasm.exe" and process.parent.args : "Smartbar.Installer.CustomActions!Linkury.Installer.CustomActions.CustomActions.InstallationComplete") and 
   not (process.name : "powershell.exe" and process.command_line : "\"powershell\" Set-NetIPInterface \"Twingate\" -InterfaceMetric 1") and
   not process.hash.sha256 :
@@ -46,11 +47,9 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
              "4afd03745958fc80b12086faf92cfd198236f7f99c462a3fdf35bd8249cffbd8") and
   not (process.name : "cmd.exe" and process.parent.args : "RestoreScheduledTasks!RestoreScheduledTasks.CustomActions.GetTaskStatus") and
   not (process.name : "rundll32.exe" and process.command_line : "\"?:\\Windows\\System32\\rundll32.exe\" dfshim CleanOnlineAppCache") and
-  not process.executable :
-             ("?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe",
-              "?:\\Windows\\Microsoft.NET\\Framework*\\aspnet_regiis.exe",
-              "?:\\Windows\\Microsoft.NET\\Framework*\\ServiceModelReg.exe") and
-  not (process.name : ("regsvr32.exe", "regasm.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+  not process.executable : "?:\\Windows\\Microsoft.NET\\Framework*" and
+  not (process.name : ("regsvr32.exe", "regasm.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+  not (process.executable : "C:\\Argus3\\Tools\\Regsvr32.exe" and process.args : "C:\\Argus3\\*.dll")
 '''
 
 min_endpoint_version = "7.15.0"

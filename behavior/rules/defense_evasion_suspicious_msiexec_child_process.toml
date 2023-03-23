@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -29,10 +29,15 @@ process where event.action == "start" and
     process.name : ("wscript.exe", "cscript.exe") or
 
     (process.name : "powershell.exe" and
-     process.command_line : ("*Software\\Classes\\CLSID*", "*Reflection.Assembly*", "*::Load*",
-     "?:\\Users\\*\\AppData\\Local\\Temp\\pss*.tmp.ps1", "* -enc *", "* -ec *", "*WebClient*", "*DownloadFile*", "*DownloadString*", "*iex)*")) or
+     process.command_line :
+             ("*Software\\Classes\\CLSID*", "*Reflection.Assembly*", "*::Load*", 
+              "?:\\Users\\*\\AppData\\Local\\Temp\\pss*.tmp.ps1", "* -enc *", "* -ec *", 
+              "*WebClient*", "*DownloadFile*", "*DownloadString*", "*iex)*", "*-encodedCommand*", "*HwAaQBlAHgA*")) or
 
-    (process.name : "powershell.exe" and process.parent.name : "msiexec.exe" and process.parent.args : "/v")
+    (process.name : "powershell.exe" and process.parent.name : "msiexec.exe" and process.parent.args : "/v") or
+
+    /* AteraAgent RMM abused by threat actors -  */
+    (process.pe.original_file_name == "AteraAgent.exe" and process.args : "/IntegratorLogin=*@*" and process.args : "/AccountId=??*")
 
     ) and
 

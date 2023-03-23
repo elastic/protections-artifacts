@@ -1,0 +1,110 @@
+[rule]
+description = """
+Identifies the load of an untrusted DLL by a persistent trusted binary. This behavior may indicate that an existing
+persistent program is sideloading a malicious DLL.
+"""
+id = "29007eb1-40d9-47fa-82c0-d862db0586b4"
+license = "Elastic License v2"
+name = "Untrusted DLL Loaded by a Persistent Program"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  (
+    /* programs started shortly after user logon like startup items */
+   (process.parent.executable : "?:\\Windows\\Explorer.exe" and process.Ext.session_info.relative_logon_time <= 100) or
+
+   /* scheduled tasks */
+   (process.parent.name : "svchost.exe" and process.parent.args : "Schedule") or
+
+    /* services */
+    process.parent.executable : "?:\\Windows\\System32\\services.exe"
+   ) and
+  not (process.executable :
+             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
+              "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and
+              not process.name : ("rundll32.exe", "regsvr32.exe"))]
+[library where
+
+   (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000 ) and
+
+   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+   dll.hash.sha256 != null and
+   not (dll.path : ("?:\\Windows\\Installer\\*",
+                   "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                   "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                   "?:\\Program Files\\*", "?:\\Program Files (x86)\\*",
+                   "?:\\Windows\\assembly\\*",
+                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\*") and not process.name : ("regsvr32.exe", "rundll32.exe")) and
+   not process.executable : ("?:\\Windows\\SysWOW64\\msiexec.exe", "?:\\Windows\\System32\\msiexec.exe") and
+   not dll.hash.sha256 :
+             ("8dc562cda7217a3a52db898243de3e2ed68b80e62ddcb8619545ed0b4e7f65a8",
+              "06cad1e73c3e0976d3b85df7299891a6bf3fadd166972af431e74673305ea12a",
+              "5b175330539eb0911e1cce8c94892fdf728ad67fc593866a7efe80e68b92d86a",
+              "2120b986bed79dba90c3fa91f0d1e577e500e9674d9a329307872bfc9eb7db95",
+              "c923980eab8e1a02608fa5e01f7658fd4a036180fe2c292cbf886e8a7813e9e6",
+              "d6dd5739fc1a02f7cc284b8957d7412800ded255f2c5b5a736f3a2742c046de6",
+              "35e5768a738ff9d172bc75261a31dba48b7718c5c71fabffbba7fb1ed5427cb6", 
+              "917aa103ee56f1a7929b24b06678aadf15809601bd07ac711c2f1dafb3ecb909", 
+              "c923980eab8e1a02608fa5e01f7658fd4a036180fe2c292cbf886e8a7813e9e6", 
+              "05fdd60cb09e1d43c0a0097f7ff683d81dfaad2653637686b1668a7d2acc6df9", 
+              "d6dd5739fc1a02f7cc284b8957d7412800ded255f2c5b5a736f3a2742c046de6") and
+   not dll.pe.imphash :
+              ("c1c7505e1e6e929ebb6b9100e55b050a",
+               "6ed82d3226365ffafff2c57c1935d352",
+               "4c12041ee3b1492f5ec25875e818c034",
+               "d41d8cd98f00b204e9800998ecf8427e") and
+   not (process.executable :
+             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
+              "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and
+              not process.name : ("rundll32.exe", "regsvr32.exe")) and
+   not (dll.name : "*.tmp" and not process.name : ("regsvr32.exe", "rundll32.exe")) and
+
+   /* DLL loaded from the process.executable current directory */
+   (endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
+    not process.name : ("regsvr32.exe", "rundll32.exe")) and
+
+    not (process.code_signature.subject_name:
+                        ("Johannes Schindelin",
+                         "Datto Inc",
+                         "IFS World Operations AB",
+                         "RingCentral, Inc.", "Net Health Systems, Inc.",
+                         "Mobatek",
+                         "Red Gate Software Ltd",
+                         "Signal Messenger, LLC",
+                         "KYLIN INC.",
+                         "Cricut, Inc.",
+                         "Clevercontrol LLC",
+                         "VNG CORPORATION",
+                         "Connectwise, LLC") and process.code_signature.trusted == true)]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

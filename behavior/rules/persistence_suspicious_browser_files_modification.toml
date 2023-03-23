@@ -7,13 +7,13 @@ id = "7df7fca3-8a91-4a54-9799-0478a90ae326"
 license = "Elastic License v2"
 name = "Suspicious Browser Files Modification"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 any where event.category : ("file", "registry") and not event.action : ("deletion", "query") and
    (process.code_signature.trusted == false or process.code_signature.exists == false) and
    not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-19") and
-   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*") and
+   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*", "E:\\Migwiz\\migwiz.exe") and
    (
      registry.path  : "HK*SOFTWARE\\Policies\\*\\ExtensionInstallWhitelist*" or
 
@@ -22,8 +22,7 @@ any where event.category : ("file", "registry") and not event.action : ("deletio
 	         "?:\\Users\\*\\AppData\\Roaming\\Mozilla\\*\\Profiles\\*default*\\prefs.js",
 	         "?:\\Users\\*\\AppData\\Local\\*\\User Data\\Default\\Extensions\\*.js")
 	) and
-	not (file.Ext.header_bytes : "2f2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a" and
-	     process.executable : "?:\\Users\\*\\AppData\\Local\\chromium\\Application\\chrome.exe")
+	not file.Ext.header_bytes : "2f2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a"
 '''
 
 min_endpoint_version = "8.1.0"

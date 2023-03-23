@@ -1,0 +1,173 @@
+[rule]
+description = """
+Identifies the execution of commonly abused native binaries or processes from unusual paths and from a remote network
+logon session. This may indicate lateral movement via remote services.
+"""
+id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
+license = "Elastic License v2"
+name = "Suspicious Process Execution via Network Logon"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ process.Ext.session_info.logon_type == "Network" and
+ process.Ext.session_info.relative_logon_time <= 5 and
+ (
+  process.name : ("powershell.exe", "cmd.exe", "rundll32.exe", "regsvr32.exe", "regasm.exe", "mshta.exe",
+                  "wscript.exe", "msbuild.exe", "installutil.exe", "bash.exe", "excel.exe", "winword.exe", "mshta.exe") or
+  process.parent.name : "mmc.exe" or
+  (process.parent.name : "svchost.exe" and process.parent.args : "DcomLaunch") or
+  process.parent.args : "-Embedding" or
+  process.executable :
+           ("?:\\Windows\\Microsoft.NET\\*",
+            "?:\\Users\\Public\\*",
+            "?:\\ProgramData\\*",
+            "?:\\Windows\\Tasks\\*",
+            "?:\\Users\\*\\AppData\\Roaming\\*",
+            "?:\\Windows\\System32\\Tasks\\*",
+            "?:\\PerfLogs\\*",
+            "?:\\Users\\Default\\*",
+            "?:\\Windows\\Logs\\*",
+            "?:\\windows\\Help\\*",
+            "?:\\Windows\\INF\\*",
+            "*:\\Users\\*\\Music\\*",
+            "*:\\Users\\*\\Pictures\\*")
+  ) and
+
+  not process.executable :
+             ("?:\\Windows\\System32\\wsmprovhost.exe",
+              "?:\\Windows\\System32\\conhost.exe",
+              "?:\\Windows\\System32\\winrshost.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\cvtres.exe",
+              "?:\\Windows\\System32\\w32tm.exe",
+              "?:\\Windows\\System32\\netsh.exe",
+              "?:\\Windows\\System32\\msiexec.exe",
+              "?:\\Program Files (x86)\\Kaspersky Lab\\NetworkAgent\\klnagchk.exe",
+              "?:\\Program Files (x86)\\Flexx\\Sistemas\\flgacesso.exe",
+              "?:\\Program Files\\7-Zip\\7z.exe",
+              "?:\\Windows\\System32\\plasrv.exe",
+              "?:\\Windows\\System32\\vdsldr.exe",
+              "?:\\Windows\\System32\\gpupdate.exe",
+              "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\*.exe",
+              "?:\\Windows\\System32\\WerFault.exe",
+              "?:\\Windows\\System32\\dfsfrsHost.exe") and
+
+  not (process.name : ("cmd.exe", "powershell.exe") and
+       /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
+       not (process.command_line : ("*WebClient*", "*http*", "* -exec Bypass*", "* -enc *") and
+            not process.command_line : ("*echo nessus_cmd*", "*$ErrorActionPreference*", "*-executionpolicy*"))) and
+
+  not (process.executable : "?:\\Windows\\System32\\dllhost.exe" and
+       process.args : ( /* PSIProfileNotifyPermalink */
+                       "/Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
+                        /* IIS ahadmin */
+                       "/Processid:{9FA5C497-F46D-447F-8011-05D03D7D7DDC}",
+                        /* third party - HP Universal Printer */
+                       "/Processid:{AD137AE1-ED62-40ED-9891-8C294D9D3D33}",
+                        /* GPMC Reporting. */
+                       "/Processid:{7F9BBC82-BA5F-4448-8622-EF76B8D007E6}",
+
+                       "/Processid:{3EB3C877-1F16-487C-9050-104DBCD66683}",
+
+                       "/Processid:{76A64158-CB41-11D1-8B02-00600806D9B6}")) and
+  not (process.executable : "?:\\Windows\\system32\\sc.exe" and process.args : "config" and
+       process.args : "VisualStudioRemoteDeployer*" and process.parent.name : "wsmprovhost.exe") and
+  not (process.executable : "?:\\Windows\\System32\\net.exe" and process.args : ("stop", "start")) and
+  not (process.name : ("cmd.exe", "powershell.exe") and
+       process.command_line :
+                   ("*Metadata*/metadata/instance/compute*",
+                    "*metadata/latest/InstanceInfo*",
+                    "*machine?comp=goalstate*")) and
+  not process.hash.sha256 :
+                 ("06078b8b840b4591535566d18d5f88b201c4cb8e033361095f7fd37d058e6962",
+                  "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",
+                  "603a70b53c4f9121081526723ea8a7cc29447d02899de7fd24d11ac7fdd42f8c",
+                  "5442497d3a9314e591bc6969c87d6a7a00ac6189f660b3cd3176501fdeacdf57",
+                  "abc11a5c2f04381b9b1d66238db3bc914f8f89d0130a7b1abae76b20af92c8b0",
+                  "b8d0e4e50f144c5ae8392b52ab30ce67166918a8aa1acc282a3f144f83bafd85") and
+  not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe")
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.6.0"

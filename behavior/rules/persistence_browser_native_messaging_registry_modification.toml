@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies attempts to install a new chromium browser native messaging application via registry change. Adversaries may
+install a rogue browser native messaging host to maintain persistence.
+"""
+id = "f906c1f1-926e-4602-8287-1edc9667d2ad"
+license = "Elastic License v2"
+name = "Browser Native Messaging Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://developer.chrome.com/docs/apps/nativeMessaging/",
+    "https://www.trendmicro.com/en_us/research/23/b/earth-kitsune-delivers-new-whiskerspy-backdoor.html",
+]
+version = "1.0.2"
+
+query = '''
+registry where
+  (process.code_signature.trusted == false or process.code_signature.exists == false or process.name : "reg.exe") and
+   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-19") and
+   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*") and
+   registry.path : "HK*\\Software\\*\\NativeMessagingHosts\\*" and registry.data.strings : "*.json*"
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1176"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

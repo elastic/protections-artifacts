@@ -7,7 +7,7 @@ id = "b0a0d293-f85e-4994-97e6-95541c0bc181"
 license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -27,7 +27,7 @@ process where event.action == "start" and
        process.args : "60" and process.args : "1" and
        not process.Ext.effective_parent.name : ("excel.exe", "powerpnt.exe", "winword.exe")) and
 
-  not (process.code_signature.subject_name : ("Immense Networks LLC") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("Immense Networks LLC", "Synology Inc.") and process.code_signature.trusted == true) and
 
   /* ansible */
   not (process.name : "powershell.exe" and

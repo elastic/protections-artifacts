@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -57,7 +57,14 @@ sequence with maxspan=5m
                                       "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
                                       "?:\\Program Files (x86)\\ITSPlatform\\plugin\\scripting\\platform-scripting-plugin.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
-    not (process.name : "powershell.exe" and user.id : "S-1-5-18")
+    not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
+    not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
+    not process.executable : "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe" and
+    /* DOCs opened from network file share trigger an office default scheduled task */
+    not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
+    not process.hash.sha256 :
+                  ("3d95157908cee58d19193c93c5f2b0a06910b8123a4211b0ea059ff66f2506e0",
+                   "79dbc3cf0d4cdc0f2150ab5e2bf3457ba54297202500f26f1a1d48e455f7c54a")
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

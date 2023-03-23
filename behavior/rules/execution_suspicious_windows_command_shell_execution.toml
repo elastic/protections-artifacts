@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -50,7 +50,8 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
                  "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
                  "?:\\Program Files (x86)\\Helpdesk Button\\button_gui.exe",
-                 "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe") and
+                 "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",
+                 "?:\\Program Files\\Bot Framework Composer\\Bot Framework Composer.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and

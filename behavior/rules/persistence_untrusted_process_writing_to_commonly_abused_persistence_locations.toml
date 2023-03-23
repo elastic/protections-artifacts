@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Untrusted Process Writing to Commonly Abused Persistence Locations"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -29,12 +29,14 @@ sequence by process.entity_id with maxspan=1m
                         ("?:\\Program Files\\*",
                          "?:\\Program Files (x86)\\*",
                          "?:\\programdata\\chocolatey\\*\\multiclip.exe",
-                         "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\*.tmp")]
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\*.tmp") and
+   not (process.code_signature.subject_name : "ONELAUNCH TECHNOLOGIES INC." and process.code_signature.trusted == true)
+   ]
   [file where event.action != "deletion" and
    file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*" and file.name != null]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -76,4 +78,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

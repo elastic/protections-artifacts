@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence with maxspan=1m
@@ -30,14 +30,18 @@ sequence with maxspan=1m
       (process.name : "curl" and
 	   process.command_line : ("*.amazonaws.com*", "*.cloudfront.net*", "*raw.githubusercontent.com*")) or
       // No hang up executed with a bash command
-      (process.name == "nohup" and process.command_line : "*bash *") or
+      (process.name == "nohup" and process.command_line : "* &") or
       // Open SSL used to encrypt or encode/decode data
-      (process.name == "openssl" and process.args : ("-base64", "-enc")) or
+      (process.name == "openssl" and process.args : ("-base64", "-enc") and process.args : "/tmp/*") or
+      // Base64 used to decode data
+      (process.name == "base64" and process.args : "-d" and process.args : "/tmp/*") or
       // chmod used to make files readable, writable and executable by all users
-      (process.name == "chmod" and process.args : "777" and process.args : "/tmp/*" and
+      (process.name == "chmod" and process.args : ("+x", "a+x", "0777", "755", "777") and process.args : "/tmp/*" and
 	   not process.args : "/tmp/com.adobe.acrobat.DC") or
       // xattr used to change extended attributes for a file
-      (process.name == "xattr" and process.args : "/tmp/*") or
+      (process.name == "xattr" and ((process.args : "com.apple.quarantine" and 
+        process.args : ("-d", "-w", "-?d", "-?w")) or
+        (process.args : "-c")) and process.args : "/tmp/*") or
 	  // convert a downloaded file from the temp folder to a plist
 	  (process.name == "plutil" and process.args : "-convert" and process.args : "/tmp/*")
     ) and

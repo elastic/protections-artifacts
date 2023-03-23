@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "DLL Execution via Visual Studio Live Share"
 os_list = ["windows"]
 reference = ["https://twitter.com/bohops/status/1583916360404729857"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
   (process.name : "vsls-agent.exe" or process.pe.original_file_name : "vsls-agent.dll") and process.args : "--agentExtensionPath" and
 
-  not (process.args : "--pipe" and process.args : "vscode.*" and process.args : "https://*.visualstudio.com/") and
+  not (process.args : "--pipe" and process.args : "https://*.visualstudio.com/") and
 
   not process.parent.executable :
              ("?:\\Program Files\\Microsoft Visual Studio\\*\\IDE\\devenv.exe",

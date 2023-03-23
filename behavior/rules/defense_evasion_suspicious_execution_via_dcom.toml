@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=1m
@@ -72,12 +72,16 @@ sequence with maxspan=1m
                 "?:\\Windows\\System32\\mspaint.exe",
                 "?:\\Windows\\SysWOW64\\mspaint.exe",
                 "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
-                "?:\\Windows\\System32\\TokenBrokerCookies.exe") and
+                "?:\\Windows\\System32\\TokenBrokerCookies.exe",
+                "?:\\Windows\\Sys*\\PresentationHost.exe",
+                "?:\\Windows\\System32\\w32tm.exe",
+                "?:\\Windows\\System32\\colorcpl.exe") and
 
    not process.parent.executable :
                ("?:\\Program Files (x86)\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",
                 "?:\\Program Files\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",
-                "?:\\Windows\\SysWOW64\\PresentationHost.exe") and
+                "?:\\Windows\\SysWOW64\\PresentationHost.exe",
+                "?:\\Program Files (x86)\\BL\\BL\\ACTIVEX.OUT.OF.PROCESS\\*.exe") and
 
    not (process.code_signature.trusted == true and
         process.code_signature.subject_name :

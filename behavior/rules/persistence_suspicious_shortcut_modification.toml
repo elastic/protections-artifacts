@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
@@ -49,7 +49,9 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
             "?:\\Windows\\System32\\sppsvc.exe",
             "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
             "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\IPCBox\\AdobeIPCBroker.exe",
-            "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe") and
+            "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
+            "?:\\Windows\\System32\\xcopy.exe",
+            "?:\\Windows\\System32\\dsregcmd.exe") and
   file.path :
      ("?:\\Users\\*\\Desktop\\*.lnk",
       "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",
@@ -66,7 +68,8 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
            "Slack*",
            "Mozilla*",
            "Zoom*",
-           "Discord*") and
+           "Discord*",
+           "Citrix Systems, Inc.") and
        process.code_signature.trusted == true) and
   not (process.executable : "?:\\Users\\*\\Microsoft\\EdgeUpdate\\Install\\*\\setup.exe" and
        process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true) and

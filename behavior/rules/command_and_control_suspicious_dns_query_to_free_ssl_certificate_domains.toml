@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,7 +15,7 @@ sequence by process.entity_id with maxspan=5m
   (
    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") or
    process.executable :
-                 ("?:\\Windows\\system32\\*",
+         ("?:\\Windows\\system32\\*",
 		  "?:\\Windows\\SysWOW64\\*",
 		  "?:\\Windows\\Microsoft.NET\\Framework*.exe",
 		  "?:\\Windows\\explorer.exe",
@@ -29,7 +29,7 @@ sequence by process.entity_id with maxspan=5m
    (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*") and process.Ext.relative_file_creation_time <= 500)
    ) and
    not process.executable :
-                 ("?:\\Windows\\System32\\drivers\\RivetNetworks\\Killer\\KillerNetworkService.exe",
+         ("?:\\Windows\\System32\\drivers\\RivetNetworks\\Killer\\KillerNetworkService.exe",
 		  "?:\\Windows\\System32\\lsass.exe",
 		  "?:\\Windows\\System32\\svchost.exe",
 		  "?:\\Windows\\System32\\backgroundTaskHost.exe",
@@ -50,10 +50,16 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
 		  "?:\\Windows\\System32\\AuthHost.exe", 
 		  "?:\\Windows\\SysWOW64\\WuWUI.exe", 
-		  "?:\\Windows\\System32\\msfeedssync.exe") and
+		  "?:\\Windows\\System32\\msfeedssync.exe",
+		  "?:\\Windows\\System32\\omadmclient.exe",
+		  "?:\\Windows\\System32\\DeviceCensus.exe",
+		  "?:\\Windows\\System32\\smartscreen.exe",
+		  "?:\\Windows\\System32\\ipconfig.exe",
+		  "?:\\Windows\\SysWOW64\\ipconfig.exe",
+		  "?:\\Windows\\System32\\SIHClient.exe",
+		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe") and
    not (process.executable :
-              ("?:\\Windows\\System32\\ipconfig.exe",
-               "?:\\Windows\\Sys*\\ping.exe",
+              ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
    not (process.name : "rundll32.exe" and
          process.args : ("?:\\windows\\system32\\davclnt.dll,DavSetCookie", 
@@ -64,9 +70,13 @@ sequence by process.entity_id with maxspan=5m
    not (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*") and process.code_signature.trusted == true) and 
    not (process.pe.original_file_name : "NetworkOnboardingClient.dll" and process.code_signature.trusted == true) and 
    not process.hash.sha256 : 
-               ("edd0a64dc65087ffe453ca94b267169b39458a983b29ac31320fcaa983d0f97e", 
-	        "316fbec9eca41deef9a63837dfaf4de4369ca507c5b2143cd3a805cb238e5057", 
-		"b653d77479b36e9d804a5e8ca78adbbfe9ce0b82fd8e45512cf7f3ad175b945c")
+               ("edd0a64dc65087ffe453ca94b267169b39458a983b29ac31320fcaa983d0f97e",
+                "316fbec9eca41deef9a63837dfaf4de4369ca507c5b2143cd3a805cb238e5057",
+                "b653d77479b36e9d804a5e8ca78adbbfe9ce0b82fd8e45512cf7f3ad175b945c") and
+   not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
+        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+   not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
+        process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
  ]
  [dns where 
   dns.question.name : ("*letsencrypt.org", "*.sslforfree.com", "*.zerossl.com", "*.freessl.org", "*.lencr.*")]

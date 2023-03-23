@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.action == "exec" and
@@ -17,7 +17,8 @@ process where event.action == "exec" and
     process.name: (
       "Microsoft Word",
       "Microsoft Excel",
-      "Microsoft PowerPoint"
+      "Microsoft PowerPoint",
+      "Microsoft OneNote"
     )
   ] and
   process.name : (
@@ -63,6 +64,7 @@ process where event.action == "exec" and
         (
           "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
           "/usr/local/Privacy-i/PISupervisor",
+          "/Library/Elastic/Agent/*",
           "/opt/jc/bin/jumpcloud-agent",
           "/usr/sbin/networksetup"
         ) and

@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -29,7 +29,9 @@ sequence by process.entity_id with maxspan=5m
      not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\MSBuild.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\MSBuild.exe") and
      not (process.name : "javaw.exe" and
           process.parent.executable : ("?:\\Program Files\\QZ Tray\\qz-tray.exe", "?:\\Program Files (x86)\\PGP Tool\\pgptool.exe", "?:\\Program Files\\OWASP\\Zed Attack Proxy\\ZAP.exe")) and
-     not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc")
+     not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc") and
+     /* BlueIris - Camera IOT monitoring sw using telegram to upload pictures */
+     not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ")
   ]
   [dns where
     dns.question.name :
@@ -90,8 +92,12 @@ sequence by process.entity_id with maxspan=5m
         "tiny.one",
         "api.notion.com",
         "graph.microsoft.com",
-        "*.sharepoint.com"
-    )
+        "*.sharepoint.com",
+        "*upload.ee",
+        "bit.ly",
+        "cutt.ly"
+    ) and
+    not (process.name : "powershell.exe" and dns.question.name : ("graph.microsoft.com", "*.sharepoint.com"))
   ]
 '''
 

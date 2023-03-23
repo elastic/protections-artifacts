@@ -7,7 +7,7 @@ id = "5b00c9ba-9546-47cc-8f9f-1c1a3e95f65c"
 license = "Elastic License v2"
 name = "Potential Masquerading as SVCHOST"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -28,14 +28,14 @@ process where event.action == "start" and
     "?:\\Windows\\System32\\svchost.exe",
     "?:\\WINDOWS\\SysWOW64\\svchost.exe",
     "\\Device\\VhdHardDisk*\\Windows\\System32\\services.exe",
-    "\\Device\\HarddiskVolume?\\Windows\\System32\\services.exe", 
-    "\\Device\\HarddiskVolume?\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe", 
-    "\\Device\\HarddiskVolume?\\Program Files\\Microsoft Security Client\\MsMpEng.exe", 
-    "\\Device\\HarddiskVolume?\\Program Files*\\Windows Defender\\MsMpEng.exe", 
-    "\\Device\\HarddiskVolume?\\Windows\\*\\rpcnet*.exe", 
-    "\\Device\\HarddiskVolume?\\Windows\\system32\\MRT.exe", 
-    "\\Device\\HarddiskVolume?\\Program Files*\\Unity Client\\Unity.exe", 
-    "\\Device\\HarddiskVolume?\\Windows\\System32\\wermgr.exe", 
+    "\\Device\\HarddiskVolume*\\Windows\\System32\\services.exe",
+    "\\Device\\HarddiskVolume*\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
+    "\\Device\\HarddiskVolume*\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
+    "\\Device\\HarddiskVolume*\\Program Files*\\Windows Defender\\MsMpEng.exe",
+    "\\Device\\HarddiskVolume*\\Windows\\*\\rpcnet*.exe",
+    "\\Device\\HarddiskVolume*\\Windows\\system32\\MRT.exe",
+    "\\Device\\HarddiskVolume*\\Program Files*\\Unity Client\\Unity.exe",
+    "\\Device\\HarddiskVolume*\\Windows\\System32\\wermgr.exe",
     "?:\\Program Files\\Microsoft Security Client\\Antimalware\\MsMpEng.exe", 
     "?:\\Program Files (x86)\\Microsoft Security Client\\Antimalware\\MsMpEng.exe", 
     "?:\\Program Files\\Cisco\\AMP\\*\\sfc.exe", 
@@ -60,7 +60,9 @@ process where event.action == "start" and
        process.Ext.token.integrity_level_name == "system") and
   not (process.pe.original_file_name == "AsDVDLock.exe" and
        process.executable : "?:\\Program Files (x86)\\ASUS\\ASUS Manager\\USB Lock\\svchost.exe") and
-  not (process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.executable : "?:\\Windows\\System32\\svchost.exe")
+  not (process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.executable : "?:\\Windows\\System32\\svchost.exe") and
+  not (process.executable : ("?:\\WINDOWS\\system32\\msres\\svchost.exe", "?:\\WINDOWS\\syswow64\\msres\\svchost.exe") and
+       process.code_signature.subject_name : "SyncFuture Software Company Limited" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "7.15.0"

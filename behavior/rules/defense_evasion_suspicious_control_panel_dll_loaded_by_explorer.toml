@@ -8,13 +8,14 @@ license = "Elastic License v2"
 name = "Suspicious Control Panel DLL Loaded by Explorer"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence  with maxspan = 5s
 
  [library where process.name : "explorer.exe" and
   (dll.code_signature.trusted == false or dll.code_signature.exists == false) and
+  (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
   not dll.path :
           ("?:\\Program Files\\*",
            "?:\\Program Files (x86)\\*",
@@ -40,7 +41,7 @@ sequence  with maxspan = 5s
   ] by process.parent.entity_id
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.4.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -66,4 +67,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.4.0"

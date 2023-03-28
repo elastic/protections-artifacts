@@ -17,15 +17,17 @@ Another example of our commitment to openness in security is our existing public
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.27', '1.0.26') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.27', '1.0.25') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Defense Evasion      |         1 |       0 |       0 |                 1 |
+| Credential Access    |         1 |       0 |       0 |                 1 |
+| Defense Evasion      |         5 |       0 |       0 |                 5 |
 | Initial Access       |         1 |       0 |       0 |                 1 |
-| Persistence          |         2 |       0 |       0 |                 2 |
+| Lateral Movement     |         1 |       0 |       0 |                 1 |
+| Persistence          |         4 |       0 |       0 |                 4 |
 | Privilege Escalation |         1 |       0 |       0 |                 1 |
-| Total by OS          |         5 |       0 |       0 |                 5 |
+| Total by OS          |        13 |       0 |       0 |                13 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 

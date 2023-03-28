@@ -7,7 +7,7 @@ id = "1543ed0b-2d7b-42f9-93d2-bf9bfd8759e3"
 license = "Elastic License v2"
 name = "DLL Dropped by MSIEXEC followed by SideLoad"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -17,7 +17,6 @@ sequence by user.id with maxspan=1m
    (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000) and
 
    process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
-   dll.hash.sha256 != null and
    not dll.path : ("?:\\Windows\\Installer\\*",
                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                    "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
@@ -30,7 +29,8 @@ sequence by user.id with maxspan=1m
                  "4cb634e37c2622afbcddf706868f4e992db59b7bbb6f99820ec636307f833c32", 
                  "1da5bf4f88d663f11c110c191dc56b0970c4fce5cb80b8e094f0023478e0995b", 
                  "273bd97fc9c42a07a7e44a285243f0ee38f8668c2a22f095c99d8a3f44146843", 
-                 "4bf70e90594a6d3fbc042747bb314f541e84c0d5f7ec1cf82beac0afd94b5348") and
+                 "4bf70e90594a6d3fbc042747bb314f541e84c0d5f7ec1cf82beac0afd94b5348",
+                 "dd3f06ea143ccc6aba3a05a7093bc6aac6868086a596c015f4e0279df8b97e7e") and
    not dll.pe.imphash : "c1c7505e1e6e929ebb6b9100e55b050a" and
    not process.executable :
              ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",

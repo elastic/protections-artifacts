@@ -7,13 +7,14 @@ id = "2b8ea430-897d-486c-85a8-add9d7072ff3"
 license = "Elastic License v2"
 name = "Microsoft Office Process Setting Persistence via Startup"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 file where event.action != "deletion" and
   file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
                "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
-  process.name : ("EQNEDT32.EXE", "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE")
+  process.name : ("EQNEDT32.EXE", "WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSPUB.EXE", "MSACCESS.EXE") and
+  not file.extension : ("docx", "xls", "doc", "xlsx", "tmp") and file.extension != null
 '''
 
 min_endpoint_version = "7.15.0"

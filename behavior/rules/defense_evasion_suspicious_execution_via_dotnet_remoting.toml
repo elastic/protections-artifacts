@@ -12,7 +12,7 @@ reference = [
     "https://www.tiraniddo.dev/2017/07/dg-on-windows-10-s-executing-arbitrary.html",
     "https://www.netspi.com/blog/technical/adversary-simulation/re-animating-activitysurrogateselector/",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -27,10 +27,10 @@ process where event.action == "start" and
                   process.args : "/guid*" and process.args : "/pid*"]
    ) and
 
-   not process.parent.executable : "?:\\Program Files\\Autodesk\\Desktop Connector\\DesktopConnector.Applications.Tray.exe" and
+   not process.parent.executable : "?:\\Program Files\\Autodesk\\*.exe" and
    
    not descendant of [process where event.action == "start" and
-                      process.executable : "?:\\Program Files\\Autodesk\\Desktop Connector\\DesktopConnector.Applications.Tray.exe"] and
+                      process.executable : "?:\\Program Files\\Autodesk\\*.exe"] and
 
    not (process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\System32\\WerFault.exe") and
         process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\AddInProcess.exe")

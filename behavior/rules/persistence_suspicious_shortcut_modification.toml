@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
@@ -51,7 +51,8 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
             "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\IPCBox\\AdobeIPCBroker.exe",
             "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
             "?:\\Windows\\System32\\xcopy.exe",
-            "?:\\Windows\\System32\\dsregcmd.exe") and
+            "?:\\Windows\\System32\\dsregcmd.exe",
+            "?:\\Program Files (x86)\\Splashtop\\Splashtop Remote\\Server\\SRUtility.exe") and
   file.path :
      ("?:\\Users\\*\\Desktop\\*.lnk",
       "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",

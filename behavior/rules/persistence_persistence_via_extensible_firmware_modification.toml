@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id
@@ -57,6 +57,8 @@ sequence by process.entity_id
   not (process.executable : "?:\\Windows\\System32\\bcdboot.exe" and process.args : "/f" and process.args : "?:\\Windows")
   ] as event0
  [file where event.action != "deletion" and file.path :"\\Device\\HarddiskVolume*\\EFI\\*" and
+
+  file.size > 0 and 
 
   not (process.name : "PowerShell.exe" and file.path : "\\Device\\HarddiskVolume1\\EFI\\HP\\DEVFW\\Firmware.BIN" and
        event0.process.args : "?:\\WINDOWS\\IMECache\\HealthScripts\\*.ps1") and

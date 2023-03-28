@@ -11,11 +11,12 @@ reference = [
     "https://github.com/BishopFox/sliver/blob/master/implant/sliver/shell/shell_windows.go#L39",
     "https://github.com/BishopFox/sliver",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
 
+(
   /* Silver default shell cmd */
  (process.name : "powershell.exe" and
   process.command_line : "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell.exe -NoExit -Command [Console]::OutputEncoding=[Text.UTF8Encoding]::UTF8") or
@@ -32,6 +33,13 @@ process where event.action == "start" and
 
    /* Silver spawns_as a child process with extra quotes after the process image */
   (process.args_count == 2 and process.command_line : "?:\\*.exe \"\"" and process.args : "?:\\Windows\\*.exe")
+) and
+not (process.code_signature.subject_name : "Chocolatey Software, Inc." and process.code_signature.trusted == true) and
+not (process.parent.executable : "?:\\ProgramData\\chocolatey\\choco.exe" and process.parent.args : "install") and
+not  descendant of [process where event.action == "start" and
+                    process.code_signature.subject_name : "Chocolatey Software, Inc." and process.code_signature.trusted == true] and
+not (process.executable : "?:\\Windows\\System32\\setx.exe" and
+      process.args : "ChocolateyLastPathUpdate" and process.parent.name : "powershell.exe")
 '''
 
 min_endpoint_version = "7.16.0"

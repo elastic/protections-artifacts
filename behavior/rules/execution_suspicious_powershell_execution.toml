@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -36,7 +36,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
  not process.parent.name : ("wscript.exe", "cscript.exe") and
 
  not (process.args:"-NonInteractive" and process.args :"-InputFormat" ) and
- not process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
+ not (process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
+      not process.parent.name : ("explorer.exe", "python.exe")) and
  not process.command_line :
             ("*ConvertTo-Json*Write-Host*",
              "*BrowserExtension.dll*WebCompanion.BrowserExtension*",
@@ -95,7 +96,12 @@ process where event.action == "start" and process.name : "powershell.exe" and
       
       (process.args : "-bxor" and process.args : "0x*") or 
 
-      process.args : "$*$*;set-alias"
+      process.args : "$*$*;set-alias" or
+
+      (process.command_line : ("*-encodedCommand*", "*Invoke-webrequest*", "*WebClient*", "*Reflection.Assembly*") and
+       (process.parent.name : ("explorer.exe", "python.exe") or
+        (process.parent.name : "cmd.exe" and
+         descendant of [process where event.action == "start" and process.executable : "?:\\Windows\\explorer.exe"])))
      )
 '''
 

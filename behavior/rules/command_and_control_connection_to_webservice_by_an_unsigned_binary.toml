@@ -7,10 +7,10 @@ id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
 license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
-sequence by process.entity_id with maxspan=1m
+sequence by process.entity_id with maxspan=5m
  /* execution of an unsigned PE file followed by dns lookup to commonly abused trusted webservices */
 
   [process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -91,7 +91,10 @@ sequence by process.entity_id with maxspan=1m
         "api.notion.com",
         "graph.microsoft.com",
         "*.sharepoint.com",
-        "note.youdao.com"
+        "note.youdao.com",
+        "mbasic.facebook.com",
+        "login.live.com",
+        "login.microsoftonline.com"
     )
   ]
 '''

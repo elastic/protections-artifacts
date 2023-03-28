@@ -7,7 +7,7 @@ id = "92f114fb-7113-4e82-b021-6c2c4ca0a507"
 license = "Elastic License v2"
 name = "Inhibit System Recovery Followed by a Suspicious File Rename"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=5s
@@ -18,7 +18,8 @@ sequence with maxspan=5s
     (process.pe.original_file_name == "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
     (process.pe.original_file_name == "WBADMIN.EXE" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*") or
     (process.pe.original_file_name == "iCACLS.EXE" and process.command_line : ("*/deny*S-1-1-0*", "*?:\\*\" /grant*Everyone:F*"))
-  )]
+  ) and
+  not (process.name : "bcdedit.exe" and process.parent.executable : "?:\\Program Files (x86)\\Faronics\\Deep Freeze\\Install C-0\\DFServ.exe")]
  [file where event.action : "rename" and process.pid != 4 and
   file.extension != null and file.Ext.entropy >= 7 and
   file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and

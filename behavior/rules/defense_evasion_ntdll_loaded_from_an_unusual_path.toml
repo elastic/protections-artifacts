@@ -7,7 +7,7 @@ id = "3205274e-7eb0-4765-a712-5783361091ae"
 license = "Elastic License v2"
 name = "NTDLL Loaded from an Unusual Path"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 library where dll.pe.original_file_name : "ntdll.dll" and
@@ -23,7 +23,7 @@ library where dll.pe.original_file_name : "ntdll.dll" and
  not (process.code_signature.subject_name : "INCA Internet Co.,Ltd." and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -48,4 +48,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

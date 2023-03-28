@@ -8,10 +8,10 @@ id = "95601d8b-b969-4189-9744-090140ae29e6"
 license = "Elastic License v2"
 name = "Network Connection via Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
-sequence by process.entity_id with maxspan=5m
+sequence by process.entity_id
   [process where event.action == "start" and process.args_count == 1 and
    process.name :
      ("AddInProcess.exe",
@@ -50,6 +50,7 @@ sequence by process.entity_id with maxspan=5m
       /* Issue #639 - added msiexec */
       "msiexec.exe")]
   [network where event.action == "connection_attempted"]
+  until [process where event.action:"end"]
 '''
 
 min_endpoint_version = "7.15.0"

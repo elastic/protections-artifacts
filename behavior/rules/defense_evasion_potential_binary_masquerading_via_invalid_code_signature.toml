@@ -7,7 +7,7 @@ id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "exec" and
@@ -19,10 +19,7 @@ process where event.action == "exec" and
             "com.apple.WebKit.GPU.Development",
             "com.apple.WebKit.Networking.Development",
             "com.apple.WebKit.Storage.Development")) and
- not process.hash.sha256 :
-             ("a5440ea1473f53044092a231ba7b65bc9e780877834808502418e7730d5a0f3b",
-              "56249a8f2a9fcd16c8b9a098e42ad39beda867c318bc11a75e54e3a47c333dc3",
-              "06b67f63f7a3e06839d56f0085fb782760b734cba135fc564957691f88cec9ce")
+ not process.parent.executable : "/sbin/launchd"
 '''
 
 min_endpoint_version = "8.1.0"

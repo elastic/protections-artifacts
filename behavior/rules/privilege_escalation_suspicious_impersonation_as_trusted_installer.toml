@@ -1,0 +1,88 @@
+[rule]
+description = """
+Identifies actions performed by a process with an impersonation security token running as the Windows Trusted Installer
+service. Adversaries may need to impersonate this service to modify certain system protected resources.
+"""
+id = "cc35ee3e-d350-4319-b7f3-ea0d991ce4d9"
+license = "Elastic License v2"
+name = "Suspicious Impersonation as Trusted Installer"
+os_list = ["windows"]
+reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
+version = "1.0.2"
+
+query = '''
+any where
+ (
+  (Effective_process.name : "TrustedInstaller.exe" and 
+   not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
+        file.path : "?:\\windows\\system32\\config\\systemprofile\\*") and 
+   not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
+        registry.path : 
+	        ("HKLM\\SOFTWARE\\Policies\\Microsoft\\SystemCertificates\\*", 
+		 "HKLM\\SOFTWARE\\Microsoft\\SystemCertificates\\*"))) or
+
+  (process.Ext.effective_parent.name : "TrustedInstaller.exe" and
+   process.parent.name != null and
+   not (process.executable :
+               ("?:\\Windows\\WinSxS\\*\\TiWorker.exe",
+                "\\Device\\HarddiskVolume*\\Windows\\WinSxS\\*\\TiWorker.exe",
+                "\\Device\\VhdHardDisk*\\Windows\\WinSxS\\*\\TiWorker.exe",
+                "\\\\?\\Volume{*}\\Windows\\WinSxS\\*\\TiWorker.exe") and
+         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+
+   not (process.executable :
+                ("?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
+                 "\\Device\\HarddiskVolume*\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
+                 "\\Device\\VhdHardDisk*\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
+                 "\\\\?\\Volume{*}\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe") and
+         process.code_signature.subject_name : "Microsoft Windows Publisher" and process.code_signature.trusted == true) and 
+		 
+   not (process.executable : 
+               ("?:\\Windows\\System32\\WerFault.exe", 
+                "\\Device\\HarddiskVolume*\\Windows\\System32\\WerFault.exe", 
+                "\\Device\\VhdHardDisk*\\Windows\\System32\\WerFault.exe", 
+                "\\\\?\\Volume{*}\\Windows\\System32\\WerFault.exe") and 
+        process.parent.executable : 
+                ("?:\\Windows\\servicing\\TrustedInstaller.exe", 
+                 "\\Device\\HarddiskVolume*\\Windows\\servicing\\TrustedInstaller.exe",  
+                 "\\Device\\VhdHardDisk*\\Windows\\servicing\\TrustedInstaller.exe", 
+                 "\\\\?\\Volume{*}\\Windows\\servicing\\TrustedInstaller.exe")))
+ )
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.4.0"

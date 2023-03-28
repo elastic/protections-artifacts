@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=1m
@@ -44,7 +44,11 @@ sequence with maxspan=1m
    /* excluding AppInfo */
    not process.parent.Ext.real.pid > 0 and 
    /* noisy FPs */
-   not (process.name : "rundll32.exe" and process.args : ("?:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie", "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141")) and
+   not (process.name : "rundll32.exe" and
+        process.args : ("?:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie",
+                        "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141",
+                        "?:\\Program Files (x86)\\*",
+                        "?:\\Program Files\\*")) and
 
    not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09" and
    not (process.code_signature.subject_name : ("F5 Networks Inc", "Citrix Systems, Inc.") and process.code_signature.trusted == true) and 
@@ -75,7 +79,9 @@ sequence with maxspan=1m
                 "?:\\Windows\\System32\\TokenBrokerCookies.exe",
                 "?:\\Windows\\Sys*\\PresentationHost.exe",
                 "?:\\Windows\\System32\\w32tm.exe",
-                "?:\\Windows\\System32\\colorcpl.exe") and
+                "?:\\Windows\\System32\\colorcpl.exe",
+                "?:\\Windows\\SysWOW64\\psr.exe",
+                "?:\\Windows\\System32\\psr.exe") and
 
    not process.parent.executable :
                ("?:\\Program Files (x86)\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",

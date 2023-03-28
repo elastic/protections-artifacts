@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -112,7 +112,11 @@ process where event.action == "start" and
 	          "121ed90aec5135af04b1e5f8b26a4e25278232a93c45ef09ae226629ad1de64f",
 	          "03978563fcd327059ef3df101ca1defa60b0f3c86b5fa72b01d31f802ad81856",
 	          "7e0ff000ce7cacd201a76a017ee669f34e71f557fa468280cf27b0d2370dd8ad",
-	          "42aa6483ad8f0d091141e0fd05631e79600f5d37a25bf260b493a8cfa99adf1b") and
+	          "42aa6483ad8f0d091141e0fd05631e79600f5d37a25bf260b493a8cfa99adf1b",
+	          "9d2e4a42cbcdd9315b6c86a36af632c86293940287dc26930e1c7932eb7c6cb2",
+	          "cd1dd8cff168b57aebbd59a62e48e592be8571082e1e5416613cd6ad27edc2ce",
+	          "5fc1af2ed768d259612242c76dee2a29fd84379a7eb1a30da13cbc036f16385e",
+	          "7e0ff000ce7cacd201a76a017ee669f34e71f557fa468280cf27b0d2370dd8ad") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -130,7 +134,8 @@ process where event.action == "start" and
    "SecureLink, Inc.", "Google Inc", "Wondershare Technology Group Co.,Ltd", "Malwarebytes Inc.", "Suse LLC", "FLEXTECH INC.",
    "DameWare Development, LLC.", "Acronis International GmbH", "Broadcom Inc", "Symantec Corporation", "Ivanti, Inc.", 
    "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
-   "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH") and
+   "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
+   "Sikka Software Corporation") and
    process.code_signature.trusted == true) and
 
    not (process.name : "RUNDLL32.EXE" and

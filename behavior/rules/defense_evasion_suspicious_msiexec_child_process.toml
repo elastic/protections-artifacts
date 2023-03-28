@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -21,7 +21,8 @@ process where event.action == "start" and
 
     (process.parent.args : "/DontWait" and process.parent.args : "/HideWindow") or
 
-    (process.name : "cmd.exe" and process.command_line : ("*start*microsoft-edge:*", "*reg add*", "*fodhelper.exe*")) or
+    (process.name : "cmd.exe" and
+     process.command_line : ("*start*microsoft-edge:*", "*reg add*", "*fodhelper.exe*", "*CurrentVersion\\Run*", "*set *&set*")) or
 
 
     process.executable : ("?:\\Users\\*\\Documents\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\Roaming\\*") or
@@ -31,13 +32,17 @@ process where event.action == "start" and
     (process.name : "powershell.exe" and
      process.command_line :
              ("*Software\\Classes\\CLSID*", "*Reflection.Assembly*", "*::Load*", 
-              "?:\\Users\\*\\AppData\\Local\\Temp\\pss*.tmp.ps1", "* -enc *", "* -ec *", 
+              "?:\\Users\\*\\AppData\\Local\\Temp\\pss*.tmp.ps1", "* -enc *", "* -ec *", "*Add-MpPreference*",
               "*WebClient*", "*DownloadFile*", "*DownloadString*", "*iex)*", "*-encodedCommand*", "*HwAaQBlAHgA*")) or
 
     (process.name : "powershell.exe" and process.parent.name : "msiexec.exe" and process.parent.args : "/v") or
 
     /* AteraAgent RMM abused by threat actors -  */
-    (process.pe.original_file_name == "AteraAgent.exe" and process.args : "/IntegratorLogin=*@*" and process.args : "/AccountId=??*")
+    (process.pe.original_file_name == "AteraAgent.exe" and process.args : "/IntegratorLogin=*@*" and process.args : "/AccountId=??*") or
+
+    (process.pe.original_file_name : "viewer.exe" and process.args : ("/HideWindow", "/RunAsAdmin", "/EnforcedRunAsAdmin")) or
+
+    (process.pe.original_file_name : "WMIC.exe" and process.args : "MSFT_MpPreference")
 
     ) and
 

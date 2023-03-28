@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -18,6 +18,8 @@ sequence by process.entity_id with maxspan=5m
                      "installutil.exe","RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
+                           "?:\\Program Files\\Java\\jre*\\bin\\java.exe",
+                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\java.exe",
                            "?:\\Windows\\Microsoft.NET\\*.exe")
      )
    ]

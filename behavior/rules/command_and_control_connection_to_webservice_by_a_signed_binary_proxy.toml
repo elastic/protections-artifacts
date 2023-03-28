@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -95,9 +95,13 @@ sequence by process.entity_id with maxspan=5m
         "*.sharepoint.com",
         "*upload.ee",
         "bit.ly",
-        "cutt.ly"
+        "cutt.ly",
+        "mbasic.facebook.com",
+        "login.live.com",
+        "login.microsoftonline.com"
     ) and
-    not (process.name : "powershell.exe" and dns.question.name : ("graph.microsoft.com", "*.sharepoint.com"))
+    /* common to use powershell script by Microsoft Cloud sysadmins */
+    not (process.name : "powershell.exe" and dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com"))
   ]
 '''
 

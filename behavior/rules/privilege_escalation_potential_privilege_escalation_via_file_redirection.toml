@@ -12,7 +12,7 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -27,7 +27,8 @@ sequence by process.entity_id with maxspan=1m
                "?:\\Program Files\\IHS Markit\\KingdomSuite\\TKS *\\TKS.exe",
                "?:\\Program Files (x86)\\Teklynx\\LABELVIEW *\\Lppa.exe",
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmw.exe",
-               "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge*.exe")
+               "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge*.exe",
+               "?:\\Program Files (x86)\\PRTG Network Monitor\\npcapoem.exe")
 
  ]
  [file where event.action != "deletion" and
@@ -44,7 +45,9 @@ sequence by process.entity_id with maxspan=1m
                    "?:\\Program Files (x86)\\Microsoft\\EdgeCore\\*\\BHO\\ie_to_edge_bho.dll",
                    "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\msedgeupdate.dll",
                    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\*",
-                   "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\MicrosoftEdgeUpdate.exe") and
+                   "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\MicrosoftEdgeUpdate.exe",
+                   "?:\\Windows\\SysWOW64\\Macromed\\Flash\\Flash.ocx",
+                   "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil_ActiveX.dll") and
   not (process.executable : "?:\\Windows\\splwow64.exe" and file.path : "?:\\Windows\\System32\\spool\\drivers\\*")
   ]
 '''

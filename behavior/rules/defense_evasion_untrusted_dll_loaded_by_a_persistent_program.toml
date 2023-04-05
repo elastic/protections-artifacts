@@ -7,7 +7,7 @@ id = "29007eb1-40d9-47fa-82c0-d862db0586b4"
 license = "Elastic License v2"
 name = "Untrusted DLL Loaded by a Persistent Program"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -54,7 +54,8 @@ sequence by process.entity_id with maxspan=1m
               "fc2b6d0f9e4af39e3892ddbdc08ac13640042112e6188482a7c1fb94454e8f52",
               "63588b11dfee771e6114188883bee4310872a7ebfb8b4c45db8307f9e1791e55",
               "76f19b52423774932831dcba0596989ec56213f9b217a0432fbc122f99704a2a",
-              "26dad78da7bfb24d2046f3aa86f6fe779844fb3681baaeeca08404f4ab9fdbf0") and
+              "26dad78da7bfb24d2046f3aa86f6fe779844fb3681baaeeca08404f4ab9fdbf0",
+              "63588b11dfee771e6114188883bee4310872a7ebfb8b4c45db8307f9e1791e55") and
    not dll.pe.imphash :
               ("c1c7505e1e6e929ebb6b9100e55b050a",
                "6ed82d3226365ffafff2c57c1935d352",
@@ -82,7 +83,21 @@ sequence by process.entity_id with maxspan=1m
                          "Cricut, Inc.",
                          "Clevercontrol LLC",
                          "VNG CORPORATION",
-                         "Connectwise, LLC") and process.code_signature.trusted == true)]
+                         "Connectwise, LLC",
+                         "PreVeil, Inc",
+                         "RICOH COMPANY,LTD.",
+                         "ONELAUNCH TECHNOLOGIES INC.",
+                         "Overjet, Inc.",
+                         "BANDAI NAMCO Online Inc.",
+                         "Jade Software Corporation Limited",
+                         "Freshworks Inc",
+                         "8bit Solutions LLC",
+                         "Canon Electronics Inc.",
+                         "OPERIS SAS",
+                         "TD Ameritrade",
+                         "INTEGRATED COMPUTER SYSTEMS, INC.",
+                         "KYOCERA Document Solutions Inc.",
+                         "Conexant Systems LLC") and process.code_signature.trusted == true)]
 '''
 
 min_endpoint_version = "8.6.0"

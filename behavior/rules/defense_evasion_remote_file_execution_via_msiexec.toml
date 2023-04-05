@@ -10,12 +10,18 @@ os_list = ["windows"]
 reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
+    "https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/",
 ]
-version = "1.0.16"
+version = "1.0.19"
 
 query = '''
-process where event.action == "start" and process.args_count <= 5 and
- process.pe.original_file_name : "msiexec.exe" and process.command_line : "*http*" and
+process where event.action == "start" and
+(
+ ((process.pe.original_file_name : "devinit.dll" or process.name : "devinit.exe") and
+   process.args : "msi-install" and process.command_line : "*http*") or
+
+ (process.pe.original_file_name : "msiexec.exe" and
+  process.command_line : "*http*" and process.args_count <= 5 and
   (
    (process.args : ("/i", "-i") and process.args : ("/q", "/quiet", "/qn", "-q", "-quiet", "-qn")) or
    process.args : ("*-Q-I*", "*-I-Q*", "*/q-i*", "*-q/i*", "*/q/i*") or
@@ -23,7 +29,8 @@ process where event.action == "start" and process.args_count <= 5 and
    ) and
   not descendant of
        [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
-  not process.Ext.token.integrity_level_name == "system"
+  not process.Ext.token.integrity_level_name == "system")
+)
 '''
 
 min_endpoint_version = "7.15.0"

@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://learn.microsoft.com/en-us/windows/win32/msi/custom-actions",
 ]
-version = "1.0.5"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -36,6 +36,7 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                                "* sc failure *",
                                "* sc start *",
                                "* sc config *",
+                               "* net start *",
                                "*BlueJeans\\BlueJeans.Detector.exe*",
                                "*rewrite_amd64_en-US.msi *",
                                "*\\Argus3\\Tools\\configure_pdfprinter.cmd*")) and
@@ -49,6 +50,7 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
   not (process.name : "rundll32.exe" and process.command_line : "\"?:\\Windows\\System32\\rundll32.exe\" dfshim CleanOnlineAppCache") and
   not process.executable : "?:\\Windows\\Microsoft.NET\\Framework*" and
   not (process.name : ("regsvr32.exe", "regasm.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+  not (process.name : ("regsvr32.exe", "regasm.exe") and process.working_directory : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
   not (process.executable : "C:\\Argus3\\Tools\\Regsvr32.exe" and process.args : "C:\\Argus3\\*.dll")
 '''
 

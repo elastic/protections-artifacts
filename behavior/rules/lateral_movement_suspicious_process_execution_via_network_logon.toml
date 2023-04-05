@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -52,7 +52,8 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\gpupdate.exe",
               "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\*.exe",
               "?:\\Windows\\System32\\WerFault.exe",
-              "?:\\Windows\\System32\\dfsfrsHost.exe") and
+              "?:\\Windows\\System32\\dfsfrsHost.exe",
+              "?:\\Windows\\System32\\wuauclt.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -92,7 +93,9 @@ process where event.action == "start" and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
-                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc."))
+                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.")) and
+  not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
+       process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe")
 '''
 
 min_endpoint_version = "8.6.0"

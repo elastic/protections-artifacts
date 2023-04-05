@@ -7,7 +7,7 @@ id = "739cdfd9-d316-46aa-9400-4a1e535188bb"
 license = "Elastic License v2"
 name = "MsiExec Service Child Process With Network Connection"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -33,7 +33,8 @@ sequence by process.entity_id with maxspan=5m
  not (process.code_signature.trusted == true and
       process.code_signature.subject_name :
                  ("Clevercontrol LLC", "Box, Inc.", "Citrix Systems, Inc.", "VMware, Inc.", "Autodesk, Inc.",
-                  "Add-in Express", "SkyKick, Inc.", "Autodesk, Inc.", "CD NewCo, LLC", "Kofax, Inc.")) and
+                  "Add-in Express", "SkyKick, Inc.", "Autodesk, Inc.", "CD NewCo, LLC", "Kofax, Inc.",
+                  "Krisp Technologies, Inc")) and
 
  not process.hash.sha256 :
             ("0dd52218872229c6cca07f62048a46eabd08b2af9ed7365c48220b3724a09a92",
@@ -46,7 +47,9 @@ sequence by process.entity_id with maxspan=5m
              "386d6fa2f3a273cfaed7176ec0d155453685de45a6e042483fd8488bddb96d15", 
              "7c33270e54646ba7cbda98157a052586812d004670b02f920b285e4eb42507b5", 
              "ba8c1a434b2cc355fc2f005639af36729f32fc91ff1f278bcded65428cad0126",
-             "f816a216be04316c09cb4fedc5e2522a768846c6738c9239bfe66418dfc0338c")]
+             "f816a216be04316c09cb4fedc5e2522a768846c6738c9239bfe66418dfc0338c",
+             "80059ba4e59c0602391cf06f2335fd5753468d45cb2f9bea29b51b3e5283d6e2",
+             "525b993f89500abc33cab311e453beb2841d2335eb787a3753f7ff092cca195a")]
 [any where event.category : ("network", "dns")]
 '''
 

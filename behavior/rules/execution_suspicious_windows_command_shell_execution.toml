@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.15"
 
 query = '''
 process where event.action == "start" and
@@ -16,7 +16,8 @@ process where event.action == "start" and
 
   process.command_line : ("*^*^*^*^*^*^*", "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
   "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
-  "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*") or
+  "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
+  "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
@@ -55,7 +56,10 @@ process where event.action == "start" and
                  "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",
                  "?:\\Program Files\\Bot Framework Composer\\Bot Framework Composer.exe",
                  "?:\\Users\\*\\AppData\\Local\\Programs\\*electron\\AXIS Device Manager Extend.exe",
-                 "?:\\Users\\*\\AppData\\Local\\Programs\\Arduino IDE\\Arduino IDE.exe") and
+                 "?:\\Users\\*\\AppData\\Local\\Programs\\Arduino IDE\\Arduino IDE.exe",
+                 "?:\\Program Files\\KMSYS Worldwide\\eQuate\\*\\SessionMgr.exe",
+                 "?:\\Program Files (x86)\\Craneware\\Pricing Analyzer\\Craneware.Pricing.Shell.exe",
+                 "?:\\sonarqube\\MSBuild\\SonarScanner.MSBuild.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and

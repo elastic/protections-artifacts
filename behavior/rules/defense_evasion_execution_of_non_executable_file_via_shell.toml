@@ -1,0 +1,58 @@
+[rule]
+description = """
+Detects the execution of an un-executable file, per file extension, via a shell interpreter. Sometimes threat actors
+will masquerade their payloads as non-executable files in order to avoid suspicion and go unnoticed.
+"""
+id = "c0770406-7ede-4049-a7a1-999c15fb60bd"
+license = "Elastic License v2"
+name = "Execution of Non-Executable File via Shell"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+    process.name : ("bash", "sh", "zsh") and 
+    process.args : ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and 
+    process.args : ("/*.pid", "/*.plist", "/*.txt", "/*.json", "/*.tmp", "/*.bin", "/*.js", "/*.nib") and 
+    process.args_count == 2
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

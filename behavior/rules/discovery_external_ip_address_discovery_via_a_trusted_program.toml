@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -49,7 +49,7 @@ sequence by process.entity_id with maxspan=5m
           "ipinfo.io",
           "checkip.amazonaws.com",
           "wtfismyip.com",
-          "iplogger.org",
+          "iplogger.*",
           "freegeoip.net",
           "freegeoip.app",
           "ipinfo.io",
@@ -59,7 +59,10 @@ sequence by process.entity_id with maxspan=5m
           "api64.ipify.org",
           "ip4.seeip.org",
           "*.geojs.io",
-          "*portmap.io"
+          "*portmap.io",
+          "api.2ip.ua",
+          "api.db-ip.com",
+          "geolocation-db.com"
          )
   ]
 '''

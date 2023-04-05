@@ -1,0 +1,65 @@
+[rule]
+description = """
+Detects the use of the cp or mv binaries to add a kext file in the System extensions directory and then immediately load
+it via the kextload utility. Threat actors have created malicious kernel extensions and attempted to load them on
+compromised systems in order to bypass defences and manipulate their presence on the machine.
+"""
+id = "de869aa1-c63a-451e-a953-7069ec39ba60"
+license = "Elastic License v2"
+name = "New System Kext File and Immediate Load via KextLoad"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+sequence by process.parent.pid with maxspan=20s
+[process where event.type == "start" and event.action == "exec" and 
+    process.name : ("mv", "cp") and 
+    process.args : "/System/Library/Extensions/*.kext"]
+[process where event.type == "start" and event.action == "exec" and 
+    process.name : "kextload"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.006"
+name = "Kernel Modules and Extensions"
+reference = "https://attack.mitre.org/techniques/T1547/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

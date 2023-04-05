@@ -11,7 +11,7 @@ reference = [
     "https://developer.chrome.com/docs/apps/nativeMessaging/",
     "https://www.trendmicro.com/en_us/research/23/b/earth-kitsune-delivers-new-whiskerspy-backdoor.html",
 ]
-version = "1.0.4"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -19,6 +19,7 @@ process where event.action == "start" and
  (
   (process.parent.name : "cmd.exe" and process.parent.args : "\\\\.\\pipe\\*.nativeMessaging.*" and
    (process.code_signature.trusted == false or process.code_signature.exists == false) and
+   not process.code_signature.status : ("errorExpired", "errorCode_endpoint*") and
    not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
    not process.parent.args :
               (
@@ -61,7 +62,9 @@ process where event.action == "start" and
                ("af0a5a9d2b22c2e440f24b2a75f7a064b8855ff0989b577b7cca0bb8e5b26d62",
                 "5dd9b8b313a020ecb47c8abc5f5f7c2cd6346a574dab7d8fa528d50a3efd4bcf",
                 "6feaea10fa48a077b43d21f423c16cd78c928ec7caa5eae379b64b51e01c4f09",
-                "154b04d3526ceb79b6e4b096d28f94501fc3748ad0e59c10bb42d9a8eecfa741")
+                "154b04d3526ceb79b6e4b096d28f94501fc3748ad0e59c10bb42d9a8eecfa741",
+                "af862b278038dc2a84dee82932cfdcffc837a747c7852dc905de72300c6fd937",
+                "d9fdfe1f8fb03c430a4fe739af3b1c86f23a941b96513a2536caa7370dfa1cb8")
 '''
 
 min_endpoint_version = "8.0.0"

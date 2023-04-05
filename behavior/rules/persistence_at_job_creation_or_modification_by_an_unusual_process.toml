@@ -1,0 +1,64 @@
+[rule]
+description = """
+Detects the creation or modification of an At job by a suspicious process. This activity should almost never take place
+as Apple is slowly deprecating it and atrun execution is disabled by default. If this rule fires it should indicate
+highly abnormal or malicious activity. Threat actors can abuse the atrun scheduler to persist their binaries on a
+system.
+"""
+id = "779f18ce-1457-457c-80e1-3a5d146c2dc0"
+license = "Elastic License v2"
+name = "At Job Creation or Modification by an Unusual Process"
+os_list = ["macos"]
+reference = ["https://theevilbit.github.io/beyond/beyond_0014/"]
+version = "1.0.6"
+
+query = '''
+file where event.action != "deletion" and file.path : "/private/var/at/jobs/*" and not
+  (process.executable : "/sbin/launchd" or 
+  (process.code_signature.trusted == true or process.code_signature.exists == true))
+'''
+
+min_endpoint_version = "8.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.002"
+name = "At"
+reference = "https://attack.mitre.org/techniques/T1053/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.002"
+name = "At"
+reference = "https://attack.mitre.org/techniques/T1053/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.1.0"

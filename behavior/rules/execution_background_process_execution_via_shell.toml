@@ -1,0 +1,58 @@
+[rule]
+description = """
+Detects when a binary located in a suspicious location gets executed by a shell interpreter and put in the background
+via the & operator. Malwares may execute their payloads in the background in an effort to remain hidden.
+"""
+id = "603ac59e-9cca-4c48-9750-e38399079043"
+license = "Elastic License v2"
+name = "Background Process Execution via Shell"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+    process.name : ("bash", "sh", "zsh", "tclsh*") and 
+    process.args : "-c" and process.args : ("/* &", "/*&") and 
+    process.args_count == 3 and 
+    process.parent.executable : ("/private/tmp/*", 
+                                 "/var/tmp/*", 
+                                 "/tmp/*", 
+                                 "/var/folders/*", 
+                                 "/Library/Containers/*", 
+                                 "/Users/Shared/*", 
+                                 "/Users/*/Library/Preferences/*", 
+                                 "/var/root/*", 
+                                 "/Library/WebServer/*", 
+                                 "/Library/Preferences/*", 
+                                 "/Library/Services/*", 
+                                 "/Library/Fonts/*", 
+                                 "/usr/local/bin/*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

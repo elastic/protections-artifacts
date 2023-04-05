@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Persistence via a Process from a Removable or Mounted ISO Device"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -45,7 +45,8 @@ sequence by process.entity_id with maxspan=5m
          "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath", 
          "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec", 
          "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun", 
-         "HKEY_USERS\\S-1-5-*_Classes\\CLSID\\*\\InprocServer32\\")) or
+         "HKEY_USERS\\S-1-5-*_Classes\\CLSID\\*\\InprocServer32\\",
+         "HKEY_USERS\\S-1-5-*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*")) or
     (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
    )]
 '''

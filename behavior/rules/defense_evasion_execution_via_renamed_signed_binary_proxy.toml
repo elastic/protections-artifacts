@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Renamed Signed Binary Proxy"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io"]
-version = "1.0.18"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
@@ -43,7 +43,11 @@ process where event.action == "start" and
        (process.pe.original_file_name == "CertReq.exe" and not process.name : "CertReq.exe") or
        (process.pe.original_file_name == "bsdtar" and not process.name : "tar.exe" and
         process.code_signature.subject_name == "Microsoft Windows") or 
-       (process.pe.original_file_name : "GfxDownloadWrapper.exe" and not process.name : "GfxDownloadWrapper.exe")
+       (process.pe.original_file_name : "GfxDownloadWrapper.exe" and not process.name : "GfxDownloadWrapper.exe") or
+       (process.pe.original_file_name : "devinit.dll" and
+        process.code_signature.subject_name : "Microsoft *" and not process.name : "devinit.exe") or
+       (process.pe.original_file_name == "DumpMinitool.exe" and
+        process.code_signature.subject_name : "Microsoft *" and not process.name : "DumpMinitool.exe")
      ) and
  /* some third party programs tend to include renamed binaries, still often run from trusted paths */
  not process.executable :

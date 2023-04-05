@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.17"
+version = "1.0.20"
 
 query = '''
 sequence with maxspan=5m
@@ -93,7 +93,9 @@ sequence with maxspan=5m
        process.parent.executable : "*\\Users\\*\\.vscode\\extensions\\ms-vscode.cpptools-*\\bin\\cpptools.exe") and
 
   /* noisy with variable patterns for the parent and real parent process */
-  not (process.executable : "*\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system")
+  not (process.executable : "*\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system") and
+
+  not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87"
   ] by process.parent.Ext.real.entity_id
 '''
 

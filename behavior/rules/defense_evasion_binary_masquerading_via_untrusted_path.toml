@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.27"
 
 query = '''
 process where event.action == "start" and
@@ -25,7 +25,6 @@ process where event.action == "start" and
     "control.exe",
     "cscript.exe",
     "csrss.exe",
-    "csi.exe",
     "dsget.exe",
     "dfsvc.exe",
     "dllhost.exe",
@@ -75,7 +74,8 @@ process where event.action == "start" and
     "VsJITDebugger.exe",
     "extexport.exe",
     "extexport.exe") or
-    (process.pe.original_file_name == "bsdtar" and process.name : "tar.exe" and process.code_signature.subject_name == "Microsoft Windows")
+    (process.pe.original_file_name == "bsdtar" and process.name : "tar.exe" and process.code_signature.subject_name == "Microsoft Windows") or
+    (process.pe.original_file_name : "WerFaultSecure.exe" or process.name : "WerFaultSecure.exe")
     )
     and
     
@@ -165,7 +165,8 @@ process where event.action == "start" and
                             "?:\\SpearTrayApplication\\Tray\\regsvr32.exe",
                             "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
-       process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*")
+       process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
+  not (process.code_signature.subject_name : "JetBrains s.r.o." and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "7.15.0"

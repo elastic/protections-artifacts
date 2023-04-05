@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -31,7 +31,9 @@ sequence by process.entity_id with maxspan=5m
           process.parent.executable : ("?:\\Program Files\\QZ Tray\\qz-tray.exe", "?:\\Program Files (x86)\\PGP Tool\\pgptool.exe", "?:\\Program Files\\OWASP\\Zed Attack Proxy\\ZAP.exe")) and
      not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc") and
      /* BlueIris - Camera IOT monitoring sw using telegram to upload pictures */
-     not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ")
+     not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ") and
+     not (process.name : "rundll32.exe" and
+          process.args : ("?:\\Program Files\\Microsoft Office\\root\\*.CPL",  "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*"))
   ]
   [dns where
     dns.question.name :
@@ -49,7 +51,7 @@ sequence by process.entity_id with maxspan=5m
         "*.onedrive.org",
         "onedrive.live.com",
         "filebin.net",
-        "?.tcp.ngrok.io",
+        "*.ngrok.io",
         "ngrok.com",
         "*.portmap.*",
         "*serveo.net",
@@ -89,6 +91,7 @@ sequence by process.entity_id with maxspan=5m
         "workupload.com",
         "temp.sh",
         "filetransfer.io",
+        "gofile.io",
         "tiny.one",
         "api.notion.com",
         "graph.microsoft.com",
@@ -98,10 +101,16 @@ sequence by process.entity_id with maxspan=5m
         "cutt.ly",
         "mbasic.facebook.com",
         "login.live.com",
-        "login.microsoftonline.com"
+        "login.microsoftonline.com",
+        "api.gofile.io",
+        "api.anonfiles.com",
+        "api.trello.com",
+        "api.notion.com",
+        "gist.githubusercontent.com"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
-    not (process.name : "powershell.exe" and dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com"))
+    not (process.name : ("powershell.exe", "pwsh.exe") and
+         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com"))
   ]
 '''
 

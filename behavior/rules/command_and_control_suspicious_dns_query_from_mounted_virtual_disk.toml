@@ -7,12 +7,13 @@ id = "3bc98de7-3349-43ac-869c-58357ae2aac0"
 license = "Elastic License v2"
 name = "Suspicious DNS Query from Mounted Virtual Disk"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
  [process where event.action == "start" and
-  (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")]
+  (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*") and
+  not process.hash.sha256 : "cf4179ffdb3eda997a26340edaa70a85f919093d0753239eb4a38d7dc3a1107d"]
  [dns where
   dns.question.name :
        (
@@ -60,7 +61,7 @@ sequence by process.entity_id with maxspan=5m
         "*.onedrive.org",
         "onedrive.live.com",
         "filebin.net",
-        "?.tcp.ngrok.io",
+        "*.ngrok.io",
         "ngrok.com",
         "*.portmap.*",
         "*serveo.net",
@@ -87,6 +88,7 @@ sequence by process.entity_id with maxspan=5m
         "www.uplooder.net",
         "*.cdnmegafiles.com",
         "transfer.sh",
+        "gofile.io",
         "updates.peer2profit.com",
         "api.telegram.org",
         "meacz.gq",
@@ -112,6 +114,11 @@ sequence by process.entity_id with maxspan=5m
         "*.sharepoint.com",
         "mbasic.facebook.com",
         "login.live.com",
+        "api.gofile.io",
+        "api.anonfiles.com",
+        "api.notion.com",
+        "api.trello.com",
+        "gist.githubusercontent.com",
 
         /* public IP discovery */
         "ip-api.com",
@@ -136,7 +143,7 @@ sequence by process.entity_id with maxspan=5m
         "ipinfo.io",
         "checkip.amazonaws.com",
         "wtfismyip.com",
-        "iplogger.org",
+        "iplogger.*",
         "freegeoip.net",
         "freegeoip.app",
         "ipinfo.io",
@@ -149,6 +156,12 @@ sequence by process.entity_id with maxspan=5m
         "*portmap.io",
         "*mediafire.com",
         "filetransfer.io",
+        "api.gofile.io",
+        "api.anonfiles.com",
+        "api.trello.com",
+        "api.2ip.ua",
+        "api.db-ip.com",
+        "geolocation-db.com",
 
         /* other */
         "*.lencr.org",

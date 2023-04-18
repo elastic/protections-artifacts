@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "MSBuild with Unusual Arguments"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msbuild/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -16,7 +16,9 @@ process where event.action == "start" and
   /* FP - expected developers msbuild installation directories */
 
  not process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*",
-                           "?:\\Program Files\\Microsoft Visual Studio\\*") and
+                           "?:\\Program Files\\Microsoft Visual Studio\\*",
+                           "?:\\Program Files (x86)\\MSBuild\\*",
+                           "?:\\Program Files\\MSBuild\\*") and
  not process.command_line : ("* /*", "* .\\*", "*.proj*", "*.sln*") and
   /* FP - Third Party Programs except MS Office */
 

@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=1m
@@ -41,7 +41,8 @@ sequence with maxspan=1m
                "D:\\Microsoft office 2016\\office2016\\Office16\\*.EXE",
                "D:\\Programs\\Foxit Software\\Foxit PhantomPDF\\Plugins\\Creator\\FoxitProxyServer_Socket_PH.exe",
                "\\\\*",
-               "\\Device\\Mup\\*") and
+               "\\Device\\Mup\\*",
+               "?:\\Adobe\\Acrobat DC\\Acrobat\\AcroTray.exe") and
   not (process.name : "BrowserSubprocess.exe" and process.command_line : "*--type=gpu-process*--no-sandbox*") and
   not (process.code_signature.subject_name :
           ("Zhuhai Kingsoft Office Software Co., Ltd.",
@@ -86,7 +87,8 @@ sequence with maxspan=1m
               "bc1ec9584f749b1d264cf1ce040e98f96de680efd74a1dab2de53e8d481c5b79",
               "b72b18af7ed446db1630a2263c76fc3cbde6c189f88ea7ba4e42ecf61cb0ee8b",
               "28c69f2b353a8df70abef0e5f09e1d390ef88e79b08465bc21c0d9fdb3b61f0d",
-              "4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb") and
+              "4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
+              "b20dff35c0aabb92f2e72d2236d33e3f0d9f150ad8206db9d56c642825775c25") and
   not (process.pe.original_file_name : ("Teams.exe", "msedgewebview2.exe", "BDEUNLOCK.EXE") and process.code_signature.trusted == true) and
   not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\RegAsm.exe" and process.args : "?:\\Program Files (x86)\\Thomson Reuters\\*") and
   not (process.name : "cmd.exe" and process.command_line : "\"CMD.exe\" /C dotnet --list-runtimes")

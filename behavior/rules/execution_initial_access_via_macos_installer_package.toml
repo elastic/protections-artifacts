@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=1m
@@ -27,14 +27,15 @@ sequence with maxspan=1m
 
     (
       // curl scope limited to silver-sparrows to reduce noise
-      (process.name : "curl" and
-	   process.command_line : ("*.amazonaws.com*", "*.cloudfront.net*", "*raw.githubusercontent.com*")) or
+      (process.name : "curl" and process.command_line : ("*.amazonaws.com*", 
+                                                         "*.cloudfront.net*", 
+                                                         "*raw.githubusercontent.com*")) or
       // No hang up executed with a bash command
       (process.name == "nohup" and process.command_line : "* &") or
       // Open SSL used to encrypt or encode/decode data
-      (process.name == "openssl" and process.args : ("-base64", "-enc") and process.args : "/tmp/*") or
+      (process.name == "openssl" and process.args : ("-base64", "-enc")) or
       // Base64 used to decode data
-      (process.name == "base64" and process.args : "-d" and process.args : "/tmp/*") or
+      (process.name == "base64" and process.args : "-d") or
       // chmod used to make files readable, writable and executable by all users
       (process.name == "chmod" and process.args : ("+x", "a+x", "0777", "755", "777") and process.args : "/tmp/*" and
 	   not process.args : "/tmp/com.adobe.acrobat.DC") or
@@ -43,10 +44,28 @@ sequence with maxspan=1m
         process.args : ("-d", "-w", "-?d", "-?w")) or
         (process.args : "-c")) and process.args : "/tmp/*") or
 	  // convert a downloaded file from the temp folder to a plist
-	  (process.name == "plutil" and process.args : "-convert" and process.args : "/tmp/*")
+	    (process.name == "plutil" and process.args : "-convert") or
+      (process.name == "touch" and process.args : "/tmp/*") or
+      (process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*/bin/curl*",
+                                                                                        "curl*",
+                                                                                        "*/bin/osascript*",
+                                                                                        "osascript*", 
+                                                                                        "*/bin/wget*", 
+                                                                                        "wget*",
+                                                                                        "*/bin/chmod*", 
+                                                                                        "chmod*",
+                                                                                        "*/bin/plutil*", 
+                                                                                        "plutil*",
+                                                                                        "*/bin/openssl*", 
+                                                                                        "openssl*",
+                                                                                        "*/bin/base64*", 
+                                                                                        "base64*",
+                                                                                        "*/bin/xattr*",
+                                                                                        "xattr*",
+                                                                                        "*/bin/touch*",
+                                                                                        "touch*"))
     ) and
-    not process.parent.executable : "/usr/bin/sudo"
-  ]
+    not process.parent.executable : "/usr/bin/sudo"]
 '''
 
 min_endpoint_version = "7.15.0"

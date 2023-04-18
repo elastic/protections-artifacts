@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,11 +15,14 @@ sequence by process.entity_id with maxspan=5m
     (
      process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
                      "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
-                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or 
+     process.pe.original_file_name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", 
+                                      "vbc.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe", 
+                                      "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or 
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Windows\\Microsoft.NET\\*.exe") or
-     (process.name : ("powershell.exe", "pwsh.exe") and process.args_count >= 2)
+     ((process.name : "powershell.exe" or process.pe.original_file_name == "PowerShell.EXE") and process.args_count >= 2)
      ) and
      not (process.name : "rundll32.exe" and process.command_line : "*davclnt.dll,DavSetCookie*") and
      not (process.parent.executable : ("?:\\Program Files\\Microsoft SQL Server\\MSSQL*.EXE", "?:\\Program Files\\WindowsApps\\Microsoft.*.exe") and
@@ -33,7 +36,11 @@ sequence by process.entity_id with maxspan=5m
      /* BlueIris - Camera IOT monitoring sw using telegram to upload pictures */
      not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ") and
      not (process.name : "rundll32.exe" and
-          process.args : ("?:\\Program Files\\Microsoft Office\\root\\*.CPL",  "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*"))
+          process.args : ("?:\\Program Files\\Microsoft Office\\root\\*.CPL",
+                          "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*",
+                          "?:\\Program Files (x86)\\F5 VPN\\*",
+                          "?:\\Program Files\\F5 VPN\\*",
+                          "?:\\Program Files (x86)\\Microsoft Office\\root\\*.CPL"))
   ]
   [dns where
     dns.question.name :

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Creation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -21,8 +21,7 @@ process where event.action == "start" and
    process.args : ("*Users\\Public\\*", "*:\\Windows\\Tasks\\*", "*:\\Windows\\system32\\Tasks\\*") or 
    
    (process.args : "minute" and process.args : "/mo" and
-    process.args : ("*\\AppData\\*", "*\\ProgramData\\*", "*Users\\Public\\*") and
-    process.parent.name : ("wscript.exe", "RegSvcs.exe", "regsvr32.exe")) or
+    process.args : ("*\\AppData\\*", "*\\ProgramData\\*", "*Users\\Public\\*")) or
 
    (process.args : "HIGHEST" and process.args : "ONLOGON" and
     process.parent.name : ("wmiprvse.exe", "rundll32.exe", "regsvr32.exe") and

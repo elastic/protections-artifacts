@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via DiskCleanup Scheduled Task Hijack"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/05/exploiting-environment-variables-in.html"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
@@ -19,7 +19,10 @@ process where event.action == "start" and
                            "?:\\Windows\\System32\\taskhostw.exe",
                            /* Issue #359 */
                            "?:\\Windows\\System32\\taskhost.exe",
-                           "?:\\Windows\\SysWOW64\\taskhost.exe")
+                           "?:\\Windows\\SysWOW64\\taskhost.exe",
+                           "\\Device\\HarddiskVolume*\\Windows\\Sys*\\cleanmgr.exe",
+                           "\\Device\\HarddiskVolume*\\Windows\\Sys*\\taskhostw.exe",
+                           "\\Device\\HarddiskVolume*\\Windows\\Sys*\\taskhost.exe")
 '''
 
 min_endpoint_version = "7.15.0"

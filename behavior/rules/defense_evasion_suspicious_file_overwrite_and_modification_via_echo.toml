@@ -1,0 +1,73 @@
+[rule]
+description = """
+Detects the abnormal use of the echo command via a shell to write text into a file located in a suspicious location.
+Threat actors have used this as a method for creating second stage payloads on systems after initial access has been
+achieved.
+"""
+id = "cd3a06dc-58c3-4d57-a03a-0d8991f237e7"
+license = "Elastic License v2"
+name = "Suspicious File Overwrite and Modification via Echo"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=20s
+[process where event.type == "start" and event.action == "exec" and 
+    process.name : ("bash", "sh", "zsh") and 
+    process.args : "-c" and 
+    process.args : ("echo* > /.*", 
+                    "echo* > /usr/local/bin/*", 
+                    "echo* > ~/.*", 
+                    "echo* > /tmp/*", 
+                    "echo* > /var/root/*", 
+                    "echo* > /private/tmp/*", 
+                    "echo* > /var/tmp/*", 
+                    "echo* > /var/folders/*", 
+                    "echo* > /Library/*", 
+                    "echo* > /Users/*", 
+                    "echo* > ~/*") and 
+    process.args_count <= 3 and 
+    process.Ext.effective_parent.name == null and not 
+    process.parent.executable : "/Library/Developer/*"]
+[file where event.action == "modification" and process.name : ("sh", "zsh", "bash")]
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.5.0"

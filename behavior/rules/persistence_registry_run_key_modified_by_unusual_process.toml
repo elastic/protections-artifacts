@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Registry Run Key Modified by Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -62,7 +62,9 @@ sequence by process.entity_id with maxspan=1m
               "?:\\Windows\\System32\\wmiprvse.exe",
               "?:\\Windows\\System32\\userinit.exe",
               "?:\\Windows\\System32\\mmc.exe",
-              "?:\\Windows\\System32\\wiawow64.exe") and
+              "?:\\Windows\\System32\\wiawow64.exe",
+              "?:\\Windows\\System32\\PDR24PM_SV64.EXE",
+              "?:\\Windows\\twain_32\\Samsung\\SCX4623\\Scan2Pc.exe") and
    not (process.name : "rundll32.exe" and process.command_line : ("*\\Windows\\Downloaded Program Files\\*", "*zzzzInvokeManagedCustomActionOutOfProc*")) and
    not (process.name : ("powershell.exe", "cscript.exe", "wscript.exe") and process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")) and
    not (process.pe.original_file_name == "NKHlp.exe" and process.code_signature.subject_name == "DBS AG" and process.code_signature.trusted == true) and
@@ -110,7 +112,8 @@ sequence by process.entity_id with maxspan=1m
       "*Microsoft\\Teams\\Update.exe --processStart *Teams.exe*",
       "*\\Windows\\system32\\hkcmd.exe*",
       "%SystemRoot%\\system32\\dmwappushsvc.dll",
-      "?:\\Windows\\SysWOW64\\StikyNot.exe"
+      "?:\\Windows\\SysWOW64\\StikyNot.exe",
+      "?:\\Windows\\twain_32\\Samsung\\*.exe"
     )]
 '''
 

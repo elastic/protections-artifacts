@@ -8,7 +8,7 @@ id = "6d9b4bb0-1262-4cc1-8e65-3f4758ceaaad"
 license = "Elastic License v2"
 name = "Executable File Creation in a Removable Media"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 file where event.action != "deletion" and process.name != null and
@@ -31,9 +31,8 @@ file where event.action != "deletion" and process.name != null and
           "?:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\ECM Titanium-3.0-Setup*.tmp",
           "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\7zG.exe") and
 
- (file.Ext.header_bytes : "4d5a*" or
-  file.extension : ("exe", "scr", "pif", "com", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe", "lnk", "iqy", "slk", "iqy",
-                    "cmd", "bat", "library-ms", "glk", "url", "scf", "chm")) and
+ file.extension : ("exe", "scr", "pif", "com", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe", "lnk", "iqy", "slk", "iqy",
+                    "cmd", "library-ms", "glk", "url", "scf", "chm") and
   process.pid != 4 and
 
   /* avoid reporting processes running from the USB itself */

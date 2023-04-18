@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1070/006/",
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -34,7 +34,8 @@ sequence with maxspan=5m
               "?:\\Program Files\\*.exe",
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe") and
 
-  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and process.code_signature.trusted == true) and
+  not file.path : "?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll"
   ] by file.path as event0
  [library where
 
@@ -59,9 +60,14 @@ sequence with maxspan=5m
        not process.executable : ("?:\\Program Files*\\Microsoft\\*.exe", "?:\\Program Files*\\Google\\Chrome\\*.exe",
                                  "?:\\Program Files*\\Internet Explorer\\*.exe", "?:\\Program Files*\\Mozilla Firefox\\*.exe")) and
 
-  not dll.hash.sha256 : "9ac63dcf5a2437ed43cb143479ec4a810915017d8eb138a7fede88867e2a8121" and
+  not dll.hash.sha256 :
+             ("9ac63dcf5a2437ed43cb143479ec4a810915017d8eb138a7fede88867e2a8121",
+              "8bbe5898caa826ac1cb99d6c01c8a5ee9bb660493d2a48c9294d837390f7bae2",
+              "42a0d4dca77d4ce7077c18e08b1d49715d6b1038e147611106388aec3e422c82",
+              "6e12069312e286307a12ba71228e720e890d242191eb07d0e769630b600098b3") and
   not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true) and
-  not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true)
+  not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true) and
+  not process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe"
   ] by dll.path
 '''
 

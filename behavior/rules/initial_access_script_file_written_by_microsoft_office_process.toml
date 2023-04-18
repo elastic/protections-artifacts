@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Script File Written by Microsoft Office Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -27,7 +27,7 @@ sequence by user.id with maxspan=1m
   descendant of [process where event.action == "start" and
      process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe")] and
   not (process.name : "cmd.exe" and process.parent.executable : "\\Device\\Mup\\*\\netlogon\\*") and
-  not (process.name : "cmd.exe" and process.parent.name : ("chrome.exe", "msedge.exe", "iexplore.exe", "opera.exe", "firefox.exe")) and
+  not (process.name : "cmd.exe" and process.parent.name : ("chrome.exe", "msedge.exe", "iexplore.exe", "opera.exe", "firefox.exe", "brave.exe")) and
   not (process.command_line : "cmd.exe /c set" and process.parent.executable : "?:\\Program Files (x86)\\eparakstitajs?\\eparakstitajs?.exe") and
   not (process.name : "regsvr32.exe" and process.args : "?:\\Program Files\\Mozilla Firefox\\Accessible*.dll")
   ]

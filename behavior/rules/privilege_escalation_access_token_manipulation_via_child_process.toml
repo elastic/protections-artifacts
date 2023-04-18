@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence
@@ -66,10 +66,16 @@ sequence
             ("b2b8a7156ec0079a1801db1647d6dbc4206345689772495eac311e0e6afcad57",
              "2c476f212dc61977ae3deb9319fa21242524f3b6dd30803715659a9618316089",
              "b2f6de33dc0dfd256f9708a09b853a96d5cf5bffcaf52aa1331b3b4242421667",
-             "a02e0984d790393aea56252f45dd58d25cdfa4501efb40efadecd90145717c35") and
+             "a02e0984d790393aea56252f45dd58d25cdfa4501efb40efadecd90145717c35",
+             "5212286922b7b1bce5fda2c2b25a9dfdef9300736ded91350d08c837ae1e9e1c",
+             "e18fbe144c938627e3c383e942e8da74ed301612d035f1e7e92557db70d05277",
+             "c83ef42b6c4c85e24666c8e55b93fb64cf08164e34b85fde0270c03dd463c11f",
+             "af483a6e34a9b12ed2adcdb388b50311e5c322947718a41bbc325c2d1f3a7393") and
 
   not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*") and 
-  not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*"
+  not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*" and
+  not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+  not event0.process.hash.sha256 == process.hash.sha256
   ] by process.parent.entity_id
 
   until [process where event.action:"end"] by process.parent.entity_id

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious ImageLoad via Windows Update Auto Update Client"
 os_list = ["windows"]
 reference = ["https://dtm.uk/wuauclt/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,7 +24,8 @@ sequence by process.entity_id with maxspan=1m
                   "?:\\Program Files (x86)\\*.dll",
                   "?:\\Windows\\System32\\*.dll",
                   "?:\\Windows\\SysWOW64\\*.dll",
-                  "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*.dll"))]
+                  "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*.dll")) and
+  not dll.hash.sha256 : "dde77d27a7cb0189a9a3314e42f10666a2f69ca2b81ad03ae0cc9035a97a55ad"]
 '''
 
 min_endpoint_version = "7.16.0"

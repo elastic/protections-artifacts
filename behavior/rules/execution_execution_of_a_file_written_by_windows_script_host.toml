@@ -4,7 +4,7 @@ id = "49e47c2a-307f-4591-939a-dfdae6e5156c"
 license = "Elastic License v2"
 name = "Execution of a File Written by Windows Script Host"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=5m
@@ -19,7 +19,8 @@ sequence with maxspan=5m
                 ("Microsoft *",
                  "ESET, spol. s r.o.",
                  "VORTECH SOLUTIONS PTY LTD",
-                 "Western Union Holdings Inc.")) and
+                 "Western Union Holdings Inc.",
+                 "KOBIL Systems GmbH")) and
    not (process.pe.original_file_name : "Packman.exe" and process.args : "checkCompileErrors=true") and
    not process.pe.original_file_name : ("CCCLauncher.exe", "Bginfo.exe") and
    not process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and

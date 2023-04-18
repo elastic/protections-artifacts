@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 any where
@@ -28,7 +28,11 @@ any where
                 "\\Device\\HarddiskVolume*\\Windows\\WinSxS\\*\\TiWorker.exe",
                 "\\Device\\VhdHardDisk*\\Windows\\WinSxS\\*\\TiWorker.exe",
                 "\\\\?\\Volume{*}\\Windows\\WinSxS\\*\\TiWorker.exe") and
-         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+         process.parent.executable : 
+	            ("?:\\Windows\\System32\\svchost.exe",
+	             "\\Device\\HarddiskVolume*\\Windows\\System32\\svchost.exe",
+	             "\\Device\\VhdHardDisk*\\Windows\\System32\\svchost.exe",
+	             "\\\\?\\Volume{*}\\Windows\\System32\\svchost.exe")) and
 
    not (process.executable :
                 ("?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",

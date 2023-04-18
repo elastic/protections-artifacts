@@ -1,0 +1,42 @@
+[rule]
+description = """
+Identifies instances where a dynamic library (dylib) is loaded with a suspicious or non-standard code signature on
+macOS. Threat actors may abuse this technique by forging or tampering with code signatures of dylibs to bypass security
+mechanisms and load malicious code for code injection, persistence, or privilege escalation. A dylib load event with a
+suspicious code signature may indicate that the dylib has been tampered with or originates from a malicious source,
+potentially allowing the execution of unauthorized or harmful code on the system.
+"""
+id = "c5681e08-0c25-4030-b306-c67efc36d324"
+license = "Elastic License v2"
+name = "Dylib Load with Suspicious Code Signature"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+any where event.action == "load" and 
+    dll.code_signature.subject_name : ("Apple Distribution:*", "3rd Party Mac Developer Application:*") and 
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

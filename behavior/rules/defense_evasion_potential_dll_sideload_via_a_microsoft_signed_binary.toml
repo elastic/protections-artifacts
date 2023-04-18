@@ -7,7 +7,7 @@ id = "ba802fb2-f183-420e-947b-da5ce0c74dd3"
 license = "Elastic License v2"
 name = "Potential DLL SideLoad via a Microsoft Signed Binary"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 /* MS bin used as DLL sideloading target from an ISO/DMG/VHD archive */
@@ -16,7 +16,14 @@ library where
   process.code_signature.subject_name : "Microsoft*" and
   not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining") and
   not process.executable : "C:\\*" and
-  not startswith~(dll.name, process.name)
+  not startswith~(dll.name, process.name) and
+  not dll.hash.sha256 :
+              ("94555c70cf6376c645c6f7277d0cf61f8b50add7fe0b8b17b6d5f222589689b6",
+               "9b594093385a5f3f23e8bb2112d0ee5df93b4cf6f95515909d4fbea22e4283aa",
+               "d668366c74f476d73fc0e00b00433ce3e2ccff7b18a525cf41758b7c3c495ea3",
+               "0924c7a3f02eee3b0b6f1b4d9c22cd3c7e914d57fcd07a707d56e0cb04d66e7a",
+               "6ee2c087b7c55b7fea604515fd47eb20a7a531854da8a7c010744743cb937f6a",
+               "c048df2f3928f57f27951e5d917f90b788b1881948d98379c8772423d91fc4fb")
 '''
 
 min_endpoint_version = "8.4.0"

@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
@@ -22,24 +22,15 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
             "?:\\Windows\\System32\\dllhost.exe",
             "?:\\Windows\\SysWOW64\\dllhost.exe",
             "?:\\Windows\\System32\\RuntimeBroker.exe",
-            "?:\\Program Files*\\Microsoft Office*\\*\\OUTLOOK.EXE",
-            "?:\\Program Files*\\Microsoft\\Edge\\*.exe", 
-            "?:\\Program Files*\\Microsoft\\EdgeUpdate\\*.exe",
             "?:\\Config.Msi\\*.rbf",
             "?:\\Windows\\System32\\svchost.exe",
             "?:\\Windows\\System32\\MoUsoCoreWorker.exe",
             "?:\\Windows\\System32\\SearchFilterHost.exe",
             "?:\\Windows\\System32\\audiodg.exe",
-            "?:\\Program Files*\\Google\\Update\\GoogleUpdate.exe",
-            "?:\\Program Files*\\Sophos\\Live Query\\SophosOsquery.exe",
-            "?:\\Program Files*\\independenceIT\\Cloud Workspace Client\\ApplicationServices.exe",
-            "?:\\Program Files\\WindowsApps\\Microsoft.Office.Desktop.Outlook_*\\OUTLOOK.EXE",
             "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe",
             "?:\\Windows\\servicing\\TrustedInstaller.exe",
             "?:\\Windows\\System32\\VSSVC.exe",
             "?:\\Windows\\SystemApps\\MicrosoftWindows.*.exe",
-            "?:\\Program Files (x86)\\Zscaler\\ZSATunnel\\ZSATunnel.exe",
-            "?:\\Program Files (x86)\\Citrix\\ICA Client\\SelfServicePlugin\\SelfService.exe",
             "?:\\Windows\\System32\\taskhostw.exe",
             "?:\\Windows\\System32\\backgroundTaskHost.exe",
             "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
@@ -47,14 +38,14 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
             "?:\\Windows\\CCM\\UpdateTrustedSites.exe",
             "?:\\Windows\\System32\\Robocopy.exe",
             "?:\\Windows\\System32\\sppsvc.exe",
-            "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\IPCBox\\AdobeIPCBroker.exe",
             "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
             "?:\\Windows\\System32\\xcopy.exe",
             "?:\\Windows\\System32\\dsregcmd.exe",
-            "?:\\Program Files (x86)\\Splashtop\\Splashtop Remote\\Server\\SRUtility.exe",
-            "?:\\Program Files (x86)\\Windows Live\\Photo Gallery\\WLXPhotoGallery.exe",
-            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe") and
+            "?:\\Program Files (x86)\\*.exe",
+            "?:\\Program Files\\*.exe",
+            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe",
+            "?:\\Windows\\System32\\PrintIsolationHost.exe",
+            "?:\\Windows\\System32\\LocationNotificationWindows.exe") and
   file.path :
      ("?:\\Users\\*\\Desktop\\*.lnk",
       "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",

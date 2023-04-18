@@ -7,7 +7,7 @@ id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
 license = "Elastic License v2"
 name = "Unusual File Written or Modified in Startup Folder"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 file where event.action != "deletion" and
@@ -45,7 +45,8 @@ file where event.action != "deletion" and
                 "?:\\Program Files\\*.exe",
                 "?:\\Program Files (x86)\\*.exe") and
     not (process.executable : "?:\\Windows\\System32\\cmd.exe" and file.extension : "cmd") and
-    not (process.code_signature.subject_name : ("Intercontinental Exchange, Inc.", "Chocolatey Software, Inc.") and
+    not (process.code_signature.subject_name :
+                 ("Intercontinental Exchange, Inc.", "Chocolatey Software, Inc.", "ONELAUNCH TECHNOLOGIES INC.") and
          process.code_signature.trusted == true) and
     not (process.executable : "?:\\Windows\\System32\\notepad.exe" and file.extension : ("bat", "cmd"))
 '''

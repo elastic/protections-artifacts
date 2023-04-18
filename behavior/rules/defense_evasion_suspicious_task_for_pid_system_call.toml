@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies when a process invoke the task_for_pid system service which gives a process the capability to control another
+process. A process needs root privileges to call task_for_pid or possesses the com.apple.security.get-task-allow
+entitlement. This type of behavior may indicate inter-process code injection or legit debugging activity. Adversaries
+may inject code into processes in order to evade process-based defenses as well as possibly elevate privileges.
+"""
+id = "572ec53e-fc79-43ad-8bdd-573999ff70d7"
+license = "Elastic License v2"
+name = "Suspicious Task for Pid System Call"
+os_list = ["macos"]
+reference = [
+    "http://os-tres.net/blog/2010/02/17/mac-os-x-and-task-for-pid-mach-call/",
+    "https://knight.sc/malware/2019/03/15/code-injection-on-macos.html",
+    "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
+    "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
+]
+version = "1.0.17"
+
+query = '''
+process where event.action == "process_open" and
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and not 
+  process.executable : ("/private/var/folders/*", 
+                        "/Users/*/.pyenv/*",
+                        "/opt/homebrew/*",
+                        "/nix/store/*",
+                        "/usr/local/Cellar/*",
+                        "/System/*") and not
+  (startswith~(process.parent.executable, Target.process.executable) or 
+   startswith~(process.executable, Target.process.executable)) and 
+  not process.hash.sha256 : "d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a"
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.002"
+name = "Portable Executable Injection"
+reference = "https://attack.mitre.org/techniques/T1055/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

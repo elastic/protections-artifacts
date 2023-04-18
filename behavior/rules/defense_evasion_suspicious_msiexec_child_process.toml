@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and
@@ -17,7 +17,7 @@ process where event.action == "start" and
     process.parent.executable : "?:\\WINDOWS\\Installer\\MSI*.tmp") and
 
   (
-    (process.name : ("regsvr32.exe", "rundll32.exe") and process.args : ("scrobj.dll", "?:\\Users\\*\\AppData\\*", "?:\\ProgramData\\*", "?:\\Users\\Public\\*", "-e")) or
+    (process.name : "rundll32.exe" and process.args : ("?:\\Users\\*\\AppData\\*", "?:\\ProgramData\\*", "?:\\Users\\Public\\*", "-e")) or
 
     (process.parent.args : "/DontWait" and process.parent.args : "/HideWindow") or
 
@@ -40,8 +40,6 @@ process where event.action == "start" and
     /* AteraAgent RMM abused by threat actors -  */
     (process.pe.original_file_name == "AteraAgent.exe" and process.args : "/IntegratorLogin=*@*" and process.args : "/AccountId=??*") or
 
-    (process.pe.original_file_name : "viewer.exe" and process.args : ("/HideWindow", "/RunAsAdmin", "/EnforcedRunAsAdmin")) or
-
     (process.pe.original_file_name : "WMIC.exe" and process.args : "MSFT_MpPreference")
 
     ) and
@@ -49,7 +47,8 @@ process where event.action == "start" and
     /* noisy FP patterns */
     not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*MSI*.tmp,WiseElevateRun*")) and
 
-    not (process.name : ("wscript.exe", "cscript.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+    not (process.name : ("wscript.exe", "cscript.exe") and
+         process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "IsHTTPSListenerPresent.vbs")) and
 
     not (process.executable : "?:\\ProgramData\\*" and (process.Ext.token.integrity_level_name : "high" or process.args : "*uninstall*")) and
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Persistence via a Process from a Removable or Mounted ISO Device"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -21,8 +21,11 @@ sequence by process.entity_id with maxspan=5m
    ) and
    not process.executable :
             ("?:\\Program Files\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
-             "?:\\Program Files (x86)\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe") and
-   not (process.code_signature.subject_name : "Global Security Center" and process.code_signature.trusted == true)
+             "?:\\Program Files (x86)\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
+             "?:\\Program Files (x86)\\Microsoft OneDrive\\*\\FileSyncConfig.exe") and
+   not (process.code_signature.subject_name :
+                              ("Global Security Center", "Fabrice PARISOT", "Veeam Software Group GmbH") and process.code_signature.trusted == true) and
+   not process.hash.sha256 : "6decdc0e295f2246d684480c10266c067cbd60c03af702505b7b3d045e81df18"
  ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (
@@ -47,7 +50,8 @@ sequence by process.entity_id with maxspan=5m
          "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun", 
          "HKEY_USERS\\S-1-5-*_Classes\\CLSID\\*\\InprocServer32\\",
          "HKEY_USERS\\S-1-5-*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*")) or
-    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
+    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*" and
+     not file.name : "dektop.ini")
    )]
 '''
 

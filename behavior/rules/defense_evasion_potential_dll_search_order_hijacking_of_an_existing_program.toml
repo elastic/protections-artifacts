@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential DLL Search Order Hijacking of an Existing Program"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,7 +24,7 @@ sequence by process.entity_id with maxspan=1m
     process.Ext.relative_file_name_modify_time > 86400 and
 
     not process.code_signature.subject_name :
-              ("IFS World Operations AB", "TEAMDEV LTD.", "philandro Software GmbH", "Autodesk, Inc.", "Loom, Inc.")
+              ("IFS World Operations AB", "TEAMDEV LTD.", "philandro Software GmbH", "Autodesk, Inc.", "Loom, Inc.", "SystemServer")
     ]
 
    [library where
@@ -40,7 +40,8 @@ sequence by process.entity_id with maxspan=1m
 	 not dll.hash.sha256 :
 	         ("73170761d6776c0debacfbbc61b6988cb8270a20174bf5c049768a264bb8ffaf",
 	          "76f19b52423774932831dcba0596989ec56213f9b217a0432fbc122f99704a2a",
-	          "0da7803bdd72de8f635336057d3d672b645d4da963e5c61544a4c5a2e8289fd8")]
+	          "0da7803bdd72de8f635336057d3d672b645d4da963e5c61544a4c5a2e8289fd8",
+	          "d78adc29ea8fd4f180a3eaaa5713874af42cb79509aef6509af299b895b8dd77")]
 '''
 
 min_endpoint_version = "8.4.0"

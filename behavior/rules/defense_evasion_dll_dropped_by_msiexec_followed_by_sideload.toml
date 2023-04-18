@@ -7,7 +7,7 @@ id = "1543ed0b-2d7b-42f9-93d2-bf9bfd8759e3"
 license = "Elastic License v2"
 name = "DLL Dropped by MSIEXEC followed by SideLoad"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -63,7 +63,14 @@ sequence by user.id with maxspan=1m
                          "KASEYA HOLDINGS INC.",
                          "Accenture LLP",
                          "Bizagi Corp.",
-                         "Viber Media S.à r.l.") and process.code_signature.trusted == true) and
+                         "Viber Media S.à r.l.",
+                         "Fiserv",
+                         "KASEYA HOLDINGS INC.",
+                         "Sadas Srl",
+                         "Viber Media S.à r.l.",
+                         "Cisco Systems, Inc.",
+                         "Wickr LLC",
+                         "Suse LLC") and process.code_signature.trusted == true) and
     not dll.pe.imphash :
                ("dae02f32a21e03ce65412f6e56942daa",
                 "d41d8cd98f00b204e9800998ecf8427e",

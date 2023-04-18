@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://oddvar.moe/2018/04/10/persistence-using-globalflags-in-image-file-execution-options-hidden-from-autoruns-exe/",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 registry where registry.data.strings != null and
@@ -43,10 +43,11 @@ registry where registry.data.strings != null and
               "?:\\Program Files (x86)\\Airwatch\\AgentUI\\TaskScheduler.exe",
               "?:\\Program Files (x86)\\d7xTech\\Amphetamine\\Amphetamine.exe",
               "?:\\Program Files\\Netspark\\NsUpdate\\NsUpdate.exe",
-              "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe")
+              "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe") and
+ not (process.code_signature.subject_name : "Patch My PC, LLC" and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -76,4 +77,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

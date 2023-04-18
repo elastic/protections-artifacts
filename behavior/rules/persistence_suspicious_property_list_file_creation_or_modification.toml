@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious Property List File Creation or Modification"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -20,11 +20,13 @@ sequence by user.id with maxspan=5m
     /* Issue #649 */
     not (process.args : "/Library/LaunchAgents/com.microsoft.OneDriveStandaloneUpdater.plist" and
          process.args : "*/Applications/OneDrive.app/Contents/StandaloneUpdater.app/Contents/MacOS/OneDriveStandaloneUpdater*") and
-    not process.parent.executable : "/Library/Application Support/TrendMicro/TmccMac/Extensions/ExtManager"
+    not process.parent.executable : "/Library/Application Support/TrendMicro/TmccMac/Extensions/ExtManager" and
+    not process.command_line : ("*/Applications/OneDrive.app/Contents/SyncReporter.app/*", "*RunAtLoad bool NO*")
    ]
   [process where event.action == "exec" and
     process.name : "plistbuddy" and
-    process.command_line : "*ProgramArguments*"]
+    process.command_line : "*ProgramArguments*" and
+    not process.command_line : ("*/Applications/OneDrive.app/Contents/SyncReporter.app/*", "*RunAtLoad bool NO*")]
 '''
 
 min_endpoint_version = "7.15.0"

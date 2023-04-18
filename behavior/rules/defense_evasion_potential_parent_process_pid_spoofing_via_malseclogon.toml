@@ -8,16 +8,17 @@ license = "Elastic License v2"
 name = "Potential Parent Process PID Spoofing via MalSecLogon"
 os_list = ["windows"]
 reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
-sequence with maxspan=1m
-  [process where event.action == "start" and process.name : "svchost.exe" and process.args : "seclogon"] by process.entity_id
-  [process where event.action == "start" and
+process where event.action == "start" and
+
+   process.Ext.session_info.logon_type : "NewCredentials" and
+
    process.parent.Ext.real.pid > 0 and not process.Ext.token.integrity_level_name == "system" and
 
    /* dirs hosting interesting processes to spoof as parent process like Explorer.exe */
-   process.parent.executable : ("?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
+   process.parent.executable regex~ """(c:\\windows\\system32\\[a-z0-9\-\_\.]+\.exe|c:\\windows\\syswow64\\[a-z0-9\-\_\.]+\.exe|c:\\windows\\[a-z0-9\-\_\.]+\.exe)""" and
 
     /* common secLogon Clients running from trusted directories */
     not (process.parent.executable : "?:\\WINDOWS\\Explorer.EXE" and process.name : "rundll32.exe" and process.command_line : "*SHELL32.dll,RunAsNewUser_RunDLL*") and
@@ -30,7 +31,7 @@ sequence with maxspan=1m
 
     not (process.parent.executable : "?:\\Windows\\Sys*\\OneDriveSetup.exe" and process.parent.args : ("/thfirstsetup", "/uninstall") and
          process.pe.original_file_name in ("OneDrive.exe", "OneDriveSetup.exe") and
-         process.code_signature.subject_name == "Microsoft Corporation" and process.code_signature.trusted == true) and
+         process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
 
     not (process.parent.executable : "?:\\Windows\\Sys*\\MsiExec.exe" and process.parent.args : "-Embedding") and
 
@@ -40,9 +41,6 @@ sequence with maxspan=1m
     not process.parent.name : ("cscript.exe", "powershell.exe", "wscript.exe") and
 
     not process.parent.executable : ("?:\\windows\\system32\\ServerManager.exe", "?:\\Windows\\System32\\LogonUI.exe", "?:\\Windows\\System32\\dgagent\\dsagent.exe") and
-
-    not (process.parent.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\AircommandEngine.exe" and
-         process.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\AircommandEngine.exe") and
 
     not (process.parent.executable : "?:\\Windows\\System32\\mmc.exe" and process.executable : "?:\\Windows\\system32\\gpupdate.exe") and
 
@@ -56,20 +54,21 @@ sequence with maxspan=1m
     not process.executable : ("?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\*.exe", "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\SamsungSystemSupportOSD.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe" and process.parent.executable : "?:\\Windows\\SysWOW64\\OneDriveSetup.exe") and
 
-    not process.parent.executable : "?:\\Windows\\System32\\SpecopsClient\\SecuredBrowserNet\\SecuredBrowserDotNetLauncher.exe" and
     not process.executable : "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe" and
+
     not (process.code_signature.subject_name : ("TeamViewer*", "Schneider Electric") and process.code_signature.trusted == true) and
+
     not (process.pe.original_file_name : "VCPkgSrv.exe" and process.code_signature.trusted == true) and
+
     not process.executable : "?:\\Program Files (x86)\\Varian\\OCS\\*\\VMS.Varis.Vishnu.exe"
-    ] by process.parent.Ext.real.entity_id
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 1
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"
@@ -90,4 +89,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"

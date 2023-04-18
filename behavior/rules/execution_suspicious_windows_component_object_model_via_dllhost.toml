@@ -8,7 +8,7 @@ id = "f678ec9a-c348-485c-ac9e-84b0923ff5f5"
 license = "Elastic License v2"
 name = "Suspicious Windows Component Object Model via DLLHOST"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=5m
@@ -46,7 +46,8 @@ sequence with maxspan=5m
     not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and process.parent.name : "msiexec.exe") and
     not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and process.code_signature.trusted == true) and
-    not (process.name : "rundll32.exe" and process.args : ("shell32.dll,Control_RunDLL", "printui.dll,PrintUIEntryDPIAware"))
+    not (process.name : "rundll32.exe" and process.args : ("shell32.dll,Control_RunDLL", "printui.dll,PrintUIEntryDPIAware")) and
+    not (process.code_signature.subject_name : "Avora Holdings, LTD" and process.code_signature.trusted == true)
    ] by process.entity_id
  [process where event.action == "start" and
    process.name : "dllhost.exe" and
@@ -131,7 +132,9 @@ sequence with maxspan=5m
             /* Shell Disc Image Mount */
             "/Processid:{51A1467F-96A2-4B1C-9632-4B4D950FE216}",
 
-            "/Processid:{D4648AF3-803B-4993-BAA3-502E8F892E4B}"
+            "/Processid:{D4648AF3-803B-4993-BAA3-502E8F892E4B}",
+
+            "/Processid:{1EF75F33-893B-4E8F-9655-C3D602BA4897}"
             )
             ] by process.Ext.effective_parent.entity_id
 '''

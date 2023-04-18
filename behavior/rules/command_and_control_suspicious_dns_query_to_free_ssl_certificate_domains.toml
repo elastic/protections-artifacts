@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -75,7 +75,8 @@ sequence by process.entity_id with maxspan=5m
                 "b653d77479b36e9d804a5e8ca78adbbfe9ce0b82fd8e45512cf7f3ad175b945c",
                 "f28aad782bc6f10f3e27a5c07b7a3d3cc3b3ec3805eaaaf4db5f311882caa91f",
                 "96bd6636458bd2c3f020c7cb922058579a2fc8014f587c4617531ddcbc55475a",
-                "748d48d246526e2a79edcde87255ffa5387e3bcc94f6ca5e59589e07e683cd80") and
+                "748d48d246526e2a79edcde87255ffa5387e3bcc94f6ca5e59589e07e683cd80",
+                "1c0a4d603fb16b53d733663bde0ebd1e9a593d4c55015301f06e8a01261c1d0d") and
    not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and

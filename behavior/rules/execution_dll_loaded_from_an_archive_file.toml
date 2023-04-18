@@ -8,7 +8,7 @@ id = "08fba401-b76f-4c7b-9a88-4f3b17fe00c1"
 license = "Elastic License v2"
 name = "DLL Loaded from an Archive File"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -36,7 +36,8 @@ sequence by process.entity_id with maxspan=5s
     /* loading dll from a mounted device or archive temp path */
    (dll.path : ("\\Device\\Cdrom?\\*", "?:\\Users\\*\\Temp\\7z*", "?:\\Users\\*\\Temp\\Rar$*", "?:\\Users\\*\\Temp\\Temp?_*", "?:\\Users\\*\\Temp\\BNZ.*") or
     (dll.path : "?:\\*" and not dll.path : "?:\\*\\*" and not dll.path : "C:\\*")) and
-   not dll.path : ("\\Device\\Cdrom?\\*\\*", "?:\\Users\\*\\Temp\\7z*\\*\\*", "?:\\Users\\*\\Temp\\Rar$*\\*\\*")]
+   not dll.path : ("\\Device\\Cdrom?\\*\\*", "?:\\Users\\*\\Temp\\7z*\\*\\*", "?:\\Users\\*\\Temp\\Rar$*\\*\\*") and
+   not dll.hash.sha256 : "43978534cd35ec0830a8cc89afbeda4b0110d119eaeb641912ef2769c1c73ea8"]
 '''
 
 min_endpoint_version = "7.16.0"

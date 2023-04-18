@@ -11,7 +11,7 @@ reference = [
     "https://developer.chrome.com/docs/apps/nativeMessaging/",
     "https://www.trendmicro.com/en_us/research/23/b/earth-kitsune-delivers-new-whiskerspy-backdoor.html",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -56,7 +56,9 @@ process where event.action == "start" and
                 ("?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe",
                  "?:\\Program Files\\*.exe", 
                  "?:\\Program Files (x86)\\*", 
-                 "?:\\Windows\\System32\\conhost.exe") and
+                 "?:\\Windows\\System32\\conhost.exe",
+                 "?:\\Windows\\Microsoft.NET\\Framework*\\vbc.exe",
+                 "?:\\Windows\\Microsoft.NET\\Framework*\\cvtres.exe") and
   not process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe" and 
   not process.hash.sha256 :
                ("af0a5a9d2b22c2e440f24b2a75f7a064b8855ff0989b577b7cca0bb8e5b26d62",
@@ -64,7 +66,12 @@ process where event.action == "start" and
                 "6feaea10fa48a077b43d21f423c16cd78c928ec7caa5eae379b64b51e01c4f09",
                 "154b04d3526ceb79b6e4b096d28f94501fc3748ad0e59c10bb42d9a8eecfa741",
                 "af862b278038dc2a84dee82932cfdcffc837a747c7852dc905de72300c6fd937",
-                "d9fdfe1f8fb03c430a4fe739af3b1c86f23a941b96513a2536caa7370dfa1cb8")
+                "d9fdfe1f8fb03c430a4fe739af3b1c86f23a941b96513a2536caa7370dfa1cb8",
+                "c00b1aedc14b6d11f8af36a5ca7cd23c349de4213254aa1b7bd8c7c8d15900f8",
+                "f649d010713be56a21f83fb9abfcce453ae805473c5d28d9a00f28d16f4cec62",
+                "e14e2edcfaddff1eff81ad4b837649b2b1f3a425cce1ea314667949cd450e384",
+                "f32ff940b9cb7f166ff2fe055c5776489168edd9445e7d726f246489b57b93e6",
+                "26a3df875ac4e1bb02c9916b761d62d7b12b0557d6f3754bebd11b61ab6a7067")
 '''
 
 min_endpoint_version = "8.0.0"

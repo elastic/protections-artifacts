@@ -7,7 +7,7 @@
 ```mermaid
 flowchart TD
     A[Elastic's Eventing System] -->|Send file events| B(Ransomware Plugin)
-    B -->|Enriche event with entropy, header bytes,  ..| C[LUA Artifact]
+    B -->|Enrich event with entropy, header bytes,  ..| C[LUA Artifact]
 ```
 Our detection framework is based on a **scoring system**; as file modification events come in, we continue to evaluate them against our ransomware detection heuristics. Each file event may or may not increase the score depending on how anomalous it appears to be. If the score reaches a certain threshold, we raise an alert and terminate the malicious process.
 
@@ -19,7 +19,7 @@ Our detection framework is based on a **scoring system**; as file modification e
     - ✔️ **Path History**: evaluates the current event and how it relates to previous events involving the same filepath within the same process. In particular, we seek to find anomalous file modification patterns that may not be apparent when analyzing the current event in a vacuum (e.g. deleting and creating the same filepath).
     - ✔️ **Abnormal Extensions**: performs various heuristics over the sub parts of a file extension.
     - ✔️ **Ransom Notes**: checking for various pattern found in random notes dropped by ransomware.
-    - ✔️**Canary Files**: drop several canary files and monitor them for signs for encryption.
+    - ✔️ **Canary Files**: drop several canary files and monitor them for signs for encryption.
     - ✔️ **Known ransomware extension**: a quick and easy way to detect previously known families.
 
 ## Questions? Suggestions?

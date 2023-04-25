@@ -14,6 +14,7 @@ Below you will find the artifacts we have opened in this repository:
 | ------ | ----------- |
 | [`behavior/`](behavior/) | EQL based malicious behavior rules |
 | [`yara/`](yara) | Yara rules for malware protection |
+| [`ransomware/`](ransomware/) | Elastic ransomware protection artifact  |
 
 # Questions? Problems? Suggestions?
 

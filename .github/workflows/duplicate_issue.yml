@@ -32,3 +32,16 @@ jobs:
           labels: ${{toJSON(github.event.issue.labels)}}
         env:
           GITHUB_TOKEN: ${{ secrets.PROTECTIONS_MACHINE_TOKEN }}
+
+      - name: Duplicate issue to internal ransomware repo
+        uses: octokit/request-action@v2.x
+        if: contains(github.event.issue.labels.*.name, 'ransomware')
+        with:
+          route: POST /repos/{owner}/{repo}/issues
+          owner: elastic
+          repo: protections-ransomware
+          title: "${{ toJSON(format('{0} {1}', '[Openness Issue]', github.event.issue.title ))}}"
+          body: "${{ toJSON(format('*Issue link*:\n{0}\n{1}', github.event.issue.html_url,  github.event.issue.body ))}}"
+          labels: ${{toJSON(github.event.issue.labels)}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROTECTIONS_MACHINE_TOKEN }}

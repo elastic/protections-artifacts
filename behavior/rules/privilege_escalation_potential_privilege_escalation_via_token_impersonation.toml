@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -40,12 +40,23 @@ process where event.action == "start" and
  not process.parent.executable : "?:\\Windows\\System32\\AtBroker.exe" and
  not (process.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe" and 
       process.parent.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe") and 
- not (process.code_signature.subject_name in ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH",
-                                              "Projector.is, Inc.", "TeamViewer GmbH", "Cisco WebEx LLC", "TeamViewer",
-                                              "Tranquil I.T. Systems") and
+ not (process.code_signature.subject_name :
+                            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH",
+                             "Projector.is, Inc.", "TeamViewer GmbH", "Cisco WebEx LLC", "TeamViewer",
+                             "Tranquil I.T. Systems", "VOICEFIVE, INC.") and
       process.code_signature.trusted == true) and
  not (process.executable : "?:\\windows\\system32\\WerMgr.exe" and process.args : "-datacollectorcreate") and
- not process.executable : "?:\\Program Files (x86)\\Dolphin\\SnovaMag*\\dol_logon.exe"
+ not process.executable : "?:\\Program Files (x86)\\Dolphin\\SnovaMag*\\dol_logon.exe" and
+ not (process.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe" and
+      process.Ext.effective_parent.executable : "?:\\Windows\\servicing\\TrustedInstaller.exe" and
+      process.code_signature.subject_name : "Microsoft Windows Publisher" and process.code_signature.trusted == true) and
+ /* ansible exec_wrapper */
+ not (process.name : "powershell.exe" and
+      process.command_line :
+              ("*AkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApA*",
+               "*ABzAHAAbABpAHQAXwBwAGEAcgB0AHMAIAA9ACAAJABlAHgAZQBjAF8AdwByAGEAcABwAGUAcgBfAHMAdAByAC4AUwBwAGwAaQB0*",
+               "*CgAgACAAIAAgAHQAcgBhAHAAIAB7AAoAIAAgACAAIAAgACAAIAAgACQAdwByAGEAcABwAGUAcgBfAHAAYQB0AGgAIAA9ACAAIgA*") and
+      process.Ext.effective_parent.executable : "?:\\Windows\\System32\\lsass.exe")
 '''
 
 min_endpoint_version = "8.4.0"

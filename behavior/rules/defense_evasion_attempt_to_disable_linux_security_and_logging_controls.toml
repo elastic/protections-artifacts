@@ -8,7 +8,7 @@ id = "b63df89d-ac6f-44d7-80fa-ddf038295e42"
 license = "Elastic License v2"
 name = "Attempt to Disable Linux Security and Logging Controls"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type=="start" and
@@ -22,7 +22,7 @@ process where event.type=="start" and
       (process.name == "chkconfig" and process.args == "off") or
       (process.name == "systemctl" and process.args in ("disable","stop","kill"))or
       (process.name == "sysctl")
-    ) and  process.args in ("apparmor","kernel.nmi_watchdog=0","syslog","rsyslog","syslog-ng")
+    ) and  process.args in ("apparmor","kernel.nmi_watchdog=0","syslog", "syslog-ng")
   )
   ) and
   not process.parent.executable : ("/usr/local/cpanel/bin/taskrun", "/opt/alfresco-*/alfresco.sh", "/sbin/*")

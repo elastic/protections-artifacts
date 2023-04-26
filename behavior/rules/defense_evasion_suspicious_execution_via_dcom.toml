@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=1m
@@ -51,7 +51,8 @@ sequence with maxspan=1m
                         "?:\\Program Files\\*")) and
 
    not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09" and
-   not (process.code_signature.subject_name : ("F5 Networks Inc", "Citrix Systems, Inc.", "fCoder SIA") and process.code_signature.trusted == true) and
+   not (process.code_signature.subject_name : ("F5 Networks Inc", "Citrix Systems, Inc.", "fCoder SIA", "Adobe Inc.") and
+        process.code_signature.trusted == true) and
    not (process.pe.original_file_name : "msedgeupdate.dll" and process.code_signature.trusted == true)
    ] by process.entity_id
   [process where event.action : "start" and
@@ -111,12 +112,13 @@ sequence with maxspan=1m
                "?:\\Windows\\System32\\spool\\drivers\\*",
                "?:\\ProgramData\\") and process.code_signature.trusted == true) and
 
-   not (process.name : "rundll32.exe" and
+   not (process.name : ("rundll32.exe", "regsvr32.exe") and
         process.command_line :
                 ("*windows\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus*",
                  "*WINDOWS\\system32\\inetcpl*ClearMyTracksByProcess*",
                  "*PhotoViewer.dll*ImageView_Fullscreen*",
-                 "*\\Program Files (x86)\\AllesTechnologyAgent\\Super Shield\\SuperShieldHookCpy64.dll*")) and
+                 "*\\Program Files (x86)\\AllesTechnologyAgent\\Super Shield\\SuperShieldHookCpy64.dll*",
+                 "*:\\Windows\\system32\\spool\\DRIVERS\\x64\\3\\*")) and
 
    not (process.name : "regsvr32.exe" and process.parent.name : "dllhost.exe" and
         process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and
@@ -125,12 +127,15 @@ sequence with maxspan=1m
                ("4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
                 "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d",
                 "ef7d80e4cc017ba0b8ca0cef2956ed762f4a3e8053d2569785bfaf735e9aecb9",
-                "1b71b0b94f70215fa4ed9fe8cf950558eb20413feb54967cade34148ca97793e") and
+                "1b71b0b94f70215fa4ed9fe8cf950558eb20413feb54967cade34148ca97793e",
+                "e08a98f79de70175f6bb4c319b70bc13063aa1f03780709393f4f6d498da9c0f") and
 
    not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and
 
-   not (process.executable : "?:\\Windows\\System32\\conhost.exe" and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe")
+   not (process.executable : "?:\\Windows\\System32\\conhost.exe" and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe") and
+
+   not (process.parent.name : "dllhost.exe" and process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}")
    ] by process.parent.entity_id
 '''
 

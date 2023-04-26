@@ -11,7 +11,7 @@ os_list = ["linux", "macos"]
 reference = [
     "https://www.trendmicro.com/en_us/research/21/f/bash-ransomware-darkradiation-targets-red-hat--and-debian-based-linux-distributions.html",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "exec" and
@@ -23,7 +23,7 @@ process where event.action == "exec" and
  process.args : ("/home/*", "/var/lib/docker/*") and process.parent.name == "xargs"
 '''
 
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -49,4 +49,4 @@ name = "Impact"
 reference = "https://attack.mitre.org/tactics/TA0040/"
 
 [internal]
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"

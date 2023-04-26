@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Privilege Escalation Enumeration via LinPEAS"
 os_list = ["linux", "macos"]
 reference = ["https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "exec" and
   process.name == "sed" and process.command_line like "*ImPoSSssSiBlEee*"
 '''
 
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -41,4 +41,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"

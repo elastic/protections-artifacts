@@ -4,14 +4,14 @@ id = "a412fd9b-2a06-49ff-a073-8eb313c2d930"
 license = "Elastic License v2"
 name = "Elastic Endpoint Security Kernel Extension Unload"
 os_list = ["macos"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and
  process.name : "kextunload" and process.args : ("*.EndpointSecurity", "EndpointSecurity.kext")
 '''
 
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -54,4 +54,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"

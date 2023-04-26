@@ -7,14 +7,14 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
  process.parent.name == "svchost.exe" and process.parent.args == "Schedule" and
  (
   /* non noisy child processes */
-  process.pe.original_file_name : ("MSHTA.EXE", "REGSVR32.EXE", "MSBuild.exe", "InstallUtil.exe", "RegAsm.exe", "RegSvcs.exe") or
+  process.pe.original_file_name : ("MSHTA.EXE", "REGSVR32.EXE", "MSBuild.exe", "InstallUtil.exe", "RegSvcs.exe") or
 
   /* suspicious path */
   (process.executable : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\Windows\\system32\\tasks\\*") and

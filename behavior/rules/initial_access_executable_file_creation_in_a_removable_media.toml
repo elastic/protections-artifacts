@@ -8,7 +8,7 @@ id = "6d9b4bb0-1262-4cc1-8e65-3f4758ceaaad"
 license = "Elastic License v2"
 name = "Executable File Creation in a Removable Media"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 file where event.action != "deletion" and process.name != null and
@@ -52,7 +52,11 @@ file where event.action != "deletion" and process.name != null and
                 "Shenzhen iSunshare Software Co., Ltd.", 
                 "Software Technology, LLC",
                 "Rare Ideas, LLC",
-                "Seagull Scientific Inc.") and
+                "Seagull Scientific Inc.",
+                "2BrightSparks Pte. Ltd.",
+                "Python Software Foundation",
+                "Dell Inc",
+                "Fabrice PARISOT") and
        process.code_signature.trusted == true) and
   not (process.name : "powershell.exe" and file.path : "?:\\KAPE_UofUDev\\KAPE\\KAPE\\Modules\\bin\\RECmd\\Plugins\\*") and
   not (process.executable : "?:\\Windows\\System32\\svchost.exe" and file.path : "?:\\FileHistory\\*") and

@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious PrivilegedHelperTool Activity"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/bypass-tcc-via-privileged-helpers-aka-cve-2020-10008/"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and 
@@ -29,8 +29,9 @@ process where event.type == "start" and
       process.name : ("python*", "tclsh*", "osascript", "osacompile", "curl", "wget", "tccd")) and not 
       process.command_line : ("*remove*", "*unload*", "*/Library/Application Support/JAMF/Composer/Sources/*")) or   
    /* unsigned or untrusted macO */
-   (process.code_signature.exists == false or process.code_signature.trusted == false)
-  )
+   (process.code_signature.exists == false or process.code_signature.trusted == false) 
+  ) and not
+  process.executable : ("/Library/PrivilegedHelperTools/*", "/Applications/*")
 '''
 
 min_endpoint_version = "8.1.0"

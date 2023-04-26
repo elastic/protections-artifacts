@@ -1,0 +1,112 @@
+[rule]
+description = """
+Identifies the creation of two persistence items via startup followed by scheduled task. Adversaries may use this
+technique to maintain multiple methods of persistence on an endpoint.
+"""
+id = "8eb8bf95-872b-43c9-9f7c-528d795d6b4e"
+license = "Elastic License v2"
+name = "Dual Persistence via Startup and Scheduled Task"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=3m
+ [any where event.category : ("registry", "file") and
+  process.executable : ("?:\\*", "\\Device\\Mup*") and
+  event.action != "deletion" and user.id : ("S-1-5-21*", "S-1-12-*") and
+   (
+    (registry.data.strings != null and
+	 not registry.data.strings : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*") and
+     registry.path :
+              ("H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+			   "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+			   "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+			   "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+			   "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+			   "HKEY_USERS\\*\\Environment\\UserInitMprLogonScript",
+			   "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Userinit",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+			   "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+			   "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+			   "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+			   "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+			   "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun")) or
+    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
+   ) and
+
+   not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+        process.code_signature.trusted == true) and
+
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name :
+                              ("Opera Norway AS", "Google LLC", "ONELAUNCH TECHNOLOGIES INC.", "Windows Client Management AG",
+                               "Avast Software s.r.o.", "Barco N.V.", "Avast Software s.r.o.", "Brave Software, Inc.",
+                               "Signiant Corporation")) and
+
+   not (process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *" and
+        process.executable : ("OneLaunch.exe", "MicrosoftEdgeUpdate.exe", "OneDriveSetup.exe", "OneDrive.exe")) and
+
+   not process.executable : "?:\\Windows\\System32\\svchost.exe"
+  ] by process.entity_id
+  [file where event.action != "deletion" and
+   file.path : "?:\\Windows\\System32\\Tasks\\*" and file.name != null] by Effective_process.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.005"
+name = "Scheduled Task"
+reference = "https://attack.mitre.org/techniques/T1053/005/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

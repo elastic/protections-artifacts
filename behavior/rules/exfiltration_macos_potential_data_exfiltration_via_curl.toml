@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.7"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
@@ -22,7 +22,8 @@ process.args : ("-F", "-T", "-d", "--data-*") and
 process.args : ("*@*.zip", "*@*.gz") and 
 process.args : "http*" and not 
 process.args : ("http*://localhost*", 
-                "https://mobile-symbol-upload.newrelic.com/symbol",
+                "https://*.newrelic.com*",
+                "x-app-license-key*",
                 "http*://127.0.0.1*", 
                 "http*://0.0.0.0*") and 
 not process.parent.executable : "/Library/Developer/*"

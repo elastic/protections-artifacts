@@ -10,19 +10,33 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.19"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "exec" and process.name : ("Installer", "package_script_service") and not 
-    process.args : "/Library/Application Support/JAMF/Downloads/*"]
+    process.args : ("/Library/Application Support/JAMF/Downloads/*", 
+                    "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
+    process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
+                                 "/sbin/launchd", 
+                                 "/Users/*/Library/Caches/*",
+                                 "/Library/PrivilegedHelperTools/*",
+                                 "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+                                 "/private/var/folders/*/download/ARMDCHammer")]
   [process where event.action : ("exec", "fork") and
 
     // Descendant of macOS installer process
     descendant of [
         process where event.action == "exec" and
         process.name : ("Installer", "package_script_service") and not
-        process.args : "/Library/Application Support/JAMF/Downloads/*"
+        process.args : ("/Library/Application Support/JAMF/Downloads/*", 
+                        "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
+        process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
+                                     "/sbin/launchd", 
+                                     "/Users/*/Library/Caches/*",
+                                     "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+                                     "/Library/PrivilegedHelperTools/*",
+                                     "/private/var/folders/*/download/ARMDCHammer")
         ] and
 
     (
@@ -46,26 +60,23 @@ sequence with maxspan=1m
 	  // convert a downloaded file from the temp folder to a plist
 	    (process.name == "plutil" and process.args : "-convert") or
       (process.name == "touch" and process.args : "/tmp/*") or
-      (process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*/bin/curl*",
-                                                                                        "curl*",
+      (process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*/bin/curl*.amazonaws.com*",
+                                                                                        "*/bin/curl*.cloudfront.net*",
+                                                                                        "*/bin/curl*raw.githubusercontent.com*",
                                                                                         "*/bin/osascript*",
-                                                                                        "osascript*", 
                                                                                         "*/bin/wget*", 
-                                                                                        "wget*",
-                                                                                        "*/bin/chmod*", 
-                                                                                        "chmod*",
-                                                                                        "*/bin/plutil*", 
-                                                                                        "plutil*",
-                                                                                        "*/bin/openssl*", 
-                                                                                        "openssl*",
-                                                                                        "*/bin/base64*", 
-                                                                                        "base64*",
-                                                                                        "*/bin/xattr*",
-                                                                                        "xattr*",
-                                                                                        "*/bin/touch*",
-                                                                                        "touch*"))
+                                                                                        "*/bin/chmod +x*", 
+                                                                                        "*/bin/plutil*-convert*", 
+                                                                                        "*/bin/openssl*-enc*",
+                                                                                        "*/bin/openssl*-base64*",  
+                                                                                        "*/bin/base64*-d*", 
+                                                                                        "*/bin/xattr*com.apple.quarantine*",
+                                                                                        "*/bin/touch /tmp/*"))
     ) and
-    not process.parent.executable : "/usr/bin/sudo"]
+    not process.parent.executable : ("/sbin/launchd", 
+                                     "/Users/*/Library/Caches/*",
+                                     "/Library/PrivilegedHelperTools/*",
+                                     "/private/var/folders/*/download/ARMDCHammer")]
 '''
 
 min_endpoint_version = "7.15.0"

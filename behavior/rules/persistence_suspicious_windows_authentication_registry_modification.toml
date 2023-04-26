@@ -1,0 +1,116 @@
+[rule]
+description = """
+Identifies registry modification that may affect the Windows Logon or the Local Security Authority (LSA) service
+behaviors for persistence or credential access such as installing a rogue password filter or notification packages.
+"""
+id = "8eb2906a-9878-448d-807a-08fbe27b7d2d"
+license = "Elastic License v2"
+name = "Suspicious Windows Authentication Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://blog.xpnsec.com/exploring-mimikatz-part-1/",
+    "https://pentestlab.blog/2019/10/21/persistence-security-support-provider/",
+    "https://github.com/gtworek/PSBits/tree/master/PasswordStealing/NPPSpy",
+]
+version = "1.0.5"
+
+query = '''
+registry where event.action == "modification" and
+
+   process.executable : ("?:\\*", "\\Device\\Mup*") and registry.data.strings != null and
+
+   registry.path : ("HKLM\\SYSTEM\\*ControlSet*\\Control\\Lsa\\Security Packages*",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Control\\Lsa\\OSConfig\\Security Packages*",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Control\\Lsa\\Notification Packages",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Control\\Lsa\\Authentication Packages",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Services\\NTDS\\DirectoryServiceExtPt",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Services\\NTDS\\LsaDbExtPt",
+                    "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Notify\\*",
+                    "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\NetworkProvider\\ProviderPath") and
+
+   not process.executable :
+             ("?:\\Windows\\System32\\msiexec.exe",
+              "?:\\Windows\\SysWOW64\\msiexec.exe",
+              "?:\\Windows\\Sys*\\drvinst.exe",
+              "?:\\Windows\\Sys*\\poqexec.exe",
+              "?:\\Windows\\System32\\lsass.exe",
+              "?:\\Windows\\SysWOW64\\regsvr32.exe",
+              "?:\\Windows\\system32\\regsvr32.exe",
+              "?:\\Windows\\WinSxS\\*\\TiWorker.exe",
+              "?:\\Windows\\Sys*\\config\\systemprofile\\*",
+              "?:\\Program Files\\*.exe",
+              "?:\\Program Files (x86)\\*.exe") and
+
+   /* excluding signed and non Microsoft binaries */
+   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+
+   not registry.value : ("SmartCardLogonNotify", "Asynchronous", "Enabled", "Impersonate", "Startup", "Logoff", "Logon", "Shutdown") and
+
+   not registry.data.strings : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "?:\\Windows\\system32\\cbfsShellHelper20.dll")
+'''
+
+min_endpoint_version = "8.0.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.002"
+name = "Authentication Package"
+reference = "https://attack.mitre.org/techniques/T1547/002/"
+
+[[threat.technique.subtechnique]]
+id = "T1547.005"
+name = "Security Support Provider"
+reference = "https://attack.mitre.org/techniques/T1547/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1556"
+name = "Modify Authentication Process"
+reference = "https://attack.mitre.org/techniques/T1556/"
+[[threat.technique.subtechnique]]
+id = "T1556.002"
+name = "Password Filter DLL"
+reference = "https://attack.mitre.org/techniques/T1556/002/"
+
+
+
+[threat.tactic]
+id = "TA0006"
+name = "Credential Access"
+reference = "https://attack.mitre.org/tactics/TA0006/"
+
+[internal]
+min_endpoint_version = "8.0.0"

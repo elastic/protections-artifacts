@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://learn.microsoft.com/en-us/windows/win32/msi/custom-actions",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -37,6 +37,7 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                                "* sc start *",
                                "* sc config *",
                                "* sc sdshow *",
+                               "* wevtutil gp *",
                                "* net start *",
                                "*BlueJeans\\BlueJeans.Detector.exe*",
                                "*rewrite_amd64_en-US.msi *",

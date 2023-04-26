@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies the creation of an unsigned or untrusted large DLL and subsequently loaded by a trusted binary. This behavior
+is consistent with some malwares leveraging malicious DLLs for evasion and execution.
+"""
+id = "33cdad6c-5809-4d78-94f0-5a5153289e7e"
+license = "Elastic License v2"
+name = "Oversized DLL Creation followed by SideLoad"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action != "deletion" and file.Ext.header_bytes : "4d5a*" and
+
+  /* size more or equal to 90MB */
+   file.size >= 90000000 and
+
+  not process.executable : "?:\\Windows\\System32\\drvinst.exe" and
+
+  not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft *")
+ ] by file.path
+ [library where
+   (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000) and
+   not dll.code_signature.trusted == true and
+   process.code_signature.trusted == true and not startswith~(dll.name, process.name) and 
+   not process.executable : 
+               ("?:\\Program Files\\*.exe", 
+                "?:\\Program Files (x86)\\*.exe", 
+                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*", 
+                "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*") and 
+   not process.code_signature.subject_name : ("TEAMDEV LTD.", "Spotify AB") and 
+   not dll.name : ("libcef.dll", "Qt?WebEngineCore.dll", "xul.dll", "chrome.dll", "libwireshark.dll", "chrome_child.dll") and 
+  /* loaded from current dir */
+   endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)),
+             substring(process.executable, 0, length(process.executable) - (length(process.name) + 1)))] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.001"
+name = "Binary Padding"
+reference = "https://attack.mitre.org/techniques/T1027/001/"
+
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

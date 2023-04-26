@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -73,7 +73,9 @@ process where event.action == "start" and
 
                        "/Processid:{3EB3C877-1F16-487C-9050-104DBCD66683}",
 
-                       "/Processid:{76A64158-CB41-11D1-8B02-00600806D9B6}")) and
+                       "/Processid:{76A64158-CB41-11D1-8B02-00600806D9B6}",
+
+                       "/Processid:{2AF83513-9943-42EC-90D1-09F9A40C483D}")) and
   not (process.executable : "?:\\Windows\\system32\\sc.exe" and process.args : ("config", "delete") and
        process.args : "VisualStudioRemoteDeployer*" and process.parent.name : "wsmprovhost.exe") and
   not (process.executable : "?:\\Windows\\System32\\net.exe" and process.args : ("stop", "start")) and
@@ -94,9 +96,12 @@ process where event.action == "start" and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
-                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.", "Chocolatey Software, Inc.")) and
+                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.",
+                 "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
-       process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe")
+       process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
+  not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
+       process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.6.0"

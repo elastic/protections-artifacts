@@ -1,0 +1,57 @@
+[rule]
+description = """
+Identifies modifications to the Windows Defender configuration settings to exclude a recently dropped or modified
+executable.
+"""
+id = "e6cebe64-0f47-42e9-813e-fd9a53aa59b1"
+license = "Elastic License v2"
+name = "Windows Defender Exclusions by Path"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
+]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+[process where event.action == "start" and
+ (process.Ext.relative_file_creation_time <= 500 or process.Ext.relative_file_name_modify_time <= 500) and
+ not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true)
+ ] by process.name
+[registry where
+ registry.path :
+       ("HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Exclusions\\Paths\\*",
+        "HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Exclusions\\Processes\\*")] by registry.value
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

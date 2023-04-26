@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Apple Mail Rule Plist Creation or Modification"
 os_list = ["macos"]
 reference = ["https://www.n00py.io/2016/10/using-email-for-persistence-on-os-x/"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 file where event.type != "deletion" and process.executable != null and file.name : "SyncedRules.plist" and
@@ -26,7 +26,7 @@ file where event.type != "deletion" and process.executable != null and file.name
                             "/System/Library/CoreServices/Finder.app/Contents/MacOS/Finder")
 '''
 
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -47,4 +47,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.14.0"
+min_endpoint_version = "7.15.0"

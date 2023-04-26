@@ -7,7 +7,7 @@ id = "8c69476a-d8ea-46da-8052-6a4f9254125c"
 license = "Elastic License v2"
 name = "Suspicious Windows Script File Name"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
@@ -64,7 +64,10 @@ process where event.action == "start" and
       "*Wire Transfer*.vbs",
       "*Moneygram*",
       "*agreement*.js",
-      "*agreement*.vbs") and
+      "*agreement*.vbs",
+      "*Billing*.wsf",
+      "*Billing*.vbs",
+      "*Billing*.js") and
  not (process.args : "C:\\Users\\Invoices-*" and process.args : "remove")
 '''
 

@@ -7,7 +7,7 @@ id = "dfe28e03-9b0b-47f5-9753-65ed2666663f"
 license = "Elastic License v2"
 name = "External IP Address Discovery via Untrusted Program"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -17,7 +17,11 @@ sequence by process.entity_id with maxspan=1m
   [process where event.action == "start" and not user.id : "S-1-5-18" and
    not process.code_signature.trusted == true and
    process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*") and
-   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) ]
+   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
+   not process.hash.sha256 :
+                   ("99f9ed0629c5bd62413ecbc670092da217862d21db1e1bea786a4d921289571c",
+                    "e739d08d695cfe2a68d4566c71d756ca25602e4c7e050e93ecbe3cdc7aa44b58",
+                    "f58f2d82bba0477e64f124c9e75523524927dc9c72f60e2b4f00c482cc57313b")]
   [dns where
     dns.question.name :
          (

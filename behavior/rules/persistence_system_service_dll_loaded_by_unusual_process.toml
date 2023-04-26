@@ -1,0 +1,129 @@
+[rule]
+description = """
+Identifies the load of the dot NET System service module that can be imported to manage windows services from a managed
+application. Adversaries may use services to maintain persistence or run with System privileges.
+"""
+id = "4bb7bf2e-675a-45c5-973a-cc2ef109596c"
+license = "Elastic License v2"
+name = "System Service DLL Loaded by Unusual Process"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  (
+   /* unsigned process exec from USB or mounted ISO/DMG files */
+   (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and
+    (process.code_signature.trusted == false or process.code_signature.exists == false)) or
+
+   /* unusual MS native binary */
+   (process.executable : ("?:\\Windows\\system32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\explorer.exe") and
+    process.code_signature.subject_name : "Microsoft *" and process.parent.name != null and
+    not process.name : ("powershell.exe", "powershell_ise.exe", "pwsh.exe") and
+    not process.executable :
+               ("?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe",
+                "?:\\Windows\\Microsoft.NET\\Framework*\\InstallUtil.exe",
+                "?:\\Windows\\Microsoft.NET\\Framework*\\PresentationFontCache.exe",
+                "?:\\Windows\\SysWOW64\\PowerMgrInst.exe",
+                "?:\\Windows\\System32\\sdiagnhost.exe",
+                "?:\\Windows\\SysWOW64\\sdiagnhost.exe",
+                "?:\\Program Files\\*",
+                "?:\\Program Files (x86)\\*",
+                "?:\\Windows\\System32\\DriverStore\\*",
+                "?:\\Windows\\System32\\mmc.exe",
+                "?:\\Windows\\System32\\msiexec.exe",
+                "?:\\Windows\\SysWOW64\\msiexec.exe",
+                "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+                "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
+                "?:\\Windows\\System32\\wsmprovhost.exe",
+                "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
+                "?:\\Windows\\SysWOW64\\wbem\\WmiPrvSE.exe",
+                "?:\\Windows\\System32\\taskhostw.exe",
+                "?:\\Windows\\System32\\taskhost.exe",
+                "?:\\Windows\\System32\\inetsrv\\InetMgr.exe",
+                "?:\\Windows\\System32\\Essentials\\RunTask.exe",
+                "?:\\Windows\\System32\\ServerManager.exe",
+                "?:\\Windows\\System32\\wsisvc.exe",
+                "?:\\Windows\\System32\\RAMgmtUI.exe",
+                "?:\\Windows\\System32\\cAVS\\Intel(R) Audio Service\\IntelAudioService.exe",
+                "?:\\Windows\\System32\\RemoteFXvGPUDisablement.exe",
+                "?:\\Windows\\System32\\ClusterUpdateUI.exe") and
+
+    not (process.executable : "?:\\Windows\\system32\\dllhost.exe" and
+         process.args : ("/Processid:{BD07DDB9-1C61-4DCE-9202-A2BA1757CDB2}",  "/Processid:{E78A0D1B-3978-4793-9AB1-E50F81BBABC3}")) and
+
+    not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
+
+    not (process.executable : "?:\\Windows\\sys*\\mmc.exe" and process.args : "?:\\*.msc") and
+
+    not (process.executable : "?:\\Windows\\Sys*\\svchost.exe" and process.parent.executable : "?:\\Windows\\Sys*\\rpcnet.exe")
+    ) or
+
+     /* unsigned and recently dropped PE from users writable directories */
+    (
+     process.executable :
+             ("?:\\Users\\*\\Appdata\\Local\\Temp\\*",
+              "?:\\Users\\*\\AppData\\Roaming\\*",
+              "?:\\Users\\*\\Temp\\7z*",
+              "?:\\Users\\*\\Temp\\Rar$*",
+              "?:\\Users\\*\\Temp\\Temp?_*",
+              "?:\\Users\\*\\Temp\\BNZ.*",
+              "?:\\Users\\Public\\*",
+              "?:\\Windows\\Temp\\*",
+              "?:\\ProgramData\\*",
+              "?:\\Users\\*\\Desktop\\*",
+              "?:\\Users\\*\\Downloads\\*") and
+     process.Ext.relative_file_creation_time <= 500 and
+     (process.code_signature.trusted == false or process.code_signature.exists == false) and
+     not process.parent.executable : "?:\\Program Files*\\memoQ\\memoQ*\\MemoQ.AutoUpdate.exe" and
+     not process.executable : ("?:\\Users\\*\\Downloads\\*\\*",  "?:\\Users\\*\\Desktop\\*\\*", "?:\\ProgramData\\*\\*\\*") and
+     not process.hash.sha256 :
+                     ("d41c824aa9afe3548083043a9566419619d997eb5dbd9012d8ef5cd157cc25c0",
+                      "b0e05e64a93471e517d77b043c24e726e260255a621fd6cd30a0d887ae06c5fb",
+                      "fe5b6ab7850d9a3f79907a853351dbab25603767e4d036ea80e0ec4894ec7773",
+                      "43881549228975c7506b050bce4d9b671412d3cdc08c7516c9dbbb7f50c25146",
+                      "5859b114d96800a2b98ef9d19eaa573a786a422dad324547ef25be181389df01",
+                      "e99caefd4ef99171814f4add8123cfeaa56787c3dd4260fc3fa6cd3ecf3121d6",
+                      "cdcdcd2866eb4156875cb8a2304d2dce9d9ba764f67e5a79c98556c9efa2aeaa",
+                      "32d9cfd7996f9ffc6de23dd8b9da89eb4a5b1fb6584cd33741a835f9070b31fd",
+                      "ea6e358a6e2e059484b7d52dfee1e4812ab6511abfbb20fc7f5cd9752aa2fd7e",
+                      "6576c4d482d3b9edbf8666c833941c298e0088cf45e981455588d1c8a5b9ae6d",
+                      "75f9851b3c1f597ef8e5cd9ffa6ce29e5c3b9c4d60469e91d1b03fb135a458b9",
+                      "2cddd2e71dd4ec2aa9bd8461f71a24a1205b5842080dff596efddd3a84f5df93")
+     )
+    )]
+ [library where dll.name : "System.ServiceProcess.ni.dll"]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

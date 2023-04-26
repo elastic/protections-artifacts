@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies the execution of the Windows Command Shell process (cmd.exe) with suspicious argument values. This behavior
+is often observed during malware installation.
+"""
+id = "8b2ddba4-9af2-4a8f-ac30-798881bf6cff"
+license = "Elastic License v2"
+name = "Suspicious Batch File Execution from a Mounted Device"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ process.name : "cmd.exe" and process.args : "/c" and process.args_count == 3 and
+ process.parent.name : ("explorer.exe", "python.exe") and
+ process.parent.executable : "C:\\*" and
+ process.working_directory regex~ """[D-F]:\\""" and
+ process.args : ("?:\\*.bat*", "?:\\*.cmd*") and
+ not process.args : ("?:\\*\\*.bat*", "?:\\*\\*.cmd*")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

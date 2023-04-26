@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -57,16 +57,21 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\ipconfig.exe",
 		  "?:\\Windows\\SysWOW64\\ipconfig.exe",
 		  "?:\\Windows\\System32\\SIHClient.exe",
-		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe") and
+		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe",
+		  "?:\\Windows\\system32\\WerFault.exe",
+		  "?:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechRuntime.exe",
+		  "?:\\Windows\\System32\\BackgroundTransferHost.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
    not (process.name : "rundll32.exe" and
-         process.args : ("?:\\windows\\system32\\davclnt.dll,DavSetCookie", 
-	                 "?:\\Windows\\SysWOW64\\davclnt.dll,DavSetCookie", 
-			 "cryptext.dll,CryptExtOpenCER", 
-			 "cryptext.dll,CryptExtAddCER", 
-			 "?:\\Windows\\system32\\cryptext.dll,CryptExt*")) and 
+         process.args :
+                    ("?:\\windows\\system32\\davclnt.dll,DavSetCookie",
+	                 "?:\\Windows\\SysWOW64\\davclnt.dll,DavSetCookie",
+	                 "cryptext.dll,CryptExtOpenCER",
+	                 "cryptext.dll,CryptExtAddCER",
+	                 "?:\\Windows\\system32\\cryptext.dll,CryptExt*",
+	                 "?:\\Windows\\System32\\LogiLDA.dll,LogiFetch")) and
    not (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*") and process.code_signature.trusted == true) and 
    not (process.pe.original_file_name : "NetworkOnboardingClient.dll" and process.code_signature.trusted == true) and 
    not process.hash.sha256 : 
@@ -80,7 +85,15 @@ sequence by process.entity_id with maxspan=5m
    not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
-        process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
+        process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and process.code_signature.trusted == true) and
+   not (process.executable : "?:\\Windows\\System32\\mstsc.exe" and
+        process.parent.executable : "?:\\Windows\\explorer.exe" and
+        not process.args :
+                   ("?:\\Users\\*\\Downloads\\*",
+                    "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+                    "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+                     "?:\\Users\\*\\Content.Outlook\\*"))
  ]
  [dns where 
   dns.question.name : ("*letsencrypt.org", "*.sslforfree.com", "*.zerossl.com", "*.freessl.org", "*.lencr.*")]

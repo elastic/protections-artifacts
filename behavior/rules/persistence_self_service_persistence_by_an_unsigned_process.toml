@@ -1,0 +1,84 @@
+[rule]
+description = """
+Identifies when a recently dropped unsigned process attempt to register itself to run as service. Adversaries may use
+services to maintain persistence or run with System privileges.
+"""
+id = "e5ad5d97-da99-4371-9611-b6dfa8e55e30"
+license = "Elastic License v2"
+name = "Self Service Persistence by an Unsigned Process"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence with maxspan=5m 
+
+[process where event.action == "start" and 
+
+ (process.Ext.relative_file_creation_time <= 500 or process.Ext.relative_file_name_modify_time <= 500) and 
+ 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ 
+  not process.code_signature.status : ("errorExpired", "errorCode_endpoint*") and
+
+  (
+   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*") or
+   process.parent.executable : "?:\\Windows\\System32\\services.exe" or
+   process.executable regex~ """c:\\windows\\[a-z0-9\-\_\.]+\.exe"""
+   ) and
+
+  not process.hash.sha256 :
+                   ("e68743f3a0c299024e1540add1bcd9d3658ebbdbf172d74e1bf8fcd8c8c0406b",
+                    "2b5923d303fa2ec5ba263d745654873e2efbde2d341d0a94e72c5d51fab72957",
+                    "451b5850e88fe552dac685c03ce6ecb4fbb4fc42f4c9669627942d807d237681",
+                    "7e5490652e367d1ea0400ed95788afb4e067373e5f8bf73165b7f7fde20d1b27",
+                    "97f217682ed5e6ab2a01144b33a7a5bf5f7354ef5a7180c0b3140e879d4d7cb1",
+                    "7198c02935b3714c455ee94305d2a21d900d72ac67049c11a1e842572ad6c5e1",
+                    "5859b114d96800a2b98ef9d19eaa573a786a422dad324547ef25be181389df01",
+                    "72b21ed3aba756bf04df4daf5f8d4bd14437f118087ac51a51053cce7b1663c8",
+                    "e94fb53cd47723ac3afec0f8c587bbf1841e64943f230b18ad63322f92ce4606")
+  ] as event0
+  
+[registry where 
+
+  registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath" and 
+  
+  (
+   startswith~(registry.data.strings, event0.process.executable) or 
+  
+   /* registry.data.strings value may start with quotes */
+   startswith~(registry.data.strings,  concat("\"", event0.process.executable))
+   )
+  ]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

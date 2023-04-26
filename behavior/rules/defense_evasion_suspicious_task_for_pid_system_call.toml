@@ -15,7 +15,7 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "process_open" and
@@ -28,7 +28,8 @@ process where event.action == "process_open" and
                         "/System/*") and not
   (startswith~(process.parent.executable, Target.process.executable) or 
    startswith~(process.executable, Target.process.executable)) and 
-  not process.hash.sha256 : "d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a"
+  not process.hash.sha256 : ("d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a",
+                             "bee1a00ffb1c4b7c2c4784a1fdcb849dc7853b9deb5173ff4c5a08209c84bc26")
 '''
 
 min_endpoint_version = "8.4.0"

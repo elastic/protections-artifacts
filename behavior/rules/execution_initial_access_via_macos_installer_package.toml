@@ -10,12 +10,13 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "exec" and process.name : ("Installer", "package_script_service") and not 
-    process.args : ("/Library/Application Support/JAMF/Downloads/*", 
+    process.args : ("/Library/Application Support/JAMF/Downloads/*",
+                    "/tmp/KSInstallAction.*", 
                     "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
     process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
                                  "/sbin/launchd", 
@@ -30,6 +31,7 @@ sequence with maxspan=1m
         process where event.action == "exec" and
         process.name : ("Installer", "package_script_service") and not
         process.args : ("/Library/Application Support/JAMF/Downloads/*", 
+                        "/tmp/KSInstallAction.*",
                         "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
         process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
                                      "/sbin/launchd", 

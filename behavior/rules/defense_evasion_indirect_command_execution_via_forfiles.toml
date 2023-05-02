@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Indirect Command Execution via ForFiles"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Forfiles/"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,8 @@ process where event.action == "start" and
   not (process.name : "cmd.exe" and process.args: ("del", "xcopy", "cmd /c del @PATH", "move")) and
   not (process.name : "cmd.exe" and process.command_line :  "/c if TRUE==TRUE rmdir /s /q \"nw*\"") and
   not (process.name : "cmd.exe" and process.command_line : "*echo *J2A* Autolog*") and
-  not (process.name : "cmd.exe" and process.args : "echo" and length(process.command_line) <= 25)
+  not (process.name : "cmd.exe" and process.args : "echo" and length(process.command_line) <= 25) and
+  process.working_directory : ("?:\\", "?:\\*\\AppData\\*", "?:\\Windows\\*")
 '''
 
 min_endpoint_version = "7.15.0"

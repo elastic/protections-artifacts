@@ -12,7 +12,7 @@ reference = [
     "https://pentestlab.blog/2019/10/21/persistence-security-support-provider/",
     "https://github.com/gtworek/PSBits/tree/master/PasswordStealing/NPPSpy",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 registry where event.action == "modification" and
@@ -46,7 +46,12 @@ registry where event.action == "modification" and
 
    not registry.value : ("SmartCardLogonNotify", "Asynchronous", "Enabled", "Impersonate", "Startup", "Logoff", "Logon", "Shutdown") and
 
-   not registry.data.strings : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "?:\\Windows\\system32\\cbfsShellHelper20.dll")
+   not registry.data.strings : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "?:\\Windows\\system32\\cbfsShellHelper20.dll") and
+
+   not (registry.value : "notification packages" and registry.data.strings : ("kdcsvc", "rassfm", "scecli") and
+        process.executable : "?:\\Windows\\System32\\services.exe") and
+
+   not (registry.value : "ProviderPath" and registry.data.strings : "?:\\Program Files (x86)\\Citrix\\ICA Client\\x64\\pnsson.dll")
 '''
 
 min_endpoint_version = "8.0.0"

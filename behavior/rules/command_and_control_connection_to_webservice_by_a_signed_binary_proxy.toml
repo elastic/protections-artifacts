@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -36,11 +36,11 @@ sequence by process.entity_id with maxspan=5m
      /* BlueIris - Camera IOT monitoring sw using telegram to upload pictures */
      not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ") and
      not (process.name : "rundll32.exe" and
-          process.args : ("?:\\Program Files\\Microsoft Office\\root\\*.CPL",
+          process.args : ("?:\\Program Files\\Microsoft Office\\root\\*",
                           "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*",
                           "?:\\Program Files (x86)\\F5 VPN\\*",
                           "?:\\Program Files\\F5 VPN\\*",
-                          "?:\\Program Files (x86)\\Microsoft Office\\root\\*.CPL",
+                          "?:\\Program Files (x86)\\Microsoft Office\\root\\*",
                           "?:\\Windows\\system32\\shell32.dll,Control_RunDLL"))
   ]
   [dns where

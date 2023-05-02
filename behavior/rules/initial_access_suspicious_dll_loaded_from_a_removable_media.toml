@@ -8,13 +8,13 @@ id = "91ca1c5d-f6f1-46e1-9ad5-3336e67cf50a"
 license = "Elastic License v2"
 name = "Suspicious DLL Loaded from a Removable Media"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 library where
  (dll.Ext.device.bus_type : "usb" or dll.Ext.device.product_id : "USB *") and
- process.code_signature.trusted == true and
- process.executable != null and
+ process.code_signature.trusted == true and user.id : ("S-1-5-21*", "S-1-12-*") and
+ process.executable != null and not dll.path : "C:\\*" and
  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining") and
  not startswith~(dll.name, process.name) and
 
@@ -59,7 +59,11 @@ library where
 		"Sage South Africa (Pty) Ltd",
 		"Autodesk, Inc.",
 		"Delta Electronics, Inc.",
-		"KYOCERA Document Solutions Inc.") and
+		"KYOCERA Document Solutions Inc.",
+		"Bedford Freeman Worth Publishing Group LLC",
+		"Holtzbrinck Publishers, LLC",
+		"Disashop, S.L.",
+		"Blizzard Entertainment, Inc.") and
  not dll.hash.sha256 :
              ("07365d59639b68528986394a8858bba1a520362ee2eccb97f4be34d5c7335dd4",
               "be9199479f86e2e3aca7b7c12332a73ce2d4d469f6537ef2dafa46504ac71274")

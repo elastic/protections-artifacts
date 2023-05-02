@@ -8,7 +8,7 @@ id = "cd3a06dc-58c3-4d57-a03a-0d8991f237e7"
 license = "Elastic License v2"
 name = "Suspicious File Overwrite and Modification via Echo"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=20s
@@ -29,7 +29,7 @@ sequence by process.entity_id with maxspan=20s
     process.args_count <= 3 and 
     process.Ext.effective_parent.name == null and not 
     process.parent.executable : "/Library/Developer/*"]
-[file where event.action == "modification" and process.name : ("sh", "zsh", "bash")]
+[file where event.action == "modification" and process.name : ("sh", "zsh", "bash") and not file.path : "/private/tmp/docker-desktop-privileged*/exitcode.txt"]
 '''
 
 min_endpoint_version = "8.5.0"

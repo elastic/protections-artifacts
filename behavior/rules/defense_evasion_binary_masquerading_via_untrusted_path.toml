@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -166,7 +166,15 @@ process where event.action == "start" and
                             "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
-  not (process.code_signature.subject_name : "JetBrains s.r.o." and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : "JetBrains s.r.o." and process.code_signature.trusted == true) and
+  not process.hash.sha256 :
+                  ("7c621ec91b71d14494beddaae8edb67ed26baa257d750546772aa90653ad6016",
+                   "195bebdefeb704158633b7f3d943e1d792fcb9b81f36530fad5b04a1622a0c58",
+                   "dc84f15625f115faa757dee79b285a5af65298074827c917f0dfcacc5b308855",
+                   "3f73452d3a5c39c8abc9e2b37c5e5f6ef210a4edb17ac180f425b05f320e5720",
+                   "10fe2a16356afcb0f0d3ae77dc1320acdc7244a4115e3eabff6220fdd8d1347f",
+                   "77e67a63a69c545a193998e3c17f6e4b15538f40aaaec3a1d4713b05ab3a4ede",
+                   "87a4a3a8fb5df2e79e512f8a5043725dde70811afb39110cd8b4904dd15046f2")
 '''
 
 min_endpoint_version = "7.15.0"

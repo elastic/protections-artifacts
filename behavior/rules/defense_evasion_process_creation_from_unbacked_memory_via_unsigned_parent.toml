@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies the creation of a process where the creating thread's stack contains frames pointing outside any known
+executable image and the parent process is unsigned and was recently dropped. This may be indicative of the creation of
+a process as a result of a code injection.
+"""
+id = "5eb295bd-38d5-48b0-9753-47e1651cef1b"
+license = "Elastic License v2"
+name = "Process Creation from Unbacked Memory via Unsigned Parent"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence by user.id with maxspan=3m
+ [process where event.action == "start" and not user.id : "S-1-5-18" and
+  (process.Ext.relative_file_creation_time <= 500 or process.Ext.relative_file_name_modify_time <= 500) and
+  not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")] by process.entity_id as event0
+ [process where event.action == "start" and
+  process.parent.thread.Ext.call_stack_contains_unbacked == true and
+  process.parent.thread.Ext.call_stack_summary :
+                           ("ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|windows.storage.dll|shell32.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                            "*mscorlib.ni.dll|microsoft.visualbasic.ni.dll|Unbacked*") and
+(
+ process.executable : "?:\\Windows\\Microsoft.NET\\Framework*" or
+ (process.executable regex~ """(c:\\windows\\system32\\[a-z0-9\-\_\.]+\.exe|c:\\windows\\syswow64\\[a-z0-9\-\_\.]+\.exe|c:\\windows\\[a-z0-9\-\_\.]+\.exe)""" and process.args_count <= 1) or
+ event0.process.hash.sha256 == process.hash.sha256
+)
+] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

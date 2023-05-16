@@ -1,7 +1,7 @@
 [rule]
 description = """
-Identifies the execution of Microsoft Office processes to open a document from unknown sources fro MS SmartScreen and
-subsequently Microsoft Office spawns an unusual child processes.
+Identifies the execution of Microsoft Office processes to open a document classified by Microsoft SmartScreen as
+originating from an unknown source followed by Microsoft Office spawning an unusual child process.
 """
 id = "2887ca7c-40b9-4d04-ab9c-65a5c0428ab8"
 license = "Elastic License v2"
@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=1m

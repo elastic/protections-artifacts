@@ -1,0 +1,80 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process loads a DLL and from a call stack pointing to Microsoft Office Visual Basic
+for Applications modules. This may indicate an attempt to get initial access using malicious macro enabled documents.
+"""
+id = "9ebda43a-16dd-4d9e-ab7c-c1056e7d959a"
+license = "Elastic License v2"
+name = "DLL Loaded from a Macro Enabled Document"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+library where
+   process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "mspub.exe", "fltldr.exe", "visio.exe") and
+   (
+    /* VBA */
+    process.thread.Ext.call_stack_summary : "*|vbe?.dll*" or
+
+    /* Shellcode RWX  */
+    (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.protection : "RWX") and
+     not process.thread.Ext.call_stack_summary : ("*|clr.dll|*", "*mscorwks.dll*", "*mscoreei.dll|mscoree.dll*", "*system.management.ni.dll*"))
+   ) and
+
+   /* Suspicious DLLs */
+   (
+    dll.name : ("taskschd.dll", "wmiutils.dll") or
+    dll.Ext.relative_file_creation_time <= 300 or
+    (dll.code_signature.trusted == false or dll.code_signature.exists == false)
+    ) and
+
+    not dll.path :
+           ("?:\\Windows\\assembly\\NativeImages_*.dll",
+            "?:\\Windows\\System32\\spool\\drivers\\x64\\3\\*",
+            "?:\\Program Files\\*.dll",
+            "?:\\Program Files (x86)\\*.dll", 
+            "?:\\Windows\\Microsoft.NET\\Framework*", 
+            "?:\\Windows\\system32\\scrrun.dll",
+            "?:\\Windows\\syswow64\\scrrun.dll",
+            "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and
+    not dll.hash.sha256 :
+                 ("a33c6d203ffa6941b1e498f52f6ef565c5d731c2deecbae067c0039208a8db25",
+                  "4579447a18f557ef95cad8df77634370dbe7ddeaed8d319ea6e7a26ac1e79db6",
+                  "f1c4e834f96abc5d787bd3d4efea008537eb44fd3e3b6560f8cef4eace525a62",
+                  "902553c9ffdc9e9751c6045b50590613183d4a7cc730365f7d629729a43fedcd",
+                  "b80eca5b58d276be4d66bda65599e609efde2811de252172eeccea803826d41f",
+                  "a33c6d203ffa6941b1e498f52f6ef565c5d731c2deecbae067c0039208a8db25",
+                  "f110d49ca78d0fe8ee0fa1824f7bb714359159e824a65a13f2fd5bb7d91b692a")
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "8.8.0"

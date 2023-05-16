@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies the creation of a process where the creating thread's stack contains frames pointing outside any known
+executable image and the parent process is executing from a mounted virtual disk, archive or USB device. This may be
+indicative of the creation of a process as a result of a code injection.
+"""
+id = "daaf517e-f4fc-4366-bfa7-87e651b3055b"
+license = "Elastic License v2"
+name = "Process from Archive or Removable Media via Unbacked Code"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by user.id with maxspan=3m
+ [process where event.action == "start" and not user.id : "S-1-5-18" and
+  (
+   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") or
+   process.executable :
+          ("?:\\Users\\*\\AppData\\Local\\Temp\\7z*\\*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*\\*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\RarSFX*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*",
+           "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*")
+   )
+ ] by process.entity_id
+ [process where event.action == "start" and
+  process.parent.thread.Ext.call_stack_contains_unbacked == true and
+  not process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and
+  process.parent.thread.Ext.call_stack_summary :
+                           ("ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|windows.storage.dll|shell32.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                            "*mscorlib.ni.dll|microsoft.visualbasic.ni.dll|Unbacked*",
+                            "ntdll.dll|kernelbase.dll|kernel32.dll|system.ni.dll|clr.dll|mscorlib.ni.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked|kernel32.dll|ntdll.dll")
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

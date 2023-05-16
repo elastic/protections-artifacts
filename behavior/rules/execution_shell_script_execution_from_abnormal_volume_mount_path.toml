@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Shell Script Execution from abnormal Volume Mount Path"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -20,10 +20,11 @@ process.args : "/Volumes/*/Contents/*" and
 process.args_count <= 3 and
 process.parent.executable : "/Volumes/*" and not 
 process.args : ("/Volumes/*/Contents/MacOS/*",
-                "/Volumes/*/Contents/Eclipse/*")
+                "/Volumes/*/Contents/Eclipse/*") and not
+process.Ext.effective_parent.executable : "/Volumes/*"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -49,4 +50,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"

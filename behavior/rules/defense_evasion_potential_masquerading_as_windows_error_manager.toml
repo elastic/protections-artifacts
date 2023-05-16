@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies suspicious instances of the Windows Error Reporting process (WerFault.exe or Wermgr.exe) with matching a
+suspicious parent call stack. This may be indicative of a masquerading attempt to evade suspicious child process
+behavior detections.
+"""
+id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
+license = "Elastic License v2"
+name = "Potential Masquerading as Windows Error Manager"
+os_list = ["windows"]
+version = "1.0.8"
+
+query = '''
+process where event.action == "start" and
+ process.name : ("WerFault.exe", "wermgr.exe", "WerFaultSecure.exe") and
+ process.parent.thread.Ext.call_stack_summary : "*|*" and
+ not process.parent.thread.Ext.call_stack_summary : ("*faultrep.dll*", "*wersvc.dll*", "*|wer.dll|*", "*|ubpm.dll|*") and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info: ("?:\\Windows\\System32\\kernel32.dll!Wer*",
+                                       "?:\\Windows\\SysWOW64\\kernel32.dll!Wer*",
+                                       "?:\\Windows\\Sys*\\KernelBase.dll!UnhandledExceptionFilter*",
+                                       "?:\\Windows\\Sys*\\kernel32.dll!BasepReportFault*",
+                                       "?:\\Program Files\\*.dll*", 
+                                       "?:\\Program Files (x86)\\*.dll*",
+                                       "?:\\Windows\\System32\\dataclen.dll*Purge*",
+                                       "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe.kernel32.dll.*!WerpLaunchAeDebug*", 
+                                       "?:\\Windows\\System32\\tmumh\\*.dll*",
+                                       "?:\\Windows\\WinSxS\\*\\kernel32.dll!WerpLaunchAeDebug*")) and
+ not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -1,0 +1,103 @@
+[rule]
+description = """
+Identifies the load of a Windows network module by a process where the creating thread's stack contains frames pointing
+outside any known executable image. This may indicate evasion via process injection.
+"""
+id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
+license = "Elastic License v2"
+name = "Network Module Loaded from Suspicious Unbacked Memory"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id
+ [process where event.action == "start" and
+
+  not process.Ext.token.integrity_level_name == "low" and
+
+  not user.id : ("S-1-5-19", "S-1-5-20") and
+
+  not (process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\*") and
+       process.code_signature.trusted == true) and
+       
+  not (process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and process.Ext.relative_file_creation_time >= 80000) and 
+  
+  not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\NGenTask.exe", "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
+
+  not (process.name : "rundll32.exe" and
+       process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and
+       process.parent.executable : "?:\\Windows\\sys*\\msiexec.exe") and
+
+  not (process.code_signature.subject_name :
+                    ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
+                     "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
+                     "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo") and
+       process.code_signature.trusted == true) and
+
+  not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
+       process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
+
+  not process.hash.sha256 :
+                   ("35542bc04fbfa2e3ef68837640e0459c6f99729c0c73578c08ab351cdf030696",
+                    "1005dcfddfbde91cc967ecc6d778c81cb4f7bede03121a3e6e0d9bae12a033e0",
+                    "53cec44e4fc9a3477d264c5edc9e376af8fcca20853faa289387f5bd7eaae05f",
+                    "49113f4cd7bbf3343a43b13edd745008c4f41da1d80c9f89dc90a4b0bb39b8f8",
+                    "0ab8a14e7fd42818608cc0916fc26a12b2ae6b976c97310dc86011713e455d2d") and
+
+  not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
+       process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
+
+  not (process.executable : "?:\\Windows\\SysWOW64\\DWRCST.EXE" and
+       process.parent.executable : "?:\\WINDOWS\\SysWOW64\\runonce.exe" and process.parent.args : "/Run6432") and
+
+  not (process.executable : "?:\\Windows\\system32\\winsat.exe" and
+       process.parent.executable : "?:\\Windows\\system32\\rundll32.exe" and
+       process.parent.args : "sysmain.dll,PfSvWsSwapAssessmentTask")
+  ]
+ [library where
+  dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
+  process.thread.Ext.call_stack_contains_unbacked == true and
+  (
+   process.thread.Ext.call_stack_summary :
+                  ("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                   "ntdll.dll|kernelbase.dll|Unbacked",
+                   "ntdll.dll|iphlpapi.dll|Unbacked",
+		   "ntdll.dll|kernelbase.dll|wininet.dll|Unbacked", 
+                   "ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll", 
+		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked", 
+		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wininet.dll|Unbacked|ntdll.dll", 
+		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll") or 
+  
+  startswith~(process.thread.Ext.call_stack_summary, concat(concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|", process.name), "|kernel32.dll|ntdll.dll"))
+  )
+  ]
+  until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

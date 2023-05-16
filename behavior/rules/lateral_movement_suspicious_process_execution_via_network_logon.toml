@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -54,7 +54,8 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\WerFault.exe",
               "?:\\Windows\\System32\\dfsfrsHost.exe",
               "?:\\Windows\\System32\\wuauclt.exe",
-              "?:\\Windows\\system32\\UsoClient.exe") and
+              "?:\\Windows\\system32\\UsoClient.exe",
+              "?:\\Windows\\System32\\chcp.com") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -92,16 +93,19 @@ process where event.action == "start" and
                   "abc11a5c2f04381b9b1d66238db3bc914f8f89d0130a7b1abae76b20af92c8b0",
                   "b8d0e4e50f144c5ae8392b52ab30ce67166918a8aa1acc282a3f144f83bafd85",
                   "f069b7f43f36f92d1db6cf90f6ff62393e8caddfc8a33c0708a6dccfece70a64",
-                  "0a88ec2728fdea771fe86c59ae08e2f6b76a22ca2467e3024d31561c791f571a") and
+                  "0a88ec2728fdea771fe86c59ae08e2f6b76a22ca2467e3024d31561c791f571a",
+                  "fb80046d52fa1ee5fd9dcca24ccb5a7bd70b34727859d55dd74ffae6fa279548") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
                 ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.",
-                 "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.")) and
+                 "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.",
+                 "Elasticsearch, Inc.", "Oracle America, Inc.")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
-       process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true)
+       process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
+  not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe")
 '''
 
 min_endpoint_version = "8.6.0"

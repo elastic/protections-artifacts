@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
@@ -123,7 +123,10 @@ process where event.action == "start" and
 	          "022cb167a29a32dae848be91aef721c74f1975af151807dafcc5ed832db246b7",
 	          "9c89e90a6a649cbe41aaae468aab6bdb1400620bee498b151b282c411fc11357",
 	          "c0908b08a80f031c49a50f873a8d4a9426c0100fb4fa7a46f7b34540191684ce",
-	          "ca3056bbec01c0610b7f7f169ee1081c72cc210df169c9cc36e9bcfc38f94ceb") and
+	          "ca3056bbec01c0610b7f7f169ee1081c72cc210df169c9cc36e9bcfc38f94ceb",
+	          "acd55c44b8b0d66d66defed85ca18082c092f048d3621da827fce593305c11fd",
+	          "bb3830b14df80838fb201c611abf0c1f3714c6b8b103ed084eafc170036631be",
+	          "488df57af2d0a29d555b3ad233e5ac17058582ef040b3a89471d4c519b9b4db7") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -142,7 +145,7 @@ process where event.action == "start" and
    "DameWare Development, LLC.", "Acronis International GmbH", "Broadcom Inc", "Symantec Corporation", "Ivanti, Inc.", 
    "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
    "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
-   "Sikka Software Corporation") and
+   "Sikka Software Corporation", "TeamViewer Germany GmbH") and
    process.code_signature.trusted == true) and
 
    not (process.name : "RUNDLL32.EXE" and

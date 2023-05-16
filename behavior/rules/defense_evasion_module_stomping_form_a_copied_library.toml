@@ -1,0 +1,63 @@
+[rule]
+description = """
+Identifies the load of a library that was recently copied and with a unusual memory allocation properties. This may be
+the result of a code injection using module stomping or DLL hollowing via overwriting the content of legit DLL with
+malicious code.
+"""
+id = "c3758f2c-66d5-4cbe-820f-1c6207c6e341"
+license = "Elastic License v2"
+name = "Module Stomping form a Copied Library"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by user.id with maxspan=3m
+
+[file where event.action != "deletion" and
+
+  /* PE file dropped via CopyFile API calls  */
+  file.Ext.header_bytes : "4d5a*" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*CopyFileEx*", "*MoveFileExW*"))] as event0
+
+[library where
+
+  /* common networing and recon system modules */
+  dll.name : ("ws2_32.dll", "dnsapi.dll", "wininet.dll", "psapi.dll", "vaultcli.dll") and
+
+  /* stack starts from the recently dropped PE */
+  endswith~(process.thread.Ext.call_stack_summary, event0.file.name) and
+
+  /* Process name is different from the dropped PE */
+  process.name != event0.file.name and
+
+  /* Abnormal private bytes allocation for the dropped PE when loaded in memory */
+ _arraysearch(process.thread.Ext.call_stack, $entry,
+              $entry.allocation_private_bytes >= 100000 and startswith~($entry.symbol_info, event0.file.path))]
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

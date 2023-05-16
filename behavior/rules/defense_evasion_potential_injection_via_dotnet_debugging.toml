@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies creation of a process and from a call stack that refers to dotnet debugging API OpenVirtualProcess. This may
+be the result of a code injection attempt using .NET debugging capabilities.
+"""
+id = "3071b34f-3b34-44b6-ad1a-afc5a5675d8b"
+license = "Elastic License v2"
+name = "Potential Injection via DotNET Debugging"
+os_list = ["windows"]
+reference = [
+    "https://github.com/xpn/DotNetDebug",
+    "https://blog.xpnsec.com/debugging-into-net/",
+    "https://learn.microsoft.com/en-us/dotnet/framework/unmanaged-api/debugging/iclrdebugging-openvirtualprocess-method",
+]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Windows\\Microsoft.NET\\Framework*OpenVirtualProcess*") and
+ not (process.code_signature.subject_name : "Magic Software Enterprises LTD" and process.code_signature.trusted == true) and
+ not (process.parent.executable : "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Community\\*\\IDE\\Remote Debugger\\*\\msvsmon.exe" and
+      process.executable : "?:\\Program Files\\IIS Express\\iisexpress.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

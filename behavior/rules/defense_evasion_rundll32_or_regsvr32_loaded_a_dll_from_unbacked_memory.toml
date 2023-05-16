@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies instances of RunDLL32 or Regsvr32 loading a DLL with from an unbacked memory region. Adversaries often abuse
+those programs to proxy execution of malicious code.
+"""
+id = "226df8a0-6ef8-4965-91b4-7ce64078c206"
+license = "Elastic License v2"
+name = "Rundll32 or Regsvr32 Loaded a DLL from Unbacked Memory"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id
+ [process where event.action == "start" and
+  (process.name : ("rundll32.exe", "regsvr32.exe") or process.pe.original_file_name : ("rundll32.exe", "regsvr32.exe")) and
+
+  not (process.name : "rundll32.exe" and
+       process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and process.parent.executable : "?:\\Windows\\Sys*\\msiexec.exe") and
+
+  not (process.executable : "?:\\Windows\\sys*\\rundll32.exe" and
+       process.args : "--type=gpu-process" and process.parent.args : "--enable-speech-input" and
+       process.parent.executable : "?:\\Windows\\sys*\\rundll32.exe") and
+
+  not (process.command_line : "\"C:\\Windows\\sys*\\rundll32.exe\"  --enable-speech-input --enable-media-stream --no-sandbox" and
+       process.parent.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+  ]
+ [library where dll.name : ("wininet.dll", "ws2_32.dll", "winhttp.dll", "psapi.dll", "vaultcli.dll") and
+  process.thread.Ext.call_stack_summary :
+                  ("*ntdll.dll|kernelbase.dll|Unbacked*",
+				   "ntdll.dll|iphlpapi.dll|Unbacked",
+				   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wininet.dll|Unbacked|kernel32.dll|ntdll.dll",
+				   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|winhttp.dll|Unbacked|kernel32.dll|ntdll.dll",
+				   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|wininet.dll|Unbacked")
+  ]
+  until [process where event.action == "end"]
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

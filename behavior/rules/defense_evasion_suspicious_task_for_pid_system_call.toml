@@ -15,7 +15,7 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.action == "process_open" and
@@ -24,6 +24,7 @@ process where event.action == "process_open" and
                         "/Users/*/.pyenv/*",
                         "/opt/homebrew/*",
                         "/nix/store/*",
+                        "/Users/*/miniconda3/envs/*",
                         "/usr/local/Cellar/*",
                         "/System/*") and not
   (startswith~(process.parent.executable, Target.process.executable) or 

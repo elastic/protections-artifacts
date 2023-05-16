@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process spawns a child process and from a call stack pointing to Microsoft Office
+Visual Basic for Applications modules. This may indicate an attempt to get initial access using malicious macro enabled
+documents.
+"""
+id = "1c4047ca-a69b-473f-a93e-5660e012d9a5"
+license = "Elastic License v2"
+name = "Execution from a Macro Enabled Office Document"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+process where event.action == "start" and
+   process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "MSACCESS.EXE", "mspub.exe", "fltldr.exe", "visio.exe") and
+   process.parent.thread.Ext.call_stack_summary : "*|VBE?.dll*" and
+
+   not (process.executable : "?:\\Windows\\splwow64.exe" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\Sys*\\winspool.drv*")) and
+
+   not (process.executable : "?:\\Program Files*\\Microsoft Office\\root\\Office*\\MSACCESS.EXE" and
+         process.parent.name : "MSACCESS.EXE" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Program Files*\\Microsoft Office\\root\\Office*\\MSACCESS.EXE!FDeliverDb*")) and
+
+   not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -1,0 +1,43 @@
+[rule]
+description = """
+Identifies the creation of process where the parent process call stack contains a DLL with suspicious memory properties.
+This may be the result of a code injection using module stomping or DLL hollowing via overwriting the content of legit
+DLL with malicious code.
+"""
+id = "b444173e-ef79-4e76-b329-f0926aa249ee"
+license = "Elastic License v2"
+name = "Process Creation from a Stomped Module"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/code-injection-process-injection/modulestomping-dll-hollowing-shellcode-injection",
+]
+version = "1.0.7"
+
+query = '''
+process where event.action == "start" and
+ _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+             $entry.allocation_private_bytes >= 20000 and $entry.symbol_info: ("?:\\windows\\SysWOW64\\*.dll", "?:\\Windows\\system32\\*.dll"))
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

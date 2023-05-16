@@ -7,7 +7,7 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -49,7 +49,8 @@ sequence by user.id with maxspan=5m
        process.parent.args : ("?:\\PROGRA~2\\Baxter\\*\\REGIST~1.BAT", "PrepStation\\registerCameraStand.bat", "?:\\Program Files (x86)\\Baxter\\*")) and
   not (process.parent.args : "http*://*:8282/dataloader/*" and process.args : "?:\\Windows\\TEMP\\Spiceworks\\spiceworks_upload.vbs") and
   not (process.parent.args : "C:\\XperCon\\_Xtra\\PDF_Rename\\pdf_rename.bat" and process.args : "C:\\XperCon\\_Xtra\\PDF_Rename\\transform.vbs") and
-  not (process.parent.args : "C:\\CSM Infopath Templates\\Register CSM InfoPath Templates.exe" and process.args : "C:\\CSM Infopath Templates\\installAllTemplates.vbs")
+  not (process.parent.args : "C:\\CSM Infopath Templates\\Register CSM InfoPath Templates.exe" and process.args : "C:\\CSM Infopath Templates\\installAllTemplates.vbs") and
+  not (process.parent.name : "cmd.exe" and process.parent.args : "%TEMP%\\Spiceworks\\*")
   ]
 '''
 

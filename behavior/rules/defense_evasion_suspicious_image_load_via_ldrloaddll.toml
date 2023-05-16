@@ -1,0 +1,40 @@
+[rule]
+description = """
+Identifies the load of a library by calling directly the LdrLoadDLL windows API and from a memory allocation with
+suspicious properties. This could be the result of a process code injection.
+"""
+id = "2c4f5a78-a64f-4fcf-ac52-bf91fd9b82c8"
+license = "Elastic License v2"
+name = "Suspicious Image Load via LdrLoadDLL"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+library where
+   _arraysearch(process.thread.Ext.call_stack, $entry,
+                $entry.symbol_info : "*LdrLoadDLL*" and ($entry.protection : "RWX" or $entry.allocation_private_bytes >= 100000)) and
+   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*LoadLibrary*")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

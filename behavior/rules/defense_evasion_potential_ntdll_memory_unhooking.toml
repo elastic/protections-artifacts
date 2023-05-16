@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies the load of NTDLL for the second time and followed by another activity from a call stack with a modified
+NTDLL memory section. This may indicate an attempt to patch or modify the NTDLL memory region to evade endpoint security
+solutions hooking Windows APIs.
+"""
+id = "d7bc9652-fe82-4fb3-8a48-4a9289c840f8"
+license = "Elastic License v2"
+name = "Potential NTDLL Memory Unhooking"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
+]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [library where dll.name : "ntdll.dll" and
+
+  /* ondisk copy  of NTDLL mapped in memory */
+  dll.Ext.load_index >= 2 and
+  _arraysearch(process.thread.Ext.call_stack, $entry,
+               $entry.symbol_info: ("?:\\Windows\\Sys*\\KernelBase.dll!MapViewOfFile*", "?:\\Windows\\Sys*\\ntdll.dll!*MapViewOfSection*")) and
+
+  /* no private bytes in ntdll memory allocation */
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes > 0 and $entry.symbol_info: "?:\\windows\\sys*\\ntdll.dll*") and
+
+  /* FACEIT Anti-Cheat Launcher */
+  not (process.code_signature.subject_name == "FACE IT LIMITED" and process.code_signature.trusted == true and
+       process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+  ]
+ [any where
+
+   /* potentially ntdll was modified in memory to unkook or patch function */
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes > 0 and $entry.symbol_info: "?:\\windows\\sys*\\ntdll.dll*")]
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

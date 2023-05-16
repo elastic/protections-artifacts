@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies the load of NTDLL for the second time and from an unbacked call stack. This may indicate the use of direct
+system calls to evade endpoint security solutions hooking Windows APIs.
+"""
+id = "69267bb2-e2d9-4621-9bf6-064ac885e49c"
+license = "Elastic License v2"
+name = "Parallel NTDLL Loaded from Unbacked Memory"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
+]
+version = "1.0.7"
+
+query = '''
+library where dll.name : "ntdll.dll" and
+ dll.Ext.load_index >= 2 and process.thread.Ext.call_stack_summary : "*kernelbase.dll|Unbacked*"
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -38,26 +38,6 @@ rule Linux_Hacktool_Earthworm_e3da43e2 {
         all of them
 }
 
-rule Linux_Hacktool_Earthworm_a6e229b5 {
-    meta:
-        author = "Elastic Security"
-        id = "a6e229b5-d43c-4ff5-b604-761b906f1d2b"
-        fingerprint = "ff59695e5146703990a2e16945393532cc14c201248c79fbb015063d4838a761"
-        creation_date = "2021-01-12"
-        last_modified = "2021-09-16"
-        threat_name = "Linux.Hacktool.Earthworm"
-        reference_sample = "dc412d4f2b0e9ca92063a47adfb0657507d3f2a54a415619db5a7ccb59afb204"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "linux"
-    strings:
-        $a = { FC 01 00 00 00 89 85 48 FF FF FF 8B 45 FC 48 81 C4 C0 00 00 }
-    condition:
-        all of them
-}
-
 rule Linux_Hacktool_Earthworm_82d5c4cf {
     meta:
         author = "Elastic Security"

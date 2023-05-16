@@ -1779,26 +1779,6 @@ rule Linux_Trojan_Mirai_0bfc17bd {
         all of them
 }
 
-rule Linux_Trojan_Mirai_dab39a25 {
-    meta:
-        author = "Elastic Security"
-        id = "dab39a25-852b-441f-86ab-23d945daa62c"
-        fingerprint = "5a628d9af9d6dccf29e78f780bb74a2fa25167954c34d4a1529bdea5ea891ac0"
-        creation_date = "2022-01-05"
-        last_modified = "2022-01-26"
-        threat_name = "Linux.Trojan.Mirai"
-        reference_sample = "3e02fb63803110cabde08e809cf4acc1b8fb474ace531959a311858fdd578bab"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "linux"
-    strings:
-        $a = { 0E 75 20 50 6A 00 6A 00 6A 00 53 6A 0E FF 74 24 48 68 DD 00 }
-    condition:
-        all of them
-}
-
 rule Linux_Trojan_Mirai_389ee3e9 {
     meta:
         author = "Elastic Security"

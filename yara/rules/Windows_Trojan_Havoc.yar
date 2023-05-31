@@ -1,11 +1,11 @@
-rule Windows_Hacktool_Havoc_77f3d40e {
+rule Windows_Trojan_Havoc_77f3d40e {
     meta:
         author = "Elastic Security"
         id = "77f3d40e-9365-4e76-a1a3-36d128e775a9"
         fingerprint = "95d35d167df7f77f23b1afb1b7655cc47830c9986c54791b562c33db8f2773ae"
         creation_date = "2022-10-20"
         last_modified = "2022-11-24"
-        threat_name = "Windows.Hacktool.Havoc"
+        threat_name = "Windows.Trojan.Havoc"
         reference_sample = "3427dac129b760a03f2c40590c01065c9bf2340d2dfa4a4a7cf4830a02e95879"
         severity = 100
         arch_context = "x86"

@@ -1,0 +1,71 @@
+[rule]
+description = """
+Detects when an installer package executes a pre or post install script that immediately copies a file, like an
+executable, to somewhere on the filesystem. This activity is not common and usually indicates a malicious package
+attempting to install persistence or establish a working directory. Various different types of malware have been seen
+using this technique to move a plist file into the LaunchDaemons or LaunchAgents directories or moving an executable
+into an existing system folder or newly created folder as a home directory for the malware.
+"""
+id = "f06d9987-33f8-44b7-b815-c1f66fb39d25"
+license = "Elastic License v2"
+name = "Suspicious File Creation via Pkg Install Script"
+os_list = ["macos"]
+reference = ["https://objective-see.org/blog/blog_0x51.html"]
+version = "1.0.15"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and process.name : ("bash", "sh", "zsh") and 
+  process.args : ("/tmp/PKInstallSandbox.*/Scripts/com.*/preinstall", "/tmp/PKInstallSandbox.*/Scripts/*/postinstall") and
+  process.args : ("/Users/*", "/Volumes/*") and not
+  process.args : "/Users/*/Library/Caches/*"]
+[file where event.action != "deletion" and process.name : ("mv", "cp") and 
+  (file.extension : ("py", "js", "dylib", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or 
+  length(file.extension) == 0) and 
+  file.path : ("/private/etc/*",
+               "/var/tmp/*", 
+               "/tmp/*", 
+               "/var/folders/*", 
+               "/Users/Shared/*", 
+               "/Library/Graphics/*",
+               "/Library/Containers/*",
+               "/Library/Graphics/*",
+               "/Users/*/Library/Containers/*", 
+               "/Users/*/Library/Services/*",
+               "/Users/*/Library/Preferences/*",
+               "/var/root/*",
+               "/Library/WebServer/*",
+               "/Library/Fonts/*",
+               "/usr/local/bin/*") and not
+  file.name : "CodeResources" and not
+  file.path : ("/private/tmp/org.gpgtools/MacGPG2/libexec/pinentry-mac.app",
+               "/private/tmp/org.gpgtools/gpgmailloader_install/GPGMailLoader.signed.mailbundle/Contents/MacOS/GPGMailLoader")]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

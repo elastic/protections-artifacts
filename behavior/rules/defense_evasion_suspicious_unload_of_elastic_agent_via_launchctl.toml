@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects the abnormal unload of the Elastic Agent plist via the launchctl system binary. This activity can indicate an
+attempt to disable or destroy the agent's ability to continuously monitor system activity and may indicate a threat
+actors attempt to evade defenses and remain undetected or not be recorded while performing actions on their objective.
+"""
+id = "4abdbb10-6653-4a3b-8e7a-9c4f9382f03b"
+license = "Elastic License v2"
+name = "Suspicious Unload of Elastic Agent via Launchctl"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and 
+    (
+        (
+            process.name : "launchctl" and 
+            process.args : "unload" and 
+            process.args : "*co.elastic.elastic-agent.plist"
+        ) or 
+        (
+            process.name : ("sh", "zsh", "bash") and 
+            process.args : "-c" and 
+            process.command_line : "*unload*co.elastic.elastic-agent.plist*"
+        )
+    ) and not 
+process.parent.name : "elastic-agent" and not
+process.parent.executable : ("/sbin/launchd", 
+                             "/usr/local/jamf/bin/jamf", 
+                             "/usr/bin/sudo") and not 
+process.Ext.effective_parent.executable : ("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", 
+                                           "/usr/local/jamf/bin/jamf", 
+                                           "/Applications/iTerm.app/Contents/MacOS/iTerm2")
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.5.0"

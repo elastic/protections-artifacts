@@ -1,0 +1,63 @@
+[rule]
+description = """
+Detects when the xpcproxy process starts an application within the /Applications directory, and the parent process is
+/sbin/launchd. If an application is being launched via xpcproxy with launchd as its parent process, it generally means
+the application is being started as an XPC service. An application being executed in this specific manner is not normal
+and based on testing can indicate a malicious application being launched.
+"""
+id = "88d5495f-f1fa-4137-bc5d-e96abd7d199b"
+license = "Elastic License v2"
+name = "Unusual Application Launch via XPC"
+os_list = ["macos"]
+reference = [
+    "https://attack.mitre.org/techniques/T1559/003/",
+    "https://attack.mitre.org/techniques/T1059/004/",
+    "https://medium.com/dwarves-foundation/xpc-services-on-macos-app-using-swift-657922d425cd",
+]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and 
+process.executable : "/Applications/*" and 
+process.args : "xpcproxy" and 
+process.args : "application.com.*" and 
+process.parent.executable : "/sbin/launchd"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1559"
+name = "Inter-Process Communication"
+reference = "https://attack.mitre.org/techniques/T1559/"
+[[threat.technique.subtechnique]]
+id = "T1559.003"
+name = "XPC Services"
+reference = "https://attack.mitre.org/techniques/T1559/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

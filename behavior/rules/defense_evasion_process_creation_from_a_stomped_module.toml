@@ -11,12 +11,39 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/code-injection-process-injection/modulestomping-dll-hollowing-shellcode-injection",
 ]
-version = "1.0.7"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
+ length(process.parent.thread.Ext.call_stack_summary) <= 60 and
  _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-             $entry.allocation_private_bytes >= 20000 and $entry.symbol_info: ("?:\\windows\\SysWOW64\\*.dll", "?:\\Windows\\system32\\*.dll"))
+             $entry.allocation_private_bytes >= 100000 and $entry.symbol_info: ("?:\\windows\\SysWOW64\\*.dll*", "?:\\Windows\\system32\\*.dll*")) and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info:
+                                                                ("?:\\Program Files (x86)\\*.dll*",
+                                                                 "?:\\Program Files\\*.dll*",
+                                                                 "?:\\Windows\\Sys*\\hmpalert.dll*",
+                                                                 "?:\\Windows\\System32\\umppc*.dll*")) and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes >= 100000 and
+                  $entry.symbol_info:
+                        ("?:\\Windows\\SysWOW64\\KernelBase.dll*",
+                         "?:\\Windows\\System32\\KernelBase.dll*",
+                         "?:\\Windows\\System32\\ntdll.dll*",
+                         "?:\\Windows\\SysWOW64\\ScriptControl32_*.dll!*",
+                         "?:\\Windows\\SysWOW64\\rpcrt4.dll!*",
+                         "?:\\Windows\\System32\\rpcrt4.dll!",
+                         "?:\\Windows\\SysWOW64\\combase.dll!*",
+                         "?:\\Windows\\System32\\combase.dll!*",
+                         "?:\\Windows\\SysWOW64\\webio.dll*",
+                         "?:\\Windows\\SysWOW64\\TWAINDSM.dll*",
+                         "?:\\Windows\\Sys*\\ws2_32.dll*",
+                         "?:\\Windows\\Sys*\\user32.dll*",
+                         "?:\\Windows\\Sys*\\cyinjct.dll*",
+                         "?:\\Windows\\SysWOW64\\twpix32.dll*",
+                         "?:\\Windows\\SysWOW64\\IMCRCMN3.DLL*",
+                         "?:\\Windows\\SysWOW64\\Windows.Security.Authentication.Web.Core.dll*",
+                         "?:\\Windows\\assembly\\NativeImages_*",
+                         "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                         "?:\\Windows\\Sys*\\spool\\drivers\\*"))
 '''
 
 min_endpoint_version = "8.7.0"

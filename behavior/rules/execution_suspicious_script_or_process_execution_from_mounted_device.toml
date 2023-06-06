@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects potential execution of a script or unsigned macOS binary from a mounted device. Malware may abuse DMG files to
+deliver malicious code or scripts to gain initial access.
+"""
+id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
+license = "Elastic License v2"
+name = "Suspicious Script or Process Execution from Mounted Device"
+os_list = ["macos"]
+version = "1.0.18"
+
+query = '''
+sequence with maxspan=3m
+ [file where event.action == "mount" and
+  not (process.executable : "/usr/libexec/lsd" and file.path : "/private/var/folders/*/AppTranslocation/*")] as event0
+ [process where event.action == "exec" and 
+  (startswith (process.args, event0.file.path) or 
+   startswith (process.parent.args, event0.file.path)) and
+  (process.code_signature.trusted == false or
+   (process.name : ("curl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or 
+   (process.name : "chmod" and process.args : ("+x", "a+x", "0777", "777")) or
+   (process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
+    (process.args : "-c" or process.args_count <= 2))) and not 
+  process.args : ("/tmp/PKInstallSandbox.*/Scripts/*", 
+                  "/Library/Apple/System/Library/InstallerSandboxes/.*",
+                  "/nix/store/*",
+                  "/private/var/folders/*",
+                  "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
+                  "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 
+  process.parent.executable : ("/sbin/launchd",
+                               "/Volumes/Eclipse Installer/Eclipse Installer.app/Contents/MacOS/eclipse-inst")]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.4.0"

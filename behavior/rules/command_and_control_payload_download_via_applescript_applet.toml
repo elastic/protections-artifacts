@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies activity where an AppleScript applet is executed followed by the immediate execution of the "curl" command.
+An attacker might use an AppleScript applet to automate malicious tasks and leverage "curl" to download additional
+payloads or communicate with a command and control (C2) server. This activity has been observed being utilized by XCSSET
+and more recently by a new threat deemed "Rustbucket" by JAMF to bypass Gatekeeper and download a second stage payload.
+"""
+id = "52ad2198-1a7b-4492-b578-6ffa110f9b09"
+license = "Elastic License v2"
+name = "Payload Download via AppleScript Applet"
+os_list = ["macos"]
+reference = [
+    "https://www.jamf.com/blog/bluenoroff-apt-targets-macos-rustbucket-malware/",
+    "https://attack.mitre.org/techniques/T1553/001/",
+    "https://attack.mitre.org/techniques/T1105/",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and 
+    process.executable : ("/Users/*/Applications/*/Contents/MacOS/applet", 
+                          "/private/var/folders/*.app/Contents/MacOS/applet", 
+                          "/Applications/*.app/Contents/MacOS/applet")] 
+[process where event.type == "start" and process.name : "curl"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+[[threat.technique.subtechnique]]
+id = "T1553.001"
+name = "Gatekeeper Bypass"
+reference = "https://attack.mitre.org/techniques/T1553/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

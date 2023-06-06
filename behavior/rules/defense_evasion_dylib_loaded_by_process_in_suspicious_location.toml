@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies instances where a dynamic library (dylib) is loaded by a process running from a suspicious or non-standard
+path on macOS. Threat actors may abuse this technique by using compromised or malicious processes originating from
+unusual locations to load dylibs for code injection, persistence, or privilege escalation. A dylib loaded from a
+suspicious process path can indicate that the process itself is malicious, has been tampered with, or is attempting to
+evade detection by operating from a non-standard location.
+"""
+id = "b97ecb91-b4bb-480e-a855-47f2a9ec107c"
+license = "Elastic License v2"
+name = "Dylib Loaded by Process in Suspicious Location"
+os_list = ["macos"]
+version = "1.0.9"
+
+query = '''
+any where event.action == "load" and 
+  process.executable : ("/var/tmp/*", 
+                        "/var/lib/*", 
+                        "/tmp/*", 
+                        "/var/folders/*",
+                        "/Library/Graphics/*",
+                        "/Library/Containers/*", 
+                        "/Library/Services/*",
+                        "/var/root/*", 
+                        "/private/var/root/*",
+                        "/Library/WebServer/*", 
+                        "/Library/Fonts/*") and not
+  dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and not 
+  process.executable : ("/private/tmp/KSInstallAction*",
+                        "/Users/Shared/Epic Games/MagicTheGathering/MTGA.app/Contents/MacOS/MTGA",
+                        "/private/var/folders/*",
+                        "/Library/Services/GPGServices.service/Contents/MacOS/GPGServices",
+                        "/private/tmp/PKInstallSandbox*") and not
+  dll.path : ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

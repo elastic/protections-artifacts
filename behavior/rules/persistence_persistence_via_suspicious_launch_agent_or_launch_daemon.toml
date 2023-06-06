@@ -1,0 +1,114 @@
+[rule]
+description = """
+Identifies the creation of a launch agent or daemon property list file containing abnormal or suspicious values. An
+adversary may establish persistence by installing a new launch agent or daemon which executes at login. This rule looks
+within newly created property list files for a set of specific keys and values that contain certain file paths or system
+binaries malware has commonly used when implementing persistence via this method.
+"""
+id = "c6037fad-ad13-46a6-9f7f-4deeef5ac69b"
+license = "Elastic License v2"
+name = "Persistence via Suspicious Launch Agent or Launch Daemon"
+os_list = ["macos"]
+reference = [
+    "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
+    "https://objective-see.org/blog",
+]
+version = "1.0.22"
+
+query = '''
+any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and 
+  ((Persistence.args : ("*/.*", 
+                        "/private/tmp/*", 
+                        "/private/var/root/Library/HTTPStorages/*",
+                        "/private/var/root/Library/*",
+                        "/var/tmp/*", 
+                        "/var/lib/*",
+                        "/tmp/*", 
+                        "/var/folders/*", 
+                        "/Users/Shared/*", 
+                        "/Library/Containers/*", 
+                        "/Users/*/Library/*",
+                        "/Users/*/Applications/*",
+                        "/var/root/*", 
+                        "/Library/WebServer/*",
+                        "/Library/Graphics/*",
+                        "/Library/Fonts/*",
+                        "/usr/local/bin/*",
+                        "DYLD_INSERT_LIBRARIES*",
+                        "LD_PRELOAD*",
+                        "python*", 
+                        "*spawn*",
+                        "sh", 
+                        "*/bin/sh", 
+                        "bash", 
+                        "*/bin/bash", 
+                        "zsh", 
+                        "*/bin/zsh", 
+                        "java", 
+                        "curl",
+                        "osascript",
+                        "nohup",
+                        "wget", 
+                        "exec", 
+                        "base64") and not 
+  Persistence.args : ("/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service", 
+                      "/var/tmp/LogMeIn Rescue - */Support-LogMeInRescue.app/Contents/MacOS/Support-LogMeInRescue", 
+                      "/Users/*/.docker/run/docker.sock", 
+                      "/usr/local/bin/elastic-agent",
+                      "/Library/Bitdefender/AVP/product/bin/bdredline", 
+                      "/Users/*/Library/Application Support/*",
+                      "/var/run/docker.sock")) or
+  (Persistence.args : ("/Users/*/Library/Application Support/*", "/Library/*", "/Applications/*") and 
+    (process.code_signature.exists == false or process.code_signature.trusted == false))) and not 
+  process.executable : ("/System/*", "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not
+  process.code_signature.signing_id : ("com.bomgar.bomgar-scc", 
+                                       "com.apple.vim", 
+                                       "com.apple.cat", 
+                                       "com.apple.cfprefsd",
+                                       "com.jetbrains.toolbox",
+                                       "ksinstall",
+                                       "com.apple.shove")
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1543.004"
+name = "Launch Daemon"
+reference = "https://attack.mitre.org/techniques/T1543/004/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.6.0"

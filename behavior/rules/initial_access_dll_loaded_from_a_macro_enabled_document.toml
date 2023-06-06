@@ -7,7 +7,7 @@ id = "9ebda43a-16dd-4d9e-ab7c-c1056e7d959a"
 license = "Elastic License v2"
 name = "DLL Loaded from a Macro Enabled Document"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.11"
 
 query = '''
 library where
@@ -36,6 +36,7 @@ library where
             "?:\\Windows\\Microsoft.NET\\Framework*", 
             "?:\\Windows\\system32\\scrrun.dll",
             "?:\\Windows\\syswow64\\scrrun.dll",
+            "?:\\Windows\\SysWOW64\\THREED32.OCX",
             "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and
     not dll.hash.sha256 :
                  ("a33c6d203ffa6941b1e498f52f6ef565c5d731c2deecbae067c0039208a8db25",

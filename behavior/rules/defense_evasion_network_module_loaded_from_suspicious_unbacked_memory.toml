@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id
@@ -31,7 +31,7 @@ sequence by process.entity_id
   not (process.code_signature.subject_name :
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
                      "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
-                     "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo") and
+                     "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -63,11 +63,12 @@ sequence by process.entity_id
                    "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
                    "ntdll.dll|kernelbase.dll|Unbacked",
                    "ntdll.dll|iphlpapi.dll|Unbacked",
-		   "ntdll.dll|kernelbase.dll|wininet.dll|Unbacked", 
-                   "ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll", 
-		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked", 
-		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wininet.dll|Unbacked|ntdll.dll", 
-		   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll") or 
+                   "ntdll.dll|kernelbase.dll|wininet.dll|Unbacked",
+                   "ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wininet.dll|Unbacked|ntdll.dll",
+                   "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll",
+                   "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll") or
   
   startswith~(process.thread.Ext.call_stack_summary, concat(concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|", process.name), "|kernel32.dll|ntdll.dll"))
   )

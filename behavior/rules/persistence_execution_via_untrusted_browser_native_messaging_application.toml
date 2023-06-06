@@ -11,7 +11,7 @@ reference = [
     "https://developer.chrome.com/docs/apps/nativeMessaging/",
     "https://www.trendmicro.com/en_us/research/23/b/earth-kitsune-delivers-new-whiskerspy-backdoor.html",
 ]
-version = "1.0.9"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -81,7 +81,13 @@ process where event.action == "start" and
                 "2e409d692d5fa32735033e0ac6d49d8a23fb8f93d2bc37782830044f267b7dfb", 
                 "dcf9424bcbed483001b8846e701eb3652fc8f4077c151e3210e9d7d2e1f38624", 
                 "008e607c5a70884971978d65533ea6e1c84ee7759e4970c847ebda6fcdfb29d6", 
-                "d0d66cc8a419f964004d0ecb493ec5b3adb88d2fa7b55c2579940efd033fb059")
+                "d0d66cc8a419f964004d0ecb493ec5b3adb88d2fa7b55c2579940efd033fb059",
+                "86ad0c89afbfa047b23427b866141596449f44a89a8748b782d73315a25637cd",
+                "e8e614450a584a2c8f6c1a4acd59ba9968fee4156b430e14baeb137e3222be63",
+                "28aa62e7e76ac74bff62a094af128a951eafe2bdfd9147fe3fc4f9336f7e8cd3",
+                "27237fe05d07d5293b52aae82e5fc90e8a5c890ae91cbae7b1319d84ff636080") and
+  not (process.name : "cmd.exe" and process.args : "getmac.exe" and
+       process.parent.executable : "?:\\Users\\*\\AppData\\Roaming\\CertiPlugin\\CertisignerHost.exe")
 '''
 
 min_endpoint_version = "8.0.0"

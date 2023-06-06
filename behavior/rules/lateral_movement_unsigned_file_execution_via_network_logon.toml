@@ -7,7 +7,7 @@ id = "642b43ad-67bf-476b-9581-a434535395f2"
 license = "Elastic License v2"
 name = "Unsigned File Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -17,7 +17,9 @@ process where event.action == "start" and
  (process.code_signature.exists == false or process.code_signature.trusted == false) and
  not process.hash.sha256 :
                 ("f1d3489e0af0c498103df0433cee9f36f5d28d34dfe94aac510f7d32d0da5495",
-                 "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c")
+                 "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",
+                 "31f692eaa4a205f52235f43ee69b23c6789b45ed11e5a831e9b9b460c3985867",
+                 "8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a")
 '''
 
 min_endpoint_version = "8.6.0"

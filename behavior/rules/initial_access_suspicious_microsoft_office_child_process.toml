@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Microsoft Office Child Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.25"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -97,8 +97,10 @@ process where event.action == "start" and
 	not (process.name : "rundll32.exe" and process.args : "?:\\PROGRA~2\\MICROS~*\\Office*\\GrooveUtil.DLL,GetResourceModulePath") and
 	not (process.name : "hh.exe" and process.args : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*")) and
 	not (process.name : "javaw.exe" and process.args : "?:\\PROGRA~2\\Andar\\ANDARP~1\\bin\\andar.jar") and
-	not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\System32\\LogiLDA.dll,LogiFetch") and
-	not (process.name : "rundll32.exe" and process.args : "-localserver" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617")
+	not (process.name : "rundll32.exe" and
+	     process.args : ("?:\\Windows\\System32\\LogiLDA.dll,LogiFetch", "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbShortcut")) and
+	not (process.name : "rundll32.exe" and process.args : "-localserver" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617") and
+	not process.executable : "?:\\Program Files (x86)\\Andar\\Jre*\\bin\\javaw.exe"
 '''
 
 min_endpoint_version = "7.15.0"

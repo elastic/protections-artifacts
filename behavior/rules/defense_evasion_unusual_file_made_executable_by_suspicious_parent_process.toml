@@ -1,0 +1,87 @@
+[rule]
+description = """
+Detects when a file located in a suspicious location is made executable using chmod via an abnormal or suspicious parent
+process. Malware will often drop a second stage payload or file and will need to make it executable before invoking it.
+"""
+id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
+license = "Elastic License v2"
+name = "Unusual File Made Executable by Suspicious Parent Process"
+os_list = ["macos"]
+version = "1.0.13"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+    process.name : "chmod" and 
+    process.args : ("+x", "a+x", "0777", "755", "777") and 
+    process.args : ("/private/tmp/*", 
+                    "/var/lib/*", 
+                    "/var/tmp/*", 
+                    "/tmp/*", 
+                    "/var/folders/*", 
+                    "/Library/Containers/*", 
+                    "/Library/Graphics/*",
+                    "/Users/Shared/*", 
+                    "/Users/*/Library/Preferences/*", 
+                    "/var/root/*", 
+                    "/Library/WebServer/*", 
+                    "/Library/Preferences/*", 
+                    "/Library/Services/*", 
+                    "/Library/Fonts/*", 
+                    "/usr/local/bin/*") and 
+    process.parent.executable != null and not 
+    process.args : ("/Users/*/shims/*", "/tmp/combine_commits.py", "/var/folders/*/Microsoft.Android.Sdk.Darwin-*-extracted/tools/Darwin/*") and not 
+    process.parent.executable : ("/usr/bin/*", 
+                                 "/usr/sbin/*", 
+                                 "/usr/libexec/*",
+                                 "/bin/*", 
+                                 "/sbin/*", 
+                                 "/opt/homebrew/*",
+                                 "/usr/local/share/dotnet/dotnet",
+                                 "/Applications/Eclipse.app/Contents/MacOS/eclipse",
+                                 "/Applications/AWS VPN Client/AWS VPN Client.app/Contents/MacOS/AWS VPN Client",
+                                 "/Applications/Fiery Driver Updater.app/Contents/Resources/Fiery Software Uninstaller.app/Contents/MacOS/Fiery Software Uninstaller",
+                                 "/Applications/AWS VPN Client/AWS VPN Client.app/Contents/MacOS/AWS VPN Client",
+                                 "/Applications/Fiery/Fiery Software Manager/Fiery Software Manager.app/Contents/Resources/Fiery Software Uninstaller.app/Contents/MacOS/Fiery Software Uninstaller",
+                                 "/Applications/Fiery Software Uninstaller.app/Contents/MacOS/Fiery Software Uninstaller",
+                                 "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/Resources/Fiery Software Uninstaller.app/Contents/MacOS/Fiery Software Uninstaller",
+                                 "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM",
+                                 "/Applications/Eclipse_2020.app/Contents/MacOS/eclipse",
+                                 "/Users/*/eclipse/*/Eclipse.app/Contents/MacOS/eclipse",
+                                 "/Applications/Eclipse.app/Contents/MacOS/eclipse", 
+                                 "/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service",
+                                 "/usr/local/Cellar/*",
+                                 "/opt/cisco/anyconnect/*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1222"
+name = "File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/"
+[[threat.technique.subtechnique]]
+id = "T1222.002"
+name = "Linux and Mac File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/002/"
+
+
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

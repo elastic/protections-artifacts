@@ -7,13 +7,14 @@ id = "c9674e88-8423-442a-9712-ba6271bcff10"
 license = "Elastic License v2"
 name = "Suspicious Image Load from SMB Shares"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [library where dll.path : "\\Device\\Mup\\*" and not startswith~(dll.name, process.name) and 
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))]
  [library where
+  process.executable != null and
   (
    (dll.name : ("ws2_32.dll", "dnsapi.dll", "wininet.dll", "psapi.dll") and
     process.thread.Ext.call_stack_summary : "*Unbacked*" and
@@ -23,8 +24,7 @@ sequence by process.entity_id with maxspan=1m
              "*java.dll|Unbacked*", "*system.data.ni.dll*", "*|ntdll.dll|Unbacked|ntdll.dll", "*windowsbase.ni.dll*",
              "*presentationframework.ni.dll*", "ntdll.dll|Unbacked")) or
 
-   dll.name : ("vaultcli.dll", "taskschd.dll", "dsquery.dll", "mstask.dll", "mstscax.dll",
-               "sqlite3.dll", "bitsproxy.dll", "softokn3.dll", "System.Management.Automation.dll") or
+   dll.name : ("vaultcli.dll", "dsquery.dll", "System.Management.Automation.dll") or
 
    (dll.name : "ntdll.dll" and dll.Ext.load_index >= 2)
   ) and 

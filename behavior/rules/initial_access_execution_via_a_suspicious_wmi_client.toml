@@ -7,7 +7,7 @@ id = "b0a0d293-f85e-4994-97e6-95541c0bc181"
 license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
@@ -27,7 +27,8 @@ process where event.action == "start" and
        process.args : "60" and process.args : "1" and
        not process.Ext.effective_parent.name : ("excel.exe", "powerpnt.exe", "winword.exe")) and
 
-  not (process.code_signature.subject_name : ("Immense Networks LLC", "Synology Inc.") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("Immense Networks LLC", "Synology Inc.", "Xerox Corporation") and
+       process.code_signature.trusted == true) and
 
   /* ansible */
   not (process.name : "powershell.exe" and
@@ -37,7 +38,13 @@ process where event.action == "start" and
        process.command_line : ("powershell.exe -WindowStyle \"Hidden\" -Command \"Enable-PSRemoting -Force\"",
                                "powershell.exe -WindowStyle \"Hidden\" -Command \"Set-WSManQuickConfig -Force\"",
                                "powershell.exe -WindowStyle \"Hidden\" -Command \"WinRM QuickConfig -Quiet -Force\"")) and
-  not process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe")
+  not process.executable :
+             ("?:\\Windows\\System32\\WerFault.exe",
+              "?:\\Windows\\SysWOW64\\WerFault.exe",
+              "?:\\Program Files*\\Adobe\\Acrobat DC\\Acrobat\\AcroTray.exe",
+              "?:\\Program Files*\\Google\\Chrome\\Application\\chrome.exe",
+              "?:\\Program Files*\\Mozilla Firefox\\firefox.exe") and
+  not (process.name : "cmd.exe" and process.args : ("\\\\*\\netlogon\\logon.cmd", "?:\\ProgramData\\Package Cache\" %a in (cybereasonsensor.exe)*"))
 '''
 
 min_endpoint_version = "8.4.0"

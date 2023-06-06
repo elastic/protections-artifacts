@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies the load of a library with a unusual memory private bytes allocation. This may be the result of a code
+injection using module stomping or DLL hollowing via overwriting the content of legit DLL with malicious code.
+"""
+id = "ace1b159-be74-413c-bbe0-b5383fb9770b"
+license = "Elastic License v2"
+name = "Potential Injection via Module Stomping"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/code-injection-process-injection/modulestomping-dll-hollowing-shellcode-injection",
+]
+version = "1.0.12"
+
+query = '''
+sequence by process.entity_id
+[process where event.type:"start" and
+ not process.Ext.token.integrity_level_name == "low" and
+ not process.hash.sha256 : "123c8b533f529fcfda0fd48077c79fd2c71750237741fbd771ece8244550303e" and
+ not process.executable :
+            ("?:\\Program Files (x86)\\*",
+             "?:\\Program Files\\*",
+             "?:\\Windows\\SysWOW64\\rpcnet.exe",
+             "?:\\Windows\\System32\\rpcnet.exe")]
+[library where
+
+ dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
+
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes >= 100000 and
+             $entry.symbol_info: ("?:\\windows\\System32\\*.dll", "?:\\windows\\SysWOW64\\*.dll")) and length(process.thread.Ext.call_stack_summary) <= 60 and
+
+ /* critical for a process, often hooked by other EPP or AV, EPP or AV own DLLs */
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes >= 100000 and
+                  $entry.symbol_info:
+                        ("?:\\Windows\\SysWOW64\\KernelBase.dll*",
+                         "?:\\Windows\\System32\\KernelBase.dll*",
+                         "?:\\Windows\\System32\\ntdll.dll*",
+                         "?:\\Windows\\SysWOW64\\ScriptControl32_*.dll!*",
+                         "?:\\Windows\\SysWOW64\\rpcrt4.dll!*",
+                         "?:\\Windows\\System32\\rpcrt4.dll!",
+                         "?:\\Windows\\SysWOW64\\combase.dll!*",
+                         "?:\\Windows\\System32\\combase.dll!*",
+                         "?:\\Windows\\SysWOW64\\webio.dll*",
+                         "?:\\Windows\\SysWOW64\\TWAINDSM.dll*",
+                         "?:\\Windows\\Sys*\\ws2_32.dll*",
+                         "?:\\Windows\\Sys*\\user32.dll*",
+                         "?:\\Windows\\Sys*\\cyinjct.dll*",
+                         "?:\\Windows\\SysWOW64\\twpix32.dll*",
+                         "?:\\Windows\\SysWOW64\\IMCRCMN3.DLL*",
+                         "?:\\Windows\\SysWOW64\\Windows.Security.Authentication.Web.Core.dll*",
+                         "?:\\Windows\\assembly\\NativeImages_*",
+                         "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                         "?:\\Windows\\Sys*\\spool\\drivers\\*")) and
+
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes >= 100000 and
+                  startswith~($entry.symbol_info, process.executable)) and
+
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info:
+                                                                ("?:\\Program Files (x86)\\*.dll*",
+                                                                 "?:\\Program Files\\*.dll*",
+                                                                 "?:\\Windows\\Sys*\\hmpalert.dll*",
+                                                                 "?:\\Windows\\System32\\umppc*.dll*"))]
+until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

@@ -1,0 +1,56 @@
+[rule]
+description = """
+Detects the potential loading of a dylib from memory by looking for dylib load events without a dll.path present
+indicating the dylib was not loaded from disk. Loading a dylib directly into memory is a technique often used by
+attackers to evade detection. This is because loading a dylib directly into memory leaves no traces on the disk, making
+it harder for security tools or analysts to detect the malicious dylib.
+"""
+id = "d94b90a5-e9fd-4997-9920-13c283683634"
+license = "Elastic License v2"
+name = "Potential Reflective Dylib Load"
+os_list = ["macos"]
+reference = [
+    "https://github.com/MythicAgents/poseidon/tree/master/Payload_Type/poseidon/agent_code/execute_memory",
+    "https://github.com/slyd0g/SwiftInMemoryLoading",
+    "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
+]
+version = "1.0.5"
+
+query = '''
+any where event.action == "load" and ((dll.path : ("*=<null>", "*=", "?*")) or (dll.name : "NSCreateObjectFileImageFromMemory*"))
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

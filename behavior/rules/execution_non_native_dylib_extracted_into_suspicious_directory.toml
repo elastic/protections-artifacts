@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects the modification or creation of a dylib file via an archive utility (unzip, tar, bsdtar) in a suspicious
+directory. Threat actors will drop malicious dylibs on compromised systems in order to perform attacks such as dylib
+hijacking, dylib proxying or dylib injection. These attacks can be used to bypass defenses, elevate privileges and
+maintain persistence.
+"""
+id = "62cc9cf4-5440-4237-aa5b-ea8db83deb3d"
+license = "Elastic License v2"
+name = "Non-Native Dylib Extracted into Suspicious Directory"
+os_list = ["macos"]
+version = "1.0.10"
+
+query = '''
+file where event.action != "deletion" and 
+    process.name : ("unzip") and 
+    file.extension : "dylib" and
+    file.path : ("/var/tmp/*", 
+                 "/var/lib/*",
+                 "/tmp/*", 
+                 "/var/folders/*", 
+                 "/Users/Shared/*", 
+                 "/Library/Containers/*", 
+                 "/Library/Graphics/*",
+                 "/var/root/*", 
+                 "/Users/*/Library/*",
+                 "/Library/WebServer/*",
+                 "/Library/Services/*",
+                 "/Library/Fonts/*",
+                 "/usr/local/bin/*") and not
+    file.path : ("/private/tmp/*",
+                 "/Users/*/Library/Application Support/*",
+                 "/Users/*/Library/Caches/*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

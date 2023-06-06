@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies attempt to elevate privileges to bypass User Account Control via an elevated function
+ServerCreateElevatedObject exposed by the Virtual Factory for MaintenanceUI COM object. Attackers may attempt to
+instantiate other privileged COM objects by proxy such as the ITaskService to execute with elevated permissions.
+"""
+id = "99da9371-dca4-400c-8b62-3c222553d2d3"
+license = "Elastic License v2"
+name = "Potential UAC Bypass via IElevatedFactoryServer"
+os_list = ["windows"]
+reference = [
+    "https://www.zcgonvh.com/post/Advanced_Windows_Task_Scheduler_Playbook-Part.2_from_COM_to_UAC_bypass_and_get_SYSTEM_dirtectly.html",
+    "https://github.com/zcgonvh/TaskSchedulerMisc/blob/master/schuac.cs",
+    "https://strontic.github.io/xcyclopedia/library/clsid_A6BFEA43-501F-456F-A845-983D3AD7B8F0.html",
+    "https://www.trendmicro.com/en_us/research/23/e/attack-on-security-titans-earth-longzhi-returns-with-new-tricks.html",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=5m
+ [process where event.action == "start" and
+  process.name : "dllhost.exe" and process.args : "/Processid:{A6BFEA43-501F-456F-A845-983D3AD7B8F0}"] by process.entity_id
+ [file where file.path : "?:\\Windows\\System32\\Tasks\\*"] by Effective_process.entity_id
+'''
+
+actions = []
+min_endpoint_version = "8.4.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.005"
+name = "Scheduled Task"
+reference = "https://attack.mitre.org/techniques/T1053/005/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.4.0"

@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -41,7 +41,11 @@ sequence by process.entity_id with maxspan=5m
                           "?:\\Program Files (x86)\\F5 VPN\\*",
                           "?:\\Program Files\\F5 VPN\\*",
                           "?:\\Program Files (x86)\\Microsoft Office\\root\\*",
-                          "?:\\Windows\\system32\\shell32.dll,Control_RunDLL"))
+                          "?:\\Windows\\system32\\shell32.dll,Control_RunDLL",
+                          "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141",
+                          "?:\\WINDOWS\\System32\\shell32.dll,SHCreateLocalServerRunDll",
+                          "?:\\PROGRA~2\\MICROS~2\\Office*\\*.CPL*",
+                          "?:\\Windows\\System32\\mshtml.dll,PrintHTML"))
   ]
   [dns where
     dns.question.name :
@@ -119,7 +123,7 @@ sequence by process.entity_id with maxspan=5m
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe") and
-         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com"))
+         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com"))
   ]
 '''
 

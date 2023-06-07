@@ -14,10 +14,10 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-any where event.action == "load" and ((dll.path : ("*=<null>", "*=", "?*")) or (dll.name : "NSCreateObjectFileImageFromMemory*"))
+any where event.action == "load" and ((dll.path : ("*=<null>", "*=")) or (dll.name : "NSCreateObjectFileImageFromMemory*"))
 '''
 
 min_endpoint_version = "8.7.0"

@@ -287,3 +287,66 @@ rule Windows_Trojan_Metasploit_66140f58 {
         all of them
 }
 
+rule Windows_Trojan_Metasploit_2092c42a {
+    meta:
+        author = "Elastic Security"
+        id = "2092c42a-793b-4b0e-868b-9a39c926f44c"
+        fingerprint = "4f17bfb02d3ac97e48449b6e30c9b07f604c13d5e12a99af322853c5d656ee88"
+        creation_date = "2023-05-09"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "e47d88c11a89dcc84257841de0c9f1ec388698006f55a0e15567354b33f07d3c"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 65 6E 61 62 6C 65 5F 6B 65 79 62 6F 61 72 64 5F 69 6E 70 75 74 }
+        $a2 = { 01 04 10 49 83 C2 02 4D 85 C9 75 9C 41 8B 43 04 4C 03 D8 48 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Metasploit_46e1c247 {
+    meta:
+        author = "Elastic Security"
+        id = "46e1c247-1ebb-434f-835f-faf421b35169"
+        fingerprint = "6cd37d32976add38d7165f8088f38f4854b59302d6adf20db5c46cd3e8c7d9e7"
+        creation_date = "2023-05-10"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "ef70e1faa3b1f40d92b0a161c96e13c96c43ec6651e7c87ee3977ed07b950bab"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 73 74 64 61 70 69 5F 66 73 5F 66 69 6C 65 }
+        $a2 = { 85 D2 74 0E 8B F3 2B 75 F8 8A 01 88 04 0E 41 4A 75 F7 0F B7 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Metasploit_b62aac1e {
+    meta:
+        author = "Elastic Security"
+        id = "b62aac1e-2ce8-4803-90ee-138b509e814d"
+        fingerprint = "58340ea67e2544d22adba3317350150c61c84fba1d16c7c9f8d0c626c3421296"
+        creation_date = "2023-05-10"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.Metasploit"
+        reference_sample = "af9af81f7e46217330b447900f80c9ce38171655becb3b63e51f913b95c71e70"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 42 3C 8B AC 10 88 00 00 00 44 8B 54 15 20 44 8B 5C 15 24 4C }
+        $a2 = { CB 4D 85 D2 74 10 41 8A 00 4D 03 C3 88 02 49 03 D3 4D 2B D3 }
+    condition:
+        all of them
+}
+

@@ -121,3 +121,87 @@ rule Windows_Trojan_RedLineStealer_3d9371fd {
         all of them
 }
 
+rule Windows_Trojan_RedLineStealer_63e7e006 {
+    meta:
+        author = "Elastic Security"
+        id = "63e7e006-6c0c-47d8-8090-a6b36f01f3a3"
+        fingerprint = "47c7b9a39a5e0a41f26fdf328231eb173a51adfc00948c68332ce72bc442e19e"
+        creation_date = "2023-05-01"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.RedLineStealer"
+        reference_sample = "e062c99dc9f3fa780ea9c6249fa4ef96bbe17fd1df38dbe11c664a10a92deece"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 30 68 44 27 25 5B 3D 79 21 54 3A }
+        $a2 = { 40 5E 30 33 5D 44 34 4A 5D 48 33 }
+        $a3 = { 4B EF 4D FF 44 DD 41 70 44 DC 41 00 44 DC 41 03 43 D9 3E 00 44 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_RedLineStealer_f07b3cb4 {
+    meta:
+        author = "Elastic Security"
+        id = "f07b3cb4-a1c5-42c3-a992-d6d9a48bc7a0"
+        fingerprint = "8687fa6f540ccebab6000c0c93be4931d874cd04b0692c6934148938bac0026e"
+        creation_date = "2023-05-03"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.RedLineStealer"
+        reference_sample = "5e491625475fc25c465fc7f6db98def189c15a133af7d0ac1ecbc8d887c4feb6"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 3C 65 6E 63 72 79 70 74 65 64 5F 6B 65 79 3E 6B 5F 5F 42 61 63 6B 69 6E 67 46 69 65 6C 64 }
+        $a2 = { 45 42 37 45 46 31 39 37 33 43 44 43 32 39 35 42 37 42 30 38 46 45 36 44 38 32 42 39 45 43 44 41 44 31 31 30 36 41 46 32 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_RedLineStealer_4df4bcb6 {
+    meta:
+        author = "Elastic Security"
+        id = "4df4bcb6-a492-4407-8d8f-bbb835322c98"
+        fingerprint = "a9e08bf28e8915615f9b39ab814a46c092b5714ef9133f740a1f1f876bfda2d9"
+        creation_date = "2023-05-04"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.RedLineStealer"
+        reference_sample = "9389475bd26c1d3fd04a083557f2797d0ee89dfdd1f7de67775fcd19e61dfbb3"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 34 42 30 35 43 45 42 44 37 44 37 30 46 31 36 30 37 44 34 37 34 43 41 45 31 37 36 46 45 41 45 42 37 34 33 39 37 39 35 46 }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_RedLineStealer_15ee6903 {
+    meta:
+        author = "Elastic Security"
+        id = "15ee6903-757f-462b-8e1c-1ed8ca667910"
+        fingerprint = "d3a380f68477b98b3f5adc11cc597042aa95636cfec0b0a5f2e51c201aa61227"
+        creation_date = "2023-05-04"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.RedLineStealer"
+        reference_sample = "46b506cafb2460ca2969f69bcb0ee0af63b6d65e6b2a6249ef7faa21bde1a6bd"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 53 65 65 6E 42 65 66 6F 72 65 33 }
+        $a2 = { 73 65 74 5F 53 63 61 6E 47 65 63 6B 6F 42 72 6F 77 73 65 72 73 50 61 74 68 73 }
+    condition:
+        all of them
+}
+

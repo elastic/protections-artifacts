@@ -1036,3 +1036,65 @@ rule Windows_Trojan_CobaltStrike_1787eef5 {
         1 of ($a*)
 }
 
+rule Windows_Trojan_CobaltStrike_4106070a {
+    meta:
+        author = "Elastic Security"
+        id = "4106070a-24e2-421b-ab83-67b817a9f019"
+        fingerprint = "c12b919064a9cd2a603c134c5f73f6d05ffbf4cbed1e5b5246687378102e4338"
+        creation_date = "2023-05-09"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.CobaltStrike"
+        reference_sample = "98789a11c06c1dfff7e02f66146afca597233c17e0d4900d6a683a150f16b3a4"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 8B 44 24 48 0F B7 00 66 C1 E8 0C 66 83 E0 0F 0F B7 C0 83 }
+        $a2 = { 44 24 48 0F B7 00 66 C1 E8 0C 66 83 E0 0F 0F B7 C0 83 F8 0A }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_CobaltStrike_3dc22d14 {
+    meta:
+        author = "Elastic Security"
+        id = "3dc22d14-a2f4-49cd-a3a8-3f071eddf028"
+        fingerprint = "0e029fac50ffe8ea3fc5bc22290af69e672895eaa8a1b9f3e9953094c133392c"
+        creation_date = "2023-05-09"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.CobaltStrike"
+        reference_sample = "7898194ae0244611117ec948eb0b0a5acbc15cd1419b1ecc553404e63bc519f9"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = "%02d/%02d/%02d %02d:%02d:%02d" fullword
+        $a2 = "%s as %s\\%s: %d" fullword
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_CobaltStrike_7f8da98a {
+    meta:
+        author = "Elastic Security"
+        id = "7f8da98a-3336-482b-91da-82c7cef34c62"
+        fingerprint = "c375492960a6277bf665bea86302cec774c0d79506e5cb2e456ce59f5e68aa2e"
+        creation_date = "2023-05-09"
+        last_modified = "2023-06-13"
+        threat_name = "Windows.Trojan.CobaltStrike"
+        reference_sample = "e3bc2bec4a55ad6cfdf49e5dbd4657fc704af1758ca1d6e31b83dcfb8bf0f89d"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 25 63 25 63 25 63 25 63 25 63 25 63 25 63 25 63 25 63 4D 53 53 45 2D 25 64 2D 73 65 72 76 65 72 }
+    condition:
+        all of them
+}
+

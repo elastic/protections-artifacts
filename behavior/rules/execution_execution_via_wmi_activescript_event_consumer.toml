@@ -1,0 +1,68 @@
+[rule]
+description = """
+Identifies the creation or execution of a Windows script via a Windows Management Instrumentation Script consumer. The
+ActiveScriptEventConsumer class runs a predefined script in an arbitrary scripting language when an event is delivered
+to it. This is a legit feature but rarely used and can be a sign of execution or persistence via a malicious WMI Script
+consumer.
+"""
+id = "396f3062-05ba-4594-b83e-9bd6597f0e5e"
+license = "Elastic License v2"
+name = "Execution via WMI ActiveScript Event Consumer"
+os_list = ["windows"]
+reference = [
+    "https://threathunterplaybook.com/hunts/windows/200902-RemoteWMIActiveScriptEventConsumers/notebook.html",
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/activescripteventconsumer",
+]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ (
+  process.parent.executable : "?:\\Windows\\Sys*\\wbem\\scrcons.exe" or
+  descendant of [process where event.action == "start" and process.executable : "?:\\Windows\\Sys*\\wbem\\scrcons.exe"] or
+  (process.pe.original_file_name : "wmic.exe" and process.command_line : "*create*" and process.command_line : "*ActiveScriptEventConsumer*")
+  ) and
+  not (process.executable : "?:\\Windows\\System32\\wscript.exe" and
+       user.id : "S-1-5-18" and process.args : "?:\\Windows\\System32\\sleeper.vbs") and
+  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+       process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+  not (process.executable : "?:\\Windows\\System32\\omadmprc.exe" and user.id : "S-1-5-18") and process.parent.executable != null
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.16.0"

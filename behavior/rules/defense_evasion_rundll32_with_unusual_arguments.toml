@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -118,7 +118,9 @@ process where event.action == "start" and process.name : "rundll32.exe" and
                        "?:\\Windows\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification")) and
   not (process.name : "rdunll32.exe" and
        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*" and
-       process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp")
+       process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp") and
+  not (process.parent.executable : "?:\\Program Files*\\Splashtop\\Splashtop Remote\\Client for STB\\strwinclt.exe" and
+       process.args : "?:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper64.dll,#1")
 '''
 
 min_endpoint_version = "7.15.0"

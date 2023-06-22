@@ -7,7 +7,7 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.18"
+version = "1.0.20"
 
 query = '''
 sequence with maxspan=3m
@@ -24,6 +24,8 @@ sequence with maxspan=3m
   process.args : ("/tmp/PKInstallSandbox.*/Scripts/*", 
                   "/Library/Apple/System/Library/InstallerSandboxes/.*",
                   "/nix/store/*",
+                  "/Volumes/DBeaver Community/DBeaver.app/Contents/Eclipse/jre/Contents/Home/bin/java -version 2>&1",
+                  "/Volumes/LogiTuneInstaller/LogiTuneInstaller.app/Contents/Resources/uninstall_daemon.sh",
                   "/private/var/folders/*",
                   "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
                   "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 

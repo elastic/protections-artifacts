@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "UAC Bypass via Control Panel Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.24"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=1m
-  [registry where registry.data.strings != null and
+  [registry where
    registry.hive == "HKEY_USERS" and
    registry.key : "S-1-5-21*_Classes\\Folder\\Shell\\Open\\Command*"]
   [process where event.action == "start" and process.pe.original_file_name : "sdclt.exe"]

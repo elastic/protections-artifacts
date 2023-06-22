@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -22,8 +22,7 @@ sequence by user.id with maxspan=5m
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*CopyFileEx*", "*MoveFileExW*")) and 
   
   /* DismHost is copied by CleanMgr */
-  not (file.name : "DismHost.exe" and 
-       process.executable : "?:\\Windows\\Sys*\\cleanmgr.exe" and process.thread.Ext.call_stack_summary : "*dismcore.dll*") and 
+  not (file.name : "DismHost.exe" and process.thread.Ext.call_stack_summary : "*ntdll.dll|kernelbase.dll|dismcore.dll|*") and
        
   not (file.path : "?:\\Program Files*\\Microsoft\\EdgeUpdate\\*\\MicrosoftEdgeUpdateComRegisterShell*.exe" and 
        process.executable : "?:\\Program Files*\\Microsoft\\Temp\\*\\MicrosoftEdgeUpdate.exe") and

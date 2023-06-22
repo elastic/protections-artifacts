@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.9"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -27,12 +27,21 @@ sequence by process.entity_id with maxspan=1m
 
   /* FACEIT Anti-Cheat Launcher */
   not (process.code_signature.subject_name == "FACE IT LIMITED" and process.code_signature.trusted == true and
-       process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+       process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+
+  not (process.executable : "?:\\Windows\\System32\\taskhostw.exe" and user.id : "S-1-5-18" and
+       _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.symbol_info : ("?:\\Windows\\System32\\sysmain.dll!AgTwLoad*",
+                                          "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\sysfer.dll*")))
   ]
  [any where
 
    /* potentially ntdll was modified in memory to unkook or patch function */
-  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes > 0 and $entry.symbol_info: "?:\\windows\\sys*\\ntdll.dll*")]
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes > 8000 and $entry.symbol_info: "?:\\windows\\sys*\\ntdll.dll*") and
+
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info: ("?:\\program files*\\avg\\antivirus\\aswhook.dll+*",
+                                        "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*"))]
 '''
 
 min_endpoint_version = "8.7.0"

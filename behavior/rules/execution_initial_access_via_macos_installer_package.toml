@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.26"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=1m
@@ -84,10 +84,11 @@ sequence with maxspan=1m
     not process.parent.executable : ("/sbin/launchd", 
                                      "/Users/*/Library/Caches/*",
                                      "/Library/PrivilegedHelperTools/*",
-                                     "/private/var/folders/*/download/ARMDCHammer")]
+                                     "/private/var/folders/*/download/ARMDCHammer") and not
+    process.Ext.effective_parent.executable : "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -201,4 +202,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"

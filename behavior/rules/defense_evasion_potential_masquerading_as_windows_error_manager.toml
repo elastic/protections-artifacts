@@ -8,13 +8,13 @@ id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
 license = "Elastic License v2"
 name = "Potential Masquerading as Windows Error Manager"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
  process.name : ("WerFault.exe", "wermgr.exe", "WerFaultSecure.exe") and
  process.parent.thread.Ext.call_stack_summary : "*|*" and
- not process.parent.thread.Ext.call_stack_summary : ("*faultrep.dll*", "*wersvc.dll*", "*|wer.dll|*", "*|ubpm.dll|*") and
+ not process.parent.thread.Ext.call_stack_summary : ("*faultrep.dll*", "*wersvc.dll*", "*|wer.dll|*", "*|ubpm.dll|*", "*|cbscore.dll|rpcrt4.dll*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                   $entry.symbol_info: ("?:\\Windows\\System32\\kernel32.dll!Wer*",
                                        "?:\\Windows\\SysWOW64\\kernel32.dll!Wer*",

@@ -14,17 +14,18 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://medium.com/dwarves-foundation/xpc-services-on-macos-app-using-swift-657922d425cd",
 ]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and 
 process.executable : "/Applications/*" and 
 process.args : "xpcproxy" and 
 process.args : "application.com.*" and 
-process.parent.executable : "/sbin/launchd"
+process.parent.executable : "/sbin/launchd" and not
+process.code_signature.subject_name : "Developer ID Application: Microsoft Corporation*"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -60,4 +61,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"

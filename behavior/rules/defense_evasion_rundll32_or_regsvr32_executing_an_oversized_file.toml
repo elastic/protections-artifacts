@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Rundll32 or Regsvr32 Executing an OverSized File"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1027/001/"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5m
@@ -22,7 +22,10 @@ sequence with maxspan=5m
   process.name : ("rundll32.exe", "regsvr32.exe", "control.exe") and process.args_count >= 2 and
   startswith~(process.args, event0.file.path) and
   not (process.name : "rundll32.exe" and process.command_line : "*FirewallControlPanel*ShowNotificationDialog*") and
-  not (process.name : "regsvr32.exe" and process.args : "?:\\Program Files (x86)\\FileCenter\\Main\\PDFXEditCore.x86.dll")]
+  not (process.name : "regsvr32.exe" and
+       process.args : ("?:\\Program Files (x86)\\*",
+                       "?:\\Program Files\\*",
+                       "?:\\Users\\*\\AppData\\Local\\Microsoft\\TeamsMeetingAddin\\*\\Microsoft.Teams.AddinLoader.dll"))]
 '''
 
 min_endpoint_version = "8.4.0"

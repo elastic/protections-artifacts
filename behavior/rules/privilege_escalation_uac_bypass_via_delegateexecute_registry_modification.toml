@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://medium.com/cybersecpadawan/utilizing-a-common-windows-binary-to-escalate-to-system-privileges-c16482cced4b",
 ]
-version = "1.0.23"
+version = "1.0.25"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -28,7 +28,7 @@ sequence by process.entity_id with maxspan=1m
 
    not process.executable : "?:\\Windows\\explorer.exe"
    ]
-  [registry where registry.data.strings != null and
+  [registry where
    registry.value : "DelegateExecute" and registry.hive : "HKEY_USERS" and
    not (process.executable : "?:\\Windows\\regedit.exe" and registry.path : "HKEY_USERS\\S-1-*_Classes\\AppX*\\Shell\\open\\command\\DelegateExecute") and
    not process.executable : "?:\\Windows\\explorer.exe"

@@ -7,13 +7,16 @@ id = "2c4f5a78-a64f-4fcf-ac52-bf91fd9b82c8"
 license = "Elastic License v2"
 name = "Suspicious Image Load via LdrLoadDLL"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 library where
    _arraysearch(process.thread.Ext.call_stack, $entry,
                 $entry.symbol_info : "*LdrLoadDLL*" and ($entry.protection : "RWX" or $entry.allocation_private_bytes >= 100000)) and
-   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*LoadLibrary*")
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                                                   $entry.symbol_info : ("*LoadLibrary*",
+                                                                         "?:\\Program Files\\*.dll!*",
+                                                                         "?:\\Program Files (x86)\\*.dll!*"))
 '''
 
 min_endpoint_version = "8.7.0"

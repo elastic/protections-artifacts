@@ -7,7 +7,7 @@ id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
 license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -21,6 +21,7 @@ sequence by process.entity_id with maxspan=5m
    process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*") and
    not (process.name : "Clash for Windows.exe" and process.args : "--utility-sub-type=network.mojom.NetworkService") and
    not (process.name : "clash-win64.exe" and process.parent.args : "--app-user-model-id=com.*.clashwin") and
+   not process.parent.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
    not process.hash.sha256 :
                  ("1cef2a7e7fe2a60e7f1d603162e60969469488cae99d04d13c4450cb90934b0f",
                   "ec4d11bd8216b894cb02f4e9cc3974a87901e928b4cdd2cac6d6eb22b3fa25eb",
@@ -42,7 +43,8 @@ sequence by process.entity_id with maxspan=5m
                   "dae7bd888b715b8e215482bc5ea6f028ded32a3ad88bf4acb6431d2a62ffe3f4",
                   "45c045feb30ba5ac7dcdc7572d4683d9efbaa27737d8cd70c8d6a34d29cfd665",
                   "e1fdb4a9925f322c5c945a3a3d2f82cac25ea0fd616cffa8772515b19fb368ae",
-                  "80bd8b7b9a819b7fb29c77b59fc7fe1b1fb9565ff23be7cdb95064217320d5f0")]
+                  "80bd8b7b9a819b7fb29c77b59fc7fe1b1fb9565ff23be7cdb95064217320d5f0",
+                  "dda5ae1a22c38351c52e6c365c159852bb9105cccb85512c5aa344e71ba70b5f")]
   [dns where
     dns.question.name :
     (

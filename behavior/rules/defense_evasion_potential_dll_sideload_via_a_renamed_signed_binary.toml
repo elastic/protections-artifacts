@@ -7,7 +7,7 @@ id = "b117a187-3677-4891-ac4c-12677b5773a7"
 license = "Elastic License v2"
 name = "Potential DLL SideLoad via a Renamed Signed Binary"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 /* Signed PE with OriginalFileName different than process.name as potential target from a malicious ISO/DMG/VHD archive */
@@ -15,7 +15,7 @@ query = '''
 sequence by process.entity_id with maxspan=1m
 
  [process where event.action == "start" and process.pe.original_file_name != null and
-  process.code_signature.trusted == true and
+  (process.code_signature.trusted == true or process.pe.original_file_name : ("calc.exe", "ClientConsole.EXE")) and
   not startswith~(process.name, process.pe.original_file_name) and
   (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*") and
 

@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies the load of an unsigned or untrusted DLL by a trusted binary followed by calling a memory manipulation API
+with suspicious arguments. This may indicate execution via DLL sideloading to perform code injection.
+"""
+id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
+license = "Elastic License v2"
+name = "Suspicious API Call from an Unsigned DLL"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id
+[library where
+   (dll.Ext.relative_file_creation_time < 900 or
+    dll.Ext.relative_file_name_modify_time < 900 or
+    dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *")) and
+    process.code_signature.trusted == true and
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+    dll.hash.sha256 != null and
+    (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
+    not dll.path : ("?:\\Windows\\Installer\\*",
+                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                    "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                    "?:\\Program Files\\*",
+                    "?:\\Program Files (x86)\\*",
+                    "?:\\Windows\\assembly\\*") and
+   not (process.executable :
+             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
+              "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and
+        not process.name : ("regsvr32.exe", "rundll32.exe")) and
+
+   /* DLL loaded from the process.executable current directory  or via rundll32/regsvr32 */
+   (process.name : ("regsvr32.exe", "rundll32.exe") or
+    endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))))] as event0
+[api where
+  event.category : "intrusion_detection" and
+  (
+    stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", event0.dll.name)) or
+
+    stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|", event0.dll.name))
+   )]
+ until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

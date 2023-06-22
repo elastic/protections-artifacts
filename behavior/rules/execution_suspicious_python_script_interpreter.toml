@@ -4,7 +4,7 @@ id = "20eaa6a3-6b80-48bc-9c48-a935138169f9"
 license = "Elastic License v2"
 name = "Suspicious Python Script Interpreter"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -14,7 +14,7 @@ sequence by process.entity_id with maxspan=1m
                              ("Dropbox, Inc", "Rapid7 LLC", "Intel Corporation", "Box, Inc.", "Tanium Inc.", 
                               "Amazon Web Services, Inc.", "PrinterLogic", "Netalytics Security Inc", "Palo Alto Networks*",
                               "Dynatrace LLC", "DVDFab Software Inc.", "Vim, Inc.", "Sophos Ltd", "AVIATRIX SYSTEMS, INC",
-                              "Andrew Ziem")) and
+                              "Andrew Ziem", "Trophy SAS")) and
   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
   not process.hash.sha256 : 
                    ("b80be3102561bf891454bd52673fdcd49d08b14c17061c077d6a88ca5ba3e9e3", 
@@ -31,7 +31,9 @@ sequence by process.entity_id with maxspan=1m
                     "cacde2ae530296624adbca7393f84015f0d5cb0e1c1c5a4345b91e3a841dd5f9",
                     "14f1d41be0a0218233b1b823ddb9ed3ac06603c15c56c2f11aa4a286e72c2e4e",
                     "03b8dfcf64c4e9801becb8945cdf1ebc6f3524daf5de75f662204553e97a4f05",
-                    "ca78c09f7c334844dba28d0d6438ac507d14ad2874c04635cae42d398df4b6fd")
+                    "ca78c09f7c334844dba28d0d6438ac507d14ad2874c04635cae42d398df4b6fd",
+                    "8f067758c753c4d325653f2349bf5f761c4e1b4fb8a4516a152afc2375a88800",
+                    "9ad4c8d68a26f6feb2287e9d9895358a5a560ecc34cb3649edade01b054e1dd5")
   ]
  [library where dll.name : ("win32api*.pyd", "win32process.pyd", "win32security.pyd", "md.cp*-win32.pyd", "win32crypt.pyd", "win32net.pyd")]
 '''

@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id
@@ -71,7 +71,22 @@ sequence by process.entity_id
                    "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll") or
   
   startswith~(process.thread.Ext.call_stack_summary, concat(concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|", process.name), "|kernel32.dll|ntdll.dll"))
-  )
+  ) and
+  /* DynTrace, HP Sure Click Hook Dll */
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_leading_bytes :
+                         ("*6764a118008b40243b835b080000753033c089835b0800008d835f080000508d8353000000506a006a00ff936b080000*",
+                          "45fc33c08945f88bf28dbd82fcffffb9dc000000f3a566a568008000006a0052ff55b86803800000ff55bc8bf080bd82fcffff0074188d8592fdffff50ff55c4",
+                          "*d74533db4c8b4d504c894d284c8d0d0f0000004c894d404c8b4d6041c6410c00ffd0*",
+                          "83ec28488b4c2430ff15b40f00004883c428c3cccccccccccccc4c894424188954241048894c24084883ec38837c244801755f488d0d701f0000ff15720f0000",
+                          "55c0488d55c0488b4d10e8886dadff488bc8488975b8488b55b0488b5220488b02488bd64533db4c8b45b04c8945804c8d050a0000004c894598c6470c00ffd0")) and
+  /* Managed Code, Cynet MemScanner, xSecuritas */
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes :
+                         ("*8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b*",
+                          "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
+                          "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
+                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65"))
   ]
   until [process where event.action:"end"]
 '''

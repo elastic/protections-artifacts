@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies modification of the Image File Execution Options registry value MinimumStackCommitInBytes. Adversaries may
+abuse this key to force the crash of an endpoint security solution due to stack overflow.
+"""
+id = "d1abaedb-c95a-4c8e-ab8a-baf3b344892f"
+license = "Elastic License v2"
+name = "Potential Evasion via Stack Rumbling"
+os_list = ["windows"]
+reference = [
+    "https://www.trendmicro.com/en_us/research/23/e/attack-on-security-titans-earth-longzhi-returns-with-new-tricks.html",
+]
+version = "1.0.5"
+
+query = '''
+registry where registry.data.strings != null and
+ registry.path : ("HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\*\\MinimumStackCommitInBytes",
+                  "HKLM\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\*\\MinimumStackCommitInBytes")
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.012"
+name = "Image File Execution Options Injection"
+reference = "https://attack.mitre.org/techniques/T1546/012/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

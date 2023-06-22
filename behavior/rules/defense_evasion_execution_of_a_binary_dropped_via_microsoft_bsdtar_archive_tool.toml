@@ -7,12 +7,19 @@ id = "5b856290-d3f5-4b2f-9f49-e753ce4ade28"
 license = "Elastic License v2"
 name = "Execution of a Binary Dropped via Microsoft BSDTAR Archive Tool"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=5m
    [file where process.executable : "?:\\Windows\\Sys*\\tar.exe" and file.Ext.header_bytes : "4d5a*"] by file.path
-   [process where event.action == "start" and not process.code_signature.trusted == true] by process.executable
+   [process where event.action == "start" and not process.code_signature.trusted == true and
+    not process.hash.sha256 :
+               ("762abab44d25a0e6441600f6ad3a08e8f07016774608d80edc71b5b90b1ac5d8",
+                "70d994f269c652a3a5fb639251f8247a6d914bfde068eb807f6023909de89530",
+                "68b41beae36e4aa7ba4237b6067ed36dc0c6e0d9d5453fd8d61af335d0efd37f",
+                "70d994f269c652a3a5fb639251f8247a6d914bfde068eb807f6023909de89530",
+                "e8368338fe5d2f0cc7529df9f3684ea6d79a627d2cc33b1685b8f7adcfa952ae",
+                "82909875e911bb7b5c31a3338449368f62e1ff7cbc09829ed72e31789b1a0712")] by process.executable
 '''
 
 min_endpoint_version = "7.15.0"

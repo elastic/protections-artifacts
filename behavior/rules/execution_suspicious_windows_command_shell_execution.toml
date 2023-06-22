@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.action == "start" and
@@ -62,7 +62,8 @@ process where event.action == "start" and
                  "?:\\sonarqube\\MSBuild\\SonarScanner.MSBuild.exe",
                  "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
                  "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
-                 "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe") and
+                 "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+                 "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and
@@ -77,7 +78,8 @@ process where event.action == "start" and
              "D:\\GitHub\\lilitech-cloud-app\\node_modules\\.bin\\*",
              "*--flat-playlist^*--no-cache-dir^*") and
   not process.command_line : "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"" and
-  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data")
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
+  not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G"
 '''
 
 min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "7df7fca3-8a91-4a54-9799-0478a90ae326"
 license = "Elastic License v2"
 name = "Suspicious Browser Files Modification"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 any where event.category : ("file", "registry") and not event.action : ("deletion", "query") and
@@ -22,7 +22,9 @@ any where event.category : ("file", "registry") and not event.action : ("deletio
 	         "?:\\Users\\*\\AppData\\Roaming\\Mozilla\\*\\Profiles\\*default*\\prefs.js",
 	         "?:\\Users\\*\\AppData\\Local\\*\\User Data\\Default\\Extensions\\*.js")
 	) and
-	not file.Ext.header_bytes : "2f2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a"
+	not file.Ext.header_bytes : "2f2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a" and
+	not (process.code_signature.subject_name == "WAVESOR SOFTWARE" and process.code_signature.status ==  "errorChaining" and
+	     process.executable : "?:\\Users\\*\\Wavesor Software\\WaveBrowser\\wavebrowser.exe")
 '''
 
 min_endpoint_version = "8.1.0"

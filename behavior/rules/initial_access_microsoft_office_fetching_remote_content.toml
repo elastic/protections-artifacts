@@ -8,12 +8,13 @@ id = "6b3aa7d9-08c6-4091-aa03-715d25b34000"
 license = "Elastic License v2"
 name = "Microsoft Office Fetching Remote Content"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=60s
 [registry where process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and
- registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Office\\*\\Common\\Internet\\Server Cache\\http*"] by process.entity_id
+ registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Office\\*\\Common\\Internet\\Server Cache\\http*" and
+ not registry.path : "*https://files.slack.com*"] by process.entity_id
 [file where event.action == "creation" and
  file.path : "?:\\Users\\*\\AppData\\*\\Content.MSO\\*" and process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and
  (file.extension : "htm*" or file.Ext.header_bytes : "3c21646f63747970652068746d6c3e0a") and file.size >= 4096] by process.entity_id

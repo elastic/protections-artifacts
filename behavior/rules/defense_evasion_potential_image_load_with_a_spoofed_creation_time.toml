@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1070/006/",
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
 ]
-version = "1.0.16"
+version = "1.0.18"
 
 query = '''
 sequence with maxspan=5m
@@ -64,7 +64,10 @@ sequence with maxspan=5m
              ("9ac63dcf5a2437ed43cb143479ec4a810915017d8eb138a7fede88867e2a8121",
               "8bbe5898caa826ac1cb99d6c01c8a5ee9bb660493d2a48c9294d837390f7bae2",
               "42a0d4dca77d4ce7077c18e08b1d49715d6b1038e147611106388aec3e422c82",
-              "6e12069312e286307a12ba71228e720e890d242191eb07d0e769630b600098b3") and
+              "6e12069312e286307a12ba71228e720e890d242191eb07d0e769630b600098b3",
+              "0ae555e24450606fe86938be0450310e8d0da7cd8b661ed79c6f4dc6747cfd95",
+              "8180f736781f2af47059a83c73c2c8b9f4423fc764c8897ac7c4f6dd8837a804",
+              "c3823447efb2fe8690861541f23890bf5b7a36f40a9c282f4cb33cc3bb3d4689") and
   not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true) and
   not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true) and
   not process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe"

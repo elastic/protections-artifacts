@@ -11,15 +11,16 @@ reference = [
     "https://modexp.wordpress.com/2018/09/12/process-injection-user-data/",
     "https://github.com/odzhan/injection/tree/master/conhost",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
  process.parent.name : "conhost.exe" and
- process.parent.thread.Ext.call_stack_contains_unbacked == true
+ process.parent.thread.Ext.call_stack_contains_unbacked == true and
+ process.parent.thread.Ext.call_stack_summary : "*kernelbase.dll|Unbacked*"
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -44,4 +45,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"

@@ -7,7 +7,7 @@ id = "055ce112-f2ad-418b-bce1-5fbe46e703fc"
 license = "Elastic License v2"
 name = "Suspicious Svchost Registry Modification"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost" and
@@ -28,7 +28,8 @@ registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\
               "?:\\Windows\\WinSxS\\*\\TiWorker.exe",
               "?:\\Windows\\System32\\drvinst.exe",
               "?:\\Windows\\System32\\spoolsv.exe",
-              "?:\\Windows\\System32\\regsvr32.exe")
+              "?:\\Windows\\System32\\regsvr32.exe",
+              "?:\\Windows\\Regedit.exe")
 '''
 
 min_endpoint_version = "8.0.0"

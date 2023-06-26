@@ -38,23 +38,3 @@ rule Windows_VulnDriver_DBUtil_852ba283 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and $str1
 }
 
-rule Windows_VulnDriver_DBUtil_23afa785 {
-    meta:
-        author = "Elastic Security"
-        id = "23afa785-fd0a-4d6a-b994-fa9e033697b0"
-        fingerprint = "af4ad3d99599e0c1e1ac6472194de7055c6ffa11801614a375647eba1a863295"
-        creation_date = "2022-04-04"
-        last_modified = "2023-06-13"
-        threat_name = "Windows.VulnDriver.DBUtil"
-        reference_sample = "2e6b339597a89e875f175023ed952aaac64e9d20d457bbc07acf1586e7fe2df8"
-        severity = 50
-        arch_context = "x86"
-        scan_context = "file"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $str1 = "\\DellRingZeroLib\\Common\\Win\\KernelModeDriver\\x64\\Release\\DBUtilDrv2.pdb"
-    condition:
-        int16(uint32(0x3C) + 0x5c) == 0x0001 and $str1
-}
-

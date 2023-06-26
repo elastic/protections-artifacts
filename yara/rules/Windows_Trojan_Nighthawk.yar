@@ -1,11 +1,11 @@
-rule Windows_Hacktool_Nighthawk_9f3a5abb {
+rule Windows_Trojan_Nighthawk_9f3a5abb {
     meta:
         author = "Elastic Security"
         id = "9f3a5abb-b329-44db-af71-d72eae2737ac"
-        fingerprint = "ba21edf160113951444dacf7549f288a41ec0bae64064431e8defd8e34f173db"
+        fingerprint = "a2c49831d048ba91951780f4295895eba3a15f489a39b26b7a27efbc81746e09"
         creation_date = "2022-11-24"
-        last_modified = "2023-01-11"
-        threat_name = "Windows.Hacktool.Nighthawk"
+        last_modified = "2023-06-20"
+        threat_name = "Windows.Trojan.Nighthawk"
         reference_sample = "b775a8f7629966592cc7727e2081924a7d7cf83edd7447aa60627a2b67d87c94"
         severity = 100
         arch_context = "x86"
@@ -15,18 +15,24 @@ rule Windows_Hacktool_Nighthawk_9f3a5abb {
     strings:
         $loader_build_iat0 = { B9 BF BF D1 D5 E8 ?? ?? ?? ?? BA 7C 75 84 91 [3-12] E8 ?? ?? ?? ?? BA 47 FB EB 2B [3-12] E8 ?? ?? ?? ?? BA 42 24 3D 39 [3-12] E8 ?? ?? ?? ?? BA E7 E9 EF EE [3-12] E8 ?? ?? ?? ?? BA 47 FD 36 2E [3-12] E8 ?? ?? ?? ?? BA 39 DE 19 3D [3-12] E8 ?? ?? ?? ?? BA 20 DF DB F7 [3-12] E8 ?? ?? ?? ?? BA 45 34 2A 41 [3-12] E8 ?? ?? ?? ?? BA 7D 1C 44 2E [3-12] E8 ?? ?? ?? ?? BA 7D 28 44 2E [3-12] E8 ?? ?? ?? ?? BA 94 36 65 8D [3-12] E8 ?? ?? ?? ?? }
         $loader_syscall_func = { 65 48 8B 04 25 30 00 00 00 48 8B 80 10 01 00 00 48 89 44 24 F0 65 48 8B 04 25 30 00 00 00 8B 40 68 49 89 CA FF 64 24 F0 }
+        $seq_calc_offset = { 48 8D 0D ?? ?? ?? ?? 51 5A 48 81 C1 ?? ?? ?? ?? 48 81 C2 ?? ?? ?? ?? FF E2 }
+        $seq_keying_registry = { BA ?? ?? ?? ?? 48 8B C8 48 8B D8 E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B CB 4C 8B F0 E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B CB 4C 8B F8 E8 ?? ?? ?? ?? 0F B6 4E ?? 48 8B D8 83 E9 ?? 74 ?? 83 F9 ?? 75 ?? 48 C7 C1 ?? ?? ?? ?? EB ?? }
+        $seq_keying_hostname_user = { 40 53 48 83 EC ?? 8A 42 ?? 48 8B D9 3C ?? 75 ?? B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? BA ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 48 8D 53 ?? 48 8D 4B ?? C7 02 ?? ?? ?? ?? FF D0 85 C0 0F 95 C0 EB ?? }
+        $seq_keying_file = { E8 ?? ?? ?? ?? 33 DB 48 8D 4E ?? 48 89 5C 24 ?? 45 33 C9 89 5C 24 ?? BA ?? ?? ?? ?? 4C 8B E0 89 5C 24 ?? 44 8D 43 ?? C7 44 24 ?? ?? ?? ?? ?? FF D7 48 8B F8 48 83 F8 ?? 74 ?? 8B 55 ?? 45 33 C9 45 33 C0 48 8B C8 }
+        $seq_crypto_op = { 40 84 F6 74 ?? 48 8B C2 B9 04 00 00 00 F3 0F 6F 44 05 ?? F3 0F 6F 4C 05 ?? 48 8D 40 ?? 66 0F EF C8 F3 0F 7F 4C 05 ?? 48 83 E9 01 }
+        $seq_byte_shift = { 48 83 C3 ?? 8D 4D ?? 48 03 CF 0F B6 41 ?? 0F B6 71 ?? C1 E6 08 0B F0 0F B6 41 ?? C1 E6 08 0B F0 0F B6 01 C1 E6 ?? 0B F0 41 3B 75 ?? 76 ?? B8 ?? ?? ?? ?? EB ?? }
     condition:
-        $loader_build_iat0 and $loader_syscall_func
+        ($loader_build_iat0 and $loader_syscall_func) or (2 of ($seq*))
 }
 
-rule Windows_Hacktool_Nighthawk_2a2e3b9d {
+rule Windows_Trojan_Nighthawk_2a2e3b9d {
     meta:
         author = "Elastic Security"
         id = "2a2e3b9d-e85f-43b6-9754-1aa7c9f6f978"
         fingerprint = "40912e8d6bd09754046598b1311080e0ec6e040cb1b9ca93003c6314725d4d45"
         creation_date = "2022-11-24"
-        last_modified = "2023-01-11"
-        threat_name = "Windows.Hacktool.Nighthawk"
+        last_modified = "2023-06-20"
+        threat_name = "Windows.Trojan.Nighthawk"
         reference_sample = "38881b87826f184cc91559555a3456ecf00128e01986a9df36a72d60fb179ccf"
         severity = 100
         arch_context = "x86"

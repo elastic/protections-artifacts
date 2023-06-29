@@ -7,7 +7,7 @@ id = "b0a0d293-f85e-4994-97e6-95541c0bc181"
 license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -41,6 +41,7 @@ process where event.action == "start" and
   not process.executable :
              ("?:\\Windows\\System32\\WerFault.exe",
               "?:\\Windows\\SysWOW64\\WerFault.exe",
+              "?:\\Windows\\System32\\typeperf.exe",
               "?:\\Program Files*\\Adobe\\Acrobat DC\\Acrobat\\AcroTray.exe",
               "?:\\Program Files*\\Google\\Chrome\\Application\\chrome.exe",
               "?:\\Program Files*\\Mozilla Firefox\\firefox.exe") and

@@ -7,14 +7,14 @@ id = "697151c0-a1bd-498e-9056-6c726ce592b7"
 license = "Elastic License v2"
 name = "Process Stared via Remote Thread"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
  _arraysearch(process.parent.thread.Ext.call_stack, $entry,
               $entry.symbol_info: ("?:\\Windows\\System32\\ntdll.dll!ZwCreateThreadEx*",
                                    "?:\\Windows\\System32\\ntdll.dll!NtCreateThreadEx*")) and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*CreateProcess*", "*CreateUserProcess*"))
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*CreateProcess*", "*CreateUserProcess*"))
 '''
 
 min_endpoint_version = "8.7.0"

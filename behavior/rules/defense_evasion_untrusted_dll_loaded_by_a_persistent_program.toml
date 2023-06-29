@@ -7,7 +7,7 @@ id = "29007eb1-40d9-47fa-82c0-d862db0586b4"
 license = "Elastic License v2"
 name = "Untrusted DLL Loaded by a Persistent Program"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,7 +25,8 @@ sequence by process.entity_id with maxspan=1m
   not (process.executable :
              ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
               "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and
-              not process.name : ("rundll32.exe", "regsvr32.exe"))]
+              not process.name : ("rundll32.exe", "regsvr32.exe")) and
+  process.executable : "C:\\*"]
 [library where
 
    (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000 ) and
@@ -127,7 +128,12 @@ sequence by process.entity_id with maxspan=1m
                          "FrontApp, Inc.",
                          "The Neat Company, Inc.",
                          "Environmental Systems Research Institute, Inc.",
-                         "CANON INC.") and process.code_signature.trusted == true)]
+                         "CANON INC.",
+                         "Micro Focus International plc",
+                         "Mattermost, Inc.",
+                         "PFU Limited",
+                         "Poised Inc",
+                         "Loom, Inc.") and process.code_signature.trusted == true)]
 '''
 
 min_endpoint_version = "8.6.0"

@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -58,7 +58,20 @@ process where event.action == "start" and
               "?:\\Windows\\system32\\UsoClient.exe",
               "?:\\Windows\\System32\\chcp.com",
               "?:\\Windows\\System32\\manage-bde.exe",
-              "?:\\Windows\\System32\\dllhost.exe") and
+              "?:\\Windows\\System32\\dllhost.exe",
+              "?:\\Windows\\System32\\quser.exe",
+              "?:\\Windows\\System32\\nslookup.exe",
+              "?:\\Windows\\System32\\reg.exe",
+              "?:\\Windows\\System32\\HOSTNAME.EXE",
+              "?:\\Windows\\System32\\wbem\\WMIC.exe",
+              "?:\\Windows\\System32\\NETSTAT.EXE",
+              "?:\\Windows\\System32\\ipconfig.exe",
+              "?:\\Windows\\System32\\shutdown.exe",
+              "?:\\Windows\\System32\\net.exe",
+              "?:\\Windows\\System32\\dsregcmd.exe",
+              "?:\\Windows\\System32\\sc.exe",
+              "?:\\Windows\\System32\\schtasks.exe",
+              "?:\\Windows\\System32\\wbem\\WinMgmt.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -97,7 +110,9 @@ process where event.action == "start" and
                   "b8d0e4e50f144c5ae8392b52ab30ce67166918a8aa1acc282a3f144f83bafd85",
                   "f069b7f43f36f92d1db6cf90f6ff62393e8caddfc8a33c0708a6dccfece70a64",
                   "0a88ec2728fdea771fe86c59ae08e2f6b76a22ca2467e3024d31561c791f571a",
-                  "fb80046d52fa1ee5fd9dcca24ccb5a7bd70b34727859d55dd74ffae6fa279548") and
+                  "fb80046d52fa1ee5fd9dcca24ccb5a7bd70b34727859d55dd74ffae6fa279548",
+                  "3de11905d85b52f73b787d7360742e9f1b2b70fe5d6a3e812fcec8fe00211f09",
+                  "856feb3dce681e971d4344b5cb3e34f7f91fcc7dc476d92b22da17405baef801") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :

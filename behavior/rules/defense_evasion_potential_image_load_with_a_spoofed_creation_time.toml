@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1070/006/",
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=5m
@@ -34,7 +34,8 @@ sequence with maxspan=5m
               "?:\\Program Files\\*.exe",
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe") and
 
-  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "JACK HENRY & ASSOCIATES, INC.") and 
+       process.code_signature.trusted == true) and
   not file.path : "?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll"
   ] by file.path as event0
  [library where

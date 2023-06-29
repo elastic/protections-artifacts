@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.action == "start" and
@@ -64,7 +64,12 @@ process where event.action == "start" and
    not (process.name : "consent.exe" and
         process.parent.executable : "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\CRWindowsClientService.exe") and
    not (process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\*\\MicrosoftEdgeUpdateCore.exe" and
-        process.executable : "?:\\WINDOWS\\system32\\SearchProtocolHost.exe" and process.command_line : "*UsGthrFltPipeMssGthrPipe*")
+        process.executable : "?:\\WINDOWS\\system32\\SearchProtocolHost.exe" and process.command_line : "*UsGthrFltPipeMssGthrPipe*") and
+   not (process.executable : "?:\\Windows\\System32\\SearchProtocolHost.exe" and
+        process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe") and
+   not (process.executable :
+                ("?:\\Program Files (x86)\\Tanium\\Tanium Client\\Patch\\tools\\TaniumFileInfo.exe",
+                 "?:\\Program Files (x86)\\VIPRE Business Agent\\UrlInspectAddon.exe") and process.parent.name : "smss.exe")
 '''
 
 min_endpoint_version = "7.15.0"

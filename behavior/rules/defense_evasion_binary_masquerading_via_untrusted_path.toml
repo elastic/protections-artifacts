@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -31,6 +31,7 @@ process where event.action == "start" and
     "eventvwr.exe",
     "ieexec.exe",
     "installutil.exe",
+    "RegAsm.exe",
     "ipconfig.exe",
     "lsass.exe",
     "Microsoft.Workflow.Compiler.exe",
@@ -49,7 +50,6 @@ process where event.action == "start" and
     "qprocess.exe",
     "quser.exe",
     "qwinsta.exe",
-    "regasm.exe",
     "regsvcs.exe",
     "regsvr32.exe",
     "rundll32.exe",
@@ -165,7 +165,10 @@ process where event.action == "start" and
                             "?:\\CAMS\\Enterprise\\CAMSServices\\ServiceBroker\\RegAsm.exe",
                             "?:\\Witron\\wms\\rt\\axl\\runtime\\bin\\system\\tools\\RegAsm.exe",
                             "?:\\SpearTrayApplication\\Tray\\regsvr32.exe",
-                            "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe") and
+                            "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe",
+                            "*\\Visual Studio\\*\\Bin\\MSBuild.exe",
+                            "C:\\Sage\\Sage300\\Online\\Worker\\InstallUtil.exe",
+                            "C:\\AssessPro\\Programs\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
   not (process.code_signature.subject_name : "JetBrains s.r.o." and process.code_signature.trusted == true) and

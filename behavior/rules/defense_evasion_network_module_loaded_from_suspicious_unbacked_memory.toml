@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id
@@ -31,7 +31,8 @@ sequence by process.entity_id
   not (process.code_signature.subject_name :
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
                      "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
-                     "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.") and
+                     "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.",
+                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -42,7 +43,11 @@ sequence by process.entity_id
                     "1005dcfddfbde91cc967ecc6d778c81cb4f7bede03121a3e6e0d9bae12a033e0",
                     "53cec44e4fc9a3477d264c5edc9e376af8fcca20853faa289387f5bd7eaae05f",
                     "49113f4cd7bbf3343a43b13edd745008c4f41da1d80c9f89dc90a4b0bb39b8f8",
-                    "0ab8a14e7fd42818608cc0916fc26a12b2ae6b976c97310dc86011713e455d2d") and
+                    "0ab8a14e7fd42818608cc0916fc26a12b2ae6b976c97310dc86011713e455d2d",
+                    "afa3dc1ecd4e15a869dc57a280aee930fc0bab1cd49e17afd3944ae4ad1fc91f",
+                    "18b177280b0e0e05aa0e26807f34634c3384ae4f5901f41ff5bb0a720ea5c106",
+                    "4f1528318085f6117734a27f34a317a83b096d55532000f81ed67b1bb10632fa",
+                    "35f210c1f941f917b81c2516bee9de8f0495baca42095685e9b0b76f67250dc9") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and

@@ -8,13 +8,13 @@ id = "daaf517e-f4fc-4366-bfa7-87e651b3055b"
 license = "Elastic License v2"
 name = "Process from Archive or Removable Media via Unbacked Code"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by user.id with maxspan=3m
  [process where event.action == "start" and not user.id : "S-1-5-18" and
   (
-   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") or
+   (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not process.executable : "C:\\*") or
    process.executable :
           ("?:\\Users\\*\\AppData\\Local\\Temp\\7z*\\*",
            "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*\\*",

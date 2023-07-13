@@ -7,22 +7,22 @@ and based on testing can indicate a malicious application being launched.
 """
 id = "88d5495f-f1fa-4137-bc5d-e96abd7d199b"
 license = "Elastic License v2"
-name = "Unusual Application Launch via XPC"
+name = "Unsigned or Untrusted Application Launch via XPC"
 os_list = ["macos"]
 reference = [
     "https://attack.mitre.org/techniques/T1559/003/",
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://medium.com/dwarves-foundation/xpc-services-on-macos-app-using-swift-657922d425cd",
 ]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and 
 process.executable : "/Applications/*" and 
 process.args : "xpcproxy" and 
 process.args : "application.com.*" and 
-process.parent.executable : "/sbin/launchd" and not
-process.code_signature.subject_name : "Developer ID Application: Microsoft Corporation*"
+process.parent.executable : "/sbin/launchd" and 
+(process.code_signature.trusted == false or process.code_signature.exists == false)
 '''
 
 min_endpoint_version = "8.3.0"

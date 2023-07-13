@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.24"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=1m
@@ -40,7 +40,8 @@ sequence with maxspan=1m
              "?:\\Windows\\System32\\vdsldr.exe",
              "?:\\Windows\\SysWOW64\\vdsldr.exe",
              "?:\\Windows\\System32\\CredentialUIBroker.exe",
-             "?:\\WINDOWS\\System32\\DriverStore\\FileRepository\\*.exe") and 
+             "?:\\WINDOWS\\System32\\DriverStore\\FileRepository\\*.exe",
+             "?:\\Program Files (x86)\\Dropbox\\Client\\Dropbox.exe") and
    /* excluding AppInfo */
    not process.parent.Ext.real.pid > 0 and 
    /* noisy FPs */

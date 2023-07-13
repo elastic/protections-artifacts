@@ -7,12 +7,12 @@ id = "ba802fb2-f183-420e-947b-da5ce0c74dd3"
 license = "Elastic License v2"
 name = "Potential DLL SideLoad via a Microsoft Signed Binary"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.18"
 
 query = '''
 /* MS bin used as DLL sideloading target from an ISO/DMG/VHD archive */
 library where
-  dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and
+  (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not dll.path : "C:\\*") and
   process.code_signature.subject_name : "Microsoft*" and
   not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining") and
   not process.executable : "C:\\*" and
@@ -23,7 +23,11 @@ library where
                "d668366c74f476d73fc0e00b00433ce3e2ccff7b18a525cf41758b7c3c495ea3",
                "0924c7a3f02eee3b0b6f1b4d9c22cd3c7e914d57fcd07a707d56e0cb04d66e7a",
                "6ee2c087b7c55b7fea604515fd47eb20a7a531854da8a7c010744743cb937f6a",
-               "c048df2f3928f57f27951e5d917f90b788b1881948d98379c8772423d91fc4fb")
+               "c048df2f3928f57f27951e5d917f90b788b1881948d98379c8772423d91fc4fb",
+               "3c30e83ae1150ae8efd52d652af227948cc8d8107c99d313084a3f4c3a0545c7",
+               "0b8094f76dbe2621cef9f6340bf4225d49ac847b8fd5c7b3456256fdb31141de",
+               "69326fd2322db837d680d3fd0d61ca4de77eac3ba96306bad8c12b64c922880f",
+               "6a6299dc667bedfa449f374931d1990cd19c3b23e2e603562b7f9d2c42e37f62")
 '''
 
 min_endpoint_version = "8.4.0"

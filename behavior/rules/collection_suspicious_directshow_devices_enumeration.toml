@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies attempt to enumerate accessible DirectShow devices by an unusual process to potentially capture audio or
+video using the Microsoft DirectShow application programming interface.
+"""
+id = "d6699c83-fb2f-4029-8fb4-0f628f131a22"
+license = "Elastic License v2"
+name = "Suspicious DirectShow Devices Enumeration"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/directshow/directshow"]
+version = "1.0.3"
+
+query = '''
+registry where registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\ActiveMovie\\devenum*\\Version" and
+ (
+  process.thread.Ext.call_stack_summary : ("*|devenum.dll|combase.dll|Unbacked*", "*devenum.dll|clr.dll|mscorlib.ni.dll|Unbacked*") or
+  process.name : ("rundll32.exe", "regsvr32.exe") or
+  process.executable : "?:\\Windows\\Microsoft.NET\\*" or
+  (process.executable : "?:\\Users\\*" and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))
+ )
+ and not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Sys*\\DriverStore\\FileRepository\\*.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1123"
+name = "Audio Capture"
+reference = "https://attack.mitre.org/techniques/T1123/"
+
+[[threat.technique]]
+id = "T1125"
+name = "Video Capture"
+reference = "https://attack.mitre.org/techniques/T1125/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.7.0"

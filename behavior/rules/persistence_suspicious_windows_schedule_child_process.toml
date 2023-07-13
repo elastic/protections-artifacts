@@ -7,14 +7,14 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.action == "start" and
  process.parent.name == "svchost.exe" and process.parent.args == "Schedule" and
  (
   /* non noisy child processes */
-  process.pe.original_file_name : ("MSHTA.EXE", "REGSVR32.EXE", "MSBuild.exe", "InstallUtil.exe", "RegSvcs.exe") or
+  process.pe.original_file_name : ("MSHTA.EXE", "MSBuild.exe", "InstallUtil.exe", "RegSvcs.exe") or
 
   /* suspicious path */
   (process.executable : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\Windows\\system32\\tasks\\*") and
@@ -81,7 +81,8 @@ process where event.action == "start" and
        process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", 
                        "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,", 
                        "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL")) and
-  not (process.name : "regasm.exe" and process.args : "?:\\ProgramData\\DevelNetworks\\DevimeCounlers\\WPHh_Pdsapi.dll")
+  not (process.name : "regasm.exe" and process.args : "?:\\ProgramData\\DevelNetworks\\DevimeCounlers\\WPHh_Pdsapi.dll") and
+  not (process.executable : "?:\\ProgramData\\Mozilla\\uxftbei.exe" and process.args : "-vtfjmdd")
 '''
 
 min_endpoint_version = "8.4.0"

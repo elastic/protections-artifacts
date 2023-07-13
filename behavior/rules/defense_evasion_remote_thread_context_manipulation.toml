@@ -7,11 +7,16 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "SetThreadContext" and
- process.executable != null and process.Ext.api.behaviors : ("cross-process", "hardware_breakpoint_set")
+ process.executable != null and process.Ext.api.behaviors : ("cross-process", "hardware_breakpoint_set") and
+ not (process.code_signature.subject_name : "Duncan Ogilvie" and process.code_signature.trusted == true) and
+ not (process.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WinDbg_*\\EngHost.exe" and
+      process.parent.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WinDbg_*\\DbgX.Shell.exe") and
+ not (process.executable : "?:\\Program Files (x86)\\WindowsApps\\Microsoft.WinDbg_*\\EngHost.exe" and
+      process.parent.executable : "?:\\Program Files (x86)\\WindowsApps\\Microsoft.WinDbg_*\\DbgX.Shell.exe")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects the creation of a DMG file in the temp directory. The creation of a DMG file like this has been observed being
+used to exploit vulnerabilities that allow for mounting over sensitive parts of the filesystem, thereby bypassing
+certain macOS security controls such as TCC and SIP. This activity is not normal or common and should be considered
+suspicious.
+"""
+id = "fdb0e7ed-4210-4b71-be47-d0b0d9458fa7"
+license = "Elastic License v2"
+name = "Suspicious DMG File Creation in Tmp Directory"
+os_list = ["macos"]
+reference = [
+    "https://theevilbit.github.io/posts/cve-2021-30808/",
+    "https://www.trendmicro.com/en_us/research/22/l/diving-into-an-old-exploit-chain-and-discovering-3-new-sip-bypas.html",
+]
+version = "1.0.12"
+
+query = '''
+file where event.action : ("modification", "rename") and process.name : "diskimages-helper" and 
+    file.extension : "dmg" and file.path : ("/private/tmp/*", "/tmp/*") and not
+    file.path : ("/private/tmp/munki-*/*.dmg", "/private/tmp/Ventura.dmg", "/private/tmp/com.ninxsoft.mist/*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1211"
+name = "Exploitation for Defense Evasion"
+reference = "https://attack.mitre.org/techniques/T1211/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

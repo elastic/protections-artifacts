@@ -7,7 +7,7 @@ id = "226df8a0-6ef8-4965-91b4-7ce64078c206"
 license = "Elastic License v2"
 name = "Rundll32 or Regsvr32 Loaded a DLL from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id
@@ -22,7 +22,14 @@ sequence by process.entity_id
        process.parent.executable : "?:\\Windows\\sys*\\rundll32.exe") and
 
   not (process.command_line : "\"C:\\Windows\\sys*\\rundll32.exe\"  --enable-speech-input --enable-media-stream --no-sandbox" and
-       process.parent.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+       process.parent.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+
+  not process.parent.executable :
+                     ("?:\\Program Files\\Royal TS V6\\RoyalTS.exe",
+                      "?:\\Program Files (x86)\\Kaarya LLC\\myKaarma Desktop\\KaarmaDesktop.exe",
+                      "?:\\Program Files (x86)\\Steam\\steamapps\\common\\Sun Haven\\Sun Haven.exe") and
+
+  not (process.args : "--zoam=IndexCigar\\license.dat" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
   ]
  [library where dll.name : ("wininet.dll", "ws2_32.dll", "winhttp.dll", "psapi.dll", "vaultcli.dll") and
   process.thread.Ext.call_stack_summary :

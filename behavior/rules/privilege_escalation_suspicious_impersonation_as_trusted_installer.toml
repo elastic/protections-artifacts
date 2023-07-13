@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-any where
+any where process.executable != null and 
  (
   (Effective_process.name : "TrustedInstaller.exe" and 
    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 

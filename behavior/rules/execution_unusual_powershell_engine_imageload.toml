@@ -7,7 +7,7 @@ id = "f57505bb-a1d2-4d3b-b7b5-1d81d7bdb80e"
 license = "Elastic License v2"
 name = "Unusual PowerShell Engine ImageLoad"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -23,7 +23,8 @@ sequence by process.entity_id with maxspan=1m
                             "?:\\Windows\\System32\\inetsrv\\*",
                             "?:\\Windows\\System32\\WindowsPowerShell\\*",
                             "?:\\windows\\System32\\DriverStore\\*",
-                            "?:\\Windows\\system32\\Essentials\\Dashboard.exe") and
+                            "?:\\Windows\\system32\\Essentials\\Dashboard.exe", 
+                            "?:\\Windows\\Microsoft.NET\\Framework\\*\\RegAsm.exe") and
   not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 
   not (process.name : "dllhost.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
        /* CrowdStrike.RemoteResponse CLSIDs */

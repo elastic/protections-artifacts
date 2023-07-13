@@ -7,17 +7,19 @@ id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
 license = "Elastic License v2"
 name = "Suspicious API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id
 [library where
    (dll.Ext.relative_file_creation_time < 900 or
     dll.Ext.relative_file_name_modify_time < 900 or
-    dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *")) and
+    (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*")) and
     process.code_signature.trusted == true and
+    not process.code_signature.subject_name : ("RingCentral, Inc.", "Sky UK Limited", "EFI Software (Electronics for Imaging, Inc.)", "Qualcomm Atheros, Inc.") and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
     dll.hash.sha256 != null and
+    not dll.hash.sha256 : "a8a427c037818767c16410817de817af9782f64b04f2d7ac2869af07a20c3f0e" and
     (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",

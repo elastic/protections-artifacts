@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies attempt to modify the content of a loaded module and from a suspicious call stack. This may indicate an
+attempt to inject code using module stomping or DLL hollowing via overwriting the content of a legit DLL with malicious
+code.
+"""
+id = "446e61bf-8370-45df-88ab-7b213ee653db"
+license = "Elastic License v2"
+name = "Image Hollow from Unusual Stack"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.behaviors == "hollow_image" and
+  process.Ext.api.name : "VirtualProtect" and
+  process.Ext.api.parameters.size >= 10000 and process.executable != null and
+  process.thread.Ext.call_stack_summary :
+                     ("ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                      "ntdll.dll|Unbacked",
+                      "Unbacked") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel", "tcaddin.dll", "clr.dll")) and
+  not (process.Ext.api.summary : ("*qipcap64.dll*", "*redemption64*", "*eowp.22.1.94.0.exe*", "*conemuhk64.dll*", "*xalan-c_1_10.dll*",
+                                 "*crpe32.dll*", "*_*.dll*", "*-*.dll*", "*sqlite?.dll*") and not process.Ext.api.summary : "*ws2_32*") and 
+  not (process.parent.executable : "?:\\Program Files (x86)\\think-cell\\tcasr.exe" and 
+       process.executable : "?:\\Program Files\\Microsoft Office\\root\\Office*\\EXCEL.EXE") and
+  not (process.code_signature.subject_name : "Code Systems Corporation" and process.code_signature.trusted == true)
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

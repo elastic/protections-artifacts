@@ -7,16 +7,18 @@ id = "c9674e88-8423-442a-9712-ba6271bcff10"
 license = "Elastic License v2"
 name = "Suspicious Image Load from SMB Shares"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [library where dll.path : "\\Device\\Mup\\*" and not startswith~(dll.name, process.name) and 
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\Sys*\\tmumh\\*\\tmmon.dll+*")) and
   not process.executable :
             ("?:\\Windows\\System32\\sdiagnhost.exe",
              "?:\\Windows\\System32\\CompPkgSrv.exe",
-             "?:\\Windows\\System32\\backgroundTaskHost.exe")
+             "?:\\Windows\\System32\\backgroundTaskHost.exe") and 
+  not process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|jvm.dll|java.dll|Unbacked"
   ]
  [library where
   process.executable != null and

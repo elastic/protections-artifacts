@@ -7,10 +7,11 @@ id = "8a8daa15-eed0-4bf0-85b5-ada73b55ab05"
 license = "Elastic License v2"
 name = "Windows API via a CallBack Function"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.behaviors : "indirect_syscall" and
+ not process.Ext.api.name : "IoCreateDevice" and process.executable != null and
  process.thread.Ext.call_stack_summary :
                    ("*ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll*",
                     "ntdll.dll|kernelbase.dll|ntdll.dll|kernelbase.dll*")

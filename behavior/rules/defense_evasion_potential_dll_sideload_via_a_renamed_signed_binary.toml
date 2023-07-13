@@ -7,7 +7,7 @@ id = "b117a187-3677-4891-ac4c-12677b5773a7"
 license = "Elastic License v2"
 name = "Potential DLL SideLoad via a Renamed Signed Binary"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 /* Signed PE with OriginalFileName different than process.name as potential target from a malicious ISO/DMG/VHD archive */
@@ -22,7 +22,7 @@ sequence by process.entity_id with maxspan=1m
   /* ba802fb2-f183-420e-947b-da5ce0c74dd3 */
   not process.code_signature.subject_name : "Microsoft *"]
  [library where
-  dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and
+  (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not dll.path : "C:\\*") and
   not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining") and
   not startswith~(dll.name, process.name)]
 '''

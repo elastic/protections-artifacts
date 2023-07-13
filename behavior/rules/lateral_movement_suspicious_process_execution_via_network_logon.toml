@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
@@ -71,7 +71,12 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\dsregcmd.exe",
               "?:\\Windows\\System32\\sc.exe",
               "?:\\Windows\\System32\\schtasks.exe",
-              "?:\\Windows\\System32\\wbem\\WinMgmt.exe") and
+              "?:\\Windows\\System32\\wbem\\WinMgmt.exe",
+              "?:\\Windows\\System32\\OpenWith.exe",
+              "?:\\Windows\\System32\\Dism.exe",
+              "?:\\Windows\\System32\\query.exe",
+              "?:\\Windows\\System32\\systeminfo.exe",
+              "?:\\Windows\\System32\\auditpol.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */

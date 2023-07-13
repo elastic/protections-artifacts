@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects possible Python based malware that stage their files in a hidden directory or file that sits within the tmp
+directory. This rule looks for Python executions where the process arguments include references to hidden folders or
+files in the tmp directory.
+"""
+id = "7f165456-b724-4a83-b006-002c902ccee7"
+license = "Elastic License v2"
+name = "Hidden Folder or File Access in Tmp via Python"
+os_list = ["macos"]
+reference = ["https://github.com/rapid7/metasploit-framework"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and 
+    (process.parent.name : "python*" or process.Ext.effective_parent.name : "python*") and 
+    process.args : "/tmp/.*"
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.5.0"

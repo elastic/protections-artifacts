@@ -7,17 +7,19 @@ it harder for security tools or analysts to detect the malicious dylib.
 """
 id = "d94b90a5-e9fd-4997-9920-13c283683634"
 license = "Elastic License v2"
-name = "Potential Reflective Dylib Load"
+name = "Reflective Dylib Load"
 os_list = ["macos"]
 reference = [
     "https://github.com/MythicAgents/poseidon/tree/master/Payload_Type/poseidon/agent_code/execute_memory",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.8"
+version = "1.0.10"
 
 query = '''
-any where ((event.action == "load" and not dll.path : "?*") or (event.action == "load" and dll.name : "NSCreateObjectFileImageFromMemory*"))
+any where ((event.action == "load" and not dll.path : "?*") or 
+  (event.action == "load" and dll.name : "NSCreateObjectFileImageFromMemory*")) and not
+  process.code_signature.subject_name : "Developer ID Application: AMZN Mobile LLC (94KV3E626L)"
 '''
 
 min_endpoint_version = "8.7.0"

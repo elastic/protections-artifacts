@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies attempts to allocate remote memory with RWX permissions, this behavior is often associated with remote
+process injection preparation.
+"""
+id = "b2104624-d0e8-4864-8266-605056c6469a"
+license = "Elastic License v2"
+name = "Suspicious Remote Memory Allocation"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
+  process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.size >= 10000 and 
+  process.thread.Ext.call_stack_summary : "?*" and not user.id : ("S-1-5-19", "S-1-5-20") and 
+  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\*") and
+       process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+  not (process.executable : "?:\\Windows\\System32\\RPC\\OSD\\osdservice.exe" and user.id : "S-1-5-18" and
+       process.code_signature.subject_name : "Microsoft Windows Hardware Compatibility Publisher") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("?:\\Program Files\\*.dll*", 
+                                         "?:\\Program Files (x86)\\*.dll*", 
+                                         "?:\\windows\\system32\\*\\tmmon*.dll*", 
+                                         "?:\\Windows\\SysWOW64\\esensordbi.dll*", 
+                                         "?:\\Windows\\System32\\esensordbi.dll*", 
+                                         "?:\\Windows\\System32\\umppc*.dll*", 
+                                         "?:\\Windows\\FireEye\\AppMonitorDll*.dll*", 
+                                         "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*", 
+                                         "?:\\windows\\system32\\hmpalert.dll!*")) and 
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Kernel*") and 
+  /* Cynet MemScanner, xSecuritas, Mcafee */
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes :
+                         ("48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
+                          "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
+                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65", 
+                          "2048894538488b4d1048c1e103488b7d38488b7550f3a44c8b4d284d8b49484c8b45284d8b4040488b5528488b5220488b4d28488b8988000000ff95a0000000"))
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

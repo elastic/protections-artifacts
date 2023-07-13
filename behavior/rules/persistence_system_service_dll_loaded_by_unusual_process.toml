@@ -7,15 +7,17 @@ id = "4bb7bf2e-675a-45c5-973a-cc2ef109596c"
 license = "Elastic License v2"
 name = "System Service DLL Loaded by Unusual Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and
+  not user.id : ("S-1-5-19", "S-1-5-20") and 
   (
    /* unsigned process exec from USB or mounted ISO/DMG files */
    (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and
-    (process.code_signature.trusted == false or process.code_signature.exists == false)) or
+    (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+    not process.executable : "C:\\*") or
 
    /* unusual MS native binary */
    (process.executable : ("?:\\Windows\\system32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\explorer.exe") and
@@ -41,6 +43,8 @@ sequence by process.entity_id with maxspan=1m
                 "?:\\Windows\\SysWOW64\\wbem\\WmiPrvSE.exe",
                 "?:\\Windows\\System32\\taskhostw.exe",
                 "?:\\Windows\\System32\\taskhost.exe",
+                "?:\\Windows\\System32\\dllhost.exe",
+                "?:\\Windows\\SysWOW64\\dllhost.exe",
                 "?:\\Windows\\System32\\inetsrv\\InetMgr.exe",
                 "?:\\Windows\\System32\\Essentials\\RunTask.exe",
                 "?:\\Windows\\System32\\ServerManager.exe",

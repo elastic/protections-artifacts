@@ -11,14 +11,16 @@ os_list = ["macos"]
 reference = [
     "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
 ]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
-file where event.action != "deletion" and 
-file.name : "TCC.db" and process.executable != null and
+file where file.name : "TCC.db" and 
+process.executable != null and not
+event.action : ("open", "deletion") and
 not process.executable : (
   "/Applications/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/Support/tccd",
   "/System/Library/PrivateFrameworks/TCC.framework/*",
+  "/usr/bin/sysdiagnose",
   "/Applications/*/iOS.simruntime/*/System/Library/PrivateFrameworks/TCC.framework/tccd",
   "/Users/*/Downloads/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",
   "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS *simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",

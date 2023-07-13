@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 any where process.pid != 4 and process.executable != null and
@@ -25,7 +25,8 @@ any where process.pid != 4 and process.executable != null and
 
   /* call_stack_summary looks like ntdll.dll|process.parent.name|etc */
   (event.category : "process" and event.action == "start" and
-   endswith~(substring(process.parent.thread.Ext.call_stack_summary, 0, 10 + length(process.parent.name)), process.parent.name))
+   endswith~(substring(process.parent.thread.Ext.call_stack_summary, 0, 10 + length(process.parent.name)), process.parent.name) and
+   not process.parent.executable : "?:\\Windows\\System32\\services.exe")
   ) and 
   not ((process.executable : "?:\\Windows\\system32\\smss.exe" or process.parent.executable : "?:\\Windows\\system32\\smss.exe") and 
        (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*" or process.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*")) and 
@@ -36,7 +37,8 @@ any where process.pid != 4 and process.executable != null and
        process.executable : "?:\\Windows\\System32\\vmsp.exe" and 
        process.code_signature.subject_name : "Microsoft*" and process.code_signature.status : "trusted" and 
        process.parent.thread.Ext.call_stack_summary : "ntdll.dll|vmwp.exe|ntdll.dll*") and
-  not (event.category : "library" and dll.code_signature.status : "trusted" and not dll.code_signature.subject_name : "Microsoft*")
+  not (event.category : "library" and dll.code_signature.status : "trusted" and not dll.code_signature.subject_name : "Microsoft*") and
+  not (process.executable : "?:\\Windows\\System32\\WUDFCompanionHost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe")
 '''
 
 min_endpoint_version = "8.7.0"

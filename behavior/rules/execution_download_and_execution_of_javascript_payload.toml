@@ -9,23 +9,24 @@ license = "Elastic License v2"
 name = "Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.25"
+version = "1.0.27"
 
 query = '''
 sequence by user.id with maxspan=30s
   [process where event.action == "exec" and
     process.name : "curl" and process.args : "http*" and
-    not process.args : ("https://*.jamfcloud.com/JSSResource/*",
+    not process.args : ("https://*.jamfcloud.com/*",
                         "https://download.zerotier.com/RELEASES/*",
                         "https://download.mozilla.org/?os=osx&product=firefox-latest-ssl",
                         "https://support-sp.apple.com/sp/product*")]
   [process where event.action == "exec" and process.name : "osascript" and
     process.command_line : "*-l JavaScript*" and
     /* rule scope is limited to curl output passed to osascript via pipe */
-    process.args_count <= 3]
+    process.args_count <= 3 and not
+    process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -51,4 +52,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"

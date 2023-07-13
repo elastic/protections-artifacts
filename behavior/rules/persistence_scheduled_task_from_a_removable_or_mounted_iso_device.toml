@@ -8,16 +8,16 @@ license = "Elastic License v2"
 name = "Scheduled Task from a Removable or Mounted ISO Device"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
  [process where event.action == "start" and
   (
-   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") or
+   (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not process.executable : "C:\\*") or
 
    descendant of [process where event.action == "start" and
-   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *")]
+   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not process.executable : "C:\\*"]
    ) and
    not process.executable : ("?:\\Program Files\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
                              "?:\\Program Files (x86)\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",

@@ -1,0 +1,59 @@
+[rule]
+description = """
+Detects the attempt to access or open the users TCC database by an unsigned or untrusted binary. This activity may
+indicate the presence of a malicious payload attempting to bypass TCC or gain awareness of system permissions in place.
+"""
+id = "a9bec1de-bc5f-4e0f-a80e-569f5b920ef6"
+license = "Elastic License v2"
+name = "User TCC DB Access by Unsigned or Untrusted Process"
+os_list = ["macos"]
+reference = [
+    "https://www.sentinelone.com/blog/session-cookies-keychains-ssh-keys-and-more-7-kinds-of-data-malware-steals-from-macos-users/",
+]
+version = "1.0.2"
+
+query = '''
+file where event.action == "open" and process.executable != null and 
+ file.path : "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and
+ (process.code_signature.trusted == false or process.code_signature.exists == false)
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1069"
+name = "Permission Groups Discovery"
+reference = "https://attack.mitre.org/techniques/T1069/"
+
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.8.0"

@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies a Windows script interpreter executing for more than 5 minutes followed by spawning a child process. This may
+indicate long term network activity from a Windows script which is common pattern of a command and control backdoor via
+malicious scripts.
+"""
+id = "c89c8742-9040-4de8-b3cf-477407fafac1"
+license = "Elastic License v2"
+name = "Suspicious Execution from a Windows Script"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [network where process.uptime >= 300 and
+  process.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe")] by process.entity_id
+ [process where event.action == "start" and
+  process.parent.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and 
+  not process.parent.args : "?:\\Program Files (x86)\\smartagent\\agent\\common\\snapins\\adpcommon\\ADP_DmsTasks.vbs"] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+[[threat.technique]]
+id = "T1573"
+name = "Encrypted Channel"
+reference = "https://attack.mitre.org/techniques/T1573/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.8.0"

@@ -1,0 +1,41 @@
+[rule]
+description = """
+Detects when curl is executed with the -o option and the effective parent process is an Apple installer process. Threat
+actors will utilize benign or backdoored software packages to download second stage payloads using curl in order to
+avoid detection and gain malicious code execution. An example of this activity is the nation state malware known as
+oRAT.
+"""
+id = "a4a66e7f-b81a-4a2c-8f33-28a6807314a9"
+license = "Elastic License v2"
+name = "Curl Execution via Apple Installer Package"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and 
+  process.name : "curl" and process.args : ("-o", "--output") and 
+  process.Ext.effective_parent.name : ("installer", "package_script_service")
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.5.0"

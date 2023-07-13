@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name :"VirtualAlloc" and
@@ -17,7 +17,11 @@ api where process.Ext.api.name :"VirtualAlloc" and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*HeapCreate*", "*RtlCreateHeap*", "*RtlProtectHeap*")) and
  process.thread.Ext.call_stack_summary : "?*" and 
  not process.thread.Ext.call_stack_summary :("*|clr.dll|*", "*mscorwks.dll*", "*mscoreei.dll*") and 
- not process.executable : "?:\\Program Files (x86)\\Steam\\steamapps\\common\\BattleBit Remastered\\BattleBit.exe"
+ not process.executable :
+             ("?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
+              "?:\\Program Files (x86)\\HP\\HP LaserJet Pro MFP*\\Help_Learn\\Help.exe",
+              "E:\\*PortableCase\\Dependencies\\Sandbox\\stubcache\\CefSharp.BrowserSubprocess.exe") and
+ not (process.code_signature.subject_name : ("Atera Networks Ltd", "Riot Games, Inc.") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.8.0"

@@ -13,7 +13,7 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.23"
+version = "1.0.25"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and 
@@ -38,6 +38,7 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                         "LD_PRELOAD*",
                         "python*", 
                         "*spawn*",
+                        "http*",
                         "sh", 
                         "*/bin/sh", 
                         "bash", 

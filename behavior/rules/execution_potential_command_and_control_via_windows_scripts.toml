@@ -1,0 +1,67 @@
+[rule]
+description = """
+Identifies the execution of a Windows script interpreter followed by a network connection or DNS loookup request after 5
+minutes of the process start. This may indicate long term network activity from a Windows script which is common pattern
+of a command and control backdoor via malicious scripts.
+"""
+id = "3121956f-8c0b-40ef-b98d-7b7b0ab02d2e"
+license = "Elastic License v2"
+name = "Potential Command and Control via Windows Scripts"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id
+ [process where event.action == "start" and
+  process.pe.original_file_name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and
+  not process.Ext.token.integrity_level_name == "system"]
+ [network where
+  event.action == "connection_attempted" and network.direction == "egress" and network.transport == "tcp" and
+   process.uptime >= 300 and source.port >= 49152 and not destination.address : ("127.*", "::1")]
+  until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+[[threat.technique]]
+id = "T1573"
+name = "Encrypted Channel"
+reference = "https://attack.mitre.org/techniques/T1573/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.8.0"

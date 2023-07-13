@@ -8,29 +8,46 @@ license = "Elastic License v2"
 name = "Payload Downloaded by Process Running in Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://objective-see.com/blog/blog_0x69.html"]
-version = "1.0.23"
+version = "1.0.25"
 
 query = '''
-sequence by process.entity_id with maxspan=5s
-  [process where event.action == "exec" and
+sequence by process.entity_id with maxspan=30s
+  [process where event.action == "exec" and 
+   process.name == "curl" and process.args : "http*://*/*" and 
     descendant of [
-      process where event.action : ("exec", "fork") and
+      process where event.action : "exec" and
         process.executable : (
-          "/private/tmp/*",
           "/tmp/*",
-          "/Users/*/Library/Preferences/*"
-        )
-    ] and
-    process.name == "curl" and
-    not process.args : ("https://omahaproxy.appspot.com/history", 
-                        "https://console.jumpcloud.com/api/systems/*", 
-                        "https://support-sp.apple.com/sp/product*",
-                        "https://download.mozilla.org/*",
-                        "https://*:443/logs-osquery_manager.result-default/*",
-                        "https://www.mozilla.org/*",
-                        "https://zoom.us/client/*")
+          "/Users/*/Library/Preferences/*",
+          "/Users/*/Library/Services/*",
+          "/var/tmp/*",
+          "/var/folders/*",
+          "/var/lib/*",
+          "/Users/Shared/*",
+          "/Library/Graphics/*",
+          "/Library/Containers/*", 
+          "/Users/*/Library/Containers/*", 
+          "/var/root/*", 
+          "/Library/WebServer/*", 
+          "/Library/Fonts/*") 
+  ] and not 
+  process.args : ("https://omahaproxy.appspot.com/history", 
+                  "https://console.jumpcloud.com/api/systems/*", 
+                  "/usr/local/Homebrew/*",
+                  "Homebrew/*",
+                  "*/opt/homebrew/*",
+                  "http*://*.jamfcloud.com/*",
+                  "http*elastic.co*",
+                  "http*localhost*",
+                  "http*127.0.0.1*",
+                  "http*0.0.0.0*",
+                  "https://zoom.us/client/*") and 
+  not process.parent.executable : ("/usr/local/munki/*",
+                                   "/System/*",
+                                   "/opt/homebrew/*",
+                                   "/Library/Management/*")   
   ]
-  [network where event.action == "connection_attempted"]
+  [network where event.action == "connection_attempted" and process.name == "curl"]
 '''
 
 min_endpoint_version = "7.15.0"

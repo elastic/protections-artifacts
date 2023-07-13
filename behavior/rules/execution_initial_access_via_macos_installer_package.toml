@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=1m
@@ -26,7 +26,8 @@ sequence with maxspan=1m
                                  "/Users/*/Library/Caches/*",
                                  "/Library/PrivilegedHelperTools/*",
                                  "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
-                                 "/private/var/folders/*/download/ARMDCHammer")]
+                                 "/private/var/folders/*/download/ARMDCHammer") and not
+    process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"]
   [process where event.action : ("exec", "fork") and
 
     // Descendant of macOS installer process
@@ -44,7 +45,8 @@ sequence with maxspan=1m
                                      "/Users/*/Library/Caches/*",
                                      "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                      "/Library/PrivilegedHelperTools/*",
-                                     "/private/var/folders/*/download/ARMDCHammer")
+                                     "/private/var/folders/*/download/ARMDCHammer") and not
+        process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"
         ] and
 
     (
@@ -85,7 +87,8 @@ sequence with maxspan=1m
                                      "/Users/*/Library/Caches/*",
                                      "/Library/PrivilegedHelperTools/*",
                                      "/private/var/folders/*/download/ARMDCHammer") and not
-    process.Ext.effective_parent.executable : "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater"]
+    process.Ext.effective_parent.executable : ("/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+                                               "/usr/local/jamf/bin/jamf")]
 '''
 
 min_endpoint_version = "8.5.0"

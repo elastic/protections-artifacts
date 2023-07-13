@@ -17,32 +17,35 @@ Another example of our commitment to openness in security is our existing public
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.30', '1.0.28') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.38', '1.0.30') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |         0 |       0 |       1 |                 1 |
-| Credential Access    |         4 |       0 |       0 |                 4 |
-| Defense Evasion      |         3 |       0 |       4 |                 7 |
-| Discovery            |         1 |       0 |       0 |                 1 |
-| Execution            |         2 |       0 |       0 |                 2 |
-| Persistence          |         7 |       0 |       0 |                 7 |
-| Privilege Escalation |         0 |       0 |       1 |                 1 |
-| Total by OS          |        17 |       0 |       6 |                23 |
+| Collection           |         1 |       0 |       0 |                 1 |
+| Command and Control  |         1 |       0 |       4 |                 5 |
+| Credential Access    |         2 |       0 |       2 |                 4 |
+| Defense Evasion      |        43 |       0 |      11 |                54 |
+| Discovery            |         0 |       0 |       1 |                 1 |
+| Execution            |         6 |       0 |       9 |                15 |
+| Initial Access       |         5 |       0 |       0 |                 5 |
+| Persistence          |         2 |       0 |       2 |                 4 |
+| Privilege Escalation |         1 |       0 |       0 |                 1 |
+| Total by OS          |        61 |       0 |      29 |                90 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |        17 |       2 |       6 |                25 |
-| Credential Access    |        34 |       0 |       6 |                40 |
-| Defense Evasion      |        92 |       2 |      21 |               115 |
-| Discovery            |         4 |       0 |       1 |                 5 |
-| Execution            |        38 |       5 |      15 |                58 |
+| Collection           |         1 |       0 |       0 |                 1 |
+| Command and Control  |        18 |       2 |      10 |                30 |
+| Credential Access    |        36 |       0 |       8 |                44 |
+| Defense Evasion      |       134 |       2 |      32 |               168 |
+| Discovery            |         4 |       0 |       2 |                 6 |
+| Execution            |        44 |       5 |      24 |                73 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
 | Impact               |        13 |       2 |       2 |                17 |
-| Initial Access       |        37 |       1 |       2 |                40 |
+| Initial Access       |        42 |       1 |       2 |                45 |
 | Lateral Movement     |         8 |       0 |       1 |                 9 |
-| Persistence          |        43 |       0 |      12 |                55 |
-| Privilege Escalation |        45 |       2 |       7 |                54 |
-| Total by OS          |       331 |      14 |      74 |               419 |
+| Persistence          |        44 |       0 |      14 |                58 |
+| Privilege Escalation |        46 |       2 |       7 |                55 |
+| Total by OS          |       390 |      14 |     103 |               507 |

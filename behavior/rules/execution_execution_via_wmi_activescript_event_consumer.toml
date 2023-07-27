@@ -13,7 +13,7 @@ reference = [
     "https://threathunterplaybook.com/hunts/windows/200902-RemoteWMIActiveScriptEventConsumers/notebook.html",
     "https://learn.microsoft.com/en-us/windows/win32/wmisdk/activescripteventconsumer",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -26,7 +26,8 @@ process where event.action == "start" and
        user.id : "S-1-5-18" and process.args : "?:\\Windows\\System32\\sleeper.vbs") and
   not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
-  not (process.executable : "?:\\Windows\\System32\\omadmprc.exe" and user.id : "S-1-5-18") and process.parent.executable != null
+  not (process.executable : "?:\\Windows\\System32\\omadmprc.exe" and user.id : "S-1-5-18") and process.parent.executable != null and
+  not (process.executable : "?:\\Windows\\system32\\conhost.exe" and process.args : "0xffffffff" and process.args : "-ForceV1")
 '''
 
 min_endpoint_version = "7.16.0"

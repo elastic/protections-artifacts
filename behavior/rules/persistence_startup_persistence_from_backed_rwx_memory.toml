@@ -8,10 +8,10 @@ id = "15c48f2d-e461-40a9-accd-090a0863ea10"
 license = "Elastic License v2"
 name = "Startup Persistence from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-any where event.category : ("registry", "file") and
+any where event.category : ("registry", "file") and process.executable != null and
  not event.action : ("deletion", "query") and process.thread.Ext.call_stack_summary : "?*" and
  not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
  not process.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*") and
@@ -32,7 +32,8 @@ any where event.category : ("registry", "file") and
 	                $entry.protection : "RWX" and
 	                $entry.symbol_info : ("?:\\Windows\\Installer\\*",
 	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\*\\isrt.dll!_RegSetKeyValue+*",
-	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\{*}\\ISSetup.dll!InstallEngineTypelib*"))
+	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\{*}\\ISSetup.dll!InstallEngineTypelib*",
+	                                      "?:\\Program Files (x86)\\Gizmo\\gdrive.dll!Remount_Startup_Images*"))
 '''
 
 min_endpoint_version = "8.7.0"

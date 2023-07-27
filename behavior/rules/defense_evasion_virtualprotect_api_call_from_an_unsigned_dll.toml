@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id
@@ -26,18 +26,17 @@ sequence by process.entity_id
                     "?:\\Windows\\assembly\\*") and
 
   not (process.code_signature.trusted == true and
-       process.code_signature.subject_name : ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG")) and
+       process.code_signature.subject_name :
+                         ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG", "EFI Software (Electronics for Imaging, Inc.)")) and
 
-  not process.executable :
-                ("?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
-                 "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
-                 "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe",
-                 "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe") and
+  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
   not dll.hash.sha256 : 
                ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9", 
                 "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea", 
                 "4b3d1f4ec733afa5c593be64f251560515b91cb328e5c741ff877455aff0d453", 
-                "b950c9f7fb8e9b558d9caf634d7463fb4bf0aaf69a501d8f922763f8837b0ad2")
+                "b950c9f7fb8e9b558d9caf634d7463fb4bf0aaf69a501d8f922763f8837b0ad2",
+                "6eed2886728608f1b3f4a54a7a7d338ef1b1669f6f53a5d38bcd352f0ec755c9",
+                "139a3fba0e2035830021d50bd24b73dc6d5b8b0520ee6d946ebef1ec2f602ff0")
  ] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and

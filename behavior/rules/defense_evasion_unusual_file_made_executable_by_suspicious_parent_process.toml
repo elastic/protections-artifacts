@@ -7,7 +7,7 @@ id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
 license = "Elastic License v2"
 name = "Unusual File Made Executable by Suspicious Parent Process"
 os_list = ["macos"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -36,6 +36,7 @@ process where event.type == "start" and event.action == "exec" and
                                  "/bin/*", 
                                  "/sbin/*", 
                                  "/opt/homebrew/*",
+                                 "/Library/Kaseya/AgentMon",
                                  "/Library/Application Support/SyncroMSP/SyncroMSP.app/Contents/MacOS/*/SyncroDesktop.Svc",
                                  "/usr/local/share/dotnet/dotnet",
                                  "/Applications/Eclipse.app/Contents/MacOS/eclipse",
@@ -49,12 +50,17 @@ process where event.type == "start" and event.action == "exec" and
                                  "/Applications/Eclipse_2020.app/Contents/MacOS/eclipse",
                                  "/Users/*/eclipse/*/Eclipse.app/Contents/MacOS/eclipse",
                                  "/Applications/Eclipse.app/Contents/MacOS/eclipse", 
+                                 "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Software Uninstaller",
                                  "/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service",
                                  "/usr/local/Cellar/*",
-                                 "/opt/cisco/anyconnect/*")
+                                 "/opt/cisco/anyconnect/*") and not
+    process.Ext.effective_parent.executable : ("/Applications/EaseUS Data Recovery Wizard.app/Contents/MacOS/EaseUS Data Recovery Wizard",
+                                               "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Printer Driver Installer",
+                                               "/Library/Kaseya/AgentMon",
+                                               "/Applications/Disk Drill.app/Contents/MacOS/Disk Drill")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -85,4 +91,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"

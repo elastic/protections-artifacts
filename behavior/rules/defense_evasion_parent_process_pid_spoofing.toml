@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.27"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=5m
@@ -95,7 +95,13 @@ sequence with maxspan=5m
   /* noisy with variable patterns for the parent and real parent process */
   not (process.executable : "*\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system") and
 
-  not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87"
+  /* AM_Delta_Patch Windows Update */
+  not (process.name : "MpSigStub.exe" and user.id == "S-1-5-18" and
+       process.parent.executable : ("wuaucltcore.exe", "wuauclt.exe") and process.code_signature.trusted == true) and
+
+  not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87" and
+
+  not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe")
   ] by process.parent.Ext.real.entity_id
 '''
 

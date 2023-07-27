@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies registry modification via the Remote Registry service to point to an executable or script file. This may
+indicate attempt to move laterally via remote configuration changes.
+"""
+id = "01c2b2e3-a0a9-4ad1-92e2-1aa80d70de50"
+license = "Elastic License v2"
+name = "Suspicious Remote Registry Modification"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-12-*") and
+ process.name : "svchost.exe" and process.thread.Ext.call_stack_summary : "*regsvc.dll|rpcrt4.dll*" and
+ (
+  registry.data.strings : ("*:\\*\\*", "*.exe*", "*.dll*", "*rundll32*", "*powershell*", "*http*", "* /c *", "*COMSPEC*", "\\\\*.*") or
+  registry.path :
+         ("HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ServiceDLL",
+          "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\ImagePath",
+          "HKEY_USERS\\*Classes\\*\\InprocServer32\\",
+          "HKEY_USERS\\*Classes\\*\\LocalServer32\\",
+          "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*") or
+  (registry.value : "Start" and registry.data.strings : "4")
+  ) and
+  not registry.path : ("HKLM\\SOFTWARE\\Microsoft\\SMS\\*",
+                       "HKLM\\SYSTEM\\*ControlSet*\\Services\\EventLog\\Microsoft-ServerManagementExperience\\*")
+'''
+
+actions = []
+min_endpoint_version = "8.7.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.7.0"

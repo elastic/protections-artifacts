@@ -1,0 +1,59 @@
+[rule]
+description = "Identifies registry modification via Windows Management Instrumentation to point to an executable or script file."
+id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
+license = "Elastic License v2"
+name = "Unusual Registry Modification via WMI"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
+ user.id : ("S-1-5-21*", "S-1-12-*") and
+ registry.data.strings : ("*.dll*", "*.exe*", "*.sys", "*rundll32.exe*", "*cscript.exe*", "*wscript.exe", "*powershell.exe*", "*regsvr*", "*Users\\Public\\*", "*mshta*") and
+ not registry.path :
+             ("HKLM\\SOFTWARE\\lansweeper\\Remote Deployment\\*",
+              "HKEY_USERS\\*\\SOFTWARE\\Black Ice Software LLC\\*",
+              "HKLM\\SOFTWARE\\Legato\\NetWorker\\QuietUninstallString",
+              "HKEY_USERS\\*\\Software\\SSPrint\\ssn3m\\AutoConfig_DeviceID",
+              "HKEY_USERS\\*\\Software\\ODBC\\ODBC.INI\\DMG\\Driver") and
+ not registry.key : ("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\TSAppAllowList\\Applications\\*",
+                     "*Classes\\Local Settings\\MuiCache\\*",
+                     "*Classes\\SystemFileAssociations\\*",
+                     "*\\Software\\AppDataLow\\Software*") and
+ not (registry.key : "SYSTEM\\ControlSet001\\Control\\Terminal Server\\WinStations\\RDP-Tcp" and registry.data.strings : "CfgDLL")
+'''
+
+actions = []
+min_endpoint_version = "8.4.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

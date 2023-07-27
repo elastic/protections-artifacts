@@ -7,7 +7,7 @@ id = "83da4fac-563a-4af8-8f32-5a3797a9068e"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and
@@ -45,7 +45,8 @@ process where event.type == "start" and
      not (process.code_signature.subject_name : "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true) and
      not (process.parent.name : "cscript.exe" and
           process.parent.args : "?:\\Windows\\Options\\SWD\\MapHomeDrive_*.vbs" and process.name : "mshta.exe") and
-     not (process.name : "rundll32.exe" and process.parent.args : "?:\\Program Files (x86)\\PCMatic\\PC Matic\\registerActiveX.wsf")
+     not (process.name : "rundll32.exe" and process.parent.args : "?:\\Program Files (x86)\\PCMatic\\PC Matic\\registerActiveX.wsf") and
+     not process.command_line : "mshta.exe"
 '''
 
 min_endpoint_version = "7.15.0"

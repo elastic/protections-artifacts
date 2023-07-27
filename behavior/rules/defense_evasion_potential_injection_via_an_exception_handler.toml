@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies suspicious memory intrusion events originating from an exception handler. This may be the result of an
+evasion attempt to evade memory scanners while performing malicious code injection.
+"""
+id = "66e9a65a-d1ef-4590-a397-5d21bddfec0c"
+license = "Elastic License v2"
+name = "Potential Injection via an Exception Handler"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[api where process.Ext.api.behaviors :
+                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                   "execute_shellcode", "allocate_in_system_image_range") and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
+ not (process.name : "cmd.exe" and
+      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+[api where process.Ext.api.behaviors :
+                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                   "execute_shellcode", "allocate_in_system_image_range") and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
+ not (process.name : "cmd.exe" and
+      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+[api where process.Ext.api.behaviors :
+                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                   "execute_shellcode", "allocate_in_system_image_range") and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
+ not (process.name : "cmd.exe" and
+      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

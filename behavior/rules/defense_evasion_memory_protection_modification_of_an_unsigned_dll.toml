@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies the load of an unsigned or untrusted DLL by Rundll32 or Regsvr32 followed by calling VirtualProtect API to
+change the memory protection of the same loaded DLL. This may indicate an attempt to unpack malicious code from the DLL
+to perform code injection.
+"""
+id = "5f1eb14e-9717-4a35-bc80-3fb453a59596"
+license = "Elastic License v2"
+name = "Memory Protection Modification of an Unsigned DLL"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[library where
+   process.name : ("rundll32.exe", "regsvr32.exe") and
+   (dll.Ext.relative_file_creation_time <= 900 or
+    (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not dll.path : "C:\\*") or
+    dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+    not dll.path : ("?:\\Windows\\Installer\\*",
+                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                    "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                    "?:\\Program Files\\*",
+                    "?:\\Program Files (x86)\\*",
+                    "?:\\Windows\\assembly\\*",
+                    "?:\\Windows\\Microsoft.NET\\*") and
+    not dll.hash.sha256 : ("6e51bb2531165a4f0a561e6641ea718ee82bcc3447fa3c365155aefd71e0a7d5")] by dll.name
+[api where
+  process.Ext.api.name : "VirtualProtect*" and
+  process.Ext.api.parameters.protection : ("*X*", "*W*")] by process.Ext.api.parameters.name
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

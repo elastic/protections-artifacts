@@ -10,12 +10,14 @@ id = "c5681e08-0c25-4030-b306-c67efc36d324"
 license = "Elastic License v2"
 name = "Dylib Load with Suspicious Code Signature"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 any where event.action == "load" and 
     dll.code_signature.subject_name : ("Apple Distribution:*", "3rd Party Mac Developer Application:*") and 
-    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")
+    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and not
+    (process.executable : "/Applications/EntryReady Local Encoder.app/Contents/MacOS/EntryReady Local Encoder" and 
+     dll.code_signature.subject_name : "Apple Distribution: Corserva, Inc. (68V7726M4Z)")
 '''
 
 min_endpoint_version = "8.7.0"

@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies attempt to load an untrusted Windows Management Instrumentation (WMI) performance module. WMI performance
+modules can be used to execute in the context of a privileged process leveraging the WmiPerfClass.
+"""
+id = "ad909beb-74cd-40a0-b0a3-35e1d3a65042"
+license = "Elastic License v2"
+name = "Suspicious WMI Performance Module"
+os_list = ["windows"]
+reference = ["https://posts.specterops.io/performance-diagnostics-and-wmi-21f3e01790d3"]
+version = "1.0.2"
+
+query = '''
+library where
+ (
+  (process.name : ("WmiPrvSE.exe", "svchost.exe") and user.id : ("S-1-5-18", "S-1-5-19") and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*PdhCollectQueryData*", "*WmiPerfClass*")) and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*RegQueryValue*")) or
+
+  (process.name : "svchost.exe" and user.id : "S-1-5-19" and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*regsvc.dll*") and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*RtlFormatCurrentUserKeyPath*")) or
+
+  (process.name : ("svchost.exe", "wmiprvse.exe") and user.id : ("S-1-5-18", "S-1-5-19") and
+   process.thread.Ext.call_stack_summary :
+                      ("*advapi32.dll|kernelbase.dll|pdh.dll|sdprov.dll|ntdll.dll*",
+                       "*kernelbase.dll|pdh.dll|wmiperfclass.dll|wmiprvse.exe*"))
+ ) and
+
+ not dll.code_signature.status : "trusted" and
+
+ /* excluding DLLs with creation and modification time more than 7d old */
+ not (dll.Ext.relative_file_creation_time >= 600000 and dll.Ext.relative_file_name_modify_time >= 600000) and
+
+ not (dll.path : "?:\\Program Files*\\Arcserve\\RHA\\*" and process.thread.Ext.call_stack_summary : "*fastprox.dll|combase.dll*") and
+ not (dll.path : "?:\\Windows\\System32\\msscntrs.dll" and dll.pe.original_file_name : "pkmcntrs.dll") and 
+ not (dll.path : "?:\\Windows\\System32\\winspool.drv" and dll.pe.original_file_name : "winspool.drv")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.7.0"

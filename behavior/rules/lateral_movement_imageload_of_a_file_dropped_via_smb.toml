@@ -7,7 +7,7 @@ id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
 license = "Elastic License v2"
 name = "ImageLoad of a File dropped via SMB"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=5m
@@ -16,7 +16,11 @@ sequence with maxspan=5m
    process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
    (file.extension : ("dll", "cpl", "ocx") or (file.Ext.header_bytes : "4d5a*" and not file.extension : "exe")) ] by file.path
   [ library where dll.hash.sha256 != null and
-    (process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe", "lsass.exe") or process.executable : "?:\\Windows\\Microsoft.NET\\*.exe") and
+    (process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe", "lsass.exe") or
+     process.executable :
+              ("?:\\Windows\\Microsoft.NET\\*.exe",
+               "?:\\WINDOWS\\system32\\PerceptionSimulation\\PerceptionSimulationService.exe",
+               "?:\\Program Files*\\Windows NT\\Accessories\\wordpad.exe")) and
 
     /* signed FPs */
     not (dll.code_signature.subject_name : ("Veeam Software Group GmbH", "Veeam Software AG", "Lansweeper", "Microsoft Windows",
@@ -39,7 +43,11 @@ sequence with maxspan=5m
               "f9ff91b05b5e705464d364226ba5e40b9256f4720f3f9281247c7ce19f311f12",
               "fab84acf7d285984bb61fa655c24973de89b2234b7ba002954ba315fb2b9c90c",
               "b628784e41989e5ba2f96beec98c42fc32d15fc2de03187f6c50cc6705b57166",
-              "2d64b8e67e97ccd363d26a5ee3acbb9fe949d2f7f22ae6dc134645972c3f43d9") and
+              "2d64b8e67e97ccd363d26a5ee3acbb9fe949d2f7f22ae6dc134645972c3f43d9",
+              "5e40b53733105e98ad2914bfb2f0dda52e3b9b3c87d82bf4ff092f1bed25cd13",
+              "6d859a89e80f290249b9b1a7aaea3929d999f1f15b99089f88d5e5120e23a6d8",
+              "2c611395ad89e8653533e6c1b8815720f7fb4c043197e52c93d983b3e3726226",
+              "ce77f9afb4942b85a0bfa1ccb41c0b599f0275e56c6ed2e9699dada6b08989d3") and
     not (dll.path : "?:\\LifecareMALL\\mmm\\*" and process.name : "regsvr32.exe" and user.id : "S-1-5-18")
     ] by dll.path
 '''

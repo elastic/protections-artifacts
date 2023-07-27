@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -34,7 +34,8 @@ sequence with maxspan=5m
                      "?:\\Windows\\System32\\drivers\\*.exe",
                      "?:\\Program Files\\Cloudflare\\*.exe",
                      "?:\\Program Files\\ExpressConnect\\ECDBWMService.exe",
-                     "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell_ise.exe")
+                     "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell_ise.exe",
+                     "?:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe")
   ] by process.parent.entity_id
 [network where true] by process.entity_id
 '''

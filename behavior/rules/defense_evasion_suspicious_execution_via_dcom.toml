@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=1m
@@ -52,9 +52,7 @@ sequence with maxspan=1m
                         "?:\\Program Files\\*")) and
 
    not process.hash.sha256 : "f18a9d2e5af55587a3c13edde7a33a235634b2be8b567fa0a195923305e13f09" and
-   not (process.code_signature.subject_name : ("F5 Networks Inc", "Citrix Systems, Inc.", "fCoder SIA", "Adobe Inc.",
-                                               "Google LLC", "Corel Corporation") and
-        process.code_signature.trusted == true) and
+   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
    not (process.pe.original_file_name : "msedgeupdate.dll" and process.code_signature.trusted == true)
    ] by process.entity_id
   [process where event.action : "start" and
@@ -95,22 +93,7 @@ sequence with maxspan=1m
                 "?:\\Windows\\SysWOW64\\PresentationHost.exe",
                 "?:\\Program Files (x86)\\BL\\BL\\ACTIVEX.OUT.OF.PROCESS\\*.exe") and
 
-   not (process.code_signature.trusted == true and
-        process.code_signature.subject_name :
-                                    ("Google LLC",
-                                     "CASERIS GmbH",
-                                     "Black Ice Software LLC",
-                                     "Citrix Systems, Inc.",
-                                     "Dropbox, Inc",
-                                     "Hidden Reflex",
-                                     "TEAMDEV LTD.",
-                                     "CANON INC.",
-                                     "Cisco WebEx LLC",
-                                     "Avast Software s.r.o.",
-                                     "Brave Software, Inc.",
-                                     "FOXIT SOFTWARE INC.",
-                                     "Daishin Securities Co., LTD",
-                                     "AVG Technologies USA, LLC")) and
+   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
 
    not (process.executable :
               ("?:\\Users\\*",

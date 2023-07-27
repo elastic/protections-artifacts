@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id
@@ -47,7 +47,8 @@ sequence by process.entity_id
                     "afa3dc1ecd4e15a869dc57a280aee930fc0bab1cd49e17afd3944ae4ad1fc91f",
                     "18b177280b0e0e05aa0e26807f34634c3384ae4f5901f41ff5bb0a720ea5c106",
                     "4f1528318085f6117734a27f34a317a83b096d55532000f81ed67b1bb10632fa",
-                    "35f210c1f941f917b81c2516bee9de8f0495baca42095685e9b0b76f67250dc9") and
+                    "35f210c1f941f917b81c2516bee9de8f0495baca42095685e9b0b76f67250dc9",
+                    "edef301528767963f460bf7fe497ca3b5c648627a2d13abe74d5544578b56bd4") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -85,7 +86,8 @@ sequence by process.entity_id
                           "*d74533db4c8b4d504c894d284c8d0d0f0000004c894d404c8b4d6041c6410c00ffd0*",
                           "83ec28488b4c2430ff15b40f00004883c428c3cccccccccccccc4c894424188954241048894c24084883ec38837c244801755f488d0d701f0000ff15720f0000",
                           "55c0488d55c0488b4d10e8886dadff488bc8488975b8488b55b0488b5220488b02488bd64533db4c8b45b04c8945804c8d050a0000004c894598c6470c00ffd0", 
-                          "488bcd48894da8488d8d78ffffff48894b10488975c0488b4db8488b4920488b01488bcf488bd64c8b45b84c8945884c8d050a0000004c8945a0c6430c00ffd0")) and
+                          "488bcd48894da8488d8d78ffffff48894b10488975c0488b4db8488b4920488b01488bcf488bd64c8b45b84c8945884c8d050a0000004c8945a0c6430c00ffd0",
+                          "80000000c7858c00000001000000488b4d50488b4920488b01488b8d800000004533db488b555048895528488d150e00000048895540488b5560c6420c00ffd0")) and
   /* Managed Code, Cynet MemScanner, xSecuritas */
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :

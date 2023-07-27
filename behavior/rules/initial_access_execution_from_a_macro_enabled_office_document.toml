@@ -8,7 +8,7 @@ id = "1c4047ca-a69b-473f-a93e-5660e012d9a5"
 license = "Elastic License v2"
 name = "Execution from a Macro Enabled Office Document"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -23,7 +23,12 @@ process where event.action == "start" and
         _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Program Files*\\Microsoft Office\\root\\Office*\\MSACCESS.EXE!FDeliverDb*")) and
 
    not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
-        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*")
+        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+
+   not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb", "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0") and
+
+   not (process.executable : "?:\\WINDOWS\\system32\\dwwin.exe" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*"))
 '''
 
 min_endpoint_version = "8.7.0"

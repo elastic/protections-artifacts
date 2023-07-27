@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies the creation of registry symbolic link by an unusual process. This may indicate an attempt to elevate
+privileges via hijacking privileged registry read operations using a malicious registry symbolic link.
+"""
+id = "0c5c8b29-9903-4a04-9ca8-20abafc9db41"
+license = "Elastic License v2"
+name = "Suspicious Registry Symbolic Link"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-12-*") and
+registry.value : "SymbolicLinkValue" and process.executable : "?:\\*" and
+ not process.executable :
+            ("?:\\Windows\\System32\\DriverStore\\FileRepository\\*", 
+	     "?:\\Windows\\System32\\svchost.exe", 
+             "?:\\Program Files\\*.exe", 
+	     "?:\\Program Files (x86)\\*.exe") and
+ not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and 
+ not (process.name : "DismHost.exe" and process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *") and
+ not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and registry.path : "HKEY_USERS\\*\\Software\\Nico Mak Computing\\SymbolicLinkValue")
+'''
+
+actions = []
+min_endpoint_version = "8.4.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

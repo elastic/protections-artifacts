@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies an attempt to load a network module from unbacked memory or perform suspicious Windows API calls by an
+executable with erroneous code signature. Malware may append malicious code to benign signed binaries or use invalid
+code signature to bypass certain security controls.
+"""
+id = "f3f769b9-0695-49ed-ab6e-c8f199a7d2c8"
+license = "Elastic License v2"
+name = "Potential Evasion via Invalid Code Signature"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+any where
+ process.executable != null and process.code_signature.status : "errorBadDigest" and 
+ process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "rwx", "hollow_image") and 
+ not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
+      not process.code_signature.subject_name : "Microsoft*") and
+ (
+  (event.category : "api" and event.category : "intrusion_detection") or
+
+  (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
+   process.thread.Ext.call_stack_summary :
+            ("*kernelbase.dll|Unbacked*", "*ntdll.dll|Unbacked*", "*wininet.dll|Unbacked*",
+             "*dnsapi.dll|Unbacked*", "*ws2_32.dll|Unbacked*", "*iphlpapi.dll|Unbacked*",
+             "*winhttp.dll|Unbacked*", "Unbacked|*"))
+ ) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                     $entry.symbol_info : ("?:\\Program Files\\*.dll*",
+                                           "?:\\Program Files (x86)\\*.dll*",
+                                           "?:\\windows\\system32\\*\\tmmon*.dll*",
+                                           "?:\\Windows\\SysWOW64\\esensordbi.dll*",
+                                           "?:\\Windows\\System32\\esensordbi.dll*",
+                                           "?:\\Windows\\System32\\umppc*.dll*",
+                                           "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
+                                           "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*",
+                                           "?:\\windows\\system32\\hmpalert.dll!*"))
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

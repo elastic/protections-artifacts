@@ -7,7 +7,7 @@ id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
 license = "Elastic License v2"
 name = "Suspicious API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id
@@ -26,7 +26,8 @@ sequence by process.entity_id
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
                     "?:\\Program Files\\*",
                     "?:\\Program Files (x86)\\*",
-                    "?:\\Windows\\assembly\\*") and
+                    "?:\\Windows\\assembly\\*",
+                    "?:\\Windows\\twain_32\\*") and
    not (process.executable :
              ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
               "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and

@@ -8,14 +8,14 @@ id = "ccbc4a79-3bae-4623-aaef-e28a96bf538b"
 license = "Elastic License v2"
 name = "Execution of a File Written by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence with maxspan=5m
   [file where event.action != "deletion" and
-   (process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe") or
+   (process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe", "PrintBrm.exe") or
     process.executable : "?:\\Windows\\sys*\\OpenSSH\\sftp.exe") and
-   not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] by file.path
+    not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] by file.path
   [process where event.action == "start" and
    not process.parent.executable : ("?:\\Windows\\System32\\drvinst.exe") and
    not (process.code_signature.subject_name: "Bentley Systems, Incorporated" and process.code_signature.trusted == true)

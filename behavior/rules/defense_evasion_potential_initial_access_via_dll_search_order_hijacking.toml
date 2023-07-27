@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Initial Access via DLL Search Order Hijacking"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 file where event.action != "deletion" and
@@ -21,7 +21,8 @@ file where event.action != "deletion" and
          "?:\\Users\\*\\AppData\\Local\\slack\\app-*\\*.dll",
          "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\*") and
  process.name : ("winword.exe", "excel.exe", "powerpnt.exe", "MSACCESS.EXE", "MSPUB.EXE", "fltldr.exe", "cmd.exe",
-                 "certutil.exe", "mshta.exe", "cscript.exe", "wscript.exe", "curl.exe", "powershell.exe", "pwsh.exe") and 
+                 "certutil.exe", "mshta.exe", "cscript.exe", "wscript.exe", "curl.exe", "powershell.exe", "pwsh.exe",
+                 "mstsc.exe") and
  not file.path : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\*.dll",
                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\resources\\meeting-addin\\*")
 '''

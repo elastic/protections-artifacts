@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name :"VirtualAlloc" and
@@ -21,7 +21,9 @@ api where process.Ext.api.name :"VirtualAlloc" and
              ("?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
               "?:\\Program Files (x86)\\HP\\HP LaserJet Pro MFP*\\Help_Learn\\Help.exe",
               "E:\\*PortableCase\\Dependencies\\Sandbox\\stubcache\\CefSharp.BrowserSubprocess.exe") and
- not (process.code_signature.subject_name : ("Atera Networks Ltd", "Riot Games, Inc.") and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name : ("Atera Networks Ltd", "Riot Games, Inc.", "IObit CO., LTD", "IObit Information Technology") and
+      process.code_signature.trusted == true) and
+ not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.8.0"

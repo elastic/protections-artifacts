@@ -14,12 +14,13 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 any where ((event.action == "load" and not dll.path : "?*") or 
   (event.action == "load" and dll.name : "NSCreateObjectFileImageFromMemory*")) and not
-  process.code_signature.subject_name : "Developer ID Application: AMZN Mobile LLC (94KV3E626L)"
+  process.code_signature.subject_name : ("Developer ID Application: AMZN Mobile LLC (94KV3E626L)",
+                                         "Apple Mac OS Application Signing")
 '''
 
 min_endpoint_version = "8.7.0"

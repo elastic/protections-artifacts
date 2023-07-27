@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Payload Downloaded by Process Running in Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://objective-see.com/blog/blog_0x69.html"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -41,6 +41,7 @@ sequence by process.entity_id with maxspan=30s
                   "http*localhost*",
                   "http*127.0.0.1*",
                   "http*0.0.0.0*",
+                  "*jumpcloud.osquery_manager*",
                   "https://zoom.us/client/*") and 
   not process.parent.executable : ("/usr/local/munki/*",
                                    "/System/*",

@@ -8,7 +8,7 @@ id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
 license = "Elastic License v2"
 name = "Potential Masquerading as Windows Error Manager"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.15"
 
 query = '''
 process where event.action == "start" and
@@ -16,16 +16,16 @@ process where event.action == "start" and
  process.parent.thread.Ext.call_stack_summary : "*|*" and
  not process.parent.thread.Ext.call_stack_summary : ("*faultrep.dll*", "*wersvc.dll*", "*|wer.dll|*", "*|ubpm.dll|*", "*|cbscore.dll|rpcrt4.dll*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-                  $entry.symbol_info: ("?:\\Windows\\System32\\kernel32.dll!Wer*",
-                                       "?:\\Windows\\SysWOW64\\kernel32.dll!Wer*",
-                                       "?:\\Windows\\Sys*\\KernelBase.dll!UnhandledExceptionFilter*",
-                                       "?:\\Windows\\Sys*\\kernel32.dll!BasepReportFault*",
+                  $entry.symbol_info: ("*kernel32.dll*!Wer*",
+                                       "*KernelBase.dll*!UnhandledExceptionFilter*",
+                                       "*kernel32.dll*!BasepReportFault*",
+                                       "*combase.dll!CoSetErrorInfo*",
                                        "?:\\Program Files\\*.dll*", 
                                        "?:\\Program Files (x86)\\*.dll*",
                                        "?:\\Windows\\System32\\dataclen.dll*Purge*",
-                                       "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe.kernel32.dll.*!WerpLaunchAeDebug*", 
+                                       "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\*!WerpLaunchAeDebug*",
                                        "?:\\Windows\\System32\\tmumh\\*.dll*",
-                                       "?:\\Windows\\WinSxS\\*\\kernel32.dll!WerpLaunchAeDebug*",
+                                       "*kernel32.dll*!WerpLaunchAeDebug*",
                                        "?:\\Windows\\System32\\SettingsHandlers_StorageSense.dll!GetSettingForUser*")) and
  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll"
 '''

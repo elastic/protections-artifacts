@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -81,7 +81,9 @@ sequence with maxspan=5m
 
   not (process.pe.original_file_name == "tailscale-ipn.exe" and
         process.code_signature.subject_name == "Tailscale Inc." and
-        (process.code_signature.trusted == true or process.code_signature.status == "errorChaining"))
+        (process.code_signature.trusted == true or process.code_signature.status == "errorChaining")) and
+
+  not (user.id : "S-1-5-18" and process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
@@ -96,8 +98,8 @@ sequence with maxspan=5m
   not (process.executable : "*\\WINDOWS\\system32\\WerFaultSecure.exe" and process.Ext.token.integrity_level_name == "system") and
 
   /* AM_Delta_Patch Windows Update */
-  not (process.name : "MpSigStub.exe" and user.id == "S-1-5-18" and
-       process.parent.executable : ("wuaucltcore.exe", "wuauclt.exe") and process.code_signature.trusted == true) and
+  not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and
+       process.parent.name : ("wuauclt.exe", "wuaucltcore.exe") and user.id : "S-1-5-18") and
 
   not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87" and
 

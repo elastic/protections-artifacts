@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.action == "start" and
@@ -38,10 +38,6 @@ process where event.action == "start" and
 
  not process.parent.executable : ("?:\\Windows\\System32\\AtBroker.exe", "?:\\Windows\\System32\\Utilman.exe") and
 
- /* AM_Delta_Patch Windows Update */
- not (process.name : "MpSigStub.exe" and user.id == "S-1-5-18" and
-      process.parent.executable : ("wuaucltcore.exe", "wuauclt.exe") and process.code_signature.trusted == true) and
-
  not (process.code_signature.subject_name in
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
             "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
@@ -63,7 +59,11 @@ process where event.action == "start" and
       process.name : "cmd.exe" and process.args : "?:\\Program Files (x86)\\SubPrint/subprint_temp/configure.bat") and
  not process.parent.executable : "?:\\Program Files (x86)\\VisualCron\\VisualCronService.exe" and
  not (process.name : "powershell.exe" and process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
-      process.command_line : "powershell.exe -NonInteractive -NoProfile -ExecutionPolicy Bypass -EncodedCommand CgA*")
+      process.command_line : "powershell.exe -NonInteractive -NoProfile -ExecutionPolicy Bypass -EncodedCommand CgA*") and
+
+ /* AM_Delta_Patch Windows Update */
+ not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and 
+      process.parent.name : ("wuauclt.exe", "wuaucltcore.exe"))
 '''
 
 min_endpoint_version = "7.15.0"

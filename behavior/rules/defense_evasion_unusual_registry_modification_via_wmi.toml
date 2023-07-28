@@ -4,7 +4,7 @@ id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
 license = "Elastic License v2"
 name = "Unusual Registry Modification via WMI"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
@@ -15,7 +15,9 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
               "HKEY_USERS\\*\\SOFTWARE\\Black Ice Software LLC\\*",
               "HKLM\\SOFTWARE\\Legato\\NetWorker\\QuietUninstallString",
               "HKEY_USERS\\*\\Software\\SSPrint\\ssn3m\\AutoConfig_DeviceID",
-              "HKEY_USERS\\*\\Software\\ODBC\\ODBC.INI\\DMG\\Driver") and
+              "HKEY_USERS\\*\\Software\\ODBC\\ODBC.INI\\DMG\\Driver",
+              "HKLM\\SYSTEM\\*\\Control\\Session Manager\\PendingFileRenameOperations",
+              "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MDM\\JobDB\\*\\UrlList") and 
  not registry.key : ("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\TSAppAllowList\\Applications\\*",
                      "*Classes\\Local Settings\\MuiCache\\*",
                      "*Classes\\SystemFileAssociations\\*",

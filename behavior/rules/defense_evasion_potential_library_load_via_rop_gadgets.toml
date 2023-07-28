@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 library where process.pid != 4 and
@@ -17,7 +17,8 @@ library where process.pid != 4 and
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
                   $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
                                       "*ntdll.dll*!*OpenThreadTokenEx*", "*ntdll.dll*!*DeviceIoControlFile*", "*ntdll.dll*!NtOpenProcess*",
-                                      "*ntdll.dll*!*CreateUserProcess*", "*ntdll.dll*!NtTerminateProcess*", "*ntdll.dll*!NtAlpcOpenSenderProcess*")) and
+                                      "*ntdll.dll*!*CreateUserProcess*", "*ntdll.dll*!NtTerminateProcess*", "*ntdll.dll*!NtAlpcOpenSenderProcess*",
+                                      "*ntdll.dll*!*ReplyWaitReceivePortEx*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*")
 '''

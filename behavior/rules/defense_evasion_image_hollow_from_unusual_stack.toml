@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -26,7 +26,7 @@ api where process.Ext.api.behaviors == "hollow_image" and
                                  "*crpe32.dll*", "*_*.dll*", "*-*.dll*", "*sqlite?.dll*") and not process.Ext.api.summary : "*ws2_32*") and 
   not (process.parent.executable : "?:\\Program Files (x86)\\think-cell\\tcasr.exe" and 
        process.executable : "?:\\Program Files\\Microsoft Office\\root\\Office*\\EXCEL.EXE") and
-  not (process.code_signature.subject_name : "Code Systems Corporation" and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : ("Code Systems Corporation", "Essential Objects, Inc.") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.8.0"

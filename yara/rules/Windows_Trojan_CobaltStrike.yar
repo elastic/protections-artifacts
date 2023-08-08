@@ -826,29 +826,6 @@ rule Windows_Trojan_CobaltStrike_8751cdf9 {
         all of them
 }
 
-rule Windows_Trojan_CobaltStrike_8519072e {
-    meta:
-        author = "Elastic Security"
-        id = "8519072e-3e43-470b-a3cf-18f92b3f31a2"
-        fingerprint = "9fc88b798083adbcf25f9f0b35fbb5035a98cdfe55377de96fa0353821de1cc8"
-        creation_date = "2021-03-25"
-        last_modified = "2021-10-04"
-        description = "Identifies Cobalt Strike trial/default versions"
-        threat_name = "Windows.Trojan.CobaltStrike"
-        severity = 90
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $a1 = "User-Agent:"
-        $a2 = "wini"
-        $a3 = "5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*" ascii fullword
-        $a4 = /[^0-9";.\/]([0-9]{1,3}\.){3}[0-9]{1,3}[^0-9";.\/]/
-    condition:
-        all of them
-}
-
 rule Windows_Trojan_CobaltStrike_663fc95d {
     meta:
         author = "Elastic Security"

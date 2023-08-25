@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
 sequence with maxspan=5m
@@ -35,9 +35,7 @@ sequence with maxspan=5m
           "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
           "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
           "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
-          "\\Device\\CdRom*",
-          "\\Device\\Mup\\*",
-          "\\\\*") or
+          "\\Device\\CdRom*") or
 
     /* execution from a mounted device */
     (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")
@@ -57,19 +55,25 @@ sequence with maxspan=5m
                                       "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
                                       "?:\\Program Files (x86)\\ITSPlatform\\plugin\\scripting\\platform-scripting-plugin.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe",
-                                      "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\Lenovo.Vantage.AddinInstaller.exe")) and
+                                      "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\Lenovo.Vantage.AddinInstaller.exe",
+                                      "?:\\ProgramData\\Lenovo\\LenovoNow\\Downloads\\LenovoNow.Updater.exe",
+                                      "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoFirstRunExperiencePackage\\x86\\LenovoWelcomeTask.exe",
+                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
     not process.executable :
                 ("?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe",
-                 "?:\\Program Files (x86)\\Beyond Compare ?\\UACLaunch.exe") and
+                 "?:\\Program Files (x86)\\Beyond Compare ?\\UACLaunch.exe",
+                 "?:\\Windows\\SysWOW64\\OneDriveSetup.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe") and
     /* DOCs opened from network file share trigger an office default scheduled task */
     not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
     not process.hash.sha256 :
                   ("3d95157908cee58d19193c93c5f2b0a06910b8123a4211b0ea059ff66f2506e0",
                    "79dbc3cf0d4cdc0f2150ab5e2bf3457ba54297202500f26f1a1d48e455f7c54a",
                    "62d96982e2c2d58682471af9a9d0727ba49199d48b7766c318886e8e7e23670a",
-                   "ef330f95416162866f5d8b9cd509066ab4168cfcc66e305006be1952905d47e6")
+                   "ef330f95416162866f5d8b9cd509066ab4168cfcc66e305006be1952905d47e6") and
+    not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

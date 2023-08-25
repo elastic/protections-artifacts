@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.24"
+version = "1.0.26"
 
 query = '''
 process where event.action == "exec" and
@@ -68,10 +68,18 @@ process where event.action == "exec" and
           "/opt/jc/bin/jumpcloud-agent",
           "/usr/sbin/networksetup"
         ) and
-   not (process.name : "sh" and process.command_line : "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*")
+   not (process.name : "sh" and process.command_line : "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
+
+   not process.Ext.effective_parent.executable : (
+        "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
+        "/usr/local/Privacy-i/PISupervisor",
+        "/Library/Elastic/Agent/*",
+        "/opt/jc/bin/jumpcloud-agent",
+        "/usr/sbin/networksetup"
+      )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -180,4 +188,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.5.0"

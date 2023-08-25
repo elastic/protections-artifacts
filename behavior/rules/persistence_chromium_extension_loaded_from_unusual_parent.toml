@@ -12,7 +12,7 @@ reference = [
     "https://redcanary.com/blog/chromeloader/",
     "https://blogs.vmware.com/security/2022/09/the-evolution-of-the-chromeloader-malware.html",
 ]
-version = "1.0.16"
+version = "1.0.18"
 
 query = '''
 sequence with maxspan=5m
@@ -22,13 +22,19 @@ sequence with maxspan=5m
    process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Windows\\Microsoft.Net\\*") or
    process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "regsvr32.exe", "rundll32.exe", "cmd.exe")
   ) and
-  not (process.code_signature.subject_name : ("Cypress.io, Inc.", "PortSwigger Ltd", "Scalehat Technologies Ltd") and
+  not (process.code_signature.subject_name : ("Cypress.io, Inc.", "PortSwigger Ltd", "Scalehat Technologies Ltd", "Azul Systems, Inc.") and
        process.code_signature.trusted == true) and
   not process.hash.sha256 :
               ("a064743886dc4068db7e4143a2eba14d1cdf80f5dd28d8057c6087a30ca7f3b4",
                "7d95b4e26859620738a31dbbafbf019da42f2378821e2bb49b748956ef50b3e3",
                "fcc098d6a5df5a302c4fc635203bf28868a92d2469465551f6cf7e5c93a1719a",
-               "e4244190024bdd0ffed267b47f897cca054a4762c76b93cb34ae2d7925589956") and
+               "e4244190024bdd0ffed267b47f897cca054a4762c76b93cb34ae2d7925589956",
+               "e309416c7ec1606899e646b54ff8ac15a42925e2cfb8b0cd5d455b208846671f",
+               "02901bc79c262a6e0c9f8c62682c9165e50ed0027ff54011de949c3a510bbd60",
+               "e309416c7ec1606899e646b54ff8ac15a42925e2cfb8b0cd5d455b208846671f",
+               "ffa8aee6d8b251b21d7744980196fb556ca7e4247aa7017d5e7ee7d498d50c4d",
+               "02901bc79c262a6e0c9f8c62682c9165e50ed0027ff54011de949c3a510bbd60",
+               "976373ee09d6cb298ac802b46002c9dfbd30f1bf0988f840a74285ee409c6d5d") and
   not (process.name : "cmd.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Programs\\GoLogin\\GoLogin.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.command_line : "*--load-extension*"] by process.parent.entity_id

@@ -7,7 +7,7 @@ id = "9ba39516-651e-489f-8b6a-f5501e0c492d"
 license = "Elastic License v2"
 name = "Execution from Suspicious Directory"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,7 +20,6 @@ sequence by process.entity_id with maxspan=1m
           "?:\\Windows\\System32\\Tasks\\*",
           "?:\\Windows\\Tasks\\*",
           "?:\\PerfLogs\\*",
-          "?:\\Users\\Default\\*",
           "?:\\Windows\\Logs\\*",
           "?:\\windows\\Help\\*",
           "?:\\Windows\\INF\\*",
@@ -54,7 +53,14 @@ sequence by process.entity_id with maxspan=1m
                "f97caae8172e3204538e855ee9a32f04fc41be0d67ff7e54c0c903e6dc1dbc26",
                "849b4a0d01c53a4c5f9d3eef9bc5ad2f2ffa6613b763b257a7f654596a5bbc33",
                "e0fb6d51e3a8de0e8db04d0e91517cc46f4d83a55c986b313fb333dc9e5bce83",
-               "422aa4268713b6c99581365985d403a62f6ccd9f0b5a23f9d963d1947dc77aee")]
+               "422aa4268713b6c99581365985d403a62f6ccd9f0b5a23f9d963d1947dc77aee",
+               "c6a75b46eee11a5bb11f5f970b51464a34c6e007583e73f717dbfc74edb84300",
+               "1333bac5283998a18f761816f0fd09028e50e89d7085f39338b57a01549e5015") and
+
+   not (process.code_signature.subject_name :
+                               ("Daybreak Game Company LLC", "Prusa Research a.s.", "RHUB Communications, Inc.",
+                                "Bedford, Freeman & Worth Publishing Group, LLC", "RICOH COMPANY,LTD.",
+                                "NortonLifeLock Inc.") and process.code_signature.trusted == true)]
  [dns where
    dns.question.name : "*.*" and
    process.executable :
@@ -64,7 +70,6 @@ sequence by process.entity_id with maxspan=1m
           "?:\\Windows\\Tasks\\*",
           "?:\\ProgramData\\*",
           "?:\\PerfLogs\\*",
-          "?:\\Users\\Default\\*",
           "?:\\Windows\\Logs\\*",
           "?:\\windows\\Help\\*",
           "?:\\Windows\\INF\\*") and

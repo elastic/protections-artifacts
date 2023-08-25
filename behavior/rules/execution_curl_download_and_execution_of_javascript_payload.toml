@@ -6,24 +6,23 @@ endpoint.
 """
 id = "871f0c30-a7c5-40a5-80e3-a50c6714632f"
 license = "Elastic License v2"
-name = "Download and Execution of JavaScript Payload"
+name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.27"
+version = "1.0.30"
 
 query = '''
-sequence by user.id with maxspan=30s
+sequence by process.parent.entity_id with maxspan=1m
   [process where event.action == "exec" and
-    process.name : "curl" and process.args : "http*" and
-    not process.args : ("https://*.jamfcloud.com/*",
-                        "https://download.zerotier.com/RELEASES/*",
-                        "https://download.mozilla.org/?os=osx&product=firefox-latest-ssl",
-                        "https://support-sp.apple.com/sp/product*")]
+    process.name : "curl" and 
+    process.args : "http*" and
+    not process.args : "https*//support-sp.apple.com/*"]
   [process where event.action == "exec" and process.name : "osascript" and
-    process.command_line : "*-l JavaScript*" and
-    /* rule scope is limited to curl output passed to osascript via pipe */
-    process.args_count <= 3 and not
-    process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"]
+    process.command_line : "*-l JavaScript*" and not
+    process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
+                                               "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
+                                               "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
+                                               "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")]
 '''
 
 min_endpoint_version = "8.5.0"

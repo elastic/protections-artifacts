@@ -7,7 +7,7 @@ id = "be55434a-ae96-437e-aaaf-9fb60cd7dff4"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from SMB"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5m
@@ -132,10 +132,14 @@ sequence with maxspan=5m
 	          "cb7f34839ce80b7aaef9f8d61bc61b1f471fdfc514c13a675350077bbf27b24c",
 	          "c6d195690a617791e7e9f483597cea1f68fbe59e3f9b1989a1d324f00e9d1c80",
 	          "c6d195690a617791e7e9f483597cea1f68fbe59e3f9b1989a1d324f00e9d1c80",
-	          "9e3cd4d957f1130e8308357b921d2475afd1519704f0a176a062d06d96199da2") and
+	          "9e3cd4d957f1130e8308357b921d2475afd1519704f0a176a062d06d96199da2",
+	          "5485ca7e2be4afc76aadd97536192cf2850228fe338083d6bab4c981bd6ddf92") and
 
    not (process.code_signature.subject_name == "CyberArk Software Ltd." and
 	    process.executable : "?:\\Windows\\CAInvokerService.exe" and process.pe.original_file_name == "PSMWinAgentInvoker.exe") and
+
+   not (process.pe.original_file_name == "ccmsetup.exe" and process.code_signature.subject_name : "Microsoft*" and
+        process.code_signature.trusted == true) and
 
    not (process.parent.name : "powershell.exe" and process.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*")) and
 

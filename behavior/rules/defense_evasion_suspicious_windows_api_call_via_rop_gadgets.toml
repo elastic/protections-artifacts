@@ -7,7 +7,7 @@ id = "d7239b58-3e32-481a-9bfa-63e04caf1a4e"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 api where
@@ -37,7 +37,16 @@ api where
                                                                   "*ntdll.dll!*TerminateThread*",
                                                                   "*kernelbase.dll*!CreateProcess*", 
                                                                   "*ntdll.dll*!*AlpcOpenSenderProcess*", 
-                                                                  "*ntdll.dll*!*AlpcCreateResourceReserve*")) and
+                                                                  "*ntdll.dll*!*AlpcCreateResourceReserve*",
+                                                                  "ntdll.dll*!*IsProcessInJob*",
+                                                                  "*ntdll.dll*!*SetInformationFile*",
+                                                                  "*ntdll.dll*!NtSetEvent*",
+                                                                  "*ntdll.dll*!RtlGetNativeSystemInformation*",
+                                                                  "*ntdll.dll*!KiUserApcDispatcher*",
+                                                                  "*ntdll.dll!LdrLoadDll*",
+                                                                  "*ntdll.dll*!NtReadRequestData*",
+                                                                  "*ntdll.dll!RtlVirtualUnwind*",
+                                                                  "\\device\\+0*")) and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
 
@@ -63,12 +72,14 @@ api where
                                            "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
                                            "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*",
                                            "?:\\windows\\system32\\hmpalert.dll!*",
-                                           "?:\\windows\\SysWOW64\\hmpalert.dll!*")) and
+                                           "?:\\windows\\SysWOW64\\hmpalert.dll!*",
+                                           "?:\\programdata\\microsoft\\windows defender\\definition updates\\*\\mpengine.dll*")) and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "?*" and $entry.symbol_info : "*ntdll.dll+0x*") and
 
  not (process.code_signature.trusted == true and process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
-      not process.code_signature.subject_name : "Microsoft *" and user.id : "S-1-5-18")
+      not process.code_signature.subject_name : "Microsoft *") and
+ not (process.executable : "?:\\Windows\\System32\\sppsvc.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -4,7 +4,7 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -72,7 +72,8 @@ process where event.action == "start" and
    not process.command_line : ("*.Access.IdentityReference*win32_SID.SID*", "*AGIAbQB4AC0AYQBwAC4AcwAzAC4AdQBzAC0AZQBhAHMAd*") and
    not (process.parent.args : "?:\\Users\\Prestige\\AppData\\Local\\Temp\\Rar$*\\KMS_VL_ALL_AIO.cmd  -elevated" and process.command_line : "*KMS_VL_ALL_AIO.cmd*") and
    not (process.parent.name : "cmd.exe" and
-        process.parent.command_line : "*C:\\Program Files\\CheckPoint\\Harmony Connect\\resources\\build\\installation_scripts\\on_install\\on_install.bat*")
+        process.parent.command_line : "*C:\\Program Files\\CheckPoint\\Harmony Connect\\resources\\build\\installation_scripts\\on_install\\on_install.bat*") and
+   not process.args : "iwr https://bmx-panels-check.s3.us-east-1.amazonaws.com/scripts/Start-SpeedTest.ps1 -UserAgent * -UseBasicParsing | invoke-expression"
 '''
 
 min_endpoint_version = "7.15.0"

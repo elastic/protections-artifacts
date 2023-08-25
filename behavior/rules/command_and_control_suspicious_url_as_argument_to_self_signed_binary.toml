@@ -1,0 +1,55 @@
+[rule]
+description = """
+Detects the execution of a binary that is untrusted by Apple and self-signed using the Codesign utility where a URL is
+provided as an argument to the malicious binary in order to download additional tools or establish C2. Threat actors and
+specifically DPRK threat actors have been see utilizing this technique in order to evade defenses when downloading
+additional tools or exfiltrating data.
+"""
+id = "639ed144-3922-4d00-890f-93b534fe7397"
+license = "Elastic License v2"
+name = "Suspicious URL as argument to Self-Signed Binary"
+os_list = ["macos"]
+reference = ["https://www.jamf.com/blog/bluenoroff-apt-targets-macos-rustbucket-malware/"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and 
+ process.code_signature.trusted == false and 
+ process.code_signature.signing_id regex~ """[A-Za-z0-9\_\s]{2,}\-[a-z0-9]{40}""" and 
+ process.args : "http*" and process.args_count <= 3 and not
+ process.name : ("wget", "curl", "git") and not 
+ process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*")
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.3.0"

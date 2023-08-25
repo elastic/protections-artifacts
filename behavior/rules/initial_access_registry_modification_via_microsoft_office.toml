@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Registry Modification via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -39,7 +39,8 @@ sequence by process.entity_id with maxspan=1m
 
    not registry.data.strings :
                     ("?:\\Program Files\\Microsoft Office\\Root\\Office*\\officeappguardwin*.exe server",
-                     "%USERPROFILE%\\OneDrive - *\\Documents\\Downloads")
+                     "%USERPROFILE%\\OneDrive - *\\Documents\\Downloads") and
+   not registry.path : "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\{BFB9D5E0-C6A9-404C-B2B2-AE6DB6AF4968}"
    ]
 '''
 

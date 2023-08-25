@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 any where process.executable != null and
@@ -32,8 +32,12 @@ not process.executable :
              "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
              "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
              "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
-             "?:\\Windows\\System32\\inetsrv\\w3wp.exe") and
- not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation") and process.code_signature.trusted == true) and 
+             "?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+             "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+             "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe",
+             "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+             "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe") and
+ not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.") and process.code_signature.trusted == true) and
  /* chromium and last one for Acrobat */
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :

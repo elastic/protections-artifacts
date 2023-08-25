@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.22"
 
 query = '''
 process where event.action == "start" and
@@ -80,7 +80,13 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\FcSrv.exe",
               "?:\\Program Files\\ansible\\GTS\\jre\\bin\\java.exe",
               "?:\\Windows\\system32\\ARP.EXE",
-              "?:\\Windows\\system32\\tasklist.exe") and
+              "?:\\Windows\\system32\\tasklist.exe",
+              "?:\\Windows\\System32\\dnscmd.exe",
+              "?:\\Windows\\System32\\find.exe",
+              "?:\\Windows\\System32\\findstr.exe",
+              "?:\\Windows\\System32\\wermgr.exe",
+              "?:\\Windows\\System32\\takeown.exe",
+              "?:\\Windows\\System32\\regini.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -109,7 +115,8 @@ process where event.action == "start" and
        process.command_line :
                    ("*Metadata*/metadata/instance/compute*",
                     "*metadata/latest/InstanceInfo*",
-                    "*machine?comp=goalstate*")) and
+                    "*machine?comp=goalstate*",
+                    "*Cloudamize_HOST_SHARE*")) and
   not process.hash.sha256 :
                  ("06078b8b840b4591535566d18d5f88b201c4cb8e033361095f7fd37d058e6962",
                   "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",

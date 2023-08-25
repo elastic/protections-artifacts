@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious WMI Performance Module"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/performance-diagnostics-and-wmi-21f3e01790d3"]
-version = "1.0.2"
+version = "1.0.4"
 
 query = '''
 library where
@@ -34,7 +34,11 @@ library where
 
  not (dll.path : "?:\\Program Files*\\Arcserve\\RHA\\*" and process.thread.Ext.call_stack_summary : "*fastprox.dll|combase.dll*") and
  not (dll.path : "?:\\Windows\\System32\\msscntrs.dll" and dll.pe.original_file_name : "pkmcntrs.dll") and 
- not (dll.path : "?:\\Windows\\System32\\winspool.drv" and dll.pe.original_file_name : "winspool.drv")
+ not (dll.path : "?:\\Windows\\System32\\winspool.drv" and dll.pe.original_file_name : "winspool.drv") and
+ not dll.hash.sha256 :
+               ("7d5562ee313e7dd2029f49beacfb9049025cd8ed35ac8c15465064132dd60e25",
+                "b2b4d8a776667b21a57a34b09ab02e0fcedd1ada915835a7f6d49f8152eb46f1",
+                "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe")
 '''
 
 min_endpoint_version = "8.7.0"

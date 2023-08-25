@@ -4,7 +4,7 @@ id = "20eaa6a3-6b80-48bc-9c48-a935138169f9"
 license = "Elastic License v2"
 name = "Suspicious Python Script Interpreter"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,7 +21,7 @@ sequence by process.entity_id with maxspan=1m
              "?:\\Python*\\python*.exe",
              "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python??\\python.exe",
              "?:\\Users\\*\\AppData\\Local\\anaconda?\\envs\\*\\python.exe",
-             "?:\\ProgramData\\Anaconda?\\python.exe") and
+             "?:\\*\\Anaconda?\\python*.exe") and
   not process.hash.sha256 : 
                    ("b80be3102561bf891454bd52673fdcd49d08b14c17061c077d6a88ca5ba3e9e3", 
                     "8e7bbf6e1bc3588f6d13b8372ca1bef37b6758b8a3a17bda424eba140dd4e8fe",
@@ -46,7 +46,12 @@ sequence by process.entity_id with maxspan=1m
                     "dc9d9b130c2271fb3d5ebce3f10b84682d7c420ccb72220f7942f40b9e833c82",
                     "273823283ed4d333a585462dba323186bbb436522182488936879aa3af35cfbb",
                     "39813ef813924c17f0b19aef66b7b80987670e39a3f6daae2ef0b5a0b62f71e0",
-                    "c70fa68e604f91387bbe920971057cb04148c0fed4142124ccd9226abfb93538")
+                    "c70fa68e604f91387bbe920971057cb04148c0fed4142124ccd9226abfb93538",
+                    "afbe4150814176a86abb7192b14465b88a0cbf3a58b512eaa533fb56dccc6077",
+                    "7351523031359477a5ac0e6d39b04dec624fd3e990f85e698b6f2a77873963fd",
+                    "a53af751d32103fab234be6ae680fc0f6057989d8ff1486d8d5b26ccde0b3d70",
+                    "1a59794c7c29f4569a0fe87bc9d9ffbf57835358c69f957950cd9718151f1af6",
+                    "3d8595f90fb478cb0f3673a4e5162ac054638fe699a3879ad47514cf872077dd")
   ]
  [library where dll.name : ("win32api*.pyd", "win32process.pyd", "win32security.pyd", "md.cp*-win32.pyd", "win32crypt.pyd", "win32net.pyd")]
 '''

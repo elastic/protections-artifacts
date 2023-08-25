@@ -8,7 +8,7 @@ id = "c01cddb6-bbcf-437c-8256-6b4d44c6bdc3"
 license = "Elastic License v2"
 name = "Startup Persistence via Microsoft Office Descendant Process"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -26,7 +26,8 @@ sequence by process.entity_id with maxspan=5m
    not process.Ext.token.integrity_level_name == "system" and
    /* Issue #409 */
    not (process.code_signature.subject_name != null and process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true) and
-   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*" and process.working_directory : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*")
+   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*" and process.working_directory : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*") and
+   not process.executable : "?:\\Program Files\\Ebix Inc\\Common Files\\SmartBridgeDXO.exe"
    ]
  [file where event.action != "deletion" and
   file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",

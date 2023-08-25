@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://bsodtutorials.wordpress.com/2014/07/31/windows-integrity-levels-process-explorer-and-windbg/",
 ]
-version = "1.0.27"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=5m
@@ -25,7 +25,8 @@ sequence with maxspan=5m
             ("?:\\Windows\\System32\\wermgr.exe",
              "?:\\Windows\\System32\\WerFault.exe",
              "?:\\Windows\\SysWOW64\\WerFault.exe",
-             "?:\\Windows\\System32\\WerFaultSecure.exe")] by process.parent.entity_id
+             "?:\\Windows\\System32\\WerFaultSecure.exe",
+             "?:\\Program Files\\Microsoft EPM Agent\\EpmConsentUI\\EpmConsentUI.exe")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"

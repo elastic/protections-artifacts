@@ -7,15 +7,14 @@ id = "055ce112-f2ad-418b-bce1-5fbe46e703fc"
 license = "Elastic License v2"
 name = "Suspicious Svchost Registry Modification"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost" and
 
- registry.data.type : "REG_MULTI_SZ" and process.executable : ("?:\\*", "\\Device\\Mup\\*") and
+ registry.data.type : "REG_MULTI_SZ" and process.executable : ("?:\\*", "\\Device\\Mup\\*") and registry.data.strings != null and
 
- not (user.id : "S-1-5-18" and registry.value : "print" and
-      registry.data.strings : "PrintNotify" and process.executable : "?:\\Windows\\System32\\*.exe") and
+ not (registry.value : "print" and registry.data.strings : "PrintNotify") and
 
  not (process.executable : "?:\\Windows\\System32\\poqexec.exe" and user.id : "S-1-5-18") and
 
@@ -29,7 +28,10 @@ registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\
               "?:\\Windows\\System32\\drvinst.exe",
               "?:\\Windows\\System32\\spoolsv.exe",
               "?:\\Windows\\System32\\regsvr32.exe",
-              "?:\\Windows\\Regedit.exe")
+              "?:\\Windows\\Regedit.exe",
+              "?:\\Windows\\VeeamVssSupport\\VeeamGuestHelper.exe",
+              "?:\\Program Files\\ForeScout SecureConnector\\SecureConnector.exe",
+              "?:\\Program Files\\UVK - Ultra Virus Killer\\UVK_en64.exe")
 '''
 
 min_endpoint_version = "8.0.0"

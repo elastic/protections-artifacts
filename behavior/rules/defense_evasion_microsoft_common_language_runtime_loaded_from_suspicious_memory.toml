@@ -7,7 +7,7 @@ id = "ad2c6fcc-89d3-4939-85d9-d7114d6bbf14"
 license = "Elastic License v2"
 name = "Microsoft Common Language Runtime Loaded from Suspicious Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -15,8 +15,7 @@ library where dll.name : "clr.dll" and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*mscoreei.dll!CreateInterface*") and
  not (process.executable : "?:\\Program Files\\Dell\\DTP\\DiagnosticsSubAgent\\Dell.TechHub.Diagnostics.SubAgent.exe" and
       process.code_signature.trusted == true and process.code_signature.subject_name : "Dell Inc") and
- not (process.executable : "?:\\Program Files*\\ManageEngine\\M365 Manager Plus\\jre\\bin\\java.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name : "Azul Systems, Inc.")
+ not (process.code_signature.trusted == true and process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o."))
 '''
 
 min_endpoint_version = "8.7.0"

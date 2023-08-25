@@ -5,18 +5,23 @@ file creation of "NSCreateObjectFileImageFromMemory-*******" in the /tmp directo
 """
 id = "16fba7a9-f8f6-43ce-ae24-6a392a48e49c"
 license = "Elastic License v2"
-name = "MacOS Monterey Reflective Code Loading"
+name = "Reflective Binary Load"
 os_list = ["macos"]
 reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.20"
+version = "1.0.23"
 
 query = '''
 file where event.type != "deletion" and 
-file.path : "/private/tmp/NSCreateObjectFileImageFromMemory-*" and 
-not process.name : ("osx-x86_64",  "Setup", "Install")
+file.name : "NSCreateObjectFileImageFromMemory-*" and 
+not process.name : ("osx-x86_64", 
+                    "Setup",
+                    "oahd-helper",
+                    "oahd",
+                    "Install") and 
+not process.executable : "/System/*"
 '''
 
 min_endpoint_version = "7.15.0"

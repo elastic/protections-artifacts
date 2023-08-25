@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -93,7 +93,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
           "*curl *;Start*",
           "powershell.exe \"<#*",
           "*ssh -p *",
-          "*http*|iex*"
+          "*http*|iex*",
+          "*@SSL\\DavWWWRoot\\*.ps1*"
         ) or
 
       (process.args : "-c" and process.args : "&{'*") or

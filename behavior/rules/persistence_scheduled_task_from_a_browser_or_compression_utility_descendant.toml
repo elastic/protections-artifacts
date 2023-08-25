@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task from a Browser or Compression Utility Descendant"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=5m
@@ -27,7 +27,12 @@ sequence with maxspan=5m
   process where event.action == "start" and
   (process.code_signature.trusted == false or process.code_signature.exists==false)
   and process.parent.name: ("explorer.exe", "chrome.exe", "msedge.exe", "firefox.exe", "7zFM.exe", "iexplore.exe", "winrar.exe") and
-  process.executable: ("*\\Downloads\\*", "*\\AppData\\Local\\Temp\\*")
+  process.executable: ("*\\Downloads\\*", "*\\AppData\\Local\\Temp\\*") and
+  not process.hash.sha256 :
+                  ("aaeaae8a88cab0ff1401e8c8e0fca3d92c758844e17b198355951c8fc842ccaa",
+                   "62925978d2c0de2c69801302eb7040cb633068a44cd83415d15f8c25f5bebff6",
+                   "be7beb3d9b8c56e1395bfee0d31503e0156eeba0312d385ca77068b95d1d4bea",
+                   "c3ab138aa176fda1a43e3a38d376e8ec284b610d9dacb9db0d08e503d071e4fe")
   ]
  )
  ] by process.entity_id

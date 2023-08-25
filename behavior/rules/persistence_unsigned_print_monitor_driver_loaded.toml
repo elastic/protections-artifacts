@@ -5,10 +5,10 @@ adversary supplied DLL during system boot for persistence or privilege escalatio
 """
 id = "555cdfaa-b87d-4fbb-8ab1-869497210569"
 license = "Elastic License v2"
-name = "Suspicious Print Monitor Driver Loaded"
+name = "Unsigned Print Monitor Driver Loaded"
 os_list = ["windows"]
 reference = ["https://pentestlab.blog/2019/10/28/persistence-port-monitors/"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 library where
@@ -19,7 +19,18 @@ library where
  not dll.hash.sha256 : 
               ("2fd0dbb21a920f7be4c878ac9ba263425f6ad2e15d9bc1d9cea76a124630e3e2", 
                "d919c39a348294d378a9f7d1f100a4aef9b855f6fd4049ecd73de817388fee86",
-               "e91962ad43988b52cd093222004a660202af467b69c215f6eba17dab844c3acd")
+               "e91962ad43988b52cd093222004a660202af467b69c215f6eba17dab844c3acd",
+               "bea471a636a2ca493dec23fbf8d04ffc5e655c94b1c07b5db107c412cc831f62",
+               "bbb1cb9e857ec99916bd1664ea8de5b67ef418d1167e449fc3f19bfc640d6790",
+               "a73ee63e1666b075e4eb63956594f94506f5784067d91d177900f4a0ba3dc4e3",
+               "cbdbdf6a477c97ee2525ff83b0ff96645be2934fc163162adbec67b7bfe41a01",
+               "6b655781cd8dec4834bc2e8a94d518ff36c034a08d75d7e227eec10caa8a5c46",
+               "a7d942f8186ddb60667e49fb087ccc7783141bcf3075b6d3d4378f6b0d728deb",
+               "76d626c6ce889d7f34bbf8c19255b4389496a8675822d0404cf8b32551ddd682",
+               "e5626c6e87e75060815280e3006d5dce91c82c4e7e38541a8892f2d3c56b9922",
+               "5e9627a00395b82aed5a8d16d69e1dfceb744f211aa254122a31899eba805a27",
+               "9778b78946afe9a089a1c7a4ad98b0be19751e961eb697e4b8ca82598b82009f",
+               "1b6cf43b5176de524aedab8cda6fc6258d4038920ca72a46e0286533a8a50252")
 '''
 
 min_endpoint_version = "8.7.0"

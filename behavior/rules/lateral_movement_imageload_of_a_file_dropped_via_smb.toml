@@ -7,7 +7,7 @@ id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
 license = "Elastic License v2"
 name = "ImageLoad of a File dropped via SMB"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=5m
@@ -47,8 +47,11 @@ sequence with maxspan=5m
               "5e40b53733105e98ad2914bfb2f0dda52e3b9b3c87d82bf4ff092f1bed25cd13",
               "6d859a89e80f290249b9b1a7aaea3929d999f1f15b99089f88d5e5120e23a6d8",
               "2c611395ad89e8653533e6c1b8815720f7fb4c043197e52c93d983b3e3726226",
-              "ce77f9afb4942b85a0bfa1ccb41c0b599f0275e56c6ed2e9699dada6b08989d3") and
-    not (dll.path : "?:\\LifecareMALL\\mmm\\*" and process.name : "regsvr32.exe" and user.id : "S-1-5-18")
+              "ce77f9afb4942b85a0bfa1ccb41c0b599f0275e56c6ed2e9699dada6b08989d3",
+              "3fbe9db285c0248d5d50e832a1c2312e3eb3490607a09cbf9962aa64b8edc3e7",
+              "8ed521e3a1e15a85e8043aafef7b69873de69c388bbcbf12f42777134af32751") and
+    not (dll.path : "?:\\LifecareMALL\\mmm\\*" and process.name : "regsvr32.exe" and user.id : "S-1-5-18") and
+    not dll.pe.imphash : "c7606b6181f4b33c77e536a70d7b354c"
     ] by dll.path
 '''
 

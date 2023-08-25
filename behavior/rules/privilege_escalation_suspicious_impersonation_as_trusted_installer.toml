@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 any where process.executable != null and 
@@ -50,7 +50,8 @@ any where process.executable != null and
                 ("?:\\Windows\\servicing\\TrustedInstaller.exe", 
                  "\\Device\\HarddiskVolume*\\Windows\\servicing\\TrustedInstaller.exe",  
                  "\\Device\\VhdHardDisk*\\Windows\\servicing\\TrustedInstaller.exe", 
-                 "\\\\?\\Volume{*}\\Windows\\servicing\\TrustedInstaller.exe")))
+                 "\\\\?\\Volume{*}\\Windows\\servicing\\TrustedInstaller.exe",
+                 "?:\\WINDOWS\\System32\\svchost.exe")))
  )
 '''
 

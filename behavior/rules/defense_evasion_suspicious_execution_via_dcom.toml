@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.27"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=1m
@@ -85,7 +85,13 @@ sequence with maxspan=1m
                 "?:\\Windows\\SysWOW64\\psr.exe",
                 "?:\\Windows\\System32\\psr.exe",
                 "?:\\Windows\\BrowserCore\\BrowserCore.exe",
-                "?:\\Windows\\System32\\conhost.exe") and
+                "?:\\Windows\\System32\\conhost.exe",
+                "?:\\Windows\\System32\\UsoClient.exe",
+                "?:\\Windows\\System32\\mcbuilder.exe",
+                "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge_X64*.exe",
+                "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge_*.exe") and
 
    not process.parent.executable :
                ("?:\\Program Files (x86)\\Common Files\\InstallShield\\Engine\\*\\IKernel.exe",
@@ -118,7 +124,8 @@ sequence with maxspan=1m
                 "1b71b0b94f70215fa4ed9fe8cf950558eb20413feb54967cade34148ca97793e",
                 "e08a98f79de70175f6bb4c319b70bc13063aa1f03780709393f4f6d498da9c0f",
                 "d0f324e0267f7075e60f896cf064538e8398fb51557d2e1a53f348d39d10c3ac",
-                "1d70bbb5c62a2c27583cd38261c09fdc9c208f6ea96349e535b6c4135c0a8569") and
+                "1d70bbb5c62a2c27583cd38261c09fdc9c208f6ea96349e535b6c4135c0a8569",
+                "b52ee82c7e579fd73abc31c368462df9d99c6623be91526ee150706286dc19ee") and
 
    not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and

@@ -8,7 +8,7 @@ id = "15c48f2d-e461-40a9-accd-090a0863ea10"
 license = "Elastic License v2"
 name = "Startup Persistence from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.6"
 
 query = '''
 any where event.category : ("registry", "file") and process.executable != null and
@@ -33,7 +33,8 @@ any where event.category : ("registry", "file") and process.executable != null a
 	                $entry.symbol_info : ("?:\\Windows\\Installer\\*",
 	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\*\\isrt.dll!_RegSetKeyValue+*",
 	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\{*}\\ISSetup.dll!InstallEngineTypelib*",
-	                                      "?:\\Program Files (x86)\\Gizmo\\gdrive.dll!Remount_Startup_Images*"))
+	                                      "?:\\Program Files (x86)\\Gizmo\\gdrive.dll!Remount_Startup_Images*")) and
+   not registry.data.strings : "?:\\windows\\Twain_32\\fjscan32\\FjtwMkup.exe /Station"
 '''
 
 min_endpoint_version = "8.7.0"

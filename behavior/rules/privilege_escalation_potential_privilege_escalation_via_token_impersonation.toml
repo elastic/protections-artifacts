@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
 process where event.action == "start" and
@@ -56,7 +56,9 @@ process where event.action == "start" and
               ("*AkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApA*",
                "*ABzAHAAbABpAHQAXwBwAGEAcgB0AHMAIAA9ACAAJABlAHgAZQBjAF8AdwByAGEAcABwAGUAcgBfAHMAdAByAC4AUwBwAGwAaQB0*",
                "*CgAgACAAIAAgAHQAcgBhAHAAIAB7AAoAIAAgACAAIAAgACAAIAAgACQAdwByAGEAcABwAGUAcgBfAHAAYQB0AGgAIAA9ACAAIgA*") and
-      process.Ext.effective_parent.executable : "?:\\Windows\\System32\\lsass.exe")
+      process.Ext.effective_parent.executable : "?:\\Windows\\System32\\lsass.exe") and
+ not (process.executable : "?:\\WINDOWS\\system32\\osk.exe" and
+      process.parent.executable : ("?:\\WINDOWS\\System32\\WinLogon.exe", "?:\\Windows\\System32\\LogonUI.exe"))
 '''
 
 min_endpoint_version = "8.4.0"

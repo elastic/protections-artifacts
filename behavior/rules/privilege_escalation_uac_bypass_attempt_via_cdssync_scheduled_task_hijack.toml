@@ -9,14 +9,16 @@ license = "Elastic License v2"
 name = "UAC Bypass Attempt via CDSSync Scheduled Task Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/AzAgarampur/byeintegrity5-uac"]
-version = "1.0.25"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=60s
   [file where file.path : "?:\\*\\system32\\npmproxy.dll" and
    not file.path : ("?:\\Windows\\System32\\npmproxy.dll", "?:\\Windows\\SysWOW64\\npmproxy.dll")]
   [process where event.action == "start" and
-   process.parent.name : "taskhostw.exe" and process.Ext.token.integrity_level_name == "high"]
+   process.parent.name : "taskhostw.exe" and process.Ext.token.integrity_level_name == "high" and
+   not (process.executable : "?:\\Windows\\System32\\rdrleakdiag.exe" and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft*")]
 '''
 
 min_endpoint_version = "7.15.0"

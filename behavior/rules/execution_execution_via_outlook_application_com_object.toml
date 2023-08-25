@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Outlook Application COM Object"
 os_list = ["windows"]
 reference = ["https://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office"]
-version = "1.0.26"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=1m
@@ -33,7 +33,9 @@ sequence with maxspan=1m
                 "pwsh.exe",
                 "ScriptRunner.exe") and not
    /* Issue #330 */
-   (process.name:"rundll32.exe" and process.args : ("--eoim", "--enable-speech-input"))] by process.parent.entity_id
+   (process.name:"rundll32.exe" and process.args : ("--eoim", "--enable-speech-input")) and
+
+   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\spool\\DRIVERS\\x64\\3\\*.dll,MonitorPrintJobStatus")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"

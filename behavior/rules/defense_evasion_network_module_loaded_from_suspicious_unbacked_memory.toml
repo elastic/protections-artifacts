@@ -7,11 +7,11 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id
- [process where event.action == "start" and
+ [process where event.action == "start" and process.parent.executable != null and
 
   not process.Ext.token.integrity_level_name == "low" and
 
@@ -48,17 +48,26 @@ sequence by process.entity_id
                     "18b177280b0e0e05aa0e26807f34634c3384ae4f5901f41ff5bb0a720ea5c106",
                     "4f1528318085f6117734a27f34a317a83b096d55532000f81ed67b1bb10632fa",
                     "35f210c1f941f917b81c2516bee9de8f0495baca42095685e9b0b76f67250dc9",
-                    "edef301528767963f460bf7fe497ca3b5c648627a2d13abe74d5544578b56bd4") and
+                    "edef301528767963f460bf7fe497ca3b5c648627a2d13abe74d5544578b56bd4",
+                    "f856a3c582ca689bdea3e784ef6a0db37011bd5ebb31d7c79d0328ebfcf6d8a4",
+                    "fe62ba0a61191a9b54aab7ba3221479c451b042fa30a08957cacff84ddfe094b",
+                    "183cd12fbdd93aa785d3793a8872c4a9730dd154f6482c39f94552e556a7b4e9",
+                    "ed6c844c72fccd7e7799d448f5e74df368cafd2631858573e6e29110c213ac79",
+                    "43a84e01b5ddecf0b6297277d53c72025a73b00b9f0073933a700695a240b5e8",
+                    "f4cb2a001dcee0577046c56df5adfe989bc875c29ecfe27c9569849a9a6f0671") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\DWRCST.EXE" and
-       process.parent.executable : "?:\\WINDOWS\\SysWOW64\\runonce.exe" and process.parent.args : "/Run6432") and
+       process.parent.executable : ("?:\\WINDOWS\\SysWOW64\\runonce.exe", "?:\\Windows\\SysWOW64\\DWRCST.EXE")) and
 
   not (process.executable : "?:\\Windows\\system32\\winsat.exe" and
        process.parent.executable : "?:\\Windows\\system32\\rundll32.exe" and
-       process.parent.args : "sysmain.dll,PfSvWsSwapAssessmentTask")
+       process.parent.args : "sysmain.dll,PfSvWsSwapAssessmentTask") and
+
+  not (process.executable :  "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and
+       process.parent.executable : ("?:\\Windows\\System32\\inetsrv\\w3wp.exe", "?:\\Windows\\System32\\svchost.exe"))
   ]
  [library where
   dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
@@ -94,7 +103,8 @@ sequence by process.entity_id
                          ("*8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b*",
                           "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
-                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65"))
+                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65",
+                          "488944242048837c2420007520488b8424600200004883c050488bd0488d0d49180100e84c77ffffe9b6000000488b8424600200004883c0504c8b442420488b"))
   ]
   until [process where event.action:"end"]
 '''

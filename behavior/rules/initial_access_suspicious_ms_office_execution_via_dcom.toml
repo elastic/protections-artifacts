@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/blog/playing-defense-against-gamaredon-group",
     "https://stigviewer.com/stig/microsoft_powerpoint_2007/2014-04-03/finding/V-17522",
 ]
-version = "1.0.23"
+version = "1.0.25"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -26,7 +26,8 @@ sequence by user.id with maxspan=1m
     not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and process.args : "-u" and process.args : "-p") and
     not (process.pe.original_file_name == "ItSukurti.exe" and process.executable : "?:\\SamExpert\\ItSukurti.exe") and
     not (process.executable : "?:\\WINDOWS\\splwow64.exe" and process.args : "8192") and
-    not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true)]
+    not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true) and
+    not (process.code_signature.subject_name : "Essential Objects, Inc." and process.code_signature.trusted == true)]
 '''
 
 min_endpoint_version = "7.15.0"

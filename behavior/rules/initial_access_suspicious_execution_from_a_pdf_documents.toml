@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identifies a suspicious execution from a PDF document with embedded objects. This behavior is consistent with the
+successful exploitation using spearphishing attachment.
+"""
+id = "4994b3af-632c-41b8-9bff-d96488b1af52"
+license = "Elastic License v2"
+name = "Suspicious Execution from a PDF Documents"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+ (
+  (process.parent.name : "AcroRd*.exe" and
+   process.name : ("chrome.exe", "firefox.exe", "msedge.exe", "cscript.exe", "wscript.exe",
+                   "mshta.exe", "powershell.exe", "hh.exe", "cmd.exe") and
+   process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\acrord*_sbx\\*") or
+
+  (process.parent.name : ("chrome.exe", "firefox.exe", "msedge.exe") and process.parent.args : "?:\\Users\\*\\AppData\\Local\\Temp\\acrord*_sbx\\*" and
+   not process.name : ("chrome.exe", "firefox.exe", "msedge.exe")) or
+
+  (process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\acrord*_sbx\\*" and
+   not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))
+ )
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.16.0"

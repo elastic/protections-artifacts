@@ -7,7 +7,7 @@ id = "2c4f5a78-a64f-4fcf-ac52-bf91fd9b82c8"
 license = "Elastic License v2"
 name = "Suspicious Image Load via LdrLoadDLL"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.15"
 
 query = '''
 library where
@@ -16,7 +16,8 @@ library where
    not _arraysearch(process.thread.Ext.call_stack, $entry,
                                                    $entry.symbol_info : ("*LoadLibrary*",
                                                                          "?:\\Program Files\\*.dll!*",
-                                                                         "?:\\Program Files (x86)\\*.dll!*")) and 
+                                                                         "?:\\Program Files (x86)\\*.dll!*",
+                                                                         "*KernelBase.dll!CreateProcess*")) and
    /* Managed Code, Cynet MemScanner, xSecuritas, Mcafee */
    not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes :

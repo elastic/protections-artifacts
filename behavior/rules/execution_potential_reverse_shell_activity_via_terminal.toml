@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.26"
+version = "1.0.28"
 
 query = '''
 process where event.action == "exec" and
@@ -17,8 +17,21 @@ process where event.action == "exec" and
   process.args : ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and
 
   /* noisy FPs */
-  not (process.parent.name : "timeout" and process.executable : ("/var/lib/docker/overlay*", "/opt/kubernetes/data/containerd/*")) and
-  not process.command_line : ("*/dev/tcp/sirh_db/*", "*/dev/tcp/itom-vault/8200*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*", "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*") and
+  not (process.parent.name : "timeout" and 
+   process.executable : ("/var/lib/docker/overlay*", 
+                         "/opt/kubernetes/data/containerd/*")) and
+  not process.command_line : ("*/dev/tcp/sirh_db/*", 
+                              "*/dev/tcp/itom-vault/8200*", 
+                              "*/dev/tcp/remoteiot.com/*", 
+                              "*dev/tcp/elk.stag.one/*", 
+                              "*dev/tcp/kafka/*", 
+                              "*/dev/tcp/$0/$1*",
+                              "*/dev/tcp/::1/*",
+                              "*/dev/tcp/livelog.default.svc.cluster.local*",
+                              "*/dev/tcp/db.default.svc.cluster.local*", 
+                              "*/dev/tcp/127.*", 
+                              "*/dev/udp/127.*", 
+                              "*/dev/tcp/localhost/*") and
   not process.parent.command_line : "runc init"
 '''
 

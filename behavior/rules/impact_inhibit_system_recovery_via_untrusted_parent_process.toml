@@ -8,14 +8,15 @@ id = "d3588fad-43ae-4f2d-badd-15a27df72132"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Untrusted Parent Process"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "start" and
     process.Ext.token.integrity_level_name : ("high", "system") and
     not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\System32\\*.exe", "?:\\Windows\\SysWOW64\\*.exe") and
-    not process.code_signature.trusted == true] by process.entity_id
+    not process.code_signature.trusted == true and
+    not process.hash.sha256 : "60ccd4ba2566d96676b448203fb4414a39c7c1e004e8c3fa1bbce139403ef1fb"] by process.entity_id
   [process where event.action == "start" and
     (
       (process.pe.original_file_name : "wmic.exe" and process.command_line : "*shadowcopy*" and process.command_line : "*delete*") or

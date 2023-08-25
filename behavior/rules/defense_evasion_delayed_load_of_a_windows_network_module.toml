@@ -8,7 +8,7 @@ id = "9bbcc138-3adb-41a5-b61a-787260b6492d"
 license = "Elastic License v2"
 name = "Delayed Load of a Windows Network Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,7 +21,7 @@ sequence by process.entity_id with maxspan=1m
   process.thread.Ext.call_stack_summary : "?*" and
   (
    process.name : ("wscript.exe", "cscript.exe", "rundll32.exe", "regsvr32.exe", "mshta.exe") or
-   (process.executable : "?:\\Users\\*" and (process.code_signature.status : "errorBadDigest" or process.code_signature.exists == false))
+   (process.executable : ("?:\\Users\\Public\\*", "?:\\ProgramData\\*") and (process.code_signature.status : "errorBadDigest" or process.code_signature.exists == false))
   ) and
 
   not (process.name : ("rundll32.exe", "regsvr32.exe") and

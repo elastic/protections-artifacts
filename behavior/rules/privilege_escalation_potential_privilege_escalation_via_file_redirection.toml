@@ -12,7 +12,7 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,10 +25,11 @@ sequence by process.entity_id with maxspan=1m
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmwprint.exe",
                "?:\\Program Files (x86)\\LABEL MATRIX *\\UpgradeWizard.exe",
                "?:\\Program Files\\IHS Markit\\KingdomSuite\\TKS *\\TKS.exe",
-               "?:\\Program Files (x86)\\Teklynx\\LABELVIEW *\\Lppa.exe",
+               "?:\\Program Files (x86)\\Teklynx\\*\\Lppa.exe",
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmw.exe",
                "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge*.exe",
-               "?:\\Program Files (x86)\\PRTG Network Monitor\\npcapoem.exe")
+               "?:\\Program Files (x86)\\PRTG Network Monitor\\npcapoem.exe",
+               "?:\\Program Files\\MicroSurvey\\*\\MSEmbed.exe")
 
  ]
  [file where event.action != "deletion" and

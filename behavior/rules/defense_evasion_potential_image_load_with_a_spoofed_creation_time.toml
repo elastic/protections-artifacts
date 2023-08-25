@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1070/006/",
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
 ]
-version = "1.0.20"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=5m
@@ -69,7 +69,7 @@ sequence with maxspan=5m
               "0ae555e24450606fe86938be0450310e8d0da7cd8b661ed79c6f4dc6747cfd95",
               "8180f736781f2af47059a83c73c2c8b9f4423fc764c8897ac7c4f6dd8837a804",
               "c3823447efb2fe8690861541f23890bf5b7a36f40a9c282f4cb33cc3bb3d4689") and
-  not (process.code_signature.subject_name : "Epicor Software Corporation" and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("Epicor Software Corporation", "KONICA MINOLTA, INC.") and process.code_signature.trusted == true) and
   not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true) and
   not process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe"
   ] by dll.path

@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
 ]
-version = "1.0.24"
+version = "1.0.26"
 
 query = '''
 file where file.name : "TCC.db" and 
@@ -24,7 +24,7 @@ not process.executable : (
   "/Applications/MosyleSecurity.app/Contents/MacOS/MosyleSecurity",
   "/Applications/*/iOS.simruntime/*/System/Library/PrivateFrameworks/TCC.framework/tccd",
   "/Users/*/Downloads/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",
-  "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS *simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/tccd",
+  "/Library/Developer/CoreSimulator/*",
   "/System/Library/Frameworks/FileProvider.framework/XPCServices/ArchiveService.xpc/Contents/MacOS/ArchiveService",
   "/System/Library/PrivateFrameworks/SystemMigration.framework/Versions/A/Resources/systemmigrationd",
   "/Applications/FortiClient.app/Contents/Frameworks/FortiClient Helper (Renderer).app/Contents/MacOS/FortiClient Helper (Renderer)",

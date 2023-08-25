@@ -9,19 +9,23 @@ license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name :"VirtualAlloc" and
- process.Ext.api.parameters.protection : "*X*" and
+ process.Ext.api.parameters.protection : "*X*" and process.executable != null and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*HeapCreate*", "*RtlCreateHeap*", "*RtlProtectHeap*")) and
  process.thread.Ext.call_stack_summary : "?*" and 
- not process.thread.Ext.call_stack_summary :("*|clr.dll|*", "*mscorwks.dll*", "*mscoreei.dll*") and 
+ not process.thread.Ext.call_stack_summary :("*|clr.dll|*", "*mscorwks.dll*", "*mscoreei.dll*", "*mscoree.dll|ntdll.dll*", "*coreclr.dll*") and
  not process.executable :
              ("?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
               "?:\\Program Files (x86)\\HP\\HP LaserJet Pro MFP*\\Help_Learn\\Help.exe",
-              "E:\\*PortableCase\\Dependencies\\Sandbox\\stubcache\\CefSharp.BrowserSubprocess.exe") and
- not (process.code_signature.subject_name : ("Atera Networks Ltd", "Riot Games, Inc.", "IObit CO., LTD", "IObit Information Technology") and
+              "E:\\*PortableCase\\Dependencies\\Sandbox\\stubcache\\CefSharp.BrowserSubprocess.exe",
+              "C:\\Steam\\steamapps\\common\\Farlight 84\\WindowsClient\\Solarland\\Binaries\\Win64\\SolarlandClient-Win64-Shipping.exe") and
+ not (process.code_signature.subject_name :
+           ("Atera Networks Ltd", "Riot Games, Inc.", "IObit CO., LTD", "IObit Information Technology",
+            "Shanghai Lilith Network Technology Co., Ltd.", "OKIGAMES OYUN VE YAZILIM HİZMETLERİ LİMİTED ŞİRKETİ",
+            "Code Systems Corporation") and
       process.code_signature.trusted == true) and
  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true)
 '''

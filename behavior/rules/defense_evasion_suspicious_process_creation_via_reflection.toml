@@ -1,0 +1,42 @@
+[rule]
+description = """
+Identifies the creation of process clone via the Windows API RtlCreateProcessReflection. This may indicate an attempt to
+create a process as a target for process injection.
+"""
+id = "8d222b62-4ca5-41aa-85e1-4e6c0a21f2aa"
+license = "Elastic License v2"
+name = "Suspicious Process Creation via Reflection"
+os_list = ["windows"]
+reference = ["https://www.deepinstinct.com/blog/dirty-vanity-a-new-approach-to-code-injection-edr-bypass"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ descendant of [process where event.action == "start" and
+                 _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!RtlCreateProcessReflection*", "*ntdll.dll!RtlCloneUserProcess*"))] and
+ not (process.executable : ("?:\\WINDOWS\\SysWOW64\\WerFault.exe", "?:\\WINDOWS\\system32\\WerFault.exe") and
+      process.parent.thread.Ext.call_stack_summary : "*faultrep.dll|wersvc.dl*")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

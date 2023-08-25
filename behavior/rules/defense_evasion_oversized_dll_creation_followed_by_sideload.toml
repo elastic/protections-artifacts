@@ -7,7 +7,7 @@ id = "33cdad6c-5809-4d78-94f0-5a5153289e7e"
 license = "Elastic License v2"
 name = "Oversized DLL Creation followed by SideLoad"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -29,7 +29,10 @@ sequence with maxspan=5m
                 "?:\\Program Files (x86)\\*.exe", 
                 "?:\\Windows\\System32\\DriverStore\\FileRepository\\*", 
                 "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*") and 
-   not process.code_signature.subject_name : ("TEAMDEV LTD.", "Spotify AB") and 
+   not process.code_signature.subject_name :
+                              ("TEAMDEV LTD.", "Spotify AB", "Snap-on Business Solutions, Inc.", "ITAU UNIBANCO S.A.",
+                               "Kahua Inc.", "Bloomberg LP", "Amazon.com Services LLC", "EnterpriseDB Corporation",
+                               "Mitel Networks Corporation") and
    not dll.name : ("libcef.dll", "Qt?WebEngineCore.dll", "xul.dll", "chrome.dll", "libwireshark.dll", "chrome_child.dll") and 
   /* loaded from current dir */
    endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)),

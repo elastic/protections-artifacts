@@ -8,7 +8,7 @@ id = "902f471c-27b4-4e78-b344-be46c6cfb72b"
 license = "Elastic License v2"
 name = "Remote Process Manipulation by Suspicious Process"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id
@@ -39,7 +39,9 @@ sequence by process.entity_id
                                      "?:\\Program Files (x86)\\VisualCron\\VisualCronClient.exe",
                                      "?:\\Program Files (x86)\\Kaarya LLC\\Kaarma Desktop\\KaarmaDesktop.exe")) and
    not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\inetcpl.cpl,ClearMyTracksByProcess" and
-        process.parent.executable : "?:\\Program Files*\\Internet Explorer\\iexplore.exe")
+        process.parent.executable : "?:\\Program Files*\\Internet Explorer\\iexplore.exe") and
+   not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SNXAC\\STAProxy.exe" and
+        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\snxac\\*\\sta.dll,LaunchSTA")
   ]
  [api where process.Ext.api.behaviors : "cross-process" and
   process.Ext.api.name : ("VirtualAllocEx", "VirtualProtectEx") and

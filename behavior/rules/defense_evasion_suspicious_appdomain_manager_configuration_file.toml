@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies the creation of an AppDomain Manager configuration file followed by an attempt to load a recently created and
+unsigned DLL file by a .NET application matching the configuration file name. This may indicate an attempt to load a
+malicious module via DLL search order hijacking.
+"""
+id = "cf9ea814-1e87-4a99-943d-81ec4a996144"
+license = "Elastic License v2"
+name = "Suspicious AppDomain Manager Configuration File"
+os_list = ["windows"]
+reference = [
+    "https://www.rapid7.com/blog/post/2023/05/05/appdomain-manager-injection-new-techniques-for-red-teams/",
+    "https://github.com/netbiosX/GhostLoader/tree/master",
+]
+version = "1.0.5"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action : ("creation", "rename") and file.name : "*.exe.config" and
+  not file.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+  not process.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe"] as event0
+ [library where
+  not dll.code_signature.status : "trusted" and startswith~(event0.file.name, process.name) and
+  user.id : ("S-1-5-21*", "S-1-12-*") and
+  (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*clr.dll!StrongNameTokenFromPublicKey*")  and
+
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll*!LdrLoadDll*", "*combase.dll*!CoGetTreatAsClass*")) and
+  not dll.path :
+        ("?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+		 "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+		 "?:\\Windows\\assembly\\NativeImages\\*",
+		 "?:\\windows\\WinSxS\\*",
+		 "?:\\Program Files\\*",
+		 "?:\\Program Files (x86)\\*",
+		 "?:\\Windows\\Microsoft.NET\\*") and
+  not dll.path regex~ """(.:\\windows\\system32\\[a-z0-9\-\_\.]+\.dll|.:\\windows\\syswow64\\[a-z0-9\-\_\.]+\.dll|.:\\windows\\[a-z0-9\-\_\.]+\.dll)""" and
+  not process.executable :
+            ("?:\\Windows\\System32\\rundll32.exe",
+			 "?:\\Windows\\SysWOW64\\rundll32.exe",
+			 "?:\\Windows\\System32\\regsvr32.exe",
+			 "?:\\Windows\\System32\\regsvr32.exe") and
+  not dll.hash.sha256 : ("4810a7b50ffb5e044ac64432b7fcfe4795cc4c6494e1d7f25f9f9cfe388d2ea6",
+                         "9a5294182e611ccdae9962d2e26a84c3287cd18409b4985d468055b690d9134c",
+                         "506e3d9184a6c08ae75c1bb7f3d72901ff6eeade3f6ed06237de878276f9fed7")]
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

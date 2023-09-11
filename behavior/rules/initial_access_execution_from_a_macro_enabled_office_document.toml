@@ -8,7 +8,7 @@ id = "1c4047ca-a69b-473f-a93e-5660e012d9a5"
 license = "Elastic License v2"
 name = "Execution from a Macro Enabled Office Document"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.16"
 
 query = '''
 process where event.action == "start" and
@@ -25,10 +25,23 @@ process where event.action == "start" and
    not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
         process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
 
-   not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb", "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0") and
+   not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb",
+                              "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0",
+                              "0697a5a9fecac88cd1a875f32ebbb5fecefdcdc9ddd3e1c17e391527abf47aa0",
+                              "5fa6ed1524d60215307f7c84df56f1fa8c852321df1fe0931521c76cbb6d6821",
+                              "be4d0288c69fba437e369110f27cbc4f5448bb7c3d2fe204c6ea8a053f426620") and
 
-   not (process.executable : "?:\\WINDOWS\\system32\\dwwin.exe" and
-        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*"))
+   not process.executable : ("?:\\Windows\\explorer.exe",
+                             "?:\\Windows\\System32\\spool\\drivers\\*",
+                             "?:\\Program Files (x86)\\Microsoft Office\\root\\*.EXE",
+                             "?:\\Program Files\\Microsoft Office\\root\\*.EXE",
+                             "?:\\Program Files (x86)\\AV\\AV.EXE",
+                             "?:\\Program Files\\AV\\AV.EXE",
+                             "?:\\Program Files (x86)\\PDFtk\\bin\\pdftk.exe",
+                             "?:\\Program Files\\PDFtk\\bin\\pdftk.exe",
+                             "?:\\Windows\\SysWOW64\\DWWIN.EXE",
+                             "?:\\WINDOWS\\system32\\dwwin.exe",
+                             "\\Device\\Mup\\*")
 '''
 
 min_endpoint_version = "8.7.0"

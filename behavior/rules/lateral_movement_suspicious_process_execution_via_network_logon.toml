@@ -7,12 +7,12 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
  process.Ext.session_info.logon_type == "Network" and
- process.Ext.session_info.relative_logon_time <= 5 and
+ process.Ext.session_info.relative_logon_time <= 5 and process.executable : "C:\\*" and
  (
   process.name : ("powershell.exe", "cmd.exe", "rundll32.exe", "regsvr32.exe", "regasm.exe", "mshta.exe",
                   "wscript.exe", "msbuild.exe", "installutil.exe", "bash.exe", "excel.exe", "winword.exe", "mshta.exe") or
@@ -77,6 +77,8 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\query.exe",
               "?:\\Windows\\System32\\systeminfo.exe",
               "?:\\Windows\\System32\\auditpol.exe",
+              "?:\\Windows\\System32\\HOSTNAME.EXE",
+              "?:\\Windows\\System32\\whoami.exe",
               "?:\\Windows\\System32\\FcSrv.exe",
               "?:\\Program Files\\ansible\\GTS\\jre\\bin\\java.exe",
               "?:\\Windows\\system32\\ARP.EXE",
@@ -85,8 +87,16 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\find.exe",
               "?:\\Windows\\System32\\findstr.exe",
               "?:\\Windows\\System32\\wermgr.exe",
+              "?:\\Windows\\SysWOW64\\wermgr.exe",
               "?:\\Windows\\System32\\takeown.exe",
-              "?:\\Windows\\System32\\regini.exe") and
+              "?:\\Windows\\System32\\regini.exe",
+              "?:\\WINDOWS\\system32\\iisreset.exe",
+              "?:\\Windows\\System32\\SecEdit.exe",
+              "?:\\Program Files (x86)\\Google\\Update\\*.exe",
+              "?:\\Program Files\\Google\\Update\\*.exe",
+              "?:\\Program Files\\Commvault\\installer\\Setup.exe",
+              "?:\\Windows\\System32\\CPrepSrv.exe",
+              "?:\\Windows\\System32\\repadmin.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -128,7 +138,9 @@ process where event.action == "start" and
                   "0a88ec2728fdea771fe86c59ae08e2f6b76a22ca2467e3024d31561c791f571a",
                   "fb80046d52fa1ee5fd9dcca24ccb5a7bd70b34727859d55dd74ffae6fa279548",
                   "3de11905d85b52f73b787d7360742e9f1b2b70fe5d6a3e812fcec8fe00211f09",
-                  "856feb3dce681e971d4344b5cb3e34f7f91fcc7dc476d92b22da17405baef801") and
+                  "856feb3dce681e971d4344b5cb3e34f7f91fcc7dc476d92b22da17405baef801",
+                  "42ef31adef9a6397853af89d34a64d3909f1a8c0f1aba7aeee11e3e3d9ddb577",
+                  "9514d09fc81aa4a98100924186e80a111591dfc1bdf23f1a09dbbf8991c58457") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -140,7 +152,8 @@ process where event.action == "start" and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
        process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
-  not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*")
+  not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*") and
+  not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise")
 '''
 
 min_endpoint_version = "8.6.0"

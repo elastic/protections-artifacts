@@ -7,7 +7,7 @@ id = "c9674e88-8423-442a-9712-ba6271bcff10"
 license = "Elastic License v2"
 name = "Suspicious Image Load from SMB Shares"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -23,22 +23,29 @@ sequence by process.entity_id with maxspan=1m
  [library where
   process.executable != null and
   (
-   (dll.name : ("ws2_32.dll", "dnsapi.dll", "wininet.dll", "psapi.dll") and
+   (dll.name : ("ws2_32.dll", "wininet.dll", "psapi.dll") and
     process.thread.Ext.call_stack_summary : "*Unbacked*" and
     not process.thread.Ext.call_stack_summary :
             ("*mscorlib.dll*","*|clr.dll*", "*coreclr.dll*", "*mscoreei.dll*", "*mscoree.dll*", "*system.ni.dll*",
              "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*",
              "*java.dll|Unbacked*", "*system.data.ni.dll*", "*|ntdll.dll|Unbacked|ntdll.dll", "*windowsbase.ni.dll*",
-             "*presentationframework.ni.dll*", "ntdll.dll|Unbacked")) or
+             "*presentationframework.ni.dll*", "ntdll.dll|Unbacked", "*system.windows.forms.ni.dll|Unbacked*", "ntdll.dll")) or
 
-   dll.name : ("vaultcli.dll", "dsquery.dll", "System.Management.Automation.dll") or
-
-   (dll.name : "ntdll.dll" and dll.Ext.load_index >= 2)
+   dll.name : ("dsquery.dll", "System.Management.Automation.dll")
   ) and 
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))]
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_leading_bytes :
+                         ("ffeb1e8d4e0ce86482000083660400684c5*",
+                          "8bcee8ac9affff837d10007414ff7510*",
+                          "0000004d63db4a8b0c19488b0948894d9890488b4db84533db488b458048898558ffffff488d051500000048898570ffffff488b4588c6400c00488b4598ffd0",
+                          "8b750cc706d3c6ca05e8cd9d2e588b4d10e855d728588b4d108b750cc706dec6ca05e884102d588b4d10e8dcf72c588b4d108b750cc706e6c6ca05e89b9d2e58",
+                          "008bc3eb8933c0413bed75824488afe81c0000e976ffffffcccccc40534881eca000000033db48391d66360d000f85bb010000488d0db9580b00ff15132b0900"))
+  ]
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -76,4 +83,4 @@ name = "Lateral Movement"
 reference = "https://attack.mitre.org/tactics/TA0008/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"

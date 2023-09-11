@@ -7,7 +7,7 @@ id = "ffbab5db-73ae-42fd-a33f-36bf649f41cc"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Process Execution"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
@@ -52,7 +52,8 @@ sequence by process.entity_id with maxspan=3m
                                    "?:\\Program Files (x86)\\Epson Software\\Download Navigator\\EPSDNRUD.EXE",
                                    "?:\\Program Files (x86)\\BizTalkHealthMonitor\\BHMCOLLECT.EXE",
                                    "?:\\Program Files (x86)\\WINDEV\\AD_Voyager\\AD_voyager.exe",
-                                   "?:\\Program Files\\Windev\\AD_Voyager\\AD_voyager.exe") and
+                                   "?:\\Program Files\\Windev\\AD_Voyager\\AD_voyager.exe",
+                                   "?:\\Program Files (x86)\\Kovai Ltd\\BizTalk360\\Service\\BHMCollect.exe") and
   not process.working_directory : ("?:\\Windows\\system32\\spool\\DRIVERS\\*", "?:\\windows\\system32\\driverstore\\filerepository\\*") and
   not process.command_line : "*AppData\\Roaming\\Nextech\\NxTSAddin\\ContingencyUninstallNXTSForCurrentUser.vbs*"
   ]

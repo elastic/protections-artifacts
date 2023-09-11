@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 any where process.executable != null and
@@ -16,15 +16,13 @@ any where process.executable != null and
  process.thread.Ext.call_stack_summary : "?*" and not process.thread.Ext.call_stack_summary : "ntdll.dll*" and
  /* mov r10,rcx, mov eax,ssn, syscall */
  _arraysearch(process.thread.Ext.call_stack, $entry,
-              ($entry.callsite_trailing_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05") or
-               $entry.callsite_leading_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05")))) or
+               $entry.callsite_leading_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05"))) or
 
  (event.category : "process" and
   process.parent.thread.Ext.call_stack_summary : "?*" and not process.parent.thread.Ext.call_stack_summary : "ntdll.dll*" and
   /* mov r10,rcx, mov eax,ssn, syscall */
   _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-              ($entry.callsite_trailing_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05") or
-               $entry.callsite_leading_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05"))))
+               $entry.callsite_leading_bytes : ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05")))
 ) and
 not process.executable :
             ("?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -36,7 +34,14 @@ not process.executable :
              "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
              "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe",
              "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
-             "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe") and
+             "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe",
+             "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+             "?:\\Program Files\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+             "?:\\Program Files\\BackupClient\\TrayMonitor\\MmsMonitor.exe",
+             "?:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe",
+             "?:\\Program Files\\Google\\Update\\GoogleUpdate.exe",
+             "?:\\Program Files\\BackupClient\\TrayMonitor\\MmsMonitor.exe",
+             "?:\\Program Files (x86)\\BackupClient\\TrayMonitor\\MmsMonitor.exe") and
  not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.") and process.code_signature.trusted == true) and
  /* chromium and last one for Acrobat */
  not _arraysearch(process.thread.Ext.call_stack, $entry,
@@ -46,11 +51,14 @@ not process.executable :
                           "c3cd2ec30f1f84000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
                           "c30f1f4400004c8bd1b8280000000f05c30f1f44000000000000000000000000000000000000000000000000000000000000000000004c8bd1b8290000000f05", 
                           "c30f1f4400004c8bd1b8280000000f05c30f1f4400004c8bd1b8290000000f05c30f00000000000000000000000000000000000000004c8bd1b8290000000f05", 
-                          "c30f1f440000ff25000000007004fd89ff7f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")) and
+                          "c30f1f440000ff25000000007004fd89ff7f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                          "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not (event.category : "library" and
-      process.executable : ("?:\\Windows\\Sys*\\inetsrv\\w3wp.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe"))
+      process.executable : ("?:\\Windows\\Sys*\\inetsrv\\w3wp.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe")) and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes : "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies the execution of the ASPNET Compiler utility to execute cshap code passed via arguments. Adversaries may
+abuse this utility to run malicious code.
+"""
+id = "2aa05bad-c402-4504-9fbe-cc2fb273193a"
+license = "Elastic License v2"
+name = "Potential Evasion via ASP.NET Compiler"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ (process.name : "aspnet_compiler.exe" or process.pe.original_file_name : "aspnet_compiler.exe") and
+  process.args : "-v" and process.args : "-f" and process.args : "-u" and not process.args : "-d" and
+  not process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio*", "?:\\Program Files\\Microsoft Visual Studio*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.004"
+name = "InstallUtil"
+reference = "https://attack.mitre.org/techniques/T1218/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

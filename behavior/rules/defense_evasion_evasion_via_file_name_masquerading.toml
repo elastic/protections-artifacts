@@ -1,15 +1,15 @@
 [rule]
 description = """
-Adversaries may abuse a double extension or unicode right-to-left override (RTLO or RLO) character (U+202E) in the
-filename as a means of masquerading the true file type. A file name may include a secondary file type extension that may
-cause only the first extension to be displayed which maximize user execution likelihood.
+Adversaries may abuse a double extension or unicode right-to-left override (RTLO or RLO) character (U+202E) or multiple
+spaces in the filename as a means of masquerading the true file type. A file name may include a secondary file type
+extension that may cause only the first extension to be displayed which maximize user execution likelihood.
 """
 id = "ccfca0c7-c975-4735-82bd-954ffbafd00b"
 license = "Elastic License v2"
-name = "Evasion via Double File Extension"
+name = "Evasion via File Name Masquerading"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.22"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -18,6 +18,9 @@ process where event.action == "start" and
   process.name regex~ """.+(\.|\,|\_|\-)(pdf|doc|docx|xls|xlsx|png|jpg|html|txt|rar|ppt|pptx|htm|GIF)\.(scr|exe|com|pif)""" or
 
   process.name : ("*   pdf.exe", "*_pdf.exe") or
+
+  /* multiple spaces */
+  process.name regex """.+\s{10,}\.(exe|pif|com|scr)""" or
 
   /* fake extension via Unicode Right-To-Left-Override technique */
   process.name : "*\u{202E}*"

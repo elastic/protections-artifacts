@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies registry modification to modify the system internet proxy settings by an unusual process. This may indicate
+an attempt to hijack user internet traffic to certain websites.
+"""
+id = "6dd16a01-b779-4a39-b436-deed75f2c355"
+license = "Elastic License v2"
+name = "Potential AutoConfigURL Settings Hijack"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+registry where
+ registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\AutoConfigURL" and
+ registry.data.strings : "*http*" and not registry.data.strings : "*127.0.0.1*" and process.executable != null and
+ (
+  process.code_signature.trusted == false or
+  process.code_signature.exists == false or
+  process.name : ("powershell.exe", "wscript.exe", "cscript.exe")
+  ) and
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

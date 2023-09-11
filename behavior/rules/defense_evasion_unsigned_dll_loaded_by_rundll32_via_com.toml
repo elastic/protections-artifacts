@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies attempts to load an unsigned and recently dropped DLL from a COM ClassID using the Rundll32 -sta argument.
+Adversaries may use this method to execute malicious modules via Rundll32 with legit looking process arguments.
+"""
+id = "d7b30f32-4e92-496e-9cf5-c46d985f66cd"
+license = "Elastic License v2"
+name = "Unsigned DLL loaded by Rundll32 via COM"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Rundll32/"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  (process.pe.original_file_name == "RUNDLL32.EXE" or process.name : "RUNDLL32.EXE") and process.args : ("/sta", "-sta")]
+ [library where process.name : "rundll32.exe" and
+   (dll.Ext.relative_file_creation_time <= 900 or dll.Ext.relative_file_name_modify_time <= 900) and
+   not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.015"
+name = "Component Object Model Hijacking"
+reference = "https://attack.mitre.org/techniques/T1546/015/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

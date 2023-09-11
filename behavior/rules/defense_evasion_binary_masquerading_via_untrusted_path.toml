@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -78,7 +78,8 @@ process where event.action == "start" and
     (process.pe.original_file_name : "WerFaultSecure.exe" or process.name : "WerFaultSecure.exe") or
     (process.pe.original_file_name : "WerFault.exe" or process.name : "WerFault.exe") or
     (process.pe.original_file_name : "wermgr.exe" or process.name : "wermgr.exe") or
-    (process.pe.original_file_name : "IE4UINIT.EXE" or process.name : "ie4uinit.exe")
+    (process.pe.original_file_name : "IE4UINIT.EXE" or process.name : "ie4uinit.exe") or
+    (process.pe.original_file_name == "curl.exe" and process.code_signature.subject_name : "Microsoft *")
     )
     and
     

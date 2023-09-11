@@ -7,10 +7,10 @@ id = "9c5c3957-f8cb-4225-ad07-e5a6325eafb2"
 license = "Elastic License v2"
 name = "Mach-O File with Unusual Extension"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.6"
 
 query = '''
-file where event.action : ("modification", "rename", "creation") and
+file where event.action : ("modification", "rename", "open") and
 
  file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and
 
@@ -22,8 +22,14 @@ file where event.action : ("modification", "rename", "creation") and
    file.extension : ("mp3", "wav", "avi", "mpeg", "flv", "wma", "wmv", "mov", "mp4", "3gp") or
 
    /* common document file extensions */
-   file.extension : ("txt", "pdf", "doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx", "hwp", "html")
-  )
+   file.extension : ("txt", "pdf", "doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx", "hwp", "html") or
+
+   /* common log, txt and temporary file extensions */
+   file.extension : ("tmp", "log", "conf", "txt")
+  ) and
+
+  not (process.executable : "/bin/cp" and file.path : "/Library/PrivilegedHelperTools/us.zoom.ZoomDaemon.tmp") and
+  not (process.name : "java" and file.path : "/Users/*/Library/Caches/*")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies the use of known legit utilities to potentially tunnel network traffic. This can be used by attackers to
+enable routing of network packets that would otherwise not reach their intended destination.
+"""
+id = "87aa3f52-3f7b-4d6e-aecc-101bb1275020"
+license = "Elastic License v2"
+name = "Potential Protocol Tunneling via Legit Utilities"
+os_list = ["windows"]
+reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
+version = "1.0.5"
+
+query = '''
+process where event.action == "start" and
+ (
+  /* RDP port and usual SSH tunneling related switches in command line */
+  (process.command_line : "*:3389*" and process.args : ("-L", "-P", "-R", "-pw", "-ssh")) or
+
+  (process.code_signature.subject_name : "ngrok, Inc." and process.args : ("http", "tcp", "tunnel", "tls", "start", "3389"))
+ )
+and not (process.code_signature.subject_name : "ninjaRMM LLC" and process.code_signature.status : "trusted")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1572"
+name = "Protocol Tunneling"
+reference = "https://attack.mitre.org/techniques/T1572/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

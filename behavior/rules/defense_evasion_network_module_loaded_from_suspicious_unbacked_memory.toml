@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id
@@ -32,11 +32,14 @@ sequence by process.entity_id
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
                      "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
                      "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.",
-                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy") and
+                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy", "Logitech Inc") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
        process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
+
+  not (process.executable : "?:\\Windows\\System32\\Essentials\\SharedServiceHost.exe" and
+       process.parent.executable : "?:\\Windows\\System32\\services.exe") and
 
   not process.hash.sha256 :
                    ("35542bc04fbfa2e3ef68837640e0459c6f99729c0c73578c08ab351cdf030696",
@@ -54,7 +57,11 @@ sequence by process.entity_id
                     "183cd12fbdd93aa785d3793a8872c4a9730dd154f6482c39f94552e556a7b4e9",
                     "ed6c844c72fccd7e7799d448f5e74df368cafd2631858573e6e29110c213ac79",
                     "43a84e01b5ddecf0b6297277d53c72025a73b00b9f0073933a700695a240b5e8",
-                    "f4cb2a001dcee0577046c56df5adfe989bc875c29ecfe27c9569849a9a6f0671") and
+                    "f4cb2a001dcee0577046c56df5adfe989bc875c29ecfe27c9569849a9a6f0671",
+                    "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9",
+                    "51346e95656164783ae4de9d6b202f28be87358eb0e056d2d7cdd12b502d30e7",
+                    "889cb8827a400984bea2e0561a1efbf9d18044e879974da8baa750a0c63748c6",
+                    "96dcdb449ab48b21b6efd33afc59ae163dea5fc597ffaf5dd7030b20d2624467") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -101,10 +108,15 @@ sequence by process.entity_id
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :
                          ("*8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b*",
+                          "c6430c01833d*5f007406ff1*",
                           "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
                           "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65",
-                          "488944242048837c2420007520488b8424600200004883c050488bd0488d0d49180100e84c77ffffe9b6000000488b8424600200004883c0504c8b442420488b"))
+                          "488944242048837c2420007520488b8424600200004883c050488bd0488d0d49180100e84c77ffffe9b6000000488b8424600200004883c0504c8b442420488b",
+                          "**45a848894590eb00488b4590488b5588c6420c01488b5588",
+                          "*488b5560c6420c01488b5560488b4d2048894a",
+                          "c6470c01833d6cf1b45f007406ff15f40cb45f8bf0e8b5e76f5f85f6400f95c6400fb6f64883bdc0000000007423488b8dc0000000e825ebe25e448bc0488b95",
+                          "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a"))
   ]
   until [process where event.action:"end"]
 '''

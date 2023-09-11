@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.15"
+version = "1.0.18"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -40,7 +40,9 @@ sequence by user.id with maxspan=5m
   /* DLL loaded from the process.executable directory */
   endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
 
-  not dll.hash.sha256 : "3e278f47c124c44e8e5a18a12364f3b7af723292b6a4c6011e8f558325bbd7cb"
+  not dll.hash.sha256 : "3e278f47c124c44e8e5a18a12364f3b7af723292b6a4c6011e8f558325bbd7cb" and
+
+  not (dll.path : "?:\\$WINDOWS.~BT\\Sources\\*.dll" and process.executable : "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe")
   ] by process.executable
 '''
 

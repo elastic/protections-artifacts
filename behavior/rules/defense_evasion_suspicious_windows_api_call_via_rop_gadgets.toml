@@ -7,7 +7,7 @@ id = "d7239b58-3e32-481a-9bfa-63e04caf1a4e"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.9"
 
 query = '''
 api where
@@ -46,7 +46,8 @@ api where
                                                                   "*ntdll.dll!LdrLoadDll*",
                                                                   "*ntdll.dll*!NtReadRequestData*",
                                                                   "*ntdll.dll!RtlVirtualUnwind*",
-                                                                  "\\device\\+0*")) and
+                                                                  "\\device\\+0*",
+                                                                  "*ntdll.dll*!*CreateLowBoxToken*")) and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
 

@@ -1,0 +1,67 @@
+[rule]
+description = """
+Identifies attempts to drop an executable file via a malicious RDP connection file. This may indicate an attempt to get
+initial access by connecting to an adversary controlled malicious RDP server.
+"""
+id = "4c6cea1d-7c50-4d83-861b-3fee8c079d97"
+license = "Elastic License v2"
+name = "Potential Initial Access via Rogue RDP Server"
+os_list = ["windows"]
+reference = [
+    "https://www.blackhillsinfosec.com/rogue-rdp-revisiting-initial-access-methods/",
+    "https://shorsec.io/blog/malrdp-implementing-rouge-rdp-manually/",
+]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+ [process where event.action == "start" and process.name : "mstsc.exe" and process.args_count >= 2 and
+  not (process.args : "-Embedding" and process.parent.name : "svchost.exe") and
+  not process.parent.executable :
+             ("?:\\Program Files\\Thycotic Software Ltd\\Secret Server Protocol Handler\\RDPWin.exe",
+              "?:\\Program Files (x86)\\Thycotic Software Ltd\\Secret Server Protocol Handler\\RDPWin.exe")]
+ [network where event.action == "connection_attempted" and process.name : "mstsc.exe"]
+ [file where event.action != "deletion" and process.name : "mstsc.exe" and 
+  (
+   (file.extension : ("dll", "exe", "cpl", "pif", "com", "js", "vbs", "wsh", "vbe", "jse", "bat", "cmd") or
+    file.Ext.header_bytes : "4d5a*" or file.name : "*.exe.config") or
+
+   file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*",
+               "?:\\Users\\*\\Desktop\\*.lnk")
+   ) and
+   not file.path : ("?:\\*\\AppData\\Local\\Temp\\*", "?:\\Program Files*") and
+   not (file.path : "?:\\ProgramData\\*" and not file.path : "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*")]
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.16.0"

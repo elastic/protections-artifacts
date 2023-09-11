@@ -8,7 +8,7 @@ id = "5f1eb14e-9717-4a35-bc80-3fb453a59596"
 license = "Elastic License v2"
 name = "Memory Protection Modification of an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -16,7 +16,7 @@ sequence by process.entity_id with maxspan=1m
    process.name : ("rundll32.exe", "regsvr32.exe") and
    (dll.Ext.relative_file_creation_time <= 900 or
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not dll.path : "C:\\*") or
-    dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
+    dll.path : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
@@ -24,7 +24,8 @@ sequence by process.entity_id with maxspan=1m
                     "?:\\Program Files\\*",
                     "?:\\Program Files (x86)\\*",
                     "?:\\Windows\\assembly\\*",
-                    "?:\\Windows\\Microsoft.NET\\*") and
+                    "?:\\Windows\\Microsoft.NET\\*",
+                    "\\Device\\Mup\\*") and
     not dll.hash.sha256 : ("6e51bb2531165a4f0a561e6641ea718ee82bcc3447fa3c365155aefd71e0a7d5")] by dll.name
 [api where
   process.Ext.api.name : "VirtualProtect*" and

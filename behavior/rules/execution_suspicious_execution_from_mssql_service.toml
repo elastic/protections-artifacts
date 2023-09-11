@@ -8,7 +8,7 @@ id = "547636af-cad2-4be0-a74e-613c7bb86664"
 license = "Elastic License v2"
 name = "Suspicious Execution from MSSQL Service"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -25,7 +25,16 @@ process where event.action == "start" and
   (process.parent.name : "sqlservr.exe" and process.code_signature.trusted != true and
    not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
    process.code_signature.status != "errorChaining" and
-   not process.hash.sha256 : "1a9adfd83a88d80377d9060c7e2857964bf24974eae13447678cedca7da3dba8")
+   not process.hash.sha256 : "1a9adfd83a88d80377d9060c7e2857964bf24974eae13447678cedca7da3dba8") or
+
+   (process.parent.name : "sqlservr.exe" and (process.name : "vpnbridge.exe" or process.pe.original_file_name : "vpnbridge.exe")) or
+
+   (process.parent.name : "sqlservr.exe" and
+    (process.name : "certutil.exe" or process.pe.original_file_name == "CertUtil.exe") and process.args : "-urlcache") or
+
+   (process.parent.name : "sqlservr.exe" and
+    (process.name : "bitsadmin.exe" or process.pe.original_file_name : "bitsadmin.exe") and
+    process.command_line : ("*download*", "*transfer*", "*create*", "*addfile*", "*SetNotifyCmdLine*"))
 )
 '''
 

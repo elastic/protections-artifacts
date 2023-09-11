@@ -7,7 +7,7 @@ id = "66e9a65a-d1ef-4590-a397-5d21bddfec0c"
 license = "Elastic License v2"
 name = "Potential Injection via an Exception Handler"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -17,21 +17,21 @@ sequence by process.entity_id with maxspan=1m
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
  not (process.name : "cmd.exe" and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+      process.thread.Ext.call_stack_summary : "*kernelbase.dll|clink_dll_x64.dll|ntdll.dll*")]
 [api where process.Ext.api.behaviors :
                   ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
                    "execute_shellcode", "allocate_in_system_image_range") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
  not (process.name : "cmd.exe" and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+      process.thread.Ext.call_stack_summary : "*kernelbase.dll|clink_dll_x64.dll|ntdll.dll*")]
 [api where process.Ext.api.behaviors :
                   ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
                    "execute_shellcode", "allocate_in_system_image_range") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
  not (process.name : "cmd.exe" and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clink_dll_x64.dll|ntdll.dll|kernelbase.dll|*")]
+      process.thread.Ext.call_stack_summary : "*kernelbase.dll|clink_dll_x64.dll|ntdll.dll*")]
 '''
 
 min_endpoint_version = "8.8.0"

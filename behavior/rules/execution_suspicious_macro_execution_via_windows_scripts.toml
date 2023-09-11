@@ -7,20 +7,23 @@ id = "b4390574-78e4-4408-b1aa-be3fc4d1e2f1"
 license = "Elastic License v2"
 name = "Suspicious Macro Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and
   process.Ext.effective_parent.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe") and
   process.name : ("outlook.exe", "excel.exe", "winword.exe", "powerpnt.exe",
-                  "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe")]
+                  "eqnedt32.exe", "fltldr.exe", "mspub.exe")]
  [any where
   process.name : ("outlook.exe", "excel.exe", "winword.exe", "powerpnt.exe",
-                  "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe") and
+                  "eqnedt32.exe", "fltldr.exe", "mspub.exe") and
   /* executing some Macro VBA code */
   process.thread.Ext.call_stack_summary : "*|vbe?.dll*" and
-  not (event.category : "registry" and registry.key : "SOFTWARE\\Microsoft\\Office\\*\\Word\\Text Converters\\Import")]
+  not (event.category : "registry" and
+       (registry.value : ("SlowSettingTypesChanged", "File Path") or registry.key : "SOFTWARE\\Microsoft\\Office\\*\\Word\\Text Converters\\Import")) and
+  not (event.category : "file" and (file.Ext.header_bytes : ("504b03*", "d0cf*") or event.action : "deletion" or file.size == 0)) and
+  not (event.category : "library" and dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))]
 '''
 
 min_endpoint_version = "8.7.0"

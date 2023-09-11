@@ -7,7 +7,7 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.7"
 
 query = '''
 registry where
@@ -33,7 +33,10 @@ registry where
                             "?:\\Program Files\\Lenovo\\VantageService\\*\\LenovoVantageService.exe") and
       process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|Unbacked") and
  not process.executable : ("?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\ADNotificationManager.exe",
-                           "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\ADNotificationManager.exe")
+                           "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\ADNotificationManager.exe",
+                           "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AdobeCollabSync.exe",
+                           "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AdobeCollabSync.exe") and
+ not (process.code_signature.subject_name : "Cisco WebEx LLC" and process.executable : "?:\\Users\\*\\AppData\\Local\\WebEx\\webexAppLauncher.exe")
 '''
 
 min_endpoint_version = "8.7.0"

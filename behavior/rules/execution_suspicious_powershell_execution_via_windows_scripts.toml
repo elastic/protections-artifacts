@@ -4,7 +4,7 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -14,6 +14,8 @@ process where event.action == "start" and
    (descendant of [process where event.action == "start" and process.parent.name : ("wscript.exe", "cscript.exe")] and
     not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
    ) and
+   (
+   process.args_count == 1 or
    process.command_line :
              ("*^*^*^*^*^*^*^*^*^*",
               "*''*''*''*",
@@ -49,7 +51,8 @@ process where event.action == "start" and
               "*Assembly.GetType*",
               "*.Sockets.*",
               "*Add-MpPreference*ExclusionPath*",
-              "*raw.githubusercontent*") and
+              "*raw.githubusercontent*")
+   ) and
     /* false positives */
    not process.parent.name: ("gc_worker.exe", "gc_service.exe") and
    not process.parent.command_line : "*Windows\\TEMP\\nessus_*" and

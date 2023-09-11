@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.30"
+version = "1.0.33"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -20,6 +20,7 @@ sequence by process.parent.entity_id with maxspan=1m
   [process where event.action == "exec" and process.name : "osascript" and
     process.command_line : "*-l JavaScript*" and not
     process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
+                                               "/Library/Addigy/auditor",
                                                "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")]

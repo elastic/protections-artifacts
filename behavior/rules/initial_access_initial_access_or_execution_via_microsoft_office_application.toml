@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.26"
+version = "1.0.29"
 
 query = '''
 process where event.action == "exec" and
@@ -64,6 +64,7 @@ process where event.action == "exec" and
         (
           "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
           "/usr/local/Privacy-i/PISupervisor",
+          "/Library/Addigy/lan-cache",
           "/Library/Elastic/Agent/*",
           "/opt/jc/bin/jumpcloud-agent",
           "/usr/sbin/networksetup"
@@ -73,6 +74,7 @@ process where event.action == "exec" and
    not process.Ext.effective_parent.executable : (
         "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
         "/usr/local/Privacy-i/PISupervisor",
+        "/Library/Addigy/auditor",
         "/Library/Elastic/Agent/*",
         "/opt/jc/bin/jumpcloud-agent",
         "/usr/sbin/networksetup"

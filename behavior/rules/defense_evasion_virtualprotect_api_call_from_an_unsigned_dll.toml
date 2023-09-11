@@ -7,11 +7,11 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id
-[library where
+[library where process.name != null and
    (dll.Ext.relative_file_creation_time <= 900 or
     dll.Ext.relative_file_name_modify_time <= 900 or
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
@@ -27,7 +27,9 @@ sequence by process.entity_id
 
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
-                         ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG", "EFI Software (Electronics for Imaging, Inc.)")) and
+                         ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
+                          "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
+                          "VICON INDUSTRIES, INC.")) and
 
   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
   not dll.hash.sha256 : 
@@ -36,7 +38,15 @@ sequence by process.entity_id
                 "4b3d1f4ec733afa5c593be64f251560515b91cb328e5c741ff877455aff0d453", 
                 "b950c9f7fb8e9b558d9caf634d7463fb4bf0aaf69a501d8f922763f8837b0ad2",
                 "6eed2886728608f1b3f4a54a7a7d338ef1b1669f6f53a5d38bcd352f0ec755c9",
-                "139a3fba0e2035830021d50bd24b73dc6d5b8b0520ee6d946ebef1ec2f602ff0")
+                "139a3fba0e2035830021d50bd24b73dc6d5b8b0520ee6d946ebef1ec2f602ff0",
+                "127ebabd8e20267bdd26165cd26398bd9225d89b2977ff8de2b5f9da8a231e67",
+                "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962",
+                "3ed846264d5003acbd0dd624cbe4ca84606fe897fd8caa29350621906a3e28c0",
+                "b211c61e1fa89cbaf4570ee5f9712772582b2f4bb23597549ec32ea066a20b76",
+                "deaf71807722382d05244160ee35b1a14c0e621d7caf74c863475669e5c95b35",
+                "7bafd0da58d427bbe8a2d34c953a53809bcbb3ff6c6f90b8acbe6c2b3ab8fa08",
+                "8747dc251af9c3192bad2001786c626ad03903c3afaadb8c6a8c2627c66730bd",
+                "5c45a7439d127c09b74fa16a0b300fb290ba15d316397579985464be484b8e17")
  ] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and

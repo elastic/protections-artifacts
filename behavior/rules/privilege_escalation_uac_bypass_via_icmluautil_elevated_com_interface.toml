@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "UAC Bypass via ICMLuaUtil Elevated COM Interface"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.26"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -19,7 +19,8 @@ process where event.action == "start" and
              ("?:\\Windows\\System32\\WerFault.exe",
               "?:\\Windows\\SysWOW64\\WerFault.exe",
               "?:\\Windows\\System32\\wermgr.exe",
-              "?:\\Windows\\SysWOW64\\wermgr.exe") and
+              "?:\\Windows\\SysWOW64\\wermgr.exe",
+              "?:\\Windows\\System32\\dccw.exe") and
  /* Issue #364 */
  not (process.code_signature.subject_name == "WireGuard LLC" and process.code_signature.trusted == true)
 '''

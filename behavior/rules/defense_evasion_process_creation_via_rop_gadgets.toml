@@ -7,7 +7,7 @@ id = "4cd250a2-82a0-463b-adda-5256cee422ce"
 license = "Elastic License v2"
 name = "Process Creation via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and
@@ -27,7 +27,8 @@ process where event.action == "start" and
                                                                   "*ntdll.dll!NtReplyWaitReceivePort*",
                                                                   "*KernelBase.dll!WriteConsoleW*")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
- not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*")
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
+ not process.executable : "?:\\Windows\\System32\\conhost.exe"
 '''
 
 min_endpoint_version = "8.8.0"

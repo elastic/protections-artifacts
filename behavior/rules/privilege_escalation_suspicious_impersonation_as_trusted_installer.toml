@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.13"
+version = "1.0.16"
 
 query = '''
 any where process.executable != null and 
@@ -51,7 +51,10 @@ any where process.executable != null and
                  "\\Device\\HarddiskVolume*\\Windows\\servicing\\TrustedInstaller.exe",  
                  "\\Device\\VhdHardDisk*\\Windows\\servicing\\TrustedInstaller.exe", 
                  "\\\\?\\Volume{*}\\Windows\\servicing\\TrustedInstaller.exe",
-                 "?:\\WINDOWS\\System32\\svchost.exe")))
+                 "?:\\WINDOWS\\System32\\svchost.exe"))) and
+
+   not (process.executable : ("?:\\Program Files (x86)\\Panda Security\\*.exe", "?:\\Program Files\\Panda Security\\*.exe") and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Panda Security S.L.")
  )
 '''
 

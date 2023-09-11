@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task from a Browser or Compression Utility Descendant"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.13"
+version = "1.0.16"
 
 query = '''
 sequence with maxspan=5m
@@ -34,7 +34,8 @@ sequence with maxspan=5m
                    "be7beb3d9b8c56e1395bfee0d31503e0156eeba0312d385ca77068b95d1d4bea",
                    "c3ab138aa176fda1a43e3a38d376e8ec284b610d9dacb9db0d08e503d071e4fe")
   ]
- )
+ ) and
+ not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and process.code_signature.trusted == true)
  ] by process.entity_id
  [file where event.action : "creation" and process.name : "svchost.exe" and
   file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*")] by Effective_process.entity_id

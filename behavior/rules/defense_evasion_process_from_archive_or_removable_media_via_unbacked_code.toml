@@ -8,7 +8,7 @@ id = "daaf517e-f4fc-4366-bfa7-87e651b3055b"
 license = "Elastic License v2"
 name = "Process from Archive or Removable Media via Unbacked Code"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by user.id with maxspan=3m
@@ -22,7 +22,8 @@ sequence by user.id with maxspan=3m
            "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*",
            "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*") or
    (process.parent.name : "explorer.exe" and process.parent.thread.Ext.call_stack_summary : "*shlwapi.dll|zipfldr.dll|shell32.dll*")
-   )
+   ) and
+   not (process.code_signature.subject_name : "Carbon Black, Inc." and process.code_signature.trusted == true)
  ] by process.entity_id
  [process where event.action == "start" and
   process.parent.thread.Ext.call_stack_contains_unbacked == true and

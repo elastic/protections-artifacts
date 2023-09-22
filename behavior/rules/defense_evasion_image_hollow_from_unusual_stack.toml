@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -21,7 +21,7 @@ api where process.Ext.api.behaviors == "hollow_image" and
                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
                       "ntdll.dll|Unbacked",
                       "Unbacked") and
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel", "tcaddin.dll", "clr.dll", "appvisvsubsystems64.dll", "appvisvsubsystems.dll")) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel", "Kernel|*", "tcaddin.dll", "clr.dll", "appvisvsubsystems64.dll", "appvisvsubsystems.dll")) and
   not (process.Ext.api.summary : ("*qipcap64.dll*", "*redemption64*", "*eowp.22.1.94.0.exe*", "*conemuhk64.dll*", "*xalan-c_1_10.dll*",
                                  "*crpe32.dll*", "*_*.dll*", "*-*.dll*", "*sqlite?.dll*", "*appprofiler.x64.dll*", "*appprofiler.x86.dll*") and
                                   not process.Ext.api.summary : "*ws2_32*") and
@@ -38,10 +38,16 @@ api where process.Ext.api.behaviors == "hollow_image" and
                 "?:\\Program Files\\Google\\Compute Engine\\metadata_scripts\\GCEMetadataScripts.exe",
                 "?:\\Program Files (x86)\\Google\\Compute Engine\\metadata_scripts\\GCEMetadataScripts.exe",
                 "?:\\Program Files\\Microsoft Office\\root\\vfs\\ProgramFilesCommonX64\\Microsoft Shared\\OFFICE*\\ai.exe",
-                "?:\\Program Files (x86)\\Baxter\\DoseEdge PrepStation\\Baxa.DoseEdge.exe") and
+                "?:\\Program Files (x86)\\Baxter\\DoseEdge PrepStation\\Baxa.DoseEdge.exe",
+                "?:\\Program Files\\Adobe\\Adobe InDesign *\\InDesign.exe",
+                "?:\\Program Files (x86)\\Adobe\\Adobe InDesign *\\InDesign.exe",
+                "?:\\Program Files (x86)\\Luidia\\eBeam Stylus Driver\\eBeam_Stylus_Preferences.exe") and
   not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and process.Ext.api.summary : "*msi*.tmp*") and
   not (process.executable : "?:\\Windows\\Sys*\\rundll32.exe" and process.command_line : ("*--no-sandbox*", "*--eoim*")) and
-  not (process.executable : "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe" and
+  not (process.executable :
+            ("?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
+             "?:\\Program Files\\WindowsApps\\Microsoft.Windows.Photos_*\\PhotosApp.exe",
+             "?:\\Windows\\System32\\backgroundTaskHost.exe") and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
   not process.parent.executable : ("?:\\Program Files (x86)\\Steam\\steam.exe", "?:\\Program Files\\Steam\\steam.exe")
 '''

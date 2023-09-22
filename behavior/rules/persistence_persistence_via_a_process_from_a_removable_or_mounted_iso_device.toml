@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Persistence via a Process from a Removable or Mounted ISO Device"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -22,9 +22,12 @@ sequence by process.entity_id with maxspan=5m
    not process.executable :
             ("?:\\Program Files\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
              "?:\\Program Files (x86)\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
-             "?:\\Program Files (x86)\\Microsoft OneDrive\\*\\FileSyncConfig.exe") and
+             "?:\\Program Files (x86)\\Microsoft OneDrive\\*\\FileSyncConfig.exe",
+             "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe") and
    not (process.code_signature.subject_name :
-                              ("Global Security Center", "Fabrice PARISOT", "Veeam Software Group GmbH") and process.code_signature.trusted == true) and
+                              ("Global Security Center", "Fabrice PARISOT", "Veeam Software Group GmbH", "Esko Software bv",
+                               "Google LLC", "Sage Software Inc.") and
+        process.code_signature.trusted == true) and
    not process.hash.sha256 : "6decdc0e295f2246d684480c10266c067cbd60c03af702505b7b3d045e81df18"
  ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and

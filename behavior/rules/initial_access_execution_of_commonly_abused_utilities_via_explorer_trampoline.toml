@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution of Commonly Abused Utilities via Explorer Trampoline"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Explorer/"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -40,7 +40,8 @@ process where event.action == "start" and
                       "printui.dll,PrintUIEntryDPIAware",
                       "?:\\windows\\System32\\srchadmin.dll",
                       "fdprint,InvokeTask",
-                      "cryptext.dll,CryptExtAddPFX")
+                      "cryptext.dll,CryptExtAddPFX",
+                      "?:\\WINDOWS\\System32\\SHELL32.dll,RunAsNewUser_RunDLL")
       ) and
   not (process.name : "wscript.exe" and process.args : "\\\\*\\*\\*.vbs")
 '''

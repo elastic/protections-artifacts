@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies the execution of a Windows script with file size more than 30MB. Adversaries may use large files to bypass
+online malware sandbox file upload size limitation.
+"""
+id = "e8dded92-4ef5-4322-8098-98e7cb33994f"
+license = "Elastic License v2"
+name = "Oversized Windows Script Execution"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=1m
+ [file where event.action != "deletion" and
+
+  /* windows script file size is more than 30MB */
+  file.extension : ("js", "jse", "vbs", "vbe", "wsh", "hta") and file.size >= 30000000] as event0
+ [process where event.action == "start" and
+  (process.name : ("wscript.exe", "cscript.exe", "mshta.exe") or process.pe.original_file_name : ("cscript.exe", "wscript.exe", "mshta.exe")) and
+   (
+    stringcontains~(process.command_line, event0.file.name) or
+    startswith~(event0.file.path, process.working_directory)
+   )]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

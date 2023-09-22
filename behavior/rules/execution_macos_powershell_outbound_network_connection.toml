@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when Powershell (pwsh) on macOS makes an outbound network connection attempt. Powershell usage on macOS is
+extremely rare but usage of Powershell to connect out to the internet is almost always indicative of malicious behavior.
+"""
+id = "53aa049c-72d1-4ddf-b089-a86059642a35"
+license = "Elastic License v2"
+name = "MacOS Powershell Outbound Network Connection"
+os_list = ["macos"]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.type == "start" and event.action == "exec" and process.name : "pwsh"]
+[network where event.type == "start" and process.name : "pwsh" and event.action : "connection_attempted" and
+   not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.3.0"

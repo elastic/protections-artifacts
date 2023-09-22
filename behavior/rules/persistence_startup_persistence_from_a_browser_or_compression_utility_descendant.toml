@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Startup Persistence from a Browser or Compression Utility Descendant"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -48,7 +48,9 @@ sequence by process.entity_id with maxspan=5m
               "8eb1e2a08f299b7c7c53e03e2121d5fd073b32791092f783feb5c00a8d6f1781",
               "978123c86b1cbc981770fbd8bdfc58ef4030f8d9b3adf06b71b928cc0394c073",
               "d06598f2f203cec7a7a3857f727bc2ba457c1c0cef2787b90ce553407fbf8536",
-              "8a8d94b58aa3443b57c917ca0650ae6befe0bc293a2333ddf9bb45fb2485203c") and
+              "8a8d94b58aa3443b57c917ca0650ae6befe0bc293a2333ddf9bb45fb2485203c",
+              "b8416acb067cae9a6a04cf31c5c98c2ef72a4d2efda715b44fb76f62fcddf788",
+              "13a5adab078ceaefea89d2058e81d6cac41f3732d1f246bd4de6c4a0bd656d0f") and
   not process.executable : "?:\\Program Files (x86)\\LAN Messenger\\lmc.exe"
  ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and

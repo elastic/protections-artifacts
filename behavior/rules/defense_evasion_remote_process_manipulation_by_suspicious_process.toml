@@ -8,7 +8,7 @@ id = "902f471c-27b4-4e78-b344-be46c6cfb72b"
 license = "Elastic License v2"
 name = "Remote Process Manipulation by Suspicious Process"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id
@@ -41,7 +41,8 @@ sequence by process.entity_id
    not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\inetcpl.cpl,ClearMyTracksByProcess" and
         process.parent.executable : "?:\\Program Files*\\Internet Explorer\\iexplore.exe") and
    not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SNXAC\\STAProxy.exe" and
-        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\snxac\\*\\sta.dll,LaunchSTA")
+        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\snxac\\*\\sta.dll,LaunchSTA") and
+   not (process.name : "rundll32.exe" and process.command_line : "\"C:\\Windows\\Sys*\\rundll32.exe\"  --enable-speech-input --enable-media-stream --no-sandbox")
   ]
  [api where process.Ext.api.behaviors : "cross-process" and
   process.Ext.api.name : ("VirtualAllocEx", "VirtualProtectEx") and
@@ -86,6 +87,7 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[threat]]
 framework = "MITRE ATT&CK"

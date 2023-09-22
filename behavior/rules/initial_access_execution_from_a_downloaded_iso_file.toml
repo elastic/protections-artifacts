@@ -7,7 +7,7 @@ id = "df9cc41e-4686-4aa0-8f79-60055dd01812"
 license = "Elastic License v2"
 name = "Execution from a Downloaded ISO File"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=5m
@@ -18,7 +18,8 @@ sequence with maxspan=5m
                  "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*") or
     file.name : "*:Zone.Identifier" or
     file.Ext.windows.zone_identifier > 1
-   )
+   ) and
+   not process.executable : "?:\\Windows\\System32\\dllhost.exe"
   ]
  [process where event.action == "start" and
   process.parent.name : ("explorer.exe", "cmd.exe", "powershell.exe") and 

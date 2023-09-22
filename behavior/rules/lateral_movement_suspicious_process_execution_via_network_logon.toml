@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.action == "start" and
@@ -96,28 +96,16 @@ process where event.action == "start" and
               "?:\\Program Files\\Google\\Update\\*.exe",
               "?:\\Program Files\\Commvault\\installer\\Setup.exe",
               "?:\\Windows\\System32\\CPrepSrv.exe",
-              "?:\\Windows\\System32\\repadmin.exe") and
+              "?:\\Windows\\System32\\repadmin.exe",
+              "?:\\Windows\\System32\\dllhost.exe",
+              "?:\\Windows\\SysWOW64\\dllhost.exe",
+              "?:\\Windows\\System32\\inetsrv\\iisrstas.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
        not (process.command_line : ("*WebClient*", "*http*", "* -exec Bypass*", "* -enc *") and
             not process.command_line : ("*echo nessus_cmd*", "*$ErrorActionPreference*", "*-executionpolicy*"))) and
 
-  not (process.executable : "?:\\Windows\\System32\\dllhost.exe" and
-       process.args : ( /* PSIProfileNotifyPermalink */
-                       "/Processid:{E10F6C3A-F1AE-4ADC-AA9D-2FE65525666E}",
-                        /* IIS ahadmin */
-                       "/Processid:{9FA5C497-F46D-447F-8011-05D03D7D7DDC}",
-                        /* third party - HP Universal Printer */
-                       "/Processid:{AD137AE1-ED62-40ED-9891-8C294D9D3D33}",
-                        /* GPMC Reporting. */
-                       "/Processid:{7F9BBC82-BA5F-4448-8622-EF76B8D007E6}",
-
-                       "/Processid:{3EB3C877-1F16-487C-9050-104DBCD66683}",
-
-                       "/Processid:{76A64158-CB41-11D1-8B02-00600806D9B6}",
-
-                       "/Processid:{2AF83513-9943-42EC-90D1-09F9A40C483D}")) and
   not (process.executable : "?:\\Windows\\system32\\sc.exe" and process.args : ("config", "delete") and
        process.args : "VisualStudioRemoteDeployer*" and process.parent.name : "wsmprovhost.exe") and
   not (process.executable : "?:\\Windows\\System32\\net.exe" and process.args : ("stop", "start")) and
@@ -146,7 +134,8 @@ process where event.action == "start" and
        process.code_signature.subject_name :
                 ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.",
                  "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.",
-                 "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc")) and
+                 "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc", "Flexera Software LLC",
+                 "Arcserve (USA) LLC", "Hewlett Packard")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and

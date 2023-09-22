@@ -8,12 +8,11 @@ id = "7f1872c5-0231-4fa7-a1e7-6400964d7cf3"
 license = "Elastic License v2"
 name = "Service Communication via Mail Protocol"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
- [library where process.name : "svchost.exe" and
-  (dll.Ext.relative_file_creation_time <= 900 or dll.Ext.relative_file_name_modify_time <= 900) and
+ [library where process.name : "svchost.exe" and dll.Ext.relative_file_creation_time <= 900 and
   not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")]
  [dns where dns.question.name : ("smtp.*", "mail.*") and process.name : "svchost.exe"]
 '''

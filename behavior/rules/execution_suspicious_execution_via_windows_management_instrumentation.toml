@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -79,7 +79,7 @@ not (process.name : "cmd.exe" and process.working_directory : "?:\\tmp\\smartche
 not (process.pe.original_file_name == "360se.exe" and process.code_signature.trusted == true and
      process.code_signature.subject_name == "Beijing Qihu Technology Co., Ltd.") and
 
-not (process.code_signature.subject_name : ("Synology Inc.", "Zoom Video Communications, Inc.") and process.code_signature.trusted == true) and
+not (process.code_signature.subject_name : ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.") and process.code_signature.trusted == true) and
 
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 

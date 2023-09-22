@@ -7,7 +7,7 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=3m
@@ -30,6 +30,7 @@ sequence with maxspan=3m
                   "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
                   "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 
   process.parent.executable : ("/sbin/launchd",
+                               "/Library/PrivilegedHelperTools/*",
                                "/Volumes/Eclipse Installer/Eclipse Installer.app/Contents/MacOS/eclipse-inst") and not
   process.Ext.effective_parent.executable : "/Volumes/EPSON/Install Navi.app/Contents/MacOS/Install Navi"]
 '''

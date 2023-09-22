@@ -7,7 +7,7 @@ id = "4bb7bf2e-675a-45c5-973a-cc2ef109596c"
 license = "Elastic License v2"
 name = "System Service DLL Loaded by Unusual Process"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -66,7 +66,9 @@ sequence by process.entity_id with maxspan=1m
 
     not (process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
-    not (process.executable : "?:\\Windows\\Sys*\\svchost.exe" and process.parent.executable : "?:\\Windows\\Sys*\\rpcnet.exe")
+    not (process.executable : "?:\\Windows\\Sys*\\svchost.exe" and process.parent.executable : "?:\\Windows\\Sys*\\rpcnet.exe") and
+
+    not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and process.parent.executable : "?:\\Windows\\System32\\winlogon.exe")
     ) or
 
      /* unsigned and recently dropped PE from users writable directories */

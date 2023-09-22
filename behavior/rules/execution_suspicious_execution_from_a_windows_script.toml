@@ -8,7 +8,7 @@ id = "c89c8742-9040-4de8-b3cf-477407fafac1"
 license = "Elastic License v2"
 name = "Suspicious Execution from a Windows Script"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=1m
@@ -16,7 +16,9 @@ sequence with maxspan=1m
   process.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe")] by process.entity_id
  [process where event.action == "start" and
   process.parent.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and 
-  not process.parent.args : "?:\\Program Files (x86)\\smartagent\\agent\\common\\snapins\\adpcommon\\ADP_DmsTasks.vbs"] by process.parent.entity_id
+  not process.parent.args :
+              ("?:\\Program Files (x86)\\smartagent\\agent\\common\\snapins\\adpcommon\\ADP_DmsTasks.vbs",
+               "?:\\\\Program Files (x86)\\\\Tanium\\\\Tanium Client\\\\Patch\\\\lib\\\\tanium-patch.min.vbs")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.8.0"

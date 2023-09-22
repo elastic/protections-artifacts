@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 any where process.pid != 4 and process.executable != null and
@@ -38,7 +38,8 @@ any where process.pid != 4 and process.executable != null and
        process.code_signature.subject_name : "Microsoft*" and process.code_signature.status : "trusted" and 
        process.parent.thread.Ext.call_stack_summary : "ntdll.dll|vmwp.exe|ntdll.dll*") and
   not (event.category : "library" and dll.code_signature.status : "trusted" and not dll.code_signature.subject_name : "Microsoft*") and
-  not (process.executable : "?:\\Windows\\System32\\WUDFCompanionHost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe")
+  not (process.executable : "?:\\Windows\\System32\\WUDFCompanionHost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe") and
+  not process.executable :  ("?:\\Program Files\\Oracle\\VirtualBox\\VirtualBoxVM.exe",  "?:\\Program Files (x86)\\Oracle\\VirtualBox\\VirtualBoxVM.exe")
 '''
 
 min_endpoint_version = "8.7.0"

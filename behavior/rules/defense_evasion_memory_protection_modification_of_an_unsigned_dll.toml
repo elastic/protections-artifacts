@@ -1,19 +1,19 @@
 [rule]
 description = """
-Identifies the load of an unsigned or untrusted DLL by Rundll32 or Regsvr32 followed by calling VirtualProtect API to
-change the memory protection of the same loaded DLL. This may indicate an attempt to unpack malicious code from the DLL
-to perform code injection.
+Identifies the load of an unsigned or untrusted DLL by Rundll32 followed by calling VirtualProtect API to change the
+memory protection of the same loaded DLL. This may indicate an attempt to unpack malicious code from the DLL to perform
+code injection.
 """
 id = "5f1eb14e-9717-4a35-bc80-3fb453a59596"
 license = "Elastic License v2"
 name = "Memory Protection Modification of an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [library where
-   process.name : ("rundll32.exe", "regsvr32.exe") and
+   process.name : "rundll32.exe" and
    (dll.Ext.relative_file_creation_time <= 900 or
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and not dll.path : "C:\\*") or
     dll.path : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and

@@ -7,7 +7,7 @@ id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
 license = "Elastic License v2"
 name = "Suspicious API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id
@@ -19,7 +19,9 @@ sequence by process.entity_id
     not process.code_signature.subject_name : ("RingCentral, Inc.", "Sky UK Limited", "EFI Software (Electronics for Imaging, Inc.)", "Qualcomm Atheros, Inc.") and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
     dll.hash.sha256 != null and
-    not dll.hash.sha256 : "a8a427c037818767c16410817de817af9782f64b04f2d7ac2869af07a20c3f0e" and
+    not dll.hash.sha256 :
+                ("a8a427c037818767c16410817de817af9782f64b04f2d7ac2869af07a20c3f0e",
+                 "acd3457c40e41d26f50cf0c664f84b8c2e5d6d770a1bb03467761877aa87ca2f") and
     (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
@@ -27,7 +29,9 @@ sequence by process.entity_id
                     "?:\\Program Files\\*",
                     "?:\\Program Files (x86)\\*",
                     "?:\\Windows\\assembly\\*",
-                    "?:\\Windows\\twain_32\\*") and
+                    "?:\\Windows\\twain_32\\*",
+                    "?:\\Windows\\SystemApps\\*.dll") and
+                    
    not (process.executable :
              ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
               "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*") and

@@ -7,7 +7,7 @@ id = "971ff66d-a0fe-4fdc-aa74-3cb1a19336f4"
 license = "Elastic License v2"
 name = "Potential DLL Hijacking via Environment Paths"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 library where
@@ -46,7 +46,9 @@ library where
         "?:\\Windows\\Sys*\\wbem\\wbemsvc.dll",
         "?:\\Windows\\Sys*\\wbem\\wbemprox.dll",
         "?:\\Windows\\Sys*\\wbem\\wmiutils.dll",
-        "?:\\Windows\\Sys*\\wbem\\mofd.dll") and
+        "?:\\Windows\\Sys*\\wbem\\mofd.dll",
+        "?:\\Windows\\Sys*\\wbem\\esscli.dll",
+        "?:\\Windows\\Sys*\\wbem\\cimwin32.dll") and
 
  /* not DLL loaded from the process.executable current directory - except windir and subdirs */
  not (endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and

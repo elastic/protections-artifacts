@@ -4,7 +4,7 @@ id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
 license = "Elastic License v2"
 name = "Unusual Registry Modification via WMI"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
@@ -25,8 +25,11 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
                      "*\\Software\\AppDataLow\\Software*",
                      "SOFTWARE\\WOW6432Node\\Google\\Update\\*",
                      "*_Classes\\webcatalog-aventri\\*",
-                     "*\\SOFTWARE\\Clients\\StartMenuInternet\\webcatalog-aventri\\*") and
- not (registry.key : "SYSTEM\\ControlSet001\\Control\\Terminal Server\\WinStations\\RDP-Tcp" and registry.data.strings : "CfgDLL")
+                     "*\\SOFTWARE\\Clients\\StartMenuInternet\\webcatalog-aventri\\*",
+                     "SOFTWARE\\WOW6432Node\\ODBC\\ODBCINST.INI\\Teradata Database ODBC Driver*",
+                     "S-1-5-21-*_Classes\\TypeLib\\{C0529B10-073A-4754-9BB0-72325D80D122}\\1.0\\0\\win32",
+                     "S-1-5-21-*_Classes\\WOW6432Node\\CLSID\\{19A6E644-14E6-4A60-B8D7-DD20610A871D}\\InprocServer32", 
+                     "SYSTEM\\ControlSet*\\Control\\Terminal Server\\WinStations\\RDP-Tcp")
 '''
 
 actions = []

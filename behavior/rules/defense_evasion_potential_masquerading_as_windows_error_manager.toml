@@ -8,7 +8,7 @@ id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
 license = "Elastic License v2"
 name = "Potential Masquerading as Windows Error Manager"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -27,7 +27,9 @@ process where event.action == "start" and
                                        "?:\\Windows\\System32\\tmumh\\*.dll*",
                                        "*kernel32.dll*!WerpLaunchAeDebug*",
                                        "?:\\Windows\\System32\\SettingsHandlers_StorageSense.dll!GetSettingForUser*",
-                                       "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\*!UbpmTriggerConsumerQueryStatus*")) and
+                                       "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\*!UbpmTriggerConsumerQueryStatus*",
+                                       "?:\\Windows\\System32\\SettingsHandlers_StorageSense.dll!DllGetActivationFactory*",
+                                       "?:\\Windows\\System32\\dataclen.dll!DllCanUnloadNow+*")) and
  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll"
 '''
 

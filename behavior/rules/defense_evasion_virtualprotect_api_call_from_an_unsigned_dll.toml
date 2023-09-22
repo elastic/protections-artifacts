@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id
@@ -46,8 +46,9 @@ sequence by process.entity_id
                 "deaf71807722382d05244160ee35b1a14c0e621d7caf74c863475669e5c95b35",
                 "7bafd0da58d427bbe8a2d34c953a53809bcbb3ff6c6f90b8acbe6c2b3ab8fa08",
                 "8747dc251af9c3192bad2001786c626ad03903c3afaadb8c6a8c2627c66730bd",
-                "5c45a7439d127c09b74fa16a0b300fb290ba15d316397579985464be484b8e17")
- ] as event0
+                "5c45a7439d127c09b74fa16a0b300fb290ba15d316397579985464be484b8e17",
+                "262816adf053d82039f17512bb4e168020cc7f5f37efdf712589a22b89903a80",
+                "96c8eb8c7ad08ef045861b711b1655df7346cd387580ba038d74e938f2037bf5")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name))]

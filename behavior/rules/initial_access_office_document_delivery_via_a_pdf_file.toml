@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Office Document Delivery via a PDF File"
 os_list = ["windows"]
 reference = ["https://blogs.jpcert.or.jp/en/2023/08/maldocinpdf.html"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-file where event.action == "creation" and
+file where event.action != "deletion" and
 
  /* PDF header with MS Office file extension */
  file.Ext.header_bytes : "25504446*" and file.extension : "doc*" and file.path : "?:\\Users\\*"

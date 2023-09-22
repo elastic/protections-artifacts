@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Untrusted Process Writing to Commonly Abused Persistence Locations"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -30,8 +30,8 @@ sequence by process.entity_id with maxspan=1m
                          "?:\\Program Files (x86)\\*",
                          "?:\\programdata\\chocolatey\\*\\multiclip.exe",
                          "?:\\Users\\*\\AppData\\Local\\Temp\\*.tmp\\*.tmp") and
-   not (process.code_signature.subject_name : "ONELAUNCH TECHNOLOGIES INC." and process.code_signature.trusted == true)
-   ]
+   not (process.code_signature.subject_name : "ONELAUNCH TECHNOLOGIES INC." and
+        process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))]
   [file where event.action != "deletion" and
    file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*" and file.name != null]
 '''

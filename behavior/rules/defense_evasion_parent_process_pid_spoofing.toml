@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence with maxspan=5m
@@ -83,7 +83,9 @@ sequence with maxspan=5m
         process.code_signature.subject_name == "Tailscale Inc." and
         (process.code_signature.trusted == true or process.code_signature.status == "errorChaining")) and
 
-  not process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe"
+  not process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe" and
+
+  not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev")
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
@@ -99,7 +101,7 @@ sequence with maxspan=5m
 
   /* AM_Delta_Patch Windows Update */
   not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and
-       process.parent.name : ("wuauclt.exe", "wuaucltcore.exe") and user.id : "S-1-5-18") and
+       process.parent.name : ("wuauclt.exe", "wuaucltcore.exe")) and
 
   not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87" and
 

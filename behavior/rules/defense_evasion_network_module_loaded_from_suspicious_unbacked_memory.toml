@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id
@@ -24,6 +24,9 @@ sequence by process.entity_id
   
   not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\NGenTask.exe", "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
 
+  not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe" and
+       process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
+
   not (process.name : "rundll32.exe" and
        process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and
        process.parent.executable : "?:\\Windows\\sys*\\msiexec.exe") and
@@ -32,7 +35,7 @@ sequence by process.entity_id
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
                      "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
                      "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.",
-                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy", "Logitech Inc") and
+                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy", "Logitech Inc", "N-ABLE TECHNOLOGIES LTD") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -66,15 +69,26 @@ sequence by process.entity_id
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
 
-  not (process.executable : "?:\\Windows\\SysWOW64\\DWRCST.EXE" and
-       process.parent.executable : ("?:\\WINDOWS\\SysWOW64\\runonce.exe", "?:\\Windows\\SysWOW64\\DWRCST.EXE")) and
+  not (process.executable : ("?:\\Windows\\SysWOW64\\DWRCST.EXE", "?:\\Windows\\SysWOW64\\DWRCS.EXE") and
+       process.parent.executable : ("?:\\WINDOWS\\SysWOW64\\runonce.exe", "?:\\Windows\\SysWOW64\\DWRCST.EXE", "?:\\Windows\\SysWOW64\\DWRCS.EXE")) and
 
   not (process.executable : "?:\\Windows\\system32\\winsat.exe" and
        process.parent.executable : "?:\\Windows\\system32\\rundll32.exe" and
        process.parent.args : "sysmain.dll,PfSvWsSwapAssessmentTask") and
 
   not (process.executable :  "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and
-       process.parent.executable : ("?:\\Windows\\System32\\inetsrv\\w3wp.exe", "?:\\Windows\\System32\\svchost.exe"))
+       process.parent.executable : ("?:\\Windows\\System32\\inetsrv\\w3wp.exe", "?:\\Windows\\System32\\svchost.exe")) and
+
+  not (process.name : "rundll32.exe" and process.args : "--no-sandbox" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                     $entry.symbol_info : "?:\\Windows\\assembly\\NativeImages_*\\EO.Base\\*\\EO.Base.ni.dll*")) and
+
+  not (user.id : "S-1-5-18" and
+       process.parent.executable : ("?:\\Program Files (x86)\\Advanced Monitoring Agent\\featureres\\PMESetup.exe",
+                                    "?:\\PROGRA~2\\ADVANC~1\\featureres\\PMESetup.exe",
+                                    "?:\\PROGRA~2\\ADVANC~1\\downloads\\NetworkManagementInstall.exe",
+                                    "?:\\PROGRA~2\\ADVANC~1\\staging\\_new_setup.exe",
+                                    "?:\\PROGRA~2\\ADVANC~1\\downloads\\MAV-Installer.exe"))
   ]
  [library where
   dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
@@ -116,7 +130,10 @@ sequence by process.entity_id
                           "**45a848894590eb00488b4590488b5588c6420c01488b5588",
                           "*488b5560c6420c01488b5560488b4d2048894a",
                           "c6470c01833d6cf1b45f007406ff15f40cb45f8bf0e8b5e76f5f85f6400f95c6400fb6f64883bdc0000000007423488b8dc0000000e825ebe25e448bc0488b95",
-                          "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a"))
+                          "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a",
+                          "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
+                          "41c6460c01833d*",
+                          "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24"))
   ]
   until [process where event.action:"end"]
 '''

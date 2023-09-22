@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,10 +15,10 @@ sequence by process.entity_id with maxspan=5m
     (
      process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
                      "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
-                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "dfsvc.exe") or
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "dfsvc.exe", "net.exe") or
      process.pe.original_file_name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", 
                                       "vbc.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe", 
-                                      "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe") or 
+                                      "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe") or
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Windows\\Microsoft.NET\\*.exe") or
@@ -123,7 +123,8 @@ sequence by process.entity_id with maxspan=5m
         "gist.githubusercontent.com",
         "dpaste.com",
         "*azurewebsites.net",
-        "*.zulipchat.com"
+        "*.zulipchat.com",
+        "*.4shared.com"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe") and

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Process Injection via Mapping"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile2"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name : "MapViewOfFile*" and
@@ -20,6 +20,7 @@ min_endpoint_version = "8.8.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

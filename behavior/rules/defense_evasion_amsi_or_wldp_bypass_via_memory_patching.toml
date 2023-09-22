@@ -12,7 +12,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell/blob/master/README.md#Patch-the-providers-DLL-of-Microsoft-MpOav.dll",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -35,7 +35,9 @@ api where
 
   endswith~(process.thread.Ext.call_stack_summary, concat(concat("ntdll.dll|kernelbase.dll|Unbacked|", process.name), "|kernel32.dll|ntdll.dll"))
  ) and
- not (process.code_signature.subject_name : "TPZ SOLUCOES DIGITAIS LTDA" and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name : "TPZ SOLUCOES DIGITAIS LTDA" and process.code_signature.trusted == true) and
+ not (process.executable : "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe" and
+      process.parent.executable : "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe")
 '''
 
 min_endpoint_version = "8.8.0"

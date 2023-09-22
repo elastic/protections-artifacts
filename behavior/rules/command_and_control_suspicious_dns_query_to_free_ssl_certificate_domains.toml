@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -81,12 +81,14 @@ sequence by process.entity_id with maxspan=5m
                 "f28aad782bc6f10f3e27a5c07b7a3d3cc3b3ec3805eaaaf4db5f311882caa91f",
                 "96bd6636458bd2c3f020c7cb922058579a2fc8014f587c4617531ddcbc55475a",
                 "748d48d246526e2a79edcde87255ffa5387e3bcc94f6ca5e59589e07e683cd80",
-                "1c0a4d603fb16b53d733663bde0ebd1e9a593d4c55015301f06e8a01261c1d0d") and
+                "1c0a4d603fb16b53d733663bde0ebd1e9a593d4c55015301f06e8a01261c1d0d",
+                "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1",
+                "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1") and
    not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
         process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
-   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *") and
+   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *", "Specops Software Inc.") and
         process.code_signature.trusted == true) and
    not (process.executable : "?:\\Windows\\System32\\mstsc.exe" and
         process.parent.executable : "?:\\Windows\\explorer.exe" and

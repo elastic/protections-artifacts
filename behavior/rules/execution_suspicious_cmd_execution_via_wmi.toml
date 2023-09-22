@@ -7,7 +7,7 @@ id = "242ccb88-5e28-4a74-ac6a-ff0e4c814ad8"
 license = "Elastic License v2"
 name = "Suspicious Cmd Execution via WMI"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -17,7 +17,8 @@ process where event.action == "start" and
                 not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*") and
                 not process.args : "\\\\127.0.0.1\\ADMIN$\\__*"] and
  not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Windows\\System32\\findstr.exe", "?:\\Windows\\System32\\chcp.com") and
- not (process.parent.name : "cmd.exe" and process.parent.command_line : "*\\127.0.0.1\\c$\\temp\\cotportal\\COT_Mid_Cluster*")
+ not (process.parent.name : "cmd.exe" and process.parent.command_line : "*\\127.0.0.1\\c$\\temp\\cotportal\\COT_Mid_Cluster*") and
+ not (process.name : "cmd.exe" and process.command_line : "* dir *")
 '''
 
 min_endpoint_version = "7.15.0"

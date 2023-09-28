@@ -1,11 +1,11 @@
-rule Windows_Trojan_OddDancer_3793364e {
+rule Windows_Trojan_BloodAlchemy_3793364e {
     meta:
         author = "Elastic Security"
         id = "3793364e-a73c-4cf0-855c-fdcdb2b88386"
         fingerprint = "b4620f360093284ae6f2296b4239227099f58f8f0cfe9f70298c84d6cbe7fa29"
-        creation_date = "2023-05-09"
-        last_modified = "2023-06-13"
-        threat_name = "Windows.Trojan.OddDancer"
+        creation_date = "2023-09-25"
+        last_modified = "2023-09-25"
+        threat_name = "Windows.Trojan.BloodAlchemy"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -18,14 +18,14 @@ rule Windows_Trojan_OddDancer_3793364e {
         all of them
 }
 
-rule Windows_Trojan_OddDancer_e510798d {
+rule Windows_Trojan_BloodAlchemy_e510798d {
     meta:
         author = "Elastic Security"
         id = "e510798d-a938-47ba-92e3-0c1bcd3ce9a9"
         fingerprint = "151519156e4c6b5395c03f70c77601681f17f86a08db96a622b9489a3df682d6"
-        creation_date = "2023-05-09"
-        last_modified = "2023-06-13"
-        threat_name = "Windows.Trojan.OddDancer"
+        creation_date = "2023-09-25"
+        last_modified = "2023-09-25"
+        threat_name = "Windows.Trojan.BloodAlchemy"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -38,14 +38,14 @@ rule Windows_Trojan_OddDancer_e510798d {
         any of them
 }
 
-rule Windows_Trojan_OddDancer_63084eea {
+rule Windows_Trojan_BloodAlchemy_63084eea {
     meta:
         author = "Elastic Security"
         id = "63084eea-358b-4fb0-9668-3f40f0aae9e7"
         fingerprint = "3f6ef0425b846b2126263c590d984bc618ad61de91a9141160c2b804c585ff6d"
-        creation_date = "2023-05-10"
-        last_modified = "2023-06-13"
-        threat_name = "Windows.Trojan.OddDancer"
+        creation_date = "2023-09-25"
+        last_modified = "2023-09-25"
+        threat_name = "Windows.Trojan.BloodAlchemy"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -57,14 +57,14 @@ rule Windows_Trojan_OddDancer_63084eea {
         all of them
 }
 
-rule Windows_Trojan_OddDancer_c2d80609 {
+rule Windows_Trojan_BloodAlchemy_c2d80609 {
     meta:
         author = "Elastic Security"
         id = "c2d80609-9a66-4fbb-b594-17d16372cb14"
         fingerprint = "8815e42ef85ae5a8915cd26b573cd7411c041778cdf4bc99efd45526e3699642"
-        creation_date = "2023-05-10"
-        last_modified = "2023-06-13"
-        threat_name = "Windows.Trojan.OddDancer"
+        creation_date = "2023-09-25"
+        last_modified = "2023-09-25"
+        threat_name = "Windows.Trojan.BloodAlchemy"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

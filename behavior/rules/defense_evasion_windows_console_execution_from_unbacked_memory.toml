@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -36,7 +36,8 @@ sequence with maxspan=5m
                      "?:\\Program Files\\ExpressConnect\\ECDBWMService.exe",
                      "?:\\ProVation\\Utilities\\ProVation.DataExport\\ProVation.DataExport.exe",
                      "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell_ise.exe",
-                     "?:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe")
+                     "?:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe", 
+		     "?:\\Program Files\\Citrix\\Telemetry Service\\TelemetryService.exe")
   ] by process.parent.entity_id
 [network where true] by process.entity_id
 '''

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence with maxspan=1m
@@ -28,7 +28,7 @@ sequence with maxspan=1m
                                  "/Library/PrivilegedHelperTools/*",
                                  "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                  "/private/var/folders/*/download/ARMDCHammer") and not
-    process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"]
+    process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager")]
   [process where event.action : ("exec", "fork") and
 
     // Descendant of macOS installer process
@@ -48,7 +48,7 @@ sequence with maxspan=1m
                                      "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                      "/Library/PrivilegedHelperTools/*",
                                      "/private/var/folders/*/download/ARMDCHammer") and not
-        process.Ext.effective_parent.executable : "/usr/local/jamf/bin/jamf"
+        process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager")
         ] and
 
     (
@@ -90,6 +90,7 @@ sequence with maxspan=1m
                                      "/Library/PrivilegedHelperTools/*",
                                      "/private/var/folders/*/download/ARMDCHammer") and not
     process.Ext.effective_parent.executable : ("/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+                                               "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager",
                                                "/usr/local/jamf/bin/jamf")]
 '''
 

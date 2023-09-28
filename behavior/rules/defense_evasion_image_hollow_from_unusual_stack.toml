@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -19,16 +19,20 @@ api where process.Ext.api.behaviors == "hollow_image" and
                       "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
-                      "ntdll.dll|Unbacked",
-                      "Unbacked") and
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel", "Kernel|*", "tcaddin.dll", "clr.dll", "appvisvsubsystems64.dll", "appvisvsubsystems.dll")) and
+                      "ntdll.dll|Unbacked") and 
+  not process.Ext.api.summary : ("*Unknown*",  "*Unbacked*") and 
+  not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                   $entry.protection_provenance : ("Kernel", "Kernel|*", "tcaddin.dll", "clr.dll", "appvisvsubsystems64.dll", 
+                                                  "appvisvsubsystems.dll", "softmon.exe|*", "appventsubsystems32.dll", 
+                                                  "appventsubsystems64.dll", "appventsubsystems.dll")) and
   not (process.Ext.api.summary : ("*qipcap64.dll*", "*redemption64*", "*eowp.22.1.94.0.exe*", "*conemuhk64.dll*", "*xalan-c_1_10.dll*",
                                  "*crpe32.dll*", "*_*.dll*", "*-*.dll*", "*sqlite?.dll*", "*appprofiler.x64.dll*", "*appprofiler.x86.dll*") and
                                   not process.Ext.api.summary : "*ws2_32*") and
   not (process.parent.executable : "?:\\Program Files (x86)\\think-cell\\tcasr.exe" and 
        process.executable : "?:\\Program Files\\Microsoft Office\\root\\Office*\\EXCEL.EXE") and
   not (process.code_signature.subject_name : ("Code Systems Corporation", "Essential Objects, Inc.", "JAM Software GmbH",
-                                              "IMSI Design, LLC", "Nuance Communications, Inc.", "Rocket Software, Inc.") and
+                                              "IMSI Design, LLC", "Nuance Communications, Inc.", "Rocket Software, Inc.", 
+                                              "Tracker Software Products (Canada) Ltd", "Sage Software, Inc.", "Azul Systems, Inc.") and
        process.code_signature.trusted == true) and
   not (process.parent.executable : ("?:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe", "?:\\Program Files\\Google\\Update\\GoogleUpdate.exe") and
        process.executable : ("?:\\Program Files (x86)\\Google\\Update\\*\\GoogleCrashHandler*.exe", "?:\\Program Files\\Google\\Update\\*\\GoogleCrashHandler*.exe")) and
@@ -41,7 +45,10 @@ api where process.Ext.api.behaviors == "hollow_image" and
                 "?:\\Program Files (x86)\\Baxter\\DoseEdge PrepStation\\Baxa.DoseEdge.exe",
                 "?:\\Program Files\\Adobe\\Adobe InDesign *\\InDesign.exe",
                 "?:\\Program Files (x86)\\Adobe\\Adobe InDesign *\\InDesign.exe",
-                "?:\\Program Files (x86)\\Luidia\\eBeam Stylus Driver\\eBeam_Stylus_Preferences.exe") and
+                "?:\\Program Files (x86)\\Luidia\\eBeam Stylus Driver\\eBeam_Stylus_Preferences.exe", 
+                "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe", 
+                "?:\\Program Files\\ManageEngine\\OpManager\\pgsql\\bin\\postgres.exe", 
+                "?:\\Program Files (86)\\ManageEngine\\OpManager\\pgsql\\bin\\postgres.exe") and
   not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and process.Ext.api.summary : "*msi*.tmp*") and
   not (process.executable : "?:\\Windows\\Sys*\\rundll32.exe" and process.command_line : ("*--no-sandbox*", "*--eoim*")) and
   not (process.executable :

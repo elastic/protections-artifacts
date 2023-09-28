@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -32,7 +32,11 @@ process where event.action == "start" and
 	
 	/* unusual script extension */
 	(process.name : ("rebol-view*.exe", "AutoHotkey*.exe", "KIX*.EXE") and process.args_count == 2 and 
-	 not process.command_line : ("*.ahk*", "*.rb*", "*.kix*", "*.scr*", "*.bms"))
+	 not process.command_line : ("*.ahk*", "*.rb*", "*.kix*", "*.scr*", "*.bms")) or 
+
+        (process.Ext.relative_file_creation_time <= 300 and process.pe.original_file_name : "node.exe" and 
+	 process.code_signature.subject_name : "Node.js Foundation" and not process.name : "node*.exe" and 
+         process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*")) 
    
    ) and  
    
@@ -52,7 +56,7 @@ process where event.action == "start" and
    not process.executable : "?:\\Program Files\\AutoHotkey\\SciTE\\InternalAHK.exe"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -82,4 +86,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"

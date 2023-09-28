@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -18,12 +18,14 @@ sequence by process.parent.entity_id with maxspan=1m
     process.args : "http*" and
     not process.args : "https*//support-sp.apple.com/*"]
   [process where event.action == "exec" and process.name : "osascript" and
-    process.command_line : "*-l JavaScript*" and not
-    process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
-                                               "/Library/Addigy/auditor",
-                                               "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
-                                               "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
-                                               "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")]
+    process.command_line : "*-l JavaScript*" and 
+    not process.command_line : ("osascript -l JavaScript -e 'use strict'; ObjC.import('stdlib') function run(argv) { try { var app = Application(argv[0]) if (app.running()) { $.exit(0) } } catch (err) { } $.exit(1) } *",
+                                "osascript -l JavaScript -e ObjC.import('Cocoa'); ($.NSEvent.modifierFlags & $.NSEventModifierFlagOption) > 1") and
+    not process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
+                                                   "/Library/Addigy/auditor",
+                                                   "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
+                                                   "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
+                                                   "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")]
 '''
 
 min_endpoint_version = "8.5.0"

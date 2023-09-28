@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious DirectShow Devices Enumeration"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/directshow/directshow"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 registry where registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\ActiveMovie\\devenum*\\Version" and
@@ -18,7 +18,10 @@ registry where registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\ActiveMovie\
   process.executable : "?:\\Windows\\Microsoft.NET\\*" or
   (process.executable : "?:\\Users\\*" and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))
  )
- and not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Sys*\\DriverStore\\FileRepository\\*.exe")
+ and not process.executable : ("?:\\Program Files\\*.exe", 
+                               "?:\\Program Files (x86)\\*.exe", 
+                               "?:\\Windows\\Sys*\\DriverStore\\FileRepository\\*.exe", 
+                               "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe")
 '''
 
 min_endpoint_version = "8.7.0"

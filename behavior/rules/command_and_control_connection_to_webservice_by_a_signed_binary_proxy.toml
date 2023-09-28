@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -124,7 +124,9 @@ sequence by process.entity_id with maxspan=5m
         "dpaste.com",
         "*azurewebsites.net",
         "*.zulipchat.com",
-        "*.4shared.com"
+        "*.4shared.com",
+        "filecloud.me",
+        "i.ibb.co"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe") and

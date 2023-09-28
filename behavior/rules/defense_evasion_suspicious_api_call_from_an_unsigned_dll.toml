@@ -7,7 +7,7 @@ id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
 license = "Elastic License v2"
 name = "Suspicious API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id
@@ -18,10 +18,16 @@ sequence by process.entity_id
     process.code_signature.trusted == true and
     not process.code_signature.subject_name : ("RingCentral, Inc.", "Sky UK Limited", "EFI Software (Electronics for Imaging, Inc.)", "Qualcomm Atheros, Inc.") and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
-    dll.hash.sha256 != null and
+    dll.hash.sha256 != null and 
+    not (dll.name : "ISSetup.dll" and dll.pe.original_file_name : "iKernel.dll") and 
+    not (dll.name : ("chrome_elf.dll", "nw_elf.dll") and dll.pe.original_file_name : ("chrome_elf.dll", "nw_elf.dll")) and 
+    not (dll.name : "Qt5Core.dll" and dll.pe.original_file_name : "Qt5Core.dll") and 
     not dll.hash.sha256 :
                 ("a8a427c037818767c16410817de817af9782f64b04f2d7ac2869af07a20c3f0e",
-                 "acd3457c40e41d26f50cf0c664f84b8c2e5d6d770a1bb03467761877aa87ca2f") and
+                 "acd3457c40e41d26f50cf0c664f84b8c2e5d6d770a1bb03467761877aa87ca2f", 
+                 "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962", 
+                 "70e2b80e9b1ce5c09e2fef869e8b40ee5553161fab8e93fa89dfade68c6998fa", 
+                 "56bd3cf7bf54db0e059d07ffc308ae61a8b4a7589d6607c02027a4d0d08d44e4") and
     (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",

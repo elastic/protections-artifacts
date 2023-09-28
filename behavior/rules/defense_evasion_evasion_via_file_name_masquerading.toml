@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via File Name Masquerading"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.action == "start" and
@@ -21,6 +21,7 @@ process where event.action == "start" and
 
   /* multiple spaces */
   process.name regex """.+\s{10,}\.(exe|pif|com|scr)""" or
+  process.name : "*                    .exe" or 
 
   /* fake extension via Unicode Right-To-Left-Override technique */
   process.name : "*\u{202E}*"

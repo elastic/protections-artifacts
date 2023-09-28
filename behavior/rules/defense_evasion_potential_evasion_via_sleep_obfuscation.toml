@@ -7,14 +7,15 @@ id = "47aec49c-4f8b-4245-8eae-7d615f30f154"
 license = "Elastic License v2"
 name = "Potential Evasion via Sleep Obfuscation"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 any where 
  (event.category == "api" or 
   (event.category == "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll", "vaultcli.dll", "ntdll.dll"))) and
- _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!ZwDelayExecution*", "*ntdll.dll!NtDelayExecution*")) and
- not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true) and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!ZwDelayExecution*", "*ntdll.dll!NtDelayExecution*")) and 
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\System32\\tquery.dll!ExceptInitialize+*") and 
+ not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
  not (process.code_signature.subject_name : "SAP SE" and process.code_signature.trusted == true and
       process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|dbghelp.dll|disp+work.exe|ntdll.dll|kernelbase.dll|disp+work.exe|kernel32.dll|ntdll.dll")
 '''

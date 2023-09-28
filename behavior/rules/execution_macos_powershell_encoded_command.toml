@@ -8,15 +8,17 @@ id = "4abb4f46-2066-4769-b073-dca491067e1b"
 license = "Elastic License v2"
 name = "MacOS Powershell Encoded Command"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
-process where event.type == "start" and process.name : ("pwsh", "sh", "zsh", "bash", "python*") and 
- process.args : ("-EncodedCommand", "-enc") and 
- not process.parent.executable : ("/usr/local/microsoft/powershell/7/pwsh", "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper.app/Contents/MacOS/Code Helper")
+process where event.type == "start" and process.args : ("-EncodedCommand", "-enc") and 
+ not ((process.name : "zsh" and process.parent.name : "zsh") or
+      (process.name : "pwsh" and process.parent.name : "pwsh") or
+      (process.name : "pwsh" and process.parent.name : "Code Helper")) and 
+ not process.Ext.effective_parent.name : "electron"
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.7.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -42,4 +44,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.7.0"

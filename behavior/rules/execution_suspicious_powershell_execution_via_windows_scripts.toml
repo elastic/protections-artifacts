@@ -4,14 +4,14 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
   (process.name : ("powershell.exe", "pwsh.exe") or process.pe.original_file_name : ("powershell.exe", "pwsh.exe")) and
   (
-   process.parent.name : ("wscript.exe", "cscript.exe") or
-   (descendant of [process where event.action == "start" and process.parent.name : ("wscript.exe", "cscript.exe")] and
+   process.parent.name : ("wscript.exe", "cscript.exe", "mshta.exe") or
+   (descendant of [process where event.action == "start" and process.parent.name : ("wscript.exe", "cscript.exe", "mshta.exe")] and
     not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
    ) and
    (

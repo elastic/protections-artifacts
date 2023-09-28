@@ -7,13 +7,14 @@ id = "41859cf7-8a3f-48b1-8130-6bba565592a3"
 license = "Elastic License v2"
 name = "Suspicious Activity from a Control Panel Applet"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id
 [library where process.executable != null and 
  (dll.Ext.relative_file_creation_time <= 900 or dll.Ext.relative_file_name_modify_time <= 900 or dll.path : "\\Device\\Mup\\*") and 
- (dll.code_signature.exists == false or dll.code_signature.status : "errorBadDigest") and
+ (dll.code_signature.exists == false or 
+  dll.code_signature.status : ("errorBadDigest", "errorExpired", "errorRevoked", "errorTimeStamp", "errorUntrustedRoot")) and
  not dll.path regex~ """([C-H]:\\windows\\system32\\[a-zA-Z0-9\-\_\.]+\.cpl|[C-H]:\\windows\\syswow64\\[a-zA-Z0-9\-\_\.]+\.cpl)"""] as event0
 [any where
  (

@@ -1,0 +1,82 @@
+[rule]
+description = """
+Identifies a suspicious file rename operation from an unbacked memory region. This may indicate Ransomware behavior from
+an injected trusted process.
+"""
+id = "adc08f95-6a12-441a-be30-0443d6ccae52"
+license = "Elastic License v2"
+name = "Suspicious File Rename from Unbacked Memory"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[file where event.action : "rename" and
+  process.code_signature.status : "trusted" and
+  not process.code_signature.subject_name : ("LEAP SOFTWARE DEVELOPMENTS PTY. LIMITED", "KASEYA US LLC", "Chocolatey Software, Inc.") and
+  file.extension != null and file.Ext.entropy >= 7 and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
+  not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url", "jpg",
+                        "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx") and
+  process.thread.Ext.call_stack_summary :
+                     ("ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+					  "ntdll.dll|kernelbase.dll|Unknown|kernel32.dll|ntdll.dll",
+					  "ntdll.dll|kernelbase.dll|Unknown|kernel32.dll|ntdll.dll",
+					  "ntdll.dll|kernelbase.dll|kernel32.dll|Unknown|kernel32.dll|ntdll.dll",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                      "ntdll.dll|Unbacked",
+                      "Unbacked",
+					  "Unknown")]
+[file where event.action : "rename" and
+  process.code_signature.status : "trusted" and
+  not process.code_signature.subject_name : ("LEAP SOFTWARE DEVELOPMENTS PTY. LIMITED", "KASEYA US LLC", "Chocolatey Software, Inc.") and
+  file.extension != null and file.Ext.entropy >= 7 and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
+  not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url", "jpg",
+                        "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx") and
+  process.thread.Ext.call_stack_summary :
+                     ("ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+					  "ntdll.dll|kernelbase.dll|Unknown|kernel32.dll|ntdll.dll",
+					  "ntdll.dll|kernelbase.dll|Unknown|kernel32.dll|ntdll.dll",
+					  "ntdll.dll|kernelbase.dll|kernel32.dll|Unknown|kernel32.dll|ntdll.dll",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                      "ntdll.dll|Unbacked",
+                      "Unbacked",
+					  "Unknown")]
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "8.7.0"

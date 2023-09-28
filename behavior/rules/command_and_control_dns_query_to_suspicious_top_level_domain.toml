@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,7 +25,9 @@ sequence by process.entity_id with maxspan=1m
 		 "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",  
 		 "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*") or
 
-   process.name : ("powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe")
+   process.name : ("powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe") or 
+
+   (process.Ext.relative_file_creation_time <= 500 and process.pe.original_file_name : ("node.exe", "AutoIt*.exe"))
    ) and 
    
    not (process.name : "rundll32.exe" and
@@ -44,12 +46,14 @@ sequence by process.entity_id with maxspan=1m
                    ("19a9ed41a69c74f130f53572aa1b07b1fa35d93a408dcf9d3f16f0fd72dd1e69",
                     "005f63a30438bf91d23790bfd6ab43d298e73c48024d7f48aec322b798035130",
                     "39508f47cd1220a313928d983139a3a27afdb676082c58ac2db71dfcceab4b00",
-                    "b0136acc093fe905257da3fc0591de3f6209b24f6b943ff73b9939ec5f80099d")]
+                    "b0136acc093fe905257da3fc0591de3f6209b24f6b943ff73b9939ec5f80099d") and 
+   not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe", 
+                             "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe")]
  [dns where
   dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion", 
                        "*.monster", "*.cyou", "*.quest", "*.cc", "*.bar", "*.cfd", "*.click", "*.cam",
                        "*.surf", "*.tk", "*.shop", "*.club", "*.icu", "*.pw", "*.ws", "*.rest", "*.hair",
-                       "*.mom", "*.beauty", "*.boats", "*.online", "*.cloud") and
+                       "*.mom", "*.beauty", "*.boats", "*.online", "*.fun") and
   not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz")]
 '''
 

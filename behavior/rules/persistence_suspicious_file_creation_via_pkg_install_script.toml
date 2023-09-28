@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious File Creation via Pkg Install Script"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x51.html"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -20,8 +20,8 @@ sequence by process.entity_id with maxspan=30s
   process.args : ("/Users/*", "/Volumes/*") and not
   process.args : "/Users/*/Library/Caches/*"]
 [file where event.action != "deletion" and process.name : ("mv", "cp") and 
-  (file.extension : ("py", "js", "dylib", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or 
-  length(file.extension) == 0) and 
+  (file.extension : ("py", "js", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or 
+    file.Ext.header_bytes : ("cffaedfe*", "cafebabe*")) and 
   file.path : ("/private/etc/*",
                "/var/tmp/*", 
                "/tmp/*", 
@@ -42,7 +42,7 @@ sequence by process.entity_id with maxspan=30s
                "/private/tmp/org.gpgtools/gpgmailloader_install/GPGMailLoader.signed.mailbundle/Contents/MacOS/GPGMailLoader")]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.8.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -68,4 +68,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.8.0"

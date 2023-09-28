@@ -7,7 +7,7 @@ id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
 license = "Elastic License v2"
 name = "Unusual File Made Executable by Suspicious Parent Process"
 os_list = ["macos"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -57,6 +57,8 @@ process where event.type == "start" and event.action == "exec" and
     process.Ext.effective_parent.executable : ("/Applications/EaseUS Data Recovery Wizard.app/Contents/MacOS/EaseUS Data Recovery Wizard",
                                                "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Printer Driver Installer",
                                                "/Library/Kaseya/AgentMon",
+                                               "/Applications/Cisdem Data Recovery.app/Contents/MacOS/Cisdem Data Recovery",
+                                               "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager",
                                                "/private/var/folders/*/Support-LogMeInRescue.app/Contents/MacOS/Support-LogMeInRescue",
                                                "/Applications/Disk Drill.app/Contents/MacOS/Disk Drill")
 '''

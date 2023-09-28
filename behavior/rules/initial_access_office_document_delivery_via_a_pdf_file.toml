@@ -8,13 +8,15 @@ license = "Elastic License v2"
 name = "Office Document Delivery via a PDF File"
 os_list = ["windows"]
 reference = ["https://blogs.jpcert.or.jp/en/2023/08/maldocinpdf.html"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 file where event.action != "deletion" and
 
  /* PDF header with MS Office file extension */
- file.Ext.header_bytes : "25504446*" and file.extension : "doc*" and file.path : "?:\\Users\\*"
+ file.Ext.header_bytes : "25504446*" and file.extension : "doc*" and file.path : "?:\\Users\\*" and 
+
+ not process.executable : "?:\\Windows\\System32\\spoolsv.exe"
 '''
 
 actions = []

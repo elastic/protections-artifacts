@@ -8,7 +8,7 @@ id = "5f1eb14e-9717-4a35-bc80-3fb453a59596"
 license = "Elastic License v2"
 name = "Memory Protection Modification of an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -26,6 +26,8 @@ sequence by process.entity_id with maxspan=1m
                     "?:\\Windows\\assembly\\*",
                     "?:\\Windows\\Microsoft.NET\\*",
                     "\\Device\\Mup\\*") and
+    not (dll.path : "?:\\ProgramData\\RICOH_DRV\\*" and 
+         process.thread.Ext.call_stack_summary : ("*ricu0aui.dl*", "*ricu0iui.dll*", "*ricu0igr.dll*", "*ricu0agr.dll*", "*ricu0aug.dll*")) and 
     not dll.hash.sha256 : ("6e51bb2531165a4f0a561e6641ea718ee82bcc3447fa3c365155aefd71e0a7d5")] by dll.name
 [api where
   process.Ext.api.name : "VirtualProtect*" and

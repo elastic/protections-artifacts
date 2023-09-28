@@ -8,7 +8,7 @@ id = "f678ec9a-c348-485c-ac9e-84b0923ff5f5"
 license = "Elastic License v2"
 name = "Suspicious Windows Component Object Model via DLLHOST"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=5m
@@ -138,7 +138,10 @@ sequence with maxspan=5m
 
             "/Processid:{747BBE98-066A-4DA3-80D9-5129AB999BEE}",
 
-            "/Processid:{94773112-72E8-11D0-A42E-00A024DED613}"
+            "/Processid:{94773112-72E8-11D0-A42E-00A024DED613}", 
+
+            /* CFmIfsEngine Class */
+            "/Processid:{82D94FB3-7FE6-4797-BB72-9A886C66073B}"
             )
             ] by process.Ext.effective_parent.entity_id
 '''

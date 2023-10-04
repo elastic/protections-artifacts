@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Execution of a File Dropped by OpenSSL"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://attack.mitre.org/software/S0402/"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=1m
@@ -17,7 +17,7 @@ sequence with maxspan=1m
 [process where event.action == "exec"] by process.executable
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -60,4 +60,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

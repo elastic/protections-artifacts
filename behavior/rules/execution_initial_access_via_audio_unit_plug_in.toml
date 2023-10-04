@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects when an audio plug-in is manually loaded by the auval or auvaltool process followed by an immediate outbound
+network connection. Applications such as GarageBand 10, Logic Pro X, Audacity, etc., use audio unit plug-ins to create
+sound effects and virtual instruments. Software developers and sound engineers can create either audio components or
+virtual studio technology (VST) plug-ins. Threat actors can also create audio components or plug-ins and load them to
+execute unsigned code via the native auval or auvaltool binaries.
+"""
+id = "5faec4a7-c62b-492e-83db-dc7b8eec0878"
+license = "Elastic License v2"
+name = "Initial Access via Audio Unit Plug-in"
+os_list = ["macos"]
+reference = ["https://posts.specterops.io/audio-unit-plug-ins-896d3434a882"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : ("auvaltool", "auval") and 
+  process.args : ("-a", "-v") and 
+  not process.parent.executable : ("/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X", "/sbin/launchd")]
+[network where event.type == "start" and event.action == "connection_attempted" and
+   not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.3.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.3.0"

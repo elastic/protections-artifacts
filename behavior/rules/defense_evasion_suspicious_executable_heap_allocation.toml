@@ -9,21 +9,27 @@ license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where process.Ext.api.name :"VirtualAlloc" and
  process.Ext.api.parameters.protection : "*X*" and process.executable != null and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*HeapCreate*", "*RtlCreateHeap*", "*RtlProtectHeap*")) and
- process.thread.Ext.call_stack_summary : "?*" and 
+ process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.path != null and 
  not process.thread.Ext.call_stack_final_user_module.path :
-                                         ("?:\\Program Files\\*.dll",
-                                          "?:\\Program Files (x86)\\*.dll", 
-                                          "\\program files\\microsoft office\\office??\\grooveex.dll", 
-                                          "\\program files (x86)\\micros~2\\office??\\grooveex.dll",
-                                          "?:\\windows\\microsoft.net\\framework*\\mscoreei.dll", 
-                                          "?:\\windows\\microsoft.net\\framework\\*\\clr.dll", 
-                                          "?:\\programdata\\dell\\drivers\\*\\installer.exe") and 
+                                         ("?:\\Program Files\\*",
+                                          "?:\\Program Files (x86)\\*", 
+                                          "\\program files\\*", 
+                                          "\\program files (x86)\\*",
+                                          "?:\\windows\\microsoft.net\\framework*.dll", 
+                                          "\\windows\\microsoft.net\\framework*.dll", 
+                                          "?:\\programdata\\dell\\drivers\\*\\installer.exe", 
+                                          "?:\\windows\\system32\\driverstore\\filerepository\\*", 
+                                          "\\windows\\system32\\driverstore\\filerepository\\*", 
+                                          "?:\\windows\\winsxs\\*", 
+                                          "\\windows\\winsxs\\*", 
+                                          "?:\\windows\\system32\\atiumd64.dll", 
+                                          "\\windows\\system32\\atiumd64.dll") and 
  not process.thread.Ext.call_stack_final_user_module.name : ("gtsvm.dll", "wd*vm.dll", "Unknown") and 
  not process.thread.Ext.call_stack_summary : 
           ("*|clr.dll|*", "*mscorwks.dll*", "*mscoreei.dll*", "*mscoree.dll|ntdll.dll*", "*coreclr.dll*", 
@@ -43,7 +49,8 @@ api where process.Ext.api.name :"VirtualAlloc" and
               "?:\\Windows\\Microsoft.NET\\Framework*\\ngentask.exe", 
               "?:\\Windows\\System32\\backgroundTaskHost.exe", 
               "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe", 
-              "?:\\Windows\\Lenovo\\ImController\\Service\\Lenovo.Modern.ImController.exe") and
+              "?:\\Windows\\Lenovo\\ImController\\Service\\Lenovo.Modern.ImController.exe", 
+              "?:\\Program Files\\windev\\AD_Voyager\\AD_voyager.exe") and
  not (process.code_signature.subject_name :
            ("Atera Networks Ltd", "Riot Games, Inc.", "IObit CO., LTD", "IObit Information Technology",
             "Shanghai Lilith Network Technology Co., Ltd.", "OKIGAMES OYUN VE YAZILIM HİZMETLERİ LİMİTED ŞİRKETİ",

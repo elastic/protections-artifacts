@@ -4,7 +4,7 @@ id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
 license = "Elastic License v2"
 name = "Unusual Registry Modification via WMI"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
@@ -29,7 +29,12 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
                      "SOFTWARE\\WOW6432Node\\ODBC\\ODBCINST.INI\\Teradata Database ODBC Driver*",
                      "S-1-5-21-*_Classes\\TypeLib\\{C0529B10-073A-4754-9BB0-72325D80D122}\\1.0\\0\\win32",
                      "S-1-5-21-*_Classes\\WOW6432Node\\CLSID\\{19A6E644-14E6-4A60-B8D7-DD20610A871D}\\InprocServer32", 
-                     "SYSTEM\\ControlSet*\\Control\\Terminal Server\\WinStations\\RDP-Tcp")
+                     "SYSTEM\\ControlSet*\\Control\\Terminal Server\\WinStations\\RDP-Tcp", 
+                     "*\\DefaulIcon", 
+                     "*Classes\\webcatalog-excalidraw-plus\\shell\\open\\command", 
+                     "S-*\\Software\\Clients\\StartMenuInternet\\webcatalog-excalidraw-plus\\shell\\open\\command", 
+                     "*\\Services\\EventLog\\Application\\Business World*", 
+                     "*\\Services\\EventLog\\Business World*")
 '''
 
 actions = []

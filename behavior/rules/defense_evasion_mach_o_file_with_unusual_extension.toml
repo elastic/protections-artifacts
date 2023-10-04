@@ -7,7 +7,7 @@ id = "9c5c3957-f8cb-4225-ad07-e5a6325eafb2"
 license = "Elastic License v2"
 name = "Mach-O File with Unusual Extension"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 file where event.action : ("modification", "rename", "open") and
@@ -32,7 +32,7 @@ file where event.action : ("modification", "rename", "open") and
   not (process.name : ("javaapplicationstub", "jspawnhelper", "java") and file.name : "jna*.tmp")
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -53,4 +53,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"

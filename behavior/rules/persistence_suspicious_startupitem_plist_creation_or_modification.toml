@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious StartupItem Plist Creation or Modification"
 os_list = ["macos"]
 reference = ["https://www.virusbulletin.com/uploads/pdf/conference/vb2014/VB2014-Wardle.pdf"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 file where event.type != "deletion" and 
@@ -19,7 +19,7 @@ file.path : ("/System/Library/StartupItems/*/StartupParameters.plist",
 not process.code_signature.signing_id : "com.apple.shove"
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -45,4 +45,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.10.2"

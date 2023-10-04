@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Creation via Masqueraded XML File"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -24,7 +24,8 @@ process where event.action == "start" and
               "?:\\Program Files (x86)\\Zemana\\AntiMalware\\AntiMalware.exe",
               "?:\\Program Files\\Dell\\SupportAssist\\pcdrcui.exe",
               "?:\\Program Files\\Axis Communications\\AXIS Camera Station\\Installer*\\SetupActions.exe",
-              "?:\\Program Files (x86)\\Axis Communications\\AXIS Camera Station\\Installer*\\SetupActions.exe") and
+              "?:\\Program Files (x86)\\Axis Communications\\AXIS Camera Station\\Installer*\\SetupActions.exe", 
+              "?:\\Program Files\\WinCompose\\wincompose.exe") and
   not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc")
 '''
 

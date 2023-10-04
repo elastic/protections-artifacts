@@ -7,7 +7,7 @@ id = "b4390574-78e4-4408-b1aa-be3fc4d1e2f1"
 license = "Elastic License v2"
 name = "Suspicious Macro Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -23,8 +23,9 @@ sequence by process.entity_id with maxspan=1m
   not (event.category : "registry" and
        (registry.value : ("SlowSettingTypesChanged", "File Path") or
         registry.key : ("SOFTWARE\\Microsoft\\Office\\*\\Word\\Text Converters\\Import",
-                        "S-*\\SOFTWARE\\Microsoft\\Office\\*\\Resiliency\\DocumentRecovery\\*"))) and
-  not (event.category : "file" and (file.Ext.header_bytes : ("504b03*", "d0cf*") or event.action : "deletion" or file.size == 0)) and
+                        "S-*\\SOFTWARE\\Microsoft\\Office\\*\\Resiliency\\DocumentRecovery\\*", 
+                        "S*\\SOFTWARE\\Microsoft\\Office\\*\\Reading Locations\\*"))) and
+  not (event.category : "file" and (file.Ext.header_bytes : ("504b03*", "d0cf*", "0b4a6f73657068434661766120202020") or event.action : "deletion" or file.size == 0)) and
   not (event.category : "library" and dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))]
 '''
 

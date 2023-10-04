@@ -7,7 +7,7 @@ id = "d7239b58-3e32-481a-9bfa-63e04caf1a4e"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -15,9 +15,18 @@ api where
 
  process.thread.Ext.call_stack_summary :("ntdll.dll|*", "win32*", "kernel*") and 
 
- not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and 
+ not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and process.thread.Ext.call_stack_final_user_module.path != null and 
  
- not process.thread.Ext.call_stack_final_user_module.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\Microsoft.NET\\Framework*") and 
+ not process.thread.Ext.call_stack_final_user_module.path : 
+                         ("?:\\Program Files\\*", 
+                          "?:\\Program Files (x86)\\*", 
+                          "\\Program Files*",
+                          "?:\\Windows\\Microsoft.NET\\Framework*", 
+                          "\\Windows\\Microsoft.NET\\Framework*", 
+                          "?:\\windows\\system32\\driverstore\\filerepository\\*", 
+                          "\\windows\\system32\\driverstore\\filerepository\\*", 
+                          "?:\\windows\\winsxs\\*", 
+                          "\\windows\\winsxs\\*") and 
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info:
                                                                  ("*ntdll.dll!*ProtectVirtualMemory*",

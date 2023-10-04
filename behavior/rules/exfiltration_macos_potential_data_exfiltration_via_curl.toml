@@ -14,14 +14,14 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
 process.args : ("-F", "-T", "-d", "--data-*") and 
 process.args : ("*@*.zip", "*@*.gz", "*@*.tgz") and 
 process.args : "http*" and not 
-process.args : ("http*://localhost*", 
+process.args : ("http*://*localhost*",
                 "https://*.newrelic.com*",
                 "x-app-license-key*",
                 "*github.com/elastic/*",

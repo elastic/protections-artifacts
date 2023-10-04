@@ -10,7 +10,7 @@ os_list = ["macos"]
 reference = [
     "https://www.sentinelone.com/blog/session-cookies-keychains-ssh-keys-and-more-7-kinds-of-data-malware-steals-from-macos-users/",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 file where event.action == "open" and process.executable != null and 
@@ -18,7 +18,7 @@ file where event.action == "open" and process.executable != null and
  (process.code_signature.trusted == false or process.code_signature.exists == false)
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -56,4 +56,4 @@ name = "Discovery"
 reference = "https://attack.mitre.org/tactics/TA0007/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"

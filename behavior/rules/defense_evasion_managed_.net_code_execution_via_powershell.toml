@@ -7,7 +7,7 @@ id = "cd886776-8790-4724-9484-3f0008b87da7"
 license = "Elastic License v2"
 name = "Managed .NET Code Execution via PowerShell"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.type == "start" and
@@ -18,8 +18,9 @@ process where event.type == "start" and
    (length(process.parent.command_line) >= 200 and process.parent.args : ("-e", "-enc", "-ep", "-encoded", "*;iex")) or
 
    /* suspicious args */
-   process.parent.command_line : ("*HKCU*", "*http*", "* IEX*", "*^*^*^*^*^*^*^*^*^*", "*.replace*", "*Reflection.Assembly*",
-   "*set *set *set *", "*;iex*", "*IEX (*", "*FromBase64String*")
+   process.parent.command_line : ("*HKCU*", "* IEX*", "*^*^*^*^*^*^*^*^*^*", "*.replace*", "*Reflection.Assembly*",
+   "*set *set *set *", "*;iex*", "*IEX (*", "*FromBase64String*", "*.downloadstring*", "*.downloadfile*", "*.downloaddata*", 
+   "*.webclient)*")
 
    ) and
    not process.parent.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "visualstudio20??-workload-vctools;") and
@@ -27,7 +28,11 @@ process where event.type == "start" and
    not (process.parent.args : "-ExecutionPolicy" and process.parent.command_line : "*.vscode\\extensions*") and
    not process.parent.command_line : ("*http://localhost:9900/CaptureManager?wsdl*", "*KMS_VL_ALL_AIO.cmd*", 
                                       "*ServerURI*https*.office365.com*", "*Invoke-ps2exe -inputFile*", 
-                                      "*amazonaws.com/scripts/FleetSweep.ps1*")
+                                      "*amazonaws.com/scripts/FleetSweep.ps1*", 
+                                      "*EnterpriseServices/Integrations/IntegrationHelper.svc*", 
+                                      "*chocolatey.org*", "*amazonaws.com/scripts/Leaf-Agent_*", 
+                                      "*Activator*MAS_*", "*:\\Program Files (x86)\\Universal\\Host\\host.dll*", 
+                                      "*E:\\3Activator.cmd*")
 '''
 
 min_endpoint_version = "7.15.0"

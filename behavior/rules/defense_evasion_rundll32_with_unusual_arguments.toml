@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -106,7 +106,8 @@ process where event.action == "start" and process.name : "rundll32.exe" and
   not process.parent.executable :
               ("?:\\Program Files\\Common Files\\BullGuardInstall\\BullGuard*.exe",
                "?:\\Program Files (x86)\\Intuit\\QuickBooks 20??\\QBW??.EXE",
-               "?:\\Program Files\\Intuit\\QuickBooks 2022\\QBW.EXE") and
+               "?:\\Program Files\\Intuit\\QuickBooks 2022\\QBW.EXE", 
+               "C:\\Users\\Public (x86)\\Spectra\\temp\\smsx.exe") and
   not (user.name : "user" and process.args : "file.dll,#*") and
   not (process.name : "rundll32.exe" and process.args : "uxtheme.dll,#64" and process.args : "?:\\WINDOWS\\Resources\\Themes\\*") and 
   not process.parent.executable : ("?:\\Program Files\\NVIDIA Corporation\\*.exe", "?:\\Program Files (x86)\\Windows Media Components\\Encoder\\wmstypelib.exe") and
@@ -118,7 +119,11 @@ process where event.action == "start" and process.name : "rundll32.exe" and
                        "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                        "?:\\Windows\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
                        "c:\\EWDK??\\Program Files\\Microsoft Visual Studio\\*,#1",
-                       "C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll,#1")) and
+                       "?:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll,#1", 
+                       "?:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper64.dll,#1", 
+                       "C:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acsnative.dll,", 
+                       "C:\\Windows\\TEMP\\*.tmp\\uninshlp.dll,DeleteExeAndDeleteSelf",
+                       "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\BgInstallAssist.dll,RunDll_*")) and
   not (process.name : "rdunll32.exe" and
        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*" and
        process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp") and

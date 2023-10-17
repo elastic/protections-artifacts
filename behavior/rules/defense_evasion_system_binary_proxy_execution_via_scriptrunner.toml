@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies the execution of a command or binary via the Windows Script Runner utility. Adversaries may bypass process
+and signature-based defenses by proxying execution of malicious content with signed, or otherwise trusted, binaries.
+"""
+id = "06773783-0083-429d-863e-a85719a6cb05"
+license = "Elastic License v2"
+name = "System Binary Proxy Execution via ScriptRunner"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Scriptrunner/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+  (process.parent.name : "ScriptRunner.exe" and process.parent.args : "-appvscript") and 
+  not (process.executable : "?:\\Windows\\Sys*\\conhost.exe" and process.args : "0xffffffff")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

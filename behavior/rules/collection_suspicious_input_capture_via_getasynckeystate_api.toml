@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies multiple attempts to enumerate the state of keyboard keys by the same process and in a short period of time.
+Adversaries may log user keystrokes to intercept credentials or other information from the user as the user types them.
+"""
+id = "2ed0570d-3fa4-45b1-b4f2-d7fcc827daf1"
+license = "Elastic License v2"
+name = "Suspicious Input Capture via GetAsyncKeyState API"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1056/001/",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate",
+]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=3s
+ [api where process.Ext.api.name == "GetAsyncKeyState"]
+ [api where process.Ext.api.name == "GetAsyncKeyState"]
+ [api where process.Ext.api.name == "GetAsyncKeyState"]
+ [api where process.Ext.api.name == "GetAsyncKeyState"]
+ [api where process.Ext.api.name == "GetAsyncKeyState"]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1056"
+name = "Input Capture"
+reference = "https://attack.mitre.org/techniques/T1056/"
+[[threat.technique.subtechnique]]
+id = "T1056.001"
+name = "Keylogging"
+reference = "https://attack.mitre.org/techniques/T1056/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -4,7 +4,7 @@ id = "d8d90a1a-a912-4716-994b-26e24d363d76"
 license = "Elastic License v2"
 name = "Common Language Runtime Loaded via an Unsigned Module"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -13,7 +13,7 @@ sequence by process.entity_id with maxspan=1m
   dll.code_signature.trusted  != true and not startswith~(dll.name, process.name) and
   dll.hash.sha256 : "??*" and dll.path : "?*" and
   (process.code_signature.subject_name : "Microsoft*" or process.code_signature.exists == false) and
-  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+  not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and
   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\System32\\DriverStore\\FileRepository\\*") and
   not dll.path : ("?:\\Windows\\assembly\\NativeImages_v*",
                   "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
@@ -27,7 +27,8 @@ sequence by process.entity_id with maxspan=1m
   not process.thread.Ext.call_stack_summary : "*mscoreei.dll|msi*.tmp|msi.dll*"]
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -52,4 +53,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"

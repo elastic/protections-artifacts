@@ -7,14 +7,14 @@ id = "ba802fb2-f183-420e-947b-da5ce0c74dd3"
 license = "Elastic License v2"
 name = "Potential DLL SideLoad via a Microsoft Signed Binary"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 /* MS bin used as DLL sideloading target from an ISO/DMG/VHD archive */
 library where
   (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not dll.path : "C:\\*") and
   process.code_signature.subject_name : "Microsoft*" and
-  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorChaining") and
+  not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and
   not process.executable : "C:\\*" and
   not startswith~(dll.name, process.name) and
   not dll.hash.sha256 :
@@ -30,8 +30,9 @@ library where
                "6a6299dc667bedfa449f374931d1990cd19c3b23e2e603562b7f9d2c42e37f62")
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -61,4 +62,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

@@ -7,7 +7,7 @@ id = "a0a82ad6-98ed-4426-abd8-52e7b052e297"
 license = "Elastic License v2"
 name = "Microsoft Office Loaded a Dropped Executable File"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -43,8 +43,9 @@ sequence by process.entity_id with maxspan=1m
     not dll.pe.imphash : "dae02f32a21e03ce65412f6e56942daa"] by dll.path
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -69,4 +70,4 @@ name = "Initial Access"
 reference = "https://attack.mitre.org/tactics/TA0001/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.10.0"

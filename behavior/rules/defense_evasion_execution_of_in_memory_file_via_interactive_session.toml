@@ -1,0 +1,59 @@
+[rule]
+description = """
+Detects when a file descriptor in the proc (temporary) file system is executed via an interactive session. This activity
+indicates an active attempt to execute an in-memory file and should be considered highly abnormal or suspicious. This
+activity can occur when the memfd syscall is utilized to create a memory resident file, like a payload, and then execute
+it via command and control.
+"""
+id = "fbc224a0-5469-4c0c-953d-fc57e0293197"
+license = "Elastic License v2"
+name = "Execution of In-Memory File via Interactive Session"
+os_list = ["linux"]
+reference = [
+    "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
+    "https://x-c3ll.github.io/posts/fileless-memfd_create/",
+]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.interactive == true and 
+ process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+""" and
+ not process.command_line : "runc init" and
+ not process.parent.executable : ("/usr/sbin/runc", "/usr/libexec/snapd/snap-confine")
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.3.0"

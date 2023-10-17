@@ -7,7 +7,7 @@ id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
 license = "Elastic License v2"
 name = "Unusual File Made Executable by Suspicious Parent Process"
 os_list = ["macos"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -29,7 +29,7 @@ process where event.type == "start" and event.action == "exec" and
                     "/Library/Fonts/*", 
                     "/usr/local/bin/*") and 
     process.parent.executable != null and not 
-    process.args : ("/Users/*/shims/*", "/tmp/combine_commits.py", "/var/folders/*/Microsoft.Android.Sdk.Darwin-*-extracted/tools/Darwin/*") and not 
+    process.args : ("/Users/*/shims/*", "/tmp/combine_commits.py", "/tmp/ddshare_*.sh", "/var/folders/*/Microsoft.Android.Sdk.Darwin-*-extracted/tools/Darwin/*") and not 
     process.parent.executable : ("/usr/bin/*", 
                                  "/usr/sbin/*", 
                                  "/usr/libexec/*",
@@ -37,6 +37,7 @@ process where event.type == "start" and event.action == "exec" and
                                  "/sbin/*", 
                                  "/opt/homebrew/*",
                                  "/Library/Kaseya/AgentMon",
+                                 "/Library/Application Support/Data Robotics/Drobo Dashboard/DDService64d",
                                  "/Library/Application Support/SyncroMSP/SyncroMSP.app/Contents/MacOS/*/SyncroDesktop.Svc",
                                  "/usr/local/share/dotnet/dotnet",
                                  "/Applications/Eclipse.app/Contents/MacOS/eclipse",
@@ -57,11 +58,14 @@ process where event.type == "start" and event.action == "exec" and
     process.Ext.effective_parent.executable : ("/Applications/EaseUS Data Recovery Wizard.app/Contents/MacOS/EaseUS Data Recovery Wizard",
                                                "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Printer Driver Installer",
                                                "/Library/Kaseya/AgentMon",
+                                               "/Volumes/Mac_User_SW/Fiery Master Installer.app/Contents/MacOS/Fiery Master Installer",
                                                "/Applications/Examplify.app/Contents/Resources/ExamplifyService/ExamplifyService",
                                                "/Applications/Cisdem Data Recovery.app/Contents/MacOS/Cisdem Data Recovery",
                                                "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager",
                                                "/private/var/folders/*/Support-LogMeInRescue.app/Contents/MacOS/Support-LogMeInRescue",
-                                               "/Applications/Disk Drill.app/Contents/MacOS/Disk Drill")
+                                               "/Applications/Disk Drill.app/Contents/MacOS/Disk Drill", 
+                                               "/Library/Application Support/Data Robotics/Drobo Dashboard/DDService64d", 
+                                               "/Volumes/Disk Drill ?.?/Disk Drill.app/Contents/MacOS/Disk Drill")
 '''
 
 min_endpoint_version = "8.5.0"

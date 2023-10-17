@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,7 +15,7 @@ sequence by process.entity_id with maxspan=5m
     (
      process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
                      "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
-                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "dfsvc.exe", "net.exe") or
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe") or
      process.pe.original_file_name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", 
                                       "vbc.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe", 
                                       "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe") or
@@ -46,7 +46,10 @@ sequence by process.entity_id with maxspan=5m
                           "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141",
                           "?:\\WINDOWS\\System32\\shell32.dll,SHCreateLocalServerRunDll",
                           "?:\\PROGRA~2\\MICROS~2\\Office*\\*.CPL*",
-                          "?:\\Windows\\System32\\mshtml.dll,PrintHTML"))
+                          "?:\\Windows\\System32\\mshtml.dll,PrintHTML", 
+                          "?:\\PROGRA~?\\MICROS~?\\Office??\\MLCFG32.CPL,@0", 
+                          "AppXDeploymentExtensions.OneCore.dll,ShellRefresh")) and 
+      not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe", "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe")
   ]
   [dns where
     dns.question.name :
@@ -129,8 +132,9 @@ sequence by process.entity_id with maxspan=5m
         "i.ibb.co"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
-    not (process.name : ("powershell.exe", "pwsh.exe") and
-         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com"))
+    not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and
+         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com")) and 
+    not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe")
   ]
 '''
 

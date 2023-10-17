@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -135,10 +135,10 @@ process where event.action == "start" and
           process.args : ("?:\\PerfLogs\\Admin\\New.PerfMon.Log.Analyzer*.vb", "?:\\Program Files\\Autodesk\\HSMWorks 2023\\installpost.js")) and
      not (process.name : "regsvr32.exe" and process.args : "?:\\Windows\\servicing\\LCU\\Package_for_RollupFix~*") and
      not (process.name : "wscript.exe" and process.args : "?:\\Users\\Public\\PSAppDeployToolkit\\AppDeployToolkit_BlockAppExecutionMessage.vbs") and
-     not process.parent.executable : "?:\\Program Files (x86)\\DesktopCentral_Agent\\EndpointDLP\\bin\\MEDLP.exe" and
-     not process.executable :
-                 ("?:\\Program Files\\Microsoft Visual Studio\\*\\Current\\bin\\msbuild.exe",
-                  "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Current\\bin\\msbuild.exe")
+     not process.parent.executable : ("?:\\Program Files (x86)\\DesktopCentral_Agent\\EndpointDLP\\bin\\MEDLP.exe", 
+                                      "?:\\Program Files (x86)\\Intuit\\QuickBooks *\\QBW*.EXE", 
+                                      "?:\\Program Files (x86)\\pdf*\\res\\drivedir\\pdfsave.exe") and
+     not process.executable : ("?:\\Program Files\\*\\msbuild.exe", "?:\\Program Files (x86)\\*\\MSBuild.exe")
 '''
 
 min_endpoint_version = "7.15.0"

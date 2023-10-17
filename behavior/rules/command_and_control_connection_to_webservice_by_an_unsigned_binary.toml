@@ -7,7 +7,7 @@ id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
 license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -119,7 +119,8 @@ sequence by process.entity_id with maxspan=5m
   ]
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -154,4 +155,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

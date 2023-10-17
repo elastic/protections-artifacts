@@ -7,7 +7,7 @@ id = "9ba39516-651e-489f-8b6a-f5501e0c492d"
 license = "Elastic License v2"
 name = "Execution from Suspicious Directory"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -93,7 +93,8 @@ sequence by process.entity_id with maxspan=1m
                "datapipeline.logitech.io")]
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -135,4 +136,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

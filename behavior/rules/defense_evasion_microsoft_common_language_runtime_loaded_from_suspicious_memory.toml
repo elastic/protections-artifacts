@@ -7,19 +7,23 @@ id = "ad2c6fcc-89d3-4939-85d9-d7114d6bbf14"
 license = "Elastic License v2"
 name = "Microsoft Common Language Runtime Loaded from Suspicious Memory"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 library where dll.name : "clr.dll" and
- process.thread.Ext.call_stack_summary : "*mscoreei.dll|Unbacked" and
+ process.thread.Ext.call_stack_summary : 
+             ("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|mscoreei.dll|Unbacked", 
+              "ntdll.dll|kernelbase.dll|mscoreei.dll|Unbacked") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*mscoreei.dll!CreateInterface*") and
  not (process.executable : "?:\\Program Files\\Dell\\DTP\\DiagnosticsSubAgent\\Dell.TechHub.Diagnostics.SubAgent.exe" and
       process.code_signature.trusted == true and process.code_signature.subject_name : "Dell Inc") and
- not (process.code_signature.trusted == true and process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.")) and 
+ not (process.code_signature.trusted == true and 
+      process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.", "HAYLEM Technologies Inc.", "MicroStrategy, Inc.")) and 
  not (process.executable : "C:\\ManageEngine\\ADManager Plus\\jre\\bin\\java.exe" and 
       process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.trusted == true) and 
  not (process.executable : "?:\\Program Files*\\Amazon Corretto\\jdk*\\bin\\java.exe" and 
-      process.code_signature.subject_name : "Amazon.com Services LLC" and process.code_signature.trusted == true)
+      process.code_signature.subject_name : "Amazon.com Services LLC" and process.code_signature.trusted == true)  and 
+ not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe")
 '''
 
 min_endpoint_version = "8.7.0"

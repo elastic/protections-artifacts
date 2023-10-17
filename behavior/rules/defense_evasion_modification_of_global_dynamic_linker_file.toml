@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies modification of the global dynamic linker preload file (ld.so.preload). Adversaries will add the path to
+their malicious shared object file to the global dynamic linker file causing their shared object to be preloaded
+allowing them to hook library functions and hide/remove their activity on the system.
+"""
+id = "7775840f-3df9-4159-8f4c-85fe8a81d021"
+license = "Elastic License v2"
+name = "Modification of Global Dynamic Linker File"
+os_list = ["linux"]
+reference = ["https://www.linode.com/docs/guides/linux-defense-evasion-hiding-linux-processes/"]
+version = "1.0.6"
+
+query = '''
+file where event.action == "modification" and file.path : "/etc/ld.so.preload"
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.3.0"

@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=1m
@@ -99,7 +99,8 @@ sequence with maxspan=1m
   ] by process.parent.entity_id
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -129,4 +130,4 @@ name = "Initial Access"
 reference = "https://attack.mitre.org/tactics/TA0001/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.10.0"

@@ -11,11 +11,11 @@ os_list = ["macos"]
 reference = [
     "https://www.jamf.com/blog/cryptojacking-macos-malware-discovered-by-jamf-threat-labs/?utm_source=twitter&utm_medium=social&utm_campaign=blog-promo&utm_content=2023-02-23_shared_",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 file where event.action != "deletion" and 
- process.name : ("bsdtar", "tar", "unzip", "Archive Utility") and 
+ process.name : ("bsdtar", "tar", "unzip", "Archive Utility", "ArchiveService") and 
  file.path : ("/tmp/*", "/private/var/tmp/*", "/var/tmp/*") and
  file.Ext.header_bytes : ("cffaedfe*", "cafebabe*")
 '''

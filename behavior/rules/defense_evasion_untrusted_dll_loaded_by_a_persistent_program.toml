@@ -7,7 +7,7 @@ id = "29007eb1-40d9-47fa-82c0-d862db0586b4"
 license = "Elastic License v2"
 name = "Untrusted DLL Loaded by a Persistent Program"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,7 +31,7 @@ sequence by process.entity_id with maxspan=1m
 
    (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000 ) and dll.name : "*.dll" and
 
-   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and
    dll.hash.sha256 != null and
    not (dll.path : ("?:\\Windows\\Installer\\*",
                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
@@ -69,7 +69,16 @@ sequence by process.entity_id with maxspan=1m
               "7b873201c26858d889cf891464e77b1f3fc478d025e56b75f07ff2b3f64eb209",
               "0cde7b49bc46cc5d2e25e760709431c3ade1c5bf9e1bc5acec239760aff03ccf",
               "ac7c6f8091f06f99ebc9aedd0e6e5d60509e174746510c5c2f6466e9f29d547a",
-              "6e0063b9bbf38556325669d975707499add784bd47c7d053b75eb4f076685d1c") and
+              "6e0063b9bbf38556325669d975707499add784bd47c7d053b75eb4f076685d1c", 
+              "51b82e3994b6ac4279914579bb75d06121e211d24b54a9ce5ad64101778f6fbb", 
+              "a6f2eaba3d776ee23976579c83486057b457d2ea17d2555fe2841b7d178237e4", 
+              "483e1f8314839fe1280db4c4c74a20d66868535856a8a64da542fee09adeac12", 
+              "75b1359a24ea27a8798e0a0ef43ea9ad93e5cdfaf3872d40cb8292a0c8c2c3da", 
+              "7bc542b772dd5fe2efdd84b6262eeadf4c03976af4860c9431027f7a26ba20dd", 
+              "9c5e11214b88feeefa0649ec267951ec193fd67a3cc0ea08efe83c2542f0465f", 
+              "2250edf8968f04eefc1b10502a7a6f5a70461127e892c9f8cdb460d16065b01b", 
+              "e2908dec495cc6e621358eb7c5d41403f25eb4bdbf3802866eadea378422d412", 
+              "51b82e3994b6ac4279914579bb75d06121e211d24b54a9ce5ad64101778f6fbb") and
    not dll.pe.imphash :
               ("c1c7505e1e6e929ebb6b9100e55b050a",
                "6ed82d3226365ffafff2c57c1935d352",
@@ -149,8 +158,9 @@ sequence by process.entity_id with maxspan=1m
                          "Exclaimer Ltd") and process.code_signature.trusted == true)]
 '''
 
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -175,4 +185,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.10.0"

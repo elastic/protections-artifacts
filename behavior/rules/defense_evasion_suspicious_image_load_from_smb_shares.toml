@@ -7,7 +7,7 @@ id = "c9674e88-8423-442a-9712-ba6271bcff10"
 license = "Elastic License v2"
 name = "Suspicious Image Load from SMB Shares"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,12 +24,12 @@ sequence by process.entity_id with maxspan=1m
   process.executable != null and
   (
    (dll.name : ("ws2_32.dll", "wininet.dll", "psapi.dll") and
-    process.thread.Ext.call_stack_summary : "*Unbacked*" and
+    process.thread.Ext.call_stack_summary : "*kernelbase.dll|Unbacked*" and
     not process.thread.Ext.call_stack_summary :
             ("*mscorlib.dll*","*|clr.dll*", "*coreclr.dll*", "*mscoreei.dll*", "*mscoree.dll*", "*system.ni.dll*",
-             "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*",
+             "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*", 
              "*java.dll|Unbacked*", "*system.data.ni.dll*", "*|ntdll.dll|Unbacked|ntdll.dll", "*windowsbase.ni.dll*",
-             "*presentationframework.ni.dll*", "ntdll.dll|Unbacked", "*system.windows.forms.ni.dll|Unbacked*", "ntdll.dll")) or
+             "*presentationframework.ni.dll*", "*system.windows.forms.ni.dll|Unbacked*")) or
 
    dll.name : ("dsquery.dll", "System.Management.Automation.dll")
   ) and 

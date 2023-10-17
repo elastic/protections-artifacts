@@ -8,13 +8,14 @@ id = "15c48f2d-e461-40a9-accd-090a0863ea10"
 license = "Elastic License v2"
 name = "Startup Persistence from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 any where event.category : ("registry", "file") and process.executable != null and
  not event.action : ("deletion", "query") and process.thread.Ext.call_stack_summary : "?*" and
  not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
- not process.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*") and
+ not process.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*", "*|kernelbase.dll|irsetup.exe*", 
+                                              "*issetup.dll|isrt.dll*", "*adobepim.dll|set-up.dat*") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX") and
    (
     (registry.data.strings != null and
@@ -36,7 +37,7 @@ any where event.category : ("registry", "file") and process.executable != null a
 	                                      "?:\\Program Files (x86)\\Gizmo\\gdrive.dll!Remount_Startup_Images*")) and
    not registry.data.strings : "?:\\windows\\Twain_32\\fjscan32\\FjtwMkup.exe /Station" and
    not (process.executable :  "?:\\Windows\\SysWOW64\\DWRCS.EXE" and registry.data.strings : "?:\\WINDOWS\\SysWOW64\\DWRCST.exe") and
-   not process.executable : "?:\\Program Files (x86)\\CEB\\Essential Forms\\EFDownloader.exe"
+   not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")
 '''
 
 min_endpoint_version = "8.7.0"

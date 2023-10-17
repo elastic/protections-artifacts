@@ -7,22 +7,26 @@ id = "9d5f965f-6f77-45df-9733-8707e40d1d71"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call from Virtual Disk or USB"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-sequence by process.entity_id
+sequence by process.entity_id with maxspan=2m
 [process where event.action == "start" and
    process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and 
    not process.executable : "C:\\*" and not process.Ext.device.nt_name: "\\Device\\HarddiskVolume*" and 
    not process.Ext.device.vendor_id == "Citrix" and 
    not (process.code_signature.subject_name : ("Veeam Software Group GmbH", "VMware, Inc.") and process.code_signature.trusted == true)]
-[api where event.category : "intrusion_detection" and
+[api where event.category : "intrusion_detection" and 
+  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", 
+                               "rwx", "hollow_image", "image_indirect_call") and 
   not process.Ext.api.summary :
                       ("VirtualProtect( user32.dll, 0x24, RW-, R-X )",
                        "VirtualProtect( clr.dll, 0x8, R--, RWX )",
-                       "VirtualProtect( user32.dll, 0x1000, R-X, RW- )") and
-  not (process.Ext.api.behaviors : "protection_fluctuation" and process.Ext.api.parameters.protection == "RW-")]
- until [process where event.action:"end"]
+                       "VirtualProtect( user32.dll, 0x1000, R-X, RW- )") and 
+  not (process.Ext.api.behaviors : ("hollow_image", "image_indirect_call") and 
+       process.thread.Ext.call_stack_summary : 
+                        ("ntdll.dll|tmmon64.dll|ntdll.dll|Unbacked", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll", 
+                         "*dsetup.dll|issetup.dll*"))]
 '''
 
 min_endpoint_version = "8.8.0"

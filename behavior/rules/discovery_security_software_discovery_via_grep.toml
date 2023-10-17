@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Security Software Discovery via Grep"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4F.html"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.type == "start" and
@@ -36,6 +36,7 @@ process.args : ("Little Snitch",
                 "filemonitor") and not 
 process.parent.executable : "/Library/Application Support/*" and not
 process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", 
+                                           "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                            "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
 '''
 

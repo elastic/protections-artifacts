@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential DLL Search Order Hijacking of an Existing Program"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -46,7 +46,8 @@ sequence by process.entity_id with maxspan=1m
 	          "822dae5c53e148cad6a789fb5f6fb759fab740e2d34d07f3ddbed5cbe226a785")]
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -76,4 +77,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

@@ -8,7 +8,7 @@ id = "902f471c-27b4-4e78-b344-be46c6cfb72b"
 license = "Elastic License v2"
 name = "Remote Process Manipulation by Suspicious Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id
@@ -42,7 +42,7 @@ sequence by process.entity_id
         process.parent.executable : "?:\\Program Files*\\Internet Explorer\\iexplore.exe") and
    not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SNXAC\\STAProxy.exe" and
         process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\snxac\\*\\sta.dll,LaunchSTA") and
-   not (process.name : "rundll32.exe" and process.command_line : "\"C:\\Windows\\Sys*\\rundll32.exe\"  --enable-speech-input --enable-media-stream --no-sandbox")
+   not (process.name : "rundll32.exe" and process.command_line : "*--enable-speech-input*--enable-media-stream*")
   ]
  [api where process.Ext.api.behaviors : "cross-process" and
   process.Ext.api.name : ("VirtualAllocEx", "VirtualProtectEx") and
@@ -68,7 +68,9 @@ sequence by process.entity_id
                                          "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*", 
                                          "?:\\windows\\system32\\hmpalert.dll*",
 					 "?:\\windows\\syswow64\\hmpalert.dll!*")) and 
-   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Kernel*") and 
+   not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                    $entry.protection_provenance : ("Kernel*", "appvisvsubsystems64.dll", "*appvisvsubsystems.dll*", 
+		                                    "*appventsubsystems32.dll*", "*appventsubsystems64.dll*", "*appventsubsystems.dll*")) and 
    /* Cynet MemScanner, xSecuritas, Mcafee */
    not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes :

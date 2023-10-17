@@ -7,7 +7,7 @@ id = "dfe28e03-9b0b-47f5-9753-65ed2666663f"
 license = "Elastic License v2"
 name = "External IP Address Discovery via Untrusted Program"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,7 +21,19 @@ sequence by process.entity_id with maxspan=1m
    not process.hash.sha256 :
                    ("99f9ed0629c5bd62413ecbc670092da217862d21db1e1bea786a4d921289571c",
                     "e739d08d695cfe2a68d4566c71d756ca25602e4c7e050e93ecbe3cdc7aa44b58",
-                    "f58f2d82bba0477e64f124c9e75523524927dc9c72f60e2b4f00c482cc57313b")]
+                    "f58f2d82bba0477e64f124c9e75523524927dc9c72f60e2b4f00c482cc57313b", 
+                    "37d66cf4990eabe4cfa65e4f73d673a03cbce33d1bdf7b64f0b661f4a0872b9a", 
+                    "7592a2943c2af6b9b84ebd1c8a577fdffdbf867286c8e97d16cc2087637c0ce0", 
+                    "4d7574026cfd3bfb159ed7d4780f9e1462b5e8828a7ed7979a13977e4cd6611e", 
+                    "db2c94936e13eb47fc6bff6ee9c03ee43d0a5bcb4b27df598a00c962b604f641", 
+                    "3637ef7b9ab2b80940572a7e80102bbecb75d862ae4dcf16945cbea3368a3777", 
+                    "c9b49399b3dec9003ae924736f7c947ca2a8821ef31797145a9c241dd91429c1", 
+                    "73277600db6c0586fa2016001dd4a8affdf4a83f194a8afb16956cde0b79b58f", 
+                    "89cd13792d1a14fa965e8e430a40438929de00c00e4afa2e8710b94b9d346852", 
+                    "b19334da610a7ead290419f28bad0e51704aaadfcec56ddccaefdc3097568c18",
+                    "e8d970029133b8aad87ccab772d3acbc039fa392ad8f5a64f48e5921aea16f2c",
+                    "2d13dabb8766483884b13cbe87eb5f80f7c1f25f7692ef718611808d2c0d4a2e",
+                    "ea0c4140fe1f6af856e99fe90af5bd2ebd11f752811f2aa65aee028dbd0406d1")]
   [dns where
     dns.question.name :
          (

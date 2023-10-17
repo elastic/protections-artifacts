@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies attempts to disable the Microsoft Antimalware Scan Interface via registry modification. This may indicate an
+attempt to tamper with certain Windows native protections.
+"""
+id = "0a3152e5-122f-4145-a107-7ec789b9b1a3"
+license = "Elastic License v2"
+name = "AMSI Bypass via COM Registry Modification"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+registry where event.action == "modification" and  
+ registry.path : "HKEY_USERS\\*_Classes\\CLSID\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\InProcServer*" and 
+ not registry.data.strings : ("?:\\Windows\\System32\\amsi.dll", "?:\\Windows\\SysWOW64\\amsi.dll")
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

@@ -4,13 +4,13 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
  process.parent.name : "WmiPrvSe.exe" and not user.id : "S-1-5-18" and
  (
-  (process.name : ("rundll32.exe", "regsvr32.exe", "mshta.exe", "wmic.exe", "wscript.exe", "cscript.exe", "bitsadmin.exe", "certutil.exe", "vssadmin.exe", "curl.exe", "explorer.exe")) or
+  (process.name : ("rundll32.exe", "regsvr32.exe", "mshta.exe", "wmic.exe", "wscript.exe", "bitsadmin.exe", "certutil.exe", "vssadmin.exe", "curl.exe")) or
   (process.name : "schtasks.exe" and process.args : "/create") or
   (process.name : "cmd.exe" and process.command_line : ("*powershell*", "*mshta*", "*wmic*", "*msiexec*", "*\\AppData\\Local\\Temp\\*.bat")) or
   process.executable : ("?:\\Users\\*\\AppData\\*.exe", "?:\\Users\\Public\\*", "?:\\ProgramData\\*.exe", "?:\\Windows\\Tasks\\*.exe") or
@@ -61,7 +61,8 @@ not (process.name : ("powershell.exe", "cmd.exe") and
      "*\\admin$\\temp\\cotportal_EAS_SP-SNOW*", "*/latest/dynamic/instance-identity/*", "*Get-NetFirewallProfile*",
      "*windows\\temp\\netstatcache_*", "*$ErrorActionPreference*", "*D:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1*",
      "*app360edatabase\\Install-360DB.ps1*", "*CgAgACAAIAAgAHQAcgBhAHAAIA*", "*Cert:LocalMachine -Recurse*",
-     "*\\Program Files\\Veritas\\NetBackup\\*", "*CloudamizeAgentless*", "*Get-AppxP*")) and
+     "*\\Program Files\\*", "*\\Program Files (x86)\\*", "*CloudamizeAgentless*", "*Get-AppxP*", 
+     "*Windows\\System32\\AppvClient\\AppvClient.psd1*", "*###break###'} Catch {}*")) and
 
 not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
 
@@ -79,7 +80,10 @@ not (process.name : "cmd.exe" and process.working_directory : "?:\\tmp\\smartche
 not (process.pe.original_file_name == "360se.exe" and process.code_signature.trusted == true and
      process.code_signature.subject_name == "Beijing Qihu Technology Co., Ltd.") and
 
-not (process.code_signature.subject_name : ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.") and process.code_signature.trusted == true) and
+not (process.code_signature.trusted == true and 
+     process.code_signature.subject_name : 
+                    ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.", "Chocolatey Software, Inc.", 
+		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.")) and
 
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 
@@ -89,12 +93,16 @@ not (process.name : "cmd.exe" and
 not process.hash.sha256 :
                 ("0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f",
                  "4402920c711aba26297de5ea39fcb58448ade9df77e978f1d8cd326fd810c62d",
-                 "0d9c6de8a57443bffe718d3256fdd467b8970124ba65d8accb6f47dc54d46d72") and
+                 "0d9c6de8a57443bffe718d3256fdd467b8970124ba65d8accb6f47dc54d46d72", 
+		 "fc18fbb2b4e54c25ea3fdcdd9682735a636dd61127da451a2c19fd7e8d154285", 
+                 "0d6f7b29a06cb188ce67bd99ec0a3d1fa7dda2d64a69b3279ec90e04d35c8bfb") and
 
 not process.executable : "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\WMISSH\\*.exe" and 
 
 not (process.name : "regsvr32.exe" and process.command_line : "regsvr32.exe ?:\\SMS_DP$\\sms\\bin\\smsdp.dll /s") and 
-not process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe"
+not process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe" and 
+not (process.name : "rundll32.exe" and 
+     process.command_line : "\"?:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher")
 '''
 
 min_endpoint_version = "7.15.0"

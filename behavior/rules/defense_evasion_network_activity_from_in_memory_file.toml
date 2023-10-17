@@ -1,0 +1,64 @@
+[rule]
+description = """
+Detects when a file descriptor in the proc (temporary) file system is executed and immediately makes an outbound network
+connection. This activity can occur when the memfd syscall is utilized to create a memory resident file, like a payload,
+and then execute it after which is establishes outbound network connections (C2).
+"""
+id = "4c8b9c6f-4d85-4fa9-9104-16f7a99aded6"
+license = "Elastic License v2"
+name = "Network Activity from In-Memory File"
+os_list = ["linux"]
+reference = [
+    "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
+    "https://x-c3ll.github.io/posts/fileless-memfd_create/",
+]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and 
+ process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+""" and
+ not process.parent.executable : ("/usr/sbin/runc", "/usr/bin/dockerd") and
+ not process.command_line : "runc init"]
+[network where event.type == "start" and event.action == "connection_attempted" and
+   not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.3.0"

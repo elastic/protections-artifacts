@@ -12,7 +12,7 @@ reference = [
     "https://www.rapid7.com/blog/post/2023/05/05/appdomain-manager-injection-new-techniques-for-red-teams/",
     "https://github.com/netbiosX/GhostLoader/tree/master",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5m
@@ -49,7 +49,8 @@ sequence with maxspan=5m
 ]
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -79,4 +80,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"

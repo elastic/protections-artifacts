@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects Windows Memory API calls within a potentially altered call stack in order to conceal the true source of the
+call.
+"""
+id = "0cd206df-f54d-47e8-9276-d6a73bb65f47"
+license = "Elastic License v2"
+name = "Potential API Call Stack Spoofing"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+any where 
+ (		
+  (event.category : "api" and 
+   process.Ext.api.behaviors : ("proxy_call", "indirect_syscall") and 
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*kernel32.dll!SetDefaultCommConfigW+0x*") and 
+   process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|kernel32.dll|ntdll.dll", "ntdll.dll|kernel32.dll|ntdll.dll")) or 
+
+   (event.category : "library" and _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*kernel32.dll!SetDefaultCommConfigW+0x*") and 
+    process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|kernel32.dll|ntdll.dll", "ntdll.dll|kernel32.dll|ntdll.dll")) or 
+
+   (event.category : "api" and process.Ext.api.behaviors : "proxy_call" and 
+    process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll" and 
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll!RtlDeregisterWaitEx*") and 
+     process.thread.Ext.call_stack_final_user_module.name : "ntdll.dll")
+  )
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -7,7 +7,7 @@ id = "971ff66d-a0fe-4fdc-aa74-3cb1a19336f4"
 license = "Elastic License v2"
 name = "Potential DLL Hijacking via Environment Paths"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 library where
@@ -16,7 +16,7 @@ library where
 
  process.code_signature.status : "trusted" and process.code_signature.subject_name : "Microsoft *" and
 
- not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+ not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and
 
  dll.path :
    ("?:\\Users\\*\\AppData\\Local\\Microsoft\\WindowsApps\\*.dll",
@@ -78,7 +78,8 @@ library where
                "e416f3765be8358eb2fe789c8f9033bbbeda952ce6a36a350d403e2f07b963f8")
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -108,4 +109,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

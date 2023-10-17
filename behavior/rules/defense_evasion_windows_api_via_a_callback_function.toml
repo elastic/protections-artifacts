@@ -7,23 +7,24 @@ id = "8a8daa15-eed0-4bf0-85b5-ada73b55ab05"
 license = "Elastic License v2"
 name = "Windows API via a CallBack Function"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.14"
 
 query = '''
 api where process.Ext.api.behaviors : "indirect_syscall" and
  not process.Ext.api.name : "IoCreateDevice" and process.executable != null and
- process.thread.Ext.call_stack_summary :
-                   ("*ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll*",
-                    "ntdll.dll|kernelbase.dll|ntdll.dll|kernelbase.dll*") and
- not (process.executable : "?:\\Windows\\System32\\PrintIsolationHost.exe" and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|ntdll.dll|kernelbase.dll|*|printisolationproxy.dll|rpcrt4.dll|combase.dll*") and
+ process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*TpReleaseCleanupGroupMembers*") and 
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("*\\jhooksatellite.dll!*",
                                         "*ntdll.dll!qsort*",
                                         "*kernelbase.dll!AppXLookupMoniker*", 
-                                        "?:\\program files*\\remote desktop\\rdclientax.dll!DllDeleteSavedCreds*")) and
- not (process.executable : ("?:\\Program Files\\Microsoft Policy Platform\\policyHost.exe", "?:\\Program Files (x86)\\Microsoft Policy Platform\\policyHost.exe") and
-      process.thread.Ext.call_stack_summary : "*|lpa.dll|lpp.dll|rpcrt4.dll|*")
+                                        "*ntdll.dll!RtlCaptureStackContext*", 
+                                        "*ntdll.dll!LdrSystemDllInitBlock*", 
+                                        "*kernelbase.dll!CheckIsMSIXPackage*", 
+                                        "*rpcrt4.dll!NdrSendReceive*", 
+                                        "*ntdll.dll!RtlSetThreadWorkOnBehalfTicket*", 
+                                        "*ntdll.dll!RtlPcToFileHeader*",
+                                        "?:\\program files*\\remote desktop\\rdclientax.dll!DllDeleteSavedCreds*"))
 '''
 
 min_endpoint_version = "8.8.0"

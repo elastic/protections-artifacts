@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -34,7 +34,8 @@ process where event.action == "start" and
                            "?:\\Program Files\\*.exe",
                            "?:\\Program Files (x86)\\*.exe",
                            "?:\\Windows\\System32\\osk.exe",
-                           "?:\\Windows\\System32\\Narrator.exe") and
+                           "?:\\Windows\\System32\\Narrator.exe", 
+                           "?:\\Windows\\System32\\MpSigStub.exe") and
 
  not process.parent.executable : ("?:\\Windows\\System32\\AtBroker.exe", "?:\\Windows\\System32\\Utilman.exe") and
 

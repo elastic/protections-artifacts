@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies the side load of an untrusted DLL by a persistent trusted binary and that was dropped by commonly abused
+ingress tool transfer binaries. This behavior may indicate an attempt to sideloading a malicious DLL.
+"""
+id = "7543f65d-5a1a-4f88-a2d7-ddbc18672217"
+license = "Elastic License v2"
+name = "Ingress DLL Transfer followed by DLL SideLoading"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [file where event.action != "deletion" and
+   file.Ext.header_bytes : "4d5a*" and
+   (
+    process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe", "PrintBrm.exe", "curl.exe") or
+    process.executable : "?:\\Windows\\sys*\\OpenSSH\\sftp.exe"
+   )] by file.name
+ [library where
+   (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000 ) and dll.name : "*.dll" and
+   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+   dll.hash.sha256 != null and
+
+    /* DLL loaded from the process.executable current directory */
+   endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
+
+   not process.executable :
+             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe", "?:\\Windows\\assembly\\*",
+              "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*", "?:\\Windows\\splwow64.exe", "?:\\Windows\\Microsoft.NET\\*",
+              "?:\\Windows\\Installer\\*")] by dll.name
+'''
+
+min_endpoint_version = "8.6.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

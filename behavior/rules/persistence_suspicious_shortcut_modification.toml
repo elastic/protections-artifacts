@@ -8,60 +8,27 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
-file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
+sequence by process.entity_id with maxspan=1m
+[process where event.action == "start" and
  not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
- process.executable : "?:\\*" and
+ (
+  process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe", "wscript.exe", "cscript.exe", "curl.exe", "certutil.exe", "cmd.exe") or
+  ((process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
+     not process.code_signature.status : "trusted")
+ ) and 
  not process.executable : 
-           ("?:\\Windows\\Explorer.exe", 
-            "?:\\Windows\\System32\\svchost.exe", 
-            "?:\\Windows\\System32\\msiexec.exe",
-            "?:\\Windows\\SysWOW64\\msiexec.exe",
-            "?:\\Windows\\System32\\dllhost.exe",
-            "?:\\Windows\\SysWOW64\\dllhost.exe",
-            "?:\\Windows\\System32\\RuntimeBroker.exe",
+           ("?:\\Program Files\\*.exe", 
+            "?:\\Program Files\\*.exe",
             "?:\\Config.Msi\\*.rbf",
-            "?:\\Windows\\System32\\svchost.exe",
-            "?:\\Windows\\System32\\MoUsoCoreWorker.exe",
-            "?:\\Windows\\System32\\SearchFilterHost.exe",
-            "?:\\Windows\\System32\\audiodg.exe",
             "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe",
             "?:\\Windows\\servicing\\TrustedInstaller.exe",
-            "?:\\Windows\\System32\\VSSVC.exe",
-            "?:\\Windows\\SystemApps\\MicrosoftWindows.*.exe",
-            "?:\\Windows\\System32\\taskhostw.exe",
-            "?:\\Windows\\System32\\backgroundTaskHost.exe",
-            "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
+            "?:\\Windows\\SystemApps\\*.exe",
             "?:\\Windows\\System32\\DeviceEnroller.exe",
             "?:\\Windows\\CCM\\UpdateTrustedSites.exe",
-            "?:\\Windows\\System32\\Robocopy.exe",
-            "?:\\Windows\\SysWOW64\\xcopy.exe",
-            "?:\\Windows\\System32\\xcopy.exe",
-            "?:\\Windows\\System32\\cmd.exe",
-            "?:\\Windows\\System32\\sppsvc.exe",
-            "?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
-            "?:\\Windows\\System32\\xcopy.exe",
-            "?:\\Windows\\System32\\dsregcmd.exe",
-            "?:\\Program Files (x86)\\*.exe",
-            "?:\\Program Files\\*.exe",
-            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe",
-            "?:\\Windows\\System32\\PrintIsolationHost.exe",
-            "?:\\Windows\\System32\\LocationNotificationWindows.exe",
-            "?:\\Windows\\System32\\conhost.exe",
-            "?:\\Windows\\System32\\SecurityHealthService.exe",
-            "?:\\Windows\\System32\\pacjsworker.exe") and
-  file.path :
-     ("?:\\Users\\*\\Desktop\\*.lnk",
-      "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",
-      "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk",
-      "?:\\Users\\*\\Start Menu\\Programs\\Startup\\*.lnk",
-      "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk") and
-  file.Ext.header_bytes : "4c000000*" and
-  file.name : ("Google Chrome.lnk", "Outlook.lnk", "Microsoft Outlook.lnk","Microsoft Edge.lnk",
-               "Mozilla Thunderbird.lnk", "Firefox.lnk", "Word.lnk", "Excel.lnk", "Notepad++.lnk",
-               "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk") and
+            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe") and 
   not (process.code_signature.subject_name :
           ("Google*",
            "Notepad*",
@@ -76,9 +43,22 @@ file where event.action == "overwrite" and file.extension : "lnk" and process.pi
 
   not (process.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation")
+ ]
+[file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
+ process.executable : "?:\\*" and
+  file.path :
+     ("?:\\Users\\*\\Desktop\\*.lnk",
+      "?:\\Users\\*\\Microsoft\\Internet Explorer\\Quick Launch\\*.lnk",
+      "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk",
+      "?:\\Users\\*\\Start Menu\\Programs\\Startup\\*.lnk",
+      "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\*.lnk") and
+  file.Ext.header_bytes : "4c000000*" and
+  file.name : ("Google Chrome.lnk", "Outlook.lnk", "Microsoft Outlook.lnk","Microsoft Edge.lnk",
+               "Mozilla Thunderbird.lnk", "Firefox.lnk", "Word.lnk", "Excel.lnk", "Notepad++.lnk",
+               "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk")]
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -108,4 +88,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.4.0"

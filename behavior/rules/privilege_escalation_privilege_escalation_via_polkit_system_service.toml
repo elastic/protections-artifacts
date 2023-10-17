@@ -1,0 +1,52 @@
+[rule]
+description = """
+A vulnerability exists within the polkit system service that a local, unprivileged attacker can leverage to perform
+privileged operations. In order to leverage the exposure, the attacker invokes a method over D-Bus and kills the client
+process. This will occasionally cause the operation to complete without being subjected to all necessary
+authentications. The exploit can then be used to add a new user with sudo access and a known password. The new account
+is then leveraged to execute a payload with root privileges.
+"""
+id = "3144cab7-cc28-46c3-a3ac-8fefe8db22d6"
+license = "Elastic License v2"
+name = "Privilege Escalation via Polkit System Service"
+os_list = ["linux"]
+reference = [
+    "https://packetstormsecurity.com/files/163452/Polkit-D-Bus-Authentication-Bypass.html",
+    "https://github.com/oxagast/oxasploits/blob/JoshuaJohnWard/exploits/CVE-2021-3560/polkit_godmode_0day.sh",
+    "https://access.redhat.com/security/cve/cve-2021-3560",
+]
+version = "1.0.15"
+
+query = '''
+process where event.type == "start" and process.name == "dbus-send" and
+process.args in ("--dest=org.freedesktop.Accounts", "org.freedesktop.Accounts.CreateUser",
+"org.freedesktop.Accounts.User.SetPassword", "org.freedesktop.Accounts.DeleteUser")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.002"
+name = "Bypass User Account Control"
+reference = "https://attack.mitre.org/techniques/T1548/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

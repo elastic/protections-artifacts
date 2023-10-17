@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence with maxspan=5m
@@ -103,7 +103,16 @@ sequence with maxspan=5m
   not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and
        process.parent.name : ("wuauclt.exe", "wuaucltcore.exe")) and
 
-  not process.hash.sha256 : "02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87" and
+  not process.hash.sha256 : 
+                ("02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87", 
+                 "bd7ed99c8a05b3852cc4e44a34e4ba4f7ad4d4074ee60ad6a21a706897eeb714", 
+                 "c5b9688aed57d6b6285a210d40c9a4bf43c3672a758d448cd99f40fdc6681415", 
+                 "dee8aba745a6cca1b2404f5054dd91d4159d824c3f079fe742c6a25961d7a9f0", 
+                 "0a04684ef46dcac1859a195e8c7d4bfdb2dddb7da1d4491e8b7bf794036eba3a", 
+                 "217fa613c4e129f20d1b20fd2ce5c7a7efbdf88e1e6121077057d0b14fe15450", 
+                 "038d7b257b98421ad371189cf51d67f32ddad2de687c443a59ea74e4027bbf04", 
+                 "590f3cc02628dcdb43d3ee00ecf1a86e0bfcefd26cb0ffcb809a67194b22fda6", 
+                 "ff7627eaa90ce994207d1d1d1b39ac8852b11f03a6adb86d915f4696401beca0") and
 
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe")
   ] by process.parent.Ext.real.entity_id

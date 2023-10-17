@@ -4,27 +4,22 @@ id = "20eaa6a3-6b80-48bc-9c48-a935138169f9"
 license = "Elastic License v2"
 name = "Suspicious Python Script Interpreter"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and 
   process.executable != null and 
-  not (process.code_signature.trusted == true and
-       process.code_signature.subject_name :
-                             ("Dropbox, Inc", "Rapid7 LLC", "Intel Corporation", "Box, Inc.", "Tanium Inc.", 
-                              "Amazon Web Services, Inc.", "PrinterLogic", "Netalytics Security Inc", "Palo Alto Networks*",
-                              "Dynatrace LLC", "DVDFab Software Inc.", "Vim, Inc.", "Sophos Ltd", "AVIATRIX SYSTEMS, INC",
-                              "Andrew Ziem", "Trophy SAS", "ZoomInfo Technologies LLC", "Ankitects Pty Ltd", "Naresh Singh",
-                              "Oculus VR, LLC", "Nuxeo SASU", "Accountable2You, LLC", "CHIRP Software LLC")) and
+  not process.code_signature.trusted == true and 
   not process.executable :
             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe",
              "?:\\Python*\\python*.exe",
              "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python??\\python.exe",
              "?:\\Users\\*\\AppData\\Local\\anaconda?\\envs\\*\\python.exe",
-             "?:\\Users\\*\\AppData\\Local\\*\\bin\\Miniconda?\\python.exe",
+             "?:\\Users\\*\\AppData\\Local\\*\\Miniconda?\\python.exe",
              "?:\\*\\Anaconda?\\python*.exe",
-             "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe") and
+             "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe", 
+             "?:\\ProgramData\\checkmk\\agent\\modules\\python*\\.venv\\Scripts\\python.exe") and
   not process.hash.sha256 : 
                    ("b80be3102561bf891454bd52673fdcd49d08b14c17061c077d6a88ca5ba3e9e3", 
                     "8e7bbf6e1bc3588f6d13b8372ca1bef37b6758b8a3a17bda424eba140dd4e8fe",
@@ -56,12 +51,14 @@ sequence by process.entity_id with maxspan=1m
                     "1a59794c7c29f4569a0fe87bc9d9ffbf57835358c69f957950cd9718151f1af6",
                     "3d8595f90fb478cb0f3673a4e5162ac054638fe699a3879ad47514cf872077dd",
                     "87c927fb0f347bcb689d115e6515b285302d2253cab727924924b85da9056a9e", 
-                    "ff6b583cfc19ea28e9d3580af49e6db71675a5869e27de5f2940580948258b32")
+                    "ff6b583cfc19ea28e9d3580af49e6db71675a5869e27de5f2940580948258b32", 
+                    "31f692eaa4a205f52235f43ee69b23c6789b45ed11e5a831e9b9b460c3985867")
   ]
  [library where dll.name : ("win32api*.pyd", "win32process.pyd", "win32security.pyd", "md.cp*-win32.pyd", "win32crypt.pyd", "win32net.pyd")]
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -91,4 +88,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

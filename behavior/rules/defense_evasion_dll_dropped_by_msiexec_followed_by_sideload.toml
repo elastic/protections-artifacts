@@ -7,7 +7,7 @@ id = "1543ed0b-2d7b-42f9-93d2-bf9bfd8759e3"
 license = "Elastic License v2"
 name = "DLL Dropped by MSIEXEC followed by SideLoad"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -16,7 +16,7 @@ sequence by user.id with maxspan=1m
 
    (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000) and
 
-   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+   process.code_signature.status :"trusted" and not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and
    not dll.path : ("?:\\Windows\\Installer\\*",
                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                    "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
@@ -84,7 +84,8 @@ sequence by user.id with maxspan=1m
                 "f0abbc6494af9b08bf997ec9670d9ede")] by dll.path
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -124,4 +125,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.10.0"

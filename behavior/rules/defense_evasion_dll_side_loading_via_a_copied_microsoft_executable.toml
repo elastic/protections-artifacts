@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -35,7 +35,7 @@ sequence by user.id with maxspan=5m
   process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true and
   not startswith~(dll.name, process.name) and
   (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
-  not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+  not dll.code_signature.status : "trusted" and
 
   /* DLL loaded from the process.executable directory */
   endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and

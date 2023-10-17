@@ -7,10 +7,10 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-registry where
+registry where process.executable != null and 
  registry.path : "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\*" and
  process.thread.Ext.call_stack_summary :
                   ("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
@@ -27,7 +27,8 @@ registry where
                    "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
  not process.thread.Ext.call_stack_summary :
             ("*mscorlib.dll*","*|clr.dll*", "*coreclr.dll*", "*mscoreei.dll*", "*mscoree.dll*", "*system.ni.dll*",
-             "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*", "*java.dll|Unbacked*") and
+             "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*", "*java.dll|Unbacked*", 
+             "*user32.dll|bdhkm32.dll*", "*wininet.dll|Unbacked|system.core.ni.dll|Unbacked") and
  not (process.executable : ("?:\\Windows\\System32\\inetsrv\\w3wp.exe",
                             "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\LenovoVantageService.exe",
                             "?:\\Program Files\\Lenovo\\VantageService\\*\\LenovoVantageService.exe") and
@@ -35,9 +36,19 @@ registry where
  not process.executable : ("?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\ADNotificationManager.exe",
                            "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\ADNotificationManager.exe",
                            "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AdobeCollabSync.exe",
-                           "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AdobeCollabSync.exe") and
+                           "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AdobeCollabSync.exe", 
+                           "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe", 
+                           "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\LogTransport2.exe", 
+                           "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\CRWindowsClientService.exe", 
+                           "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\AdobeCollabSync.exe",
+                           "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Crash Processor.exe",
+                           "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil*.exe", 
+                           "?:\\Windows\\system32\\Macromed\\Flash\\FlashUtil*.exe", 
+                           "?:\\Program Files (x86)\\Lavasoft\\Web Companion\\Application\\Lavasoft.WCAssistant.WinService.exe") and
  not (process.code_signature.subject_name : "Cisco WebEx LLC" and process.executable : "?:\\Users\\*\\AppData\\Local\\WebEx\\webexAppLauncher.exe") and 
- not (process.code_signature.subject_name : "GolfNow, LLC" and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name : ("GolfNow, LLC", "Pluralsight, LLC", "Blizzard Entertainment, Inc.", "Appgate Cybersecurity, INC.", 
+                                             "Zoom Video Communications, Inc.", "Vertafore, Inc.") and 
+      process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.7.0"

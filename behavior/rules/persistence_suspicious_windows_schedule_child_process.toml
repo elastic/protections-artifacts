@@ -7,11 +7,11 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
- process.parent.name == "svchost.exe" and process.parent.args == "Schedule" and
+ process.parent.name == "svchost.exe" and process.parent.args == "Schedule" and process.hash.sha256 != null and 
  (
   /* non noisy child processes */
   process.pe.original_file_name : ("MSHTA.EXE", "MSBuild.exe", "InstallUtil.exe", "RegSvcs.exe") or
@@ -68,7 +68,9 @@ process where event.action == "start" and
                "fe0ecd844393d78026fd41a5b5bb9ab577a483ec1c290566a3fbdbf52fb24fc5",
                "053c6a0f59672b06e9ebccff18f2517780ff4c77ada25ac3eee1f2c4a24e8aea",
                "1a6b98956fb92a8a57b56feeef6fedc26b95c809526374f6e7c22acd8e3925c3",
-               "554fa8a3bf2e233f64d9e000bf30f197159406fbfa9920adca0901a265e45379") and
+               "554fa8a3bf2e233f64d9e000bf30f197159406fbfa9920adca0901a265e45379", 
+               "fb0ecac0bd7b8f3d81dffb359fb1449fc3cb74a15a1f53a568c1c5ee5a8966a9", 
+               "cf635f97d0a3bea30f348277777f36db6b14aea0e7711471e5fb2e13167b80cd") and
 
   not process.executable :
              ("?:\\Users\\*\\AppData\\Local\\GoToMeeting\\*\\g2mupload.exe",
@@ -80,9 +82,15 @@ process where event.action == "start" and
   not (process.name : ("rundll32.exe", "regsvr32.exe") and
        process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", 
                        "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,", 
-                       "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL")) and
-  not (process.name : "regasm.exe" and process.args : "?:\\ProgramData\\DevelNetworks\\DevimeCounlers\\WPHh_Pdsapi.dll") and
-  not (process.executable : "?:\\ProgramData\\Mozilla\\uxftbei.exe" and process.args : "-vtfjmdd")
+                       "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL", 
+                       "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication")) and
+  not (process.name : "regasm.exe" and 
+       process.args : ("?:\\ProgramData\\DevelNetworks\\DevimeCounlers\\WPHh_Pdsapi.dll", 
+                       "?:\\Users\\*\\AppData\\Local\\FormatTrans\\RrtioRyund\\WMD_Ponicy_*.dll")) and
+  not (process.name : "cmd.exe" and 
+       process.args : ("C:\\Users\\Public\\SageBackup-Phoenix.bat", 
+                       "C:\\Users\\Public\\InvisibleTimerbatch.bat", 
+                       "rmdir"))
 '''
 
 min_endpoint_version = "8.4.0"

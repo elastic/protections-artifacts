@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=5m
@@ -26,7 +26,7 @@ sequence with maxspan=5m
       not process.code_signature.status : ("errorTimeStamp", "errorCode_endpoint*", "errorExpired", "errorChaining")) or
 
     /* common abused paths */
-    process.executable :
+    (process.executable :
          ("?:\\Users\\Public\\*",
           "?:\\Users\\*\\AppData\\Roaming\\*",
           "?:\\ProgramData\\*",
@@ -35,7 +35,7 @@ sequence with maxspan=5m
           "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
           "?:\\Users\\*\\AppData\\Local\\Temp\\Rar*",
           "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*",
-          "\\Device\\CdRom*") or
+          "\\Device\\CdRom*") and not process.code_signature.trusted == true) or
 
     /* execution from a mounted device */
     (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*")
@@ -47,7 +47,8 @@ sequence with maxspan=5m
     not (process.code_signature.trusted == true and process.executable : ("?:\\Users\\*\\AppData\\Roaming\\*", "?:\\ProgramData\\*")) and
     not (process.name : "rundll32.exe" and process.args : "tsworkspace,TaskUpdateWorkspaces") and
     not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS") and
-    not (process.name : "rundll32.exe" and process.command_line : "*PWMTR32V.dll,InitializeSettingsDuringInstallation*") and
+    not (process.name : "rundll32.exe" and 
+         process.command_line : ("*PWMTR32V.dll,InitializeSettingsDuringInstallation*", "*RunDll_EnableBits*")) and
     not (process.name : "powershell.exe" and
          process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*", "*:\\WINDOWS\\ccmcache\\*")) and
     not (process.name : "powershell.exe" and
@@ -58,21 +59,29 @@ sequence with maxspan=5m
                                       "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\Lenovo.Vantage.AddinInstaller.exe",
                                       "?:\\ProgramData\\Lenovo\\LenovoNow\\Downloads\\LenovoNow.Updater.exe",
                                       "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoFirstRunExperiencePackage\\x86\\LenovoWelcomeTask.exe",
-                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe")) and
+                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe", 
+                                      "C:\\Banyan\\Canopy\\Leaf\\leaf_desktop_app.exe", 
+                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
-    not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
+    not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 
+    not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*tsworkspace,WorkspaceSilentSetup*")) and 
     not process.executable :
                 ("?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe",
                  "?:\\Program Files (x86)\\Beyond Compare ?\\UACLaunch.exe",
                  "?:\\Windows\\SysWOW64\\OneDriveSetup.exe",
-                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe") and
+                 "?:\\Windows\\System32\\MRT.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe", 
+                 "?:\\Program Files (x86)\\Elaborate Bytes\\VirtualCloneDrive\\ExecuteWithUAC.exe") and
     /* DOCs opened from network file share trigger an office default scheduled task */
     not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
     not process.hash.sha256 :
                   ("3d95157908cee58d19193c93c5f2b0a06910b8123a4211b0ea059ff66f2506e0",
                    "79dbc3cf0d4cdc0f2150ab5e2bf3457ba54297202500f26f1a1d48e455f7c54a",
                    "62d96982e2c2d58682471af9a9d0727ba49199d48b7766c318886e8e7e23670a",
-                   "ef330f95416162866f5d8b9cd509066ab4168cfcc66e305006be1952905d47e6") and
+                   "ef330f95416162866f5d8b9cd509066ab4168cfcc66e305006be1952905d47e6", 
+                   "cf635f97d0a3bea30f348277777f36db6b14aea0e7711471e5fb2e13167b80cd", 
+                   "3c1169568774b7ce8a96e137983b059f030eb3983c369cfb12ea2c59cf3f56ad", 
+                   "edaf602006b53dc936a35d0f9e6de51c552c0203ebe814cb68b1d5cbc81f4b49") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and

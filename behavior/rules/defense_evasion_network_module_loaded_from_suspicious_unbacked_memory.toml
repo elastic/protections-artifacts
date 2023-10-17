@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id
@@ -25,7 +25,17 @@ sequence by process.entity_id
   not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\NGenTask.exe", "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
 
   not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe" and
-       process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
+       process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and 
+
+  not (process.executable : "?:\\WINDOWS\\SysWOW64\\DWRCS.EXE" and
+       process.parent.executable : "?:\\WINDOWS\\SysWOW64\\DWRCS.EXE" and process.parent.args : "-service") and 
+
+  not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and 
+       process.parent.executable : "?:\\Windows\\System32\\winlogon.exe") and 
+
+  not (process.executable : "?:\\Windows\\SysWOW64\\icacls.exe" and 
+       process.args : "?:\\Program Files\\Tenable\\Nessus Agent\\*" and 
+       process.parent.executable : "?:\\Windows\\SysWOW64\\msiexec.exe") and 
 
   not (process.name : "rundll32.exe" and
        process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and
@@ -35,7 +45,9 @@ sequence by process.entity_id
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
                      "Brave Software, Inc.", "Opera Norway AS", "GitHub, Inc.", "Stefan Ries", "JetBrains s.r.o.",
                      "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.",
-                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy", "Logitech Inc", "N-ABLE TECHNOLOGIES LTD") and
+                     "Essential Objects, Inc.", "HP Inc.", "Aina Maximit Oy", "Logitech Inc", "N-ABLE TECHNOLOGIES LTD", 
+                     "Cognizant TriZetto Software Group, Inc.", "win.acme.simple@gmail.com", "Crownalytics, LLC", 
+                     "Kodak Alaris Inc.", "JAM Software GmbH") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -64,7 +76,8 @@ sequence by process.entity_id
                     "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9",
                     "51346e95656164783ae4de9d6b202f28be87358eb0e056d2d7cdd12b502d30e7",
                     "889cb8827a400984bea2e0561a1efbf9d18044e879974da8baa750a0c63748c6",
-                    "96dcdb449ab48b21b6efd33afc59ae163dea5fc597ffaf5dd7030b20d2624467") and
+                    "96dcdb449ab48b21b6efd33afc59ae163dea5fc597ffaf5dd7030b20d2624467", 
+                    "43714f0fc5cea25a6ee936fd36a83f86a45f61447c16c8e9255ef317089ce39c") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -132,8 +145,12 @@ sequence by process.entity_id
                           "c6470c01833d6cf1b45f007406ff15f40cb45f8bf0e8b5e76f5f85f6400f95c6400fb6f64883bdc0000000007423488b8dc0000000e825ebe25e448bc0488b95",
                           "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a",
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
-                          "41c6460c01833d*",
-                          "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24"))
+                          "41c64?0c01833d*",
+                          "c6430c0148bacce0*",
+                          "c6470c01833d*",
+                          "488b9570ffffffc6420*",
+                          "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
+                          "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067"))
   ]
   until [process where event.action:"end"]
 '''

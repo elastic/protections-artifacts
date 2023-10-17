@@ -1,0 +1,64 @@
+[rule]
+description = """
+Identifies attempts to modify the Windows Firewall Policy in order to permit an unsigned executable that was recently
+introduced. Malicious software frequently employs such alterations during installation to ensure uninterrupted network
+connectivity.
+"""
+id = "bf072c39-90bc-4b1b-9c78-1d8a9bd6f0e1"
+license = "Elastic License v2"
+name = "Firewall Policy Changed by a Suspicious Process"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m 
+[process where event.action == "start" and 
+(
+ ((process.Ext.relative_file_creation_time <= 500 or process.Ext.relative_file_name_modify_time <= 500) and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+  not process.code_signature.status : ("errorExpired", "errorCode_endpoint*") and
+  (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*") or
+   process.executable regex~ """c:\\windows\\[a-z0-9\-\_\.]+\.exe""")) or 
+
+   process.executable : "?:\\Windows\\Microsoft.NET\\*" or 
+
+   (process.code_signature.subject_name : "NetSupport Ltd" and process.Ext.relative_file_creation_time <= 500 and 
+    not process.executable : ("?:\\Program Files\\NetSupport*.exe", "?:\\Program Files (x86)\\NetSupport*.exe"))
+ )   
+] as event0 
+[registry where 
+  registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\FirewallRules\\*" and 
+  registry.data.strings : "*Allow*Public|*" and stringcontains~(registry.data.strings, event0.process.executable)]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

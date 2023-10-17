@@ -8,16 +8,14 @@ id = "f3f769b9-0695-49ed-ab6e-c8f199a7d2c8"
 license = "Elastic License v2"
 name = "Potential Evasion via Invalid Code Signature"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 any where
- process.executable != null and process.code_signature.status : "errorBadDigest" and 
- process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "rwx", "hollow_image") and 
- not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
-      not process.code_signature.subject_name : "Microsoft*") and
+ process.executable != null and process.code_signature.status : "errorBadDigest" and   
  (
   (event.category : "api" and event.category : "intrusion_detection" and 
+   process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx") and 
    not process.Ext.api.name : ("SetWindowsHookEx", "IoCreateDevice")) or
 
   (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
@@ -26,6 +24,16 @@ any where
              "*dnsapi.dll|Unbacked*", "*ws2_32.dll|Unbacked*", "*iphlpapi.dll|Unbacked*",
              "*winhttp.dll|Unbacked*", "Unbacked|*"))
  ) and
+ not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
+ not (process.executable : "D:\\d3\\view\\viewapp.exe" and process.code_signature.subject_name : "d.velop AG") and 
+ not (process.executable : "C:\\AutoVue_Client\\jre\\bin\\javaw.exe" and process.code_signature.subject_name : "Oracle America, Inc.") and 
+ not (process.executable : "?:\\Users\\*\\AppData\\Local\\Turbo.net\\Sandbox\\GEARView\\*\\GEARViewBasic.exe" and 
+      process.code_signature.subject_name : "Code Systems Corporation") and 
+ not process.executable : 
+             ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", 
+              "?:\\Program Files (x86)\\Teams Installer\\Teams.exe", 
+              "?:\\Program Files\\Microsoft Mouse and Keyboard Center\\CEIP.exe", 
+              "?:\\Program Files (x86)\\Microsoft Mouse and Keyboard Center\\CEIP.exe") and 
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("?:\\Program Files\\*.dll*",
                                            "?:\\Program Files (x86)\\*.dll*",

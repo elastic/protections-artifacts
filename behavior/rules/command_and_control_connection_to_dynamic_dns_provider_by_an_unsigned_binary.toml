@@ -7,14 +7,18 @@ id = "75b80e66-90d0-4ab6-9e6b-976f7d690906"
 license = "Elastic License v2"
 name = "Connection to Dynamic DNS Provider by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  /* execution of an unsigned PEfollowed by dns request to dynamic dns provider */
   [process where event.action == "start" and user.id : "S-1-5-21-*" and
    not process.code_signature.trusted == true and
-   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*")]
+   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*") and 
+   not process.hash.sha256 : 
+              ("6cebce1ed45f77ca971281862cc9c9d0085dbc3504a9f1f9a717496cce51c829", 
+               "43bd0fa458004d384a31b9147218be267b978506784dd4da141d46195a3ea4d9", 
+               "18886da5d34be1f92ddf333c26f8c3a2b0be4da60a7ac4d795da233cbcd9e3bb")]
   [dns where
     dns.question.name :
          (

@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id
@@ -17,13 +17,14 @@ sequence by process.entity_id
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
     dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and 
     not endswith~(dll.name, process.name)  and 
-    not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and dll.hash.sha256 != null and
+    not dll.code_signature.status : "trusted" and dll.hash.sha256 != null and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
                     "?:\\Program Files\\*",
                     "?:\\Program Files (x86)\\*",
-                    "?:\\Windows\\assembly\\*") and
+                    "?:\\Windows\\assembly\\*", 
+                    "?:\\Windows\\twain_32\\*") and
 
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -31,7 +32,8 @@ sequence by process.entity_id
                           "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
                           "VICON INDUSTRIES, INC.")) and
 
-  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and 
+  not (dll.name : "chrome_elf.dll" and dll.pe.original_file_name : "chrome_elf.dll") and 
   not dll.hash.sha256 : 
                ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9", 
                 "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea", 
@@ -49,14 +51,31 @@ sequence by process.entity_id
                 "5c45a7439d127c09b74fa16a0b300fb290ba15d316397579985464be484b8e17",
                 "262816adf053d82039f17512bb4e168020cc7f5f37efdf712589a22b89903a80",
                 "96c8eb8c7ad08ef045861b711b1655df7346cd387580ba038d74e938f2037bf5", 
-                "0c33dfdc0e86f85a0e848cfbb8820868a1df2cedb850ccaf9831659d1c00e3ee")] as event0
+                "0c33dfdc0e86f85a0e848cfbb8820868a1df2cedb850ccaf9831659d1c00e3ee", 
+                "454f7d08b4e572051be599d04f202518311f9af62e2046e4640b2b2dcbab1ff2", 
+                "4e6a640686b467ea054785430b87cdce7579a03cbdc7934dd26b30212ea04318", 
+                "43bb2dabb8bb734f32c73df321f8cb39794568c0aad4f020867f8878852747a4", 
+                "55bfb4a17b931176304990be2f502c4e8b29c6ee2893527d973740e2104ca92f", 
+                "c90a438b8de5d948e5f834ace04a0e34d20121d21b5a64b04f07bc3be2c349d9", 
+                "3cc352ae187aeb3467649ea1a6c7351f42d703c42570873891e22dddd5aa1650", 
+                "ff7a3550d183e202f16074f71744f3500b99a3fe8bd6f7d3c14d570854b2e06e", 
+                "55bfb4a17b931176304990be2f502c4e8b29c6ee2893527d973740e2104ca92f", 
+                "ddcbecf2cd2cd4904cf21e3db40c6a918df0ed3b258473fc5d6e2688dee72696", 
+                "454f7d08b4e572051be599d04f202518311f9af62e2046e4640b2b2dcbab1ff2", 
+                "7c47cf9b3881355cb36781ee187adc45004f0a4239b6592c3628cf559835e515", 
+                "34de1c3d74bcff8452bdd05251e9ac3f37fa73d7d0d842c5ccf8f1d4be31e733", 
+                "4e6a640686b467ea054785430b87cdce7579a03cbdc7934dd26b30212ea04318", 
+                "0107b58df1574083db235906c3ed6897561fbcaef4921d01d76d80e4cf5c6cee", 
+                "55bfb4a17b931176304990be2f502c4e8b29c6ee2893527d973740e2104ca92f", 
+                "f03e30c6a8c883b0d2086894675f76c772368865bb1394274f1e7ae3284ab80a")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name))]
  until [process where event.action:"end"]
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
+reputation = true
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -91,4 +110,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

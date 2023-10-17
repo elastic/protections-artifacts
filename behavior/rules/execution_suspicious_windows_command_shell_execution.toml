@@ -7,14 +7,14 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
  (process.name : "cmd.exe" or process.pe.original_file_name ==  "Cmd.Exe") and not user.id : "S-1-5-18" and
  (
 
-  process.command_line : ("*^*^*^*^*^*^*", "*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
+  process.command_line : ("*).Run(*", "*GetObject*", "* curl*regsvr32*", "*echo*wscript*", "*echo*ZONE.identifier*",
   "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
   "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
   "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*") or
@@ -46,6 +46,7 @@ process where event.action == "start" and
                  "?:\\Users\\*\\node.exe",
                  "?:\\nodejs\\node.exe",
                  "?:\\*\\.nodejs\\node\\node.exe",
+                 "?:\\programmiweb\\NetBeans-*\\netbeans\\bin\\netbeans64.exe",
                  "?:\\Users\\*\\AppData\\Local\\Zuercher Suite\\production\\leds\\leds.exe",
                  "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
                  "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
@@ -80,7 +81,8 @@ process where event.action == "start" and
   not process.command_line : "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"" and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and
-  not process.parent.args :  "C:\\WINDOWS\\Runtime\\utility\\wrapper.vbs"
+  not process.parent.args :  "C:\\WINDOWS\\Runtime\\utility\\wrapper.vbs" and 
+  not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs")
 '''
 
 min_endpoint_version = "7.15.0"

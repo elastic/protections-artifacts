@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 process where event.action == "start" and
@@ -31,16 +31,13 @@ process where event.action == "start" and
     "eventvwr.exe",
     "ieexec.exe",
     "installutil.exe",
-    "RegAsm.exe",
     "ipconfig.exe",
     "lsass.exe",
     "Microsoft.Workflow.Compiler.exe",
     "mmc.exe",
-    "msbuild.exe",
     "msdt.exe",
     "mshta.exe",
     "msiexec.exe",
-    "net.exe",
     "net1.exe",
     "netsh.exe",
     "netstat.exe",
@@ -51,7 +48,6 @@ process where event.action == "start" and
     "quser.exe",
     "qwinsta.exe",
     "regsvcs.exe",
-    "regsvr32.exe",
     "rundll32.exe",
     "schtasks.exe",
     "sdclt.exe",
@@ -73,7 +69,10 @@ process where event.action == "start" and
     "systeminfo.exe",
     "VsJITDebugger.exe",
     "extexport.exe",
-    "extexport.exe") or
+    "extexport.exe", 
+    "fltmc.exe", 
+    "stordiag.exe", 
+    "manage-bde.exe") or
     (process.pe.original_file_name == "bsdtar" and process.name : "tar.exe" and process.code_signature.subject_name == "Microsoft Windows") or
     (process.pe.original_file_name : "WerFaultSecure.exe" or process.name : "WerFaultSecure.exe") or
     (process.pe.original_file_name : "WerFault.exe" or process.name : "WerFault.exe") or
@@ -151,7 +150,7 @@ process where event.action == "start" and
                               "installutil  /u Sage.CNA.WindowsService.exe ",
                               "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe") and
   not (process.name : "regsvr32.exe" and process.code_signature.subject_name == "Tarma Software Research Ltd" and process.code_signature.trusted == true) and
-  not (process.name : "CertUtil.exe" and process.code_signature.subject_name == "Certisur S.A." and process.code_signature.trusted == true) and
+  not (process.name : "CertUtil.exe" and process.code_signature.subject_name : ("Certisur S.A.", "Carbon Black, Inc.") and process.code_signature.trusted == true) and
   not (process.parent.executable : "?:\\Gb\\GBsoftware.exe" and process.executable : "?:\\Gb\\Lib\\regsvr32.exe") and
   not (process.executable : "?:\\OfficeMate\\REGSVR32.EXE" and process.parent.args : "?:\\OfficeMate\\~Reg*DLLs.bat" and process.parent.name : "cmd.exe") and
   not (process.name : "powershell.exe" and process.executable : "?:\\Windows\\WinSxS\\amd64_microsoft-windows-powershell-exe_*\\powershell.exe") and
@@ -173,7 +172,7 @@ process where event.action == "start" and
                             "C:\\AssessPro\\Programs\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
-  not (process.code_signature.subject_name : "JetBrains s.r.o." and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("JetBrains s.r.o.", "LG Electronics Inc.", "Timothy Hugh Perry", "Code Systems Corporation") and process.code_signature.trusted == true) and 
   not process.hash.sha256 :
                   ("7c621ec91b71d14494beddaae8edb67ed26baa257d750546772aa90653ad6016",
                    "195bebdefeb704158633b7f3d943e1d792fcb9b81f36530fad5b04a1622a0c58",

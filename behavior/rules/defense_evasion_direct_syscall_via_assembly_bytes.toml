@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 any where process.executable != null and
@@ -35,14 +35,21 @@ not process.executable :
              "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe",
              "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
              "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\acrocef_*\\AcroCEF.exe",
+             "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe",
              "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
              "?:\\Program Files\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
              "?:\\Program Files\\BackupClient\\TrayMonitor\\MmsMonitor.exe",
              "?:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe",
              "?:\\Program Files\\Google\\Update\\GoogleUpdate.exe",
              "?:\\Program Files\\BackupClient\\TrayMonitor\\MmsMonitor.exe",
-             "?:\\Program Files (x86)\\BackupClient\\TrayMonitor\\MmsMonitor.exe") and
- not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.") and process.code_signature.trusted == true) and
+             "?:\\Program Files (x86)\\BackupClient\\TrayMonitor\\MmsMonitor.exe", 
+             "?:\\Program Files\\Mozilla Firefox\\updated\\firefox.exe", 
+             "?:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe", 
+             "?:\\Program Files\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
+             "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe", 
+             "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\*\\Teams.exe") and
+ not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.", "Commvault Systems, Inc.") and 
+      process.code_signature.trusted == true) and
  /* chromium and last one for Acrobat */
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :

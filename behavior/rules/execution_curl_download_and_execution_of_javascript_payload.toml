@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -18,9 +18,7 @@ sequence by process.parent.entity_id with maxspan=1m
     process.args : "http*" and
     not process.args : "https*//support-sp.apple.com/*"]
   [process where event.action == "exec" and process.name : "osascript" and
-    process.command_line : "*-l JavaScript*" and 
-    not process.args : ("*'use strict'; ObjC.import('stdlib') function run(argv) { try { var app = Application(argv[0]) if (app.running()) { $.exit(0) } } catch (err) { } $.exit(1) }*",
-                        "*ObjC.import('Cocoa'); ($.NSEvent.modifierFlags & $.NSEventModifierFlagOption) > 1") and
+    (process.command_line : "*osascript -l JavaScript" or process.command_line : "*osascript -l JavaScript *.js") and
     not process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
                                                    "/Library/Addigy/auditor",
                                                    "/Applications/Alacritty.app/Contents/MacOS/alacritty",

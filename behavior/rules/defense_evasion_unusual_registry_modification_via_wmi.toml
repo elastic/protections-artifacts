@@ -4,7 +4,7 @@ id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
 license = "Elastic License v2"
 name = "Unusual Registry Modification via WMI"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
@@ -18,7 +18,9 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
               "HKEY_USERS\\*\\Software\\SSPrint\\ssn3m\\AutoConfig_DeviceID",
               "HKEY_USERS\\*\\Software\\ODBC\\ODBC.INI\\DMG\\Driver",
               "HKLM\\SYSTEM\\*\\Control\\Session Manager\\PendingFileRenameOperations",
-              "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MDM\\JobDB\\*\\UrlList") and 
+              "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MDM\\JobDB\\*\\UrlList",
+              "HKLM\\SYSTEM\\ControlSet*\\Services\\EventLog\\*", 
+              "HKLM\\SOFTWARE\\MySoftware\\Capture Printer\\PrintingModule") and 
  not registry.key : ("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\TSAppAllowList\\Applications\\*",
                      "*Classes\\Local Settings\\MuiCache\\*",
                      "*Classes\\SystemFileAssociations\\*",
@@ -34,7 +36,10 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
                      "*Classes\\webcatalog-excalidraw-plus\\shell\\open\\command", 
                      "S-*\\Software\\Clients\\StartMenuInternet\\webcatalog-excalidraw-plus\\shell\\open\\command", 
                      "*\\Services\\EventLog\\Application\\Business World*", 
-                     "*\\Services\\EventLog\\Business World*")
+                     "*\\Services\\EventLog\\Business World*", 
+                     "SYSTEM\\ControlSet*\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\*", 
+                     "SOFTWARE\\Microsoft\\Internet Explorer\\Low Rights\\ElevationPolicy\\{8096ABF6-3761-4B76-B8E7-6B596AFE07EF}", 
+                     "SOFTWARE\\Microsoft\\Internet Explorer\\Low Rights\\ElevationPolicy\\{791C3483-6F9D-43C8-93CB-F469D9BF1658}")
 '''
 
 actions = []

@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -18,8 +18,7 @@ api where process.Ext.api.behaviors == "hollow_image" and
                      ("ntdll.dll|kernelbase.dll|Unbacked",
                       "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
-                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
-                      "ntdll.dll|Unbacked") and 
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and 
   not process.Ext.api.summary : ("*Unknown*",  "*Unbacked*") and 
   not _arraysearch(process.thread.Ext.call_stack, $entry, 
                    $entry.protection_provenance : ("Kernel", "Kernel|*", "tcaddin.dll", "clr.dll", "appvisvsubsystems64.dll", 
@@ -37,24 +36,15 @@ api where process.Ext.api.behaviors == "hollow_image" and
   not (process.parent.executable : ("?:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe", "?:\\Program Files\\Google\\Update\\GoogleUpdate.exe") and
        process.executable : ("?:\\Program Files (x86)\\Google\\Update\\*\\GoogleCrashHandler*.exe", "?:\\Program Files\\Google\\Update\\*\\GoogleCrashHandler*.exe")) and
   not process.executable :
-               ("?:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\Updates\\*\\OfficeClickToRun.exe",
-                "?:\\Program Files (x86)\\Common Files\\microsoft shared\\ClickToRun\\Updates\\*\\OfficeClickToRun.exe",
-                "?:\\Program Files\\Google\\Compute Engine\\metadata_scripts\\GCEMetadataScripts.exe",
-                "?:\\Program Files (x86)\\Google\\Compute Engine\\metadata_scripts\\GCEMetadataScripts.exe",
-                "?:\\Program Files\\Microsoft Office\\root\\vfs\\ProgramFilesCommonX64\\Microsoft Shared\\OFFICE*\\ai.exe",
-                "?:\\Program Files (x86)\\Baxter\\DoseEdge PrepStation\\Baxa.DoseEdge.exe",
-                "?:\\Program Files\\Adobe\\Adobe InDesign *\\InDesign.exe",
-                "?:\\Program Files (x86)\\Adobe\\Adobe InDesign *\\InDesign.exe",
-                "?:\\Program Files (x86)\\Luidia\\eBeam Stylus Driver\\eBeam_Stylus_Preferences.exe", 
-                "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe", 
-                "?:\\Program Files\\ManageEngine\\OpManager\\pgsql\\bin\\postgres.exe", 
-                "?:\\Program Files (86)\\ManageEngine\\OpManager\\pgsql\\bin\\postgres.exe") and
+               ("?:\\Program Files\\*.exe",
+                "?:\\Program Files (x86)\\*.exe",
+                "?:\\Windows\\System32\\inetsrv\\w3wp.exe", 
+                "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe", 
+                "?:\\Windows\\SystemApps\\*.exe", 
+                "?:\\Windows\\System32\\taskhostw.exe") and
   not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and process.Ext.api.summary : "*msi*.tmp*") and
   not (process.executable : "?:\\Windows\\Sys*\\rundll32.exe" and process.command_line : ("*--no-sandbox*", "*--eoim*")) and
-  not (process.executable :
-            ("?:\\Windows\\SystemApps\\Microsoft.Windows.Search_*\\SearchApp.exe",
-             "?:\\Program Files\\WindowsApps\\Microsoft.Windows.Photos_*\\PhotosApp.exe",
-             "?:\\Windows\\System32\\backgroundTaskHost.exe") and
+  not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
   not process.parent.executable : ("?:\\Program Files (x86)\\Steam\\steam.exe", "?:\\Program Files\\Steam\\steam.exe")
 '''

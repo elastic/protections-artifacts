@@ -7,7 +7,7 @@ id = "9c5c3957-f8cb-4225-ad07-e5a6325eafb2"
 license = "Elastic License v2"
 name = "Mach-O File with Unusual Extension"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 file where event.action : ("modification", "rename", "open") and
@@ -25,7 +25,7 @@ file where event.action : ("modification", "rename", "open") and
    file.extension : ("txt", "pdf", "doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx", "hwp", "html") or
 
    /* common log, txt and temporary file extensions */
-   file.extension : ("tmp", "log", "conf", "txt")
+   file.extension : ("tmp", "log", "conf", "txt", "nib")
   ) and
   not (process.executable : ("/bin/cp", "/bin/bash") and file.path : "/Library/PrivilegedHelperTools/us.zoom.ZoomDaemon.tmp") and
   not (file.path : ("/Users/*/Library/Caches/*", "/private/var/folders/*", "/Library/Application Support/CrashPlan/conf/tmp/*") and file.name : "jna*.tmp") and

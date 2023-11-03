@@ -1,0 +1,63 @@
+[rule]
+description = "Identifies a privilege escalation attempt from an account with the SeImpersonatePrivilege to full System privileges."
+id = "e9d6f6a5-c375-4313-b269-1a8d42c64480"
+license = "Elastic License v2"
+name = "Privilege Escalation via SeImpersonatePrivilege"
+os_list = ["windows"]
+reference = [
+    "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
+    "https://github.com/hackvens/CoercedPotato",
+]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=3m
+ [process where event.action == "start" and 
+  (user.id : ("S-1-5-17", "S-1-5-19", "S-1-5-20", "S-1-5-32-568") or user.domain : "IIS AppPool") and 
+  not process.executable : 
+                ("?:\\Windows\\Syswow64\\wbem\\wmiprvse.exe", 
+                 "?:\\Windows\\system32\\wbem\\wmiprvse.exe", 
+                 "?:\\WINDOWS\\system32\\svchost.exe",
+                 "?:\\Windows\\system32\\printfilterpipelinesvc.exe", 
+                 "?:\\Windows\\syswow64\\printfilterpipelinesvc.exe",
+                 "\\Device\\HarddiskVolume*\\Windows\\System32\\printfilterpipelinesvc.exe", 
+                 "\\Device\\HarddiskVolume*\\Windows\\System32\\wbem\\wmiprvse.exe") and 
+  not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\davclnt.dll,DavSetCookie")
+  ] by process.entity_id
+ [process where event.action == "start" and user.id : "S-1-5-18" and 
+  _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+               $entry.symbol_info : ("*CreateProcessAsUser*", "*CreateProcessWithToken*")) ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

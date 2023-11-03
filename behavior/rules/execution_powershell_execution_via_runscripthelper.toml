@@ -1,0 +1,42 @@
+[rule]
+description = "Detects attempts to execute a powershell script bypassing constrained language mode using the RunScriptHelper utility."
+id = "c199e7d9-0cbe-4190-a3c1-c552e64f1b6c"
+license = "Elastic License v2"
+name = "Powershell Execution via Runscripthelper"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Runscripthelper/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and 
+ (process.name : "runscripthelper.exe" or process.pe.original_file_name : "runscripthelper.exe") and 
+ process.args : "surfacecheck" and process.args_count > 3
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.16.0"

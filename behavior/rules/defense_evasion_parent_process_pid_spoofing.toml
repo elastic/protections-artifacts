@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence with maxspan=5m
@@ -40,7 +40,10 @@ sequence with maxspan=5m
                            "eqnedt32.exe",
                            "fltldr.exe",
                            "mspub.exe",
-                           "msaccess.exe")) and
+                           "msaccess.exe")) and 
+
+  not (process.pe.original_file_name : "devenv.exe" and process.code_signature.trusted == true and 
+       process.code_signature.subject_name : "Microsoft*") and 
 
    /* FP Issue #488 - WerFaultSecure ProtectedCrash  */
   not (

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Indirect Command Execution via Console Window Host"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Conhost/"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,8 @@ process where event.action == "start" and
             ("?:\\windows\\system32\\cmd.exe",
              "?:\\windows\\SysWOW64\\cmd.exe", "cmd.exe",
              "?:\\windows\\system32\\windowspowershell\\*\\powershell.exe") and
-  not process.parent.executable : "\\Device\\Mup\\*\\IBM\\ClientSolutions\\Start_Programs\\Windows*\\acslaunch_win-*.exe"
+  not process.parent.executable : "\\Device\\Mup\\*\\IBM\\ClientSolutions\\Start_Programs\\Windows*\\acslaunch_win-*.exe" and 
+  not process.hash.sha256 : "b37565fabde8680ef7d0de3c808096b7512f42c62071f2fb486da14b773ec04a"
 '''
 
 min_endpoint_version = "7.15.0"

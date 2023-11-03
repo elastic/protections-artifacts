@@ -7,7 +7,7 @@ id = "4cd250a2-82a0-463b-adda-5256cee422ce"
 license = "Elastic License v2"
 name = "Process Creation via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
@@ -25,7 +25,10 @@ process where event.action == "start" and
                                                                   "*ntdll.dll+*",
                                                                   "*ntdll.dll!*ReadFile*",
                                                                   "*ntdll.dll!NtReplyWaitReceivePort*",
-                                                                  "*KernelBase.dll!WriteConsoleW*")) and
+                                                                  "*KernelBase.dll!WriteConsoleW*", 
+                                                                  "*ntdll.dll!NtDebugContinue*", 
+                                                                  "*kernel32.dll!CreateProcess*", 
+                                                                  "*ntdll.dll!ZwCreateMailslotFile*")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
  not process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\SysWOW64\\WerFault.exe")

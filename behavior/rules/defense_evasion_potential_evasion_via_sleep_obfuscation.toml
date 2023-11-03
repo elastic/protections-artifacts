@@ -7,7 +7,7 @@ id = "47aec49c-4f8b-4245-8eae-7d615f30f154"
 license = "Elastic License v2"
 name = "Potential Evasion via Sleep Obfuscation"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 any where 
@@ -20,7 +20,8 @@ any where
              "?:\\Program Files (x86)\\*.exe", 
              "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe") and
  not (process.code_signature.subject_name : "SAP SE" and process.code_signature.trusted == true and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|dbghelp.dll|disp+work.exe|ntdll.dll|kernelbase.dll|disp+work.exe|kernel32.dll|ntdll.dll")
+      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|dbghelp.dll|disp+work.exe|ntdll.dll|kernelbase.dll|disp+work.exe|kernel32.dll|ntdll.dll") and 
+ not process.thread.Ext.call_stack_summary : "*kernelbase.dll|sechost.dll*"
 '''
 
 min_endpoint_version = "8.8.0"

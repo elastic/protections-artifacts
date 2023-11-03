@@ -12,7 +12,7 @@ reference = [
     "https://posts.specterops.io/saving-your-access-d562bf5bf90b",
     "https://github.com/D00MFist/PersistentJXA",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=30s
@@ -29,12 +29,13 @@ sequence with maxspan=30s
       "/usr/libexec/xpcproxy",
       "/System/Library/CoreServices/ManagedClient.app/Contents/Resources/MCXCompositor",
       "/System/Library/CoreServices/ManagedClient.app/Contents/MacOS/ManagedClient"
-      )]
+      ) and
+    not Effective_process.executable : "/usr/local/jamf/bin/jamf"]
   [process where event.action == "exec" and
     process.name == "killall" and process.args : "cfprefsd"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -55,4 +56,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

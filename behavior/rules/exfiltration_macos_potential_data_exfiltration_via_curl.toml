@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
@@ -25,6 +25,8 @@ process.args : ("http*://*localhost*",
                 "https://*.newrelic.com*",
                 "x-app-license-key*",
                 "*github.com/elastic/*",
+                "https://storage.googleapis.com/detonate-ci/*",
+                "*detonate*",
                 "http*://127.0.0.1*",
                 "-H", 
                 "http*://0.0.0.0*") and 

@@ -7,7 +7,7 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=3m
@@ -17,7 +17,7 @@ sequence with maxspan=3m
   (startswith (process.args, event0.file.path) or 
    startswith (process.parent.args, event0.file.path)) and
   (process.code_signature.trusted == false or
-   (process.name : ("curl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or 
+   (process.name : ("curl", "nscurl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or 
    (process.name : "chmod" and process.args : ("+x", "a+x", "0777", "777")) or
    (process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
     (process.args : "-c" or process.args_count <= 2))) and not 

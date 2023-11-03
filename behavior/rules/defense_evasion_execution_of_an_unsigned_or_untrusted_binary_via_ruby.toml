@@ -1,0 +1,58 @@
+[rule]
+description = "Identifies the execution of an unsigned or untrusted Mach-O binary by Ruby."
+id = "beabd3bf-68b3-46be-b37c-439624247114"
+license = "Elastic License v2"
+name = "Execution of an Unsigned or Untrusted Binary via Ruby"
+os_list = ["macos"]
+reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
+version = "1.0.10"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ (process.parent.name : "ruby" or process.Ext.effective_parent.name : "ruby") and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ not process.executable : ("/opt/homebrew/*", 
+                           "/usr/local/Cellar/*",
+                           "/usr/local/git/bin/git",
+                           "/Users/*/homebrew/Cellar/*",
+                           "/usr/local/Homebrew/*",
+                           "/nix/store/*",
+                           "/Users/*/local/homebrew/*",
+                           "/usr/local/bin/tuist",
+                           "/Users/*/Documents/ios/vendor/buildinfo/buildinfo",
+                           "/opt/puppetlabs/puppet/*",
+                           "/Users/*/.rbenv/*") and
+ not process.name : ("rustc", "fsevent_watch") and 
+ not process.parent.executable : ("/Users/*/.rbenv/*", "/Users/*/.rvm/*") and
+ not process.Ext.effective_parent.executable : "/Applications/iTerm.app/Contents/MacOS/iTerm2" and 
+ not process.code_signature.signing_id : "ruby*" and
+ not startswith~(process.executable, process.parent.executable)
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.001"
+name = "Invalid Code Signature"
+reference = "https://attack.mitre.org/techniques/T1036/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.5.0"

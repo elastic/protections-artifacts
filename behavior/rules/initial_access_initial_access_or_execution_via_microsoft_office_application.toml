@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "exec" and
@@ -23,6 +23,7 @@ process where event.action == "exec" and
   ] and
   process.name : (
     "curl",
+    "nscurl",
     "bash",
     "sh",
     "osascript",

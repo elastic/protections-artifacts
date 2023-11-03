@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,7 @@ process where event.action == "start" and
    (process.pe.original_file_name : "AutoHotkey.exe" and not process.name : ("AutoHotkey*.exe", "InternalAHK.exe")) or
    (process.pe.original_file_name : "KIX32.EXE" and not process.name : "KIX*.EXE") or 
    (process.name : "rebol-view*.exe" and process.parent.name : "msiexec.exe") or 
-   (process.name : ("AutoHotkey*.exe", "KIX32.EXE", "rebol-view*.exe", "AutoIt*.exe") and
+   (process.name : ("KIX32.EXE", "rebol-view*.exe", "AutoIt*.exe") and
      
 	 /* execution from common suspicious paths */
      process.args : ("?:\\Users\\Public\\*", 

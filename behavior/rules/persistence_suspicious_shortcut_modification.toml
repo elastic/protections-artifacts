@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -42,7 +42,10 @@ sequence by process.entity_id with maxspan=1m
        process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true) and
 
   not (process.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe" and
-        process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation")
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and 
+  not (process.name : ("wscript.exe", "cscript.exe", "cmd.exe") and process.command_line : "*\\\\*\\SysVol\\*") and 
+  not (process.name : "cmd.exe" and process.args : "Menu\\Programs\\Startup\\Icons.bat ") and 
+  not (process.name : "powershell.exe" and process.args : "C:\\Windows\\Managetaskbar\\taskband.ps1")
  ]
 [file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
  process.executable : "?:\\*" and

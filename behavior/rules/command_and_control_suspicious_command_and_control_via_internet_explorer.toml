@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Command and Control via Internet Explorer"
 os_list = ["windows"]
 reference = ["https://www.fortinet.com/blog/threat-research/new-variant-of-ursnif-continuously-targeting-italy"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence with maxspan=5m
@@ -27,9 +27,12 @@ sequence with maxspan=5m
        process.args : ("?:\\Windows\\System32\\inetcpl.cpl",
                        "?:\\Windows\\System32\\LogiLDA.dll,LogiFetch",
                        "inetcpl.cpl,,?")) and
-  not (process.name : "wscript.exe" and process.working_directory : "\\\\*") and
+  not (process.name : "wscript.exe" and process.working_directory : "\\\\*") and 
 
-  not (process.name : "mshta.exe" and process.args : ("?:\\Program Files\\*.hta", "?:\\Program Files (x86)\\*.hta"))
+  not (process.name : "wscript.exe" and process.parent.name : "explorer.exe" and 
+       process.command_line : ("*\\Users\\*\\Desktop\\*", "*\\Users\\*\\OneDrive*")) and 
+
+  not (process.name : "mshta.exe" and process.args : ("?:\\Program Files\\*.hta", "?:\\Program Files (x86)\\*.hta", "?:\\PROGRA~?\\*"))
   ] by process.entity_id
 
  [process where event.action == "start" and process.name : "ielowutil.exe" and

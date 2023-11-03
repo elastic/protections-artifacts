@@ -12,7 +12,7 @@ reference = [
     "https://kyle-bailey.medium.com/detecting-macos-gatekeeper-bypass-cve-2021-30657-cc986a9bc751",
     "https://objective-see.com/blog/blog_0x64.html",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -30,6 +30,7 @@ sequence with maxspan=5m
    process.parent.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*") and
    process.name :
           ("curl",
+           "nscurl",
            "mktemp",
            "tail",
            "funzip",

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence with maxspan=1m
@@ -55,7 +55,7 @@ sequence with maxspan=1m
 
     (
       // curl scope limited to silver-sparrows to reduce noise
-      (process.name : "curl" and process.command_line : ("*.amazonaws.com*", 
+      (process.name : ("curl", "nscurl") and process.command_line : ("*.amazonaws.com*", 
                                                          "*.cloudfront.net*", 
                                                          "*raw.githubusercontent.com*")) or
       // No hang up executed with a bash command

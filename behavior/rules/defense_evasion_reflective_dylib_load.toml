@@ -14,23 +14,25 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 any where ((event.action == "load" and not dll.path : "?*") or 
   (event.action == "load" and dll.name : "NSCreateObjectFileImageFromMemory*")) and 
   not process.code_signature.subject_name : ("Developer ID Application: AMZN Mobile LLC (94KV3E626L)",
                                              "Apple Mac OS Application Signing") and 
-  not process.name : ("osx-x86_64", 
-                      "Setup",
-                      "oahd-helper",
-                      "oahd",
-                      "Install") and 
+  not (process.name : ("osx-x86_64", 
+                       "Setup",
+                       "oahd-helper",
+                       "oahd",
+                       "Install") and 
+       process.code_signature.trusted == true) and 
   not process.executable : ("/System/*", 
                             "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
                             "/Applications/Reason 12.app/Contents/MacOS/Reason",
                             "/Applications/REAPER.app/Contents/MacOS/REAPER",
                             "/Applications/Neural DSP/*",
+                            "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp.app/Contents/MacOS/ScanApp",
                             "/Applications/TouchDesigner.app/Contents/MacOS/TouchDesigner",
                             "/Applications/Ableton Live 11 Suite.app/Contents/MacOS/Live",
                             "/Applications/Ableton Live 11 Suite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner")

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution via macOS Script Editor"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/macos-red-teaming-initial-access-via-applescript-url/"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.action == "exec" and
@@ -16,14 +16,15 @@ process where event.action == "exec" and
  process.parent.executable : "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor" and
 
  // Suspicious processes spawned by the Script Editor
- (process.name : ("curl", "bash", "sh", "zsh", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "popen") or
+ (process.name : ("curl", "nscurl", "bash", "sh", "zsh", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "popen") or
 
   // Process masquerading as Apple but has an invalid signature
   (process.name : "com.apple.*" and not process.code_signature.signing_id : "com.apple.*")
- )
+ ) and
+ not process.Ext.effective_parent.executable : "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor"
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -95,4 +96,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"

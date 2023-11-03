@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -108,6 +108,8 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\bcdedit.exe", 
               "?:\\Windows\\System32\\dcdiag.exe",
               "?:\\Windows\\System32\\logman.exe",
+              "?:\\Windows\\System32\\icacls.exe",
+              "?:\\Windows\\System32\\regsvr32.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\aspnet_regiis.exe", 
               "?:\\Program Files\\ansible\\GTS\\uidext\\iam_iis_extract.exe") and
 
@@ -157,7 +159,10 @@ process where event.action == "start" and
                   "34baf12ed8572e8d289562f71e8b0ec0c3acc3df10f20a47f9e454c86e8ea020", 
                   "d401821ff9d03779d0402171730b0de3fb7565fa7c0f4bdb178f9d1046646535", 
                   "42ef31adef9a6397853af89d34a64d3909f1a8c0f1aba7aeee11e3e3d9ddb577", 
-                  "3614f7fc2457b7c5c8bc4e437850b00adf51ee2f65646597f4fe886d9645079d") and
+                  "3614f7fc2457b7c5c8bc4e437850b00adf51ee2f65646597f4fe886d9645079d", 
+                  "a087f9627bf0d88da197e34b340922e69c8b229b75c0a09e63742a0e35c2f97c", 
+                  "293e3a0cbe6f38e96ab92021431e7cecf0df95386c24b3a28490e944fb9db0f2", 
+                  "05d9fabebd65a07e3bea6512c59d59a1d47c72d12ca1828a1aefac0e38b7dadb") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -166,7 +171,7 @@ process where event.action == "start" and
                  "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc", "Flexera Software LLC",
                  "Arcserve (USA) LLC", "Hewlett Packard", "Qualys, Inc", "Synology Inc.", "NoMachine S.a.r.l.", 
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
-                 "Arcserve (USA) LLC", "Hewlett Packard")) and
+                 "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and

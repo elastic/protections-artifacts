@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence with maxspan=1m
@@ -41,7 +41,10 @@ sequence with maxspan=1m
              "?:\\Windows\\SysWOW64\\vdsldr.exe",
              "?:\\Windows\\System32\\CredentialUIBroker.exe",
              "?:\\WINDOWS\\System32\\DriverStore\\FileRepository\\*.exe",
-             "?:\\Program Files (x86)\\Dropbox\\Client\\Dropbox.exe") and
+             "?:\\Program Files (x86)\\Dropbox\\Client\\Dropbox.exe", 
+             "?:\\ProgramData\\*\\Microsoft\\Teams\\current\\Teams.exe", 
+             "?:\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", 
+             "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\FileCoAuth.exe") and
    /* excluding AppInfo */
    not process.parent.Ext.real.pid > 0 and 
    /* noisy FPs */
@@ -88,6 +91,8 @@ sequence with maxspan=1m
                 "?:\\Windows\\System32\\conhost.exe",
                 "?:\\Windows\\System32\\UsoClient.exe",
                 "?:\\Windows\\System32\\mcbuilder.exe",
+                "?:\\Windows\\System32\\mstsc.exe",
+                "?:\\Windows\\System32\\wermgr.exe",
                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge_X64*.exe",
                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
@@ -112,7 +117,8 @@ sequence with maxspan=1m
                  "*WINDOWS\\system32\\inetcpl*ClearMyTracksByProcess*",
                  "*PhotoViewer.dll*ImageView_Fullscreen*",
                  "*\\Program Files (x86)\\AllesTechnologyAgent\\Super Shield\\SuperShieldHookCpy64.dll*",
-                 "*:\\Windows\\system32\\spool\\DRIVERS\\x64\\3\\*")) and
+                 "*:\\Windows\\system32\\spool\\DRIVERS\\x64\\3\\*", 
+                 "*\\Windows\\System32\\shell32.dll,Control_RunDLL ?:\\Windows\\System32\\*")) and
 
    not (process.name : "regsvr32.exe" and process.parent.name : "dllhost.exe" and
         process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and
@@ -125,7 +131,10 @@ sequence with maxspan=1m
                 "e08a98f79de70175f6bb4c319b70bc13063aa1f03780709393f4f6d498da9c0f",
                 "d0f324e0267f7075e60f896cf064538e8398fb51557d2e1a53f348d39d10c3ac",
                 "1d70bbb5c62a2c27583cd38261c09fdc9c208f6ea96349e535b6c4135c0a8569",
-                "b52ee82c7e579fd73abc31c368462df9d99c6623be91526ee150706286dc19ee") and
+                "b52ee82c7e579fd73abc31c368462df9d99c6623be91526ee150706286dc19ee", 
+                "a430089ee8c6d119ee90ca586626038d0e1e8b4fbd742440ce5c83d295f2fc46", 
+                "e600ebf1bdada253a31f59a9870b8aa18d9a985c390510bfe9219acb44da406d", 
+                "d539b4957d8c03b6503357df836f1ed92fa37d73e19e0962d83b3dcba507f4bf") and
 
    not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and

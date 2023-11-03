@@ -11,28 +11,30 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 file where event.type != "deletion" and 
 file.name : "NSCreateObjectFileImageFromMemory-*" and 
-not process.name : ("osx-x86_64", 
-                    "Setup",
-                    "oahd-helper",
-                    "oahd",
-                    "Install") and 
+not (process.name : ("osx-x86_64", 
+                     "Setup",
+                     "oahd-helper",
+                     "oahd",
+                     "Install") and 
+     process.code_signature.trusted == true) and 
 not process.executable : ("/System/*", 
                           "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
                           "/Applications/Reason 12.app/Contents/MacOS/Reason",
                           "/Applications/REAPER.app/Contents/MacOS/REAPER",
                           "/Applications/Neural DSP/*",
                           "/usr/bin/auvaltool",
+                          "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp.app/Contents/MacOS/ScanApp",
                           "/Applications/TouchDesigner.app/Contents/MacOS/TouchDesigner",
                           "/Applications/Ableton Live 11 Suite.app/Contents/MacOS/Live",
                           "/Applications/Ableton Live 11 Suite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -65,4 +67,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"

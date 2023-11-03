@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Microsoft Office AddIn Creation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 file where event.action != "deletion" and
@@ -21,10 +21,11 @@ file where event.action != "deletion" and
      "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Excel\\XLSTART\\*") and
 
   not (process.executable : "?:\\Windows\\sys*\\msiexec.exe" and file.path : "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\AddIns\\*") and 
-  not process.executable : "?:\\Windows\\explorer.exe"
+  not process.executable : "?:\\Windows\\explorer.exe" and 
+  not (process.code_signature.subject_name : "Lars Schenk" and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.1.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -49,4 +50,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.1.0"

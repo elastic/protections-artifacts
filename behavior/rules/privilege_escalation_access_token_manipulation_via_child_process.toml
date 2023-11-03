@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence
@@ -19,7 +19,7 @@ sequence
     process.Ext.relative_file_creation_time < 500 or
 
     /* commonly abused lolbins */
-    process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe", "wscript.exe", "cscript.exe", "msbuild.exe")
+    process.name : ("rundll32.exe", "regsvr32.exe", "msbuild.exe")
    ) and
 
   not (process.executable : "C:\\Windows\\System32\\rundll32.exe" and process.parent.name : "explorer.exe" and
@@ -33,7 +33,9 @@ sequence
                "?:\\ProgramData\\*",
                "?:\\Windows\\Temp\\*")) and
 
-  not (process.name : ("wscript.exe", "cscript.exe", "powershell.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+  not (process.name : ("wscript.exe", "cscript.exe", "powershell.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and 
+
+  not (process.name : "rundll32.exe" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617" and process.parent.name : "dllhost.exe")
 
    ] by process.entity_id as event0
  [process where event.action == "start" and user.id != null and
@@ -49,13 +51,17 @@ sequence
   not (process.code_signature.subject_name :
                    ("Lenovo", "Adobe Inc.", "Brave Software, Inc.", "HP Inc.", "Splashtop Inc.", "GN AUDIO A/S",
                     "Oracle America, Inc.", "Brother Industries, Ltd.", "Bosch Automotive Service Solutions Ltd",
-                    "OpenShot Studios, LLC", "CISCO SYSTEMS, INC.", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS (SERPRO)") and
+                    "OpenShot Studios, LLC", "CISCO SYSTEMS, INC.", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS (SERPRO)", 
+                    "Wacom Co., Ltd.") and
                     process.code_signature.trusted == true) and
 
   not process.executable :
             ("?:\\Windows\\System32\\ntprint.exe",
              "?:\\Windows\\System32\\timeout.exe",
              "?:\\Windows\\System32\\printui.exe",
+             "?:\\Windows\\System32\\SndVol.exe",
+             "?:\\Windows\\System32\\MultiDigiMon.exe",
+             "?:\\WINDOWS\\splwow64.exe",
              "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe",
              "?:\\Program Files\\*",
              "?:\\Program Files (x86)\\*") and
@@ -70,7 +76,9 @@ sequence
              "5212286922b7b1bce5fda2c2b25a9dfdef9300736ded91350d08c837ae1e9e1c",
              "e18fbe144c938627e3c383e942e8da74ed301612d035f1e7e92557db70d05277",
              "c83ef42b6c4c85e24666c8e55b93fb64cf08164e34b85fde0270c03dd463c11f",
-             "af483a6e34a9b12ed2adcdb388b50311e5c322947718a41bbc325c2d1f3a7393") and
+             "af483a6e34a9b12ed2adcdb388b50311e5c322947718a41bbc325c2d1f3a7393", 
+             "bf73d2a3812ebef4f57cf81a2d24e23287cddefd57183c89535603e878eb7b11", 
+             "24e76fe67435e9c7c1aa9ec22d736de3873fbd2e880d8ae716dffec0e146fc53") and
 
   not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*") and 
   not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*" and

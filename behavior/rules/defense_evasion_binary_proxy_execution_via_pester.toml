@@ -1,0 +1,40 @@
+[rule]
+description = """
+Identifies the execution of a binary via the Pester PowerShell module. Adversaries may bypass process and
+signature-based defenses by proxying execution of malicious content with signed, or otherwise trusted, binaries.
+"""
+id = "bbc7e649-dc8e-401f-a6e4-d2d668aef4ac"
+license = "Elastic License v2"
+name = "Binary Proxy Execution via Pester"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Scripts/pester/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and process.parent.name : "powershell.exe" and 
+ process.parent.command_line : "powershell*WindowsPowerShell\\Modules*\\Pester.psm1*;*}\"" and 
+ not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe", "?:\\Windows\\Sys*\\conhost.exe")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

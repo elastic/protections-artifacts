@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies attempts to enumerate the state of keyboard keys and the call is coming from an unsigned DLL. Adversaries may
+log user keystrokes to intercept credentials or other information from the user as the user types them.
+"""
+id = "8ab0b921-38fb-495c-b5b8-075d1cbc731c"
+license = "Elastic License v2"
+name = "Keystrokes Input Capture from Unsigned DLL"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1056/001/"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=2m
+ [library where
+  dll.Ext.relative_file_creation_time <= 300 and not startswith~(dll.name, process.name) and
+  dll.hash.sha256 : "??*" and dll.path : "?*" and not dll.code_signature.status : "trusted" and 
+  not dll.hash.sha256 : 
+                ("fc23a64cc52f5b19e310a8d96b1fbfec981310359bda907f5931a53360485fbc", 
+                 "47c2871dff8948de40424df497962ea6167c56bd4d487dd2e660aa2837485e25")] as event0
+ [api where
+
+  (process.Ext.api.name : "GetAsyncKeyState" or
+   (process.Ext.api.name : "RegisterRawInputDevices" and
+    process.Ext.api.parameters.usage : "*KEYBOARD*" and process.Ext.api.parameters.flags : "*INPUTSINK*") or
+   (process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL")) and
+
+   startswith~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name)]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1056"
+name = "Input Capture"
+reference = "https://attack.mitre.org/techniques/T1056/"
+[[threat.technique.subtechnique]]
+id = "T1056.001"
+name = "Keylogging"
+reference = "https://attack.mitre.org/techniques/T1056/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.10.0"

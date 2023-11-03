@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies the execution of a suspicious Microsoft Exchange Transport server child process. Adversaries may register a
+malicious transport agent to provide a persistence mechanism in Exchange Server that can be triggered by
+adversary-specified email events.
+"""
+id = "243315b3-8664-4869-a3f4-197eb54c1446"
+license = "Elastic License v2"
+name = "Suspicious Execution via Microsoft Exchange Transport Agent"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and 
+ process.name : ("cmd.exe", "powershell.exe", "certutil.exe", "bitsadmin.exe", "rundll32.exe", "curl.exe", "reg.exe", "net.exe", "mshta.exe") and 
+ process.parent.name : ("MSExchangeTransport.exe", "EdgeTransport.exe")
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.002"
+name = "Transport Agent"
+reference = "https://attack.mitre.org/techniques/T1505/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.16.0"

@@ -12,7 +12,7 @@ reference = [
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
     "https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -31,7 +31,7 @@ process where event.action == "start" and
        [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
   not process.Ext.token.integrity_level_name == "system")
 ) and
-not process.args : "https://download.microsoft.com/download/*.msi"
+not process.args : ("https://download.microsoft.com/download/*.msi", "APIURL=http*")
 '''
 
 min_endpoint_version = "7.15.0"

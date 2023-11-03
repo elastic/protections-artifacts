@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects when Python is executed with the -c (command) option containing suspicious Python code followed immediately
+after by a Python outbound network event. This activity could indicate and attempt to establish initial access or
+download an additional payload or tool from C2.
+"""
+id = "01898b20-1504-49d1-98b2-777e32c207be"
+license = "Elastic License v2"
+name = "Potential Python Reverse Shell"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : "python*" and 
+  process.args == "-c" and 
+  process.args : ("*import*pty.spawn*", "*import*subprocess.call*")]
+[network where event.type == "start" and event.action == "connection_attempted" and
+   not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.5.0"

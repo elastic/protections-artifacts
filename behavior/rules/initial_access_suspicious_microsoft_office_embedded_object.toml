@@ -7,13 +7,13 @@ id = "a3afbd2f-e9e6-41d9-ad24-aecb6a4b6906"
 license = "Elastic License v2"
 name = "Suspicious Microsoft Office Embedded Object"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 file where event.action != "deletion" and process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*!OleSaveToStream*", "*!OleLoad*")) and
  (
-  file.extension : ("exe", "dll", "js", "vbs", "vbe", "jse", "url", "chm", "bat", "mht", "hta", "htm", "search-ms") or
+  file.extension : ("exe", "dll", "js", "vbs", "vbe", "jse", "url", "chm", "bat", "mht", "hta", "search-ms") or
 
   /* PE & HelpFile */
   file.Ext.header_bytes : ("4d5a*", "49545346*")

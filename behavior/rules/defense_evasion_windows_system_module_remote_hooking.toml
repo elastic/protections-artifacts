@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies attempts to write to a remote process memory to modify NTDLL or Kernelbase modules. This may indicate an
+attempt to evade endpoint security solutions or perform code injection.
+"""
+id = "4c10ee1d-8373-4450-bf5c-81ce138739a1"
+license = "Elastic License v2"
+name = "Windows System Module Remote Hooking"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+api where process.Ext.api.name : "WriteProcessMemory" and process.executable != null and 
+  process.thread.Ext.call_stack_final_user_module.name != null and 
+  process.Ext.api.behaviors == "cross-process" and process.Ext.api.summary :("*ntdll.dll*", "*kernelbase.dll*") and
+   process.thread.Ext.call_stack_summary : 
+             ("Unbacked", "*kernelbase.dll|Unbacked*", "ntdll.dll|Unknown", "*kernel32.dll|Unbacked*", "*ntdll.dll|Unbacked*") and 
+   not stringcontains~(process.Ext.api.summary, process.name) and 
+   (process.code_signature.trusted == false or process.code_signature.exists == false or process.name : "rundll32.exe") and 
+   not (process.name : "rundll32.exe" and process.command_line : "\"?:\\WINDOWS\\System32\\RUNDLL32\" tsworkspace,WorkspaceStatusNotify2" and 
+        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
+   not process.thread.Ext.call_stack_final_user_module.name : "kernel" and 
+   not process.thread.Ext.call_stack_final_user_module.path :
+                               ("?:\\Program Files\\*",
+                                "?:\\Program Files (x86)\\*",
+                                "?:\\Windows\\System32\\*.dll",
+                                "?:\\Windows\\SysWOW64\\*.dll",
+                                "\\Program Files\\*",
+                                "\\Program Files (x86)\\*",
+                                "\\Windows\\System32\\*.dll",
+                                "\\Windows\\SysWOW64\\*.dll",
+                                "?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll",
+                                "?:\\Windows\\FireEye\\AppMonitorDll.dll", 
+                                "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

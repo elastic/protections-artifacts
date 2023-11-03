@@ -14,7 +14,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1553/001/",
     "https://attack.mitre.org/techniques/T1105/",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -22,7 +22,7 @@ sequence by process.entity_id with maxspan=30s
     process.executable : ("/Users/*/Applications/*/Contents/MacOS/applet", 
                           "/private/var/folders/*.app/Contents/MacOS/applet", 
                           "/Applications/*.app/Contents/MacOS/applet")] 
-[process where event.type == "start" and process.name : "curl"]
+[process where event.type == "start" and process.name : ("curl", "nscurl")]
 '''
 
 min_endpoint_version = "7.15.0"

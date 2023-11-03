@@ -13,11 +13,11 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-vpn-trojan-covid",
     "https://attack.mitre.org/techniques/T1105/",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-process.name : "curl" and process.args : ("-o", "--output") and 
+process.name : ("curl", "nscurl") and process.args : ("-o", "--output", "--download", "-dl", "-dir", "--directory") and 
 process.args regex~ """http.*:\/\/[0-9]{2,3}.[0-9]{2,3}.[0-9]{2,3}.[0-9]{2,3}\/.*""" and 
 process.parent.name : ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and 
 process.Ext.effective_parent.executable : "/Applications/*" and 

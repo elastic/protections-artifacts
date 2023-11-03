@@ -1,0 +1,64 @@
+[rule]
+description = """
+Identifies attempts to enumerate keystroke state using the Windows DirectInput API. Adversaries may log user keystrokes
+to intercept credentials or other information from the user as the user types them.
+"""
+id = "102b5c1a-7f2a-4254-8b26-6b299705fce7"
+license = "Elastic License v2"
+name = "Keystroke Input Capture via DirectInput"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1056/001/",
+    "https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416842(v=vs.85)",
+    "https://wikileaks.org/ciav7p1/cms/page_3375220.html",
+]
+version = "1.0.8"
+
+query = '''
+api where process.executable : "C:\\*" and 
+
+ process.thread.Ext.call_stack_final_user_module.name : "dinput*.dll" and 
+ 
+ (process.code_signature.exists == false or 
+  process.code_signature.status : "errorbaddigest" or 
+  process.code_signature.subject_name : ("The MathWorks, Inc.", "AutoIt Consulting Ltd", "Python Software Foundation") or 
+  (process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") and process.executable : "?:\\Windows\\*" )) and 
+  
+  (process.Ext.api.name == "RegisterRawInputDevices" and
+   process.Ext.api.parameters.usage : ("HID_USAGE_GENERIC_KEYBOARD", "KEYBOARD")  and process.thread.Ext.call_stack_summary : "*|dinput?.dll|*") and 
+   
+  not process.executable : ("?:\\Windows\\System32\\dxdiag.exe", "?:\\Windows\\SysWOW64\\dxdiag.exe") and 
+  not (process.executable : "?:\\Windows\\System32\\rundll32.exe" and 
+       process.command_line : "?:\\WINDOWS\\system32\\rundll32.exe ?:\\WINDOWS\\system32\\inetcpl.cpl,ClearMyTracksByProcess*") and 
+  not (process.executable : "?:\\Windows\\Sys*\\regsvr32.exe" and process.command_line : "*\\Program Files*\\LGHUB\\sdks\\sdk_legacy_steering_wheel*") and 
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", 
+                            "?:\\Windows\\System32\\Macromed\\Flash\\FlashUtil_ActiveX.exe")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1056"
+name = "Input Capture"
+reference = "https://attack.mitre.org/techniques/T1056/"
+[[threat.technique.subtechnique]]
+id = "T1056.001"
+name = "Keylogging"
+reference = "https://attack.mitre.org/techniques/T1056/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.10.0"

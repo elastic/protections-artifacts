@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies attempt to load an untrusted executable dropped by a Kernel mode code. Adversaries may execute malicious code
+in user mode via existing malicious Kernel drivers.
+"""
+id = "1c618d05-2cac-4979-9c85-6320fc317177"
+license = "Elastic License v2"
+name = "Execution of a File Dropped from Kernel Mode"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+  [file where event.action == "creation" and
+   /* library dropped via System Virtual Process - Kernel mode code */
+   process.pid == 4 and user.id : "S-1-5-18" and
+   (file.extension : ("exe", "dll") or file.Ext.header_bytes : "4d5a*")] by file.path 
+   [library where process.pid != 4 and not dll.code_signature.status : "trusted" and process.executable != null] by dll.path
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1014"
+name = "Rootkit"
+reference = "https://attack.mitre.org/techniques/T1014/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

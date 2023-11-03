@@ -11,7 +11,7 @@ reference = [
     "https://twitter.com/orange_8361/status/1518970259868626944",
     "https://github.com/CsEnox/EventViewer-UACBypass",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 file where event.action != "deletion" and file.name : "RecentViews" and
@@ -28,10 +28,11 @@ file where event.action != "deletion" and file.name : "RecentViews" and
              "?:\\Program Files\\*.exe",
              "?:\\Program Files (x86)\\*.exe",
              "?:\\Windows\\System32\\dllhost.exe") and
- not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20")
+ not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+ not (process.code_signature.subject_name : "ForensiT Limited" and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.1.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -61,4 +62,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.1.0"

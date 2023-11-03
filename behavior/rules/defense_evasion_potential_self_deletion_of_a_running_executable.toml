@@ -9,18 +9,17 @@ license = "Elastic License v2"
 name = "Potential Self Deletion of a Running Executable"
 os_list = ["windows"]
 reference = ["https://github.com/LloydLabs/delete-self-poc"]
-version = "1.0.27"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
-    [process where event.action == "start" and
-     process.executable : ("?:\\Users\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*", "?:\\Python*")] by process.name
+    [library where not dll.code_signature.status : "trusted"] by dll.name
     [file where event.action == "rename" and
      /* Rename the primary file stream */
      file.name : "*:*" and not file.Ext.original.name : "*:*"  and file.size == 0] by file.Ext.original.name
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -50,4 +49,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

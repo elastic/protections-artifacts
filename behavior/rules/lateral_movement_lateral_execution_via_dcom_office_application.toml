@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies remote execution via Distributed Component Object Model service to launch a process via a Microsoft Office
+application.
+"""
+id = "0e9b9019-fc99-4294-9232-8581e30cd240"
+license = "Elastic License v2"
+name = "Lateral Execution via DCOM Office Application"
+os_list = ["windows"]
+reference = [
+    "https://posts.specterops.io/lateral-movement-abuse-the-power-of-dcom-excel-application-3c016d0d9922",
+]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and process.Ext.session_info.logon_type : "Network*" and
+ process.parent.executable : "?:\\Program Files*\\Microsoft Office\\*.exe" and process.parent.args : "-Embedding"
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.003"
+name = "Distributed Component Object Model"
+reference = "https://attack.mitre.org/techniques/T1021/003/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.6.0"

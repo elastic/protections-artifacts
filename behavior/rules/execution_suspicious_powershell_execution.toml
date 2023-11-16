@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -37,7 +37,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
 
  not (process.args:"-NonInteractive" and process.args :"-InputFormat") and
  not (process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
-      not process.parent.name : ("explorer.exe", "python.exe")) and
+      not process.parent.name : ("explorer.exe", "python.exe")) and 
+ not process.args : "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('cGFzc3dvcmQ='))" and 
  not process.command_line :
             ("*ConvertTo-Json*Write-Host*",
              "*BrowserExtension.dll*WebCompanion.BrowserExtension*",

@@ -8,7 +8,7 @@ id = "4abdbb10-6653-4a3b-8e7a-9c4f9382f03b"
 license = "Elastic License v2"
 name = "Suspicious Unload of Elastic Agent via Launchctl"
 os_list = ["macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and 
@@ -31,6 +31,7 @@ process.parent.executable : ("/sbin/launchd",
                              "/usr/bin/sudo") and not 
 process.Ext.effective_parent.executable : ("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", 
                                            "/usr/local/jamf/bin/jamf", 
+                                           "/Library/Endgame/esensor",
                                            "/Applications/iTerm.app/Contents/MacOS/iTerm2")
 '''
 

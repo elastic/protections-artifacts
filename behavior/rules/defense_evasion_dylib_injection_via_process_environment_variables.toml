@@ -1,0 +1,99 @@
+[rule]
+description = """
+This rule detects the use of process environment variables (DYLD_INSERT_LIBRARIES) to inject a shared library into a
+binary at or prior to execution. A threat actor may do this to load a malicious shared library for persistence,
+privilege escalation, and defense evasion. This activity is not common and should indicate malicious or suspicious
+behavior.
+"""
+id = "246741d4-3eee-4fbb-beec-53ef562c62c3"
+license = "Elastic License v2"
+name = "Dylib Injection via Process Environment Variables"
+os_list = ["macos"]
+reference = [
+    "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
+    "https://attack.mitre.org/techniques/T1574/006/",
+]
+version = "1.0.28"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+  process.env_vars : ("DYLD_INSERT_LIBRARIES=?*", 
+                      "LD_PRELOAD=?*") and 
+  not process.env_vars : ("DYLD_INSERT_LIBRARIES=",
+                          "LD_PRELOAD=",
+                          "*=/opt/homebrew/*",
+                          "*=libjemalloc.so.2*",
+                          "*=/Applications/Xcode-*.app/*",
+                          "*=/Library/Developer/CoreSimulator/*",
+                          "*=/Users/*/Library/Developer/Xcode/*",
+                          "*=/Applications/Xcode.app/*") and 
+  not process.executable : "/Applications/Xcode.app/*" and 
+  not process.parent.executable : ("/usr/bin/xcrun", 
+                                   "/Applications/Xcode.app/*",
+                                   "/Applications/Xcode-*.app/*", 
+                                   "/Users/*/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64",
+                                   "/Library/Printers/Canon/CUPS_Printer/Bins/Bins.bundle/Contents/Library/capdftopdl",
+                                   "/Applications/Android Studio.app/Contents/MacOS/studio")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

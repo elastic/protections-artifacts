@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies mutiple calls to change the memory protection of a memory address to avoid leaving suspicious allocation
+properties.
+"""
+id = "78165d05-f1d6-4c5c-bb4d-b618df979868"
+license = "Elastic License v2"
+name = "Suspicious Memory Protection Fluctuation"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
+ [api where process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "R-X" and 
+  process.executable != null and process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.name != null and 
+  not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "unknown") and 
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("unknown", "Kernel") and 
+  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "WATERFOX LIMITED") and 
+       process.code_signature.trusted == true) and 
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\xul.dll!worker*", "*\\xul.dll!XRE_GetBootstrap*")) and 
+  not process.thread.Ext.call_stack_final_user_module.path :
+                                         ("?:\\Program Files\\*",
+                                          "?:\\Program Files (x86)\\*", 
+                                          "\\program files\\*", 
+                                          "\\program files (x86)\\*",
+                                          "?:\\windows\\microsoft.net\\framework*.dll", 
+                                          "\\windows\\microsoft.net\\framework*.dll", 
+                                          "?:\\windows\\system32\\*", 
+                                          "\\windows\\system32\\*", 
+                                          "?:\\windows\\winsxs\\*", 
+                                          "\\windows\\winsxs\\*", 
+                                          "?:\\windows\\syswow64\\*", 
+                                          "\\windows\\syswow64\\*", 
+                                          "?:\\Windows\\assembly\\*", 
+                                          "\\Windows\\assembly\\*")]
+ [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "RW-"]
+ [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "R-X"]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

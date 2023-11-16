@@ -7,7 +7,7 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "SetThreadContext" and
@@ -19,7 +19,8 @@ api where process.Ext.api.name == "SetThreadContext" and
                 "Johannes Schindelin", "Unity Technologies ApS", "Larian Studios Games Ltd.", 
                 "Paradox Interactive AB (publ)", "CD PROJEKT SPÓŁKA AKCYJNA", "JetBrains s.r.o.",
                 "Open Source Developer, Maksim Moisiuk", "Take-Two Interactive Software, Inc.", 
-                "Take-Two Interactive Software, Inc.", "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk") and
+                "Take-Two Interactive Software, Inc.", "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk", 
+                "Activision Publishing Inc", "OpenJS Foundation", "Maksim Moisiuk", "Ubisoft Entertainment Sweden AB") and
       process.code_signature.trusted == true) and 
  not (process.executable : "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\*.exe" and 
       process.code_signature.subject_name : "Python Software Foundation" and process.code_signature.trusted == true) and 
@@ -34,7 +35,8 @@ api where process.Ext.api.name == "SetThreadContext" and
                "?:\\Program Files (x86)\\Windows Kits\\*\\Debuggers\\x64\\cdb.exe", 
                "?:\\Program Files\\Microsoft Visual Studio\\*\\devenv.exe",
                "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\devenv.exe",
-               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe") and 
+               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe", 
+               "C:\\Program Files\\OpenModelica1.21.0-64bit\\bin\\OMEdit.exe") and 
  not process.executable :
               ("?:\\Program Files (x86)\\Windows Kits\\*\\Debuggers\\*\\cdb.exe", 
                "?:\\Program Files\\Windows Kits\\*\\Debuggers\\*\\cdb.exe",
@@ -52,6 +54,10 @@ api where process.Ext.api.name == "SetThreadContext" and
                "?:\\Program Files\\nodejs\\node.exe",
                "?:\\ION\\mingw64\\bin\\gdborig.exe",
                "?:\\mingw64\\bin\\gdborig.exe",
+               "?:\\Program Files\\Git\\usr\\bin\\sh.exe",
+               "?:\\Program Files\\IDA Pro ?.?\\ida64.exe",
+               "D:\\SteamLibrary\\steamapps\\common\\*",
+               "E:\\SteamLibrary\\steamapps\\common\\*",
                "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", 
                "?:\\Program Files (x86)\\Microsoft Office\\root\\Office??\\EXCEL.EXE", 
                "G:\\SteamLibrary\\steamapps\\common\\Hydroneer\\Mining\\Binaries\\Win64\\Mining-Win64-Shipping.exe")

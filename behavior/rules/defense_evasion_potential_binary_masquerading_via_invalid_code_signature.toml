@@ -7,11 +7,11 @@ id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.action == "exec" and
- process.name :"com.apple.*" and
+ process.name : ("com.apple.*", "com.jamf.*", "jamf*") and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
  not (process.code_signature.subject_name : ("Software Signing", "com.apple.WebKit.Networking", "com.apple.WebKit.WebContent") and
       process.name :

@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Suspicious DLLRegisterServer Execution via MSIEXEC"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msiexec/"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
  process.pe.original_file_name : "msiexec.exe" and process.args : ("/z", "/y", "-y", "-z") and
- not (process.args : ("?:\\Program Files\\*.dll", "?:\\Program Files (x86)\\*") and process.args_count <= 3) and
+ not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
  not process.Ext.token.integrity_level_name == "system" and
  not (process.parent.executable : "?:\\Windows\\Sys*\\msiexec.exe" and process.parent.args : "/V")
 '''

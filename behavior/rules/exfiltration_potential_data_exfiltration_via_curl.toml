@@ -7,14 +7,14 @@ way while not inherently malicious should be considered highly abnormal and susp
 """
 id = "192ec591-1d00-4c16-a717-8a7481038d23"
 license = "Elastic License v2"
-name = "MacOS Potential Data Exfiltration via Curl"
+name = "Potential Data Exfiltration via Curl"
 os_list = ["macos"]
 reference = [
     "https://everything.curl.dev/usingcurl/uploads",
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and 

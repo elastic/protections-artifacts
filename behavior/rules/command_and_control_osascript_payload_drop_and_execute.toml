@@ -12,15 +12,14 @@ reference = [
     "https://github.com/MythicAgents/apfell/blob/master/documentation-payload/apfell/commands/spawn_drop_and_execute.md",
     "https://github.com/MythicAgents/apfell/",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=30s
 [file where event.action == "modification" and 
- process.name : "osascript" and 
- file.path : ("/tmp/*", "/private/tmp/*", "/var/tmp/*")] by process.entity_id
+  file.path : ("/tmp/*", "/private/tmp/*", "/var/tmp/*")] by process.entity_id
 [process where event.type == "start" and 
- process.name : "osascript" and process.args : ("/tmp/*", "/private/tmp/*", "/var/tmp/*")] by process.parent.entity_id
+  process.name : "osascript" and process.args : ("/tmp/*", "/private/tmp/*", "/var/tmp/*")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.5.0"

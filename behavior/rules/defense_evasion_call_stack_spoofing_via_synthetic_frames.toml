@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects Windows Memory API calls within a potentially altered call stack in order to conceal the true source of the
+call.
+"""
+id = "d8c57cb7-bab6-41fa-9063-dcc8793c3955"
+license = "Elastic License v2"
+name = "Call Stack Spoofing via Synthetic Frames"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+any where 
+(
+ (event.category : "api" and not process.Ext.api.name : "IoCreateDevice") or 
+ (event.category : "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll"))
+ ) and 
+
+ process.thread.Ext.call_stack_summary : "ntdll.dll|kernel32.dll*" and 
+ 
+ /* JMP RBX gadget in kernel32 */
+ (
+  (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info regex~ """.*system32\\kernel32.dll!(A|[C-Z]).+""") and 
+   not  _arraysearch(process.thread.Ext.call_stack, $entry, 
+                   $entry.symbol_info : ("*kernel32.dll!CreateProcess*", "*kernel32.dll!GetDateFormatWWorker*", 
+                                         "*kernel32.dll!WerpLaunchAeDebug*", "*kernel32.dll!BaseDllReadWriteIniFile*", 
+                                         "*kernel32.dll!GlobalReAlloc*", "*kernel32.dll!CreateToolhelp32Snapshot*", 
+                                         "*kernel32.dll!Wow64SetThreadContext*", "*kernel32.dll!ExitProcess*", 
+                                         "*kernel32.dll!CallbackMayRunLong*"))) or 
+
+  (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*kernel32.dll!BaseThreadInitThunk*") and 
+    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*system32\\kernel32.dll+0x*"))
+  )
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

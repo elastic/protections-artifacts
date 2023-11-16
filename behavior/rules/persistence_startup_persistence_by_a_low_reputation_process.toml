@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies when a process with low or unknown reputation is writing to commonly abused persistence locations (registry
+run keys and startup folder). Adversaries may use this technique to maintain persistence on an endpoint.
+"""
+id = "45322752-e899-40ee-a0ba-b4d8d38ed151"
+license = "Elastic License v2"
+name = "Startup Persistence by a Low Reputation Process"
+os_list = ["windows"]
+reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=5m
+ [process where event.action == "start" and
+ (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and
+ not process.code_signature.status : "errorCode_endpoint*"]
+ [any where event.category : ("registry", "file") and event.action != "deletion" and
+   (
+    (registry.data.strings != null and
+     registry.path :
+         ("H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+		 "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+		 "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+		 "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\Load",
+		 "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Shell",
+		 "HKEY_USERS\\*\\Environment\\UserInitMprLogonScript",
+		 "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\Userinit",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Shell",
+		 "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logoff\\Script",
+		 "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Logon\\Script",
+		 "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Shutdown\\Script",
+		 "HKEY_USERS\\*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System\\Scripts\\Startup\\Script",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Ctf\\LangBarAddin\\*\\FilePath",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
+		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun",
+		 "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+		 "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
+		 "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
+		 "*\\exefile\\shell\\open\\command\\*")) or
+    (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
+   )]
+'''
+
+min_endpoint_version = "8.10.0"
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.10.0"

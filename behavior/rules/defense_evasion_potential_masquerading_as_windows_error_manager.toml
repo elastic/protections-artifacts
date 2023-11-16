@@ -8,7 +8,7 @@ id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
 license = "Elastic License v2"
 name = "Potential Masquerading as Windows Error Manager"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.action == "start" and
@@ -30,7 +30,12 @@ process where event.action == "start" and
                                        "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\*!UbpmTriggerConsumerQueryStatus*",
                                        "?:\\Windows\\System32\\SettingsHandlers_StorageSense.dll!DllGetActivationFactory*",
                                        "?:\\Windows\\System32\\dataclen.dll!DllCanUnloadNow+*", 
-                                       "?:\\Windows\\System32\\CsXumd64_*.dll+*")) and
+                                       "?:\\Windows\\System32\\CsXumd64_*.dll+*", 
+                                       "*Acrobat.exe!IsSandboxedProcess*", 
+                                       "*AcroRd32.exe!IsSandboxedProcess*", 
+                                       "C:\\Temp\\tmmon64.dll+*", 
+                                       "*\\PendingDeletes\\$$DeleteMe*", 
+                                       "*ntdll.dll+0*")) and
  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll"
 '''
 

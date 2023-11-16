@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -28,7 +28,10 @@ sequence by user.id with maxspan=5m
        process.executable : "?:\\Program Files*\\Microsoft\\Temp\\*\\MicrosoftEdgeUpdate.exe") and
 
   not (process.executable : "?:\\Program Files*\\Common Files\\microsoft shared\\ClickToRun\\OfficeClickToRun.exe" and
-       file.path : "?:\\Program Files*\\Common Files\\microsoft shared\\ClickToRun\\Updates\\*\\OfficeClickToRun.exe")
+       file.path : "?:\\Program Files*\\Common Files\\microsoft shared\\ClickToRun\\Updates\\*\\OfficeClickToRun.exe") and 
+
+  not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe", 
+                            "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe")
 
  ] by file.path
  [library where

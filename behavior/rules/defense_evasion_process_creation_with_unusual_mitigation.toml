@@ -1,0 +1,63 @@
+[rule]
+description = """
+Identifies attempts to create a process with Microsoft mitigation policy set prevent loading non Microsoft signed DLLs.
+Adversaries may abuse this feature to prevent loading Endpoint security DLLs that lacks this code signing requirement.
+"""
+id = "d09ce1d0-f961-4eae-906c-22e551a1c3b6"
+license = "Elastic License v2"
+name = "Process Creation with Unusual Mitigation"
+os_list = ["windows"]
+reference = ["https://blog.xpnsec.com/protecting-your-malware/"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and 
+ process.Ext.mitigation_policies : "Microsoft only" and 
+ (
+  (process.parent.thread.Ext.call_stack_contains_unbacked == true and
+   process.parent.thread.Ext.call_stack_summary :
+               ("ntdll.dll|Unbacked",
+                "ntdll.dll|kernelbase.dll|Unbacked", 
+                "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked", 
+                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked", 
+                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll")) or 
+                
+   process.parent.Ext.real.pid > 0 or 
+
+   (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|*" and 
+    not process.parent.thread.Ext.call_stack_summary : ("*kernelbase.dll*", "*rpcrt4.dll*", "ntdll.dll|tmmon64.dll"))
+ ) and 
+ not (process.parent.name : "powershell.exe" and process.Ext.token.integrity_level_name : "system" and 
+      process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.exe") and 
+ not (process.code_signature.subject_name : "Microsoft Windows Defender Advanced Threat Protection" and 
+      process.code_signature.status : "trusted" and process.Ext.token.integrity_level_name : "system")
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

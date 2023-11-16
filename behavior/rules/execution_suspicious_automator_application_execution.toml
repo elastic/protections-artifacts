@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when a Automator application ("Application Stub") is executed via XPC. The "Application Stub" binary on macOS is
+associated with Automator, a tool that allows users to create automation scripts without needing to write code. When
+creating applications with Automator, the default name for the executable is "Application Stub". This is the standard
+naming convention used by Automator. Threat actors have been seen recently utilizing Automator applications to infect
+macOS systems in an attempt to fly under the radar by abusing Apple's built in automation framework.
+"""
+id = "95f37809-fdb7-4e4a-8a5f-36ad3f014a8e"
+license = "Elastic License v2"
+name = "Suspicious Automator Application Execution"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and process.name : "xpcproxy" and process.args : "application.com.apple.automator*"]
+[process where event.type == "start" and event.action == "exec" and process.name : "Application Stub"]
+'''
+
+min_endpoint_version = "8.9.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.9.0"

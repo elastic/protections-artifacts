@@ -15,7 +15,7 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "process_open" and
@@ -24,10 +24,12 @@ process where event.action == "process_open" and
                         "/Users/*/.pyenv/*",
                         "/opt/homebrew/*",
                         "/nix/store/*",
+                        "/Users/*/.homebrew/*",
                         "/Users/*/miniconda3/envs/*",
                         "/usr/local/Cellar/*",
                         "/usr/local/Caskroom/*",
                         "/System/*") and not
+  process.name : "htop" and not
   (startswith~(process.parent.executable, Target.process.executable) or 
    startswith~(process.executable, Target.process.executable)) and 
   not process.hash.sha256 : ("d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a",

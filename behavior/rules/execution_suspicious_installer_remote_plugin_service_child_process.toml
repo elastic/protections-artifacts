@@ -7,14 +7,14 @@ id = "a67b556a-daa0-46c6-ba11-d03336442337"
 license = "Elastic License v2"
 name = "Suspicious Installer Remote Plugin Service Child Process"
 os_list = ["macos"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
     (process.parent.executable : "/System/Library/CoreServices/Installer.app/Contents/XPCServices/InstallerRemotePluginService*" or
      process.Ext.effective_parent.executable : "/System/Library/CoreServices/Installer.app/Contents/XPCServices/InstallerRemotePluginService*") and 
     process.name : ("sh", "bash", "zsh", "tclsh", "python*", "osascript", "curl", "nscurl") and 
-    not process.command_line : ("/bin/sh -c /usr/bin/arch", "/bin/sh -c system_profiler SPDisplaysDataType | grep \"Chipset Model\"") and 
+    not process.command_line : ("/bin/sh -c /usr/bin/arch", "/bin/sh -c system_profiler SPDisplaysDataType | grep \"Chipset Model\"", "*/Applications/LockDown Browser.app*") and 
     not process.args : ("open", "rm", "touch", "/Applications/LockDown Browser.app")
 '''
 

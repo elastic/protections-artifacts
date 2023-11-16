@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id
@@ -47,7 +47,8 @@ sequence by process.entity_id
                      "Intel(R) Rapid Storage Technology", "Waves Inc", "Dell Inc", "Lenovo", "DameWare Development, LLC.",
                      "Essential Objects, Inc*", "HP Inc.", "Aina Maximit Oy", "Logitech Inc", "N-ABLE TECHNOLOGIES LTD", 
                      "Cognizant TriZetto Software Group, Inc.", "win.acme.simple@gmail.com", "Crownalytics, LLC", 
-                     "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE") and
+                     "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE", 
+                     "Link Data Security A/S", "Western Digital Technologies, Inc.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -78,7 +79,11 @@ sequence by process.entity_id
                     "889cb8827a400984bea2e0561a1efbf9d18044e879974da8baa750a0c63748c6",
                     "96dcdb449ab48b21b6efd33afc59ae163dea5fc597ffaf5dd7030b20d2624467", 
                     "43714f0fc5cea25a6ee936fd36a83f86a45f61447c16c8e9255ef317089ce39c", 
-                    "52a5036d1578a6b899fb5d14fd3ab12af463e94ac791d1dddb22b7e8cc1f4bd7") and
+                    "52a5036d1578a6b899fb5d14fd3ab12af463e94ac791d1dddb22b7e8cc1f4bd7", 
+                    "f5f15ab19171dbcb58e757cd6446be41e04adf00797d712b07e544066ecd3c67", 
+                    "49b95a804337ee7e12092cc7a13c2eb6c3acb33f9bbaac8e820b9184063642f2", 
+                    "4c974212f5fc3720d58a8df6c2b9587b85949edc676f9f82921c04f067c261f1", 
+                    "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -150,6 +155,7 @@ sequence by process.entity_id
                           "c6430c0148bacce0*",
                           "c6470c01833d*",
                           "a3b8eb*",
+                          "a314a2e40585c*",
                           "488b9570ffffffc6420*",
                           "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067"))

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Ingress Tool Transfer via INET Cache"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1105/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -19,7 +19,7 @@ sequence by process.entity_id with maxspan=1m
   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")]
  [file where event.action!= "deletion" and file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\*" and 
   (file.Ext.header_bytes : "4d5a*" or 
-   file.extension : ("exe", "pif", "scr", "com", "dll", "cpl", "bat", "cmd", "hta"))]
+   file.extension : ("exe", "pif", "scr", "dll", "cpl", "bat", "cmd", "hta"))]
 '''
 
 min_endpoint_version = "8.0.0"

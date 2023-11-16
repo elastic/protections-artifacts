@@ -1,0 +1,55 @@
+[rule]
+description = """
+Detects when an installer package creates a new directory structure and immediately moves an executable file into that
+directory. Threat actors will often include system preparation steps in their initial access installer packages
+implemented via pre or post install scripts with the purpose of preparing a location to drop and execute their payload
+from that won't raise suspicion.
+"""
+id = "6e53dbb1-55c6-419c-ab8e-75a5d53aac49"
+license = "Elastic License v2"
+name = "Initial Access Staging via Installer Package"
+os_list = ["macos"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+[process where event.type == "start" and process.Ext.effective_parent.name : "installer" and 
+  process.parent.name : ("bash", "sh", "zsh") and process.name : ("cp", "mv")]
+[file where event.action != "deletion" and file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
+  (file.name : ".*" or file.path : ("/Users/Shared/*", 
+                                    "/tmp/*", 
+                                    "/private/tmp/*", 
+                                    "/var/tmp/*", 
+                                    "/Library/WebServer/*", 
+                                    "/Library/Graphics/*", 
+                                    "/Library/Fonts/*")) and
+  not file.path : "/private/tmp/org.gpgtools/gpgmailloader_install/GPGMailLoader.signed.mailbundle/Contents/MacOS/GPGMailLoader"]
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.8.0"

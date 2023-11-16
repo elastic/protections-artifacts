@@ -7,7 +7,7 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 registry where process.executable != null and 
@@ -24,11 +24,12 @@ registry where process.executable != null and
                    "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
                    "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wininet.dll|Unbacked|ntdll.dll",
                    "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll",
-                   "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
+                   "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll", 
+                   "ntdll.dll|kernelbase.dll|aclayers.dll|wininet.dll|ntdll.dll|kernelbase.dll|wininet.dll|Unbacked") and
  not process.thread.Ext.call_stack_summary :
             ("*mscorlib.dll*","*|clr.dll*", "*coreclr.dll*", "*mscoreei.dll*", "*mscoree.dll*", "*system.ni.dll*",
              "*mscorlib.ni.dll*", "*mscorwks.dll*", "*mscorsvc.dll*", "*system.private.corelib.dll*", "*java.dll|Unbacked*", 
-             "*user32.dll|bdhkm32.dll*", "*wininet.dll|Unbacked|system.core.ni.dll|Unbacked") and
+             "*user32.dll|bdhkm32.dll*", "*wininet.dll|Unbacked|system.core.ni.dll|Unbacked", "*wininet.dll|Unbacked|cmserver.exe|kernel32.dll|ntdll.dll") and
  not (process.executable : ("?:\\Windows\\System32\\inetsrv\\w3wp.exe",
                             "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\LenovoVantageService.exe",
                             "?:\\Program Files\\Lenovo\\VantageService\\*\\LenovoVantageService.exe") and
@@ -44,7 +45,8 @@ registry where process.executable != null and
                            "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Crash Processor.exe",
                            "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil*.exe", 
                            "?:\\Windows\\system32\\Macromed\\Flash\\FlashUtil*.exe", 
-                           "?:\\Program Files (x86)\\Lavasoft\\Web Companion\\Application\\Lavasoft.WCAssistant.WinService.exe") and
+                           "?:\\Program Files (x86)\\Lavasoft\\Web Companion\\Application\\Lavasoft.WCAssistant.WinService.exe", 
+                           "?:\\Program Files (x86)\\Microsoft Dynamics 365 for Operations - Document Routing\\Microsoft.Dynamics.AX.Framework.DocumentRouting.Agent.exe") and
  not (process.code_signature.subject_name : "Cisco WebEx LLC" and process.executable : "?:\\Users\\*\\AppData\\Local\\WebEx\\webexAppLauncher.exe") and 
  not (process.code_signature.subject_name : ("GolfNow, LLC", "Pluralsight, LLC", "Blizzard Entertainment, Inc.", "Appgate Cybersecurity, INC.", 
                                              "Zoom Video Communications, Inc.", "Vertafore, Inc.", "Anatomage, Inc.", "Articulate Global, Inc.", 

@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -56,6 +56,10 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\dfsfrsHost.exe",
               "?:\\Windows\\System32\\wuauclt.exe",
               "?:\\Windows\\system32\\UsoClient.exe",
+              "?:\\Windows\\system32\\findstr.exe",
+              "?:\\Windows\\ccmsetup\\ccmsetup.exe",
+              "?:\\Windows\\system32\\klist.exe",
+              "?:\\Windows\\system32\\dnscmd.exe",
               "?:\\Windows\\System32\\chcp.com",
               "?:\\Windows\\System32\\manage-bde.exe",
               "?:\\Windows\\System32\\dllhost.exe",
@@ -96,6 +100,7 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\regini.exe",
               "?:\\WINDOWS\\system32\\iisreset.exe",
               "?:\\Windows\\System32\\SecEdit.exe",
+              "?:\\Windows\\System32\\dsquery.exe",
               "?:\\Program Files (x86)\\Google\\Update\\*.exe",
               "?:\\Program Files\\Google\\Update\\*.exe",
               "?:\\Program Files\\Commvault\\installer\\Setup.exe",
@@ -110,8 +115,11 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\logman.exe",
               "?:\\Windows\\System32\\icacls.exe",
               "?:\\Windows\\System32\\regsvr32.exe",
+              "?:\\Windows\\System32\\Robocopy.exe",
+              "?:\\Windows\\System32\\wbem\\mofcomp.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\aspnet_regiis.exe", 
-              "?:\\Program Files\\ansible\\GTS\\uidext\\iam_iis_extract.exe") and
+              "?:\\Program Files\\ansible\\GTS\\uidext\\iam_iis_extract.exe", 
+              "?:\\Program Files\\Microsoft SQL Server\\*\\Setup Bootstrap\\SQL*\\setup.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -162,7 +170,8 @@ process where event.action == "start" and
                   "3614f7fc2457b7c5c8bc4e437850b00adf51ee2f65646597f4fe886d9645079d", 
                   "a087f9627bf0d88da197e34b340922e69c8b229b75c0a09e63742a0e35c2f97c", 
                   "293e3a0cbe6f38e96ab92021431e7cecf0df95386c24b3a28490e944fb9db0f2", 
-                  "05d9fabebd65a07e3bea6512c59d59a1d47c72d12ca1828a1aefac0e38b7dadb") and
+                  "05d9fabebd65a07e3bea6512c59d59a1d47c72d12ca1828a1aefac0e38b7dadb", 
+                  "52b196bbe9016488c735e7b41805b651261ffa5d7aa86eb6a1d0095be83687b2") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -171,14 +180,16 @@ process where event.action == "start" and
                  "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc", "Flexera Software LLC",
                  "Arcserve (USA) LLC", "Hewlett Packard", "Qualys, Inc", "Synology Inc.", "NoMachine S.a.r.l.", 
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
-                 "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc")) and
+                 "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
        process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
   not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*") and
-  not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise")
+  not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise") and 
+  not (process.name : "certutil.exe" and process.args : "-view" and process.args : "csv") and 
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs")
 '''
 
 min_endpoint_version = "8.6.0"

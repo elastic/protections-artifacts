@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies attempts to queue an Asynchronous Procedure Call (APC) to a remote process. This may indicate a remote code
+injection attack.
+"""
+id = "2316b571-731d-4745-97ac-4fd6922d32df"
+license = "Elastic License v2"
+name = "Potential Injection via Asynchronous Procedure Call"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/code-injection-process-injection/apc-queue-code-injection",
+]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name : "QueueUserAPC" and process.pid != 4 and
+ process.Ext.api.behaviors : "cross-process" and process.Ext.api.behaviors : "execute_shellcode" and 
+ process.Ext.api.summary : "*Unbacked*NULL*"
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

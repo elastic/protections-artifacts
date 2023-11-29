@@ -1,0 +1,66 @@
+[rule]
+description = """
+Message of the day (MOTD) is the message that is presented to the user when a user connects to a Linux server via SSH or
+a serial connection. Linux systems contain several default MOTD files located in the "/etc/update-motd.d/" and
+"/usr/lib/update-notifier/" directories. These scripts run as the root user every time a user connects over SSH or a
+serial connection. Adversaries may create malicious MOTD files that grant them persistence onto the target every time a
+user connects to the system by executing a backdoor script or command. This rule detects the execution of potentially
+malicious processes through the MOTD utility.
+"""
+id = "b9b3922a-59ee-407c-8773-31b98bf9b18d"
+license = "Elastic License v2"
+name = "Suspicious Process Spawned from MOTD Detected"
+os_list = ["linux"]
+reference = [
+    "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
+]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action : ("exec", "exec_event") and
+process.parent.executable : ("/etc/update-motd.d/*", "/usr/lib/update-notifier/*") and (
+  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
+    (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*"))) or
+  (process.name : ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
+    not process.args : ("-*z*", "-*l*")) or
+  (process.name : "python*" and process.args : "-c" and process.args : (
+     "*import*pty*spawn*", "*import*subprocess*call*"
+  )) or
+  (process.name : "perl*" and process.args : "-e" and process.args : "*socket*" and process.args : (
+     "*exec*", "*system*"
+  )) or
+  (process.name : "ruby*" and process.args : ("-e", "-rsocket") and process.args : (
+     "*TCPSocket.new*", "*TCPSocket.open*"
+  )) or
+  (process.name : "lua*" and process.args : "-e" and process.args : "*socket.tcp*" and process.args : (
+     "*io.popen*", "*os.execute*"
+  )) or
+  (process.name : "php*" and process.args : "-r" and process.args : "*fsockopen*" and process.args : "*/bin/*sh*") or 
+  (process.name : ("awk", "gawk", "mawk", "nawk") and process.args : "*/inet/tcp/*") or 
+  (process.name in ("openssl", "telnet"))
+) and 
+not (process.parent.args : "--force" or process.args : ("/usr/games/lolcat", "/usr/bin/screenfetch"))
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

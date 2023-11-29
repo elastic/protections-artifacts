@@ -7,7 +7,7 @@ id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
 license = "Elastic License v2"
 name = "Unusual File Made Executable by Suspicious Parent Process"
 os_list = ["macos"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -37,6 +37,7 @@ process where event.type == "start" and event.action == "exec" and
                                  "/sbin/*", 
                                  "/opt/homebrew/*",
                                  "/Library/Kaseya/AgentMon",
+                                 "/usr/local/jamf/bin/jamf",
                                  "/Library/Application Support/Data Robotics/Drobo Dashboard/DDService64d",
                                  "/Library/Application Support/SyncroMSP/SyncroMSP.app/Contents/MacOS/*/SyncroDesktop.Svc",
                                  "/usr/local/share/dotnet/dotnet",
@@ -58,6 +59,7 @@ process where event.type == "start" and event.action == "exec" and
     process.Ext.effective_parent.executable : ("/Applications/EaseUS Data Recovery Wizard.app/Contents/MacOS/EaseUS Data Recovery Wizard",
                                                "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Printer Driver Installer",
                                                "/Library/Kaseya/AgentMon",
+                                               "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                "/Volumes/Mac_User_SW/Fiery Master Installer.app/Contents/MacOS/Fiery Master Installer",
                                                "/Applications/Examplify.app/Contents/Resources/ExamplifyService/ExamplifyService",
                                                "/Applications/Cisdem Data Recovery.app/Contents/MacOS/Cisdem Data Recovery",

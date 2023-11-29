@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence with maxspan=5m
@@ -42,7 +42,7 @@ sequence with maxspan=5m
                            "mspub.exe",
                            "msaccess.exe")) and 
 
-  not (process.pe.original_file_name : "devenv.exe" and process.code_signature.trusted == true and 
+  not (process.pe.original_file_name : ("devenv.exe", "PowerToys.exe") and process.code_signature.trusted == true and 
        process.code_signature.subject_name : "Microsoft*") and 
 
    /* FP Issue #488 - WerFaultSecure ProtectedCrash  */
@@ -71,8 +71,8 @@ sequence with maxspan=5m
   not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name in ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "*\\Windows\\SystemApps\\Microsoft.MicrosoftEdge_*\\MicrosoftEdge.exe" and
-       process.Ext.token.integrity_level_name == "low" and process.parent.executable : "*\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
+  not (process.executable : "*\\Windows\\SystemApps\\Microsoft*.exe" and
+       process.parent.executable : "*\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
   not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc") and
        process.code_signature.trusted == true) and
@@ -88,7 +88,11 @@ sequence with maxspan=5m
 
   not process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe" and
 
-  not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev")
+  not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev") and 
+
+  not (process.executable : "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and 
+       process.args : "?:\\ProgramData\\PlatformInstall\\GideCode\\rtcresofz_Mecrrcpl.dll" and 
+       process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */

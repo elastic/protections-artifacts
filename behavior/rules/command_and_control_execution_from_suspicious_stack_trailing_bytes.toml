@@ -1,0 +1,105 @@
+[rule]
+description = "Identifies execution behavior from known malware or testing tools based on known call stack trailing bytes patterns."
+id = "0a26ccb6-41b9-418d-9314-854aadcb1fba"
+license = "Elastic License v2"
+name = "Execution from Suspicious Stack Trailing Bytes"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+any where (event.category : ("library", "api") and
+           _arraysearch(process.thread.Ext.call_stack, $entry,
+                                                      ($entry.callsite_trailing_bytes :
+                                                             (/* BR */
+                                                              "4989c54885c00f841002000048c7442438000000004531c94c89*",
+                                                              "*4889c24885c00f848b020000b9dedbfe0e4531e4*",
+                                                              /* NH */
+                                                              "*741041ffc04883c008443b411872ef33c0*",
+                                                              "*4885c07511ffc383fb1472d3eb08488bceffd5*",
+                                                              /* CS */
+                                                              "4889059a840300bb040000004c8d442468488bc88d5301448bcbff15591d0200488b0d7a8403004c8d4424688d5302448bcbff15411d0200488b058284030048", 
+                                                              "*0300eb394533c033d2eb1a4533c0418bd6eb12b920000000e856*", 
+                                                              "*0000ba030000004c8bc083642420004533c9488bcbff15*",
+                                                              "4889842498000000488b4424388b00488b8c24880000004803c8488bc14889442430488b4424388b4010488b8c24880000004803c8488bc14889442428488b44", 
+                                                              "880000004803c8488bc1488b7c2420488bf0b940000000f3a4448b8424a0000000ba40000000488b4c2420e846f3ffff488b4c2420488b842480000000ff5010",
+                                                              /* dotnut shellcode */
+                                                              "eb084c213beb034d213e85c07930498d461033d24c8d8e5406000048894424204c8d864406000033c9ff963801000085c0790b4d217e1033c0e923010000498b",
+                                                              /* MP sc */
+                                                              "53534889e1535a4d31c04d31c9535349ba041f9dbb00000000ffd54989c4e81a0000003100390032002e003100360038002e0031002e003500350000005a4889",
+                                                              /* Qbot */
+                                                              "85c0740d508bd78bcbe875ffffff598bf08d45fc50e86f080000595f8bc65e5bc9c353bb0001000053e82efcffff8bd08915041002105985d2750583c8ff5bc3") or
+                                                              
+                                                           $entry.callsite_leading_bytes :
+                                                             (/* BR */
+                                                              "4989c54885c00f841002000048c7442438000000004531c94c89*",
+                                                              "*4889c24885c00f848b020000b9dedbfe0e4531e4*",
+                                                              /* NH */
+                                                              "*741041ffc04883c008443b411872ef33c0*",
+                                                              "*4885c07511ffc383fb1472d3eb08488bceffd5*",
+                                                              /* CS shellcode */
+                                                              "4889059a840300bb040000004c8d442468488bc88d5301448bcbff15591d0200488b0d7a8403004c8d4424688d5302448bcbff15411d0200488b058284030048", 
+                                                              "*0300eb394533c033d2eb1a4533c0418bd6eb12b920000000e856*", 
+                                                              "*0000ba030000004c8bc083642420004533c9488bcbff15*",
+                                                              "4889842498000000488b4424388b00488b8c24880000004803c8488bc14889442430488b4424388b4010488b8c24880000004803c8488bc14889442428488b44", 
+                                                              "880000004803c8488bc1488b7c2420488bf0b940000000f3a4448b8424a0000000ba40000000488b4c2420e846f3ffff488b4c2420488b842480000000ff5010",
+                                                              /* donut shellcode */
+                                                              "501885c0783c488b0b488d942460020000488b01ff505085c078334439bc24600200007425488b0b4d8d4e104c8d8654060000488d9644060000488b01ff5048",
+                                                              /* MP SC */
+                                                              "5841584801d05e595a41584159415a4883ec204152ffe05841595a488b12e94bffffff5d4831db5349be77696e687474700041564889e149c7c24c772607ffd5",
+                                                              "2bcb4d85d27410418a004d03c388024903d34d2bd375f04883c1284d85c975cf8b9f90000000b9080000004803dd44393b0f849b0000008b4b0c4803cd41ffd4"
+                                                              )
+                                                              ))) or
+          (event.category : "process" and event.action == "start" and
+           _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                                                      ($entry.callsite_trailing_bytes :
+                                                             (/* BR */
+                                                              "4989c54885c00f841002000048c7442438000000004531c94c89*",
+                                                              "*4889c24885c00f848b020000b9dedbfe0e4531e4*",
+                                                              /* NH */
+                                                              "*741041ffc04883c008443b411872ef33c0*",
+                                                              "*4885c07511ffc383fb1472d3eb08488bceffd5*",
+                                                              /* CS shellcode */
+                                                              "4889059a840300bb040000004c8d442468488bc88d5301448bcbff15591d0200488b0d7a8403004c8d4424688d5302448bcbff15411d0200488b058284030048", 
+                                                              "*0300eb394533c033d2eb1a4533c0418bd6eb12b920000000e856*", 
+                                                              "*0000ba030000004c8bc083642420004533c9488bcbff15*",
+                                                              "4889842498000000488b4424388b00488b8c24880000004803c8488bc14889442430488b4424388b4010488b8c24880000004803c8488bc14889442428488b44",
+                                                              "880000004803c8488bc1488b7c2420488bf0b940000000f3a4448b8424a0000000ba40000000488b4c2420e846f3ffff488b4c2420488b842480000000ff5010",
+                                                              "85c07521ff151ad30300448bc0488b442470488b10b930000000e835d4ffff33c0eb07eb05b8010000004883c468c3cc488954241048894c2408574881ec5005") or
+
+                                                           $entry.callsite_leading_bytes :
+                                                             (/* BR */
+                                                              "4989c54885c00f841002000048c7442438000000004531c94c89*",
+                                                              "*4889c24885c00f848b020000b9dedbfe0e4531e4*",
+                                                              /* NH */
+                                                              "*741041ffc04883c008443b411872ef33c0*",
+                                                              "*4885c07511ffc383fb1472d3eb08488bceffd5*",
+                                                              /* CS shellcode */
+                                                              "4889059a840300bb040000004c8d442468488bc88d5301448bcbff15591d0200488b0d7a8403004c8d4424688d5302448bcbff15411d0200488b058284030048",
+                                                              "*0300eb394533c033d2eb1a4533c0418bd6eb12b920000000e856*", 
+                                                              "*0000ba030000004c8bc083642420004533c9488bcbff15*",
+                                                              "4889842498000000488b4424388b00488b8c24880000004803c8488bc14889442430488b4424388b4010488b8c24880000004803c8488bc14889442428488b44",
+                                                              "880000004803c8488bc1488b7c2420488bf0b940000000f3a4448b8424a0000000ba40000000488b4c2420e846f3ffff488b4c2420488b842480000000ff5010")
+                                                              )))
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.8.0"

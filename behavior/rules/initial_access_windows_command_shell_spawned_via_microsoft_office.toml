@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Windows Command Shell Spawned via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://github.com/danielbohannon/Invoke-DOSfuscation"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -38,8 +38,12 @@ process where event.action == "start" and
               "*regsvr32*", 
               "*ping * -n *&*",
               "*http://*",
-              "*%%*%%*%%*") and
-  not process.command_line : ("*:\\Program Files\\Tableau\\*--server*http://tableau*", "*:\\Program Files (x86)\\Tableau\\*--server*http://tableau*")
+              "*%%*%%*%%*", 
+              "*copy*.exe*") and
+  not process.command_line : 
+             ("*:\\Program Files\\Tableau\\*--server*http://tableau*", 
+              "*:\\Program Files (x86)\\Tableau\\*--server*http://tableau*", 
+              "\"C:\\Windows\\System32\\cmd.exe\" /c C:\\windows\\System32\\rundll32 advpack.dll,LaunchINFSection \"C:\\Users\\*\\AppData\\Roaming\\McGowan Partners LLC UAT\\setup.inf\", DefaultInstall*")
 '''
 
 min_endpoint_version = "7.15.0"

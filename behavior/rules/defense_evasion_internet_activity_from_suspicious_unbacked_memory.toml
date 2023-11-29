@@ -7,7 +7,7 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 registry where process.executable != null and 
@@ -45,12 +45,14 @@ registry where process.executable != null and
                            "?:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Crash Processor.exe",
                            "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil*.exe", 
                            "?:\\Windows\\system32\\Macromed\\Flash\\FlashUtil*.exe", 
+                           "?:\\Program Files (x86)\\Romac\\Length Nesting\\LenNest.exe",
                            "?:\\Program Files (x86)\\Lavasoft\\Web Companion\\Application\\Lavasoft.WCAssistant.WinService.exe", 
                            "?:\\Program Files (x86)\\Microsoft Dynamics 365 for Operations - Document Routing\\Microsoft.Dynamics.AX.Framework.DocumentRouting.Agent.exe") and
  not (process.code_signature.subject_name : "Cisco WebEx LLC" and process.executable : "?:\\Users\\*\\AppData\\Local\\WebEx\\webexAppLauncher.exe") and 
  not (process.code_signature.subject_name : ("GolfNow, LLC", "Pluralsight, LLC", "Blizzard Entertainment, Inc.", "Appgate Cybersecurity, INC.", 
                                              "Zoom Video Communications, Inc.", "Vertafore, Inc.", "Anatomage, Inc.", "Articulate Global, Inc.", 
-                                             "Lenovo", "Mozilla Corporation") and 
+                                             "Lenovo", "Mozilla Corporation", "TurbolabData_ABSKey.pfx", "eVision Holdings, LLC", "Zscaler, Inc.", 
+                                             "March Networks Corporation") and 
       process.code_signature.trusted == true)
 '''
 

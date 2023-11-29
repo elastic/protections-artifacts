@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies the call of commonly abused Windows APIs to perform code injection and where the call stack not starting with
+Windows NT syscall DLLs such as ntdll and win32u. This may indicate the use of direct system calls to evade endpoint
+security solutions hooking Windows APIs.
+"""
+id = "fe44381a-435c-4e19-ad89-40ac3750f514"
+license = "Elastic License v2"
+name = "Suspicious Windows API Call via Direct Syscall"
+os_list = ["windows"]
+reference = [
+    "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
+]
+version = "1.0.11"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[library where
+  not dll.code_signature.status : "trusted" and not dll.path : "?:\\windows\\assembly\\nativeimages_*"] as event0
+[api where event.category : "intrusion_detection" and
+    process.Ext.api.behaviors == "direct_syscall" and process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and 
+    startswith~(process.thread.Ext.call_stack_summary, event0.dll.name) and 
+    stringcontains~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name)]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

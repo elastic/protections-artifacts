@@ -13,7 +13,7 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and 
@@ -36,6 +36,8 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                         "/usr/local/bin/*",
                         "DYLD_INSERT_LIBRARIES*",
                         "LD_PRELOAD*",
+                        "*/applet",
+                        "*/Automator Application Stub",
                         "*python*", 
                         "*spawn*",
                         "*http*",
@@ -64,7 +66,8 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                       "/Users/*/Library/Application Support/*",
                       "/var/run/docker.sock")) or
   (Persistence.args : ("/Users/*/Library/Application Support/*", "/Library/*", "/Applications/*") and 
-    (process.code_signature.exists == false or process.code_signature.trusted == false))) and not 
+    (process.code_signature.exists == false or process.code_signature.trusted == false) and
+    not process.name : "ksinstall")) and not 
   process.executable : ("/System/*",
                         "/Library/PrivilegedHelperTools/*", 
                         "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not

@@ -6,13 +6,28 @@ to establish C2 or download additional payloads / tools.
 """
 id = "883cbfd8-278a-403c-907a-aefb02da0429"
 license = "Elastic License v2"
-name = "Suspicious Curl File Download via Osascript"
+name = "Curl File Download via Osascript"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-process where event.type == "start" and 
- process.parent.name == "osascript" and process.name : ("curl", "nscurl") and process.args : ("-o", "--output", "--download", "-dl", "-dir", "--directory")
+process where event.type == "start" and process.parent.name == "osascript" and
+ (
+  (process.name : ("curl", "nscurl") and 
+    process.args : ("-o", 
+                    "--output", 
+                    "--download", 
+                    "-dl", 
+                    "-dir", 
+                    "--directory")) or
+  (process.name : ("sh", "bash", "zsh") and 
+    process.args : ("curl*", 
+                    "/bin/curl*", 
+                    "/usr/bin/curl*",
+                    "nscurl*",
+                    "/bin/nscurl*",
+                    "/usr/bin/nscurl*"))
+ )
 '''
 
 min_endpoint_version = "8.5.0"

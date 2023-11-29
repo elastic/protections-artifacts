@@ -4,7 +4,7 @@ id = "33270c59-e034-4e5b-accb-b6a23681a0d3"
 license = "Elastic License v2"
 name = "Suspicious Memory Write to a Remote Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.executable : "?:\\*" and
@@ -14,13 +14,15 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable : 
               "?:\\Program Files (x86)\\*.exe",
               "?:\\Windows\\System32\\lsass.exe",
               "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe") and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*msys-*.dll!_feinitialise*", "*cygwin*.dll!setprogname+*")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                  $entry.symbol_info : ("*msys-*.dll!_feinitialise*", "*cygwin*.dll!setprogname+*", 
+                                        "?:\\program files*\\cylance\\desktop\\cylancememdef*.dll!*")) and
  not (stringcontains~(process.Ext.api.summary, process.name) and not process.executable : "?:\\Windows\\*") and
  not (process.code_signature.trusted == true and 
       process.code_signature.subject_name : 
               ("GEOVISION INC.", "COMPUTACION EN ACCION SA DE CV", "Crownalytics, LLC", "Johannes Schindelin", 
                "INCA Internet Co.,Ltd.", "Mark Straver", "Micro Systemation AB (publ)", "HardestCodesEst OU", 
-               "MUSARUBRA US LLC")) and
+               "MUSARUBRA US LLC", "Tropic Management Systems Inc.")) and
  not (process.executable : "?:\\Users\\*\\AppData\\Local\\Mozilla Firefox\\firefox.exe" and 
       process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true) and 
  not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SNXAC\\STAProxy.exe" and
@@ -35,6 +37,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable : 
       process.Ext.api.summary : "WriteProcessMemory( microsoftpdfreader.exe, Data, 0x3000 )") and 
  not (process.parent.executable : "?:\\Program Files (x86)\\JTECH Medical\\Northstar\\Northstar.exe" and 
       process.Ext.api.summary : "WriteProcessMemory( northstar.exe, casper.dll, * )") and 
+ not process.parent.executable : ("?:\\Program Files (x86)\\Embarcadero\\Studio\\*\\bin\\bds.exe", "?:\\Program Files\\Embarcadero\\Studio\\*\\bin\\bds.exe") and 
  not user.id : ("S-1-5-20", "S-1-5-19")
 '''
 

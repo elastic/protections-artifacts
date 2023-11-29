@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence with maxspan=1m
@@ -141,7 +141,10 @@ sequence with maxspan=1m
 
    not (process.executable : "?:\\Windows\\System32\\conhost.exe" and process.parent.executable : "?:\\Windows\\System32\\sdiagnhost.exe") and
 
-   not (process.parent.name : "dllhost.exe" and process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}")
+   not (process.parent.name : "dllhost.exe" and process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and 
+
+   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication" and 
+        process.parent.command_line : "\"?:\\Program Files\\Internet Explorer\\iexplore.exe\" -startmanager -Embedding")
    ] by process.parent.entity_id
 '''
 

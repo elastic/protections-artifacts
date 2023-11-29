@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id
@@ -83,7 +83,9 @@ sequence by process.entity_id
                     "f5f15ab19171dbcb58e757cd6446be41e04adf00797d712b07e544066ecd3c67", 
                     "49b95a804337ee7e12092cc7a13c2eb6c3acb33f9bbaac8e820b9184063642f2", 
                     "4c974212f5fc3720d58a8df6c2b9587b85949edc676f9f82921c04f067c261f1", 
-                    "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9") and
+                    "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9",
+                    "121a4e78abe13c92a7ff91d2e91bc98173724072cc891ecbbc10765e8d5bd024", 
+                    "54e55d6da825d709cf495eb18be10d8cbb92ac1904c1359999d53d3fa42161e2") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -145,7 +147,6 @@ sequence by process.entity_id
                           "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
                           "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65",
-                          "488944242048837c2420007520488b8424600200004883c050488bd0488d0d49180100e84c77ffffe9b6000000488b8424600200004883c0504c8b442420488b",
                           "**45a848894590eb00488b4590488b5588c6420c01488b5588",
                           "*488b5560c6420c01488b5560488b4d2048894a",
                           "c6470c01833d6cf1b45f007406ff15f40cb45f8bf0e8b5e76f5f85f6400f95c6400fb6f64883bdc0000000007423488b8dc0000000e825ebe25e448bc0488b95",
@@ -158,7 +159,11 @@ sequence by process.entity_id
                           "a314a2e40585c*",
                           "488b9570ffffffc6420*",
                           "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
-                          "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067"))
+                          "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067", 
+                          "488944242048837c24200075*", 
+                          "c6430c01833d*", 
+                          "488906488bcb41ff542420488b064903e6eb17488bcb41ff5424384883f8087e06488b46f8eb034833c04883c420415e415c5f5e5bc300000000000000000000", 
+                          "48898424f00300004883bc24f003000000750eff94248e030000898424f80300008b8c24fc030000ff942476030000eb30488d8c2440010000ff94249e030000"))
   ]
   until [process where event.action:"end"]
 '''

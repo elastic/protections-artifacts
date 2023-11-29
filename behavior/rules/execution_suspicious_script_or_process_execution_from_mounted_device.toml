@@ -7,7 +7,7 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=3m
@@ -33,6 +33,7 @@ sequence with maxspan=3m
                                "/Library/PrivilegedHelperTools/*",
                                "/Volumes/Eclipse Installer/Eclipse Installer.app/Contents/MacOS/eclipse-inst") and not
   process.Ext.effective_parent.executable : ("/Volumes/EPSON/Install Navi.app/Contents/MacOS/Install Navi",
+                                             "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
                                              "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
 '''
 

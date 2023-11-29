@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -41,7 +41,10 @@ sequence by process.entity_id with maxspan=5m
               "?:\\Program Files\\*.exe")
   ]
  [api where process.Ext.api.name == "GetAsyncKeyState" and
-  process.Ext.api.parameters.background_callcount >= 400 and process.Ext.api.parameters.ms_since_last_keyevent >= 100]
+  process.Ext.api.parameters.background_callcount >= 400 and process.Ext.api.parameters.ms_since_last_keyevent >= 100 and 
+  not (process.executable : "?:\\Windows\\System32\\rundll32.exe" and 
+       process.command_line : "\"?:\\Windows\\System32\\rundll32.exe\" C:\\Windows\\System32\\LogiLDA.dll,LogiFetch" and 
+       process.thread.Ext.call_stack_summary : "win32u.dll|winsrvext.dll|ntdll.dll")]
 '''
 
 min_endpoint_version = "8.10.0"

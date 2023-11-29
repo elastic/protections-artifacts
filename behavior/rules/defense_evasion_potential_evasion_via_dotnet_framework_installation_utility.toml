@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Evasion via dotNET Framework Installation Utility"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Installutil/"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
@@ -29,11 +29,13 @@ process where event.action == "start" and
                "?:\\Windows\\SysWOW64\\wbem\\mofcomp.exe",
                "?:\\Windows\\system32\\conhost.exe",
                "?:\\Windows\\SysWOW64\\conhost.exe",
+               "?:\\Windows\\Sys*\\net.exe",
+               "?:\\Windows\\Sys*\\net1.exe",
                "?:\\Windows\\System32\\wbem\\mofcomp.exe") and
  not process.parent.executable :
-              ("?:\\Program Files\\SolarWinds\\Orion\\ConfigurationWizard.exe",
-               "?:\\Program Files\\Rescue and Smart Assistant\\InstallUtil64.exe",
-               "?:\\Program Files (x86)\\Rescue and Smart Assistant\\*.exe",
+              ("?:\\Program Files*\\SolarWinds\\Orion\\ConfigurationWizard.exe",
+               "?:\\Program Files*\\Rescue and Smart Assistant\\InstallUtil64.exe",
+               "?:\\Program Files*\\Rescue and Smart Assistant\\*.exe",
                "?:\\Windows\\System32\\msiexec.exe") and
  not (process.executable : "?:\\Windows\\System32\\sc.exe" and process.args : "delete")
 '''

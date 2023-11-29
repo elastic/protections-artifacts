@@ -1,0 +1,61 @@
+[rule]
+description = """
+Detects the creation of a reverse shell through a suspicious parent child relationship spawned via a shell with
+suspicious command line arguments. Attackers may spawn reverse shells to establish persistence onto a target system.
+"""
+id = "52206861-4570-4b8b-a73e-4ef0ea379a4c"
+license = "Elastic License v2"
+name = "Linux Reverse Shell"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1s
+  [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
+   process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and destination.ip != null and 
+   not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1")] by process.entity_id
+  [process where event.type == "start" and event.action in ("exec", "fork") and 
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
+     (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*")
+   )] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.5.0"

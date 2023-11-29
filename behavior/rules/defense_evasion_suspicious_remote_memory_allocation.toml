@@ -7,7 +7,7 @@ id = "b2104624-d0e8-4864-8266-605056c6469a"
 license = "Elastic License v2"
 name = "Suspicious Remote Memory Allocation"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
@@ -46,7 +46,8 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
    not (process.executable : "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe" and process.code_signature.trusted == true) and 
    not (process.executable : "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and 
         process.parent.executable : ("?:\\Windows\\System32\\SecurityHealthSystray.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\FileCoAuth.exe") and 
-        process.Ext.api.summary : "VirtualAllocEx*microsoftedgeupdate.exe,*")
+        process.Ext.api.summary : "VirtualAllocEx*microsoftedgeupdate.exe,*") and 
+   not process.parent.executable : ("?:\\Program Files (x86)\\Embarcadero\\Studio\\*\\bin\\bds.exe", "?:\\Program Files\\Embarcadero\\Studio\\*\\bin\\bds.exe")
 '''
 
 min_endpoint_version = "8.8.0"

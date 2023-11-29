@@ -7,7 +7,7 @@ id = "5abd98fb-ffbe-4cd6-9592-3cda7b155ff5"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via PowerShell"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -19,10 +19,12 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
   process.executable : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
 
   (
-    (process.parent.name : "powershell.exe" and process.parent.command_line : "*http*") or
+    (process.parent.name : "powershell.exe" and process.parent.command_line : "*http*" and 
+     not process.command_line : "**bmx-panels-check.s3.us-east-1.amazonaws.com*") or
 
     descendant of [process where event.action == "start" and
-                   process.name : "powershell.exe" and process.command_line : "*http*"]
+                   process.name : "powershell.exe" and process.command_line : "*http*" and 
+                   not process.command_line : "**bmx-panels-check.s3.us-east-1.amazonaws.com*"]
   )  and
 
   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and

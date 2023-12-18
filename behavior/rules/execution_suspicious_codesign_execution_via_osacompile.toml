@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects the abnormal execution of the codesign binary via Osacompile to forcefully sign all contents of a bundle. Threat
+actors may use this technique to bypass code signing requirements.
+"""
+id = "7d2a993e-967f-4abd-b53e-ac14fdd66ddb"
+license = "Elastic License v2"
+name = "Suspicious Codesign Execution via Osacompile"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.name : "codesign" and 
+ process.args : ("--sign", "-s") and 
+ process.args : ("--force", "-f") and 
+ process.args : "--deep" and 
+ process.parent.name : "osacompile"
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.5.0"

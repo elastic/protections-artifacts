@@ -13,7 +13,7 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -23,6 +23,7 @@ process where event.type == "start" and event.action == "exec" and
                           "LD_PRELOAD=",
                           "*=/opt/homebrew/*",
                           "*=libjemalloc.so.2*",
+                          "*=/Users/*/Library/Application Support/Steam/Steam.AppBundle/Steam/Contents/MacOS/steamloader.dylib*",
                           "*=/Applications/Xcode-*.app/*",
                           "*=/Library/Developer/CoreSimulator/*",
                           "*=/Users/*/Library/Developer/Xcode/*",
@@ -31,6 +32,7 @@ process where event.type == "start" and event.action == "exec" and
   not process.parent.executable : ("/usr/bin/xcrun", 
                                    "/Applications/Xcode.app/*",
                                    "/Applications/Xcode-*.app/*", 
+                                   "/Library/Developer/CommandLineTools/usr/bin/make",
                                    "/Users/*/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64",
                                    "/Library/Printers/Canon/CUPS_Printer/Bins/Bins.bundle/Contents/Library/capdftopdl",
                                    "/Applications/Android Studio.app/Contents/MacOS/studio")

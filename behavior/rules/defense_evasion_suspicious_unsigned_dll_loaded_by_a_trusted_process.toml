@@ -7,7 +7,7 @@ id = "14fbbd38-b858-45fa-8bc5-02a7bfd295e6"
 license = "Elastic License v2"
 name = "Suspicious Unsigned DLL Loaded by a Trusted Process"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -17,7 +17,8 @@ sequence by process.entity_id with maxspan=5s
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*")) and
     process.code_signature.trusted == true and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
-    dll.hash.sha256 != null and
+    dll.hash.sha256 != null and 
+    not dll.hash.sha256 : "e99fec7f1f2fe16029b4dbe30a96325efd7265c9cc8672f60945ce943684442d" and 
     (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",

@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies attempts to create a child process from a memory section with read, write and execute permissions and backed
+by a file on disk. This may indicate image hollowing or unpacking from suspicious memory sections.
+"""
+id = "13dadee2-f4b8-4877-8b9c-37ce59f82432"
+license = "Elastic License v2"
+name = "Process Creation from Backed RWX Memory"
+os_list = ["windows"]
+version = "1.0.10"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and
+  (
+   process.name : ("rundll32.exe", "regsvr32.exe") or
+   (process.Ext.relative_file_creation_time <= 300 and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")) or
+   (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not process.executable : "C:\\*") or
+   process.executable : ("?:\\Users\\Public\\*",
+                         "?:\\Users\\*\\Downloads\\*",
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\7z*\\",
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*\\*",
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*",
+                         "?:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*")
+  ) and 
+  process.hash.sha256 != null and 
+  not process.executable : 
+                ("?:\\Windows\\Installer\\MSI*.tmp", 
+                 "?:\\Program Files\\*.exe", 
+                 "?:\\Program Files (x86)\\*.exe", 
+                 "?:\\Users\\*\\AppData\\Local\\Temp\\_ir_sf*_temp_*\\irsetup.exe", 
+                 "?:\\Users\\*\\AppData\\Local\\Temp\\~nsuA.tmp\\*.exe") and
+  not process.hash.sha256 : 
+               ("9ad4c8d68a26f6feb2287e9d9895358a5a560ecc34cb3649edade01b054e1dd5", 
+                "aaa782279126c5e78dda4ab68e1d9f2da2d4b87b183b9ed24546637d25e5d3c6", 
+                "80be4152f9bdb4631ec7f12da1dc8dae1037b340753a1552c3e4cd8dfdd05d2d", 
+                "2cd1b00947abe2df2cba3997d7bdd5a9043ebe598987f0e9cade0aceb73f9edd") and
+  not process.parent.thread.Ext.call_stack_summary : "*|python*.dll|*" and
+  not (process.code_signature.status : ("trusted", "errorExpired") and process.executable : "?:\\Users\\*\\Downloads\\*") and
+  not process.pe.original_file_name : "python.exe"] by process.entity_id
+ [process where event.action == "start" and
+  not process.parent.thread.Ext.call_stack_contains_unbacked == true and
+  process.parent.thread.Ext.call_stack_summary : "?*" and 
+  not process.executable : "?:\\Program Files\\AutoHotkey\\UX\\AutoHotkeyUX.exe" and 
+  not process.parent.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*") and
+  (
+   _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and startswith~($entry.symbol_info, process.parent.executable)) or
+   _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+               $entry.protection : "RWX" and  $entry.symbol_info : "?:\\*" and
+               not $entry.symbol_info : ("?:\\Program Files*", "?:\\Windows\\*", "?:*\\isrt.dll*", "?:*\\ISSetup.dll*"))
+  ) and
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.symbol_info : ("?:\\Windows\\*", "?:\\Program Files*", "*.exe!*")) and
+  not process.parent.thread.Ext.call_stack_summary : ("*|python*.dll|*", "*|isrt.dll*", "|issetup.dll*") and 
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : ("85c00f8?a6000000*", "8d45f253508*", "8b4df464890d*", "6a006890751*"))
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

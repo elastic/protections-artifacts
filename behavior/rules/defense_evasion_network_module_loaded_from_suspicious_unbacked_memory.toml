@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id
@@ -48,7 +48,7 @@ sequence by process.entity_id
                      "Essential Objects, Inc*", "HP Inc.", "Aina Maximit Oy", "Logitech Inc", "N-ABLE TECHNOLOGIES LTD", 
                      "Cognizant TriZetto Software Group, Inc.", "win.acme.simple@gmail.com", "Crownalytics, LLC", 
                      "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE", 
-                     "Link Data Security A/S", "Western Digital Technologies, Inc.") and
+                     "Link Data Security A/S", "Western Digital Technologies, Inc.", "Rockstar Games, Inc.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -158,12 +158,17 @@ sequence by process.entity_id
                           "a3b8eb*",
                           "a314a2e40585c*",
                           "488b9570ffffffc6420*",
+                          "49bb60c0*",
+                          "488b5590c6420c01833d2bc9*",
+                          "8be55d558bec83ec08c745f800000000*",
                           "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067", 
                           "488944242048837c24200075*", 
                           "c6430c01833d*", 
+                          "49bb60c05eb7ff7f000048b9*",
                           "488906488bcb41ff542420488b064903e6eb17488bcb41ff5424384883f8087e06488b46f8eb034833c04883c420415e415c5f5e5bc300000000000000000000", 
-                          "48898424f00300004883bc24f003000000750eff94248e030000898424f80300008b8c24fc030000ff942476030000eb30488d8c2440010000ff94249e030000"))
+                          "48898424f00300004883bc24f003000000750eff94248e030000898424f80300008b8c24fc030000ff942476030000eb30488d8c2440010000ff94249e030000", 
+                          "8be55d558bec83ec08c745f800000000c745fc02000000c745f8f0182a008d45fc506a4068050000008b4df851b8e0a37b77ffd0680500000068df003b0268f0"))
   ]
   until [process where event.action:"end"]
 '''

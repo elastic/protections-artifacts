@@ -1,0 +1,38 @@
+[rule]
+description = """
+Detects when a file is cloned by an unsigned or untrusted process. Cloning of files is highly abnormal but especially so
+when done by an unsigned or untrusted process to duplicate a file or payload via api call.
+"""
+id = "aac13c8f-fd32-43c8-b71c-85019ad6fe50"
+license = "Elastic License v2"
+name = "File Cloned by Unsigned or Untrusted Process"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+file where event.action == "clone" and 
+ (process.code_signature.exists == false or process.code_signature.trusted == false)
+'''
+
+min_endpoint_version = "8.11.1"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1559"
+name = "Inter-Process Communication"
+reference = "https://attack.mitre.org/techniques/T1559/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.1"

@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -59,7 +59,9 @@ process where event.action == "start" and process.name : "powershell.exe" and
              "*Register-AzureADConnectHealthADDSAgent*", 
              "*\\ProgramData\\Microsoft\\LogConverter\\*", 
              "*WinSCP.com*", 
-             "*--app-id=memtime-*") and
+             "*--app-id=memtime-*", 
+             "*BkAGEAdABhAGIAYQBzAGUALgB3AGkAbgBkAG8AdwBzAC4AbgBlAHQA*", 
+             "*.vscode\\extensions\\ms-dynamics-smb*") and
 
  not (process.parent.name : "cmd.exe" and
       (process.parent.command_line : "*\\WindowsPowershell\\*\\powershell*" or process.parent.args : ("-Command", "-OutputFormat", "-InputFormat"))) and
@@ -102,7 +104,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
           "*ssh -p *",
           "*http*|iex*",
           "*@SSL\\DavWWWRoot\\*.ps1*",
-          "*.lnk*.Seek(0x*"
+          "*.lnk*.Seek(0x*",
+          "*[string]::join(*"
         ) or
 
       (process.args : "-c" and process.args : "&{'*") or

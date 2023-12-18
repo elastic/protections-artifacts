@@ -7,7 +7,7 @@ id = "42ab2c0f-b10d-467d-8c6d-def890cf3f68"
 license = "Elastic License v2"
 name = "Unusual File Made Executable by Suspicious Parent Process"
 os_list = ["macos"]
-version = "1.0.25"
+version = "1.0.27"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -51,6 +51,7 @@ process where event.type == "start" and event.action == "exec" and
                                  "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM",
                                  "/Applications/Eclipse_2020.app/Contents/MacOS/eclipse",
                                  "/Users/*/eclipse/*/Eclipse.app/Contents/MacOS/eclipse",
+                                 "/Applications/Fiery/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager",
                                  "/Applications/Eclipse.app/Contents/MacOS/eclipse", 
                                  "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Software Uninstaller",
                                  "/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service",
@@ -59,6 +60,7 @@ process where event.type == "start" and event.action == "exec" and
     process.Ext.effective_parent.executable : ("/Applications/EaseUS Data Recovery Wizard.app/Contents/MacOS/EaseUS Data Recovery Wizard",
                                                "/private/tmp/Fiery Printer Driver Installer.app/Contents/Resources/User Software/OSX/Printer Driver/Installer Wizard.app/Contents/MacOS/Fiery Printer Driver Installer",
                                                "/Library/Kaseya/AgentMon",
+                                               "/Applications/Fiery/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager",
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                "/Volumes/Mac_User_SW/Fiery Master Installer.app/Contents/MacOS/Fiery Master Installer",
                                                "/Applications/Examplify.app/Contents/Resources/ExamplifyService/ExamplifyService",

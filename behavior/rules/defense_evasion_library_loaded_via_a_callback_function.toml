@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Library Loaded via a CallBack Function"
 os_list = ["windows"]
 reference = ["https://malpedia.caad.fkie.fraunhofer.de/details/win.nighthawk"]
-version = "1.0.16"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id 
@@ -22,7 +22,7 @@ sequence by process.entity_id
    dll.name : ("vaultcli.dll", "wmiutils.dll", "taskschd.dll", "dnsapi.dll", "dsquery.dll", 
               "mstask.dll", "mstscax.dll", "sqlite3.dll", "clr.dll", "coreclr.dll", "ws2_32.dll", 
               "wininet.dll", "dnsapi.dll", "winhttp.dll", "psapi.dll", "bitsproxy.dll", "softokn3.dll", 
-              "System.Management.Automation.dll")
+              "System.Management.Automation.dll", "Wldap32.dll")
  ) and 
 
  process.thread.Ext.call_stack_summary : 

@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects the execution of the Osacompile binary followed by the immediate file modification of a script or executable
+file. This is a technique that threat actors have used by to compile scripts into executable binaries on victim systems.
+"""
+id = "60a14513-1793-4798-bad6-99c40fc4791e"
+license = "Elastic License v2"
+name = "Suspicious Script Compilation via Osacompile"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : "osacompile" and 
+  process.args : "-x" and 
+  process.args : "-o"]
+[file where event.action == "modification" and 
+  process.name : "osacompile" and 
+  file.extension : "scpt"]
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.3.0"

@@ -1,0 +1,57 @@
+[rule]
+description = """
+Detects when TextEdit is used to remove the quarantine attribute on a file. Based on research by Jeff Johnson that uses
+TextEdit to remove the quarantine attribute from files.
+"""
+id = "0c33446f-8d07-41c3-805f-885df2bc60ed"
+license = "Elastic License v2"
+name = "Quarantine Attrib Removal via TextEdit"
+os_list = ["macos"]
+reference = [
+    "https://github.com/cedowens/JXA-RemoveQuarantine",
+    "https://lapcatsoftware.com/articles/sandbox-escape.html",
+    "https://lapcatsoftware.com/articles/sandbox-escape2.html",
+]
+version = "1.0.3"
+
+query = '''
+file where event.action == "extended_attributes_delete" and process.name : "TextEdit"
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+[[threat.technique.subtechnique]]
+id = "T1553.001"
+name = "Gatekeeper Bypass"
+reference = "https://attack.mitre.org/techniques/T1553/001/"
+
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -60,7 +60,8 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe",
 		  "?:\\Windows\\system32\\WerFault.exe",
 		  "?:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechRuntime.exe",
-		  "?:\\Windows\\System32\\BackgroundTransferHost.exe") and
+		  "?:\\Windows\\System32\\BackgroundTransferHost.exe", 
+                  "?:\\Windows\\System32\\mousocoreworker.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
@@ -88,7 +89,8 @@ sequence by process.entity_id with maxspan=5m
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
         process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
-   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *", "Specops Software Inc.") and
+   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *", 
+                                               "Specops Software Inc.", "Flexera Software LLC", "N-ABLE TECHNOLOGIES LTD", "N-ABLE TECHNOLOGIES LTD") and
         process.code_signature.trusted == true) and
    not (process.executable : "?:\\Windows\\System32\\mstsc.exe" and
         process.parent.executable : "?:\\Windows\\explorer.exe" and

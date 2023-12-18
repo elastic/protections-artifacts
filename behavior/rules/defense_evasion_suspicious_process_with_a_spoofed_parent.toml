@@ -1,0 +1,93 @@
+[rule]
+description = """
+Detects attempts to start a process with a fake parent process identity to blend in with normal parent child process
+tree.
+"""
+id = "667a1895-5920-4fb2-820f-16c356f79341"
+license = "Elastic License v2"
+name = "Suspicious Process with a Spoofed Parent"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
+  not (process.name : "powershell.exe" and process.args : "Invoke-InProcessStub" and 
+       process.args : "$execWrapper" and process.args : "\"ANSIBLE_BOOTSTRAP_ERROR:")] by process.parent.Ext.real.entity_id
+ [api where 
+  process.executable : "?:\\*" and 
+  process.Ext.api.name == "WriteProcessMemory" and process.parent.executable != null and 
+  
+  not (process.executable : "?:\\windows\\system32\\svchost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe") and
+
+  not process.executable : ("?:\\Windows\\System32\\RuntimeBroker.exe", 
+                            "?:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe", 
+                            "?:\\Windows\\SoftwareDistribution\\*.exe", 
+			    "?:\\Windows\\System32\\WerFaultSecure.exe", 
+                            "?:\\WINDOWS\\SysWOW64\\WerFaultSecure.exe") and
+							 
+  not (process.executable : ("*\\Program Files (x86)\\*.exe", "*\\Program Files\\*.exe") and process.code_signature.trusted == true) and 
+
+
+  not (process.code_signature.subject_name : ("BeyondTrust Software, Inc", "Michael Maltsev", "BeyondTrust Software Inc", "Malwarebytes Inc.", "Malwarebytes Inc") and
+       process.code_signature.trusted == true) and
+
+  not (process.name : ("devenv.exe", "PowerToys.exe", "notification_helper.exe", "cpptools.exe") and process.code_signature.trusted == true and 
+       process.code_signature.subject_name : "Microsoft*") and 
+
+  not (process.executable : 
+                ("?:\\Windows\\System32\\backgroundTaskHost.exe", 
+                 "?:\\Windows\\System32\\SystemSettingsBroker.exe", 
+                 "?:\\Windows\\SystemApps\\Microsoft*.exe", 
+                 "?:\\WINDOWS\\system32\\OpenWith.exe", 
+                 "?:\\WINDOWS\\syswow64\\OpenWith.exe", 
+                 "?:\\Windows\\System32\\PickerHost.Exe",
+                 "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe") and 
+        process.parent.executable : "?:\\Windows\\system32\\svchost.exe") and
+
+  not (process.name : "tailscale-ipn.exe" and
+        process.code_signature.subject_name == "Tailscale Inc." and
+        (process.code_signature.trusted == true or process.code_signature.status == "errorChaining")) and
+	
+  not (process.code_signature.subject_name == "Roblox Corporation" and
+        (process.code_signature.trusted == true or process.code_signature.status == "errorTimeStamp")) 
+  ] by process.entity_id
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.004"
+name = "Parent PID Spoofing"
+reference = "https://attack.mitre.org/techniques/T1134/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

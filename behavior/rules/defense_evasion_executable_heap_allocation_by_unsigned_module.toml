@@ -1,0 +1,77 @@
+[rule]
+description = """
+Identifies attempt to create a heap memory allocation with executable code permission (HEAP_CREATE_ENABLE_EXECUTE
+option). This may indicate an attempt to prepare for shellcode injection evading security monitoring for suspicious
+VirtualAlloc API calls.
+"""
+id = "6e176443-7a9a-4c22-a239-164812cf961c"
+license = "Elastic License v2"
+name = "Executable Heap Allocation by Unsigned Module"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=3m
+ [library where not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and 
+  (dll.Ext.relative_file_creation_time <= 300 or
+   (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not dll.path : "C:\\*")) and 
+  dll.hash.sha256 : "?*" and 
+  not dll.hash.sha256 : 
+              ("96f4146a5d0b90029b2970d47ffa69477992eb6bb42e29062c5598d539a64f75", 
+               "dbd1822a92330459e425f3ec6615c23904160dd9f5afc7b420c6956b6a548c36", 
+               "f7efb8f1a1cf6a68c1b4d8918eb2dc75bf4ce3b46f88e6eb0ef02766a3ab3b13", 
+               "ba98a8ca5b444e45d37693e0a60600f5ee7c4047ec91413396ae32eeb399ab41", 
+               "0ac46b204a4ea9351b3ee68438159e3a317cafda6cef9534adb36cd804fd20a3", 
+               "42f2f0dcac3b8a51fef01aa8429411a0c5eca0c36109f955285286445d1180ba", 
+               "d32b9f057abc3dda988d443cf9866d70a3e986a57f2c6f82379e45b8b900128b", 
+               "9c4c5680ca6130553c8956db193f69dad049846433481d8499d1ea78f209a88a", 
+               "8fb66695caf1f417d62f3f35cd22370dadfe1c4fa2a39ffd476dd200c897efe7", 
+               "a35754d3f4964a130cb5a00ac1277af7cfdf9cfcf5131627ed00a0c30988b583", 
+               "5050a4515eae4ea3200b84a00b2df9ebe8dbd8910a78e04e8fd0a3f26c5c90fa", 
+               "f917c048dc906a531b0b2711b6f83eb8470ed91b2af48ae84fd0ee98861683e4", 
+               "ee82061a530259ee995616a93f08cc4cd3c456d199954423be3f4475c0e81b84", 
+               "63a32adbb1622053b4b1e09be8de5536bef87886aa3c8061f728f21a960c0c73", 
+               "840f50b6046d0473a18025d75cfde2da9f14164815bc2598798661585b8f01fb", 
+               "aa23cdf53027b9d67912a5d3b045c86fe98f8c0327314da142c0d3b3779eca53", 
+               "b759800c0fc0268415713a7600d4cfa5360b9fd294c3e5c2e51333bbd6a1e635", 
+               "35d0bfd492577c765ed54b430be7961b322d16e218199de972df5a215bb7aac8", 
+               "ad17b9409ac2b46f54c5fbd220d48d091ca7a1b8d91c20f15b00b93c6f6ca69d", 
+               "f917c048dc906a531b0b2711b6f83eb8470ed91b2af48ae84fd0ee98861683e4") and 
+  not dll.path :
+             ("?:\\Program Files (x86)\\*",
+              "?:\\Program Files\\*",
+              "?:\\Windows\\*")] as event0
+[api where process.Ext.api.name :"VirtualAlloc" and
+  process.Ext.api.parameters.protection : "RWX" and process.executable != null and 
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*kernelbase.dll!HeapCreate*", "*ntdll.dll!RtlCreateHeap*", "*ntdll.dll!RtlAllocateHeap*")) and
+  process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.path != null and 
+  stringcontains~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name) and 
+  (
+   stringcontains~(process.thread.Ext.call_stack_summary, concat("kernelbase.dll|", event0.dll.name)) or 
+   stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", event0.dll.name))
+   )]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -17,7 +17,7 @@ reference = [
     "http://waleedassar.blogspot.com/2013/01/wow64logdll.html",
     "https://github.com/rapid7/metasploit-framework/blob/5863ff7e357af1634f5b370e811d647a9c999158/modules/exploits/windows/local/cve_2020_17136.rb#L192",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 library where
@@ -62,7 +62,11 @@ library where
                    "?:\\Windows\\System32\\wbem\\wbemcomn.dll", 
                    "?:\\Windows\\SysWOW64\\wbem\\wbemcomn.dll")
      ) and
-     not dll.path :("?:\\Windows\\System32\\prntvpt.dll", "?:\\Windows\\System32\\wlanhlp.dll", "?:\\Windows\\SysWOW64\\prntvpt.dll") and 
+     not dll.path : 
+               ("?:\\Windows\\System32\\prntvpt.dll", 
+                "?:\\Windows\\System32\\wlanhlp.dll", 
+                "?:\\Windows\\SysWOW64\\prntvpt.dll", 
+                "?:\\Windows\\WinSxS\\*.dll") and 
      not (dll.pe.imphash : "a9ab204cf2b4a1903b3fba3c920bd357" and dll.name : "Ualapi.dll")
 '''
 

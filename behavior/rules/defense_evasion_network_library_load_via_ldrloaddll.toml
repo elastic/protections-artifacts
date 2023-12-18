@@ -1,0 +1,70 @@
+[rule]
+description = "Identifies the load of a networking library by calling directly the LdrLoadDLL windows API and from an unsigned module."
+id = "1d11bfcd-b3dd-41f6-b770-fb7cca437019"
+license = "Elastic License v2"
+name = "Network Library Load via LdrLoadDLL"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [library where not dll.code_signature.status == "trusted" and 
+  not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+  not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\*") and 
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")] as event0
+ [library where
+   dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll") and 
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*LdrLoadDLL*") and
+    stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", event0.dll.name)) and
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                                                   $entry.symbol_info : ("*LoadLibrary*",
+                                                                         "*LdrResolveDelayLoadedAPI*",
+                                                                         "*hmpalert.dll!CVCCP*",
+                                                                         "*LdrGetProcedureAddressEx*",
+                                                                         "?:\\Program Files (x86)\\*.dll*",
+                                                                         "?:\\Program Files\\*.dll*",
+                                                                         "*KernelBase.dll!CreateProcess*")) and
+   /* Managed Code, Cynet MemScanner, xSecuritas, Mcafee */
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes :
+                         ("*8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b*",
+                          "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
+                          "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
+                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65", 
+                          "2048894538488b4d1048c1e103488b7d38488b7550f3a44c8b4d284d8b49484c8b45284d8b4040488b5528488b5220488b4d28488b8988000000ff95a0000000",
+                          "83c4209d61c38b1890906683fb1875158b580485db740e8b5b0c81fb33003200750331dbc331db4bc30000000000000000000000000000000000000000000000")) and
+   not process.code_signature.subject_name : ("ZOHO Corporation Private Limited", "Sophos Ltd", "Electronic Arts, Inc.", "Epic Games Inc.")]
+  [network where event.action == "connection_attempted" and 
+   not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

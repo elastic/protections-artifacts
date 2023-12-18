@@ -13,7 +13,7 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.34"
+version = "1.0.36"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and 
@@ -28,16 +28,17 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                         "/Users/Shared/*", 
                         "/Library/Containers/*", 
                         "/Users/*/Library/*",
-                        "/Users/*/Applications/*",
                         "/var/root/*", 
                         "/Library/WebServer/*",
                         "/Library/Graphics/*",
+                        "/Users/*/Applications/*",
                         "/Library/Fonts/*",
                         "/usr/local/bin/*",
                         "DYLD_INSERT_LIBRARIES*",
                         "LD_PRELOAD*",
                         "*/applet",
                         "*/Automator Application Stub",
+                        "*/Application Stub",
                         "*python*", 
                         "*spawn*",
                         "*http*",
@@ -58,6 +59,7 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
   Persistence.args : ("/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service", 
                       "/var/tmp/LogMeIn Rescue - */Support-LogMeInRescue.app/Contents/MacOS/Support-LogMeInRescue", 
                       "/Users/*/.docker/run/docker.sock",
+                      "/Users/*/Applications/Grammarly Desktop.app//Contents/Library//LaunchAgents/Grammarly Desktop Helper.app/Contents/MacOS/Grammarly Desktop Helper",
                       "/usr/local/jamf/bin/jamf", 
                       "/Library/Addigy/go-agent",
                       "/usr/local/bin/elastic-agent",
@@ -65,9 +67,13 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                       "https://elastic.jamfcloud.com", 
                       "/Users/*/Library/Application Support/*",
                       "/var/run/docker.sock")) or
-  (Persistence.args : ("/Users/*/Library/Application Support/*", "/Library/*", "/Applications/*") and 
-    (process.code_signature.exists == false or process.code_signature.trusted == false) and
-    not process.name : "ksinstall")) and not 
+  (Persistence.args : ("/Users/*/Library/Application Support/*", 
+                       "/Library/*", 
+                       "/Users/*/Applications/*",
+                       "/Applications/*") and 
+    ((process.code_signature.exists == false or process.code_signature.trusted == false) or process.name : "sed") and
+    not process.name : "ksinstall" and
+    not process.executable == null)) and not 
   process.executable : ("/System/*",
                         "/Library/PrivilegedHelperTools/*", 
                         "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not

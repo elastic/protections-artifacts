@@ -12,11 +12,14 @@ reference = [
     "https://github.com/gabriellandau/PPLFault",
     "https://www.blackhat.com/asia-23/briefings/schedule/#ppldump-is-dead-long-live-ppldump-31052",
 ]
-version = "1.0.10"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id
- [process where event.action == "start" and process.Ext.protection : "PsProtected*"]
+ [process where event.action == "start" and process.Ext.protection : "PsProtected*" and 
+  not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework\\*\\mscorsvw.exe" and 
+       process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe" and 
+       process.Ext.protection : "PsProtectedSignerCodeGen-Light")]
  [library where dll.path : ("\\Device\\Mup\\*", "\\\\127.*\\*")]
   until [process where event.action:"end"]
 '''

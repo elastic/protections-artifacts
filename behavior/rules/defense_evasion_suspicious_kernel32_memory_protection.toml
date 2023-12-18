@@ -7,26 +7,27 @@ id = "c53dfced-feba-4527-bb8a-f181bcac59bc"
 license = "Elastic License v2"
 name = "Suspicious Kernel32 Memory Protection"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.4"
 
 query = '''
-sequence by process.entity_id, process.Ext.api.parameters.address, process.thread.Ext.call_stack_final_user_module.name, process.Ext.api.parameters.size with maxspan=1m
- [api where process.Ext.api.name : "VirtualProtect" and 
-  process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.parameters.size == 16 and 
-  process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and process.Ext.behaviors.network.outgoing : "*tcp*"]
- [api where process.Ext.api.name : "VirtualProtect" and 
-  process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.parameters.size == 16 and 
-  process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and process.Ext.behaviors.network.outgoing : "*tcp*"]
- [api where process.Ext.api.name : "VirtualProtect" and 
-  process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.parameters.size == 16 and 
-  process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and process.Ext.behaviors.network.outgoing : "*tcp*"]
- [api where process.Ext.api.name : "VirtualProtect" and 
-  process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.parameters.size == 16 and 
-  process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and process.Ext.behaviors.network.outgoing : "*tcp*"]
+api where process.Ext.api.name : "VirtualProtect" and process.executable != null and 
+  process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.behaviors : "write_fluctuation" and 
+  process.Ext.api.parameters.size == 16 and 
+  process.thread.Ext.call_stack_final_user_module.name != null and not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and 
+  not process.thread.Ext.call_stack_final_user_module.path :
+                                         ("?:\\Program Files\\*",
+                                          "?:\\Program Files (x86)\\*", 
+                                          "\\program files\\*", 
+                                          "\\program files (x86)\\*",
+                                          "?:\\windows\\microsoft.net\\framework*.dll", 
+                                          "\\windows\\microsoft.net\\framework*.dll", 
+                                          "?:\\programdata\\dell\\drivers\\*\\installer.exe", 
+                                          "?:\\windows\\system32\\driverstore\\filerepository\\*", 
+                                          "\\windows\\system32\\driverstore\\filerepository\\*", 
+                                          "?:\\windows\\winsxs\\*", 
+                                          "\\windows\\winsxs\\*", 
+                                          "?:\\windows\\system32\\atiumd64.dll", 
+                                          "\\windows\\system32\\atiumd64.dll")
 '''
 
 min_endpoint_version = "8.10.0"

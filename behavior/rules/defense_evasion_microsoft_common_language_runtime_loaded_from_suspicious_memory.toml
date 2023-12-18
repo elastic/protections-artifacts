@@ -7,7 +7,7 @@ id = "ad2c6fcc-89d3-4939-85d9-d7114d6bbf14"
 license = "Elastic License v2"
 name = "Microsoft Common Language Runtime Loaded from Suspicious Memory"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.20"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -22,7 +22,7 @@ library where dll.name : "clr.dll" and
  not (process.executable : "C:\\ManageEngine\\ADManager Plus\\jre\\bin\\java.exe" and 
       process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.trusted == true) and 
  not (process.executable : "?:\\Program Files*\\Amazon Corretto\\jdk*\\bin\\java.exe" and 
-      process.code_signature.subject_name : "Amazon.com Services LLC" and process.code_signature.trusted == true)  and 
+      process.code_signature.subject_name : ("Amazon.com Services LLC", "Amazon Services LLC", "Adaptive Protocols, Inc.") and process.code_signature.trusted == true)  and 
  not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe")
 '''
 

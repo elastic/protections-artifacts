@@ -8,7 +8,7 @@ id = "c3758f2c-66d5-4cbe-820f-1c6207c6e341"
 license = "Elastic License v2"
 name = "Module Stomping from a Copied Library"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.19"
 
 query = '''
 sequence by user.id with maxspan=3m
@@ -19,7 +19,8 @@ sequence by user.id with maxspan=3m
   file.Ext.header_bytes : "4d5a*" and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*CopyFileEx*", "*MoveFileExW*")) and
 
- not process.executable : "?:\\Program Files (x86)\\Citrix\\ICA Client\\concentr.exe"] as event0
+ not process.executable : ("?:\\Program Files (x86)\\Citrix\\ICA Client\\concentr.exe",  
+                           "?:\\Program Files (x86)\\InstallShield Installation Information\\*\\setup.exe")] as event0
 
 [library where
 

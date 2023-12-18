@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies attempts to modify the permissions or write to Microsoft Anti Malware Scan Interface DLL from unbacked
+memory.
+"""
+id = "06516087-9305-482b-af9a-92f4386d2f19"
+license = "Elastic License v2"
+name = "AMSI Bypass via Unbacked Memmory"
+os_list = ["windows"]
+reference = [
+    "https://aidenpearce369.github.io/offsec/AMSI-Memory-Bypass/",
+    "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
+]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.summary : "* amsi.dll*" and 
+ ((process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "*W*") or
+  process.Ext.api.name :  "WriteProcessMemory*") and 
+ process.executable != null and process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.name != null and 
+ process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and 
+ process.thread.Ext.call_stack_final_user_module.protection_provenance != null and 
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

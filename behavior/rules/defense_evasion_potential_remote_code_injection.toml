@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies attempt to allocate an executable memory region in a remote process followed by writing content to it. This
+behavior is consistent with remote code injection attacks.
+"""
+id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
+license = "Elastic License v2"
+name = "Potential Remote Code Injection"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid, process.thread.Ext.call_stack_final_user_module.name with maxspan=30s
+ [api where process.Ext.api.behaviors : "cross-process" and not process.Ext.api.behaviors : "parent-child" and 
+  process.executable != null and process.thread.Ext.call_stack_final_user_module.name != null and 
+  process.Ext.api.name : ("VirtualAllocEx", "MapViewOfFile*", "VirtualProtect*") and process.Ext.api.parameters.protection : "*X*" and
+  (process.code_signature.trusted == false or process.code_signature.exists == false or process.name : "rundll32.exe" or 
+   process.executable : ("?:\\Windows\\Microsoft.NET\\*", "?:\\Users\\Public")) and 
+   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
+   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\program files*\\cisco\\amp\\exprev\\protector*.dll*") and 
+   not (process.code_signature.trusted == true and startswith~(process.thread.Ext.call_stack_final_user_module.path, process.executable)) and 
+   not (process.code_signature.trusted == true and process.thread.Ext.call_stack_final_user_module.name : "Unknown") and 
+   not process.thread.Ext.call_stack_final_user_module.path :
+                                         ("?:\\Program Files\\*",
+                                          "?:\\Program Files (x86)\\*", 
+                                          "\\program files\\*", 
+                                          "\\program files (x86)\\*",
+                                          "?:\\windows\\microsoft.net\\framework*.dll", 
+                                          "\\windows\\microsoft.net\\framework*.dll", 
+                                          "?:\\windows\\system32\\*", 
+                                          "\\windows\\system32\\*", 
+                                          "?:\\windows\\winsxs\\*", 
+                                          "\\windows\\winsxs\\*", 
+                                          "?:\\windows\\syswow64\\*", 
+                                          "\\windows\\syswow64\\*", 
+                                          "?:\\Windows\\assembly\\*", 
+                                          "\\Windows\\assembly\\*", 
+                                          "?:\\windows\\veeamvsssupport\\veeamvsssupport.dll") and 
+   not process.thread.Ext.call_stack_final_user_module.hash.sha256 : 
+                                          ("70a8c4ae129e3d79854c6658b199faf27590800cb2d7fa5681d6bfdbe0111993", 
+                                           "13d8d9823d8f9e41247f32831e5a044fb4b09187571e498b807c07caa8c3004f", 
+                                           "51409099241d9af2b9005a0de21081ae9dbb64c0c98eb4a6460e1d1946461ce0", 
+                                           "6ad87a98d9e91e784fb1e275b9e37709a1ae85f8d6096cbf5a8ce3104314d5ed", 
+                                           "d9070a90ea8a8bc1c9120397c2588d3e8f588bcce4a261cc9f0e9f0c37c8d726", 
+                                           "2ac92e1b48ad518efa47313aac59b67950da234d20e651b221b7232e4ae9e65d", 
+                                           "c8469c12a2cf76b8b4225d8910958810847e31263487df0065c8648b572467ef", 
+                                           "9bb82a8b466b48176bd876a8fa7a9b3708cf3d86aa1b6c420cf73b003d41495d", 
+                                           "c9f420fb873c8d26c134314cd2543442685b98349a79cb51f06bd364c16aa298", 
+                                           "06e8f5fc9ac8ab8a9390531eebac30372fed6982cceac4d54bb6653f9f6603f7", 
+                                           "27d34c6032491d4dce1060eb3bf8382357a8fde4909aed3855e5c250e0789433", 
+                                           "31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b", 
+                                           "91ff5261cd17ad19edfacfb905a375c300cc6e323e6eaa42446a005a701880b4", 
+                                           "c8469c12a2cf76b8b4225d8910958810847e31263487df0065c8648b572467ef", 
+                                           "e77507caca8b74b197329f3584a540d7015aad5a94d9aa29a3427959cf129bcd", 
+                                           "cacf583a07df75fd7d76a43a78338c1d032833e1cc2d9945229df04385cfc10f", 
+                                           "a1bbeed70452386d4d3b4383dd47180e9a96440011dbdcadcc6c48c3e1337eac", 
+                                           "f71ae100e2c4a6de86033f7664db07dcba74319de4da0e72f9b5908f09257519", 
+                                           "a63dffea3202a2499abef6c507a3a84aab04e1f43a086ba79784ccb29f4a3156", 
+                                           "dd69b5adcc1832c449ee31ede33ba17dfafba278eb3627dbabf3a42b02a457d8", 
+                                           "dd1eaa53b13e901e8236d034400e36bda7249bf7bb74f50b46d31ebe4896ebb9") 
+  ]
+ [api where process.Ext.api.behaviors : "cross-process" and 
+  not process.Ext.api.behaviors : "parent-child" and process.Ext.api.name : "WriteProcessMemory"]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

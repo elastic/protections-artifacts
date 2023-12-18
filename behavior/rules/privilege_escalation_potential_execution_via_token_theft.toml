@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies the creation of a process running with a token duplicate and from unbacked memory. Adversaries may create a
+new process with a different token to escalate privileges and bypass access controls.
+"""
+id = "a2d5bdc0-b6e8-4d09-8bfe-ea22b7966141"
+license = "Elastic License v2"
+name = "Potential Execution via Token Theft"
+os_list = ["windows"]
+reference = [
+    "https://lengjibo.github.io/token/",
+    "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
+]
+version = "1.0.6"
+
+query = '''
+process where event.action == "start" and process.executable != null and 
+ process.Ext.effective_parent.name : "?*" and process.Ext.session_info.user_flags : "LOGON_EXTRA_SIDS" and 
+ process.parent.thread.Ext.call_stack_summary : 
+                     ("ntdll.dll|kernelbase.dll|advapi32.dll|Unbacked", 
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|advapi32.dll|Unbacked",
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll", 
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked", 
+                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                      "*|seclogon.dll|*") and 
+ not (process.Ext.effective_parent.executable : "?:\\Program Files*\\Dell\\SARemediation\\agent\\DellSupportAssistRemedationService.exe" and 
+      process.executable : "?:\\Program Files*\\Dell\\SARemediation\\*.exe") and 
+ not (process.code_signature.status : "trusted" and 
+      process.code_signature.subject_name : ("LENOVO", "Dell Inc", "Citrix Systems, Inc.", "Docker Inc", "Solarwinds Worldwide, LLC", 
+                                             "Binary Fortress Software Ltd", "Seagull Scientific Inc.")) and 
+ not (process.Ext.effective_parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\Sys*\\sdiagnhost.exe") and 
+      process.parent.thread.Ext.call_stack_summary : "*|seclogon.dll|*") and 
+ not (startswith~(process.Ext.effective_parent.executable, process.executable) and process.executable : "?:\\Program Files*") and 
+ not (startswith~(process.Ext.effective_parent.executable, process.parent.executable) and process.code_signature.status : "trusted" and 
+      not process.code_signature.subject_name : "Microsoft*") and 
+ not (process.Ext.effective_parent.name : "dllhost.exe" and process.name : "powershell.exe" and 
+      process.command_line : "*CQAZQB4AGUAYwBfAHcAcgBhAHAAcABlAHIAIAA9*") and 
+ not (process.parent.executable : "?:\\Windows\\System32\\wsmprovhost.exe" and process.Ext.effective_parent.executable : "?:\\Windows\\System32\\wsmprovhost.exe") and 
+ not (process.parent.executable : "?:\\windows\\system32\\inetsrv\\w3wp.exe" and 
+      process.Ext.effective_parent.executable : "?:\\windows\\system32\\inetsrv\\w3wp.exe") and 
+ not process.hash.sha256 : "7b36e127e1fa53e0c6462312777c5d004ea83bde67e6df32fb8920b6c001d664"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

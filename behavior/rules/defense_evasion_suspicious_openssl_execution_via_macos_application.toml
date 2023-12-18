@@ -11,13 +11,17 @@ license = "Elastic License v2"
 name = "Suspicious OpenSSL Execution via macOS Application"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x70.html", "https://attack.mitre.org/techniques/T1140/"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
 [process where event.type == "start" and process.name : ("bash", "sh", "zsh") and 
- process.args : ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and process.args : "/Applications/*" and process.args_count <= 2] 
-[process where event.type == "start" and process.name : "openssl" and not process.Ext.effective_parent.executable : "/usr/local/jamf/*"]
+  process.args : ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and 
+  process.args : "/Applications/*" and 
+  process.args_count <= 2] 
+[process where event.type == "start" and process.name : "openssl" and 
+  not process.Ext.effective_parent.executable : ("/usr/local/jamf/*",
+                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
 '''
 
 min_endpoint_version = "8.5.0"

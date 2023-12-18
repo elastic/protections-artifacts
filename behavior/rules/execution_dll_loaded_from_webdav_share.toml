@@ -7,10 +7,13 @@ id = "7ae54ce7-e1c9-4cbc-8e59-0350e80e9530"
 license = "Elastic License v2"
 name = "DLL Loaded from WebDav Share"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
-library where dll.path : "\\Device\\Mup\\*\\DavWWWRoot\\*" and not startswith~(dll.name, process.name)
+library where dll.path : "\\Device\\Mup\\*\\DavWWWRoot\\*" and 
+ process.executable != null and not startswith~(dll.name, process.name) and 
+ not process.executable : "\\Device\\Mup\\*\\DavWWWRoot\\*" and 
+ not dll.path : "\\Device\\Mup\\*.sharepoint.com@SSL\\DavWWWRoot\\*"
 '''
 
 min_endpoint_version = "8.4.0"

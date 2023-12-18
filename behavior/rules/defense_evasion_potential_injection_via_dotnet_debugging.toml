@@ -12,16 +12,17 @@ reference = [
     "https://blog.xpnsec.com/debugging-into-net/",
     "https://learn.microsoft.com/en-us/dotnet/framework/unmanaged-api/debugging/iclrdebugging-openvirtualprocess-method",
 ]
-version = "1.0.17"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Windows\\Microsoft.NET\\Framework*OpenVirtualProcess*") and
  not (process.code_signature.subject_name : "Magic Software Enterprises LTD" and process.code_signature.trusted == true) and
- not (process.parent.executable : "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Community\\*\\IDE\\Remote Debugger\\*\\msvsmon.exe" and
-      process.executable : "?:\\Program Files\\IIS Express\\iisexpress.exe") and
- not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\IDE\\VsDebugWERHelper.exe",
-                           "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\IDE\\VsDebugWERHelper.exe")
+ not (process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe", "?:\\Program Files\\Microsoft Visual Studio\\*.exe") and
+      process.executable : ("?:\\Program Files\\IIS Express\\iisexpress.exe", "?:\\Program Files (x86)\\IIS Express\\iisexpress.exe")) and
+ not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe",
+                           "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe", 
+                           "?:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe")
 '''
 
 min_endpoint_version = "8.7.0"

@@ -1,0 +1,63 @@
+[rule]
+description = """
+Identifies suspicious writes to the memory space of a remote process by a process that is not a direct parent. this may
+indicate a code injection attempt.
+"""
+id = "f5bbe671-5351-4566-b708-6e09d1de7dd2"
+license = "Elastic License v2"
+name = "Remote Memory Write to a non Child Process"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+api where process.Ext.api.name == "WriteProcessMemory" and process.executable != null and
+ process.Ext.api.behaviors == "cross-process" and not process.Ext.api.behaviors == "parent-child" and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false or 
+  process.name : ("rundll32.exe", "regsvr32.exe") or process.executable : "\\Device\\Mup*") and 
+ process.Ext.api.metadata.target_address_path : ("?:\\Windows\\*", "?:\\Program Files*") and 
+ not process.executable :
+             ("?:\\Program Files\\*.exe",
+              "?:\\Program Files (x86)\\*.exe",
+              "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe") and
+ not stringcontains~(process.Ext.api.summary, process.name) and
+ not process.thread.Ext.call_stack_final_user_module.name : "kernel" and 
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel")) and 
+ not process.thread.Ext.call_stack_final_user_module.path :
+                               ("?:\\Program Files\\*",
+                                "?:\\Program Files (x86)\\*",
+                                "?:\\Windows\\System32\\*.dll",
+                                "?:\\Windows\\SysWOW64\\*.dll",
+                                "\\Program Files\\*",
+                                "\\Program Files (x86)\\*",
+                                "\\Windows\\System32\\*.dll",
+                                "\\Windows\\SysWOW64\\*.dll",
+                                "?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll",
+                                "?:\\Windows\\FireEye\\AppMonitorDll.dll")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

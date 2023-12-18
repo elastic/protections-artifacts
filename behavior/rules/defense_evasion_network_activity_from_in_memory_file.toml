@@ -12,13 +12,13 @@ reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.7"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and 
  process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+""" and
- not process.parent.executable : ("/usr/sbin/runc", "/usr/bin/dockerd") and
+ not process.parent.executable : ("/usr/sbin/runc", "/usr/bin/dockerd", "/usr/lib/systemd/systemd") and
  not process.command_line : "runc init"]
 [network where event.type == "start" and event.action == "connection_attempted" and
    not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",

@@ -9,16 +9,17 @@ license = "Elastic License v2"
 name = "Potential Code Injection via Remote Thread"
 os_list = ["macos"]
 reference = ["http://newosxbook.com/src.jl?tree=listings&file=inject.c"]
-version = "1.0.25"
+version = "1.0.27"
 
 query = '''
 process where event.action : "remote_thread" and
  not process.executable :
           ("/usr/libexec/rosetta/debugserver",
+           "/Library/Developer/CoreSimulator/*/RemoteInjectionAgent",
            "/Applications/Xcode*.app/Contents/SharedFrameworks/DVTInstrumentsFoundation.framework/Versions/A/Resources/RemoteInjectionAgent")
 '''
 
-min_endpoint_version = "8.2.0"
+min_endpoint_version = "8.7.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -44,4 +45,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "8.2.0"
+min_endpoint_version = "8.7.0"

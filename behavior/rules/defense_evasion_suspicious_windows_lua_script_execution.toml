@@ -7,14 +7,14 @@ id = "8f237d98-1825-4c27-a5cd-e38bde70882a"
 license = "Elastic License v2"
 name = "Suspicious Windows LUA Script Execution"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [library where dll.name : ("luacom.dll", "lua?.?.dll", "lua??.dll") and not user.id : "S-1-5-18" and
   not dll.code_signature.trusted == true and
   dll.path : ("?:\\Programdata\\*", "?:\\Users\\*", "?:\\Windows\\Temp\\*", "?:\\windows\\System32\\Tasks\\*", "?:\\Windows\\Tasks\\*") and 
-  not (process.code_signature.subject_name : "Beijing Xiaowei Cloud Inc." and process.code_signature.trusted == true)]
+  not (process.code_signature.subject_name : ("Beijing Xiaowei Cloud Inc.", "Leslie Newell") and process.code_signature.trusted == true)]
  [network where event.action == "connection_attempted" and 
   not destination.address : ("127.0.0.1", "0.0.0.0", "::", "10.*", "172.*", "192.168.*")]
 '''

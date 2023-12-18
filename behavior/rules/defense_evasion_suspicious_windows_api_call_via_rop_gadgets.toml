@@ -7,7 +7,7 @@ id = "d7239b58-3e32-481a-9bfa-63e04caf1a4e"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -39,6 +39,7 @@ sequence by process.entity_id with maxspan=1m
                           "\\windows\\winsxs\\*", 
                           "?:\\Windows\\assembly\\*", 
                           "\\Windows\\assembly\\*", 
+                          "?:\\windows\\system32\\hmpalert.dll",
                           "c:\\cyberdigm\\destinydrive\\pantansx64.dll",
                           "c:\\cyberdigm\\destinydrive\\pantasec64.dll",
                           "?:\\users\\*\\appdata\\local\\microsoft\\teams\\current\\teams.exe", 

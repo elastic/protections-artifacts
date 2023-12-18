@@ -8,13 +8,14 @@ license = "Elastic License v2"
 name = "Potential Evasion via Inline Execute Assembly"
 os_list = ["windows"]
 reference = ["https://github.com/anthemtotheego/InlineExecute-Assembly"]
-version = "1.0.17"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=5s 
  [library where dll.name : "mscorwks.dll" and 
   process.thread.Ext.call_stack_summary : 
                    ("ntdll.dll|kernelbase.dll|mscoreei.dll|Unbacked", 
+		    "ntdll.dll|kernelbase.dll|mscoreei.dll|mscoree.dll|Unbacked",
 		    "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|mscoreei.dll|Unbacked") and 
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*mscoreei.dll!CreateInterface*") and 
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and 

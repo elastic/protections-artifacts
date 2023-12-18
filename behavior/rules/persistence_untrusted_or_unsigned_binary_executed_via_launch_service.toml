@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when a Launch Agent or Launch Daemon is created in a common way by moving the plist into one of the two
+directories using the native cp or mv binaries and the plist arguments contain a common application path followed
+immediately by the execution of an untrusted or unsigned binary from that path. Threat actors will regularly get users
+to install untrusted or unsigned applications, usually impersonating a valid application, in a normal system location
+and the application will install a launch services persistence that looks generic and won't generally raise suspicion.
+"""
+id = "74d77df0-c4ef-41d8-a07a-c37ef2ea91ad"
+license = "Elastic License v2"
+name = "Untrusted or Unsigned Binary Executed via Launch Service"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=30s
+[persistence where event.action == "launch_daemon" and process.name : ("cp", "mv", "sed") and 
+  Persistence.args : ("/Library/Application Support/*", "/Applications/*", "/Users/*/Library/Application Support/*")] as event0
+[process where event.type == "start" and event.action == "exec" and startswith~(event0.Persistence.args, process.executable) and
+  (process.code_signature.exists == false or process.code_signature.trusted == false)]
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.10.2"

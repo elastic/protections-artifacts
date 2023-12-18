@@ -1,0 +1,81 @@
+[rule]
+description = """
+Detects the execution of the Nohup utility pointing to a suspicious or malicious executable path followed by pushing the
+execution to the background using the "&". Threat actors will utilize the Nohup utility to execute their payloads in a
+variety of ways but specifically within initial access installer scripts and shell profile persistence. This activity
+should be considered highly abnormal or malicious.
+"""
+id = "3f18726c-4897-41dc-8426-15da95b8482f"
+license = "Elastic License v2"
+name = "Nohup Execution followed by Outbound Network Connection"
+os_list = ["macos"]
+reference = ["https://objective-see.org/blog/blog_0x71.html"]
+version = "1.0.19"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=30s
+[process where event.type == "start" and 
+  process.name : "nohup" and 
+  ((process.command_line : ("*/tmp/*",
+                            "*/var/tmp/*",
+                            "*/private/var/tmp/*",
+                            "*/var/folders/*", 
+                            "*/Users/Shared/*", 
+                            "*/Library/*", 
+                            "*/var/root/*", 
+                            "*/usr/local/bin/*", 
+                            "*/Applications/*")) or
+   (process.args : "npm" and process.args : "install")) and
+  process.parent.name : ("bash", "sh", "zsh", "tclsh*", "terminal", "python*", "osascript") and
+  not process.Ext.effective_parent.executable : "/Applications/SteelSeries GG/SteelSeries GG.app/Contents/MacOS/SteelSeries GG"]
+[network where event.type == "start" and not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.003"
+name = "Hidden Window"
+reference = "https://attack.mitre.org/techniques/T1564/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

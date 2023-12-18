@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when a hidden executable creates and then immediately deletes a temporary file within a temporary directory like
+/tmp. We have observed threat actors doing this on systems and is indicative of sensitive file or data collection,
+exfiltration and prompt deletion.
+"""
+id = "a6994646-d314-4ee0-be1f-1d694dc969e7"
+license = "Elastic License v2"
+name = "Potential Data Collection in Temporary Directory by Hidden Executable"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id, file.path with maxspan=30s
+  [file where event.action == "modification" and process.name : ".*" and 
+   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*")]
+  [file where event.action == "deletion" and process.name : ".*" and 
+   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*")]
+'''
+
+min_endpoint_version = "8.11.1"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1560"
+name = "Archive Collected Data"
+reference = "https://attack.mitre.org/techniques/T1560/"
+[[threat.technique.subtechnique]]
+id = "T1560.003"
+name = "Archive via Custom Method"
+reference = "https://attack.mitre.org/techniques/T1560/003/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.11.1"

@@ -7,7 +7,7 @@ id = "3205274e-7eb0-4765-a712-5783361091ae"
 license = "Elastic License v2"
 name = "NTDLL Loaded from an Unusual Path"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 library where dll.pe.original_file_name : "ntdll.dll" and
@@ -22,7 +22,8 @@ library where dll.pe.original_file_name : "ntdll.dll" and
                  "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*",
                  "?:\\ProgramData\\Microsoft\\Windows\\Containers\\BaseImages\\*\\Files\\Windows\\System32\\ntdll.dll", 
                  "?:\\Windows\\WinSxS\\Temp\\InFlight\\*\\ntdll.dll") and
- not (process.code_signature.subject_name : ("INCA Internet Co.,Ltd.", "NEXON Korea Corporation.") and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name : ("INCA Internet Co.,Ltd.", "NEXON Korea Corporation.", "Acronis International GmbH") and 
+      process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.0.0"

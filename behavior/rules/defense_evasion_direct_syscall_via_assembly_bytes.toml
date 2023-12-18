@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.16"
 
 query = '''
 any where process.executable != null and
@@ -49,7 +49,9 @@ not process.executable :
              "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe", 
              "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\*\\Teams.exe", 
              "?:\\Program Files\\Veeam\\Endpoint Backup\\Veeam.EndPoint.Manager.exe") and
- not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.", "Commvault Systems, Inc.", "Galooli Ltd") and 
+ not (process.code_signature.subject_name : 
+               ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.", "Commvault Systems, Inc.", "Galooli Ltd", 
+                "SIGNODE PACKAGING GROUP NZ", "GraphOn Corporation", "Blizzard Entertainment, Inc.", "343 Industries (Microsoft Corporation)") and 
       process.code_signature.trusted == true) and
  not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and process.parent.executable : "?:\\Windows\\System32\\winlogon.exe") and 
  /* chromium and last one for Acrobat */
@@ -62,13 +64,17 @@ not process.executable :
                           "c30f1f4400004c8bd1b8280000000f05c30f1f4400004c8bd1b8290000000f05c30f00000000000000000000000000000000000000004c8bd1b8290000000f05", 
                           "c30f1f440000ff25000000007004fd89ff7f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                           "c3ff25000000005b14*7f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
-                          "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*")) and
+                          "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*", 
+                          "c30f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
+                          "c341514150525166660f1f840000000000909090e81c0000005c004400650076006900630065005c00470047005300530052000000681a001c00488bc46a006a")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not (event.category : "library" and
       process.executable : ("?:\\Windows\\Sys*\\inetsrv\\w3wp.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-                   $entry.callsite_trailing_bytes : "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*")
+                   $entry.callsite_trailing_bytes : 
+                                 ("ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*", 
+                                  "c30f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"))
 '''
 
 min_endpoint_version = "8.8.0"

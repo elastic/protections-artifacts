@@ -8,21 +8,25 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
  [api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.summary : "*.dll*" and 
+  process.Ext.api.parameters.size >= 10000 and 
   not process.Ext.api.metadata.target_address_name : ("ntdll.dll", "kernelbase.dll") and 
   process.Ext.api.metadata.target_address_path : 
                                 ("?:\\Windows\\System32\\*.dll", 
                                  "?:\\Windows\\SysWOW64\\*.dll", 
                                  "\\Windows\\System32\\*.dll", 
                                  "\\Windows\\SysWOW64\\*.dll",
+                                 "?:\\windows\\winsxs\\*.dll",
+                                 "\\windows\\winsxs\\*.dll",
                                  "?:\\program files*\\Microsoft\\*.dll", 
                                  "?:\\program files*\\Windows*.dll", 
                                  "?:\\program files*\\common files\\Microsoft*.dll") and 
   not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*") and 
+  not process.Ext.api.metadata.target_address_path : "?:\\program files*\\microsoft\\scanprocess.dll" and 
   not process.thread.Ext.call_stack_final_user_module.path : 
                                      ("?:\\Program Files\\*", 
                                       "?:\\Program Files (x86)\\*", 
@@ -33,7 +37,12 @@ sequence by process.entity_id with maxspan=2m
                                       "?:\\windows\\system32\\apphelp.dll",
                                       "?:\\windows\\syswow64\\ntdll.dll", 
                                       "?:\\windows\\system32\\ntdll.dll", 
-                                      "?:\\windows\\system32\\rltkapo64.dll")] as event0 
+                                      "?:\\windows\\system32\\rltkapo64.dll") and 
+    not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and  
+         process.code_signature.subject_name : "Citrix Systems, Inc." and process.code_signature.trusted == true) and 
+    not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
+                              "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe")
+  ] as event0 
  [any where 
   (
    (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll")) or 

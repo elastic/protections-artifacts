@@ -7,14 +7,14 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
  process.parent.name == "svchost.exe" and process.parent.args == "Schedule" and process.hash.sha256 != null and 
  (
   /* non noisy child processes */
-  process.pe.original_file_name : ("MSHTA.EXE", "MSBuild.exe", "InstallUtil.exe", "RegSvcs.exe") or
+  process.pe.original_file_name : ("MSHTA.EXE", "MSBuild.exe", "InstallUtil.exe") or
 
   /* suspicious path */
   (process.executable : ("?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\Windows\\system32\\tasks\\*") and
@@ -85,10 +85,6 @@ process where event.action == "start" and
                        "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,", 
                        "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL", 
                        "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication")) and
-  not (process.name : ("regasm.exe", "RegSvcs.exe") and 
-       process.args : ("?:\\ProgramData\\DevelNetworks\\DevimeCounlers\\WPHh_Pdsapi.dll", 
-                       "?:\\Users\\*\\AppData\\Local\\FormatTrans\\RrtioRyund\\WMD_Ponicy_*.dll", 
-                       "?:\\Program Files (x86)\\Common Files\\RouteCons\\TasqsLoad\\WCPnls_UExt.dll")) and
   not (process.name : "cmd.exe" and 
        process.args : ("C:\\Users\\Public\\SageBackup-Phoenix.bat", 
                        "C:\\Users\\Public\\InvisibleTimerbatch.bat", 

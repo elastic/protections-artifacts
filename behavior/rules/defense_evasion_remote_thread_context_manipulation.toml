@@ -7,13 +7,15 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.16"
 
 query = '''
-api where process.Ext.api.name == "SetThreadContext" and
- process.executable != null and process.Ext.api.behaviors : ("cross-process", "hardware_breakpoint_set") and
- not process.Ext.api.summary : "SetThreadContext( *, [ OSError ] )" and 
- not (process.code_signature.subject_name :
+api where 
+  process.Ext.api.name : ("SetThreadContext", "Wow64SetThreadContext") and 
+  process.executable != null and 
+  ((process.Ext.api.behaviors : "cross-process" and process.Ext.api.behaviors : "execute_shellcode") or process.Ext.api.behaviors : "hardware_breakpoint_set") and 
+  not process.Ext.api.summary : "*OSError*" and process.thread.Ext.call_stack_final_user_module.name != null and 
+  not (process.code_signature.subject_name :
                ("Duncan Ogilvie", "International Business Machines Corporation", "COGNOSPHERE PTE. LTD.",
                 "CAPCOM CO., LTD.", "Larian Studios Games Ltd.", "Valve Corp.", "Rockstar Games, Inc.",
                 "Johannes Schindelin", "Unity Technologies ApS", "Larian Studios Games Ltd.", 
@@ -21,52 +23,25 @@ api where process.Ext.api.name == "SetThreadContext" and
                 "Open Source Developer, Maksim Moisiuk", "Take-Two Interactive Software, Inc.", 
                 "Take-Two Interactive Software, Inc.", "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk", 
                 "Activision Publishing Inc", "OpenJS Foundation", "Maksim Moisiuk", "Ubisoft Entertainment Sweden AB", 
-                "Epic Games Inc.", "NEXON Korea Corporation.") and
+                "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
+                "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
       process.code_signature.trusted == true) and 
- not (process.executable : "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\*.exe" and 
-      process.code_signature.subject_name : "Python Software Foundation" and process.code_signature.trusted == true) and 
- not (process.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WinDbg_*\\EngHost.exe" and
-      process.parent.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WinDbg_*\\DbgX.Shell.exe") and
- not (process.executable : "?:\\Program Files (x86)\\WindowsApps\\Microsoft.WinDbg_*\\EngHost.exe" and
-      process.parent.executable : "?:\\Program Files (x86)\\WindowsApps\\Microsoft.WinDbg_*\\DbgX.Shell.exe") and
- not process.parent.executable :
-              ("?:\\Program Files (x86)\\Steam\\steam.exe", "?:\\Program Files\\Steam\\steam.exe",
-               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
-               "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe", 
-               "?:\\Program Files (x86)\\Windows Kits\\*\\Debuggers\\x64\\cdb.exe", 
-               "?:\\Program Files\\Microsoft Visual Studio\\*\\devenv.exe",
-               "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\devenv.exe",
-               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe", 
-               "C:\\Program Files\\OpenModelica1.21.0-64bit\\bin\\OMEdit.exe") and 
- not process.executable :
-              ("?:\\Program Files (x86)\\Windows Kits\\*\\Debuggers\\*\\cdb.exe", 
-               "?:\\Program Files\\Windows Kits\\*\\Debuggers\\*\\cdb.exe",
-               "?:\\Program Files (x86)\\Windows Kits\\*\\Debuggers\\*\\cdb.exe",
-               "?:\\Program Files\\Microsoft Visual Studio\\*\\devenv.exe",
-               "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\devenv.exe",
-               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe", 
-               "?:\\Program Files\\DebugDiag\\DbgHost.exe", 
-               "?:\\Program Files (x86)\\DebugDiag\\DbgHost.exe", 
-               "?:\\Program Files\\IDA Freeware 8.3\\ida64.exe", 
-               "?:\\Program Files\\Git\\usr\\bin\\env.exe", 
-               "?:\\Windows\\System32\\cmd.exe", 
-               "?:\\Windows\\System32\\net.exe",
-               "?:\\Windows\\explorer.exe", 
-               "?:\\Program Files\\nodejs\\node.exe",
-               "?:\\ION\\mingw64\\bin\\gdborig.exe",
-               "?:\\mingw64\\bin\\gdborig.exe",
-               "?:\\Program Files\\Git\\usr\\bin\\sh.exe",
-               "?:\\Program Files\\IDA Pro ?.?\\ida64.exe",
-               "D:\\SteamLibrary\\steamapps\\common\\*",
-               "D:\\nv_web\\ansi\\x64\\ansicon.exe",
-               "E:\\SteamLibrary\\steamapps\\common\\*",
-               "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", 
-               "?:\\laragon\\bin\\php\\php-8.1.10-Win32-vs16-x64\\php.exe",
-               "?:\\Program Files (x86)\\Microsoft Office\\root\\Office??\\EXCEL.EXE", 
-               "G:\\SteamLibrary\\steamapps\\common\\Hydroneer\\Mining\\Binaries\\Win64\\Mining-Win64-Shipping.exe")
+ not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown") and 
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "kernel|*") and 
+ not (process.code_signature.trusted == true and stringcontains~(process.executable, process.thread.Ext.call_stack_final_user_module.path)) and 
+ not process.thread.Ext.call_stack_final_user_module.path : 
+                                               ("?:\\Program Files\\*", 
+                                                "?:\\Program Files (x86)\\*", 
+                                                "\\Program Files\\*", 
+                                                "\\Program Files (x86)\\*") and 
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b" and 
+ not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
+                           "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
+                           "Z:\\SteamLibrary\\steamapps\\common\\*.exe", 
+                           "D:\\Steam\\steamapps\\common\\*.exe")
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -88,4 +63,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Evasion via Inline Execute Assembly"
 os_list = ["windows"]
 reference = ["https://github.com/anthemtotheego/InlineExecute-Assembly"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=5s 
@@ -21,7 +21,8 @@ sequence by process.entity_id with maxspan=5s
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and 
   not (process.executable : "?:\\Program Files\\Dell\\DTP\\DiagnosticsSubAgent\\Dell.TechHub.Diagnostics.SubAgent.exe" and
        process.code_signature.trusted == true and process.code_signature.subject_name : "Dell Inc") and
-  not (process.code_signature.trusted == true and process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.")) and 
+  not (process.code_signature.trusted == true and 
+       process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.", "Milsoft Utility Solutions, Inc.")) and 
   not (process.executable : "C:\\ManageEngine\\ADManager Plus\\jre\\bin\\java.exe" and 
       process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.trusted == true) and 
   not (process.executable : "?:\\Program Files*\\Amazon Corretto\\jdk*\\bin\\java.exe" and 

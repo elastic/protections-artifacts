@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects the execution of curl via an automator application. Threat actors have been using automator applications in
+order to bypass security controls and download second stage payloads as automator apps can be signed/trusted by the
+system and are generally not subject to scanning.
+"""
+id = "3540b77a-80a6-42ea-b7f4-714291a28a62"
+license = "Elastic License v2"
+name = "Curl Execution via Automator Application"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and process.parent.name : ("Application Stub", "Automator Application Stub") and 
+ (
+  (process.name : ("sh", "bash", "zsh", "tclsh*") and 
+    process.args : "-c" and 
+    process.args : ("curl*", "nscurl*")) or 
+  (process.name : ("curl", "nscurl"))
+ )
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

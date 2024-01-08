@@ -7,7 +7,7 @@ id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "exec" and
@@ -19,10 +19,11 @@ process where event.action == "exec" and
             "com.apple.WebKit.GPU.Development",
             "com.apple.WebKit.Networking.Development",
             "com.apple.WebKit.Storage.Development")) and
- not process.parent.executable : "/sbin/launchd"
+ not process.parent.executable : "/sbin/launchd" and
+ not (process.Ext.effective_parent.executable : "/Applications/Visual Studio Code.app/Contents/MacOS/Electron" and process.name : "com.apple.WebKit.WebContent.Development")
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -48,4 +49,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"

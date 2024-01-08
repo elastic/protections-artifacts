@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when an IP address is supplied as an argument to a hidden executable. Threat actors will drop hidden payloads
+that are themselves droppers and when supplied with an ip address download additional payload stages or tools.
+"""
+id = "11cfb64b-1268-402e-9064-5a2d7af70cce"
+license = "Elastic License v2"
+name = "Suspicious Hidden Executable and Immediate Network Connection"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and process.name : ".*" and process.args regex~ "[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}"]
+[network where event.type == "start"]
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.3.0"

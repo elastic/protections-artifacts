@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Download via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,7 +20,7 @@ sequence by process.entity_id with maxspan=1m
  not file.path : ("/opt/homebrew/*", 
                   "/usr/local/Cellar/*",
                   "/Users/*/Library/Caches/*") and
- not file.name : "fsevent_watch" and
+ not file.name : ("fsevent_watch", "DTBiOSSDK") and
  not process.executable : ("/Users/*/.rvm/*", "/Users/*/.rbenv/*")]
 '''
 

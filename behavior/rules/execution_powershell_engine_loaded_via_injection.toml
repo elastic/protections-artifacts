@@ -7,7 +7,7 @@ id = "c5473399-8d0b-4cf2-a1a2-0c856649396a"
 license = "Elastic License v2"
 name = "PowerShell Engine Loaded via Injection"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -32,7 +32,8 @@ sequence by process.entity_id with maxspan=1m
                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and 
-   not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488b556*c6420c01833d*")]
+   not _arraysearch(process.parent.thread.Ext.call_stack, $entry, 
+                    $entry.callsite_trailing_bytes : ("488b556*c6420c01833d*", "48894550488b4d18488b455048894110488b4528ff5040*"))]
  [library where dll.name : ("System.Management.Automation.ni.dll", "System.Management.Automation.dll")]
 '''
 

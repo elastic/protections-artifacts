@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id
@@ -43,7 +43,12 @@ sequence by process.entity_id
                "ab813df167f8b6afe13f67231328f28fa3b0efeed8460f8b5e8a4228a8cded4e", 
                "ce0f4cd9d9af178aead83df4f46146f1c66cc2c3e600c8aafa0a392fc5ad9637", 
                "00af34a5cca727b768d6030ca15e0f728e5855c23c73c78712aaee69fa14b489", 
-               "cd5bd7618b6b70f5463b1279e692ec694978c7419c3360ad07fe69e8c9a48e7c")
+               "cd5bd7618b6b70f5463b1279e692ec694978c7419c3360ad07fe69e8c9a48e7c", 
+               "5a53be7287634f941e18ea3496ada9b336294311cd50bb4c02ec8d51cbdf4555", 
+               "ce0f4cd9d9af178aead83df4f46146f1c66cc2c3e600c8aafa0a392fc5ad9637", 
+               "cec41d7f35cf59669bad11ac70783856b2566425b9f59e3c459ef08f735bb405", 
+               "94113324af3244b7a90b12837ad305769d91bde430f02d71c0a3f4df8670d87c", 
+               "8ffcfebcd71d0ef03772e80e381abf72a482c6f091e29700ab59100fe9f82304")
   ]
   until [process where event.action == "end"]
 '''

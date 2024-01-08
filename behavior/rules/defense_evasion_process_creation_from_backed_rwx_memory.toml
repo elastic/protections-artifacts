@@ -7,7 +7,7 @@ id = "13dadee2-f4b8-4877-8b9c-37ce59f82432"
 license = "Elastic License v2"
 name = "Process Creation from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -49,7 +49,7 @@ sequence with maxspan=1m
                $entry.protection : "RWX" and  $entry.symbol_info : "?:\\*" and
                not $entry.symbol_info : ("?:\\Program Files*", "?:\\Windows\\*", "?:*\\isrt.dll*", "?:*\\ISSetup.dll*"))
   ) and
-  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.symbol_info : ("?:\\Windows\\*", "?:\\Program Files*", "*.exe!*")) and
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.symbol_info : ("?:\\Windows\\*", "?:\\Program Files*", "*.exe!*", "*.exe+*")) and
   not process.parent.thread.Ext.call_stack_summary : ("*|python*.dll|*", "*|isrt.dll*", "|issetup.dll*") and 
   not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : ("85c00f8?a6000000*", "8d45f253508*", "8b4df464890d*", "6a006890751*"))
   ] by process.parent.entity_id

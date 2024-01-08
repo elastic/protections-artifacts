@@ -13,7 +13,7 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -27,6 +27,7 @@ process where event.type == "start" and event.action == "exec" and
                           "*=/Applications/Xcode-*.app/*",
                           "*=/Library/Developer/CoreSimulator/*",
                           "*=/Users/*/Library/Developer/Xcode/*",
+                          "*=/Library/Frameworks/R.framework/Resources/lib/libR.dylib",
                           "*=/Applications/Xcode.app/*") and 
   not process.executable : "/Applications/Xcode.app/*" and 
   not process.parent.executable : ("/usr/bin/xcrun", 
@@ -35,7 +36,8 @@ process where event.type == "start" and event.action == "exec" and
                                    "/Library/Developer/CommandLineTools/usr/bin/make",
                                    "/Users/*/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64",
                                    "/Library/Printers/Canon/CUPS_Printer/Bins/Bins.bundle/Contents/Library/capdftopdl",
-                                   "/Applications/Android Studio.app/Contents/MacOS/studio")
+                                   "/Applications/Android Studio.app/Contents/MacOS/studio") and
+  not process.Ext.effective_parent.executable : "/Applications/RStudio.app/Contents/MacOS/RStudio"
 '''
 
 min_endpoint_version = "8.7.0"

@@ -1,0 +1,48 @@
+[rule]
+description = """
+Detects the abnormal spawning of curl or nscurl by a shell script within an applications directory structure. Threat
+actors have executed and abused shell scripts within a benign applications directory structures in order to evade
+detection and download a second stage payload. This specific activity has been observed when the shell script creates a
+new shell child process ,via a fork, which is then used to execute curl or nscurl. The use of shell scripts within a
+macOS application to execute curl is highly abnormal espcially in this specific manner.
+"""
+id = "fce1ba4a-596c-445c-938d-3ffd73152bf2"
+license = "Elastic License v2"
+name = "Curl Execution via Application Shell Script"
+os_list = ["macos"]
+reference = [
+    "https://www.sentinelone.com/blog/from-the-front-lines-new-macos-covid-malware-masquerades-as-apple-wears-face-of-apt/",
+    "https://github.com/D00MFist/Mystikal/blob/main/Modules/DMG.py",
+]
+version = "1.0.3"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "fork" and process.name : ("bash", "sh", "zsh", "tclsh*") and 
+  process.args_count == 2 and process.args : ("/Applications/*", "/Volumes/*") and 
+  process.parent.name : ("bash", "sh", "zsh", "tclsh*")]
+[process where event.type == "start" and event.action == "exec" and process.name : ("curl", "nscurl*")]
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

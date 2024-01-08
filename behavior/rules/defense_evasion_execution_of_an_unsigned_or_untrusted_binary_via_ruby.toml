@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Execution of an Unsigned or Untrusted Binary via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.11"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -19,7 +19,8 @@ process where event.type == "start" and event.action == "exec" and
                            "/nix/store/*",
                            "/Users/*/local/homebrew/*",
                            "/usr/local/bin/tuist",
-                           "/Users/*/Documents/ios/vendor/buildinfo/buildinfo",
+                           "/Users/*/ios/vendor/buildinfo/buildinfo",
+                           "/Applications/Solarwinds Discovery Agent.app/Contents/Resources/agent/ruby/bin/SamanageAgentSrv",
                            "/opt/puppetlabs/puppet/*",
                            "/Users/*/.rbenv/*") and
  not process.name : ("rustc", "fsevent_watch") and 

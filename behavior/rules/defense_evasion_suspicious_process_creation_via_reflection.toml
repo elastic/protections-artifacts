@@ -8,14 +8,18 @@ license = "Elastic License v2"
 name = "Suspicious Process Creation via Reflection"
 os_list = ["windows"]
 reference = ["https://www.deepinstinct.com/blog/dirty-vanity-a-new-approach-to-code-injection-edr-bypass"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
  descendant of [process where event.action == "start" and
                  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!RtlCreateProcessReflection*", "*ntdll.dll!RtlCloneUserProcess*"))] and
  not (process.executable : ("?:\\WINDOWS\\SysWOW64\\WerFault.exe", "?:\\WINDOWS\\system32\\WerFault.exe") and
-      process.parent.thread.Ext.call_stack_summary : "*faultrep.dll|wersvc.dl*")
+      process.parent.thread.Ext.call_stack_summary : "*faultrep.dll|wersvc.dl*") and 
+ not (process.executable : "?:\\WINDOWS\\system32\\conhost.exe" and
+      _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!*DeviceIoControlFile*")) and 
+ not (process.code_signature.trusted == true and 
+      process.code_signature.subject_name : ("Tencent Technology(Shenzhen) Company Limited", "Logitech Inc"))
 '''
 
 min_endpoint_version = "8.7.0"

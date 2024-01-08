@@ -10,12 +10,20 @@ id = "d92e00d3-d6a4-4662-b585-c666d05d2e9a"
 license = "Elastic License v2"
 name = "Suspicious Dylib Load from Volume Mount Path"
 os_list = ["macos"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 any where (
-            (event.action == "load" and dll.path : "/Volumes/*" and (process.code_signature.exists == false or process.code_signature.trusted == false) and not process.executable : ("/Volumes/*", "/Users/*/.nvm/*", "/Users/*/.rustup/toolchains/stable-aarch64-apple-darwin/*")) or 
-            (event.action == "load" and process.executable : "/Volumes/*" and (dll.code_signature.exists == false or dll.code_signature.trusted == false) and not dll.path : ("/Volumes/*", "/System/Library/*", "/usr/lib/*", "/private/var/db/oah/*"))
+            (event.action == "load" and dll.path : "/Volumes/*" and (process.code_signature.exists == false or process.code_signature.trusted == false) and 
+              not process.executable : ("/Volumes/*", 
+                                        "/Users/*/.nvm/*", 
+                                        "/Users/*/.rustup/toolchains/stable-aarch64-apple-darwin/*")) or 
+            (event.action == "load" and process.executable : "/Volumes/*" and (dll.code_signature.exists == false or dll.code_signature.trusted == false) and 
+              not dll.path : ("/Volumes/*", 
+                              "/System/Library/*", 
+                              "/usr/lib/*", 
+                              "/private/var/db/oah/*") and
+              not process.code_signature.team_id : "QGULMAPEB2")
           )
 '''
 

@@ -1,0 +1,46 @@
+[rule]
+description = """
+Detects the execution of an unsigned or untrusted process via a shell by the macOS installer binary. This activity is
+abnormal and may indicate an attempt to stage and execute a malicious payload.
+"""
+id = "752a2f7f-8d0c-4a7e-9665-ec948d14e947"
+license = "Elastic License v2"
+name = "Unsigned or Untrusted Process Execution via Installer"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ process.args_count == 1 and 
+ process.parent.name : ("bash", "sh", "zsh") and 
+ process.Ext.effective_parent.executable : "/usr/sbin/installer"
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.8.0"

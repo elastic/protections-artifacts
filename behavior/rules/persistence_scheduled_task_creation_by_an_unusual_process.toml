@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=5m
@@ -71,7 +71,9 @@ sequence with maxspan=5m
                  "?:\\Windows\\SysWOW64\\OneDriveSetup.exe",
                  "?:\\Windows\\System32\\MRT.exe",
                  "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe", 
-                 "?:\\Program Files (x86)\\Elaborate Bytes\\VirtualCloneDrive\\ExecuteWithUAC.exe") and
+                 "?:\\Program Files (x86)\\Elaborate Bytes\\VirtualCloneDrive\\ExecuteWithUAC.exe", 
+                 "?:\\Program Files (x86)\\LANDesk\\LDClient\\*", 
+                 "?:\\Program Files\\LANDesk\\LDClient\\*") and
     /* DOCs opened from network file share trigger an office default scheduled task */
     not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
     not process.hash.sha256 :

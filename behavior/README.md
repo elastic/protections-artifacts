@@ -20,40 +20,37 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.50 | 35d2dfba303f1daad6d05842e9518b9fa9196d60b16f8725a0c02dcb52cb5ea5 |
-| production-rules-macos-v1 | 1.0.50 | 457b5516dad4f327cb1b86d39517efc8213818d27249c579588bd1c904e06b85 |
-| production-rules-windows-v1 | 1.0.50 | 70c5f97eeb24415ad8b667d2f1056476730ce632cb730b3816ca6f6249edbb76 |
+| production-rules-linux-v1 | 1.0.51 | 91a48556f05fca944c3d4919b0769123acf53362a5e9499bb9331b334f8dbbe3 |
+| production-rules-macos-v1 | 1.0.51 | b02b26fd38bed9d8d97e1c03b4ef4e6f453416f751d76c6ffdc55589af826051 |
+| production-rules-windows-v1 | 1.0.51 | d366a368862e1957a564497d938160e4da97cc755cd57ffd7782c81dda21b8d9 |
 
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.50', '1.0.49') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.51', '1.0.50') by OS/MITRE Tactic.
 
-| Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
-|----------------------|-----------|---------|---------|-------------------|
-| Collection           |         0 |       0 |       1 |                 1 |
-| Credential Access    |         1 |       0 |       7 |                 8 |
-| Defense Evasion      |        12 |       0 |       1 |                13 |
-| Execution            |         1 |       0 |       8 |                 9 |
-| Initial Access       |         1 |       0 |       0 |                 1 |
-| Persistence          |         0 |       0 |       1 |                 1 |
-| Privilege Escalation |         1 |       0 |       0 |                 1 |
-| Total by OS          |        16 |       0 |      18 |                34 |
+| Tactic              |   Windows |   Linux |   macOS |   Total by Tactic |
+|---------------------|-----------|---------|---------|-------------------|
+| Command and Control |         0 |       1 |       3 |                 4 |
+| Credential Access   |         0 |       2 |       0 |                 2 |
+| Execution           |         0 |       0 |       2 |                 2 |
+| Persistence         |         0 |       0 |       1 |                 1 |
+| Total by OS         |         0 |       3 |       6 |                 9 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
 | Collection           |         5 |       0 |       1 |                 6 |
-| Command and Control  |        24 |       2 |      19 |                45 |
-| Credential Access    |        37 |       1 |      18 |                56 |
-| Defense Evasion      |       200 |       7 |      37 |               244 |
+| Command and Control  |        24 |       3 |      22 |                49 |
+| Credential Access    |        37 |       3 |      18 |                58 |
+| Defense Evasion      |       200 |       7 |      36 |               243 |
 | Discovery            |         4 |       0 |       3 |                 7 |
-| Execution            |        50 |      10 |      41 |               101 |
+| Execution            |        50 |      10 |      43 |               103 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
 | Impact               |        14 |       2 |       2 |                18 |
 | Initial Access       |        45 |       1 |       2 |                48 |
 | Lateral Movement     |         8 |       1 |       1 |                10 |
-| Persistence          |        49 |       2 |      16 |                67 |
+| Persistence          |        49 |       2 |      17 |                68 |
 | Privilege Escalation |        49 |       5 |       7 |                61 |
-| Total by OS          |       485 |      31 |     148 |               664 |
+| Total by OS          |       485 |      34 |     153 |               672 |

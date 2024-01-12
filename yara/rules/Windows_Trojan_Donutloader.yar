@@ -2,7 +2,7 @@ rule Windows_Trojan_Donutloader_f40e3759 {
     meta:
         author = "Elastic Security"
         id = "f40e3759-2531-4e21-946a-fb55104814c0"
-        fingerprint = "6400b34f762cebb4f91a8d24c5fce647e069a971fb3ec923a63aa98c8cfffab7"
+        fingerprint = "a6b9ccd69d871de081759feca580b034e3c5cec788dd5b3d3db033a5499735b5"
         creation_date = "2021-09-15"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Donutloader"
@@ -12,8 +12,8 @@ rule Windows_Trojan_Donutloader_f40e3759 {
         license = "Elastic License v2"
         os = "windows"
     strings:
-        $x64 = { 06 B8 03 40 00 80 C3 4C 8B 49 10 49 }
-        $x86 = { 04 75 EE 89 31 F0 FF 46 04 33 C0 EB }
+        $x64 = { 06 B8 03 40 00 80 C3 4C 8B 49 10 49 8B 81 30 08 00 00 }
+        $x86 = { 04 75 EE 89 31 F0 FF 46 04 33 C0 EB 08 83 21 00 B8 02 }
     condition:
         any of them
 }

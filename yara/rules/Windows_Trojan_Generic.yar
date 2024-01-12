@@ -88,26 +88,6 @@ rule Windows_Trojan_Generic_c7fd8d38 {
         all of them
 }
 
-rule Windows_Trojan_Generic_a160ca52 {
-    meta:
-        author = "Elastic Security"
-        id = "a160ca52-8911-4649-a1fa-ac8f6f75e18d"
-        fingerprint = "06eca9064ca27784b61994844850f05c47c07ba6c4242a2572d6d0c484a920f0"
-        creation_date = "2022-02-17"
-        last_modified = "2022-04-12"
-        threat_name = "Windows.Trojan.Generic"
-        reference_sample = "650bf19e73ac2d9ebbf62f15eeb603c2b4a6a65432c70b87edc429165d6706f3"
-        severity = 100
-        arch_context = "x86"
-        scan_context = "file, memory"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $a1 = { 1C 85 C9 74 02 8B 09 8D 41 FF 89 45 F0 89 55 EC 8B 55 EC 8B }
-    condition:
-        all of them
-}
-
 rule Windows_Trojan_Generic_bbe6c282 {
     meta:
         author = "Elastic Security"
@@ -253,6 +233,28 @@ rule Windows_Trojan_Generic_f0c79978 {
     strings:
         $a1 = "\\IronPython."
         $a2 = "\\helpers\\execassembly_x64"
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Generic_40899c85 {
+    meta:
+        author = "Elastic Security"
+        id = "40899c85-bb49-412c-8081-3a1359957c52"
+        fingerprint = "d02a17a3b9efc2fd991320a5db7ab2384f573002157cddcd12becf137e893bd8"
+        creation_date = "2023-12-15"
+        last_modified = "2024-01-12"
+        threat_name = "Windows.Trojan.Generic"
+        reference_sample = "88eb4f2e7085947bfbd03c69573fdca0de4a74bab844f09ecfcf88e358af20cc"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = "_sqlDataTypeSize"
+        $a2 = "ChromeGetName"
+        $a3 = "get_os_crypt"
     condition:
         all of them
 }

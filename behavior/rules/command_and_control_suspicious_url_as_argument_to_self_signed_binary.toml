@@ -10,15 +10,16 @@ license = "Elastic License v2"
 name = "Suspicious URL as argument to Self-Signed Binary"
 os_list = ["macos"]
 reference = ["https://www.jamf.com/blog/bluenoroff-apt-targets-macos-rustbucket-malware/"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and 
  process.code_signature.trusted == false and 
  process.code_signature.signing_id regex~ """[A-Za-z0-9\_\s]{2,}\-[a-z0-9]{40}""" and 
- process.args : "http*" and process.args_count <= 3 and not
- process.name : ("wget", "curl", "git", "nscurl") and not 
- process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*")
+ process.args : "http*" and process.args_count <= 3 and 
+ not process.args : "http.server" and
+ not process.name : ("wget", "curl", "git", "nscurl") and 
+ not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*")
 '''
 
 min_endpoint_version = "8.3.0"

@@ -9,7 +9,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://objective-see.org/blog/blog_0x59.html",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and process.parent.name : "com.*" and 
@@ -21,12 +21,13 @@ process where event.type == "start" and process.parent.name : "com.*" and
                                  "/System/*", 
                                  "/private/var/db/com.apple.xpc.*", 
                                  "/private/var/folders/*/*/*/AppTranslocation/*",
+                                 "/Library/Application Support/AvastHUB/com.avast.hub.app/Contents/Helpers/com.avast.hub.worker",
                                  "/Library/Application Support/Symantec/Silo/MES/LiveUpdate/com.symantec.SymLUHelper",
                                  "/Library/Application Support/Symantec/Silo/NFM/LiveUpdate/com.symantec.SymLUHelper",
                                  "/Library/Application Support/AvastSecureLine/components/update/com.avast.osx.secureline.update-agent",
                                  "/usr/libexec/*", 
                                  "/Library/SystemExtensions/*") and not 
-    process.parent.name : "com.docker.*" and not
+    process.parent.name : ("com.docker.*", "com.todyl.SGNWatchDog") and not
     process.command_line : ("sh -c /bin/cp /Library/Preferences/SystemConfiguration/preferences.plist /Library/Preferences/SystemConfiguration/preferences.plist.old",
                             "*sh -c */Library/Application Support/HmaProVpn/hub/userinit.sh*")
 '''

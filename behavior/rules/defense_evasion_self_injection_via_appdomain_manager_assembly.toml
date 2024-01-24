@@ -1,0 +1,91 @@
+[rule]
+description = """
+Identifies an attempt to load a recently created and unsigned DLL file by a .NET application via an AppDomain Manager
+manifest followed by suspicious VirtualProtect call to modify the memory content of the loaded DLL. This may indicate an
+attempt to load a malicious module via DLL search order hijacking.
+"""
+id = "50dd274c-651e-46aa-9485-768fa4939b93"
+license = "Elastic License v2"
+name = "Self Injection via AppDomain Manager Assembly"
+os_list = ["windows"]
+reference = [
+    "https://www.rapid7.com/blog/post/2023/05/05/appdomain-manager-injection-new-techniques-for-red-teams/",
+]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [library where
+  not dll.code_signature.status : "trusted" and not endswith~(dll.name, process.name) and
+  user.id : ("S-1-5-21*", "S-1-12-*") and
+  (dll.Ext.relative_file_creation_time <= 500 or 
+   dll.Ext.relative_file_name_modify_time <= 500 or 
+   (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*")) and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*clr.dll!ParseManifest*") and
+  process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|clr.dll|mscorlib.ni.dll|clr.dll|mscoreei.dll|mscoree.dll|kernel32.dll|ntdll.dll" and 
+   
+   /* DLL loaded from the process.executable current directory */
+  endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and 
+  
+  not process.executable : 
+           ("?:\\Program Files\\*", 
+            "?:\\Program Files (x86)\\*", 
+            "?:\\Windows\\Explorer.exe", 
+            "?:\\Windows\\SysWOW64\\*", 
+            "?:\\Windows\\System32\\*", 
+            "?:\\Windows\\splwow64.exe", 
+            "?:\\Windows\\Microsoft.NET\\*") and
+            
+  not dll.path :
+        ("?:\\Windows\\System32\\DriverStore\\FileRepository\\*", 
+         "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*", 
+         "?:\\Windows\\assembly\\NativeImages\\*",
+         "?:\\windows\\WinSxS\\*",
+         "?:\\windows\\system32\\*",
+         "?:\\windows\\syswow64\\*",
+         "?:\\Program Files\\*", 
+         "?:\\Program Files (x86)\\*", 
+         "?:\\Windows\\Microsoft.NET\\*")] as event0
+ [api where process.Ext.api.name : "VirtualProtect" and process.Ext.api.parameters.size >= 10000 and 
+  stringcontains~(process.Ext.api.metadata.target_address_path, event0.dll.path) and 
+  process.Ext.api.parameters.protection : "RWX" and process.Ext.api.parameters.protection_old : "RCX" and 
+  process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and 
+  process.thread.Ext.call_stack_final_user_module.protection_provenance : "clr.dll"]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

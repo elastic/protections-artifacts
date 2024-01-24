@@ -7,7 +7,7 @@ id = "c5473399-8d0b-4cf2-a1a2-0c856649396a"
 license = "Elastic License v2"
 name = "PowerShell Engine Loaded via Injection"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,11 +21,14 @@ sequence by process.entity_id with maxspan=1m
                 "?:\\Program Files (x86)\\*.exe") and 
   not (process.code_signature.status : "trusted" and 
        process.pe.original_file_name : ("LegacyVSTSPowerShellHost.exe", "SqlIaaSExtensionDeployer.exe", "wacrun.exe")) and 
-  not process.hash.sha256 : "07bc2c53c47cf691b8836af4e377990324e612df16de63644c8c3750e9a75a57" and 
+  not process.hash.sha256 :
+                   ("07bc2c53c47cf691b8836af4e377990324e612df16de63644c8c3750e9a75a57",
+                    "8b66483519a4be8e2cd4b9686ea465e2171731a7a91f623069046450f22b7a39",
+                    "2232525e0e8ba5d5877198fbe3589cc8a90b03054ee69e7f7d7c37761a88741f") and
   not (process.code_signature.status : "trusted" and 
        process.code_signature.subject_name : 
             ("Citrix Systems, Inc.", "Veeam Software Group GmbH", "ScriptRunner Software GmbH", "Microsoft 3rd Party Application Component", 
-             "Atera Networks Ltd")) and 
+             "Atera Networks Ltd", "Chocolatey Software, Inc.")) and
   process.parent.thread.Ext.call_stack_summary : 
                     ("ntdll.dll|Unbacked", 
                      "ntdll.dll|kernelbase.dll|Unbacked",

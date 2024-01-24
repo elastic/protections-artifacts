@@ -11,7 +11,7 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 file where event.type != "deletion" and 
@@ -22,12 +22,15 @@ not (process.name : ("osx-x86_64",
                      "oahd",
                      "Install") and 
      process.code_signature.trusted == true) and 
+not (Effective_process.name : "masMonitor" and process.code_signature.trusted == true) and
 not process.executable : ("/System/*", 
+                          "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp3.app/Contents/MacOS/ScanApp3",
                           "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
                           "/Applications/Reason 12.app/Contents/MacOS/Reason",
                           "/Applications/Reason 12.app/Contents/MacOS/PlugInspector",
                           "/Library/Application Support/Native Instruments/Maschine 2/ScanApp.app/Contents/MacOS/ScanApp",
                           "/Applications/REAPER.app/Contents/MacOS/REAPER",
+                          "/Applications/Avid Media Composer/AvidMediaComposer.app/Contents/MacOS/AvidMediaComposer",
                           "/Applications/Neural DSP/*",
                           "/usr/bin/auvaltool",
                           "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp.app/Contents/MacOS/ScanApp",
@@ -36,7 +39,7 @@ not process.executable : ("/System/*",
                           "/Applications/Ableton Live 11 Suite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner")
 '''
 
-min_endpoint_version = "8.10.2"
+min_endpoint_version = "8.11.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -69,4 +72,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.2"
+min_endpoint_version = "8.11.0"

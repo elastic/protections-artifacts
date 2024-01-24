@@ -13,7 +13,7 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -63,6 +63,8 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                       "/Users/*/Applications/Grammarly Desktop.app//Contents/Library//LaunchAgents/Grammarly Desktop Helper.app/Contents/MacOS/Grammarly Desktop Helper",
                       "/Users/*/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
                       "/usr/local/jamf/bin/jamf", 
+                      "/Users/*/Applications/.com.bomgar.bomgar-scc.*/Remote Support Customer Client.app/Contents/MacOS/bomgar-scc",
+                      "/Applications/.com.bomgar.bomgar-scc.*/Remote Support Customer Client.app/Contents/MacOS/bomgar-scc",
                       "/Library/Addigy/go-agent",
                       "/usr/local/bin/elastic-agent",
                       "/Library/Bitdefender/AVP/product/bin/bdredline",

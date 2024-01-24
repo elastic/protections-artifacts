@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects when curl is executed as part of a shell script that gets executed via a forked shell interpreter. The activity
+has been observed in many different samples of the malware known as Shlayer. Shlayer uses this technique in order to
+avoid traditional scanning and command line detections. The Shlayer malware brings along an encoded shell script within
+a, usually, signed or sometimes valid application that gets decoded and passed to a forked shell interpreter (to avoid
+process lineage detections) for execution via the "-c" command parameter.
+"""
+id = "14f0cd76-79cc-46e8-b059-fcca9e41a804"
+license = "Elastic License v2"
+name = "Curl Execution via CommandLine Shell Script"
+os_list = ["macos"]
+reference = [
+    "https://www.sentinelone.com/blog/coming-out-of-your-shell-from-shlayer-to-zshlayer/",
+    "https://www.uptycs.com/blog/macos-bashed-apples-of-shlayer-and-bundlore",
+]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "fork" and 
+  process.name : ("bash", "sh", "zsh") and 
+  process.args == "-c" and process.args_count == 3 and 
+  process.command_line == null and 
+  process.parent.name : ("bash", "sh", "zsh")]
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : ("curl", "nscurl")]
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -14,7 +14,7 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 library where ((event.action == "load" and not dll.path : "?*") or 
@@ -27,10 +27,13 @@ library where ((event.action == "load" and not dll.path : "?*") or
                        "oahd",
                        "Install") and 
        process.code_signature.trusted == true) and 
+  not (Effective_process.name : "masMonitor" and process.code_signature.trusted == true) and 
   not process.executable : ("/System/*", 
+                            "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp3.app/Contents/MacOS/ScanApp3",
                             "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
                             "/Applications/Reason 12.app/Contents/MacOS/Reason",
                             "/Applications/Reason 12.app/Contents/MacOS/PlugInspector",
+                            "/Applications/Avid Media Composer/AvidMediaComposer.app/Contents/MacOS/AvidMediaComposer",
                             "/Library/Application Support/Native Instruments/Maschine 2/ScanApp.app/Contents/MacOS/ScanApp",
                             "/Applications/REAPER.app/Contents/MacOS/REAPER",
                             "/Applications/Neural DSP/*",

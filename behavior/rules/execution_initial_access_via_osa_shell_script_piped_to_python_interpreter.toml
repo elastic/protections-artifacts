@@ -8,14 +8,12 @@ id = "2aade342-d45b-4297-a0e0-4cf0962c9042"
 license = "Elastic License v2"
 name = "Initial Access via OSA Shell Script Piped to Python Interpreter"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and 
   process.name : "osascript" and 
-  process.parent.name : ("sh", "bash", "zsh", "osascript") and 
-  process.args : ("osascript") and
   process.args : "-e"]
 [network where event.type == "start" and event.action : "connection_attempted" and 
   process.name : "python*" and

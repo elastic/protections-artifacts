@@ -1,0 +1,95 @@
+[rule]
+description = """
+Identifies the load of an unsigned or untrusted DLL by a trusted binary followed by calling VirtualAlloc API to allocate
+executable memory. This may indicate execution via DLL sideloading to perform code injection.
+"""
+id = "96ffa829-b9fc-4456-be96-2b59b8facaed"
+license = "Elastic License v2"
+name = "VirtualAlloc API Call from an Unsigned DLL"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id
+[library where process.name != null and
+   (dll.Ext.relative_file_creation_time <= 900 or
+    dll.Ext.relative_file_name_modify_time <= 900 or
+    (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
+    dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
+    not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and dll.hash.sha256 != null and
+    not dll.path : ("?:\\Windows\\Installer\\*",
+                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                    "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                    "?:\\Windows\\assembly\\*") and
+
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name :
+                         ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
+                          "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
+                          "VICON INDUSTRIES, INC.")) and
+
+  not (dll.name : "ISSetup.dll" and dll.pe.original_file_name : "iKernel.dll") and
+  not dll.hash.sha256 :
+               ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9",
+                "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea",
+                "4b3d1f4ec733afa5c593be64f251560515b91cb328e5c741ff877455aff0d453",
+                "b950c9f7fb8e9b558d9caf634d7463fb4bf0aaf69a501d8f922763f8837b0ad2",
+                "6eed2886728608f1b3f4a54a7a7d338ef1b1669f6f53a5d38bcd352f0ec755c9",
+                "139a3fba0e2035830021d50bd24b73dc6d5b8b0520ee6d946ebef1ec2f602ff0",
+                "127ebabd8e20267bdd26165cd26398bd9225d89b2977ff8de2b5f9da8a231e67",
+                "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962",
+                "3ed846264d5003acbd0dd624cbe4ca84606fe897fd8caa29350621906a3e28c0",
+                "b211c61e1fa89cbaf4570ee5f9712772582b2f4bb23597549ec32ea066a20b76",
+                "deaf71807722382d05244160ee35b1a14c0e621d7caf74c863475669e5c95b35",
+                "7bafd0da58d427bbe8a2d34c953a53809bcbb3ff6c6f90b8acbe6c2b3ab8fa08",
+                "8747dc251af9c3192bad2001786c626ad03903c3afaadb8c6a8c2627c66730bd",
+                "5c45a7439d127c09b74fa16a0b300fb290ba15d316397579985464be484b8e17",
+                "e51e7a2667b8b78ab32a7fe458d0fa498764721367ca4cc5d6fa7c05976f4bf0",
+                "7c173cdaea8e3a3cc95b7196681cb904f3996f81289d5890b30f38c99eba45ae",
+                "3dfa92d9a0ecefbb95a6b73dc15e8ae424725b2ddafe33a3e0b8d97b49a36be0",
+                "0ec17d0e628cd5c9475c88164c642c6fe62322ca62facb0c3937029a39099d31")
+ ] as event0
+[api where
+  process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "*X*" and
+  process.Ext.api.parameters.size >= 4096 and
+  _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name))]
+ until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.10.0"
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=1m
@@ -26,12 +26,13 @@ sequence with maxspan=1m
                            "?:\\Users\\*\\Documents\\*",
                            "?:\\Windows\\Resources\\Themes\\*",
                            "?:\\ProgramData\\*") and not process.executable : "?:\\ProgramData\\*\\*") or
-    (process.name : ("rundll32.exe", "regsvr32.exe", "WScript.exe"))
+    (process.name : ("rundll32.exe", "regsvr32.exe", "WScript.exe")) or
+    descendant of [process where event.action == "start" and process.name : "msiexec.exe"]
     )] by process.entity_id
   [process where event.action == "start" and
    process.name : ("cmd.exe", "powershell.exe") and
-   process.args : ("Add-MpPreference", "Set-MpPreference") and
-   process.args : ("-ExclusionPath", "-DisableRealtimeMonitoring", "-DisableScriptScanning", "-DisableArchiveScanning")] by process.parent.entity_id
+   process.command_line : ("*Add-MpPreference*", "*Set-MpPreference*") and
+   process.command_line: ("*-ExclusionPath*", "*-DisableRealtimeMonitoring*", "*-DisableScriptScanning*", "*-DisableArchiveScanning*")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"

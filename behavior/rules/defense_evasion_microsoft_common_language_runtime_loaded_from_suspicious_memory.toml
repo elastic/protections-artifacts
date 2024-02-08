@@ -7,7 +7,7 @@ id = "ad2c6fcc-89d3-4939-85d9-d7114d6bbf14"
 license = "Elastic License v2"
 name = "Microsoft Common Language Runtime Loaded from Suspicious Memory"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -18,15 +18,22 @@ library where dll.name : "clr.dll" and
  not (process.executable : "?:\\Program Files\\Dell\\DTP\\DiagnosticsSubAgent\\Dell.TechHub.Diagnostics.SubAgent.exe" and
       process.code_signature.trusted == true and process.code_signature.subject_name : "Dell Inc") and
  not (process.code_signature.trusted == true and 
-      process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.", "HAYLEM Technologies Inc.", "MicroStrategy, Inc.")) and 
+      process.code_signature.subject_name : ("Azul Systems, Inc.", "JetBrains s.r.o.", "HAYLEM Technologies Inc.", "MicroStrategy, Inc.", "Oracle America, Inc.")) and
  not (process.executable : "C:\\ManageEngine\\ADManager Plus\\jre\\bin\\java.exe" and 
       process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.trusted == true) and 
  not (process.executable : "?:\\Program Files*\\Amazon Corretto\\jdk*\\bin\\java.exe" and 
       process.code_signature.subject_name : ("Amazon.com Services LLC", "Amazon Services LLC", "Adaptive Protocols, Inc.") and process.code_signature.trusted == true)  and 
- not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe")
+ not process.executable :
+               ("?:\\Program Files\\Microsoft Visual Studio\\*.exe",
+                "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",
+                "?:\\Program Files (x86)\\PMP\\jre\\bin\\java.exe",
+                "?:\\Program Files\\ManageEngine\\PAM360\\jre\\bin\\java.exe") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes : ("c5f8774883ec10c5fb1104244883ec104889042449ba00000000000000004*",
+                                                      "*488b8d48ffffff48894b104c8b658049894424084c896588c745c0*"))
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -47,4 +54,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.8.0"

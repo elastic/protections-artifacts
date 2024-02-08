@@ -7,7 +7,7 @@ id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
 license = "Elastic License v2"
 name = "Potential Remote Code Injection"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid, process.thread.Ext.call_stack_final_user_module.name with maxspan=30s
@@ -57,7 +57,11 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
                                            "f71ae100e2c4a6de86033f7664db07dcba74319de4da0e72f9b5908f09257519", 
                                            "a63dffea3202a2499abef6c507a3a84aab04e1f43a086ba79784ccb29f4a3156", 
                                            "dd69b5adcc1832c449ee31ede33ba17dfafba278eb3627dbabf3a42b02a457d8", 
-                                           "dd1eaa53b13e901e8236d034400e36bda7249bf7bb74f50b46d31ebe4896ebb9") 
+                                           "dd1eaa53b13e901e8236d034400e36bda7249bf7bb74f50b46d31ebe4896ebb9",
+                                           "e3fdcd2b4c5215e74b0cabe91ce7fe2800cbf8e2a28157342960bca61bbd6b5d",
+                                           "f24968ff313caf2d1f6a87b5b2265bcb7278ab598e414fd60b1037aa9b226370",
+                                           "2a08e0247dcd2363430f48db72ca6c3d2f5d84486c7894cff54e6aae2eb45721",
+                                           "e9f8a89ccb79d3ce6c148022f9ba830521ece008749fb98ea129c7073b9449f9")
   ]
  [api where process.Ext.api.behaviors : "cross-process" and 
   not process.Ext.api.behaviors : "parent-child" and process.Ext.api.name : "WriteProcessMemory"]

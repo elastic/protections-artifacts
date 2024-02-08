@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
@@ -41,7 +41,7 @@ process where event.action == "start" and
    ) and  
    
    /* FP - chocolatey installs and runs Autohotkey from programdata */
-   not (process.pe.original_file_name == "AutoHotkey.exe" and
+   not (process.pe.original_file_name : "AutoHotkey*.exe" and
          process.executable : ("?:\\ProgramData\\chocolatey\\*", 
                                "?:\\Program Files\\AutoHotkey\\AutoHotkey*.exe",
                                "?:\\Program Files (x86)\\AutoHotkey\\AutoHotkey*.exe")) and
@@ -53,7 +53,15 @@ process where event.action == "start" and
         process.executable : ("C:\\kworking\\Bin\\RMMKSE.EXE", "C:\\kworking\\Bin\\RMMSSE.EXE", "?:\\ProgramData\\MSPB\\Bin\\RMMSSE.EXE")) and
    not (process.pe.original_file_name == "AutoHotkey.exe" and process.executable : "C:\\TCPU73\\Programm\\ClockTC\\ClockTC.exe" and
         process.parent.executable : "C:\\TCPU73\\TOTALCMD.EXE") and
-   not process.executable : "?:\\Program Files\\AutoHotkey\\SciTE\\InternalAHK.exe"
+   not process.executable :
+                    ("?:\\Program Files\\AutoHotkey\\SciTE\\InternalAHK.exe",
+                     "?:\\Users\\*\\AppData\\Local\\Programs\\AutoHotkey\\UX\\AutoHotkeyUX.exe") and
+   not process.parent.executable :
+                          ("?:\\Program Files\\KeePass Password Safe ?\\KeePass.exe",
+                           "?:\\Program Files (x86)\\AutoIt3\\AutoIt3.exe",
+                           "?:\\Program Files\\Far Manager\\Far.exe",
+                           "?:\\Users\\*\\Stepwise\\Stepwise.exe",
+                           "?:\\Users\\*\\AppData\\Local\\Programs\\AutoHotkey\\UX\\AutoHotkeyUX.exe")
 '''
 
 min_endpoint_version = "8.4.0"

@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies attempts to force the LogonUI process to load an unsigned DLL via logoff action. The LogonUI.exe process will
+communicate with desktop GUI processes, a malicious one may force it to load a DLL using memory mapped shellcode via
+marshal/unmarshal Direct Composition objects. This may indicate a successful vulnerability exploitation for privilege
+escalation.
+"""
+id = "b9d6cfad-4d18-49a4-a653-47d26fda4431"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via LogonUI"
+os_list = ["windows"]
+reference = ["https://googleprojectzero.github.io/0days-in-the-wild/0day-RCAs/2023/CVE-2023-36033.html"]
+version = "1.0.2"
+
+query = '''
+library where process.executable : "?:\\Windows\\System32\\LogonUI.exe" and user.id : "S-1-5-18" and 
+ not dll.code_signature.status : "trusted" and process.thread.Ext.call_stack_summary : "*combase.dll|dcomp.dll*"
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

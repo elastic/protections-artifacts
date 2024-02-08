@@ -7,7 +7,7 @@ id = "703343f1-095a-4a5a-9bf4-5338db06ecb8"
 license = "Elastic License v2"
 name = "Process Creation from Modified NTDLL"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=3m
@@ -15,7 +15,8 @@ sequence with maxspan=3m
  [process where event.action == "start" and
   _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                 $entry.symbol_info : "*ntdll.dll!*CreateUserProcess*" and $entry.allocation_private_bytes >= 100000) and
-  not (process.code_signature.subject_name : ("KRAFTON, Inc.", "Electronic Arts, Inc.") and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : ("KRAFTON, Inc.", "Electronic Arts, Inc.") and process.code_signature.trusted == true) and
+  not process.parent.executable : "?:\\Program Files (x86)\\CheckPoint\\Endpoint Security\\EFR\\EFRService.exe"
   ] by process.parent.entity_id
 '''
 

@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
@@ -30,7 +30,7 @@ process.args : ("http*://*localhost*",
                 "http*://127.0.0.1*",
                 "-H", 
                 "http*://0.0.0.0*") and 
-not process.parent.executable : "/Library/Developer/*"
+not process.parent.executable : ("/Library/Developer/*", "/Applications/Xcode.app/Contents/Developer/usr/bin/make")
 '''
 
 min_endpoint_version = "7.15.0"

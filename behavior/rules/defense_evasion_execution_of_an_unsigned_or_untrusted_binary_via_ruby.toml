@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Execution of an Unsigned or Untrusted Binary via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.13"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -23,11 +23,13 @@ process where event.type == "start" and event.action == "exec" and
                            "/Applications/Solarwinds Discovery Agent.app/Contents/Resources/agent/ruby/bin/SamanageAgentSrv",
                            "/opt/puppetlabs/puppet/*",
                            "/Users/*/.rbenv/*") and
+ not process.args : "/usr/local/Caskroom/*" and
  not process.name : ("rustc", "fsevent_watch") and 
- not process.parent.executable : ("/Users/*/.rbenv/*", "/Users/*/.rvm/*") and
- not process.Ext.effective_parent.executable : "/Applications/iTerm.app/Contents/MacOS/iTerm2" and 
+ not process.parent.executable : ("/Users/*/.rbenv/*", "/Users/*/.rvm/*", "/opt/vagrant/embedded/bin/ruby") and
+ not process.Ext.effective_parent.executable : ("/Applications/iTerm.app/Contents/MacOS/iTerm2", "/Applications/Android Studio.app/Contents/MacOS/studio") and 
  not process.code_signature.signing_id : "ruby*" and
- not startswith~(process.executable, process.parent.executable)
+ not startswith~(process.executable, process.parent.executable) and 
+ not process.hash.sha256 : "b2e6531cfd3fd6157869a726cf55e50019dc29a1cce4250fd5da912aa76dcaca"
 '''
 
 min_endpoint_version = "8.5.0"

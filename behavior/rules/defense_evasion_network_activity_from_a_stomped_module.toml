@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -25,8 +25,11 @@ sequence by process.entity_id with maxspan=2m
                                  "?:\\program files*\\Microsoft\\*.dll", 
                                  "?:\\program files*\\Windows*.dll", 
                                  "?:\\program files*\\common files\\Microsoft*.dll") and 
-  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*") and 
-  not process.Ext.api.metadata.target_address_path : "?:\\program files*\\microsoft\\scanprocess.dll" and 
+  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*") and
+  not process.Ext.api.metadata.target_address_path :
+                               ("?:\\program files*\\microsoft\\scanprocess.dll",
+                                "?:\\program files (x86)\\common files\\microsoft shared\\vba\\vba?\\vbe?.dll") and
   not process.thread.Ext.call_stack_final_user_module.path : 
                                      ("?:\\Program Files\\*", 
                                       "?:\\Program Files (x86)\\*", 
@@ -42,7 +45,8 @@ sequence by process.entity_id with maxspan=2m
          process.code_signature.trusted == true and 
          process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas")) and 
     not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
-                              "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe") and
+                              "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe",
+                              "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\dat\\Dexon\\Agent\\Agent.exe" and
          process.code_signature.subject_name : "Dexon Software S A" and process.code_signature.status : "errorExpired")
   ] as event0 

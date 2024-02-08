@@ -7,7 +7,7 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 api where 
@@ -38,7 +38,10 @@ api where
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe", 
-                           "D:\\Steam\\steamapps\\common\\*.exe")
+                           "D:\\Steam\\steamapps\\common\\*.exe",
+                           "?:\\Program Files\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
+                           "?:\\Program Files (x86)\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe") and
+ not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe"
 '''
 
 min_endpoint_version = "8.10.0"

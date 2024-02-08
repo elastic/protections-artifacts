@@ -7,12 +7,12 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 library where process.pid != 4 and
  process.executable != null and dll.name != null and
- not startswith~(dll.name, process.name) and
+ not startswith~(dll.name, process.name) and not dll.name : "ntdll.dll" and
  process.thread.Ext.call_stack_summary : ("ntdll.dll|*", "win32u.dll|*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
                   $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
@@ -20,7 +20,9 @@ library where process.pid != 4 and
                                       "*ntdll.dll*!*CreateUserProcess*", "*ntdll.dll*!NtTerminateProcess*", "*ntdll.dll*!NtAlpcOpenSenderProcess*",
                                       "*ntdll.dll*!*ReplyWaitReceivePortEx*", "*ntdll.dll*!NtSetInformationFile*", "*ntdll.dll!TpAllocPool*",
                                       "*ntdll.dll!RtlUnhandledExceptionFilter*", "*ntdll.dll*!*AlpcOpenSenderProcess*", "*ntdll.dll!KiUserApcDispatcher*", 
-                                      "*ntdll.dll!TpCallbackIndependent*", "*win32u.dll!NtGdiDdDDIQueryAdapterInfo*", "*ntdll.dll!*DuplicateObject*")) and
+                                      "*ntdll.dll!TpCallbackIndependent*", "*win32u.dll!NtGdiDdDDIQueryAdapterInfo*", "*ntdll.dll!*DuplicateObject*",
+                                      "*kernel32.dll!CreateThread*", "*KernelBase.dll!CreateRemoteThread*", "*ntdll.dll!*SetInformationWorkerFactory*", "*ntdll.dll!TpReleaseCleanupGroupMembers*",
+                                      "*ntdll.dll!NtReleaseWorkerFactoryWorker+*", "*ntdll.dll!ZwWaitForWorkViaWorkerFactory*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*")
 '''

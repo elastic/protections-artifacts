@@ -1,0 +1,41 @@
+[rule]
+description = "Identifies the load of Windows Management Instrumentation related libraries and from suspicious call stack."
+id = "3cd302aa-098b-4da6-bf20-8d37efe5f861"
+license = "Elastic License v2"
+name = "Suspicious WMI Library Load"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+library where dll.name : ("wbemprox.dll", "WMINet_Utils.dll") and
+  process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|combase.dll|Unbacked" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and 
+ not (process.code_signature.subject_name : ("Acer Incorporated", "Riot Games, Inc.", "Amazon Web Services, Inc.",
+      "Bitdefender SRL", "Blizzard Entertainment, Inc.", "JAM Software GmbH") and process.code_signature.status : "trusted") and
+ not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.callsite_trailing_bytes : "6a00504883ec300f11442420488d0d3effffff488d542438ff1523ffffff488d0524ffffff488b00f048ff084883c4300f104424f058c34883c4600f105c24c0")
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.8.0"

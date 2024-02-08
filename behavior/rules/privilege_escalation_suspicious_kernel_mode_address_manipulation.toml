@@ -7,13 +7,17 @@ id = "10d1d07c-1301-4fed-b584-eb0878a74dc7"
 license = "Elastic License v2"
 name = "Suspicious Kernel Mode Address Manipulation"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.pid != 4 and process.executable != null and 
  /*  kernel mode address range */
  process.Ext.api.parameters.address > 281474976710655 and 
- process.Ext.api.name : ("WriteProcessMemory", "VirtualProtect*", "VirtualAlloc*", "NtQueueApcThread", "QueueUserAPC", "MapViewOfFile*")
+ process.Ext.api.name : ("WriteProcessMemory", "VirtualProtect*", "VirtualAlloc*", "NtQueueApcThread", "QueueUserAPC", "MapViewOfFile*") and
+ not (process.Ext.api.name : "VirtualProtect*" and user.id : "s-1-5-18" and
+      process.executable : ("?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
+                            "?:\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
+                            "?:\\Program Files\\Windows Defender\\MsMpEng.exe"))
 '''
 
 min_endpoint_version = "8.8.0"

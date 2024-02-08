@@ -8,13 +8,15 @@ license = "Elastic License v2"
 name = "Potential HawkEyes Stealer Infection"
 os_list = ["windows"]
 reference = ["https://malpedia.caad.fkie.fraunhofer.de/details/win.hawkeye_keylogger"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
  process.name : ("chrome.exe", "msedge.exe", "brave.exe", "browser.exe", "dragon.exe") and
  process.args : "--dump-dom" and process.args : "--headless" and process.args : "http*" and 
- not process.parent.executable : "?:\\Program Files*\\Avira\\Endpoint Protection SDK\\endpointprotection.exe"
+ not process.parent.executable : 
+                   ("?:\\Program Files\\*\\Endpoint Protection SDK\\endpointprotection.exe", 
+                    "?:\\Program Files (x86)\\*\\Endpoint Protection SDK\\endpointprotection.exe")
 '''
 
 min_endpoint_version = "7.15.0"

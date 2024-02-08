@@ -7,7 +7,7 @@ id = "9d5f965f-6f77-45df-9733-8707e40d1d71"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call from Virtual Disk or USB"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -28,7 +28,8 @@ sequence by process.entity_id with maxspan=2m
   not (process.Ext.api.behaviors : ("hollow_image", "image_indirect_call") and 
        process.thread.Ext.call_stack_summary : 
                         ("ntdll.dll|tmmon64.dll|ntdll.dll|Unbacked", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll", 
-                         "*dsetup.dll|issetup.dll*"))]
+                         "*dsetup.dll|issetup.dll*")) and
+  not process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|ftapihook32.dll|ntdll.dll|kernelbase.dll|ntdll.dll"]
 '''
 
 min_endpoint_version = "8.8.0"

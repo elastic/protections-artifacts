@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -122,7 +122,14 @@ process where event.action == "start" and
               "?:\\Windows\\Microsoft.NET\\Framework*\\aspnet_regiis.exe", 
               "?:\\Program Files\\ansible\\GTS\\uidext\\iam_iis_extract.exe", 
               "?:\\Program Files\\Microsoft SQL Server\\*.exe", 
-              "?:\\Program Files (x86)\\Microsoft SQL Server\\*.exe") and
+              "?:\\Program Files (x86)\\Microsoft SQL Server\\*.exe",
+              "?:\\Windows\\System32\\msg.exe",
+              "?:\\Windows\\System32\\wbadmin.exe",
+              "?:\\Windows\\System32\\tzutil.exe",
+              "?:\\Windows\\System32\\logoff.exe",
+              "?:\\Windows\\System32\\powercfg.exe",
+              "?:\\Windows\\System32\\winver.exe",
+              "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -148,7 +155,13 @@ process where event.action == "start" and
                     "*/opc/v2/instance/*", 
                     "*'X-aws-ec2-metadata-token-ttl-seconds*", 
                     "*/vmbackup/api/v?/hyperv/inventory/installer*", 
-                    "*-api_ver vmbackup/api/*")) and
+                    "*-api_ver vmbackup/api/*",
+                    "*C:\\Windows\\temp\\ccpa-temp-*",
+                    "*-client_name hyperv-*",
+                    "*ccpa-temp*oval_registry*",
+                    "*certstorename=MY*",
+                    "*/latest/api/token*-TimeoutSec*",
+                    "*\\program files (x86)\\citrix\\Licensing\\WebServicesForLicensing\\*")) and
   not process.hash.sha256 :
                  ("06078b8b840b4591535566d18d5f88b201c4cb8e033361095f7fd37d058e6962",
                   "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",
@@ -177,7 +190,15 @@ process where event.action == "start" and
                   "293e3a0cbe6f38e96ab92021431e7cecf0df95386c24b3a28490e944fb9db0f2", 
                   "05d9fabebd65a07e3bea6512c59d59a1d47c72d12ca1828a1aefac0e38b7dadb", 
                   "52b196bbe9016488c735e7b41805b651261ffa5d7aa86eb6a1d0095be83687b2", 
-                  "78d1760e7ead9d594cb0183e9632af761df9d4c46714bb92086d5de99351050d") and
+                  "78d1760e7ead9d594cb0183e9632af761df9d4c46714bb92086d5de99351050d",
+                  "6dfc55ccee952765f4e08e0776edff7e953f40ebf29edc1e382bb6d950bfd926",
+                  "fc41e0c5941b69a28a751c8429fd377db2f4a3553c2141e4e5edc510ef71a3f0",
+                  "6dfc55ccee952765f4e08e0776edff7e953f40ebf29edc1e382bb6d950bfd926",
+                  "fc41e0c5941b69a28a751c8429fd377db2f4a3553c2141e4e5edc510ef71a3f0",
+                  "843c5b54fdc1ea6d3ba85e89741bcc7e1b3299fa8509af4638d77958baee0d05",
+                  "bebefa044c4953455037ee4c341030a667dec4ef3c9e892803fcaa75f499504e",
+                  "0acc754bf7ef9d2ed456cc4208de353ffbb6aa0db745dcdd064dbbed55733380",
+                  "38ca179d05c6cdf782c7c56f12f06c429f128867d0d878726df6bc44675be53b") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :

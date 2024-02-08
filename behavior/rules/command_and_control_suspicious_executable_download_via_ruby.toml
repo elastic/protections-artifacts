@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Download via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,10 +21,11 @@ sequence by process.entity_id with maxspan=1m
                   "/usr/local/Cellar/*",
                   "/Users/*/Library/Caches/*") and
  not file.name : ("fsevent_watch", "DTBiOSSDK") and
- not process.executable : ("/Users/*/.rvm/*", "/Users/*/.rbenv/*")]
+ not process.executable : ("/Users/*/.rvm/*", "/Users/*/.rbenv/*") and
+ not Effective_process.executable : "/Applications/Android Studio.app/Contents/MacOS/studio"]
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -45,4 +46,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.2"

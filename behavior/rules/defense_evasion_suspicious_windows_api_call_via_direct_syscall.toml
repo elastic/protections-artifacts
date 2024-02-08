@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.13"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,7 +20,13 @@ sequence by process.entity_id with maxspan=1m
 [api where event.category : "intrusion_detection" and
     process.Ext.api.behaviors == "direct_syscall" and process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and 
     startswith~(process.thread.Ext.call_stack_summary, event0.dll.name) and 
-    stringcontains~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name)]
+    stringcontains~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name) and
+    not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+                                 ("f0d37ab8636685fdf3c81f2f1df5fb0a2cdba6e6daf10200c250a31a822f0f10",
+                                  "8f7b60cb0dc32277e6e99ebfee047d5a587050a1fcd5c2f98be7204898d7b25d",
+                                  "dc1abae9fce7e192232a5be12c6096338529b327ad749e310e7375106e013579",
+                                  "f0d37ab8636685fdf3c81f2f1df5fb0a2cdba6e6daf10200c250a31a822f0f10",
+                                  "8f7b60cb0dc32277e6e99ebfee047d5a587050a1fcd5c2f98be7204898d7b25d")]
 '''
 
 min_endpoint_version = "8.10.0"

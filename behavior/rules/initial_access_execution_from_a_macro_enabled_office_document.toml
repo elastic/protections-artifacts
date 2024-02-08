@@ -1,0 +1,100 @@
+[rule]
+description = """
+Identifies when a Microsoft Office process spawns a child process and from a call stack pointing to Microsoft Office
+Visual Basic for Applications modules. This may indicate an attempt to get initial access using malicious macro enabled
+documents.
+"""
+id = "1c4047ca-a69b-473f-a93e-5660e012d9a5"
+license = "Elastic License v2"
+name = "Execution from a Macro Enabled Office Document"
+os_list = ["windows"]
+version = "1.0.20"
+
+query = '''
+process where event.action == "start" and
+   process.parent.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "mspub.exe", "fltldr.exe", "visio.exe") and
+   process.parent.thread.Ext.call_stack_summary : "*|VBE?.dll*" and process.executable : "C:\\*" and
+
+   not (process.executable : "?:\\Windows\\splwow64.exe" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\Sys*\\winspool.drv*")) and
+
+   not (process.executable : "?:\\Program Files*\\Microsoft Office\\root\\Office*\\MSACCESS.EXE" and
+         process.parent.name : "MSACCESS.EXE" and
+        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Program Files*\\Microsoft Office\\root\\Office*\\MSACCESS.EXE!FDeliverDb*")) and
+
+   not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+        not process.code_signature.subject_name : "Microsoft*") and
+
+   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus") and
+
+   not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb",
+                              "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0",
+                              "0697a5a9fecac88cd1a875f32ebbb5fecefdcdc9ddd3e1c17e391527abf47aa0",
+                              "5fa6ed1524d60215307f7c84df56f1fa8c852321df1fe0931521c76cbb6d6821",
+                              "be4d0288c69fba437e369110f27cbc4f5448bb7c3d2fe204c6ea8a053f426620",
+                              "ee8141ceae149b3b2f1fb89bfea36d287b2157b9279377b318fdaf717158eaf1",
+                              "4659ad634dce7b746929590173abbf341a456042d5a70acce462f7806c859d01",
+                              "a892c32f9c80f15716cff118a1287036c4c6d4b18ca81b0141f353bffd662134",
+                              "c568d3dd471f06d0d38b711efb04a1d6fba11bc87522aeb58b42267f5e04af89",
+                              "71bd6fd7d83af510485abe2f400311600dd8432a70ecb767c352ee6b3675ebc2") and
+
+   not process.executable : ("?:\\Windows\\explorer.exe",
+                             "?:\\Windows\\SysWOW64\\explorer.exe",
+                             "?:\\Windows\\SysWOW64\\cmd.exe",
+                             "?:\\Windows\\System32\\cmd.exe",
+                             "?:\\Windows\\hh.exe",
+                             "?:\\Windows\\System32\\spool\\drivers\\*",
+                             "?:\\Program Files (x86)\\Microsoft Office\\root\\*.EXE",
+                             "?:\\Program Files\\Microsoft Office\\root\\*.EXE",
+                             "?:\\Program Files (x86)\\AV\\AV.EXE",
+                             "?:\\Program Files\\AV\\AV.EXE",
+                             "?:\\Program Files (x86)\\PDFtk\\bin\\pdftk.exe",
+                             "?:\\Program Files\\PDFtk\\bin\\pdftk.exe",
+                             "?:\\Windows\\SysWOW64\\DWWIN.EXE",
+                             "?:\\WINDOWS\\system32\\dwwin.exe",
+                             "?:\\Windows\\System32\\wermgr.exe",
+                             "?:\\Windows\\System32\\taskkill.exe",
+                             "\\Device\\Mup\\*",
+                             "?:\\Program Files\\Common Files\\microsoft shared\\DW\\DW20.EXE",
+                             "?:\\Program Files (x86)\\Common Files\\Microsoft Shared\\DW\\DW20.EXE",
+                             "?:\\Program Files (x86)\\DivorceMate Software\\DIVORCEmate.exe",
+                             "?:\\Program Files (x86)\\DivorceMate Software\\dmFile.exe",
+                             "?:\\Program Files (x86)\\Efalia GmbH\\Efalia ECM WinClient\\DSDMS.FileDirector.WinClient.exe",
+                             "?:\\Program Files (x86)\\Spielberg Solutions GmbH\\FileDirector WinClient\\DSDMS.FileDirector.WinClient.exe",
+                             "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",
+                             "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                             "?:\\Program Files\\Internet Explorer\\iexplore.exe",
+                             "?:\\Program Files\\7-Zip\\7z.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "8.7.0"

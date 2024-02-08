@@ -16,7 +16,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Libraries/Url/",
     "https://lolbas-project.github.io/lolbas/Libraries/Desk/",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence with maxspan=1m
@@ -53,7 +53,9 @@ sequence with maxspan=1m
    not process.executable : "?:\\Windows\\System32\\grpconv.exe" and
    not (process.code_signature.subject_name : "Adobe Inc." and process.code_signature.trusted == true) and
    not process.hash.sha256 : ("f6bef3f879e082d115c2ad199a986da1660514699f5e752c7b628d9438d7cb49", "c2831f5b010f099cd1733a0183adfa16cb834a9169fc55c6f7e6dc3267488c3f") and
-   not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and process.parent.args : "?:\\WINDOWS\\system32\\pcwutl.dll,LaunchApplication")
+   not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and process.parent.args : "?:\\WINDOWS\\system32\\pcwutl.dll,LaunchApplication") and 
+   not (process.executable : "?:\\Windows\\System32\\verclsid.exe" and process.args : "{71DCE5D6-4B57-496B-AC21-CD5B54EB93FD}" and process.parent.command_line : "*ShellExec_RunDLL*") and 
+   not (process.executable : ("?:\\Windows\\System32\\notepad.exe", "?:\\Windows\\System32\\mspaint.exe") and process.parent.command_line : "*ShellExec_RunDLL*")
    ] by process.parent.entity_id
 '''
 

@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5m
@@ -17,8 +17,8 @@ sequence with maxspan=5m
  (process.executable : "?:\\Windows\\Sys*\\conhost.exe" and process.args : "0xffffffff") and
   process.parent.thread.Ext.call_stack_summary :
                ("ntdll.dll|kernelbase.dll|Unbacked",
-		"ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
-		"ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
+                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
   not (user.id : "S-1-5-18" and
        process.parent.executable :
                      ("?:\\ProgramData\\*.exe",
@@ -34,22 +34,35 @@ sequence with maxspan=5m
                      "?:\\Program Files (x86)\\Wondershare\\*.exe",
                      "?:\\Windows\\System32\\drivers\\*.exe",
                      "?:\\Program Files*\\Cloudflare\\*.exe",
-		     "?:\\Program Files (x86)\\Universal\\Universal.Server.exe", 
+                     "?:\\Program Files (x86)\\Universal\\Universal.Server.exe",
                      "?:\\Program Files*\\Listary\\Listary.exe",
                      "?:\\Program Files*\\ExpressConnect\\ECDBWMService.exe",
                      "?:\\ProVation\\Utilities\\ProVation.DataExport\\ProVation.DataExport.exe",
                      "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell_ise.exe",
-                     "?:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe", 
-		     "?:\\Program Files\\Citrix\\Telemetry Service\\TelemetryService.exe", 
-                     "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport.exe", 
-		     "?:\\Program Files*\\UiPath\\Studio\\UiPath.Studio.Project.exe",
-		     "?:\\Program Files*\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe", 
-                     "?:\\Program Files (x86)\\Canfield Scientific Inc\\PortalService\\CanfieldRegister.exe", 
-		     "?:\\Program Files*\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe", 
-                     "?:\\Drivers\\MITS_FATClient_SupportTool\\MITS_FATClient_SupportTool_admin.exe", 
-		     "?:\\Program Files*\\Microsoft Visual Studio\\*\\Community\\Common?\\IDE\\devenv.exe", 
-                     "?:\\Program Files\\ObserveIT\\WebsiteCat\\WebsiteCat.Manager.exe", 
-		     "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport19c\\ProVation.DataExport.exe")
+                     "?:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe",
+                     "?:\\Program Files\\Citrix\\Telemetry Service\\TelemetryService.exe",
+                     "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport.exe",
+                     "?:\\Program Files*\\UiPath\\Studio\\UiPath.Studio.Project.exe",
+                     "?:\\Program Files*\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe",
+                     "?:\\Program Files (x86)\\Canfield Scientific Inc\\PortalService\\CanfieldRegister.exe",
+                     "?:\\Program Files*\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe",
+                     "?:\\Drivers\\MITS_FATClient_SupportTool\\MITS_FATClient_SupportTool_admin.exe",
+                     "?:\\Program Files*\\Microsoft Visual Studio\\*\\Community\\Common?\\IDE\\devenv.exe",
+                     "?:\\Program Files\\ObserveIT\\WebsiteCat\\WebsiteCat.Manager.exe",
+                     "?:\\Program Files\\Microsoft Azure Active Directory Connect\\AzureADConnect.exe",
+                     "?:\\Program Files (x86)\\vMix\\vMix64.exe",
+                     "?:\\Work\\HP DIAG TOOL\\ImageDiags.exe",
+                     "C:\\Work\\ImageDiags.exe",
+                     "?:\\Program Files (x86)\\Driver Support One\\DSOneWeb.exe",
+                     "?:\\Program Files (x86)\\Team Shinkansen\\Hakchi2 CE\\hakchi.exe",
+                     "?:\\Program Files (x86)\\HP DIAG TOOL\\ImageDiags.exe",
+                     "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport19c\\ProVation.DataExport.exe",
+                     "?:\\Program Files\\WindowsApps\\*\\DCv2\\DCv2.exe",
+                     "?:\\Users\\*\\Desktop\\HP DIAG TOOL\\ImageDiags.exe",
+                     "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport*\\ProVation.DataExport.exe",
+                     "\\Device\\Mup\\*\\Release\\CorrespondanceDownload.vshost.exe",
+                     "?:\\Users\\*\\AppData\\Local\\Programs\\UiPath\\Studio\\UiPath.Studio.Project.exe",
+                     "D:\\*\\Exporter\\bin\\Debug\\Exporter.vshost.exe")
   ] by process.parent.entity_id
 [network where true] by process.entity_id
 '''

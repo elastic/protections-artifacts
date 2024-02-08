@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence by process.entity_id
@@ -34,7 +34,6 @@ sequence by process.entity_id
   /* potential services child processes */
   not (process.executable : "?:\\Windows\\System32\\services.exe" and dll.name : "*.exe") and
   not (dll.path : "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*" and
-       dll.pe.original_file_name : "ntdll.dll" and
        dll.code_signature.subject_name : "Microsoft Windows" and
        dll.code_signature.trusted == true) and
   not dll.hash.sha256 :
@@ -48,7 +47,12 @@ sequence by process.entity_id
                "ce0f4cd9d9af178aead83df4f46146f1c66cc2c3e600c8aafa0a392fc5ad9637", 
                "cec41d7f35cf59669bad11ac70783856b2566425b9f59e3c459ef08f735bb405", 
                "94113324af3244b7a90b12837ad305769d91bde430f02d71c0a3f4df8670d87c", 
-               "8ffcfebcd71d0ef03772e80e381abf72a482c6f091e29700ab59100fe9f82304")
+               "8ffcfebcd71d0ef03772e80e381abf72a482c6f091e29700ab59100fe9f82304",
+               "6957be7503737453c3feab129d4924fca55e7b0c026ec878d0d040765002732c",
+               "5a53be7287634f941e18ea3496ada9b336294311cd50bb4c02ec8d51cbdf4555",
+               "5d59d9f32b8f1c4e5161714f1f07bd366f6c71c0ef72a7b7e66e4ac58f646ecd",
+               "a5d83fffaac68fb3e924cba92d2f9f18c6377b4af21da00f32d5573aaab64d18",
+               "600b4ddc2fae87aaa400992c8ea4998908651900345d0b18d9b7d1ce916e02a4")
   ]
   until [process where event.action == "end"]
 '''

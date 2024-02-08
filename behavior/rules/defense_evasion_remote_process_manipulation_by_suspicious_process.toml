@@ -8,7 +8,7 @@ id = "902f471c-27b4-4e78-b344-be46c6cfb72b"
 license = "Elastic License v2"
 name = "Remote Process Manipulation by Suspicious Process"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id
@@ -54,7 +54,9 @@ sequence by process.entity_id
    not process.Ext.api.parameters.size <= 4096 and 
    process.thread.Ext.call_stack_summary : "?*" and not user.id : ("S-1-5-19", "S-1-5-20") and 
    not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\*") and
-        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and 
+        process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+   not (process.Ext.api.summary : "*splwow64.exe*" and process.name : "msiexec.exe" and
+        process.thread.Ext.call_stack_summary : "*ntdll.dll|kernelbase.dll|winspool.drv|*") and
    not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info : ("?:\\Program Files\\*.dll*", 
                                          "?:\\Program Files (x86)\\*.dll*", 

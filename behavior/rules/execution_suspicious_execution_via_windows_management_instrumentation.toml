@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
@@ -62,7 +62,8 @@ not (process.name : ("powershell.exe", "cmd.exe") and
      "*windows\\temp\\netstatcache_*", "*$ErrorActionPreference*", "*D:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1*",
      "*app360edatabase\\Install-360DB.ps1*", "*CgAgACAAIAAgAHQAcgBhAHAAIA*", "*Cert:LocalMachine -Recurse*",
      "*\\Program Files\\*", "*\\Program Files (x86)\\*", "*CloudamizeAgentless*", "*Get-AppxP*", 
-     "*Windows\\System32\\AppvClient\\AppvClient.psd1*", "*###break###'} Catch {}*", "*FQARQBNAFAAXABuAGUAcwBzAHUAcwBfA*")) and
+     "*Windows\\System32\\AppvClient\\AppvClient.psd1*", "*###break###'} Catch {}*", "*FQARQBNAFAAXABuAGUAcwBzAHUAcwBfA*",
+     "*AFMAUgBFAEcAXwBVAE4ASwBOAE8AVwBOAF8ASgBPAEkATg*", "*bgBlAHMAcwB1AHMAXwBhAHoAdQByAGUAXwBhA*")) and
 
 not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
 
@@ -83,7 +84,7 @@ not (process.pe.original_file_name == "360se.exe" and process.code_signature.tru
 not (process.code_signature.trusted == true and 
      process.code_signature.subject_name : 
                     ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.", "Chocolatey Software, Inc.", 
-		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.")) and
+		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.", "Thomson Reuters Corporation")) and
 
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 
@@ -93,19 +94,20 @@ not (process.name : "cmd.exe" and
 not process.hash.sha256 :
                 ("0e692d9d3342fdcab1ce3d61aed0520989a94371e5898edb266c92f1fe11c97f",
                  "4402920c711aba26297de5ea39fcb58448ade9df77e978f1d8cd326fd810c62d",
-                 "0d9c6de8a57443bffe718d3256fdd467b8970124ba65d8accb6f47dc54d46d72", 
-		 "fc18fbb2b4e54c25ea3fdcdd9682735a636dd61127da451a2c19fd7e8d154285", 
-                 "0d6f7b29a06cb188ce67bd99ec0a3d1fa7dda2d64a69b3279ec90e04d35c8bfb", 
-		 "24863db91f7f1222c8310160e78f2c6c8a0ed9b4c18640029e65e3a3a3c1944d",
-                 "2733a27117ec81c7f867c4b1a6a800011fa432e45b7e95656c37ee05ca68c592", 
-		 "8e597fdafc174a30633cc470b763f6ba65e79aada99adc394df745913fe41111") and
+                 "0d9c6de8a57443bffe718d3256fdd467b8970124ba65d8accb6f47dc54d46d72",
+                 "fc18fbb2b4e54c25ea3fdcdd9682735a636dd61127da451a2c19fd7e8d154285",
+                 "0d6f7b29a06cb188ce67bd99ec0a3d1fa7dda2d64a69b3279ec90e04d35c8bfb",
+                 "24863db91f7f1222c8310160e78f2c6c8a0ed9b4c18640029e65e3a3a3c1944d",
+                 "2733a27117ec81c7f867c4b1a6a800011fa432e45b7e95656c37ee05ca68c592",
+                 "8e597fdafc174a30633cc470b763f6ba65e79aada99adc394df745913fe41111") and
 
 not process.executable : "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\WMISSH\\*.exe" and 
 
 not (process.name : "regsvr32.exe" and process.command_line : "regsvr32.exe ?:\\SMS_DP$\\sms\\bin\\smsdp.dll /s") and 
 not process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe" and 
 not (process.name : "rundll32.exe" and 
-     process.command_line : "\"?:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher")
+     process.command_line : "\"?:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher") and
+not (process.name : "schtasks.exe" and process.args : "cmd /c echo N | gpupdate /force")
 '''
 
 min_endpoint_version = "7.15.0"

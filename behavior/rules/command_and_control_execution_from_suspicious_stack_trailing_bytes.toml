@@ -4,19 +4,23 @@ id = "0a26ccb6-41b9-418d-9314-854aadcb1fba"
 license = "Elastic License v2"
 name = "Execution from Suspicious Stack Trailing Bytes"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.16"
 
 query = '''
 any where (event.category : ("library", "api") and
            _arraysearch(process.thread.Ext.call_stack, $entry,
                                                       ($entry.callsite_trailing_bytes :
-                                                             (/* BR */
+                                                             (/* CBR */
                                                               "4989c54885c00f841002000048c7442438000000004531c94c89*",
                                                               "*4889c24885c00f848b020000b9dedbfe0e4531e4*",
-                                                              /* NH */
+                                                              /* CNH */
                                                               "*741041ffc04883c008443b411872ef33c0*",
                                                               "*4885c07511ffc383fb1472d3eb08488bceffd5*",
-                                                              /* CS */
+                                                              "f7d0c1e81f488b5c2450488b7424584883c4305fc3cc*",
+                                                              "*b0014881c4d80000005f5ec348894c24084883ec38488b442440488b40084863403c488b4c24404803*",
+                                                              "*83f803752b488d442430488944242041b9400000004c8b442450488b542448488b8c24300100*",
+                                                              "4889442448eb21e842d1ffff83f8017517488b542430488b8c2400010000e8e7faffff488944244848837c2448007511b918000000e8f8d0ffff32c0e96c0500",
+                                                              /* CCS */
                                                               "4889059a840300bb040000004c8d442468488bc88d5301448bcbff15591d0200488b0d7a8403004c8d4424688d5302448bcbff15411d0200488b058284030048", 
                                                               "*0300eb394533c033d2eb1a4533c0418bd6eb12b920000000e856*", 
                                                               "*0000ba030000004c8bc083642420004533c9488bcbff15*",
@@ -27,7 +31,11 @@ any where (event.category : ("library", "api") and
                                                               /* MP sc */
                                                               "53534889e1535a4d31c04d31c9535349ba041f9dbb00000000ffd54989c4e81a0000003100390032002e003100360038002e0031002e003500350000005a4889",
                                                               /* Qbot */
-                                                              "85c0740d508bd78bcbe875ffffff598bf08d45fc50e86f080000595f8bc65e5bc9c353bb0001000053e82efcffff8bd08915041002105985d2750583c8ff5bc3") or
+                                                              "85c0740d508bd78bcbe875ffffff598bf08d45fc50e86f080000595f8bc65e5bc9c353bb0001000053e82efcffff8bd08915041002105985d2750583c8ff5bc3",
+                                                              /* sRDI */
+                                                              "0fb745064783c6286a205a3bf872816a006a006affff9424c800000083bdc40000000074268b85c00000008b74180c8b0685c0741633ed456a005553ffd08d76",
+                                                              /* CS cpython *
+                                                              "489353534889e74889f14889da41b8002000004989f941ba129689e2ffd54883c42085c074b6668b074801c385c075d758585848050000000050c3e89ffdffff") or
                                                               
                                                            $entry.callsite_leading_bytes :
                                                              (/* BR */

@@ -11,14 +11,14 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id
  [process where event.action == "start" and
   not (process.pe.original_file_name :
          ("SetupHost.exe", "wbengine.exe", "BitLockerWizardElev.exe", "BitLockerDeviceEncryption.exe",
-          "omadmclient.exe", "TSManager.exe", "SETUPPLATFORM.EXE") and process.code_signature.subject_name : "Microsoft *" and
+          "omadmclient.exe", "TSManager.exe", "SETUPPLATFORM.EXE", "RECOVERYDRIVE.EXE") and process.code_signature.subject_name : "Microsoft *" and
           process.code_signature.trusted == true) and
 
   not process.hash.sha256 : 
@@ -37,6 +37,8 @@ sequence by process.entity_id
               "ee2317208b909c46b7c73b74f07f5be68717dc704398ec3434e8ba353e2cdd04", 
               "a62316c113c92f88a042cf84ed589f8eab1ec9de99e3e2da65ad982a9653103e", 
               "0def9f7030a3f2b8a3e13cc755df45179237353018f2742b91193a3b0a488656", 
+              "dadf1bfc7471d3c51a9a8f57f791b44785947324496711f54ba42257559b6fdb",
+              "4ab2db239193ff9578bcc781779b0d43a3aa5262bb217699009f4190cab216a7",
               "dadf1bfc7471d3c51a9a8f57f791b44785947324496711f54ba42257559b6fdb") and
 
   not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 

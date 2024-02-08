@@ -11,7 +11,7 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.34"
+version = "1.0.36"
 
 query = '''
 file where event.type != "deletion" and 
@@ -22,7 +22,8 @@ not (process.name : ("osx-x86_64",
                      "oahd",
                      "Install") and 
      process.code_signature.trusted == true) and 
-not (Effective_process.name : "masMonitor" and process.code_signature.trusted == true) and
+not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
+                                    "/Applications/iZotope Product Portal.app/Contents/MacOS/Product Portal") and
 not process.executable : ("/System/*", 
                           "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp3.app/Contents/MacOS/ScanApp3",
                           "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",

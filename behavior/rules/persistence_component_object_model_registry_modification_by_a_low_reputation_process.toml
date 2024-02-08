@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies Component Object Model (COM) hijacking via registry modification by a process with low or unknown reputation.
+Adversaries may establish persistence by executing malicious content triggered by hijacked references to COM objects.
+"""
+id = "02920d68-cd43-47d2-9552-99284979a1c6"
+license = "Elastic License v2"
+name = "Component Object Model Registry Modification by a Low Reputation Process"
+os_list = ["windows"]
+reference = [
+    "https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=3m
+ [process where event.action == "start" and
+  (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+  not process.code_signature.status : ("errorExpired", "errorCode_endpoint*")]
+ [registry where
+  process.executable != null and registry.data.strings != null and
+  registry.path : ("HKEY_USERS\\*Classes\\*\\InprocServer32\\",
+                   "HKEY_USERS\\*Classes\\*\\DelegateExecute\\",
+                   "HKEY_USERS\\*Classes\\*\\TreatAs\\",
+                   "HKEY_USERS\\*Classes\\CLSID\\*\\ScriptletURL\\")]
+'''
+
+min_endpoint_version = "8.10.0"
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.015"
+name = "Component Object Model Hijacking"
+reference = "https://attack.mitre.org/techniques/T1546/015/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.10.0"

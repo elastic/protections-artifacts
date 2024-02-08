@@ -7,45 +7,15 @@ id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
 license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
  /* execution of an unsigned PE file followed by dns lookup to commonly abused trusted webservices */
 
-  [process where event.action == "start" and not user.id : "S-1-5-18" and
+  [process where event.action == "start" and
    not process.code_signature.trusted == true and
-   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
-   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*") and
-   not process.args : ("--type=utility", "--squirrel-firstrun", "--utility-sub-type=*") and 
-   process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*") and
-   not (process.name : "Clash for Windows.exe" and process.args : "--utility-sub-type=network.mojom.NetworkService") and
-   not (process.name : "clash-win64.exe" and process.parent.args : "--app-user-model-id=com.*.clashwin") and
-   not process.parent.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
-   not process.hash.sha256 :
-                 ("1cef2a7e7fe2a60e7f1d603162e60969469488cae99d04d13c4450cb90934b0f",
-                  "ec4d11bd8216b894cb02f4e9cc3974a87901e928b4cdd2cac6d6eb22b3fa25eb",
-                  "5c3725fb6ef2e8044b6ffbaa3f62f1afa1f47dd69ab557b611af8d80362f99d3",
-                  "cc73c1aecb17ad6ce7c74bd258704994e43dea732212326a5b205be65b3b4b61",
-                  "e5f6f15243393cb03022a3f1d22e0175acbf54cc5386cf9820185cf43cc90342",
-                  "83d17dc95a7eba329fb29899b43d4b89b1dc898774e31ba58de883ce4e44e833",
-                  "f2e7ef9667f84a2b2f66e9116b06b6fbc3fd5af6695a50366e862692459b7a59",
-                  "21b49f2824f1357684983cfacfc0d58a95a2b41cd7bbaff544d9de8e790be1b6",
-                  "d71babf67e0e26991a34ea7d9cb78dc44dc0357bc20e4c15c61ba49cae99fcaa",
-                  "074b780a2a22d3d8af78afdfa042083488447fd5e63e7fa6e9c6abb08227e81d",
-                  "578b95a62ecf3e1a3ea77d8329e87ba72a1b3516d0e5adb8d3f3d1eb44a7941e",
-                  "a9b47f62e98f2561cf382d3d59e1d1b502b4cae96ab3e420122c3b28cc5b7da6",
-                  "14a4ae91ebf302026a8ba24f4548a82c683cfb5fa4494c76e39d6d3089cdbbc1",
-                  "21b49f2824f1357684983cfacfc0d58a95a2b41cd7bbaff544d9de8e790be1b6",
-                  "a9397805ec131e2b0cd43374f85c543ea3263d8e970a713ec743daeea5ba4389",
-                  "7d95b4e26859620738a31dbbafbf019da42f2378821e2bb49b748956ef50b3e3",
-                  "b973ae984207b0244f94509bc4b669f8448f94d5baa07d76723593f8b94b76fc",
-                  "dae7bd888b715b8e215482bc5ea6f028ded32a3ad88bf4acb6431d2a62ffe3f4",
-                  "45c045feb30ba5ac7dcdc7572d4683d9efbaa27737d8cd70c8d6a34d29cfd665",
-                  "e1fdb4a9925f322c5c945a3a3d2f82cac25ea0fd616cffa8772515b19fb368ae",
-                  "80bd8b7b9a819b7fb29c77b59fc7fe1b1fb9565ff23be7cdb95064217320d5f0",
-                  "dda5ae1a22c38351c52e6c365c159852bb9105cccb85512c5aa344e71ba70b5f",
-                  "3ac724dae16a8f603c9d3aa20f53467947865a7d78a804cf7d3049fe8127c77f")]
+   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300)]
   [dns where
     dns.question.name :
     (
@@ -114,7 +84,46 @@ sequence by process.entity_id with maxspan=5m
         "gist.githubusercontent.com",
         "*.zulipchat.com",
         "filecloud.me",
-        "i.ibb.co"
+        "i.ibb.co",
+        "files.pythonhosted.org",
+        "ip-api.com",
+          "checkip.dyndns.org",
+          "api.ipify.org",
+          "whatismyip.akamai.com",
+          "bot.whatismyipaddress.com",
+          "ifcfg.me",
+          "ident.me",
+          "ipof.in",
+          "ip.tyk.nu",
+          "icanhazip.com",
+          "curlmyip.com",
+          "wgetip.com",
+          "eth0.me",
+          "ipecho.net",
+          "ip.appspot.com",
+          "api.myip.com",
+          "geoiptool.com",
+          "api.2ip.ua",
+          "api.ip.sb",
+          "ipinfo.io",
+          "checkip.amazonaws.com",
+          "wtfismyip.com",
+          "iplogger.*",
+          "freegeoip.net",
+          "freegeoip.app",
+          "ipinfo.io",
+          "geoplugin.net",
+          "myip.dnsomatic.com",
+          "www.geoplugin.net",
+          "api64.ipify.org",
+          "ip4.seeip.org",
+          "*.geojs.io",
+          "*portmap.io",
+          "api.2ip.ua",
+          "api.db-ip.com",
+          "geolocation-db.com",
+          "httpbin.org",
+          "myip.opendns.com"
     )
   ]
 '''

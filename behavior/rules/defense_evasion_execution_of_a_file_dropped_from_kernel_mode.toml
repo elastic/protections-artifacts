@@ -7,7 +7,7 @@ id = "1c618d05-2cac-4979-9c85-6320fc317177"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from Kernel Mode"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -15,7 +15,8 @@ sequence with maxspan=5m
    /* library dropped via System Virtual Process - Kernel mode code */
    process.pid == 4 and user.id : "S-1-5-18" and
    (file.extension : ("exe", "dll") or file.Ext.header_bytes : "4d5a*")] by file.path 
-   [library where process.pid != 4 and not dll.code_signature.status : "trusted" and process.executable != null] by dll.path
+   [library where process.pid != 4 and not dll.code_signature.status : "trusted" and process.executable != null and
+    not dll.hash.sha256 : "6957be7503737453c3feab129d4924fca55e7b0c026ec878d0d040765002732c"] by dll.path
 '''
 
 min_endpoint_version = "8.4.0"

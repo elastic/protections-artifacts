@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -50,7 +50,13 @@ sequence with maxspan=5m
     not (process.name : "rundll32.exe" and 
          process.command_line : ("*PWMTR32V.dll,InitializeSettingsDuringInstallation*", "*RunDll_EnableBits*")) and
     not (process.name : "powershell.exe" and
-         process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*", "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*", "*:\\WINDOWS\\ccmcache\\*")) and
+         process.command_line :
+                   ("*:\\Program Files\\*", "*:\\Program Files (X86)\\*",
+                    "*Packages\\Plugins\\Microsoft.AdminCenter.AdminCenter*",
+                    "*:\\WINDOWS\\ccmcache\\*",
+                    "*EEAawBBAEcAVQBBAGUAQQBCAGwAQQBHAE0AQQBYAHcAQgAzAEEASABJAEEAWQBRAEIAdwBBAEgAQQBBAFoAUQBCAHkAQQBGADgAQQBjAHcA*",
+                    "*UABvAHcAZQByAFMAaABlAGwAbAAgAC0ATgBvAFAAcgBvAGYAaQBsAGUAIAA*",
+                    "*-EncodedCommand*")) and
     not (process.name : "powershell.exe" and
          process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
                                       "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
@@ -66,14 +72,11 @@ sequence with maxspan=5m
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 
     not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*tsworkspace,WorkspaceSilentSetup*")) and 
     not process.executable :
-                ("?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe",
-                 "?:\\Program Files (x86)\\Beyond Compare ?\\UACLaunch.exe",
+                ("?:\\Program Files (x86)\\*.exe",
+                 "?:\\Program Files\\*.exe",
                  "?:\\Windows\\SysWOW64\\OneDriveSetup.exe",
                  "?:\\Windows\\System32\\MRT.exe",
-                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe", 
-                 "?:\\Program Files (x86)\\Elaborate Bytes\\VirtualCloneDrive\\ExecuteWithUAC.exe", 
-                 "?:\\Program Files (x86)\\LANDesk\\LDClient\\*", 
-                 "?:\\Program Files\\LANDesk\\LDClient\\*") and
+                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe") and
     /* DOCs opened from network file share trigger an office default scheduled task */
     not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
     not process.hash.sha256 :
@@ -83,7 +86,10 @@ sequence with maxspan=5m
                    "ef330f95416162866f5d8b9cd509066ab4168cfcc66e305006be1952905d47e6", 
                    "cf635f97d0a3bea30f348277777f36db6b14aea0e7711471e5fb2e13167b80cd", 
                    "3c1169568774b7ce8a96e137983b059f030eb3983c369cfb12ea2c59cf3f56ad", 
-                   "edaf602006b53dc936a35d0f9e6de51c552c0203ebe814cb68b1d5cbc81f4b49") and
+                   "edaf602006b53dc936a35d0f9e6de51c552c0203ebe814cb68b1d5cbc81f4b49",
+                   "82c97648fa358c31fb47e44762938738ad3080880b84b69d9c303d708ab160c2",
+                   "4aff93803f1915f3a10f19a1d1e065483c4d11221e3c2792b3de1807c7bf1d9a",
+                   "f9e86b3a6275429f5dbecccc2020e498032a96fc02dd8bdb2a1cc5b5bf2b473b") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and

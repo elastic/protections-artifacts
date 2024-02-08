@@ -7,7 +7,7 @@ id = "cfaf983e-1129-464c-b0aa-270f42e20d3d"
 license = "Elastic License v2"
 name = "RunDLL32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -123,7 +123,8 @@ process where event.action == "start" and process.name : "rundll32.exe" and
                        "?:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper64.dll,#1", 
                        "C:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acsnative.dll,", 
                        "C:\\Windows\\TEMP\\*.tmp\\uninshlp.dll,DeleteExeAndDeleteSelf",
-                       "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\BgInstallAssist.dll,RunDll_*")) and
+                       "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\BgInstallAssist.dll,RunDll_*",
+                       "?:\\WINDOWS\\Installer\\MSI*.tmp*")) and
   not (process.name : "rdunll32.exe" and
        process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*" and
        process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp") and

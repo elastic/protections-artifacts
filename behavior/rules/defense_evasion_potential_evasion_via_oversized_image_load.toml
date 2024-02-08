@@ -9,14 +9,16 @@ license = "Elastic License v2"
 name = "Potential Evasion via Oversized Image Load"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1027/001/"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=1m
  [file where event.action != "deletion" and
    /* over 100MB in size */
    file.size >= 100000000 and file.Ext.header_bytes : "4d5a*" and not file.extension : "exe" and
-   not user.id : "S-1-5-18"] by file.path
+   not user.id : "S-1-5-18" and
+  not (process.code_signature.subject_name : "Trend Micro, Inc." and process.code_signature.status : "trusted")
+  ] by file.path
  [library where
     (
      process.name : ("rundll32.exe", "regsvr32.exe", "svchost.exe") or
@@ -34,7 +36,7 @@ sequence with maxspan=1m
     not user.id : "S-1-5-18"] by dll.path
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.1.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -60,4 +62,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.1.0"

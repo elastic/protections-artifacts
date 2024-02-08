@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -132,7 +132,14 @@ process where event.action == "start" and
 	          "7e46a30ec382d6973695520a3c88337bed3f33d5d30b64cac689fb83ebd29d8f", 
 	          "1186244a77bd08d3a5aad8f24f9cf59ae228782adde32467e0622c5236586190", 
 	          "ae16d853600d647688f414e023ce8644ceacf1d6ada050792ee665c4465c939b", 
-	          "cf41501fa77ffece7a67b9cd996b6a3fceafefb44bf192c9078a2f0e30e01f97") and
+	          "cf41501fa77ffece7a67b9cd996b6a3fceafefb44bf192c9078a2f0e30e01f97",
+	          "88f1612d7e774e0bbd6708ca946bcdb3c671a18048b2a4f5ad33c6a7c2db02de",
+	          "73a91d7dbdff150632a9501c94b4f328e61fc8a8e52d27b2646921ddee8acae2",
+	          "1186244a77bd08d3a5aad8f24f9cf59ae228782adde32467e0622c5236586190",
+	          "e72f59681ef6dd09608772cde8bb0dcbb42e97118ad58ad8fe2d3501d73bcd2e",
+	          "b75268bc78de915eff442611f9c7503b4f872b22d7c54547694923cce6427b4e",
+	          "854ed6e135b1405329003f0595c3ca462faf5381ac5d6f93bccfece61d6a2d88",
+	          "be132253fb111600acedb58fa96fd18af69a8a8395880b0d8d89ff13ba30455b") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -178,7 +185,7 @@ process where event.action == "start" and
    not (process.executable : "?:\\Windows\\*.exe" and process.code_signature.status : ("errorExpired", "errorCode_endpoint*", "errorChaining")) and
    not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*") and 
    not (process.executable : "?:\\Windows\\Temp\\*" and process.code_signature.trusted == true) and
-   not process.executable : "?:\\Windows\\System32\\sppsvc.exe"
+   not process.executable : ("?:\\Windows\\System32\\sppsvc.exe", "?:\\Windows\\ise-exec-svc.exe")
 '''
 
 min_endpoint_version = "7.15.0"

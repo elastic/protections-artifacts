@@ -6,6 +6,7 @@ rule Windows_Trojan_EagerBee_7029ba21 {
         creation_date = "2023-05-09"
         last_modified = "2023-06-13"
         threat_name = "Windows.Trojan.EagerBee"
+        reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         reference_sample = "09005775fc587ac7bf150c05352e59dc01008b7bf8c1d870d1cea87561aa0b06"
         severity = 100
         arch_context = "x86"
@@ -27,6 +28,7 @@ rule Windows_Trojan_EagerBee_a64b323b {
         creation_date = "2023-09-04"
         last_modified = "2023-09-20"
         threat_name = "Windows.Trojan.EagerBee"
+        reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         reference_sample = "339e4fdbccb65b0b06a1421c719300a8da844789a2016d58e8ce4227cb5dc91b"
         severity = 100
         arch_context = "x86"

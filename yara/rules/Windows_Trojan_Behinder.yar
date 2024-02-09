@@ -7,6 +7,7 @@ rule Windows_Trojan_Behinder_b9a49f4b {
         last_modified = "2023-06-13"
         description = "Webshell found in REF2924, either Behinder or Godzilla based shell in C#"
         threat_name = "Windows.Trojan.Behinder"
+        reference = "https://www.elastic.co/security-labs/ref2924-howto-maintain-persistence-as-an-advanced-threat"
         reference_sample = "a50ca8df4181918fe0636272f31e19815f1b97cce6d871e15e03b0ee0e3da17b"
         severity = 100
         arch_context = "x86"

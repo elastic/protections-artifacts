@@ -6,6 +6,7 @@ rule Windows_Trojan_IcedID_1cd868a6 {
         creation_date = "2021-02-28"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference = "https://www.fireeye.com/blog/threat-research/2021/02/melting-unc2198-icedid-to-ransomware-operations.html"
         reference_sample = "68dce9f214e7691db77a2f03af16a669a3cb655699f31a6c1f5aaede041468ff"
         severity = 100
@@ -27,6 +28,7 @@ rule Windows_Trojan_IcedID_237e9fb6 {
         creation_date = "2021-02-28"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference = "https://www.fireeye.com/blog/threat-research/2021/02/melting-unc2198-icedid-to-ransomware-operations.html"
         reference_sample = "b21f9afc6443548427bf83b5f93e7a54ac3af306d9d71b8348a6f146b2819457"
         severity = 100
@@ -48,6 +50,7 @@ rule Windows_Trojan_IcedID_f1ce2f0a {
         creation_date = "2021-02-28"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference = "https://www.fireeye.com/blog/threat-research/2021/02/melting-unc2198-icedid-to-ransomware-operations.html"
         reference_sample = "b21f9afc6443548427bf83b5f93e7a54ac3af306d9d71b8348a6f146b2819457"
         severity = 100
@@ -69,6 +72,7 @@ rule Windows_Trojan_IcedID_08530e24 {
         creation_date = "2021-03-21"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "31db92c7920e82e49a968220480e9f130dea9b386083b78a79985b554ecdc6e4"
         severity = 100
         arch_context = "x86"
@@ -102,6 +106,7 @@ rule Windows_Trojan_IcedID_11d24d35 {
         creation_date = "2022-02-16"
         last_modified = "2022-04-06"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "b8d794f6449669ff2d11bc635490d9efdd1f4e92fcb3be5cdb4b40e4470c0982"
         severity = 100
         arch_context = "x86"
@@ -123,6 +128,7 @@ rule Windows_Trojan_IcedID_0b62e783 {
         creation_date = "2022-04-06"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "b9fb0a4c28613c556fb67a0b0e7c9d4c1236b60a161ad935e7387aec5911413a"
         severity = 100
         arch_context = "x86"
@@ -143,6 +149,7 @@ rule Windows_Trojan_IcedID_91562d18 {
         creation_date = "2022-04-06"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "b9fb0a4c28613c556fb67a0b0e7c9d4c1236b60a161ad935e7387aec5911413a"
         severity = 100
         arch_context = "x86"
@@ -163,6 +170,7 @@ rule Windows_Trojan_IcedID_2086aecb {
         creation_date = "2022-04-06"
         last_modified = "2022-03-02"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "b9fb0a4c28613c556fb67a0b0e7c9d4c1236b60a161ad935e7387aec5911413a"
         severity = 100
         arch_context = "x86"
@@ -183,6 +191,7 @@ rule Windows_Trojan_IcedID_48029e37 {
         creation_date = "2022-04-06"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "b9fb0a4c28613c556fb67a0b0e7c9d4c1236b60a161ad935e7387aec5911413a"
         severity = 100
         arch_context = "x86"
@@ -204,6 +213,7 @@ rule Windows_Trojan_IcedID_56459277 {
         last_modified = "2023-03-02"
         description = "IcedID Gzip Variant Core"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "21b1a635db2723266af4b46539f67253171399830102167c607c6dbf83d6d41c"
         severity = 100
         arch_context = "x86"
@@ -235,6 +245,7 @@ rule Windows_Trojan_IcedID_7c1619e3 {
         last_modified = "2023-02-01"
         description = "IcedID Injector Variant Loader "
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "4f6de748628b8b06eeef3a5fabfe486bfd7aaa92f50dc5a8a8c70ec038cd33b1"
         severity = 100
         arch_context = "x86"
@@ -258,6 +269,7 @@ rule Windows_Trojan_IcedID_d8b23cd6 {
         last_modified = "2023-01-03"
         description = "IcedID VNC server"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "bd4da2f84c29437bc7efe9599a3a41f574105d449ac0d9b270faaca8795153ab"
         severity = 100
         arch_context = "x86"
@@ -290,6 +302,7 @@ rule Windows_Trojan_IcedID_a2ca5f80 {
         last_modified = "2023-04-23"
         description = "IcedID Injector Variant Core"
         threat_name = "Windows.Trojan.Icedid"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -318,6 +331,7 @@ rule Windows_Trojan_IcedID_b8c59889 {
         last_modified = "2023-06-13"
         description = "IcedID fork init loader"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "a63d08cd53053bfda17b8707ab3a94cf3d6021097335dc40d5d211fb9faed045"
         severity = 100
         arch_context = "x86"
@@ -343,6 +357,7 @@ rule Windows_Trojan_IcedID_81eff9a3 {
         last_modified = "2023-06-13"
         description = "IcedID fork core bot loader"
         threat_name = "Windows.Trojan.IcedID"
+        reference = "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"
         reference_sample = "96dacdf50d1db495c8395d7cf454aa3a824801cf366ac368fe496f89b5f98fe7"
         severity = 100
         arch_context = "x86"

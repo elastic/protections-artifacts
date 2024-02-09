@@ -6,6 +6,7 @@ rule Windows_Trojan_SpectralViper_43abeeeb {
         creation_date = "2023-04-13"
         last_modified = "2023-05-26"
         threat_name = "Windows.Trojan.SpectralViper"
+        reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         reference_sample = "7e35ba39c2c77775b0394712f89679308d1a4577b6e5d0387835ac6c06e556cb"
         severity = 100
         arch_context = "x86"
@@ -33,6 +34,7 @@ rule Windows_Trojan_SpectralViper_368c36a0 {
         creation_date = "2023-05-10"
         last_modified = "2023-05-10"
         threat_name = "Windows.Trojan.SpectralViper"
+        reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         reference_sample = "d1c32176b46ce171dbce46493eb3c5312db134b0a3cfa266071555c704e6cff8"
         severity = 100
         arch_context = "x86"

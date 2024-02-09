@@ -6,6 +6,7 @@ rule Windows_Ransomware_Cuba_e64a16b1 {
         creation_date = "2021-08-04"
         last_modified = "2021-10-04"
         threat_name = "Windows.Ransomware.Cuba"
+        reference = "https://www.elastic.co/security-labs/cuba-ransomware-campaign-analysis"
         reference_sample = "33352a38454cfc247bc7465bf177f5f97d7fd0bd220103d4422c8ec45b4d3d0e"
         severity = 100
         arch_context = "x86"
@@ -27,6 +28,7 @@ rule Windows_Ransomware_Cuba_95a98e69 {
         creation_date = "2021-08-04"
         last_modified = "2021-10-04"
         threat_name = "Windows.Ransomware.Cuba"
+        reference = "https://www.elastic.co/security-labs/cuba-ransomware-campaign-analysis"
         reference_sample = "00f18713f860dc8394fb23a1a2b6280d1eb2f20a487c175433a7b495a1ba408d"
         severity = 90
         arch_context = "x86"

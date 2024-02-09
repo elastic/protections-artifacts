@@ -6,6 +6,7 @@ rule Windows_Trojan_Formbook_1112e116 {
         creation_date = "2021-06-14"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Formbook"
+        reference = "https://www.elastic.co/security-labs/formbook-adopts-cab-less-approach"
         reference_sample = "6246f3b89f0e4913abd88ae535ae3597865270f58201dc7f8ec0c87f15ff370a"
         severity = 100
         arch_context = "x86"
@@ -29,6 +30,7 @@ rule Windows_Trojan_Formbook_772cc62d {
         creation_date = "2022-05-23"
         last_modified = "2022-07-18"
         threat_name = "Windows.Trojan.Formbook"
+        reference = "https://www.elastic.co/security-labs/formbook-adopts-cab-less-approach"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -51,6 +53,7 @@ rule Windows_Trojan_Formbook_5799d1f2 {
         creation_date = "2022-06-08"
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Formbook"
+        reference = "https://www.elastic.co/security-labs/formbook-adopts-cab-less-approach"
         reference_sample = "8555a6d313cb17f958fc2e08d6c042aaff9ceda967f8598ac65ab6333d14efd9"
         severity = 100
         arch_context = "x86"

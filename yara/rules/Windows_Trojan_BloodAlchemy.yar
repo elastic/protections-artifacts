@@ -6,6 +6,7 @@ rule Windows_Trojan_BloodAlchemy_3793364e {
         creation_date = "2023-09-25"
         last_modified = "2023-09-25"
         threat_name = "Windows.Trojan.BloodAlchemy"
+        reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -26,6 +27,7 @@ rule Windows_Trojan_BloodAlchemy_e510798d {
         creation_date = "2023-09-25"
         last_modified = "2023-09-25"
         threat_name = "Windows.Trojan.BloodAlchemy"
+        reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -46,6 +48,7 @@ rule Windows_Trojan_BloodAlchemy_63084eea {
         creation_date = "2023-09-25"
         last_modified = "2023-09-25"
         threat_name = "Windows.Trojan.BloodAlchemy"
+        reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -65,6 +68,7 @@ rule Windows_Trojan_BloodAlchemy_c2d80609 {
         creation_date = "2023-09-25"
         last_modified = "2023-09-25"
         threat_name = "Windows.Trojan.BloodAlchemy"
+        reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -84,6 +88,7 @@ rule Windows_Trojan_BloodAlchemy_de591c5a {
         creation_date = "2023-09-25"
         last_modified = "2023-11-02"
         threat_name = "Windows.Trojan.BloodAlchemy"
+        reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

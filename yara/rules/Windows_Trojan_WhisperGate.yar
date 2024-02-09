@@ -6,6 +6,7 @@ rule Windows_Trojan_WhisperGate_9192618b {
         creation_date = "2022-01-17"
         last_modified = "2022-01-17"
         threat_name = "Windows.Trojan.WhisperGate"
+        reference = "https://www.elastic.co/security-labs/operation-bleeding-bear"
         reference_sample = "dcbbae5a1c61dbbbb7dcd6dc5dd1eb1169f5329958d38b58c3fd9384081c9b78"
         severity = 100
         arch_context = "x86"

@@ -6,6 +6,7 @@ rule Windows_Trojan_DownTown_901c4fdd {
         creation_date = "2023-05-10"
         last_modified = "2023-06-13"
         threat_name = "Windows.Trojan.DownTown"
+        reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -27,6 +28,7 @@ rule Windows_Trojan_DownTown_145ecd2f {
         creation_date = "2023-08-23"
         last_modified = "2023-09-20"
         threat_name = "Windows.Trojan.DownTown"
+        reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

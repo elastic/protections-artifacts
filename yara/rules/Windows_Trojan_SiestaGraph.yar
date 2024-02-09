@@ -6,6 +6,7 @@ rule Windows_Trojan_SiestaGraph_8c36ddc1 {
         creation_date = "2022-12-14"
         last_modified = "2022-12-15"
         threat_name = "Windows.Trojan.SiestaGraph"
+        reference = "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry"
         reference_sample = "50c2f1bb99d742d8ae0ad7c049362b0e62d2d219b610dcf25ba50c303ccfef54"
         severity = 100
         arch_context = "x86"
@@ -34,6 +35,7 @@ rule Windows_Trojan_SiestaGraph_ad3fe5c6 {
         creation_date = "2023-09-12"
         last_modified = "2023-09-20"
         threat_name = "Windows.Trojan.SiestaGraph"
+        reference = "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry"
         reference_sample = "fe8f99445ad139160a47b109a8f3291eef9c6a23b4869c48d341380d608ed4cb"
         severity = 100
         arch_context = "x86"
@@ -61,6 +63,7 @@ rule Windows_Trojan_SiestaGraph_d801ce71 {
         creation_date = "2023-09-12"
         last_modified = "2023-09-20"
         threat_name = "Windows.Trojan.SiestaGraph"
+        reference = "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry"
         reference_sample = "fe8f99445ad139160a47b109a8f3291eef9c6a23b4869c48d341380d608ed4cb"
         severity = 100
         arch_context = "x86"

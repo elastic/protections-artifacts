@@ -6,6 +6,7 @@ rule Windows_Trojan_Deimos_f53aee03 {
         creation_date = "2021-09-18"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Deimos"
+        reference = "https://www.elastic.co/security-labs/going-coast-to-coast-climbing-the-pyramid-with-the-deimos-implant"
         reference_sample = "2c1941847f660a99bbc6de16b00e563f70d900f9dbc40c6734871993961d3d3e"
         severity = 100
         arch_context = "x86"
@@ -28,6 +29,7 @@ rule Windows_Trojan_Deimos_c70677b4 {
         creation_date = "2021-09-18"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Deimos"
+        reference = "https://www.elastic.co/security-labs/going-coast-to-coast-climbing-the-pyramid-with-the-deimos-implant"
         reference_sample = "2c1941847f660a99bbc6de16b00e563f70d900f9dbc40c6734871993961d3d3e"
         severity = 100
         arch_context = "x86"

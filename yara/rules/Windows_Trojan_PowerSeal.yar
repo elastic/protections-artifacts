@@ -6,6 +6,7 @@ rule Windows_Trojan_PowerSeal_d63f5e54 {
         creation_date = "2023-03-16"
         last_modified = "2023-05-26"
         threat_name = "Windows.Trojan.PowerSeal"
+        reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -28,6 +29,7 @@ rule Windows_Trojan_PowerSeal_2e50f393 {
         creation_date = "2023-05-10"
         last_modified = "2023-06-13"
         threat_name = "Windows.Trojan.PowerSeal"
+        reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

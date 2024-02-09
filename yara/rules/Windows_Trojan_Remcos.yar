@@ -6,6 +6,7 @@ rule Windows_Trojan_Remcos_b296e965 {
         creation_date = "2021-06-10"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Remcos"
+        reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         reference_sample = "0ebeffa44bd1c3603e30688ace84ea638fbcf485ca55ddcfd6fbe90609d4f3ed"
         severity = 100
         arch_context = "x86"
@@ -29,6 +30,7 @@ rule Windows_Trojan_Remcos_7591e9f1 {
         creation_date = "2023-06-23"
         last_modified = "2023-07-10"
         threat_name = "Windows.Trojan.Remcos"
+        reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         reference_sample = "4e6e5ecd1cf9c88d536c894d74320c77967fe08c75066098082bf237283842fa"
         severity = 100
         arch_context = "x86"

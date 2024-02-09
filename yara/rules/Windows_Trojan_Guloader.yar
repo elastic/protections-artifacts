@@ -6,6 +6,7 @@ rule Windows_Trojan_Guloader_8f10fa66 {
         creation_date = "2021-08-17"
         last_modified = "2021-10-04"
         threat_name = "Windows.Trojan.Guloader"
+        reference = "https://www.elastic.co/security-labs/getting-gooey-with-guloader-downloader"
         reference_sample = "a3e2d5013b80cd2346e37460753eca4a4fec3a7941586cc26e049a463277562e"
         severity = 100
         arch_context = "x86"
@@ -30,6 +31,7 @@ rule Windows_Trojan_Guloader_c4d9dd33 {
         creation_date = "2021-08-17"
         last_modified = "2021-10-04"
         threat_name = "Windows.Trojan.Guloader"
+        reference = "https://www.elastic.co/security-labs/getting-gooey-with-guloader-downloader"
         reference_sample = "a3e2d5013b80cd2346e37460753eca4a4fec3a7941586cc26e049a463277562e"
         severity = 100
         arch_context = "x86"
@@ -50,6 +52,7 @@ rule Windows_Trojan_Guloader_2f1e44c8 {
         creation_date = "2023-10-30"
         last_modified = "2023-11-02"
         threat_name = "Windows.Trojan.Guloader"
+        reference = "https://www.elastic.co/security-labs/getting-gooey-with-guloader-downloader"
         reference_sample = "6ae7089aa6beaa09b1c3aa3ecf28a884d8ca84f780aab39902223721493b1f99"
         severity = 100
         arch_context = "x86"

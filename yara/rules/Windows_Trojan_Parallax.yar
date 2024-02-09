@@ -6,6 +6,7 @@ rule Windows_Trojan_Parallax_d72ec0e2 {
         creation_date = "2022-09-05"
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Parallax"
+        reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -28,6 +29,7 @@ rule Windows_Trojan_Parallax_b4ea4f1a {
         creation_date = "2022-09-08"
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Parallax"
+        reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

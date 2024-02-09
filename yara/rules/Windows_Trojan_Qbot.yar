@@ -6,6 +6,7 @@ rule Windows_Trojan_Qbot_92c67a6d {
         creation_date = "2021-02-16"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "636e2904276fe33e10cce5a562ded451665b82b24c852cbdb9882f7a54443e02"
         severity = 100
         arch_context = "x86"
@@ -26,6 +27,7 @@ rule Windows_Trojan_Qbot_d91c1384 {
         creation_date = "2021-07-08"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "18ac3870aaa9aaaf6f4a5c0118daa4b43ad93d71c38bf42cb600db3d786c6dda"
         severity = 100
         arch_context = "x86"
@@ -46,6 +48,7 @@ rule Windows_Trojan_Qbot_7d5dc64a {
         creation_date = "2021-10-04"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "a2bacde7210d88675564106406d9c2f3b738e2b1993737cb8bf621b78a9ebf56"
         severity = 100
         arch_context = "x86"
@@ -67,6 +70,7 @@ rule Windows_Trojan_Qbot_6fd34691 {
         creation_date = "2022-03-07"
         last_modified = "2022-04-12"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "0838cd11d6f504203ea98f78cac8f066eb2096a2af16d27fb9903484e7e6a689"
         severity = 100
         arch_context = "x86"
@@ -88,6 +92,7 @@ rule Windows_Trojan_Qbot_3074a8d4 {
         creation_date = "2022-06-07"
         last_modified = "2022-07-18"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "c2ba065654f13612ae63bca7f972ea91c6fe97291caeaaa3a28a180fb1912b3a"
         severity = 100
         arch_context = "x86"
@@ -116,12 +121,13 @@ rule Windows_Trojan_Qbot_1ac22a26 {
     meta:
         author = "Elastic Security"
         id = "1ac22a26-ec88-4e88-8fe6-a092bbb61904"
+        fingerprint = "22436c48bc775284d1f682eaeb650fd998302021342efc322c4ca40dd30f1a0d"
         creation_date = "2022-12-29"
         last_modified = "2023-02-01"
         threat_name = "Windows.Trojan.Qbot"
+        reference = "https://www.elastic.co/security-labs/exploring-the-qbot-attack-pattern"
         reference_sample = "c2ba065654f13612ae63bca7f972ea91c6fe97291caeaaa3a28a180fb1912b3a"
         severity = 100
-        fingerprint = "22436c48bc775284d1f682eaeb650fd998302021342efc322c4ca40dd30f1a0d"
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"

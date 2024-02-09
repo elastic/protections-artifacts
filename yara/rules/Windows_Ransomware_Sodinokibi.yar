@@ -7,6 +7,7 @@ rule Windows_Ransomware_Sodinokibi_83f05fbe : beta {
         last_modified = "2021-08-23"
         description = "Identifies SODINOKIBI/REvil ransomware"
         threat_name = "Windows.Ransomware.Sodinokibi"
+        reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
         arch_context = "x86"
@@ -41,6 +42,7 @@ rule Windows_Ransomware_Sodinokibi_182b2cea : beta {
         last_modified = "2021-10-04"
         description = "Identifies SODINOKIBI/REvil ransomware"
         threat_name = "Windows.Ransomware.Sodinokibi"
+        reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
         arch_context = "x86"
@@ -68,6 +70,7 @@ rule Windows_Ransomware_Sodinokibi_a282ba44 : beta {
         last_modified = "2021-08-23"
         description = "Identifies SODINOKIBI/REvil ransomware"
         threat_name = "Windows.Ransomware.Sodinokibi"
+        reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
         arch_context = "x86"

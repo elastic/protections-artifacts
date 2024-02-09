@@ -6,6 +6,7 @@ rule Windows_Trojan_PipeDance_01c18057 {
         creation_date = "2023-02-02"
         last_modified = "2023-02-22"
         threat_name = "Windows.Trojan.PipeDance"
+        reference = "https://www.elastic.co/security-labs/twice-around-the-dance-floor-with-pipedance"
         reference_sample = "9d3f739e35182992f1e3ade48b8999fb3a5049f48c14db20e38ee63eddc5a1e7"
         severity = 100
         arch_context = "x86"

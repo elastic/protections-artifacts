@@ -7,6 +7,7 @@ rule Windows_Trojan_ShadowPad_be71209d {
         last_modified = "2023-02-01"
         description = "Target ShadowPad loader"
         threat_name = "Windows.Trojan.ShadowPad"
+        reference = "https://www.elastic.co/security-labs/update-to-the-REF2924-intrusion-set-and-related-campaigns"
         reference_sample = "452b08d6d2aa673fb6ccc4af6cebdcb12b5df8722f4d70d1c3491479e7b39c05"
         severity = 100
         arch_context = "x86"
@@ -28,6 +29,7 @@ rule Windows_Trojan_ShadowPad_0d899241 {
         last_modified = "2023-02-01"
         description = "Target ShadowPad payload"
         threat_name = "Windows.Trojan.ShadowPad"
+        reference = "https://www.elastic.co/security-labs/update-to-the-REF2924-intrusion-set-and-related-campaigns"
         reference_sample = "cb3a425565b854f7b892e6ebfb3734c92418c83cd590fc1ee9506bcf4d8e02ea"
         severity = 100
         arch_context = "x86"

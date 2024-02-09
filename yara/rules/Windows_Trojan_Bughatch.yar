@@ -6,6 +6,7 @@ rule Windows_Trojan_Bughatch_21269be4 {
         creation_date = "2022-05-09"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.Bughatch"
+        reference = "https://www.elastic.co/security-labs/bughatch-malware-analysis"
         reference_sample = "b495456a2239f3ba48e43ef295d6c00066473d6a7991051e1705a48746e8051f"
         severity = 100
         arch_context = "x86"
@@ -28,6 +29,7 @@ rule Windows_Trojan_Bughatch_98f3c0be {
         creation_date = "2022-05-09"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.Bughatch"
+        reference = "https://www.elastic.co/security-labs/bughatch-malware-analysis"
         reference_sample = "b495456a2239f3ba48e43ef295d6c00066473d6a7991051e1705a48746e8051f"
         severity = 100
         arch_context = "x86"

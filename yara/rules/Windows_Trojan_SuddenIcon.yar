@@ -6,6 +6,7 @@ rule Windows_Trojan_SuddenIcon_99487621 {
         creation_date = "2023-03-29"
         last_modified = "2023-03-30"
         threat_name = "Windows.Trojan.SuddenIcon"
+        reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         reference_sample = "aa4e398b3bd8645016d8090ffc77d15f926a8e69258642191deb4e68688ff973"
         severity = 100
         arch_context = "x86"
@@ -32,6 +33,7 @@ rule Windows_Trojan_SuddenIcon_8b07c275 {
         creation_date = "2023-03-29"
         last_modified = "2023-03-30"
         threat_name = "Windows.Trojan.SuddenIcon"
+        reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         reference_sample = "aa4e398b3bd8645016d8090ffc77d15f926a8e69258642191deb4e68688ff973"
         severity = 100
         arch_context = "x86"
@@ -53,6 +55,7 @@ rule Windows_Trojan_SuddenIcon_ac021ae0 {
         creation_date = "2023-03-30"
         last_modified = "2023-03-30"
         threat_name = "Windows.Trojan.SuddenIcon"
+        reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

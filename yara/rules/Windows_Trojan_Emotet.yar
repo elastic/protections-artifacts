@@ -6,6 +6,7 @@ rule Windows_Trojan_Emotet_18379a8d {
         creation_date = "2021-11-17"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "eeb13cd51faa7c23d9a40241d03beb239626fbf3efe1dbbfa3994fc10dea0827"
         severity = 100
         arch_context = "x86"
@@ -26,6 +27,7 @@ rule Windows_Trojan_Emotet_5528b3b0 {
         creation_date = "2021-11-17"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "eeb13cd51faa7c23d9a40241d03beb239626fbf3efe1dbbfa3994fc10dea0827"
         severity = 100
         arch_context = "x86"
@@ -46,6 +48,7 @@ rule Windows_Trojan_Emotet_1943bbf2 {
         creation_date = "2021-11-18"
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "5abec3cd6aa066b1ddc0149a911645049ea1da66b656c563f9a384e821c5db38"
         severity = 100
         arch_context = "x86"
@@ -66,6 +69,7 @@ rule Windows_Trojan_Emotet_db7d33fa {
         creation_date = "2022-05-09"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "08c23400ff546db41f9ddbbb19fa75519826744dde3b3afb38f3985266577afc"
         severity = 100
         arch_context = "x86"
@@ -93,6 +97,7 @@ rule Windows_Trojan_Emotet_d6ac1ea4 {
         creation_date = "2022-05-24"
         last_modified = "2022-06-09"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "2c6709d5d2e891d1ce26fdb4021599ac10fea93c7773f5c00bea8e5e90404b71"
         severity = 100
         arch_context = "x86"
@@ -116,6 +121,7 @@ rule Windows_Trojan_Emotet_77c667b9 {
         creation_date = "2022-11-07"
         last_modified = "2022-12-20"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "ffac0120c3ae022b807559e8ed7902fde0fa5f7cb9c5c8d612754fa498288572"
         severity = 100
         arch_context = "x86"
@@ -145,6 +151,7 @@ rule Windows_Trojan_Emotet_8b9449c1 {
         creation_date = "2022-11-09"
         last_modified = "2022-12-20"
         threat_name = "Windows.Trojan.Emotet"
+        reference = "https://www.elastic.co/security-labs/emotet-dynamic-configuration-extraction"
         reference_sample = "ffac0120c3ae022b807559e8ed7902fde0fa5f7cb9c5c8d612754fa498288572"
         severity = 100
         arch_context = "x86"

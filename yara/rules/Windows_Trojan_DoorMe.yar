@@ -6,6 +6,7 @@ rule Windows_Trojan_DoorMe_246eda61 {
         creation_date = "2022-12-09"
         last_modified = "2022-12-15"
         threat_name = "Windows.Trojan.DoorMe"
+        reference = "https://www.elastic.co/security-labs/update-to-the-REF2924-intrusion-set-and-related-campaigns"
         reference_sample = "96b226e1dcfb8ea2155c2fa508125472c8c767569d009a881ab4c39453e4fe7f"
         severity = 100
         arch_context = "x86"

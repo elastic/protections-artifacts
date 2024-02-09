@@ -6,6 +6,7 @@ rule Windows_Trojan_P8Loader_e478a831 {
         creation_date = "2023-04-13"
         last_modified = "2023-05-26"
         threat_name = "Windows.Trojan.P8Loader"
+        reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

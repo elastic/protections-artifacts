@@ -6,6 +6,7 @@ rule Windows_Trojan_SomniRecord_097e66bd {
         creation_date = "2023-03-01"
         last_modified = "2023-03-20"
         threat_name = "Windows.Trojan.SomniRecord"
+        reference = "https://www.elastic.co/security-labs/not-sleeping-anymore-somnirecords-wakeup-call"
         reference_sample = "54114c23f499738a06fd8b8ab2a8458c03ac8cc81e706702fcd1c64a075e4dcc"
         severity = 100
         arch_context = "x86"

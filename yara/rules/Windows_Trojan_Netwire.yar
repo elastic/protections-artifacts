@@ -6,6 +6,7 @@ rule Windows_Trojan_Netwire_6a7df287 {
         creation_date = "2021-06-28"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Netwire"
+        reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "e6f446dbefd4469b6c4d24988dd6c9ccd331c8b36bdbc4aaf2e5fc49de2c3254"
         severity = 100
         arch_context = "x86"
@@ -26,6 +27,7 @@ rule Windows_Trojan_Netwire_1b43df38 {
         creation_date = "2021-06-28"
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Netwire"
+        reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "e6f446dbefd4469b6c4d24988dd6c9ccd331c8b36bdbc4aaf2e5fc49de2c3254"
         severity = 100
         arch_context = "x86"
@@ -48,6 +50,7 @@ rule Windows_Trojan_Netwire_f85e4abc {
         creation_date = "2022-08-14"
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Netwire"
+        reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "ab037c87d8072c63dc22b22ff9cfcd9b4837c1fee2f7391d594776a6ac8f6776"
         severity = 100
         arch_context = "x86"
@@ -68,6 +71,7 @@ rule Windows_Trojan_Netwire_f42cb379 {
         creation_date = "2022-08-14"
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Netwire"
+        reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "ab037c87d8072c63dc22b22ff9cfcd9b4837c1fee2f7391d594776a6ac8f6776"
         severity = 100
         arch_context = "x86"

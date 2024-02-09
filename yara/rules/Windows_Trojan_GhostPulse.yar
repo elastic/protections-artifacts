@@ -6,6 +6,7 @@ rule Windows_Trojan_GhostPulse_a1311f49 {
         creation_date = "2023-10-06"
         last_modified = "2023-10-26"
         threat_name = "Windows.Trojan.GhostPulse"
+        reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         reference_sample = "0175448655e593aa299278d5f11b81f2af76638859e104975bdb5d30af5c0c11"
         severity = 100
         arch_context = "x86"
@@ -27,6 +28,7 @@ rule Windows_Trojan_GhostPulse_3fe1d02d {
         creation_date = "2023-10-12"
         last_modified = "2023-10-26"
         threat_name = "Windows.Trojan.GhostPulse"
+        reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
@@ -46,6 +48,7 @@ rule Windows_Trojan_GhostPulse_3673d337 {
         creation_date = "2023-12-11"
         last_modified = "2024-01-12"
         threat_name = "Windows.Trojan.GhostPulse"
+        reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         reference_sample = "3013ba32838f6d97d7d75e25394f9611b1c5def94d93588f0a05c90b25b7d6d5"
         severity = 100
         arch_context = "x86"

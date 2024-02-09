@@ -6,6 +6,7 @@ rule Windows_Trojan_RudeBird_3cbf7bc6 {
         creation_date = "2023-05-09"
         last_modified = "2023-06-13"
         threat_name = "Windows.Trojan.RudeBird"
+        reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
         arch_context = "x86"
         scan_context = "file, memory"

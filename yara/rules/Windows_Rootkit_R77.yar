@@ -6,6 +6,7 @@ rule Windows_Rootkit_R77_5bab748b {
         creation_date = "2022-03-04"
         last_modified = "2022-04-12"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "cfc76dddc74996bfbca6d9076d2f6627912ea196fdbdfb829819656d4d316c0c"
         severity = 100
         arch_context = "x86"
@@ -26,6 +27,7 @@ rule Windows_Rootkit_R77_eb366abc {
         creation_date = "2023-05-09"
         last_modified = "2023-06-13"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "21e7f69986987fc75bce67c4deda42bd7605365bac83cf2cecb25061b2d86d4f"
         severity = 100
         arch_context = "x86"
@@ -47,6 +49,7 @@ rule Windows_Rootkit_R77_99050e7d {
         creation_date = "2023-05-09"
         last_modified = "2023-06-13"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "3dc94c88caa3169e096715eb6c2e6de1b011120117c0a51d12f572b4ba999ea6"
         severity = 100
         arch_context = "x86"
@@ -68,6 +71,7 @@ rule Windows_Rootkit_R77_be403e3c {
         creation_date = "2023-05-18"
         last_modified = "2023-06-13"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "91c6e2621121a6871af091c52fafe41220ae12d6e47e52fd13a7b9edd8e31796"
         severity = 100
         arch_context = "x86"
@@ -88,6 +92,7 @@ rule Windows_Rootkit_R77_ee853c9f {
         creation_date = "2023-05-18"
         last_modified = "2023-06-13"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "916c805b0d512dd7bbd88f46632d66d9613de61691b4bd368e4b7cb1f0ac7f60"
         severity = 100
         arch_context = "x86"
@@ -114,6 +119,7 @@ rule Windows_Rootkit_R77_d0367e28 {
         creation_date = "2023-05-18"
         last_modified = "2023-06-13"
         threat_name = "Windows.Rootkit.R77"
+        reference = "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"
         reference_sample = "96849108e13172d14591169f8fdcbf8a8aa6be05b7b6ef396d65529eacc02d89"
         severity = 100
         arch_context = "x86"

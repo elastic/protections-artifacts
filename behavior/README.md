@@ -53,3 +53,9 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Persistence          |        50 |       2 |      17 |                69 |
 | Privilege Escalation |        54 |       5 |       7 |                66 |
 | Total by OS          |       497 |      34 |     156 |               687 |
+
+
+### The Zen of Security Rules
+
+We incorporate the [Zen of Security Rules](https://zenofsecurity.io/rules) into all of our rule development and planning. We strive to follow these principles to ensure practical rule design for resiliency at scale. 
+

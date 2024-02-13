@@ -6,6 +6,7 @@ rule Linux_Trojan_BPFDoor_59e029c3 {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "144526d30ae747982079d5d340d1ff116a7963aba2e3ed589e7ebc297ba0c1b3"
         severity = 100
         arch_context = "x86"
@@ -30,6 +31,7 @@ rule Linux_Trojan_BPFDoor_0f768f60 {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "3a1b174f0c19c28f71e1babde01982c56d38d3672ea14d47c35ae3062e49b155"
         severity = 100
         arch_context = "x86"
@@ -55,6 +57,7 @@ rule Linux_Trojan_BPFDoor_8453771b {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "591198c234416c6ccbcea6967963ca2ca0f17050be7eed1602198308d9127c78"
         severity = 100
         arch_context = "x86"
@@ -82,6 +85,7 @@ rule Linux_Trojan_BPFDoor_f690fe3b {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "591198c234416c6ccbcea6967963ca2ca0f17050be7eed1602198308d9127c78"
         severity = 100
         arch_context = "x86"
@@ -102,6 +106,7 @@ rule Linux_Trojan_BPFDoor_1a7d804b {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "76bf736b25d5c9aaf6a84edd4e615796fffc338a893b49c120c0b4941ce37925"
         severity = 100
         arch_context = "x86"
@@ -129,6 +134,7 @@ rule Linux_Trojan_BPFDoor_e14b0b79 {
         creation_date = "2022-05-10"
         last_modified = "2022-05-10"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "dc8346bf443b7b453f062740d8ae8d8d7ce879672810f4296158f90359dcae3a"
         severity = 100
         arch_context = "x86"
@@ -153,6 +159,7 @@ rule Linux_Trojan_BPFDoor_f1cd26ad {
         creation_date = "2023-05-11"
         last_modified = "2023-05-16"
         threat_name = "Linux.Trojan.BPFDoor"
+        reference = "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor"
         reference_sample = "afa8a32ec29a31f152ba20a30eb483520fe50f2dce6c9aa9135d88f7c9c511d7"
         severity = 100
         arch_context = "x86"

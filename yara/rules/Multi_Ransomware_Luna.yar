@@ -6,6 +6,7 @@ rule Multi_Ransomware_Luna_8614d3d7 {
         creation_date = "2022-08-02"
         last_modified = "2022-08-16"
         threat_name = "Multi.Ransomware.Luna"
+        reference = "https://www.elastic.co/security-labs/luna-ransomware-attack-pattern"
         reference_sample = "1cbbf108f44c8f4babde546d26425ca5340dccf878d306b90eb0fbec2f83ab51"
         severity = 100
         arch_context = "x86"

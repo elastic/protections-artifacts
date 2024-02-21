@@ -20,24 +20,19 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.53 | 44ed83276acea08c76e94c30df961ca933725eb74bfb86d68f4e3596d1767ac7 |
-| production-rules-macos-v1 | 1.0.53 | 79d90027d413e3dfdddf3ff9bb5a8ba984932eaac4844820cddf51f10ffda5e6 |
-| production-rules-windows-v1 | 1.0.53 | 97ecba1d22860c9553c25ac7357caa128472635c979cdf936bbf42f81bcd1d75 |
+| production-rules-linux-v1 | 1.0.54 | 49adb2ef4ab456d351c7683396bc23e6d53d3a949743248f1367d1786c01e227 |
+| production-rules-macos-v1 | 1.0.54 | 298722cf7c2fd6926a3bdaee717e6e49bd2a0363c49b55fadfbfc37ff675016a |
+| production-rules-windows-v1 | 1.0.54 | 81fdada0d44001c2b703b5abc459caf5368016ae4c2ca2a4f2b771667ff4f855 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.53', '1.0.52') by OS/MITRE Tactic.
-| Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
-|----------------------|-----------|---------|---------|-------------------|
-| Defense Evasion      |         3 |       0 |       0 |                 3 |
-| Execution            |         2 |       0 |       0 |                 2 |
-| Initial Access       |         1 |       0 |       0 |                 1 |
-| Persistence          |         1 |       0 |       0 |                 1 |
-| Privilege Escalation |         2 |       0 |       0 |                 2 |
-| Total by OS          |         9 |       0 |       0 |                 9 |
+Note: New Production Rules since last version ('1.0.54', '1.0.53') by OS/MITRE Tactic.
+| Tactic      |   Windows |   Linux |   macOS |   Total by Tactic |
+|-------------|-----------|---------|---------|-------------------|
+| Collection  |         1 |       0 |       0 |                 1 |
+| Total by OS |         1 |       0 |       0 |                 1 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
-
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
 | Collection           |         5 |       0 |       1 |                 6 |

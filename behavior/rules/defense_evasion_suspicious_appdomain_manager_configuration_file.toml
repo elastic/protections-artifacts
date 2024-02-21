@@ -18,7 +18,9 @@ query = '''
 sequence with maxspan=5m
  [file where event.action : ("creation", "rename") and file.name : "*.exe.config" and
   not file.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
-  not process.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe" and
+  not process.executable :
+               ("?:\\Windows\\Microsoft.NET\\Framework*\\dfsvc.exe",
+                "?:\\Program Files\\Microsoft Visual Studio\\*.exe") and
   not (process.code_signature.subject_name : "Volvo Car Corporation" and process.code_signature.trusted == true)] as event0
  [library where
   not dll.code_signature.status : "trusted" and startswith~(event0.file.name, process.name) and

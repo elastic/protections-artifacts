@@ -22,7 +22,8 @@ process where event.action == "start" and
                   "RegSvcs.exe",
                   "msbuild.exe",
                   "msxsl.exe",
-                  "xwizard.exe") and
+                  "xwizard.exe",
+                  "msiexec.exe") and
   /* add suspicious execution paths here */
   process.args : ("?:\\PerfLogs\\*",
                   "?:\\Users\\*\\Pictures\\*",
@@ -93,7 +94,9 @@ process where event.action == "start" and
                   "?:\\Windows\\LiveKernelReports\\*",
                   "?:\\Windows\\ModemLogs\\*",
                   "?:\\Windows\\ImmersiveControlPanel\\*",
-                  "?:\\$Recycle.Bin\\*") and not
+                  "?:\\$Recycle.Bin\\*",
+                  "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\*"
+) and not
     (process.name : "rundll32.exe" and
      process.command_line : ("*uxtheme.dll,#64*", "*PRINTUI.DLL,PrintUIEntry*", "*OpenAs_RunDLL*", "*ShowNotificationDialog*")) and not
     /* Issue #322 */

@@ -18,17 +18,33 @@ sequence by process.entity_id with maxspan=2m
    not (process.code_signature.subject_name : ("Veeam Software Group GmbH", "VMware, Inc.") and process.code_signature.trusted == true) and 
    not (process.executable : "?:\\FirefoxPortable\\App\\Firefox\\firefox.exe" and 
         process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true)]
-[api where event.category : "intrusion_detection" and 
+[api where event.category : "intrusion_detection" and
+  not process.Ext.api.name : ("SetWindowsHookEx", "NtQueueApcThread") and
   process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", 
                                "rwx", "hollow_image", "image_indirect_call") and 
   not process.Ext.api.summary :
-                      ("VirtualProtect( user32.dll, 0x24, RW-, R-X )",
-                       "VirtualProtect( clr.dll, 0x8, R--, RWX )",
-                       "VirtualProtect( user32.dll, 0x1000, R-X, RW- )") and 
+                      ("VirtualProtect( user32.dll,*)",
+                       "VirtualProtect( clr.dll,*",
+                       "VirtualProtect( mscorwks.dll,*",
+                       "VirtualProtect( pidgenx.dll,*",
+                       "VirtualProtect( sop_check.dll,*",
+                       "VirtualProtect( 7-zip.dll,*",
+                       "VirtualProtect( umppc*",
+                       "VirtualProtect( brc???.tmp,*") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.protection_provenance : ("Kernel", "Kernel|*", "hmpalert.dll", "bdhkm32.dll", "tmmon.dll", "ftapihook32.dll")) and
   not (process.Ext.api.behaviors : ("hollow_image", "image_indirect_call") and 
        process.thread.Ext.call_stack_summary : 
                         ("ntdll.dll|tmmon64.dll|ntdll.dll|Unbacked", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll", 
-                         "*dsetup.dll|issetup.dll*")) and
+                         "*dsetup.dll|issetup.dll*",
+                         "ntdll.dll|tmmon64.dll|Unknown",
+                         "ntdll.dll|klhkum.{*",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|aswhook.dll|kernelbase.dll|*",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|tmmon.dll|*",
+                         "ntdll.dll|protector64.dll|kernel32.dll|protector64.dll|ntdll.dll",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|apphelp.dll|ntdll.dll",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|aswhook.dll|apphelp.dll|ntdll.dll",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unknown")) and
   not process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|ftapihook32.dll|ntdll.dll|kernelbase.dll|ntdll.dll"]
 '''
 

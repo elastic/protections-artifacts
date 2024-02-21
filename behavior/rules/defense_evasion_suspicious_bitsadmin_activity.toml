@@ -83,7 +83,9 @@ process where event.action == "start" and
     not (process.args : "https://dl.duosecurity.com/*" and process.parent.args : "?:\\ProgramData\\NinjaRMMAgent\\scripting\\*") and
     not process.command_line : "bitsadmin  /RawReturn /GetBytesTransferred mingw" and
     not process.args : "https://opalrtwebsitedata.blob.core.windows.net/software/mingw/*" and 
-    not process.executable : "?:\\Program Files (x86)\\Bosch\\DownloadManager\\bin\\Bitsadmin*.exe"
+    not process.executable : "?:\\Program Files (x86)\\Bosch\\DownloadManager\\bin\\Bitsadmin*.exe" and
+    not (process.parent.name : "cmd.exe" and
+         process.parent.command_line : "C:\\WINDOWS\\system32\\cmd.exe /c \"\"C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*.bat\"\"")
 '''
 
 min_endpoint_version = "7.15.0"

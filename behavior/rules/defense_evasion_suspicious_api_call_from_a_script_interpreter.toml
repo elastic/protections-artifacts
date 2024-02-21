@@ -32,7 +32,7 @@ sequence by process.entity_id with maxspan=5m
   not process.thread.Ext.call_stack_summary : ("Unknown", "Unbacked") and 
   not process.Ext.api.summary : "VirtualProtect*msvcr*.dll,*" and
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel", "epmpthe.dll")) and 
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : "Kernel" and 
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*") and
   not process.thread.Ext.call_stack_final_user_module.path :
                                ("?:\\Program Files\\*.dll",
                                 "?:\\Program Files (x86)\\*.dll",

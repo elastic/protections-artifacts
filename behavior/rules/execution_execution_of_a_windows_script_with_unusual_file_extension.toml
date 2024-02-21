@@ -19,6 +19,7 @@ process where event.action == "start" and
  not process.command_line : ("*:\\Program Files\\*", "*:\\Program Files (x86)\\*", "*\\Windows\\system32\\spool\\DRIVERS\\*") and
  not (process.name : "cscript.exe" and process.args : "C:\\PGM_TC~1\\DHL_FR~1\\xls2csv.bat") and
  not (process.args : "\\\\*" and process.args_count >= 3) and
+ not (process.parent.args : "D:\\*.cmd" and process.args : "https://app.*:444/api/Banner") and
  not (process.parent.name : "cmd.exe" and
        process.parent.args :
             ("C:\\ProgramData\\NinjaRMMAgent\\scripting\\customscript_gen_?.bat-ninjascript.bat",

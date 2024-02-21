@@ -1,6 +1,6 @@
 [rule]
 description = """
-Identifies potential remote process manipulation using SetThreatContext API. This may indicate an attempt to inject code
+Identifies potential remote process manipulation using SetThreadContext API. This may indicate an attempt to inject code
 or debug a remote process.
 """
 id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
@@ -34,13 +34,22 @@ api where
                                                 "?:\\Program Files (x86)\\*", 
                                                 "\\Program Files\\*", 
                                                 "\\Program Files (x86)\\*") and 
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b" and 
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+                        ("31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b",
+                         "766ac0f768c5b2acb19ecb8cf179c59d56b74d71437f5d1331408d9c827cfde8",
+                         "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
-                           "Z:\\SteamLibrary\\steamapps\\common\\*.exe", 
+                           "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
+                           "D:\\SteamLibrary\\steamapps\\common\\*.exe",
                            "D:\\Steam\\steamapps\\common\\*.exe",
+                           "D:\\Visual Studio\\Common7\\IDE\\devenv.exe",
                            "?:\\Program Files\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
-                           "?:\\Program Files (x86)\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe") and
+                           "?:\\Program Files (x86)\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
+                           "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
+                           "?:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe",
+                           "?:\\Program Files (x86)\\WinHex 19.6 Portable\\WinHex64.exe",
+                           "?:\\Program Files\\JetBrains\\*\\plugins\\go\\lib\\dlv\\windows\\dlv.exe") and
  not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe"
 '''
 

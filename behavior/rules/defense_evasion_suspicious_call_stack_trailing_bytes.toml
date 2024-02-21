@@ -13,7 +13,9 @@ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_byt
  (
   (event.category : "api" and process.Ext.api.name : ("VirtualProtect*", "WriteProcessMemory")) or 
   (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll"))
-  )
+  ) and 
+ not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                  $entry.callsite_trailing_bytes :"4883c428c390909090909090904c8bdc574883ec6049c743b8feffffff49895b1849897320488b05c9a024004833c44889442450488bfa488bd9488b521849c7")
 '''
 
 min_endpoint_version = "8.8.0"

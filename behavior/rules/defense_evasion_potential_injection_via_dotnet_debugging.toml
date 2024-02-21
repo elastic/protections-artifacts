@@ -18,11 +18,17 @@ query = '''
 process where event.action == "start" and
  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Windows\\Microsoft.NET\\Framework*OpenVirtualProcess*") and
  not (process.code_signature.subject_name : "Magic Software Enterprises LTD" and process.code_signature.trusted == true) and
- not (process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe", "?:\\Program Files\\Microsoft Visual Studio\\*.exe") and
-      process.executable : ("?:\\Program Files\\IIS Express\\iisexpress.exe", "?:\\Program Files (x86)\\IIS Express\\iisexpress.exe")) and
- not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe",
-                           "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe", 
-                           "?:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugWERHelper.exe")
+ not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe",
+                           "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",
+                           "D:\\Visual Studio\\Common?\\IDE\\devenv.exe",
+                           "?:\\Program Files\\IIS Express\\iisexpress.exe",
+                           "?:\\Program Files (x86)\\IIS Express\\iisexpress.exe") and
+ not process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
+ not process.hash.sha256 : ("8c3e594924948cade83b43cee33385cf305b930224fa65daaf622f16be58f3c2",
+                            "b220760020655cc0d7222f2526ff573108e7d9633d9de4a1e51bc5567c61286b",
+                            "311e92f886b53863e43284daf77b5ff8916d7a0ac7585a8f7954218824663661",
+                            "01ce382fce6b135d2c57016c95611bf06b98b2e8d3d7070d2570d60bfa35437c",
+                            "ce676e1bae994c5e0433c5fcca9c85ce031cc0c5f0f6a78fc82e7db81988c5be")
 '''
 
 min_endpoint_version = "8.7.0"

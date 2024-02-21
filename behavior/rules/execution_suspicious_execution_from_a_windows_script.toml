@@ -15,7 +15,11 @@ sequence with maxspan=1m
  [network where process.uptime >= 300 and
   process.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe")] by process.entity_id
  [process where event.action == "start" and
-  process.parent.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and 
+  process.parent.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and
+  not process.hash.sha256 :
+                  ("ab4ebfc23f71658cc30d21d53a5d774eba2bc27cf5806aafd18f263590541b89",
+                   "42bb9150cf428aa3ea2ab4d9d27d30072a7af1ee8c00fd735ef90c11d29e96d6") and
+  not (process.name : "reg.exe" and process.args : "HKLM\\SOFTWARE\\AutoTools\\ADP SmartAgent\\SmartAgent\\Jobs" and user.id : "S-1-5-18") and
   not process.parent.args :
               ("?:\\Program Files (x86)\\smartagent\\agent\\common\\snapins\\adpcommon\\ADP_*.vbs",
                "?:\\\\Program Files (x86)\\\\Tanium\\\\Tanium Client\\\\Patch\\\\lib\\\\tanium-patch.min.vbs")] by process.parent.entity_id

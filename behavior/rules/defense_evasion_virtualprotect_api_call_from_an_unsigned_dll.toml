@@ -23,6 +23,9 @@ sequence by process.entity_id
                     "?:\\Windows\\assembly\\*", 
                     "?:\\Windows\\twain_32\\*") and
 
+  not (process.executable : ("?:\\Windows\\splwow64.exe", "?:\\Windows\\System32\\mstsc.exe") and
+       dll.path : "?:\\ProgramData\\EPSON\\*.DLL") and
+
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
                          ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
@@ -63,9 +66,21 @@ sequence by process.entity_id
                 "4e6a640686b467ea054785430b87cdce7579a03cbdc7934dd26b30212ea04318", 
                 "0107b58df1574083db235906c3ed6897561fbcaef4921d01d76d80e4cf5c6cee", 
                 "55bfb4a17b931176304990be2f502c4e8b29c6ee2893527d973740e2104ca92f", 
-                "f03e30c6a8c883b0d2086894675f76c772368865bb1394274f1e7ae3284ab80a")] as event0
+                "f03e30c6a8c883b0d2086894675f76c772368865bb1394274f1e7ae3284ab80a",
+                "bb1611e0a0b017a657aea72067ea00db4fd6731a4899e368b6860e07f0d61922",
+                "c64b26b3d1f6e3958fabd1180c76f6bb40b55e0a47844609d2557ec93f5a7cf0",
+                "3c31dd1de5d03b4c375d4a4acc5c3a782ba4a6635c7034af5d3d7d215bef5c86",
+                "e7e403ed90519579fc6bac225f957e3658b4612d5af582e64e8149e4eaca7477",
+                "07bc9d5b972acc1b9c11ea47104711ca487337131355f69019c6ac53577194a9",
+                "188d7f7979d3e69ef0f4059e7da221e690db684a93746cd4e7607397bc513c97",
+                "c33c59e0735971c4ad3ff96bedf51d74e4032206adeeea305df8f7c71b840d6d",
+                "20635d15698d547289edb8d512cec1a322a6a0f30d101d459cf6ea0d1f2f9c38",
+                "8a43ec41225a095bf1d6e027407e86a406c5b236e0a50c15b77c524cf2010597",
+                "cff49758ffcbb6d8166accb4dc905d31e79a5d587121f95ea691bf64536ce362",
+                "a986c968e948bd83033d9fda1a85c2f44e274f552bf5da9a899ab1ee794727f9")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
+  process.Ext.api.parameters.size > 4096 and
   not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
   (
     _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name)) or

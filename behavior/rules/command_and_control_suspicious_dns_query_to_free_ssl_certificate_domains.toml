@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -60,8 +60,8 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe",
 		  "?:\\Windows\\system32\\WerFault.exe",
 		  "?:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechRuntime.exe",
-		  "?:\\Windows\\System32\\BackgroundTransferHost.exe", 
-                  "?:\\Windows\\System32\\mousocoreworker.exe") and
+		  "?:\\Windows\\System32\\BackgroundTransferHost.exe",
+		  "?:\\Windows\\System32\\mousocoreworker.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
@@ -84,7 +84,9 @@ sequence by process.entity_id with maxspan=5m
                 "748d48d246526e2a79edcde87255ffa5387e3bcc94f6ca5e59589e07e683cd80",
                 "1c0a4d603fb16b53d733663bde0ebd1e9a593d4c55015301f06e8a01261c1d0d",
                 "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1",
-                "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1") and
+                "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1",
+                "3d9e0143268f52aecaff76f81553c880ec9a353eb5a6e22bd6d34bad8251710c",
+                "cc08b9ba4eefdac9d120a69d2a4541908c2ba6d68387589e9e93dddd65a26606") and
    not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
@@ -92,6 +94,7 @@ sequence by process.entity_id with maxspan=5m
    not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *", 
                                                "Specops Software Inc.", "Flexera Software LLC", "N-ABLE TECHNOLOGIES LTD", "N-ABLE TECHNOLOGIES LTD") and
         process.code_signature.trusted == true) and
+   not (process.name : "powershell.exe" and user.id == "S-1-5-18") and
    not (process.executable : "?:\\Windows\\System32\\mstsc.exe" and
         process.parent.executable : "?:\\Windows\\explorer.exe" and
         not process.args :

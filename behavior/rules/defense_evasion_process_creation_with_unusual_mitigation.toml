@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation with Unusual Mitigation"
 os_list = ["windows"]
 reference = ["https://blog.xpnsec.com/protecting-your-malware/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -34,7 +34,8 @@ process where event.type == "start" and process.executable != null and
  not (process.code_signature.subject_name : ("Microsoft Windows Defender Advanced Threat Protection", "Wavesor Software (Eightpoint Technologies Ltd. SEZC)") and 
       process.code_signature.status : "trusted" and process.Ext.token.integrity_level_name : "system") and 
  not (process.parent.executable : "?:\\Windows\\System32\\hv*.exe" and process.executable : "?:\\Windows\\System32\\hv*.exe") and 
- not (process.parent.executable : "?:\\Windows\\System32\\browser_broker.exe" and process.executable : "?:\\Windows\\System32\\browser_broker.exe")
+ not (process.parent.executable : "?:\\Windows\\System32\\browser_broker.exe" and process.executable : "?:\\Windows\\System32\\browser_broker.exe") and
+ not (process.executable : "?:\\Windows\\System32\\vmwp.exe" and process.parent.executable : "?:\\Windows\\System32\\vmcompute.exe")
 '''
 
 min_endpoint_version = "8.8.0"

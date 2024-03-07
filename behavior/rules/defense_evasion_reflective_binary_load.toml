@@ -11,7 +11,7 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 file where event.type != "deletion" and 
@@ -19,7 +19,10 @@ file.name : "NSCreateObjectFileImageFromMemory-*" and
 not (process.name : ("osx-x86_64", 
                      "Setup",
                      "oahd-helper",
+                     "ArtPro",
+                     "Dolby Atmos Renderer",
                      "oahd",
+                     "pluginrunner",
                      "Install") and 
      process.code_signature.trusted == true) and 
 not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",

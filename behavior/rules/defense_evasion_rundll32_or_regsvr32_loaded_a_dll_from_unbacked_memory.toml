@@ -7,7 +7,7 @@ id = "226df8a0-6ef8-4965-91b4-7ce64078c206"
 license = "Elastic License v2"
 name = "Rundll32 or Regsvr32 Loaded a DLL from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id
@@ -26,7 +26,8 @@ sequence by process.entity_id
   not process.parent.executable :
                      ("?:\\Program Files\\Royal TS V6\\RoyalTS.exe",
                       "?:\\Program Files (x86)\\Kaarya LLC\\myKaarma Desktop\\KaarmaDesktop.exe",
-                      "?:\\Program Files (x86)\\Steam\\steamapps\\common\\Sun Haven\\Sun Haven.exe") and
+                      "?:\\Program Files (x86)\\Steam\\steamapps\\common\\Sun Haven\\Sun Haven.exe",
+                      "?:\\Program Files\\Symantec\\Symantec Endpoint Protection\\*\\Bin64\\ccSvcHst.exe") and
 
   not (process.args : "--zoam=IndexCigar\\license.dat" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
   not (process.name : "rundll32.exe" and 
@@ -51,11 +52,14 @@ sequence by process.entity_id
                           "*ba0c0000004c8d4c2450448d423441ffd3*",
                           "*f0000ba0c0000004c8d4c2450448d423441ffd349bb80c3*",
                           "8be55d558bec83ec08c745f800000000c745fc02000000c745f*",
+                          "eb4feb4b8b45fc83780800740eff750c*",
                           "eb60eb5c488b44243048837810007410e8907bffff488b4c2440ffd0eb44eb40488b44243048837818007415e8a44500004533c033d2488b4c2438ffd0eb23eb",
                           "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
                           "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65",
-                          "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424"))
+                          "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424",
+                          "4889442428488d0d83750b00ff152d170900488944243048837c242800741048837c242000740848837c2430007578488d0569fe150048390562fe15007459b8",
+                          "90fece85c08bd6a3f024c009b8000000000f95c0c0e6074a8984243c0300000facd01633b42440010000e9fd0000008bc6c0fa02038424b80100008b5424040f"))
 
   ]
   until [process where event.action == "end"]

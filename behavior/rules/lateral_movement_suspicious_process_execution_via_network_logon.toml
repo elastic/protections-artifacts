@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -129,6 +129,8 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\logoff.exe",
               "?:\\Windows\\System32\\powercfg.exe",
               "?:\\Windows\\System32\\winver.exe",
+              "?:\\Windows\\System32\\gpresult.exe",
+              "?:\\Windows\\System32\\inetsrv\\iisrstas.exe",
               "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
@@ -162,6 +164,10 @@ process where event.action == "start" and
                     "*certstorename=MY*",
                     "*/latest/api/token*-TimeoutSec*",
                     "*\\program files (x86)\\citrix\\Licensing\\WebServicesForLicensing\\*")) and
+  not (process.name : "cmd.exe" and process.parent.name : "WmiPrvSe.exe" and
+       process.args : (" > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
+                       "} > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
+                       "(x86)\\citrix\\Licensing\\WebServicesForLicensing\\Apache\\bin\\httpd.exe  -V  > \\\\127.0.0.1\\c$\\temp\\gsasandbox\\SandBox")) and
   not process.hash.sha256 :
                  ("06078b8b840b4591535566d18d5f88b201c4cb8e033361095f7fd37d058e6962",
                   "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",
@@ -198,7 +204,10 @@ process where event.action == "start" and
                   "843c5b54fdc1ea6d3ba85e89741bcc7e1b3299fa8509af4638d77958baee0d05",
                   "bebefa044c4953455037ee4c341030a667dec4ef3c9e892803fcaa75f499504e",
                   "0acc754bf7ef9d2ed456cc4208de353ffbb6aa0db745dcdd064dbbed55733380",
-                  "38ca179d05c6cdf782c7c56f12f06c429f128867d0d878726df6bc44675be53b") and
+                  "38ca179d05c6cdf782c7c56f12f06c429f128867d0d878726df6bc44675be53b",
+                  "d1efbf9c83ecb91fb68da965c6a3bcc6322c9c29aa629a4a4ece3c92c6f976c8",
+                  "2653daafcf471d82e362572216b8b11ac37dc44c3baefc3c30a0c0c88f882af3",
+                  "eb2695c91bc11b28eec70a54c86c9396956c044040be9bd6c0c766d3bb1a146f") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -216,7 +225,9 @@ process where event.action == "start" and
   not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*") and
   not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise") and 
   not (process.name : "certutil.exe" and process.args : "-view" and process.args : "csv") and 
-  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs")
+  not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs") and
+  not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework64\\*\\installutil.exe" and
+       process.args : "?:\\Program Files\\Omnyx\\Messagehandlers\\JobAgents\\*\\Omnyx.MessageHandler.Host.exe")
 '''
 
 min_endpoint_version = "8.6.0"

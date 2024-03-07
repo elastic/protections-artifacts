@@ -7,12 +7,12 @@ id = "d8c57cb7-bab6-41fa-9063-dcc8793c3955"
 license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 any where 
 (
- (event.category : "api" and not process.Ext.api.name : "IoCreateDevice") or 
+ (event.category : "api" and not process.Ext.api.name : ("IoCreateDevice", "Wow64SuspendThread")) or
  (event.category : "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll"))
  ) and 
 

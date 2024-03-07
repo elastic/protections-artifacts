@@ -7,7 +7,7 @@ id = "9d5f965f-6f77-45df-9733-8707e40d1d71"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call from Virtual Disk or USB"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -20,8 +20,7 @@ sequence by process.entity_id with maxspan=2m
         process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true)]
 [api where event.category : "intrusion_detection" and
   not process.Ext.api.name : ("SetWindowsHookEx", "NtQueueApcThread") and
-  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", 
-                               "rwx", "hollow_image", "image_indirect_call") and 
+  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
   not process.Ext.api.summary :
                       ("VirtualProtect( user32.dll,*)",
                        "VirtualProtect( clr.dll,*",

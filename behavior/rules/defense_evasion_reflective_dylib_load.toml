@@ -14,7 +14,7 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 library where ((event.action == "load" and not dll.path : "?*") or 
@@ -24,7 +24,10 @@ library where ((event.action == "load" and not dll.path : "?*") or
   not (process.name : ("osx-x86_64", 
                        "Setup",
                        "oahd-helper",
+                       "Dolby Atmos Renderer",
+                       "ArtPro",
                        "oahd",
+                       "pluginrunner",
                        "Install") and 
        process.code_signature.trusted == true) and 
   not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",

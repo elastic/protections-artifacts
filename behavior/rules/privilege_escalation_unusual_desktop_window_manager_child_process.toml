@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies the start of an unusual child processes of the Window Desktop Manager process. This may indicate a successful
+vulnerability exploitation for privilege escalation.
+"""
+id = "30a6a73c-fd61-4328-ac42-ef94b5bbaa38"
+license = "Elastic License v2"
+name = "Unusual Desktop Window Manager Child Process"
+os_list = ["windows"]
+reference = ["https://googleprojectzero.github.io/0days-in-the-wild/0day-RCAs/2023/CVE-2023-36033.html"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.parent.executable : "?:\\Windows\\system32\\dwm.exe" and user.id : ("S-1-5-90-0-*", "S-1-5-18") and process.executable : "?:\\*" and 
+ not process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\System32\\ISM.exe", "?:\\Windows\\system32\\dwm.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

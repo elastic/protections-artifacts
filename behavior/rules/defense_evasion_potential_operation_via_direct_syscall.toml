@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
@@ -21,12 +21,12 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
    
    /* call_stack_summary looks like process.parent.name|etc. */
   (event.category : "process" and event.action == "start" and
-   startswith~(process.parent.thread.Ext.call_stack_summary, process.parent.name)) or
+   startswith~(process.parent.thread.Ext.call_stack_summary, process.parent.name) and process.parent.executable : "?:\\*") or
 
   /* call_stack_summary looks like ntdll.dll|process.parent.name|etc */
   (event.category : "process" and event.action == "start" and
    endswith~(substring(process.parent.thread.Ext.call_stack_summary, 0, 10 + length(process.parent.name)), process.parent.name) and
-   not process.parent.executable : "?:\\Windows\\System32\\services.exe")
+   not process.parent.executable : "?:\\Windows\\System32\\services.exe" and process.parent.executable : "?:\\*")
   ) and 
   not ((process.executable : "?:\\Windows\\system32\\smss.exe" or process.parent.executable : "?:\\Windows\\system32\\smss.exe") and 
        (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*" or process.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*")) and 
@@ -44,9 +44,17 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
                ("?:\\Program Files\\Oracle\\VirtualBox\\VirtualBoxVM.exe", 
                 "?:\\Program Files (x86)\\Oracle\\VirtualBox\\VirtualBoxVM.exe", 
                 "?:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe") and 
-  not process.parent.executable : "C:\\Program Files\\Rocscience\\Slide2\\slide.exe" and
+  not process.parent.executable :
+                   ("C:\\Program Files\\Rocscience\\Slide2\\slide.exe",
+                    "?:\\Program Files\\Anatomage\\Invivo\\InVivoDental.exe",
+                    "?:\\Program Files\\Anatomage\\Invivo\\Invivo.exe",
+                    "?:\\Program Files\\Anatomage\\InvivoDental\\InVivoDental.exe") and
   not process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll*" and
-  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|*"
+  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|*" and
+  not (process.name : "WerFault.exe" and
+       process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|faultrep.dll|wersvc.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
+  not process.hash.sha256 : "920d49c27f0b42dab747bdf48edfc6b668f3ae4d192a2a4c9b5a6cec14bec77f" and
+  not (event.category : "process" and _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernel32.dll!CreateProcessW*"))
 '''
 
 min_endpoint_version = "8.7.0"

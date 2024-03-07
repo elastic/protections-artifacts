@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -22,8 +22,7 @@ process where event.action == "start" and
                   "RegSvcs.exe",
                   "msbuild.exe",
                   "msxsl.exe",
-                  "xwizard.exe",
-                  "msiexec.exe") and
+                  "xwizard.exe") and
   /* add suspicious execution paths here */
   process.args : ("?:\\PerfLogs\\*",
                   "?:\\Users\\*\\Pictures\\*",
@@ -129,7 +128,8 @@ process where event.action == "start" and
                      "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
                      "?:\\Program Files\\CopyTrans HEIC for Windows\\CopyTransHEICforWindows.dll*",
                      "?:\\WINDOWS\\system32\\ieframe.dll,OpenURL",
-                     "?:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTO\\vstoee.dll,InstallVstoSolution")) and not
+                     "?:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTO\\vstoee.dll,InstallVstoSolution",
+                     "?:\\Program Files\\WIBU-SYSTEMS\\System\\WibuShellExt64.dll,OpenWbc")) and not
      /* MS Visual Studio */
      process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe", "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe") and
 

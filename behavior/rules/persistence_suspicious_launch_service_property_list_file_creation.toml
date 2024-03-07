@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies when a Property List (plist) file is created in a LaunchAgents directory using the built-in PlistBuddy
+utility. An adversary may attempt to evade detection by using PlistBuddy to build a plist file line by line or modify an
+existing plist file. Adversaries may create or modify launch agents to repeatedly execute malicious payloads and
+maintain persistence.
+"""
+id = "901f0c30-a7c5-40a5-80e3-a50c6714432f"
+license = "Elastic License v2"
+name = "Suspicious Launch Service Property List File Creation"
+os_list = ["macos"]
+reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/"]
+version = "1.0.30"
+
+query = '''
+persistence where event.action == "launch_daemon" and process.name : "plistbuddy" and (Persistence.runatload == true or Persistence.keepalive == true)
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.011"
+name = "Plist Modification"
+reference = "https://attack.mitre.org/techniques/T1547/011/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.11.0"

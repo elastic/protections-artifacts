@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies suspicious modification of a Windows service configuration using RPC. Adversaries may use this technique to
+maintain persistence or run with System privileges avoiding logging related to service creation.
+"""
+id = "4a964318-31be-46de-9bc6-fde362e37c60"
+license = "Elastic License v2"
+name = "Windows Service Configuration Hjack"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=3m
+ [registry where event.action == "modification" and process.name : "services.exe" and 
+  registry.path : ("HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath", "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\Parameters\\ServiceDll")] as event0
+ [any where 
+  (event.category : "library" and not dll.code_signature.status : "trusted" and stringcontains~(event0.registry.data.strings, dll.path)) or 
+  (event.category : "process" and event.action == "start" and process.parent.name : "services.exe" and stringcontains~(event0.registry.data.strings, process.name))]
+ [registry where event.action == "modification"  and process.name : "services.exe" and  
+  registry.path : ("HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath", "HKLM\\SYSTEM\\ControlSet*\\Services\\*\\Parameters\\ServiceDll") and 
+  event0.registry.path == registry.path and registry.data.strings : "?*" and
+  not stringcontains~(event0.registry.data.strings, registry.data.strings)]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

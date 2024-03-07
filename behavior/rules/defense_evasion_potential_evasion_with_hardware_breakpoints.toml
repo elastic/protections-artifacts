@@ -9,10 +9,10 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-any where process.thread.Ext.hardware_breakpoint_set == true and 
+any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
  (
   event.category : "api" or 
   (event.category : "library" and 
@@ -25,7 +25,10 @@ any where process.thread.Ext.hardware_breakpoint_set == true and
  not (process.code_signature.trusted == true and 
       process.code_signature.subject_name : 
                 ("Riot Games, Inc.", "Roblox Corporation", "ROBLOX CORPORATION", "Intelligent Security Systems Corporation", 
-                 "Famatech Corp.", "Nuance Communications, Inc.", "Blizzard Entertainment, Inc.", "Kofax, Inc."))
+                 "Famatech Corp.", "Nuance Communications, Inc.", "Blizzard Entertainment, Inc.", "Kofax, Inc.", "KRAFTON, Inc.",
+                 "Guidance Software, Inc.", "Open Text Corporation", "CUMMINS INC.", "Cockos Incorporated", "ByteSphere Technologies LLC")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*", "?:\\Windows\\AppPatch\\emet.dll!*"))
 '''
 
 min_endpoint_version = "8.11.0"

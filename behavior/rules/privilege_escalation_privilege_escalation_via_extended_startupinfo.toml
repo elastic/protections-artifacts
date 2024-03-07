@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -42,12 +42,18 @@ process where event.action == "start" and
  not (process.code_signature.subject_name in
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
             "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
-            "Samsung Electronics CO., LTD.", "TeamViewer", "POINT B LTD", "IMPERO SOLUTIONS LIMITED") and process.code_signature.trusted == true) and
+            "Samsung Electronics CO., LTD.", "TeamViewer", "POINT B LTD", "IMPERO SOLUTIONS LIMITED",
+            "AnyDesk Software GmbH", "Shanghai Best Oray Information S&T Co. Ltd.", "Zhou Huabing") and
+       process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and
       process.args : "CgAgACAAIAAg*" and process.parent.args : "JgBjAGgAYwBwAC4AYwBvAG0AIAA2ADUAMAAwADEAIAA+ACAA*") and 
       
- not process.hash.sha256 : ("3e541100c869dba06ee62252a9661e5a06c2e685a7ddd5288ea1358703412385", "29c977845e4822efe15cc0e44ede3a03e30030d108d2ae9932e34a1c3840283a") and 
+ not process.hash.sha256 :
+             ("3e541100c869dba06ee62252a9661e5a06c2e685a7ddd5288ea1358703412385",
+              "29c977845e4822efe15cc0e44ede3a03e30030d108d2ae9932e34a1c3840283a",
+              "1e07a7a91451303d5cdac0a1673d581f5f7198fcc08fc79e4332aba6400f55a8",
+              "f3607f433952cb23d9eb0fc5e31fd0c4079cad3133dc79d149022900d208876c") and
  
  not (process.name : "rundll32.exe" and process.command_line : "*winethc*ForceProxyDetectionOnNextRun*" and 
       process.parent.args : "WdiServiceHost" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 

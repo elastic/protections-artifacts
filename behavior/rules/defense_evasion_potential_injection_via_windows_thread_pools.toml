@@ -8,11 +8,12 @@ license = "Elastic License v2"
 name = "Potential Injection via Windows Thread Pools"
 os_list = ["windows"]
 reference = ["https://github.com/SafeBreach-Labs/PoolParty/tree/main"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id
-[library where not dll.code_signature.status : "trusted" and 
+[library where
+  (dll.code_signature.trusted == false or dll.code_signature.exists == false) and
   (dll.Ext.relative_file_creation_time <= 3600 or dll.Ext.relative_file_name_modify_time <= 3600)] as event0
 [api where
   process.Ext.api.behaviors : "cross-process" and 

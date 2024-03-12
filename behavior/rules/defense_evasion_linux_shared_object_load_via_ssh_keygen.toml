@@ -1,0 +1,45 @@
+[rule]
+description = """
+Detects when the ssh-keygen binary is executed with the -D argument which can be used to load a malicious shared object
+into memory.
+"""
+id = "cc29bf55-8d7f-45df-b8fe-212968c8951c"
+license = "Elastic License v2"
+name = "Linux Shared Object Load via SSH-Keygen"
+os_list = ["linux"]
+reference = [
+    "https://medium.com/@D00MFist/generate-keys-or-generate-dylib-loads-c99ed48f323d",
+    "https://gtfobins.github.io/gtfobins/ssh-keygen/",
+]
+version = "1.0.3"
+
+query = '''
+process where event.action == "exec" and event.type == "start" and process.name == "ssh-keygen" and
+process.args == "-D" and process.args_count >= 3 and not process.args : (
+  "/lib/*", "/usr/lib/*", "/usr/local/lib/*",
+  "/lib64/*", "/usr/lib64/*", "/usr/local/lib64/*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

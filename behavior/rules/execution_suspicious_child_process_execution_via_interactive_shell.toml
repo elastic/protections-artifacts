@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when a process is executed via an interactive shell. C2 platforms will commonly spawn an interactive shell
+providing the threat actor with a remote shell on the system as if they were physically at the terminal allowing them to
+send and execute commands manually.
+"""
+id = "f10a679a-c266-494f-b3aa-53830949d288"
+license = "Elastic License v2"
+name = "Suspicious Child Process Execution via Interactive Shell"
+os_list = ["macos"]
+version = "1.0.11"
+
+query = '''
+sequence by process.Ext.effective_parent.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and process.name : ("zsh", " bash", "sh") and process.args : "-i" and process.args_count <= 2]
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : ("nscurl", "wget", "ssh", "whoami", "dscl", "osascript", ".*") and
+  not process.args : "SendEnv=GIT_PROTOCOL" and
+  not process.parent.executable : ("/Library/Developer/CommandLineTools/usr/bin/git", 
+                                   "/opt/homebrew/Cellar/git/*")]
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.7.0"

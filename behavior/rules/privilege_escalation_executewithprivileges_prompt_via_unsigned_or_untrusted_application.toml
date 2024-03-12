@@ -1,0 +1,64 @@
+[rule]
+description = """
+Detects the use of the AuthorizationExecuteWithPrivileges function to provide the user a password prompt via an unsigned
+or untrusted application. Threat actors have recently used this in order to trick users into providing their malicious
+application with higher privileges.
+"""
+id = "559fc9c7-f2fd-4fd9-af07-df8b7408e0b8"
+license = "Elastic License v2"
+name = "ExecuteWithPrivileges Prompt via Unsigned or Untrusted Application"
+os_list = ["macos"]
+reference = ["https://securelist.com/new-macos-backdoor-crypto-stealer/111778/"]
+version = "1.0.1"
+
+query = '''
+process where event.type : "start" and event.action == "exec" and process.name: "security_authtrampoline" and 
+ process.args : ("/Applications/*", "/Volumes/*") and process.args : "auth*" and 
+ (process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false) and 
+ process.Ext.effective_parent.executable : ("/Applications/*", "/Volumes/*")
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.004"
+name = "Elevated Execution with Prompt"
+reference = "https://attack.mitre.org/techniques/T1548/004/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.004"
+name = "Elevated Execution with Prompt"
+reference = "https://attack.mitre.org/techniques/T1548/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

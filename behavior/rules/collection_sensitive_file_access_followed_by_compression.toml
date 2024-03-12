@@ -1,0 +1,57 @@
+[rule]
+description = """
+Detects when a sensitive file is accessed followed by the immediate creation of a compressed file. This activity can
+indicate an attempt to collect sensitive local data and stage it for exfiltration.
+"""
+id = "58370744-f52b-4f28-aa06-469efd1e1825"
+license = "Elastic License v2"
+name = "Sensitive File Access followed by Compression"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+[file where event.action == "open" and not file.name : ("System.keychain", "login.keychain-db")]
+[file where event.action == "modification" and file.extension : ("zip", "gzip", "gz") and 
+  file.path : ("/Users/Shared/*",
+               "/Library/Logs/*",
+               "/Users/*/Library/Logs/*",
+               "/Library/WebServer/*",
+               "/Users/*/Library/WebServer/*",
+               "/Library/Graphics/*",
+               "/Users/*/Library/Graphics/*",
+               "/Library/Fonts/*",
+               "/Users/*/Library/Fonts/*",
+               "/private/var/root/Library/HTTPStorages/*",
+               "/tmp/*",
+               "/var/tmp/*",
+               "/private/tmp/*")]
+'''
+
+min_endpoint_version = "8.11.1"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1074"
+name = "Data Staged"
+reference = "https://attack.mitre.org/techniques/T1074/"
+[[threat.technique.subtechnique]]
+id = "T1074.001"
+name = "Local Data Staging"
+reference = "https://attack.mitre.org/techniques/T1074/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.11.1"

@@ -1,0 +1,53 @@
+[rule]
+description = """
+Detects when a url is supplied as a command line argument to an installer package binary via the installer process
+itself. This technique is a creative way to download a second stage payload and evade curl based detections. This
+activity can be observed when in a pre or post install script it specifies a url as an argument to a binary included in
+the package that when executed will reach out to the specified url.
+"""
+id = "b06dcea7-9ef3-428d-bd4d-80004f69200f"
+license = "Elastic License v2"
+name = "URL as Process Argument via Installer Package"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and 
+ process.Ext.effective_parent.executable : "/usr/sbin/installer" and
+ process.args : "http*" and 
+ not process.name : ("wget", "curl", "git", "nscurl") and 
+ not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*", "/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

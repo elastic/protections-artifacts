@@ -1,0 +1,41 @@
+[rule]
+description = """
+Detects when an Application's Dock Tile Plugin gets mapped into memory by the macOS XPC external dock service process.
+Threat actors can add Dock Tile Plugins to their applications (APP_NAME.app/Contents/PlugIns/DockTile). The plugin will
+be recognized by launch services, registered, and the plugin will be loaded. These plugins are not visible to the user,
+can react to various system events, and will be loaded at each login, so persists across reboots, and runs inside a
+legitimate system process which is not sandboxed.
+"""
+id = "6fc9c19f-0315-482c-b056-e20a8d0f1b2e"
+license = "Elastic License v2"
+name = "Dock Tile Plug-In Load"
+os_list = ["macos"]
+reference = ["https://theevilbit.github.io/beyond/beyond_0032/"]
+version = "1.0.3"
+
+query = '''
+library where event.action == "load" and process.name : "com.apple.dock.external.extra.arm64"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.7.0"

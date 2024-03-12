@@ -20,19 +20,23 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.55 | a94ad4a1928968560b52ec3f0764aa3e4911c80ef1dfd9d3dc5e1a4d311ca708 |
-| production-rules-macos-v1 | 1.0.55 | c2c19417fbcd29408b7d0f4bb0772faf63cf63d31f76e26bd09dc9213db67aab |
-| production-rules-windows-v1 | 1.0.55 | 80625906e35eb85d2d952861a439b6fc2c16313b478710e552a1ac71128da59d |
+| production-rules-linux-v1 | 1.0.56 | 321c5979cb25cff1ce3e160f87ef759e97f07eee8369378796bca7f76ce74d85 |
+| production-rules-macos-v1 | 1.0.56 | e95e601dc51dc79fc3bed939ffb46eb90a08db66fde2112ddf44c5121232d823 |
+| production-rules-windows-v1 | 1.0.56 | e4e2c60a55aeb23390bc941ab29cd30e5d9010f750c7189805660122ecc03c3d |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.55', '1.0.54') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.56', '1.0.55') by OS/MITRE Tactic.
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Defense Evasion      |         3 |       0 |       0 |                 3 |
-| Persistence          |         1 |       0 |       0 |                 1 |
-| Privilege Escalation |         3 |       0 |       0 |                 3 |
-| Total by OS          |         7 |       0 |       0 |                 7 |
+| Collection           |         0 |       0 |       1 |                 1 |
+| Command and Control  |         0 |       0 |       3 |                 3 |
+| Credential Access    |         0 |       0 |       1 |                 1 |
+| Defense Evasion      |         0 |       2 |       1 |                 3 |
+| Execution            |         0 |       0 |       3 |                 3 |
+| Persistence          |         0 |       0 |       1 |                 1 |
+| Privilege Escalation |         0 |       0 |       1 |                 1 |
+| Total by OS          |         0 |       2 |      11 |                13 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 

@@ -11,12 +11,15 @@ os_list = ["windows"]
 reference = [
     "https://bsodtutorials.wordpress.com/2014/07/31/windows-integrity-levels-process-explorer-and-windbg/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence with maxspan=5m
  [process where event.action == "start" and
-  process.Ext.token.integrity_level_name in ("medium", "low")] by process.entity_id
+  process.Ext.token.integrity_level_name in ("medium", "low") and
+  not (process.executable : "C:\\Program Files\\NZXT CAM\\NZXT CAM.exe" and
+       process.code_signature.subject_name : "NZXT, Inc." and process.code_signature.trusted == true)
+  ] by process.entity_id
  [process where event.action == "start" and
   process.Ext.token.integrity_level_name == "system" and user.id : "S-1-5-18" and
   /* limiting rule scope to processes created via seclogon to avoid some weird FPs */

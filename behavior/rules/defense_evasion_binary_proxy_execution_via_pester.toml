@@ -8,12 +8,17 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via Pester"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Scripts/pester/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.action == "start" and process.parent.name : "powershell.exe" and 
- process.parent.command_line : "powershell*WindowsPowerShell\\Modules*\\Pester.psm1*;*}\"" and 
- not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe", "?:\\Windows\\Sys*\\conhost.exe")
+process where event.action == "start" and
+(
+ (process.parent.name : "powershell.exe" and
+  process.parent.command_line : "powershell*WindowsPowerShell\\Modules*\\Pester.psm1*;*" and
+ not process.executable : ("?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe", "?:\\Windows\\Sys*\\conhost.exe")) or
+
+ (process.name : "powershell.exe" and process.command_line : "*\\Pester.psm1*;*http*")
+)
 '''
 
 min_endpoint_version = "7.15.0"

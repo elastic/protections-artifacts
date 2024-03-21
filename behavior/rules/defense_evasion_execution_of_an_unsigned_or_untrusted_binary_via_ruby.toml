@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Execution of an Unsigned or Untrusted Binary via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -15,6 +15,7 @@ process where event.type == "start" and event.action == "exec" and
                            "/usr/local/Cellar/*",
                            "/usr/local/git/bin/git",
                            "/Users/*/homebrew/Cellar/*",
+                           "/Library/Ruby/Gems/*",
                            "/usr/local/Homebrew/*",
                            "/nix/store/*",
                            "/Users/*/local/homebrew/*",
@@ -29,7 +30,8 @@ process where event.type == "start" and event.action == "exec" and
  not process.Ext.effective_parent.executable : ("/Applications/iTerm.app/Contents/MacOS/iTerm2", "/Applications/Android Studio.app/Contents/MacOS/studio") and 
  not process.code_signature.signing_id : "ruby*" and
  not startswith~(process.executable, process.parent.executable) and 
- not process.hash.sha256 : "b2e6531cfd3fd6157869a726cf55e50019dc29a1cce4250fd5da912aa76dcaca"
+ not process.hash.sha256 in ("b2e6531cfd3fd6157869a726cf55e50019dc29a1cce4250fd5da912aa76dcaca",
+                             "95cce60ef8d3169e6f45be9167270bc0fd5c0e8263997a04b5ae7f9e6e582933")
 '''
 
 min_endpoint_version = "8.5.0"

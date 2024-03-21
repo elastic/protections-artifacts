@@ -9,24 +9,26 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
  (
   event.category : "api" or 
   (event.category : "library" and 
-   (dll.name : ("wininet.dll", "ws2_32.dll", "dnsapi.dll", "winhttp.dll", "clr.dll", "netapi32.dll",
+   dll.name : ("wininet.dll", "ws2_32.dll", "dnsapi.dll", "winhttp.dll", "clr.dll", "netapi32.dll",
                 "mscorwks.dll", "System.*.dll", "mscorlib*.dll", "Microsoft.PowerShell.Security*.dll", 
                 "Microsoft.PowerShell.ConsoleHost*.dll", "wmiutils.dll", "fastprox.dll", "wbemprox.dll", 
                 "vaultcli.dll", "taskschd.dll", "dsquery.dll", "mstscax.dll", "ntdll.dll", "wldap32.dll", 
-                "wtsapi32.dll", "psapi.dll") or dll.code_signature.trusted == false or dll.code_signature.exists == false))
+                "wtsapi32.dll", "psapi.dll"))
   ) and 
  not (process.code_signature.trusted == true and 
       process.code_signature.subject_name : 
                 ("Riot Games, Inc.", "Roblox Corporation", "ROBLOX CORPORATION", "Intelligent Security Systems Corporation", 
                  "Famatech Corp.", "Nuance Communications, Inc.", "Blizzard Entertainment, Inc.", "Kofax, Inc.", "KRAFTON, Inc.",
-                 "Guidance Software, Inc.", "Open Text Corporation", "CUMMINS INC.", "Cockos Incorporated", "ByteSphere Technologies LLC")) and
+                 "Guidance Software, Inc.", "Open Text Corporation", "CUMMINS INC.", "Cockos Incorporated", "ByteSphere Technologies LLC",
+                 "PROMICRA, s.r.o.", "Avid Technology, Inc.", "Avid Technology, Inc", "PROMICRA, s.r.o.", "Krzysztof Kowalczyk",
+                 "Yummy Interactive Inc")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*", "?:\\Windows\\AppPatch\\emet.dll!*"))
 '''

@@ -11,15 +11,15 @@ license = "Elastic License v2"
 name = "In-Memory JXA Execution via ScriptingAdditions"
 os_list = ["macos"]
 reference = ["https://github.com/MythicAgents/apfell", "https://posts.specterops.io/persistent-jxa-66e1c3cd1cf5"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
 [library where event.action == "load" and dll.path : "/System/Library/Components/JavaScript.component/Contents/MacOS/JavaScript" and
-  not (process.name : "osascript" and Effective_process.executable : "/Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher") and
+  not (process.name : "osascript" and (Effective_process.executable : "/Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher" or Effective_process.name : "balenaEtcher")) and
   not (Effective_process.executable : "/Applications/Setapp/BetterTouchTool.app/Contents/MacOS/BetterTouchTool" and process.executable : "BetterTouchToolAppleScriptRunner")]
 [library where event.action == "load" and dll.path : "/System/Library/ScriptingAdditions/StandardAdditions.osax/Contents/MacOS/StandardAdditions" and
-  not (process.name : "osascript" and Effective_process.executable : "/Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher") and
+  not (process.name : "osascript" and (Effective_process.executable : "/Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher" or Effective_process.name : "balenaEtcher")) and
   not (Effective_process.executable : "/Applications/Setapp/BetterTouchTool.app/Contents/MacOS/BetterTouchTool" and process.executable : "BetterTouchToolAppleScriptRunner")]
 '''
 

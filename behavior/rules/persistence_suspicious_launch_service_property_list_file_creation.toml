@@ -10,11 +10,18 @@ license = "Elastic License v2"
 name = "Suspicious Launch Service Property List File Creation"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
-persistence where event.action == "launch_daemon" and process.name : "plistbuddy" and (Persistence.runatload == true or Persistence.keepalive == true) and
- not Persistence.args : "/Library/Application Support/JamfAppInstallers/*"
+persistence where event.action == "launch_daemon" and process.name : "plistbuddy" and
+ (Persistence.runatload == true or Persistence.keepalive == true) and
+ Persistence.path != null and
+ not Persistence.args : "/Library/Application Support/JamfAppInstallers/*" and
+ not Persistence.path :
+                 ("/Library/LaunchAgents/com.microsoft.OneDriveStandaloneUpdater.plist",
+                  "/Library/LaunchDaemons/com.malwarebytes.mbam.rtprotection.daemon.plist",
+                  "/Library/LaunchDaemons/com.cloudflare.1dot1dot1dot1.macos.warp.daemon.plist",
+                  "/Library/LaunchDaemons/com.jamf.*")
 '''
 
 min_endpoint_version = "8.11.0"

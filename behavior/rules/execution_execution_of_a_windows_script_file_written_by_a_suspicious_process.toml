@@ -7,12 +7,12 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by user.id with maxspan=5m
 
- [file where event.action != "deletion" and
+ [file where event.action != "deletion" and file.path : "C:\\*" and 
 
    file.extension : ("hta", "vbs", "js", "wsf", "vbe", "jse") and not user.id : "S-1-5-18" and
 

@@ -4,7 +4,7 @@ id = "0a26ccb6-41b9-418d-9314-854aadcb1fba"
 license = "Elastic License v2"
 name = "Execution from Suspicious Stack Trailing Bytes"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 any where (event.category : ("library", "api") and
@@ -28,6 +28,7 @@ any where (event.category : ("library", "api") and
                                                               "*0000ba030000004c8bc083642420004533c9488bcbff15*",
                                                               "4889842498000000488b4424388b00488b8c24880000004803c8488bc14889442430488b4424388b4010488b8c24880000004803c8488bc14889442428488b44", 
                                                               "880000004803c8488bc1488b7c2420488bf0b940000000f3a4448b8424a0000000ba40000000488b4c2420e846f3ffff488b4c2420488b842480000000ff5010",
+                                                              "0f57c00f11458748c745970700000048c7459f0f000000488b0523e203008945870fb7051de203006689458b0fb60514e2030088458dc6458e00488d4d87e81e",
                                                               /* dotnut shellcode */
                                                               "eb084c213beb034d213e85c07930498d461033d24c8d8e5406000048894424204c8d864406000033c9ff963801000085c0790b4d217e1033c0e923010000498b",
                                                               /* MP sc */

@@ -12,7 +12,7 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,6 +20,7 @@ sequence by process.entity_id with maxspan=1m
   not process.executable :
               ("?:\\Program Files\\Npcap\\NPFInstall.exe",
                "?:\\Program Files\\Wireshark\\npcap-*.exe",
+               "?:\\Program Files\\Npcap\\Uninstall.exe",
                "?:\\Program Files (x86)\\SigmaPlot\\SPW12\\Spw.exe",
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmw.exe",
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmwprint.exe",
@@ -29,10 +30,29 @@ sequence by process.entity_id with maxspan=1m
                "?:\\Program Files (x86)\\LABEL MATRIX *\\lmw.exe",
                "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*\\MicrosoftEdge*.exe",
                "?:\\Program Files (x86)\\PRTG Network Monitor\\npcapoem.exe",
-               "?:\\Program Files\\MicroSurvey\\*\\MSEmbed.exe", 
-               "?:\\Program Files (x86)\\TerminalWorks\\TSScan\\TSScanUser.exe") and
-  not (process.code_signature.subject_name : ("Freedom Scientific Inc", "Cisco WebEx LLC", "KYOCERA Document Solutions Inc.") and
-       process.code_signature.trusted == true)
+               "?:\\Program Files\\MicroSurvey\\*\\MSEmbed.exe",
+               "?:\\Program Files\\SYSTAT 12\\App\\SYSTAT.exe",
+               "?:\\Program Files (x86)\\TerminalWorks\\TSScan\\TSScanUser.exe",
+               "?:\\Program Files (x86)\\TerminalWorks\\TSWebCam Pro Server\\TSWebCamDecoder.exe",
+               "?:\\Program Files (x86)\\Teklynx\\*\\UpgradeWizard.exe",
+               "?:\\Program Files (x86)\\SigmaPlot\\SPW10\\Spw.exe",
+               "?:\\Program Files\\MiniTool Partition Wizard ??\\partitionwizard.exe") and
+  not (process.code_signature.subject_name :
+         ("Freedom Scientific Inc", "Cisco WebEx LLC", "KYOCERA Document Solutions Inc.",
+          "Zucchetti S.p.A.") and
+       process.code_signature.trusted == true) and
+  not user.id : "S-1-5-21-*-500" and
+  not process.hash.sha256 :
+                   ("d22e5e9df76762eb30fa15849120e3678a95dec7d3eecf4feeaef176e9c459c6",
+                    "7dcf80152c95404403e8657f9c38ae3fd123ca18891485ca34e39efc0ca6e4b2",
+                    "8ec2f2ac521012cd21dea87f2362a2b16d6252ff70c2e6d052e9246db89d7a5b",
+                    "ea5275eff082741035ff8f5234df9590e7fa2826d8c0f76555ead60071538028",
+                    "a6363cc36aa99da0c8277f5e66c9dd22de78d387e8cb40e5670085f4cf7b0dec",
+                    "c1eb4b120746fcf3fe43b362a9e437c5266cf3f82a4935d469fcc6f10c017bd5",
+                    "a95577ebbc67fc45b319e2ef3a55f4e9b211fe82ed4cb9d8be6b1a9e2425ce53",
+                    "65f6efdf6df4095971a95f4bf387590ae63109388344632a22458265ab7dd289",
+                    "5b01d964ced28c1ff850b4de05a71f386addd815a30c4a9ee210ef90619df58e",
+                    "d2e98889031fa8e896b3f78e95f5f4e41757b87cf6117e4adf4f2147c81adaa9")
  ]
  [file where event.action != "deletion" and
   (file.extension : ("exe", "com", "dll") or file.Ext.header_bytes : "4d5a*") and

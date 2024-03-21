@@ -12,13 +12,20 @@ reference = [
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
     "https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
 (
  ((process.pe.original_file_name : "devinit.dll" or process.name : "devinit.exe") and
    process.args : "msi-install" and process.command_line : "*http*") or
+
+ (process.name : "msiexec.exe" and process.args :("/i", "-i") and
+  process.args : ("/q", "-q") and process.args : "\\\\*@*\\*.msi") or
+
+ (process.name : "msiexec.exe" and process.args :("/i", "-i") and
+  process.args : ("/qn", "-qn", "-q", "/q") and
+  process.command_line : ("*transforms=http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
 
  (process.pe.original_file_name : "msiexec.exe" and
   process.command_line : "*http*" and process.args_count <= 5 and

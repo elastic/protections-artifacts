@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id
@@ -32,7 +32,8 @@ sequence by process.entity_id
                           "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
                           "VICON INDUSTRIES, INC.")) and
 
-  not (dll.name : "chrome_elf.dll" and dll.pe.original_file_name : "chrome_elf.dll") and 
+  not (dll.name : "chrome_elf.dll" and dll.pe.original_file_name : "chrome_elf.dll") and
+  not dll.pe.imphash : ("8ed92d81df1fc6d13329436de2be9225", "71db138be05fb8109bd4d1747f7fab68") and
   not dll.hash.sha256 : 
                ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9", 
                 "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea", 
@@ -77,7 +78,13 @@ sequence by process.entity_id
                 "20635d15698d547289edb8d512cec1a322a6a0f30d101d459cf6ea0d1f2f9c38",
                 "8a43ec41225a095bf1d6e027407e86a406c5b236e0a50c15b77c524cf2010597",
                 "cff49758ffcbb6d8166accb4dc905d31e79a5d587121f95ea691bf64536ce362",
-                "a986c968e948bd83033d9fda1a85c2f44e274f552bf5da9a899ab1ee794727f9")] as event0
+                "a986c968e948bd83033d9fda1a85c2f44e274f552bf5da9a899ab1ee794727f9",
+                "2edc91bd457353f798678ba55884e4e6dae66fec7b444e1750f6b8e83584905e",
+                "794f0f11f13aa2e43d2a5f0ff1938394ed71a95e4b3e8c4190907610573e3327",
+                "d6054babd7f4dce815e9bf888ed815398b63029165681a0b62f492900d2f2ad1",
+                "c827359d5b62371c5c033eefd011a2daf6d2bdaa203c29db64eeaa280248f6a1",
+                "8f0f64fb33cf656cdaed265a8184f16ea734fc3758224ab40796eb46bdb23cd0",
+                "dd2bc044ee8c887225fadea3c948ab88ad86a19eb5f32e69e129ff79fca46691")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

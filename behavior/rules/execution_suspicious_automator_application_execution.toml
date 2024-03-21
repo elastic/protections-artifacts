@@ -10,12 +10,13 @@ id = "95f37809-fdb7-4e4a-8a5f-36ad3f014a8e"
 license = "Elastic License v2"
 name = "Suspicious Automator Application Execution"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and process.name : "xpcproxy" and process.args : "application.com.apple.automator*"]
-[process where event.type == "start" and event.action == "exec" and process.name : "Application Stub"]
+[process where event.type == "start" and event.action == "exec" and process.name : "Application Stub" and
+ not process.hash.sha256 == "00957d9844e61713a1c8d5dfde97d483ff861d4a245aa83865c68950e6130ad5"]
 '''
 
 min_endpoint_version = "8.9.0"

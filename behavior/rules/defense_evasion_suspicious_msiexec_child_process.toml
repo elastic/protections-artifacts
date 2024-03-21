@@ -7,7 +7,7 @@ id = "877c6bd9-8df1-4a15-aa97-2a091731b15d"
 license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -74,11 +74,17 @@ process where event.action == "start" and
                   "525b993f89500abc33cab311e453beb2841d2335eb787a3753f7ff092cca195a",
                   "ba8c1a434b2cc355fc2f005639af36729f32fc91ff1f278bcded65428cad0126",
                   "7c33270e54646ba7cbda98157a052586812d004670b02f920b285e4eb42507b5",
-                  "3f59a2799dc6aa6cdddbc62e169fad7e7dd282bffba3538ed2594e3a8d6c1a05") and
+                  "3f59a2799dc6aa6cdddbc62e169fad7e7dd282bffba3538ed2594e3a8d6c1a05",
+                  "54b1f519d64469ffcb2c9f417dc9b46e16f44a19522236122741a9df7a877f0a",
+                  "ec4a6b16df94b1c78b48796d7f624fc19253140569ccb51dfb7f6771d2b0e53d") and
    not (process.name : "rundll32.exe" and process.args : "printui.dll,PrintUIEntry") and
    not (process.name : "regsvr32.exe" and process.args : "?:\\ProgramData\\LEAP Office\\Cloud\\Extras\\Automation Extras\\LEAPRedemption64.dll") and
    not (process.name : "cmd.exe" and process.args : "del" and process.args : "/f") and
-   not (process.args : "C:\\Program Files\\Kairos\\Duet Display" and process.name : "cmd.exe")
+   not (process.args : "C:\\Program Files\\Kairos\\Duet Display" and process.name : "cmd.exe") and
+   not (process.name : "cmd.exe" and process.args : "Files\\Tychon\\\\uninstall.bat " and process.args : "C:\\Program") and
+   not (process.name : "powershell.exe" and
+        process.command_line : ("*Web Client\\Modules\\NAVWebClientManagement\\NAVWebClientManagement.psm1*", "*https://go.microsoft.com/fwlink/p/?LinkId=*")) and
+   not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
 '''
 
 min_endpoint_version = "7.15.0"

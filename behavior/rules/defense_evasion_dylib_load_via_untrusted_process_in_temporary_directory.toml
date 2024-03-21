@@ -10,14 +10,14 @@ id = "f8367f4d-08ca-4865-840c-7cb965a14eeb"
 license = "Elastic License v2"
 name = "Dylib Load via Untrusted Process in Temporary Directory"
 os_list = ["macos"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 library where event.action == "load" and 
  process.executable : ("/tmp/*", "/var/tmp/*", "/private/tmp/*") and
  process.code_signature.trusted == false and
  not process.code_signature.status : "errorCode_endpoint*" and 
- not Effective_process.executable : "/opt/homebrew/*" and
+ not Effective_process.executable : ("/opt/homebrew/*", "/nix/store/*") and
  not dll.path : ("/Applications/Xcode.app/*", "/Applications/Xcode-*.app/*", "/opt/homebrew/*") and
  not (Effective_process.executable : "/nix/store/*" and dll.path : "/nix/store/*")
 '''

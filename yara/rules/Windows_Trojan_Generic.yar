@@ -289,3 +289,43 @@ rule Windows_Trojan_Generic_9997489c {
         4 of them
 }
 
+rule Windows_Trojan_Generic_2993e5a5 {
+    meta:
+        author = "Elastic Security"
+        id = "2993e5a5-26b2-4cfd-8130-4779abcfecb2"
+        fingerprint = "709015984e3c9abaf141b76bf574921466493475182ca30a56dbc3671030b632"
+        creation_date = "2024-03-18"
+        last_modified = "2024-03-18"
+        threat_name = "Windows.Trojan.Generic"
+        reference_sample = "9f9b926cef69e879462d9fa914dda8c60a01f3d409b55afb68c3fb94bf1a339b"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 0C 8B 45 F0 89 45 C8 8B 45 C8 8B 40 3C 8B 4D F0 8D 44 01 04 89 }
+    condition:
+        1 of them
+}
+
+rule Windows_Trojan_Generic_0e135d58 {
+    meta:
+        author = "Elastic Security"
+        id = "0e135d58-efd9-4d5e-95d8-ddd597f8e6a8"
+        fingerprint = "e1a9e0c4e5531ae4dd2962285789c3bb8bb2621aa20437384fc3abcc349718c6"
+        creation_date = "2024-03-19"
+        last_modified = "2024-03-19"
+        threat_name = "Windows.Trojan.Generic"
+        reference_sample = "a91c1d3965f11509d1c1125210166b824a79650f29ea203983fffb5f8900858c"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 55 8B EC 8B 45 14 56 57 8B 7D 08 33 F6 89 47 0C 39 75 10 76 15 8B }
+    condition:
+        1 of them
+}
+

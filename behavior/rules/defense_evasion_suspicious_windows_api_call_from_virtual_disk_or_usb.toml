@@ -7,7 +7,7 @@ id = "9d5f965f-6f77-45df-9733-8707e40d1d71"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call from Virtual Disk or USB"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -44,7 +44,9 @@ sequence by process.entity_id with maxspan=2m
                          "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|apphelp.dll|ntdll.dll",
                          "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|aswhook.dll|apphelp.dll|ntdll.dll",
                          "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unknown")) and
-  not process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|ftapihook32.dll|ntdll.dll|kernelbase.dll|ntdll.dll"]
+  not process.thread.Ext.call_stack_summary :
+        ("ntdll.dll|Unknown|umppc*.dll|ntdll.dll",
+         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|ftapihook32.dll|ntdll.dll|kernelbase.dll|ntdll.dll")]
 '''
 
 min_endpoint_version = "8.8.0"

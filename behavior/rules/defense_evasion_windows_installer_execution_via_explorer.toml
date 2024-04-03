@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies execution from an Msiexec installer in quiet mode and where the parent process is Explorer.exe. This may
+indicate execution via a malicious Windows shortcut file.
+"""
+id = "65a7fb56-6f18-43d2-b799-a5b7359c8a3b"
+license = "Elastic License v2"
+name = "Windows Installer Execution via Explorer"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msiexec/"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.name : "msiexec.exe" and process.args :("/i", "-i") and process.args : ("/qn", "-qn", "-q", "/q", "/quiet") and
+ process.parent.executable : "?:\\Windows\\explorer.exe"
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

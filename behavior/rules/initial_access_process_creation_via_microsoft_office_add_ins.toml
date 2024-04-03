@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Octoberfest7/XLL_Phishing",
     "https://labs.f-secure.com/archive/add-in-opportunities-for-office-persistence/",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.action == "start" and
@@ -23,7 +23,9 @@ process where event.action == "start" and
 	                            "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Excel\\XLSTART\\*")) and
  not (process.code_signature.subject_name : "FactSet Research Systems Inc." and process.code_signature.trusted == true) and 
  not process.executable : "?:\\Windows\\splwow64.exe" and 
- not process.hash.sha256 : "b52ee82c7e579fd73abc31c368462df9d99c6623be91526ee150706286dc19ee"
+ not process.hash.sha256 : "b52ee82c7e579fd73abc31c368462df9d99c6623be91526ee150706286dc19ee" and
+ not (process.parent.name : "Excel.exe" and process.name : "csc.exe" and
+      process.parent.args : "https://*.sharepoint.com/sites/*" and process.parent.args : "/cid")
 '''
 
 min_endpoint_version = "8.7.0"

@@ -13,7 +13,7 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -28,6 +28,7 @@ process where event.type == "start" and event.action == "exec" and
                           "*=/Library/Developer/CoreSimulator/*",
                           "*=/Users/*/Library/Developer/Xcode/*",
                           "*=/Library/Frameworks/R.framework/Resources/lib/libR.dylib",
+                          "*=/usr/local/Cellar/coreutils/*/libexec/coreutils/libstdbuf.so",
                           "*=/Applications/Xcode.app/*") and 
   not process.executable : "/Applications/Xcode.app/*" and 
   not process.parent.executable : ("/usr/bin/xcrun", 

@@ -7,7 +7,7 @@ id = "89c9c5a0-a136-41e9-8cc8-f21ef5ad894b"
 license = "Elastic License v2"
 name = "Suspicious Microsoft IIS Worker Descendant"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -44,7 +44,8 @@ process where event.action == "start" and
 )
 /* False Positives */
 and not (process.name : "cmd.exe" and process.parent.args : "Icims" and process.command_line : "*vault.azure.net*" and process.parent.name : "w3wp.exe") and
-not (process.name : "curl.exe" and process.args : "https://installerapi.lansweeper.com/v1/cloudsyncversions")
+not (process.name : "curl.exe" and process.args : "https://installerapi.lansweeper.com/v1/cloudsyncversions") and
+not (process.name : "powershell.exe" and process.command_line : "\"powershell.exe\" netsh http show servicestate | ?{$_.Tostring().Contains('WWW.*')}")
 '''
 
 min_endpoint_version = "7.15.0"

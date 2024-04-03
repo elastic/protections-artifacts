@@ -1,0 +1,80 @@
+[rule]
+description = """
+Identifies the execution of oversized Windows scripts. Adversaries may employ script padding with random data to evade
+sandbox detection restriction based on file size.
+"""
+id = "7be3d607-5c11-4609-91b9-0a3cf10cac8e"
+license = "Elastic License v2"
+name = "Suspicious Oversized Script Execution"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=2m
+ [file where event.action != "deletion" and
+  file.extension : ("js", "vbs", "jse", "vbe", "wsh", "hta") and
+  (
+   process.name : ("explorer.exe", "cmd.exe", "powershell.exe", "winrar.exe", "expand.exe", "wscript.exe", "cscript.exe", "msiexec.exe",
+                  "chrome.exe", "msedge.exe", "firefox.exe", "7zFM.exe", "7zG.exe", "python*.exe", "certutil.exe", "mshta.exe") or
+   (process.code_signature.exists == false or process.code_signature.trusted == false)
+   ) and
+  /* more than 0.5MB */
+  file.size >= 500000 and file.path : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*")] as event0
+ [process where event.action == "start" and
+  process.name : ("wscript.exe", "cscript.exe", "mshta.exe") and process.args_count >= 2 and
+  stringcontains~(process.command_line, event0.file.name)]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.001"
+name = "Binary Padding"
+reference = "https://attack.mitre.org/techniques/T1027/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

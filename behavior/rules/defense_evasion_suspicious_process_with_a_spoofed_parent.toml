@@ -7,13 +7,15 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=1m
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   not (process.name : "powershell.exe" and process.args : "Invoke-InProcessStub" and 
-       process.args : "$execWrapper" and process.args : "\"ANSIBLE_BOOTSTRAP_ERROR:")] by process.parent.Ext.real.entity_id
+       process.args : "$execWrapper" and process.args : "\"ANSIBLE_BOOTSTRAP_ERROR:") and
+  not (process.name : "WerFault.exe" and
+       process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|faultrep.dll|wersvc.dll|*")] by process.parent.Ext.real.entity_id
  [api where 
   process.executable : "?:\\*" and 
   process.Ext.api.name == "WriteProcessMemory" and process.parent.executable != null and 

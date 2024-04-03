@@ -8,7 +8,7 @@ id = "3121956f-8c0b-40ef-b98d-7b7b0ab02d2e"
 license = "Elastic License v2"
 name = "Potential Command and Control via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id
@@ -17,7 +17,12 @@ sequence by process.entity_id
   not process.Ext.token.integrity_level_name == "system"]
  [network where
   event.action == "connection_attempted" and network.direction == "egress" and network.transport == "tcp" and
-   process.uptime >= 300 and source.port >= 49152 and not destination.address : ("127.*", "::1")]
+   process.uptime >= 300 and source.port >= 49152 and
+   not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8", "100.64.0.0/10", "192.168.0.0/16", "192.88.99.0/24")]
   until [process where event.action:"end"]
 '''
 

@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies registry modification consistent with the Remcos Remote Access Trojan (RAT). Remcos RAT is used by attackers
+to perform actions on infected machines remotely.
+"""
+id = "d8e20cd0-e00d-4188-8728-b3adccf10495"
+license = "Elastic License v2"
+name = "Remcos RAT ExePath Registry Modification"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/software/S0332/", "https://any.run/malware-trends/remcos"]
+version = "1.0.1"
+
+query = '''
+registry where event.action == "modification" and
+  registry.value == "EXEpath" and
+  process.code_signature.trusted != true and
+  /* EXEpath used by RemcosRAT watchdog to restart it if killed and it contains encrypted path */
+  registry.path : "HKEY_USERS\\S-1-5-*\\SOFTWARE\\*\\exepath" and
+  registry.data.strings : "?*" and
+  not registry.data.strings regex~ """.*[a-z0-9]{8,}.*"""
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.1.0"

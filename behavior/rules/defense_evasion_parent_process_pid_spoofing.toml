@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 sequence with maxspan=5m
@@ -109,6 +109,8 @@ sequence with maxspan=5m
   /* AM_Delta_Patch Windows Update */
   not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and
        process.parent.name : ("wuauclt.exe", "wuaucltcore.exe")) and
+
+  not process.executable : ("?:\\Windows\\SysWOW64\\WerFault.exe", "?:\\Windows\\system32\\WerFault.exe") and
 
   not process.hash.sha256 : 
                 ("02cfaec8d3f905a7a940dc307fb1c0558eed6a80e663526f73efeb79c1808b87", 

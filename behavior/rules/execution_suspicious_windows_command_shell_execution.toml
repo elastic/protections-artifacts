@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,7 @@ process where event.action == "start" and
   "*ActiveXObject*", "*dir /s /b *echo*", "*unescape(*",  "*findstr*TVNDRgAAAA*", "*findstr*passw*", "*start*\\\\*\\DavWWWRoot\\*",
   "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
   "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
-  "*=wscri& set *") or
+  "*=wscri& set *", "*http*!COmpUternaME!*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
@@ -26,8 +26,16 @@ process where event.action == "start" and
 
   process.args : ("1>?:\\*.vbs", "1>?:\\*.js") or 
   
-  (process.args : "explorer.exe" and process.args : "type" and process.args  :  ">" and process.args : "start")
-  
+  (process.args : "explorer.exe" and process.args : "type" and process.args  :  ">" and process.args : "start") or
+
+  (process.parent.name : ("explorer.exe", "python.exe") and
+   process.command_line :
+           ("*&&S^eT *",
+            "*&& set *&& set *&& set *&& set *&& set *&& call*",
+            "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*")) or
+
+   (process.parent.name : ("explorer.exe", "python.exe") and process.args : "copy" and
+    process.args : "&&" and process.args : "\\\\*@*\\*")
   ) and
 
   /* false positives */

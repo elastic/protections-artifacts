@@ -10,13 +10,14 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "exec" and process.name : ("installer", "package_script_service") and not 
     process.args : ("/Library/Application Support/JAMF/Downloads/*",
-                    "/tmp/KSInstallAction.*", 
+                    "/tmp/KSInstallAction.*",
+                    "/tmp/FLEXnet", 
                     "./Epson Scanner Monitor.pkg",
                     "./Epson Event Manager.pkg",
                     "./Epson Scanner ICA Driver.pkg",
@@ -42,6 +43,8 @@ sequence with maxspan=1m
                         "/tmp/KSInstallAction.*",
                         "/tmp/PKInstallSandbox.*/Scripts/com.epson.pkg.eventmanager.*/Epson Scanner Monitor.pkg",
                         "./Epson Scanner Monitor.pkg",
+                        "/tmp/FLEXnet",
+                        "/Library/Preferences/com.epson.Epson Scan OCR Component Pro.XmlType.UnInstallList.plist",
                         "./Epson Event Manager.pkg",
                         "./Epson Scanner ICA Driver.pkg",
                         "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
@@ -71,7 +74,7 @@ sequence with maxspan=1m
       (process.name == "base64" and process.args : "-d") or
       // chmod used to make files readable, writable and executable by all users
       (process.name == "chmod" and process.args : ("+x", "a+x", "0777", "755", "777") and process.args : "/tmp/*" and
-	   not process.args : "/tmp/com.adobe.acrobat.DC") or
+	   not process.args : ("/tmp/com.adobe.acrobat.DC", "/tmp/FLEXnet")) or
       // xattr used to change extended attributes for a file
       (process.name == "xattr" and ((process.args : "com.apple.quarantine" and 
         process.args : ("-d", "-w", "-?d", "-?w")) or

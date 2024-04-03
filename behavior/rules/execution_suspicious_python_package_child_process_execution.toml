@@ -10,7 +10,7 @@ os_list = ["macos"]
 reference = [
     "https://blog.sonatype.com/new-pymafka-malicious-package-drops-cobalt-strike-on-macos-windows-linux",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=1m
@@ -22,7 +22,7 @@ sequence with maxspan=1m
                  "/Applications/*", 
                  "/private/var/folders/*")] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and process.parent.name : "python*" and 
-  ((process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*curl*", "*wget*", "*osascript*", "*whoami*", "*chmod*", "*nohup*")) or 
+  ((process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*curl*", "*wget*", "*osascript*", "*whoami*", "*nohup*")) or 
   (process.name : "osascript") or (process.name : "curl") or (process.name : "wget") or 
   (process.name : "cp") or (process.name : "mv"))] by process.parent.entity_id
 '''

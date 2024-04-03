@@ -7,7 +7,7 @@ id = "5eb3c0b3-8d11-439d-b26d-d7623c5b3723"
 license = "Elastic License v2"
 name = "Suspicious NTDLL Image Load"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,11 +31,15 @@ sequence by process.entity_id with maxspan=1m
   not (process.name : ("wscript.exe", "cscript.exe") and process.args : "\\\\*\\SysVol\\*")
   ]
  [library where
-  dll.path : ("?:\\Windows\\SysWOW64\\ntdll.dll", "?:\\Windows\\System32\\ntdll.dll")]
+  dll.path : ("?:\\Windows\\SysWOW64\\ntdll.dll", "?:\\Windows\\System32\\ntdll.dll") and
+  process.thread.Ext.call_stack_summary : "?*" and 
+  not process.thread.Ext.call_stack_summary : "ntdll.dll" and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*", "?:\\Program Files (x86)\\ESET\\ESET Security\\ebehmoni.dll*"))]
  [dns where dns.question.name : "*.*"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -56,4 +60,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"

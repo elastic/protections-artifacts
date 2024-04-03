@@ -12,7 +12,7 @@ reference = [
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
     "https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -23,6 +23,9 @@ process where event.action == "start" and
  (process.name : "msiexec.exe" and process.args :("/i", "-i") and
   process.args : ("/q", "-q") and process.args : "\\\\*@*\\*.msi") or
 
+ (process.name : "msiexec.exe" and process.args : ("-PaCKagE", "/PaCKagE", "-fv") and
+  process.args : ("/qn", "-qn", "-q", "/q", "/quiet") and process.command_line : "*http*") or
+
  (process.name : "msiexec.exe" and process.args :("/i", "-i") and
   process.args : ("/qn", "-qn", "-q", "/q") and
   process.command_line : ("*transforms=http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
@@ -30,7 +33,7 @@ process where event.action == "start" and
  (process.pe.original_file_name : "msiexec.exe" and
   process.command_line : "*http*" and process.args_count <= 5 and
   (
-   (process.args : ("/i", "-i") and process.args : ("/q", "/quiet", "/qn", "-q", "-quiet", "-qn")) or
+   (process.args : ("/i", "-i") and process.args : ("/q", "/quiet", "/qn", "-q", "-quiet", "-qn", "-Q+")) or
    process.args : ("*-Q-I*", "*-I-Q*", "*/q-i*", "*-q/i*", "*/q/i*") or
    (process.parent.name : "cmd.exe" and process.parent.args : "/v/r*")
    ) and

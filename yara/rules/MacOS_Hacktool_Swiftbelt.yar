@@ -6,6 +6,7 @@ rule MacOS_Hacktool_Swiftbelt_bc62ede6 {
         creation_date = "2021-10-12"
         last_modified = "2021-10-25"
         threat_name = "MacOS.Hacktool.Swiftbelt"
+        reference = "https://www.elastic.co/security-labs/inital-research-of-jokerspy"
         reference_sample = "452c832a17436f61ad5f32ee1c97db05575160105ed1dcd0d3c6db9fb5a9aea1"
         severity = 100
         arch_context = "x86"

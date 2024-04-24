@@ -6,6 +6,7 @@ rule MacOS_Trojan_KandyKorn_a7bb6944 {
         creation_date = "2023-10-23"
         last_modified = "2023-10-23"
         threat_name = "MacOS.Trojan.KandyKorn"
+        reference = "https://www.elastic.co/security-labs/elastic-catches-dprk-passing-out-kandykorn"
         reference_sample = "51dd4efcf714e64b4ad472ea556bf1a017f40a193a647b9e28bf356979651077"
         severity = 100
         arch_context = "x86"

@@ -6,6 +6,7 @@ rule Macos_Hacktool_JokerSpy_58a6b26d {
         creation_date = "2023-06-19"
         last_modified = "2023-06-19"
         threat_name = "Macos.Hacktool.JokerSpy"
+        reference = "https://www.elastic.co/security-labs/inital-research-of-jokerspy"
         reference_sample = "d895075057e491b34b0f8c0392b44e43ade425d19eaaacea6ef8c5c9bd3487d8"
         severity = 100
         arch_context = "x86"

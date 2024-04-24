@@ -6,6 +6,7 @@ rule MacOS_Trojan_RustBucket_e64f7a92 {
         creation_date = "2023-06-26"
         last_modified = "2023-06-29"
         threat_name = "MacOS.Trojan.RustBucket"
+        reference = "https://www.elastic.co/security-labs/DPRK-strikes-using-a-new-variant-of-rustbucket"
         reference_sample = "9ca914b1cfa8c0ba021b9e00bda71f36cad132f27cf16bda6d937badee66c747"
         severity = 100
         arch_context = "x86"

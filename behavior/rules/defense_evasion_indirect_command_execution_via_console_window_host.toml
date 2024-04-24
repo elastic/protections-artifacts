@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Indirect Command Execution via Console Window Host"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Conhost/"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
   process.parent.name : "conhost.exe" and process.parent.args_count >= 2 and
-  process.parent.command_line : "*conhost* *.exe*" and
+  process.parent.command_line : ("*conhost* *.exe*", "*cmd /c *", "*powershell*", "*script*", "*mshta*", "* curl *") and
   not process.command_line :
             ("?:\\windows\\system32\\cmd.exe",
              "?:\\windows\\SysWOW64\\cmd.exe", "cmd.exe",

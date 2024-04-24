@@ -1,0 +1,92 @@
+[rule]
+description = """
+Identifies the execution of a file downloaded via SSH Windows binaries. Adversaries may abuse those utilities to
+download remote content.
+"""
+id = "2d8c7caa-a661-4989-be4f-289e4678bd5a"
+license = "Elastic License v2"
+name = "Execution of a File Downloaded via Windows OpenSSH"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=2m
+ [file where event.action != "deletion" and
+  process.executable : ("?:\\Windows\\System32\\OpenSSH\\scp.exe", "?:\\Windows\\System32\\OpenSSH\\ssh.exe") and
+  (file.extension : ("exe", "pif", "scr", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe", "bat", "cmd", "dll", "msi", "ps1") or
+   file.Ext.header_bytes : "4d5a*")] as event0
+ [any where event.category in ("process", "library") and
+   (
+   (event.action == "start" and process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe") and
+    stringcontains~(process.command_line, event0.file.name)) or
+
+   (event.action == "load" and (dll.code_signature.trusted == false or dll.code_signature.exists == false) and
+    stringcontains~(event0.file.path, dll.path))
+    )]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

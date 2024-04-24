@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies attempts to install an application-defined hook procedure to monitor keystroke messages. Adversaries may log
+user keystrokes to intercept credentials or other information from the user as the user types them.
+"""
+id = "a7e3958f-3f07-495a-8b2f-2a1d342c943f"
+license = "Elastic License v2"
+name = "Keystrokes Input Capture via SetWindowsHookEx"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1056/001/"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.action == "start" and
+ (process.Ext.relative_file_creation_time <= 900 or process.Ext.relative_file_name_modify_time <= 900) and
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and
+ not user.id : ("S-1-5-18", "s-1-5-19", "S-1-5-20") and
+ not process.hash.sha256 :
+               ("fd47875b3f3fb8f3c0ff83c148d94c0794aa4686a0495ed9006b2dbe23feb958",
+                "eca768e56ce3ab01984ab0e7e1401515a0a36b7380fed2b175b17a98b2bea6b8")]
+[api where
+  process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and
+  process.thread.Ext.call_stack_final_user_module.name == "Unknown" and
+  not process.Ext.api.parameters.hook_module :
+                     ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\*")]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1056"
+name = "Input Capture"
+reference = "https://attack.mitre.org/techniques/T1056/"
+[[threat.technique.subtechnique]]
+id = "T1056.001"
+name = "Keylogging"
+reference = "https://attack.mitre.org/techniques/T1056/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.10.0"

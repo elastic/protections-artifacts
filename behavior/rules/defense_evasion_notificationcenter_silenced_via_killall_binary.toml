@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when the killall process is spawned in order to kill NotificationCenter messages that provide users with pop up
+system notifications like security warnings etc.
+"""
+id = "5399e933-d4d7-47e5-a816-5d850729c26c"
+license = "Elastic License v2"
+name = "NotificationCenter silenced via Killall Binary"
+os_list = ["macos"]
+reference = ["https://securelist.com/new-macos-backdoor-crypto-stealer/111778/"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : "killall" and 
+ process.args : "NotificationCenter" and 
+ (process.parent.executable : ("/Applications/*", "/Volumes/*", "/Users/*", "/private/tmp/*", "/tmp/*") or 
+  process.Ext.effective_parent.executable : ("/Applications/*", "/Volumes/*", "/Users/*", "/private/tmp/*", "/tmp/*")) and
+  not (process.parent.code_signature.trusted == true and process.parent.code_signature.team_id : ("8CA6NAN723", "Y75Z7G683Y"))
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.006"
+name = "Indicator Blocking"
+reference = "https://attack.mitre.org/techniques/T1562/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

@@ -1,0 +1,58 @@
+[rule]
+description = """
+Identifies attempt to write a suspicious memory location. This behavior is consistent with remote code injection
+attacks.
+"""
+id = "1a1c26bb-7fe5-4683-9b94-bc1d89782873"
+license = "Elastic License v2"
+name = "WriteProcessMemory to Suspicious Memory Location"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behaviors : "cross-process" and
+ process.Ext.api.metadata.target_address_name : "ProcessStartupInfo" and process.Ext.api.parameters.size >= 100000 and
+ process.thread.Ext.call_stack_final_user_module.name : "?*" and
+ not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "kernel") and
+ not process.thread.Ext.call_stack_final_user_module.path :
+                              ("?:\\Program Files\\*.dll",
+                               "?:\\Program Files (x86)\\*.dll",
+                               "\\Program Files\\*.dll",
+                               "\\Program Files (x86)\\*.dll",
+                               "?:\\windows\\system32\\*.dll",
+                               "?:\\windows\\syswow64\\*.dll",
+                               "\\windows\\system32\\*.dll",
+                               "\\Windows\\SysWOW64\\*.dll",
+                               "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
+                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*") and
+ not (process.code_signature.subject_name == "GIE Sesam Vitale" and process.code_signature.trusted == true) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.callsite_trailing_bytes : "85c0750732c0e9de0100008b45f88b80b43e00008945f08b45f88b80b43e00008b4df003413c8945f46a0468002000008b45f4ff70508b45f4ff70348b45f8ff")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

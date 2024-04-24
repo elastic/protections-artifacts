@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies attempts to execute programs via the Windows OpenSSH client. This may indicate an attempt to bypass
+application control via trusted windows binaries.
+"""
+id = "a9b41132-04c7-421e-9aaf-b2c8718a66d0"
+license = "Elastic License v2"
+name = "Binary Proxy Execution via Windows OpenSSH"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/Binaries/Ssh/"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.parent.executable : "?:\\windows\\system32\\OpenSSH\\ssh.exe" and
+ process.parent.args == "-o" and process.parent.command_line : ("*ProxyCommand=*", "*LocalCommand=*") and
+ not process.executable : "?:\\Windows\\system32\\conhost.exe"
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

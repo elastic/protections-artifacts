@@ -12,7 +12,7 @@ reference = [
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
     "https://lolbas-project.github.io/lolbas/OtherMSBinaries/Devinit/",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -21,7 +21,7 @@ process where event.action == "start" and
    process.args : "msi-install" and process.command_line : "*http*") or
 
  (process.name : "msiexec.exe" and process.args :("/i", "-i") and
-  process.args : ("/q", "-q") and process.args : "\\\\*@*\\*.msi") or
+  process.args : ("/q", "-q", "/qn", "-qn") and process.args : "\\\\*@*\\*.msi") or
 
  (process.name : "msiexec.exe" and process.args : ("-PaCKagE", "/PaCKagE", "-fv") and
   process.args : ("/qn", "-qn", "-q", "/q", "/quiet") and process.command_line : "*http*") or

@@ -1,0 +1,57 @@
+[rule]
+description = """
+Identifies the modification of the WinSock2 Name Space registry to potentially maintain persistence via a malicious DLL
+that gets loaded by any processes invoking the Winsock 2 library (ws2_32.dll).
+"""
+id = "2dfb5c86-0563-4c1e-aaf2-f975f37cc84d"
+license = "Elastic License v2"
+name = "Persistence via WinSock Name Space DLL"
+os_list = ["windows"]
+reference = [
+    "https://www.welivesecurity.com/en/eset-research/nspx30-sophisticated-aitm-enabled-implant-evolving-since-2005/",
+]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=1m
+ [file where event.action != "deletion" and (file.Ext.header_bytes : "4d5a*" or file.extension : "dll") and
+  not (user.id == "S-1-5-18" and process.name == "msiexec.exe") and
+  not process.executable : "?:\\$WINDOWS.~BT\\Sources\\mighost.exe"] as event0
+ [registry where registry.data.strings != null and registry.value == "LibraryPath" and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ws2_32.dll!WSCInstallNameSpace*") and 
+  stringcontains~(registry.data.strings, event0.file.path)]
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

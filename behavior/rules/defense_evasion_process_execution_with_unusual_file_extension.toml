@@ -8,7 +8,7 @@ id = "6daf97b0-8e29-476b-998a-c3d168d98506"
 license = "Elastic License v2"
 name = "Process Execution with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,9 @@ process where event.action == "start" and
   not process.name regex~ """.+\.(exe|scr|pif|com|tmp|bin|dll|sys|dat|upd|cgi|out|pro|ngn|dep|cxp|axp|srv)""" and
 
  /* most common parents observed in malware behavior */
-  process.parent.name : ("cmd.exe", "powershell.exe", "WmiPrvSe.exe", "winword.exe", "excel.exe", "wscript.exe", "cscript.exe", "mshta.exe")
+  process.parent.name : ("cmd.exe", "powershell.exe", "WmiPrvSe.exe", "winword.exe", "excel.exe", "wscript.exe", "cscript.exe", "mshta.exe") and 
+
+  process.hash.sha256 != "28ebebabf1687e5577178b386b92591062b857b8ac04784354c2d501bd69d378"
 '''
 
 min_endpoint_version = "7.15.0"

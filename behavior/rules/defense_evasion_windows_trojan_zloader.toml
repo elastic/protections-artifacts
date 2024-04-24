@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies the load of the winsock library with a call stack containing byte patterns specific to the new Zloader
+trojan.
+"""
+id = "1ff592a3-8f38-40b7-813d-65e5d65d2380"
+license = "Elastic License v2"
+name = "Windows Trojan Zloader"
+os_list = ["windows"]
+reference = ["https://www.zscaler.com/blogs/security-research/zloader-no-longer-silent-night"]
+version = "1.0.1"
+
+query = '''
+library where dll.name == "ws2_32.dll" and
+ process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|Unbacked" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "Unbacked*" and $entry.callsite_trailing_bytes : "48894*00751031c9ba*31c9ffd0eb00488b5*")
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.8.0"

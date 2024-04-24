@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects the execution of an unsigned or untrusted binary by a shell interpreter via an XPC call. This activity can be
+carried out in several ways but the most common is when a Login Item gets created that is specified to execute a
+specific binary (in this instance an unsigned or untrusted binary). Threat actors will often utilize Login Items as a
+persistence mechanism to launch their payloads on system boot.
+"""
+id = "ecd7fb9b-4a70-4a8f-8035-2df7fc90cfd5"
+license = "Elastic License v2"
+name = "Unsigned or Untrusted Binary Execution via XPC call"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+process where event.type : "start" and event.action == "exec" and 
+ process.Ext.effective_parent.name : "xpcproxy" and 
+ process.parent.name : ("sh", "zsh", "bash") and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ process.args_count <= 2 and 
+ process.executable : ("/Volumes/*", "/Applications/*", "/Users/Shared/*", "/Library/Application Support/*", "/Users/*/Library/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*") and 
+ not process.name : "python*"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1559"
+name = "Inter-Process Communication"
+reference = "https://attack.mitre.org/techniques/T1559/"
+[[threat.technique.subtechnique]]
+id = "T1559.003"
+name = "XPC Services"
+reference = "https://attack.mitre.org/techniques/T1559/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -11,7 +11,7 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 file where event.type != "deletion" and 
@@ -21,12 +21,14 @@ not (process.name : ("osx-x86_64",
                      "oahd-helper",
                      "ArtPro",
                      "Dolby Atmos Renderer",
+                     "ARCHICAD",
                      "oahd",
                      "pluginrunner",
                      "Install") and 
      process.code_signature.trusted == true) and 
 not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
                                     "/Applications/Amazon Music.app/Contents/MacOS/Amazon Music",
+                                    "/Applications/GRAPHISOFT/ARCHICAD 24/ARCHICAD 24.app/Contents/MacOS/ARCHICAD",
                                     "/Applications/SoundFlow.app/Contents/Helpers/SoundFlow.app/Contents/MacOS/sfbackend",
                                     "/Applications/iZotope Product Portal.app/Contents/MacOS/Product Portal") and
 not process.executable : ("/System/*", 

@@ -10,12 +10,13 @@ license = "Elastic License v2"
 name = "Curl from Volume Mount"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : ("curl", "nscurl") and 
 process.parent.name : ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and 
-process.Ext.effective_parent.executable : "/Volumes/*"
+process.Ext.effective_parent.executable : "/Volumes/*" and
+not process.args : "--version"
 '''
 
 min_endpoint_version = "8.5.0"

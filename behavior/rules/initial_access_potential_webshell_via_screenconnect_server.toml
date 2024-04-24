@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies suspicious processes being spawned by the ScreenConnect server process (ScreenConnect.Service.exe). This
+activity may indicate exploitation activity or access to an existing web shell backdoor.
+"""
+id = "10265eab-b3b0-4ecb-bed2-5b4f4a5a4e28"
+license = "Elastic License v2"
+name = "Potential WebShell via ScreenConnect Server"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "ScreenConnect.Service.exe" and
+  process.name : ("cmd.exe", "powershell.exe", "pwsh.exe", "powershell_ise.exe", "csc.exe") and
+  not process.executable : "?:\\Program Files (x86)\\ScreenConnect\\bin\\roslyn\\csc.exe"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

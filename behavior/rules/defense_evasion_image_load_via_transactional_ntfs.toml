@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies attempts to load a transacted file. This is a technique that exploits Transactional NTFS to execute arbitrary
+code in the address space of a running process, without committing the code to disk.
+"""
+id = "eb40ab54-8642-488a-8e7b-ee00599079fc"
+license = "Elastic License v2"
+name = "Image Load via Transactional NTFS"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=1m
+[file where event.action == "overwrite" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*!CreateFileTransacted*")] by file.name
+[library where event.action == "load" and process.pid != 4 and dll.Ext.defense_evasions : "Process Tampering*"] by dll.name
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

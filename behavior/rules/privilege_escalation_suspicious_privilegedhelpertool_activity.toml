@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious PrivilegedHelperTool Activity"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/bypass-tcc-via-privileged-helpers-aka-cve-2020-10008/"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.type == "start" and 
@@ -32,7 +32,8 @@ process where event.type == "start" and
    /* unsigned or untrusted macO */
    (process.code_signature.exists == false or process.code_signature.trusted == false) 
   ) and not
-  process.executable : ("/Library/PrivilegedHelperTools/*", "/Applications/*")
+  process.executable : ("/Library/PrivilegedHelperTools/*", "/Applications/*") and not
+  process.parent.executable : "/Library/PrivilegedHelperTools/com.kaseya.VSAHelper"
 '''
 
 min_endpoint_version = "8.1.0"

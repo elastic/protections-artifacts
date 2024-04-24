@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -129,9 +129,12 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\logoff.exe",
               "?:\\Windows\\System32\\powercfg.exe",
               "?:\\Windows\\System32\\winver.exe",
+              "?:\\Windows\\System32\\cleanmgr.exe",
+              "?:\\Windows\\System32\\CiTool.exe",
               "?:\\Windows\\System32\\gpresult.exe",
               "?:\\Windows\\System32\\inetsrv\\iisrstas.exe",
-              "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe") and
+              "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe",
+              "?:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -207,7 +210,9 @@ process where event.action == "start" and
                   "38ca179d05c6cdf782c7c56f12f06c429f128867d0d878726df6bc44675be53b",
                   "d1efbf9c83ecb91fb68da965c6a3bcc6322c9c29aa629a4a4ece3c92c6f976c8",
                   "2653daafcf471d82e362572216b8b11ac37dc44c3baefc3c30a0c0c88f882af3",
-                  "eb2695c91bc11b28eec70a54c86c9396956c044040be9bd6c0c766d3bb1a146f") and
+                  "eb2695c91bc11b28eec70a54c86c9396956c044040be9bd6c0c766d3bb1a146f",
+                  "d47a76be781cad5d7a2fbcc7fab759d8f362779ba923922000ee10676daa7154",
+                  "5e0294f07728824c24e8262cce6e44656efe54905907cec58314ecc54b0ac273") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :

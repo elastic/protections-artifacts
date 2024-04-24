@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Keystrokes Input Capture from Unsigned DLL"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1056/001/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -17,7 +17,8 @@ sequence by process.entity_id with maxspan=2m
   dll.hash.sha256 : "??*" and dll.path : "?*" and not dll.code_signature.status : "trusted" and 
   not dll.hash.sha256 : 
                 ("fc23a64cc52f5b19e310a8d96b1fbfec981310359bda907f5931a53360485fbc", 
-                 "47c2871dff8948de40424df497962ea6167c56bd4d487dd2e660aa2837485e25")] as event0
+                 "47c2871dff8948de40424df497962ea6167c56bd4d487dd2e660aa2837485e25",
+                 "0a70f6e2ae3e77fa9406a38b244cd49cd46356af6a6880c913be9df98c4d5136")] as event0
  [api where
 
   (process.Ext.api.name : "GetAsyncKeyState" or

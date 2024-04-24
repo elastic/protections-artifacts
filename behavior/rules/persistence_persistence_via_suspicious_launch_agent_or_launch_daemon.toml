@@ -13,7 +13,7 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -60,6 +60,7 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
   Persistence.args : ("/Users/Shared/.Printix.net/Service/Printix Service.app/Contents/MacOS/Printix Service", 
                       "/var/tmp/LogMeIn Rescue - */Support-LogMeInRescue.app/Contents/MacOS/Support-LogMeInRescue", 
                       "/Users/*/.docker/run/docker.sock",
+                      "/private/var/tmp/GoToAssist Remote Support Applet - 2EA1/GoToAssistRemoteSupport.app/Contents/MacOS/GoToAssistRemoteSupport",
                       "/Users/*/Applications/Grammarly Desktop.app//Contents/Library//LaunchAgents/Grammarly Desktop Helper.app/Contents/MacOS/Grammarly Desktop Helper",
                       "/Users/*/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
                       "/usr/local/jamf/bin/jamf", 

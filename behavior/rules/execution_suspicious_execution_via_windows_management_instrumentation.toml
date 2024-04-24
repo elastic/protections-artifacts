@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -64,7 +64,7 @@ not (process.name : ("powershell.exe", "cmd.exe") and
      "*\\Program Files\\*", "*\\Program Files (x86)\\*", "*CloudamizeAgentless*", "*Get-AppxP*", 
      "*Windows\\System32\\AppvClient\\AppvClient.psd1*", "*###break###'} Catch {}*", "*FQARQBNAFAAXABuAGUAcwBzAHUAcwBfA*",
      "*AFMAUgBFAEcAXwBVAE4ASwBOAE8AVwBOAF8ASgBPAEkATg*", "*bgBlAHMAcwB1AHMAXwBhAHoAdQByAGUAXwBhA*",
-     "*EncodedCommand QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQA*", "*\\admeScript.ps1\\*")) and
+     "*EncodedCommand QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQA*", "*\\admeScript.ps1\\*", "*\\\\127.0.0.1\\ADMIN$\\apckscanner-*")) and
 
 not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
 

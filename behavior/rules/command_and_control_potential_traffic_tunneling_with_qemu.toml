@@ -1,0 +1,42 @@
+[rule]
+description = """
+Identifies the use of the QEMU hardware emulator to potentially tunnel network traffic between Virtual machines. This
+can be used by attackers to enable routing of network packets that would otherwise not reach their intended destination.
+"""
+id = "fdb6abec-804c-4611-b330-f7b1aff7c60f"
+license = "Elastic License v2"
+name = "Potential Traffic Tunneling with QEMU"
+os_list = ["windows"]
+reference = [
+    "https://securelist.com/network-tunneling-with-qemu/111803/",
+    "https://blog.xpnsec.com/bring-your-own-vm-mac-edition/",
+]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and process.args : "-netdev" and
+ process.args : "-nographic" and process.command_line : "*connect=*" and process.command_line : "*restrict=off*"
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1572"
+name = "Protocol Tunneling"
+reference = "https://attack.mitre.org/techniques/T1572/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.16.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation with Unusual Mitigation"
 os_list = ["windows"]
 reference = ["https://blog.xpnsec.com/protecting-your-malware/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -35,7 +35,9 @@ process where event.type == "start" and process.executable != null and
       process.code_signature.status : "trusted" and process.Ext.token.integrity_level_name : "system") and 
  not (process.parent.executable : "?:\\Windows\\System32\\hv*.exe" and process.executable : "?:\\Windows\\System32\\hv*.exe") and 
  not (process.parent.executable : "?:\\Windows\\System32\\browser_broker.exe" and process.executable : "?:\\Windows\\System32\\browser_broker.exe") and
- not (process.executable : "?:\\Windows\\System32\\vmwp.exe" and process.parent.executable : "?:\\Windows\\System32\\vmcompute.exe")
+ not (process.executable : "?:\\Windows\\System32\\vmwp.exe" and process.parent.executable : "?:\\Windows\\System32\\vmcompute.exe") and 
+ not (process.parent.executable : "?:\\Windows\\System32\\lsass.exe" and process.executable : "?:\\Windows\\system32\\lsass.exe" and 
+      user.id == "S-1-5-18")
 '''
 
 min_endpoint_version = "8.8.0"

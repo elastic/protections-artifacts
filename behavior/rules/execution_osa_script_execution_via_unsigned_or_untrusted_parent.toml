@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when an OSA script is executed with osascript via an untrusted or unsigned parent process. Amos stealer utilizes
+this technique in order to locate and steal sensitive folders and files on victim systems.
+"""
+id = "ad05c280-9e40-4006-904f-952949ac92a8"
+license = "Elastic License v2"
+name = "OSA Script Execution via Unsigned or Untrusted Parent"
+os_list = ["macos"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.name : "osascript" and 
+ process.args == "-e" and process.args_count == 3 and 
+ process.command_line == null and
+ process.parent.executable : ("/Applications/*", "/Volumes/*", "/Users/*/Applications/*") and
+ (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

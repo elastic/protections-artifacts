@@ -14,7 +14,7 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 library where ((event.action == "load" and not dll.path : "?*") or 
@@ -25,6 +25,7 @@ library where ((event.action == "load" and not dll.path : "?*") or
                        "Setup",
                        "oahd-helper",
                        "Dolby Atmos Renderer",
+                       "ARCHICAD",
                        "ArtPro",
                        "oahd",
                        "pluginrunner",
@@ -32,6 +33,7 @@ library where ((event.action == "load" and not dll.path : "?*") or
        process.code_signature.trusted == true) and 
   not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
                                       "/Applications/Amazon Music.app/Contents/MacOS/Amazon Music",
+                                      "/Applications/GRAPHISOFT/ARCHICAD 24/ARCHICAD 24.app/Contents/MacOS/ARCHICAD",
                                       "/Applications/SoundFlow.app/Contents/Helpers/SoundFlow.app/Contents/MacOS/sfbackend",
                                       "/Applications/iZotope Product Portal.app/Contents/MacOS/Product Portal") and
   not process.executable : ("/System/*", 

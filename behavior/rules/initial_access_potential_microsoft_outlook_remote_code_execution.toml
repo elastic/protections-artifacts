@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies when Microsoft Outlook registers a new COM object followed by loading the configured module. This behavior is
+consistent with the successful exploitation of CVE-2024-21378 (a remote code execution in Microsoft Outlook).
+"""
+id = "27203f2c-7959-4195-bba1-9f2bdbf75ffa"
+license = "Elastic License v2"
+name = "Potential Microsoft Outlook Remote Code Execution"
+os_list = ["windows"]
+reference = [
+    "https://www.netspi.com/blog/technical/red-team-operations/microsoft-outlook-remote-code-execution-cve-2024-21378/",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=3m
+  [registry where event.action == "modification" and process.name : "outlook.exe" and
+   registry.data.strings != null and registry.path : "HKEY_USERS\\*_Classes\\CLSID\\*"] as event0
+  [library where event.action == "load" and process.name : "outlook.exe" and
+   dll.Ext.relative_file_creation_time <= 900 and
+   (dll.code_signature.exists == false or dll.code_signature.trusted == false) and
+   stringcontains~(event0.registry.data.strings, dll.name) and
+   not dll.path :
+         ("?:\\Windows\\assembly\\NativeImages*",
+          "?:\\Windows\\Microsoft.NET\\*",
+          "?:\\Windows\\WinSxS\\*",
+          "?:\\Windows\\System32\\*",
+          "?:\\Windows\\SysWOW64\\*",
+          "?:\\Windows\\apppatch\\*",
+          "?:\\Program Files\\*",
+          "?:\\Program Files (x86)\\*")]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.4.0"

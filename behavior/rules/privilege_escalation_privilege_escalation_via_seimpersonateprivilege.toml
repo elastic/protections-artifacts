@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=3m
@@ -25,8 +25,22 @@ sequence with maxspan=3m
   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\davclnt.dll,DavSetCookie")
   ] by process.entity_id
  [process where event.action == "start" and user.id : "S-1-5-18" and 
-  _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-               $entry.symbol_info : ("*CreateProcessAsUser*", "*CreateProcessWithToken*")) ] by process.parent.entity_id
+  (
+   _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*CreateProcessAsUser*", "*CreateProcessWithToken*")) or 
+   
+   process.parent.thread.Ext.call_stack_summary : 
+                    ("ntdll.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|Unknown",
+                     "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") or 
+                     
+   (_arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*KernelBase.dll!CreateProcessInternal*") and 
+    not _arraysearch(process.parent.thread.Ext.call_stack, $entry, 
+                     $entry.symbol_info : ("*kernel32.dll!CreateProcess*", "*CreateProcessAsUser*", "*CreateProcessWithToken*", "*KernelBase.dll!CreateProcessA+*", "KernelBase.dll!CreateProcessW")))
+   ) 
+   ] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.7.0"

@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -59,10 +59,11 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\SIHClient.exe",
 		  "?:\\Windows\\System32\\WinBioPlugIns\\FaceFodUninstaller.exe",
 		  "?:\\Windows\\system32\\WerFault.exe",
+		  "?:\\Windows\\system32\\schtasks.exe",
 		  "?:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechRuntime.exe",
 		  "?:\\Windows\\System32\\BackgroundTransferHost.exe",
-		  "?:\\Windows\\System32\\mousocoreworker.exe", 
-                  "?:\\WINDOWS\\system32\\compattelrunner.exe") and
+		  "?:\\Windows\\System32\\mousocoreworker.exe",
+		  "?:\\WINDOWS\\system32\\compattelrunner.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and

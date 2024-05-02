@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -35,7 +35,9 @@ sequence by process.entity_id with maxspan=1m
        _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.symbol_info : ("?:\\Windows\\System32\\sysmain.dll!AgTwLoad*",
                                           "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\sysfer.dll*"))) and
-  not (user.id : "S-1-5-18" and process.executable : "?:\\Program Files (x86)\\Acunetix\\*\\wvsc.exe")
+  not (user.id : "S-1-5-18" and process.executable : "?:\\Program Files (x86)\\Acunetix\\*\\wvsc.exe") and
+  not (process.thread.Ext.call_stack_summary : "ntdll.dll|ebehmoni.dll" and
+       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*"))
   ]
  [any where
 

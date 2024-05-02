@@ -8,7 +8,7 @@ id = "58b996a5-634c-4205-9ffa-a6f2b8ebc1ad"
 license = "Elastic License v2"
 name = "Potential Process Creation via ShellCode"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,8 @@ process.parent.thread.Ext.call_stack_contains_unbacked == true and
  (process.parent.thread.Ext.call_stack_summary : "*kernel32.dll|Unbacked*" and
   _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*kernel32.dll!WinExec*")) and
 
-not (process.code_signature.subject_name : ("GIGA-BYTE TECHNOLOGY CO., LTD.", "Intuit Inc") and process.code_signature.trusted == true)
+not (process.code_signature.trusted == true and
+     process.code_signature.subject_name : ("GIGA-BYTE TECHNOLOGY CO., LTD.", "Intuit Inc", "Ramsauer und Stuermer Software GmbH"))
 '''
 
 min_endpoint_version = "8.8.0"

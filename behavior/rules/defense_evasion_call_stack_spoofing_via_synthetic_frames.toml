@@ -7,7 +7,7 @@ id = "d8c57cb7-bab6-41fa-9063-dcc8793c3955"
 license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 any where 
@@ -20,7 +20,8 @@ any where
  
   /* JMP gadget in kernel32 */
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info regex~ """.*system32\\kernel32.dll!(A|[C-Z]).+""") and 
-   not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and 
+   not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
+   not process.thread.Ext.call_stack_summary : "ntdll.dll|kernel32.dll|mso40uiwin32client.dll|mso98win32client.dll|mso.dll|*" and
    not  _arraysearch(process.thread.Ext.call_stack, $entry, 
                    $entry.symbol_info : ("*kernel32.dll!CreateProcess*", "*kernel32.dll!GetDateFormatWWorker*", 
                                          "*kernel32.dll!WerpLaunchAeDebug*", "*kernel32.dll!BaseDllReadWriteIniFile*", 

@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -61,7 +61,9 @@ sequence by process.entity_id with maxspan=2m
    process.thread.Ext.call_stack_summary : "ntdll.dll|*" and 
   _arraysearch(process.thread.Ext.call_stack, $entry,
                $entry.allocation_private_bytes >= 100000 and 
-               stringcontains~($entry.symbol_info, event0.process.Ext.api.metadata.target_address_name) and $entry.callsite_trailing_bytes : "?*")]
+               stringcontains~($entry.symbol_info, event0.process.Ext.api.metadata.target_address_name) and $entry.callsite_trailing_bytes : "?*") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes : "33c0405f5ec356578b7c24108b3785f6742e56e853e9ffff85c074138b10578bc8ff920801000085c00f85605afeff3b74240c740b56ff15d015ed1b8bf0ebce")]
 '''
 
 min_endpoint_version = "8.10.0"

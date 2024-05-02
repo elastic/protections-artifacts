@@ -7,7 +7,7 @@ id = "0c5c8b29-9903-4a04-9ca8-20abafc9db41"
 license = "Elastic License v2"
 name = "Suspicious Registry Symbolic Link"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-12-*") and
@@ -16,8 +16,10 @@ registry.value : "SymbolicLinkValue" and process.executable : "?:\\*" and
             ("?:\\Windows\\System32\\DriverStore\\FileRepository\\*", 
 	     "?:\\Windows\\System32\\svchost.exe", 
              "?:\\Program Files\\*.exe", 
-	     "?:\\Program Files (x86)\\*.exe") and
- not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and 
+	     "?:\\Program Files (x86)\\*.exe", 
+             "?:\\Windows\\Temp\\asw-*\\avg-av\\icarus.exe", 
+	     "?:\\$WINDOWS.~BT\\Work\\*\\DismHost.exe") and
+ not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
  not (process.name : "DismHost.exe" and process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft *") and
  not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and registry.path : "HKEY_USERS\\*\\Software\\Nico Mak Computing\\SymbolicLinkValue")
 '''

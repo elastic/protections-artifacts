@@ -8,14 +8,17 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 any where process.executable != null and 
  (
   (Effective_process.name : "TrustedInstaller.exe" and 
    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
-        file.path : "?:\\windows\\system32\\config\\systemprofile\\*") and 
+        file.path : ("?:\\windows\\system32\\config\\systemprofile\\*",
+                     "?:\\ProgramData\\Malwarebytes Endpoint Agent\\Plugins\\EDRPlugin\\Backup\\*.frb")) and
+   not (process.executable : "?:\\Program Files\\ProfileUnity\\FlexApp\\ContainerService\\x64\\VirtFsService.exe" and
+        process.code_signature.subject_name : "Liquidware Labs, Inc." and process.code_signature.trusted == true) and
    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
         registry.path : 
 	        ("HKLM\\SOFTWARE\\Policies\\Microsoft\\SystemCertificates\\*", 

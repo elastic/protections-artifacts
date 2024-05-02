@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -28,9 +28,11 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                  "Famatech Corp.", "Nuance Communications, Inc.", "Blizzard Entertainment, Inc.", "Kofax, Inc.", "KRAFTON, Inc.",
                  "Guidance Software, Inc.", "Open Text Corporation", "CUMMINS INC.", "Cockos Incorporated", "ByteSphere Technologies LLC",
                  "PROMICRA, s.r.o.", "Avid Technology, Inc.", "Avid Technology, Inc", "PROMICRA, s.r.o.", "Krzysztof Kowalczyk",
-                 "Yummy Interactive Inc")) and
+                 "Yummy Interactive Inc", "Caliper Corporation")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
-                  $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*", "?:\\Windows\\AppPatch\\emet.dll!*"))
+                  $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*",
+                                        "?:\\Windows\\AppPatch\\emet.dll!*",
+                                        "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*"))
 '''
 
 min_endpoint_version = "8.11.0"

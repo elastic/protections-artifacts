@@ -8,7 +8,7 @@ id = "ace0bb76-290f-4f5f-a21f-c3b13ee415a9"
 license = "Elastic License v2"
 name = "Potential Masquerading as Windows Error Manager"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.action == "start" and
@@ -43,7 +43,9 @@ process where event.action == "start" and
                                        "*dataclen.dll!DllCanUnloadNow*", 
                                        "*shell32.dll!AssocCreateForClasses*")) and
  not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll" and 
- not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488945???88b4d*")
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488945???88b4d*") and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                  $entry.callsite_trailing_bytes : "48894550488b4508488b4d5048894810488b4500ff5040488b4d088901488b8580000000488b40304889454048837d40000f84b5000000488b45008b08488b45")
 '''
 
 min_endpoint_version = "8.8.0"

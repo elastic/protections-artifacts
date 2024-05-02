@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -48,7 +48,8 @@ sequence by process.entity_id with maxspan=1m
                     "39508f47cd1220a313928d983139a3a27afdb676082c58ac2db71dfcceab4b00",
                     "b0136acc093fe905257da3fc0591de3f6209b24f6b943ff73b9939ec5f80099d") and 
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe", 
-                             "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe")]
+                             "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
+                             "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe")]
  [dns where
   dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion", 
                        "*.monster", "*.cyou", "*.quest", "*.cc", "*.bar", "*.cfd", "*.click", "*.cam",

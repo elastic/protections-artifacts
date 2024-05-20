@@ -7,7 +7,7 @@ id = "b2104624-d0e8-4864-8266-605056c6469a"
 license = "Elastic License v2"
 name = "Suspicious Remote Memory Allocation"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
@@ -40,7 +40,8 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
    not (process.code_signature.trusted == true and 
         process.code_signature.subject_name : 
               ("GEOVISION INC.", "COMPUTACION EN ACCION SA DE CV", "Crownalytics, LLC", "Johannes Schindelin", 
-               "INCA Internet Co.,Ltd.", "Mark Straver", "Micro Systemation AB (publ)", "HardestCodesEst OU")) and
+               "INCA Internet Co.,Ltd.", "Mark Straver", "Micro Systemation AB (publ)", "HardestCodesEst OU",
+               "MUSARUBRA US LLC")) and
    not (process.executable : "?:\\Users\\*\\AppData\\Local\\Mozilla Firefox\\firefox.exe" and 
         process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true) and 
    not (process.executable : "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe" and process.code_signature.trusted == true) and 

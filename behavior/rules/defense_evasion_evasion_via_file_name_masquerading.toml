@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via File Name Masquerading"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -17,7 +17,7 @@ process where event.action == "start" and
   /* double extension in process.name */
   process.name regex~ """.+(\.|\,|\_|\-)(pdf|doc|docx|xls|xlsx|png|jpg|html|txt|rar|ppt|pptx|htm|GIF)\.(scr|exe|com|pif)""" or
 
-  process.name : ("*   pdf.exe", "*_pdf.exe") or
+  process.name : ("*   pdf.exe", "*_pdf.exe", "*_PO_N.*PDF.exe") or
 
   /* multiple spaces */
   process.name regex """.+\s{10,}\.(exe|pif|com|scr)""" or

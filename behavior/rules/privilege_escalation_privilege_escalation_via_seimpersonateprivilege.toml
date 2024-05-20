@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=3m
@@ -39,7 +39,9 @@ sequence with maxspan=3m
    (_arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*KernelBase.dll!CreateProcessInternal*") and 
     not _arraysearch(process.parent.thread.Ext.call_stack, $entry, 
                      $entry.symbol_info : ("*kernel32.dll!CreateProcess*", "*CreateProcessAsUser*", "*CreateProcessWithToken*", "*KernelBase.dll!CreateProcessA+*", "KernelBase.dll!CreateProcessW")))
-   ) 
+   ) and
+   not (process.executable : "?:\\Program Files (x86)\\Lenovo\\System Update\\uncsetting.exe" and
+        process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\csc.exe")
    ] by process.parent.entity_id
 '''
 

@@ -4,7 +4,7 @@ id = "deb48ee3-8ce0-4ff7-a30b-041c5db024bb"
 license = "Elastic License v2"
 name = "Potential Injection via PyInstaller Executable"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where not process.code_signature.status : "trusted" and
@@ -17,7 +17,7 @@ api where not process.code_signature.status : "trusted" and
   process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*")) or
 
-  (process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "RWX" and
+  (process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection : "RWX" and
    process.thread.Ext.call_stack_final_user_module.name : "libffi*.dll" and
    process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|libffi-?.dll|_ctypes.pyd|*",
                                             "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|libffi-?.dll|_ctypes.pyd|*"))

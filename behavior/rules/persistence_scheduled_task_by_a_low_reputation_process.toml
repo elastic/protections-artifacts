@@ -8,14 +8,19 @@ license = "Elastic License v2"
 name = "Scheduled Task by a Low Reputation Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=5m
  [process where event.action == "start" and
   (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
   (process.code_signature.trusted == false or process.code_signature.exists == false) and
-  not process.code_signature.status : "errorCode_endpoint*"] by process.entity_id
+  not process.code_signature.status : "errorCode_endpoint*" and
+  process.pe.imphash != "28a18f58924d2f4dd2bffbbc85a12952" and
+  not process.hash.sha256 : ("fe2e331c46bd04e56d2417ff88ebce72675750aab701105086010a570f1afe62",
+                             "81fac89743d43b741a009541a9c365ed3213f49cf6314d9c50418ab0d9e82528",
+                             "5e68632b85501280c7378d20a287d40896243f1538e284d83f35f8b3aea98660",
+                             "52e1e3053aadaccf78837dffaaa6f9ed41b201e0019f22a4880a5327d7650206")] by process.entity_id
  [file where event.action : "creation" and process.name : "svchost.exe" and
   file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*")] by Effective_process.entity_id
 '''

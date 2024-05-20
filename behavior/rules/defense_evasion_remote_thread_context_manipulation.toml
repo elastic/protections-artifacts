@@ -7,7 +7,7 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 api where 
@@ -26,7 +26,7 @@ api where
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
                 "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
       process.code_signature.trusted == true) and 
- not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown") and 
+ not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "dbgeng.dll") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "kernel|*") and 
  not (process.code_signature.trusted == true and stringcontains~(process.executable, process.thread.Ext.call_stack_final_user_module.path)) and 
  not process.thread.Ext.call_stack_final_user_module.path : 
@@ -44,6 +44,7 @@ api where
                            "D:\\SteamLibrary\\steamapps\\common\\*.exe",
                            "D:\\Steam\\steamapps\\common\\*.exe",
                            "D:\\Visual Studio\\Common7\\IDE\\devenv.exe",
+                           "?:\\Program Files\\DebugDiag\\DbgHost.exe",
                            "?:\\Program Files\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
                            "?:\\Program Files (x86)\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
                            "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",

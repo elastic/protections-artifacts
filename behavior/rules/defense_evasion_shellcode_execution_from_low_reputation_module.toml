@@ -4,7 +4,7 @@ id = "9fda6a38-3822-45b6-b621-02f750e8cf0d"
 license = "Elastic License v2"
 name = "Shellcode Execution from Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -12,10 +12,24 @@ sequence by process.entity_id with maxspan=1m
   not dll.code_signature.status : "trusted" and 
   (dll.Ext.relative_file_creation_time <= 3600 or dll.Ext.relative_file_name_modify_time <= 3600) and 
   not dll.path : "?:\\windows\\assembly\\nativeimages_*" and 
-  not (dll.path : "?:\\Windows\\Installer\\*.tmp" and dll.pe.original_file_name : "iKernel.dll" and process.name : "msiexec.exe")] by dll.hash.sha256
+  not (dll.path : "?:\\Windows\\Installer\\*.tmp" and dll.pe.original_file_name : "iKernel.dll" and process.name : "msiexec.exe") and
+  not dll.hash.sha256 :
+              ("29ae6f149e581f8dbdc01eed2d5d20b82b597c4b4c7e102cab6d012b168df4d8",
+               "e2705efc246b6cd16ec560122d595394bb01de90db963d409c33f5330a871a93",
+               "c4fe4ea78a4134349dfa71f4059b6233a8d1bb4b7592b66da89619726131bd2d",
+               "2d81ba21fe9a567dd0fc283afaee95320579c2db163499593bfdc9032b29b925",
+               "6ee97fdac52b4a673e9289124be4ce86a6d33e460aa71577848880f6f2ea8b99",
+               "3b9aef3265246eac39e4bbacba2b057d5fcd1705c32679254e9ab94d267cb0ac",
+               "43af7fe8fc892c3c013f2b980b5295d2e13b0c2e1d1123841ede8a62b94f08a4",
+               "5acb0c408b3309a313623d05868ca7359dc17cf113461ffa0522f5df10963644",
+               "9c973a0aca4147970c3e714a8750fbceda27f6d96fdfb04c8f5f24f66abde6aa",
+               "c16f23e42ecdfe6561d2d9c9ce746630252f1ad15fa670d60ef268c1a7819c10")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx", "hook_api") and 
- process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*"] by process.thread.Ext.call_stack_final_user_module.hash.sha256
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and
+ not (process.name : ("msiexec.exe", "setup.exe") and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003"))
+ ] by process.thread.Ext.call_stack_final_user_module.hash.sha256
 '''
 
 min_endpoint_version = "8.10.0"

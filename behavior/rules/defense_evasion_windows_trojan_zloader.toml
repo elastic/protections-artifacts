@@ -1,19 +1,28 @@
 [rule]
 description = """
-Identifies the load of the winsock library with a call stack containing byte patterns specific to the new Zloader
-trojan.
+Identifies the load of the winsock library or spawn a child process with a call stack containing byte patterns specific
+to the new Zloader trojan.
 """
 id = "1ff592a3-8f38-40b7-813d-65e5d65d2380"
 license = "Elastic License v2"
 name = "Windows Trojan Zloader"
 os_list = ["windows"]
 reference = ["https://www.zscaler.com/blogs/security-research/zloader-no-longer-silent-night"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-library where dll.name == "ws2_32.dll" and
- process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|Unbacked" and
- _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "Unbacked*" and $entry.callsite_trailing_bytes : "48894*00751031c9ba*31c9ffd0eb00488b5*")
+any where event.category : ("library", "process") and
+ (
+  (event.category : "library" and dll.name == "ws2_32.dll" and
+   process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|Unbacked" and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "Unbacked*" and
+              $entry.callsite_trailing_bytes : ("48894*00751031c9ba*31c9ffd0eb00488b5*",
+                                                "488944243048837c243000751031c9*",
+                                                "*31c9ffd0eb00488b44243048634c2428*"))) or
+  (event.category : "process" and event.action == "start" and process.parent.thread.Ext.call_stack_summary : "Unbacked" and
+   _arraysearch(process.thread.Ext.call_stack, $entry,
+   $entry.callsite_trailing_bytes: "c3cd2ec30f1f8400000000004c8bd1b8*75030f05c3cd2*"))
+  )
 '''
 
 min_endpoint_version = "8.8.0"

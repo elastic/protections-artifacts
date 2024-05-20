@@ -4,12 +4,12 @@ id = "5a7148dc-338a-4998-8adb-5b64d7557dfc"
 license = "Elastic License v2"
 name = "Encoded Powershell Execution via MsiExec"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and
  (process.name : "powershell.exe" or process.pe.original_file_name == "PowerShell.EXE") and
- process.args : ("-e", "-enc", "-ec", "-encod", "-encode") and
+ process.args : ("-e", "-enc", "-ec", "-encod", "-encode", "iex (gc *") and
  (
   descendant of [process where event.action == "start" and process.name : "msiexec.exe"] or
   process.parent.name : "msiexec.exe"

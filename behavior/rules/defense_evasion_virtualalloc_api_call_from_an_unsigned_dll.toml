@@ -7,7 +7,7 @@ id = "96ffa829-b9fc-4456-be96-2b59b8facaed"
 license = "Elastic License v2"
 name = "VirtualAlloc API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id
@@ -47,12 +47,16 @@ sequence by process.entity_id
                 "e51e7a2667b8b78ab32a7fe458d0fa498764721367ca4cc5d6fa7c05976f4bf0",
                 "7c173cdaea8e3a3cc95b7196681cb904f3996f81289d5890b30f38c99eba45ae",
                 "3dfa92d9a0ecefbb95a6b73dc15e8ae424725b2ddafe33a3e0b8d97b49a36be0",
-                "0ec17d0e628cd5c9475c88164c642c6fe62322ca62facb0c3937029a39099d31")
+                "0ec17d0e628cd5c9475c88164c642c6fe62322ca62facb0c3937029a39099d31",
+                "ad9b9dd4f424e50bbdf126ed94fdaa75b122889766420c56ebbca1b7622af746")
  ] as event0
 [api where
-  process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "*X*" and
+  process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection : "*X*" and
   process.Ext.api.parameters.size >= 4096 and
-  _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name))]
+  _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name)) and
+  not (process.name : ("msiexec.exe", "setup.exe") and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003"))
+ ]
  until [process where event.action:"end"]
 '''
 

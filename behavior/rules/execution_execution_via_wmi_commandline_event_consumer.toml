@@ -11,7 +11,7 @@ reference = [
     "https://in.security/2019/04/03/an-intro-into-abusing-and-identifying-wmi-event-subscriptions-for-persistence/",
     "https://learn.microsoft.com/en-us/windows/win32/wmisdk/commandlineeventconsumer",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -21,9 +21,11 @@ process where event.action == "start" and
   process.parent.thread.Ext.call_stack_summary : "*wbemcons.dll*") or
 
  (process.pe.original_file_name : "wmic.exe" and process.command_line : "*create*" and process.command_line : "*CommandLineEventConsumer*")
-)
-and not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
-         process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*")
+) and
+ not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+      process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+ not process.executable : "?:\\Windows\\System32\\chkntfs.exe" and
+ not process.hash.sha256 : "c4ecbd9e75fbe2d8ab5f4d94d663207d2b73ec924ba9e27b5df9560818ff1105"
 '''
 
 min_endpoint_version = "8.7.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -89,8 +89,14 @@ sequence with maxspan=5m
                    "edaf602006b53dc936a35d0f9e6de51c552c0203ebe814cb68b1d5cbc81f4b49",
                    "82c97648fa358c31fb47e44762938738ad3080880b84b69d9c303d708ab160c2",
                    "4aff93803f1915f3a10f19a1d1e065483c4d11221e3c2792b3de1807c7bf1d9a",
-                   "f9e86b3a6275429f5dbecccc2020e498032a96fc02dd8bdb2a1cc5b5bf2b473b") and
-    not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*"))
+                   "f9e86b3a6275429f5dbecccc2020e498032a96fc02dd8bdb2a1cc5b5bf2b473b",
+                   "7b20331e03018ca74f0212aff3d5a1a66e2375188691df56c9b2b89ba84ad38b",
+                   "dc3bcf4dee3b8c3ca0062284f53e5f717085bd3f3ac6b1ac70492425a7cf2474",
+                   "81fac89743d43b741a009541a9c365ed3213f49cf6314d9c50418ab0d9e82528",
+                   "7d2c761823b183cd34a8c1c0b7b6f572d26a0265bfe65afe913faf60d27de844") and
+    not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+    not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
+    process.pe.original_file_name != "Adobe Installer"
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

@@ -7,7 +7,7 @@ id = "d7239b58-3e32-481a-9bfa-63e04caf1a4e"
 license = "Elastic License v2"
 name = "Suspicious Windows API Call via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -17,7 +17,7 @@ sequence by process.entity_id with maxspan=1m
    (dll.code_signature.trusted == false or dll.code_signature.exists == false))] as event0
 [api where 
 
- process.Ext.api.name : ("VirtualAlloc*", "VirtualProtect*") and process.executable != null and
+ process.Ext.api.name : ("VirtualAlloc*", "VirtualProtect*", "MapViewOfFile*") and process.executable != null and
 
  process.thread.Ext.call_stack_summary :("ntdll.dll|*", "win32*", "kernel*") and 
 

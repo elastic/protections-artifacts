@@ -7,7 +7,7 @@ id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
 license = "Elastic License v2"
 name = "Potential Remote Code Injection"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid, process.thread.Ext.call_stack_final_user_module.name with maxspan=30s
@@ -61,7 +61,23 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
                                            "e3fdcd2b4c5215e74b0cabe91ce7fe2800cbf8e2a28157342960bca61bbd6b5d",
                                            "f24968ff313caf2d1f6a87b5b2265bcb7278ab598e414fd60b1037aa9b226370",
                                            "2a08e0247dcd2363430f48db72ca6c3d2f5d84486c7894cff54e6aae2eb45721",
-                                           "e9f8a89ccb79d3ce6c148022f9ba830521ece008749fb98ea129c7073b9449f9")
+                                           "e9f8a89ccb79d3ce6c148022f9ba830521ece008749fb98ea129c7073b9449f9",
+                                           "3226b506e186e98c68d57b3dcd046695e59ab0b818a58b4fb9613cbe1e9049a0",
+                                           "f30518fad5e56b63c807c306b3b3ab70f043eb24956aa128e96e1482380c5e80",
+                                           "0723de6b33653635781c72d282552ad13d3a5dbe37ca6f4fd62b1f3173dc085d",
+                                           "3a2a379f7fcea34ea52fe908c57cd5bb1c76bf58306261ea30aeef35ca17e4ed",
+                                           "097a19028e711f08600ea254bbff08d03539f6d54accc297255cdd13dbede01e",
+                                           "91744edcc8efb66deda82a2ac1e560da85cd84735b0ad42ad77d28e559741015",
+                                           "ae04a881df5e2256eae703efda6f021145dbdde5230201e1501433c67f29dfb1",
+                                           "4c5391497df553576490432e32dfc5dc2e7e195027cd6faa3c8058a63899d6ab",
+                                           "c4ced30ef9ad364d35edca795bb03b128849bcdf9d4c958086309327341d7107",
+                                           "2c5c370bd7c51e834784b97af7da480653eb3e61aa2e7c662d70c1875ace0c03",
+                                           "2f8eb40944200c4b4ddf36c78a4d2e758d9ec6e43396cf85f03970ffa268c334",
+                                           "77b08483aa5d9cc5ac6050169edff7293522ce865786f181edb6fcc2e41652ca",
+                                           "ceafaeb950cae0fb4a6b8f6dd68aec8311ebad923f658335b6abc0f7114a62ac",
+                                           "b50f97afb49255d1ca37968e3fdc51515b9b9ef447d0460744ece428dc0f850c",
+                                           "e948b1c8189fbd76a85a0a4e50d7db33991ff2a0c3993d44ab54530bf8a0287e",
+                                           "e0552b8681250e081dce00fc1745926106f5c638030d0a2bbe529b152960ae15")
   ]
  [api where process.Ext.api.behaviors : "cross-process" and 
   not process.Ext.api.behaviors : "parent-child" and process.Ext.api.name : "WriteProcessMemory"]

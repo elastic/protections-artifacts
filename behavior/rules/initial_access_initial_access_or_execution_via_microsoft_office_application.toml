@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "exec" and
@@ -74,6 +74,7 @@ process where event.action == "exec" and
 
    not process.Ext.effective_parent.executable : (
         "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
+        "/Applications/Docker.app/Contents/MacOS/com.docker.backend",
         "/usr/local/Privacy-i/PISupervisor",
         "/Library/Addigy/auditor",
         "/Library/Elastic/Agent/*",

@@ -7,7 +7,7 @@ id = "2cb8bc8c-8eb7-418e-bb94-016460f8c6e1"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where 
@@ -32,7 +32,8 @@ api where
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : "kernel" and 
  not process.thread.Ext.call_stack_final_user_module.name : "kernel" and 
  not process.thread.Ext.call_stack_summary : "Unbacked|Unknown|umppc*.dll|ntdll.dll" and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll+0x*")
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll+0x*") and
+ not process.thread.Ext.call_stack_summary : "Unbacked|kernelbase.dll|mfaphook64.dll|sfrhook64.dll*"
 '''
 
 min_endpoint_version = "8.10.0"

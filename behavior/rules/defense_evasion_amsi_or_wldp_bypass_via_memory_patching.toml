@@ -12,7 +12,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell/blob/master/README.md#Patch-the-providers-DLL-of-Microsoft-MpOav.dll",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 api where
@@ -37,13 +37,15 @@ api where
  ) and
  not (process.code_signature.subject_name : 
               ("TPZ SOLUCOES DIGITAIS LTDA", "NedGraphics Software B.V.", "Gerber Technology LLC", "Rocscience Inc.", 
-               "Wilcom International Pty Limited", "Code Systems Corporation", "Wilcom Pty Ltd", "Galooli Ltd") and 
+               "Wilcom International Pty Limited", "Code Systems Corporation", "Wilcom Pty Ltd", "Galooli Ltd",
+               "MECH-MIND ROBOTICS TECHNOLOGIES LTD.") and
       process.code_signature.trusted == true) and
  not process.parent.executable : "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe" and 
  not process.executable : ("?:\\Program Files\\GRAPHISOFT\\ArchiCAD ??\\ArchiCAD.exe", 
                            "?:\\Program Files\\nQueue\\iAPrintManager\\iAPrintManager.exe", 
                            "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe", 
-                           "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe")
+                           "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe",
+                           "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe")
 '''
 
 min_endpoint_version = "8.8.0"

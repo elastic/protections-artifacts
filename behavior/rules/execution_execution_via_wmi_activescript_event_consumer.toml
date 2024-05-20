@@ -13,7 +13,7 @@ reference = [
     "https://threathunterplaybook.com/hunts/windows/200902-RemoteWMIActiveScriptEventConsumers/notebook.html",
     "https://learn.microsoft.com/en-us/windows/win32/wmisdk/activescripteventconsumer",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -24,10 +24,24 @@ process where event.action == "start" and
   ) and
   not (process.executable : "?:\\Windows\\System32\\wscript.exe" and
        user.id : "S-1-5-18" and process.args : "?:\\Windows\\System32\\sleeper.vbs") and
-  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
-       process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
+  not process.executable :
+              ("?:\\Program Files\\*.exe",
+               "?:\\Program Files (x86)\\*.exe",
+               "?:\\Windows\\System32\\gpupdate.exe",
+               "?:\\Windows\\Microsoft.NET\\Framework64\\v*\\ngen.exe",
+               "?:\\Windows\\Microsoft.NET\\Framework64\\v*\\ngentask.exe")  and
+  not (process.executable : "?:\\Windows\\System32\\schtasks.exe" and
+       process.args : "\"C:\\Program Files\\Adobe\\Adobe Creative Cloud Experience\\CCXProcess.exe\"") and
   not (process.executable : "?:\\Windows\\System32\\omadmprc.exe" and user.id : "S-1-5-18") and process.parent.executable != null and
-  not (process.executable : "?:\\Windows\\system32\\conhost.exe" and process.args : "0xffffffff" and process.args : "-ForceV1")
+  not (process.executable : "?:\\Windows\\system32\\conhost.exe" and process.args : "0xffffffff" and process.args : "-ForceV1") and
+  not process.hash.sha256 :
+                   ("4620eaed30bea5f44b2655df1592f2d3cfc45042f513876090c30153a3e23815",
+                    "0e9a6b9d0481a0f9aa49e6f53bc87414ecb84a6d45ef301f6abfde07a8e894a4",
+                    "0f635ffad292ec796dec18cafe896f09168ad2cdefec4fc8530a6a538db21e54",
+                    "d13f5e3d679ffb5787eb0227741cf3e3e3b476a831742e086c1aebea15acf735") and
+  not process.parent.executable :
+                     ("?:\\Program Files\\Adobe\\Adobe Creative Cloud Experience\\libs\\node.exe",
+                      "?:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe")
 '''
 
 min_endpoint_version = "7.16.0"

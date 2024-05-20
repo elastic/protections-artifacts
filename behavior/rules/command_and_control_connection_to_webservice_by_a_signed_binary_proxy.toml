@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -125,6 +125,7 @@ sequence by process.entity_id with maxspan=5m
         "login.live.com",
         "login.microsoftonline.com",
         "api.gofile.io",
+        "file.io",
         "api.anonfiles.com",
         "api.trello.com",
         "api.notion.com",
@@ -139,11 +140,19 @@ sequence by process.entity_id with maxspan=5m
         "*.getmyip.com",
         "files.pythonhosted.org",
         "mockbin.org",
+        "webhook.site",
+        "run.mocky.io",
         "*infinityfreeapp.com",
         "free.keep.sh",
         "tinyurl.com",
         "ftpupload.net",
-        "lobfile.com"
+        "lobfile.com",
+        "*.ngrok-free.app",
+        "www.myexternalip.com",
+        "yandex.ru",
+        "*.yandex.ru",
+        "*.aternos.me",
+        "cdn??.space"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and

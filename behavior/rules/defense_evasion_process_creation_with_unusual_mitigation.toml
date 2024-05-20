@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation with Unusual Mitigation"
 os_list = ["windows"]
 reference = ["https://blog.xpnsec.com/protecting-your-malware/"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -40,7 +40,10 @@ process where event.type == "start" and process.executable != null and
       user.id == "S-1-5-18") and
  not (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|atcuf*.dll|Unbacked" and
       _arraysearch(process.parent.thread.Ext.call_stack, $entry,
-               $entry.symbol_info : "?:\\Program Files*\\N-able Technologies\\AVDefender\\*.dll!*"))
+               $entry.symbol_info : "?:\\Program Files*\\N-able Technologies\\AVDefender\\*.dll!*")) and
+ not (process.executable : "?:\\Windows\\System32\\CastSrv.exe" and process.parent.args : "CCastServerControlInteractiveUser" and
+      process.parent.executable : "?:\\Windows\\System32\\CastSrv.exe") and
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8945ac65488b042530000000448ba05012000065488b042530000000448b6868eb0a448b642460448b6c24644d85ff7409498b0748894598eb0448897598448b")
 '''
 
 min_endpoint_version = "8.8.0"

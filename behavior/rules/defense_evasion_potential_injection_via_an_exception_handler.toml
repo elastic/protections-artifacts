@@ -7,26 +7,26 @@ id = "66e9a65a-d1ef-4590-a397-5d21bddfec0c"
 license = "Elastic License v2"
 name = "Potential Injection via an Exception Handler"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [api where process.Ext.api.behaviors :
-                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                  ("shellcode", "allocate_shellcode", "rwx", "image_rwx", "unbacked_rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
                    "execute_shellcode", "allocate_in_system_image_range") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
  not (process.name : "cmd.exe" and
       process.thread.Ext.call_stack_summary : "*kernelbase.dll|clink_dll_x64.dll|ntdll.dll*")]
 [api where process.Ext.api.behaviors :
-                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                  ("shellcode", "allocate_shellcode", "rwx", "image_rwx", "unbacked_rwx","protection_fluctuation", "hollow_image", "hollow_unbacked",
                    "execute_shellcode", "allocate_in_system_image_range") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and
  not (process.name : "cmd.exe" and
       process.thread.Ext.call_stack_summary : "*kernelbase.dll|clink_dll_x64.dll|ntdll.dll*")]
 [api where process.Ext.api.behaviors :
-                  ("shellcode", "allocate_shellcode", "rwx", "protection_fluctuation", "hollow_image", "hollow_unbacked",
+                  ("shellcode", "allocate_shellcode", "rwx", "unbacked_rwx", "image_rwx","protection_fluctuation", "hollow_image", "hollow_unbacked",
                    "execute_shellcode", "allocate_in_system_image_range") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!RtlRaiseException*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrShutdownProcess*", "*ntdll.dll!__chkstk*")) and

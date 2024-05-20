@@ -7,13 +7,13 @@ id = "0cd206df-f54d-47e8-9276-d6a73bb65f47"
 license = "Elastic License v2"
 name = "Potential Thread Call Stack Spoofing"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 any where 
  (		
   (event.category : "api" and 
-   process.Ext.api.behaviors : ("proxy_call", "indirect_syscall") and 
+   process.Ext.api.behaviors == "proxy_call" and
    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*kernel32.dll!SetDefaultCommConfigW+0x*", "*kernel32.dll!SortGetHandle*")) and 
    process.thread.Ext.call_stack_summary : 
                          ("ntdll.dll|kernelbase.dll|kernel32.dll|ntdll.dll", 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.19"
+version = "1.0.21"
 
 query = '''
 any where process.executable != null and 
@@ -64,7 +64,13 @@ any where process.executable != null and
                   "f14ea2efbbf0298963f8a574d6b139616ce6bb1e8ab97848d73312c4184b3812") and
 
    not (process.executable : "?:\\Windows\\System32\\services.exe" and
-        registry.path : "HKEY_USERS\\.DEFAULT\\Software\\Classes\\Local Settings\\MuiCache\\*")
+        registry.path : "HKEY_USERS\\.DEFAULT\\Software\\Classes\\Local Settings\\MuiCache\\*") and
+
+   not (process.parent.executable : "?:\\Program Files\\ProfileUnity\\FlexApp\\ContainerService\\x64\\VirtFsService.exe" and
+        process.executable : "?:\\Program Files\\ProfileUnity\\FlexApp\\ContainerService\\x64\\Sentinel\\LwIoSentinel.exe") and
+
+   not (process.executable : "?:\\Program Files (x86)\\Kaspersky Lab\\*.exe" and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Kaspersky Lab JSC")
  )
 '''
 

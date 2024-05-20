@@ -7,7 +7,7 @@ id = "1a16b12e-6719-4f58-8835-84880092f3a0"
 license = "Elastic License v2"
 name = "Suspicious API from an Unsigned Service DLL"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -23,7 +23,7 @@ sequence by process.entity_id with maxspan=2m
  process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe") and
   (
     process.Ext.api.name : ("WriteProcessMemory", "VirtualProtectEx") or
-   (process.Ext.api.name : "VirtualAlloc*" and
+   (process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and
     process.Ext.api.parameters.protection : "*X*" and process.Ext.api.parameters.size >= 4000)
    ) and
 

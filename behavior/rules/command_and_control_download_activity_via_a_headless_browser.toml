@@ -8,12 +8,16 @@ license = "Elastic License v2"
 name = "Download Activity via a Headless Browser"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Msedge/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.action == "start" and
+process where event.action in ("start", "already_running") and
  process.name : ("chrome.exe", "msedge.exe", "brave.exe", "browser.exe", "dragon.exe", "vivaldi.exe") and
- process.args : "--headless*" and process.args : "http*" and
+ (
+  (process.args : "--headless*" and process.args : ("http*", "data:text/html;base64,*")) or
+  process.command_line : ("*mh0dHBzOi8vd2ViaG9vay5zaXRl*", "*93ZWJob29rLnNpdGU*") or
+  (process.args_count == 2 and process.args : "data:text/html;base64,*")
+  ) and
   process.parent.name :
      ("cmd.exe", "powershell.exe", "wscript.exe", "cscript.exe", "mshta.exe", "conhost.exe", "msiexec.exe",
       "explorer.exe", "rundll32.exe", "winword.exe", "excel.exe", "onenote.exe", "hh.exe", "powerpnt.exe", "forfiles.exe",

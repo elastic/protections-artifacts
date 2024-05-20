@@ -8,7 +8,7 @@ id = "4abdbb10-6653-4a3b-8e7a-9c4f9382f03b"
 license = "Elastic License v2"
 name = "Suspicious Unload of Elastic Agent via Launchctl"
 os_list = ["macos"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and 
@@ -34,12 +34,13 @@ process.Ext.effective_parent.executable : ("/System/Applications/Utilities/Termi
                                            "/usr/local/jamf/bin/jamf", 
                                            "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                            "/opt/jc/bin/jumpcloud-agent",
+                                           "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon",
                                            "/Library/Endgame/esensor",
                                            "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM",
                                            "/Applications/iTerm.app/Contents/MacOS/iTerm2")
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -65,4 +66,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.10.2"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Curl Execution via Node"
 os_list = ["macos"]
 reference = ["https://medium.com/@D00MFist/loads-of-fun-e1f0dac3d4f8"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and process.parent.name : "node" and
@@ -22,7 +22,7 @@ process where event.type == "start" and process.parent.name : "node" and
            ("curl -sfL https://raw.githubusercontent.com/lokalise/*",
             "*http://elastic:changeme@localhost:5601*",
             "Authorization*",
-            "DELETE",
+            "*DELETE*",
             "localhost:*", "curl -s localhost:*") and
  not process.Ext.effective_parent.executable : "/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal" and
  not (process.command_line : "*https://github.com/zeromq/libzmq/archive*" and

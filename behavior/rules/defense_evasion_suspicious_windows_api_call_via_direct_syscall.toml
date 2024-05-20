@@ -11,14 +11,14 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [library where
   not dll.code_signature.status : "trusted" and not dll.path : "?:\\windows\\assembly\\nativeimages_*"] as event0
 [api where event.category : "intrusion_detection" and
-    process.Ext.api.behaviors == "direct_syscall" and process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and 
+    process.Ext.api.behaviors == "direct_syscall" and process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "MapViewOfFile*") and
     startswith~(process.thread.Ext.call_stack_summary, event0.dll.name) and 
     stringcontains~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name) and
     not process.thread.Ext.call_stack_final_user_module.hash.sha256 :

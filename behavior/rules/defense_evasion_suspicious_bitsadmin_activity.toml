@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Bitsadmin Activity"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -45,7 +45,8 @@ process where event.action == "start" and
       "cscript.exe",
       "powershell.exe",
       "pwsh.exe",
-      "cmd.exe"
+      "cmd.exe",
+      "mshta.exe"
       ) or
   descendant of [process where event.action == "start" and
     process.parent.name : (
@@ -78,7 +79,8 @@ process where event.action == "start" and
       "cscript.exe",
       "powershell.exe",
       "pwsh.exe",
-      "cmd.exe"
+      "cmd.exe",
+      "mshta.exe"
     )]) and
     not (process.args : "https://dl.duosecurity.com/*" and process.parent.args : "?:\\ProgramData\\NinjaRMMAgent\\scripting\\*") and
     not process.command_line : "bitsadmin  /RawReturn /GetBytesTransferred mingw" and

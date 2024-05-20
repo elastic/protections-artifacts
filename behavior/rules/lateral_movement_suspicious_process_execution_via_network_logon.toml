@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -134,7 +134,10 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\gpresult.exe",
               "?:\\Windows\\System32\\inetsrv\\iisrstas.exe",
               "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe",
-              "?:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe") and
+              "?:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe",
+              "?:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe",
+              "?:\\Windows\\System32\\DriverStore\\FileRepository\\*_x64PdsmqConnector.exe",
+              "?:\\Program Files (x86)\\Emerson\\OpenEnterprise\\Bin\\OEOPCDAServer.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */

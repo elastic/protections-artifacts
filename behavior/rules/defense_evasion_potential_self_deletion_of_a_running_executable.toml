@@ -9,11 +9,12 @@ license = "Elastic License v2"
 name = "Potential Self Deletion of a Running Executable"
 os_list = ["windows"]
 reference = ["https://github.com/LloydLabs/delete-self-poc"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
-    [library where not dll.code_signature.status : "trusted"] by dll.name
+    [library where not dll.code_signature.status : "trusted" and
+      not (process.code_signature.subject_name: "Datto Inc" and process.code_signature.trusted == true)] by dll.name
     [file where event.action == "rename" and
      /* Rename the primary file stream */
      file.name : "*:*" and not file.Ext.original.name : "*:*"  and file.size == 0] by file.Ext.original.name

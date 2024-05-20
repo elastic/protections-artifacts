@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects when AppleScript is directly piped to the Osascript binary for execution. Threat actors utilize this method in
+order to avoid traditional Osascript detections and perform various tasks on the system.
+"""
+id = "e955b5d2-2396-4af2-9540-680aa390c547"
+license = "Elastic License v2"
+name = "Osascript Execution via Piped AppleScript"
+os_list = ["macos"]
+reference = ["https://blog.kandji.io/malware-cuckoo-infostealer-spyware"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : ("sh", "bash", "zsh") and 
+ process.args == "-c" and process.command_line : "*osascript*<<EOD*"
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.2"

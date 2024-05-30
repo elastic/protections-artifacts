@@ -7,7 +7,7 @@ id = "b2104624-d0e8-4864-8266-605056c6469a"
 license = "Elastic License v2"
 name = "Suspicious Remote Memory Allocation"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
@@ -52,9 +52,13 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
 '''
 
 min_endpoint_version = "8.8.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

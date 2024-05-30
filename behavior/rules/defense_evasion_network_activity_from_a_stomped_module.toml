@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -42,7 +42,8 @@ sequence by process.entity_id with maxspan=2m
                                       "?:\\windows\\system32\\apphelp.dll",
                                       "?:\\windows\\syswow64\\ntdll.dll", 
                                       "?:\\windows\\system32\\ntdll.dll", 
-                                      "?:\\windows\\system32\\rltkapo64.dll") and 
+                                      "?:\\windows\\system32\\rltkapo64.dll",
+                                      "?:\\windows\\syswow64\\bit4ucsp1.dll") and
     not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and  
          process.code_signature.trusted == true and 
          process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas")) and 

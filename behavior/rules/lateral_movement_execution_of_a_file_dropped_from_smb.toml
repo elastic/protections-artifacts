@@ -7,7 +7,7 @@ id = "be55434a-ae96-437e-aaaf-9fb60cd7dff4"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from SMB"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=5m
@@ -138,7 +138,8 @@ sequence with maxspan=5m
 	          "c6d195690a617791e7e9f483597cea1f68fbe59e3f9b1989a1d324f00e9d1c80",
 	          "9e3cd4d957f1130e8308357b921d2475afd1519704f0a176a062d06d96199da2",
 	          "5485ca7e2be4afc76aadd97536192cf2850228fe338083d6bab4c981bd6ddf92",
-	          "0a765aa0610aba8d792b0153779a52a922ae5a5741af52373abb17e9e10c24ed") and
+	          "0a765aa0610aba8d792b0153779a52a922ae5a5741af52373abb17e9e10c24ed",
+	          "5968e3951cb6bf4368b866597f06317e576e6efc14d360dfffc336f1213e3a08") and
 
    not (process.code_signature.subject_name == "CyberArk Software Ltd." and
 	    process.executable : "?:\\Windows\\CAInvokerService.exe" and process.pe.original_file_name == "PSMWinAgentInvoker.exe") and

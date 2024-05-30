@@ -7,7 +7,7 @@ id = "cd25c529-73b4-4a9d-84a9-e24c4a3540d1"
 license = "Elastic License v2"
 name = "Suspicious Windows Service Execution"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,8 @@ process where event.action == "start" and
 
    /* Silver psexec default pattern */
    (process.command_line : "?:\\windows\\Temp\\*.exe \"\"" and process.args_count == 2)
-   )
+   ) and
+   not process.executable : "\\\\ENT*\\admin$\\smstsvc_passive_*.exe"
 '''
 
 min_endpoint_version = "7.15.0"

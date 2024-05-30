@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=1m
@@ -54,14 +54,19 @@ sequence with maxspan=1m
         (process.code_signature.trusted == true or process.code_signature.status == "errorChaining")) and
 	
   not (process.code_signature.subject_name == "Roblox Corporation" and
-        (process.code_signature.trusted == true or process.code_signature.status == "errorTimeStamp")) 
+        (process.code_signature.trusted == true or process.code_signature.status == "errorTimeStamp")) and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "07e82c4bc4f48e94a634480ff5140b94b2026a7716473867806355957dc4d291"
   ] by process.entity_id
 '''
 
 min_endpoint_version = "8.10.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies when a Windows script attempts to execute commands using the Windows Installer service via Component Object
+Model.
+"""
+id = "1eae6aaf-7854-4fa7-8470-f19f87f9802a"
+license = "Elastic License v2"
+name = "Msiexec Execution via a Windows Script Interpreter"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and
+  process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "mshta.exe", "cmstp.exe", "msxsl.exe") and
+  not (process.name : "powershell.exe" and
+       process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe",
+                                    "?:\\Program Files (x86)\\ScreenConnect Client*\\ScreenConnect.WindowsBackstageShell.exe"))
+  ] by process.entity_id
+ [process where event.action == "start" and process.parent.name : "msiexec.exe"] by process.Ext.effective_parent.entity_id
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

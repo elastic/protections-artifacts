@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id
@@ -50,7 +50,7 @@ sequence by process.entity_id
                      "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE", 
                      "Link Data Security A/S", "Western Digital Technologies, Inc.", "Rockstar Games, Inc.",
                      "SEMPERIS INC.", "Micro-Star International CO., LTD.", "Kaseya Holdings Inc", "KASEYA US LLC",
-                     "Intel(R) Software Development Products") and
+                     "Intel(R) Software Development Products", "Kodak Alaris Inc.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and

@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Binaries/Msiexec/",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=1m
@@ -22,7 +22,7 @@ sequence with maxspan=1m
     descendant of [process where process.name : "msiexec.exe"]  and
     not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and process.code_signature.trusted == true) and
     not process.executable : ("?:\\Windows\\System32\\MsiExec.exe", "?:\\Windows\\syswow64\\MsiExec.exe", "?:\\WINDOWS\\Installer\\MSI*.tmp") and
-    not (process.code_signature.subject_name == "Ellie Mae, Inc." and process.code_signature.trusted == true)]
+    not (process.code_signature.subject_name : ("Ellie Mae, Inc.", "Chatgenie LLC") and process.code_signature.trusted == true)]
 '''
 
 min_endpoint_version = "7.15.0"

@@ -1,0 +1,45 @@
+[rule]
+description = "Identifies attempt to download remote content by commonly abused ingress tool transfer binaries."
+id = "4e3a6c40-37b7-466f-8ed4-8e40b2cf3c5b"
+license = "Elastic License v2"
+name = "Ingress Transfer via Windows Utility"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+(
+ ((process.name : "CertUtil.exe" or process.pe.original_file_name == "CertUtil.exe") and
+  process.args : "-urlcache" and process.command_line : "*http*") or
+
+ ((process.pe.original_file_name == "CertReq.exe" or process.name : "CertReq.exe") and
+  process.args : "-Post" and process.command_line : "*http*")
+ )
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

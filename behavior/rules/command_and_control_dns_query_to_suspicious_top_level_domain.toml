@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -46,10 +46,26 @@ sequence by process.entity_id with maxspan=1m
                    ("19a9ed41a69c74f130f53572aa1b07b1fa35d93a408dcf9d3f16f0fd72dd1e69",
                     "005f63a30438bf91d23790bfd6ab43d298e73c48024d7f48aec322b798035130",
                     "39508f47cd1220a313928d983139a3a27afdb676082c58ac2db71dfcceab4b00",
-                    "b0136acc093fe905257da3fc0591de3f6209b24f6b943ff73b9939ec5f80099d") and 
+                    "b0136acc093fe905257da3fc0591de3f6209b24f6b943ff73b9939ec5f80099d",
+                    "454dc1f557995b4c1570d74110673b72172640eb3a5a3f5da304faa4a081650f",
+                    "bd8c182176f4e177c62240e8f5941446df01c21c57ad6f304e4e0af21cba52de",
+                    "6422aea329efdcc7385541801ee271f9104382cc5e9b8eafb0deae25886bd3ff",
+                    "93b47471ca51a22f08d489d6a17764dbfb492989f7f6add5f09243719c6bb73b",
+                    "d0557e9aca48065910225cd5776de67c0d887ae1d7346204a01bc85d870d7c1d",
+                    "454dc1f557995b4c1570d74110673b72172640eb3a5a3f5da304faa4a081650f",
+                    "bd8c182176f4e177c62240e8f5941446df01c21c57ad6f304e4e0af21cba52de",
+                    "e1684e5c9589d2947df49a0c8382a06040a5443d9ba32d06374049fcb88643b4",
+                    "7af4edd697f6881671d661d343dfaef243c6b630bd7d0816ddec9e049931e841",
+                    "3281760911711b9ccb262b217e8cbb625c8c5f2d585c3a7a04a2ba2a4f4e918b",
+                    "2167901996b1deff1f165c2d1575820a1c20840b19f8d98b4fd84b7a996cef42",
+                    "b8aabf174578bfc91c9ab46fab0c75c12efd66da00402a41259acef53e0ebefd",
+                    "bcfa1343b6bd0176785ecacfeda0c2eefd2c391d0f7c21a9c465fdb9f5143f63",
+                    "f5e8d65a3ad7ded72c27addfd2d2ef98f8e2c9255adec4a216353eee0e8ec482",
+                    "9421439e100d116173d28edbf180a04d3c677bca4e88c3ef46911fbd12a63426") and
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe", 
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
-                             "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe")]
+                             "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe") and
+   not (process.name : "powershell.exe" and process.parent.executable : "?:\\Program Files\\Sophos\\Endpoint Defense\\SEDService.exe")]
  [dns where
   dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion", 
                        "*.monster", "*.cyou", "*.quest", "*.cc", "*.bar", "*.cfd", "*.click", "*.cam",
@@ -59,9 +75,13 @@ sequence by process.entity_id with maxspan=1m
 '''
 
 min_endpoint_version = "8.4.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

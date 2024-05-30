@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Evasion via LdrpKernel32 Overwrite"
 os_list = ["windows"]
 reference = ["https://github.com/rbmm/LdrpKernel32DllName"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 library where (dll.code_signature.trusted == false or dll.code_signature.exists == false) and process.uptime == 0 and
@@ -19,7 +19,8 @@ library where (dll.code_signature.trusted == false or dll.code_signature.exists 
                                         "?:\\Windows\\SysWOW64\\kernel32.dll!BaseThreadInitThunk*",
                                         "?:\\Windows\\WinSxS\\*\\kernel32.dll!BaseThreadInitThunk*",
                                         "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\*!BaseThreadInitThunk*",
-                                        "\\Device\\*\\Windows\\*\\kernel32.dll!BaseThreadInitThunk*"))
+                                        "\\Device\\*\\Windows\\*\\kernel32.dll!BaseThreadInitThunk*")) and
+ not dll.path : "?:\\Windows\\assembly\\NativeImages_*\\System.Numerics.ni.dll"
 '''
 
 min_endpoint_version = "8.8.0"

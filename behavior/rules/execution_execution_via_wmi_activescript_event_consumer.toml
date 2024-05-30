@@ -13,7 +13,7 @@ reference = [
     "https://threathunterplaybook.com/hunts/windows/200902-RemoteWMIActiveScriptEventConsumers/notebook.html",
     "https://learn.microsoft.com/en-us/windows/win32/wmisdk/activescripteventconsumer",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,9 @@ process where event.action == "start" and
                    ("4620eaed30bea5f44b2655df1592f2d3cfc45042f513876090c30153a3e23815",
                     "0e9a6b9d0481a0f9aa49e6f53bc87414ecb84a6d45ef301f6abfde07a8e894a4",
                     "0f635ffad292ec796dec18cafe896f09168ad2cdefec4fc8530a6a538db21e54",
-                    "d13f5e3d679ffb5787eb0227741cf3e3e3b476a831742e086c1aebea15acf735") and
+                    "d13f5e3d679ffb5787eb0227741cf3e3e3b476a831742e086c1aebea15acf735",
+                    "ac3e1f40ce7bb7e31f9f2804fdc495ac566c5c072d850c66525926ca18fa7a27",
+                    "5c9382277658a46d9918c81b760b0e7caea3639266bcdda68413ac63f9ad6f68") and
   not process.parent.executable :
                      ("?:\\Program Files\\Adobe\\Adobe Creative Cloud Experience\\libs\\node.exe",
                       "?:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe")

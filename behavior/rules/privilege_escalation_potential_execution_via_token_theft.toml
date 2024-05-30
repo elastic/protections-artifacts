@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -44,11 +44,14 @@ process where event.action == "start" and process.executable != null and
                           ("?:\\Program Files*\\Dell\\Dell Peripheral Manager\\DPM.exe", 
                            "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe",
                            "?:\\Windows\\System32\\sihost.exe",
-                           "?:\\Program Files\\Microsoft\\Azure Functions Core Tools\\func.exe") and
+                           "?:\\Windows\\System32\\ServerManager.exe",
+                           "?:\\Program Files\\Microsoft\\Azure Functions Core Tools\\func.exe",
+                           "?:\\Program Files (x86)\\vdogServer\\VDogMasterService.exe") and
  not process.executable : "?:\\Program Files (x86)\\Alternative\\QuickBooks-connector\\QuickbooksDesktopSync.exe" and
  not process.hash.sha256 :
                   ("7b36e127e1fa53e0c6462312777c5d004ea83bde67e6df32fb8920b6c001d664",
-                   "61d372863c9cb2d83b22358c1f269b153927316b59df8093df82a497fcc40149") and
+                   "61d372863c9cb2d83b22358c1f269b153927316b59df8093df82a497fcc40149",
+                   "c42b1cdba6020d3858ce47c6a0d279045a741f21263bb417742371d0c04ae79a") and
  not (process.parent.executable : ("?:\\Program Files\\PowerShell\\*\\pwsh.exe", "?:\\Program Files (x86)\\PowerShell\\*\\pwsh.exe") and 
       process.Ext.effective_parent.executable : ("?:\\Program Files\\PowerShell\\*\\pwsh.exe", "?:\\Program Files (x86)\\PowerShell\\*\\pwsh.exe")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488b5560c6420c01833d*")

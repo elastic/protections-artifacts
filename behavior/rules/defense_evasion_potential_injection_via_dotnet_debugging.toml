@@ -12,12 +12,12 @@ reference = [
     "https://blog.xpnsec.com/debugging-into-net/",
     "https://learn.microsoft.com/en-us/dotnet/framework/unmanaged-api/debugging/iclrdebugging-openvirtualprocess-method",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Windows\\Microsoft.NET\\Framework*OpenVirtualProcess*") and
- not (process.code_signature.subject_name : "Magic Software Enterprises LTD" and process.code_signature.trusted == true) and
+ not (process.code_signature.subject_name : ("Magic Software Enterprises LTD", "JetBrains s.r.o.") and process.code_signature.trusted == true) and
  not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*.exe",
                            "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",
                            "D:\\Visual Studio\\Common?\\IDE\\devenv.exe",

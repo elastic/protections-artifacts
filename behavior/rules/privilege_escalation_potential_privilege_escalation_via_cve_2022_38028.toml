@@ -7,14 +7,15 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2024/04/22/analyzing-forest-blizzards-custom-post-compromise-tool-for-exploiting-cve-2022-38028-to-obtain-credentials/",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 file where file.path : "?:\\*\\Windows\\system32\\DriVerStoRe\\FiLeRePoSiToRy\\*\\MPDW-constraints.js" and
  not user.id : "S-1-5-18" and
  not process.executable : ("?:\\Windows\\System32\\taskhostw.exe",
                            "?:\\Program Files\\Azure\\StorageSyncAgent\\FileSyncSvc.exe",
-                           "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe")
+                           "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe",
+                           "?:\\Windows\\System32\\cleanmgr.exe")
 '''
 
 min_endpoint_version = "7.16.0"

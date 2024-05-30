@@ -8,7 +8,7 @@ id = "902f471c-27b4-4e78-b344-be46c6cfb72b"
 license = "Elastic License v2"
 name = "Remote Process Manipulation by Suspicious Process"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id
@@ -87,12 +87,16 @@ sequence by process.entity_id
 '''
 
 min_endpoint_version = "8.10.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
 tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

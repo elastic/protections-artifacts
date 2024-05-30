@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -112,9 +112,13 @@ sequence by process.entity_id with maxspan=5m
 '''
 
 min_endpoint_version = "8.4.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

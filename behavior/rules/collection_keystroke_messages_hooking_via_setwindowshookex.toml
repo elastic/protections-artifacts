@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and 
@@ -60,7 +60,8 @@ api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.paramet
     not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("hmpalert.dll", "kernel") and
     not process.executable :
                 ("?:\\Program Files\\workspacer\\workspacer.exe",
-                 "?:\\Program Files (x86)\\Do It Again\\DoItAgain.exe")
+                 "?:\\Program Files (x86)\\Do It Again\\DoItAgain.exe",
+                 "?:\\Program Files (x86)\\HP\\HP LaserJet Pro MFP *\\bin\\HPScan.exe")
 '''
 
 min_endpoint_version = "8.12.0"

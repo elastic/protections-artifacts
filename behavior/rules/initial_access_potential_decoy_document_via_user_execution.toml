@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5s
@@ -29,6 +29,8 @@ sequence with maxspan=5s
     /* Word as decoy document */
   (process.name : "WINWORD.EXE" and
    process.args : "/n" and process.args : "/o" and process.args : ("?:\\Users\\*", "?:\\ProgramData\\*")) or
+
+  (process.executable : "?:\\Program Files\\windows nt\\accessories\\wordpad.exe" and process.args_count == 2 and process.args : "*.doc*") or
 
     /* PDF as decoy document */
    (process.name : "AcroRd32.exe" and process.args_count == 2 and process.args : ("?:\\Users\\*.pdf", "?:\\ProgramData\\*.pdf")) or

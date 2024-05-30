@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -169,7 +169,8 @@ process where event.action == "start" and
                     "*ccpa-temp*oval_registry*",
                     "*certstorename=MY*",
                     "*/latest/api/token*-TimeoutSec*",
-                    "*\\program files (x86)\\citrix\\Licensing\\WebServicesForLicensing\\*")) and
+                    "*\\program files (x86)\\citrix\\Licensing\\WebServicesForLicensing\\*",
+                    "*JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQBuAGMAZQA9ACIAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQAiADsARwBlAHQALQBIAG8AdABmAGkAeAAgAHwAIABTAGUAbABlAGMAdAAtAE8AY*")) and
   not (process.name : "cmd.exe" and process.parent.name : "WmiPrvSe.exe" and
        process.args : (" > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
                        "} > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
@@ -215,7 +216,11 @@ process where event.action == "start" and
                   "2653daafcf471d82e362572216b8b11ac37dc44c3baefc3c30a0c0c88f882af3",
                   "eb2695c91bc11b28eec70a54c86c9396956c044040be9bd6c0c766d3bb1a146f",
                   "d47a76be781cad5d7a2fbcc7fab759d8f362779ba923922000ee10676daa7154",
-                  "5e0294f07728824c24e8262cce6e44656efe54905907cec58314ecc54b0ac273") and
+                  "5e0294f07728824c24e8262cce6e44656efe54905907cec58314ecc54b0ac273",
+                  "ee949cef3e7daf1cb4c695ab642b9e93dfb67fd47b8d21b52ffd22aec801baf5",
+                  "4b18f6bbf232545f3ebe0ebb92ab5a3a7aaf6f3d49b754b29712cce013418576",
+                  "9ba043914816f776d96c392b6792b16b9370f8e9f6466040ab708357a9993a9e",
+                  "df2b27c8bb3ecbbea46111e6357ea0380d0c476f3f214f1aa2c5052999397856") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
@@ -224,7 +229,8 @@ process where event.action == "start" and
                  "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc", "Flexera Software LLC",
                  "Arcserve (USA) LLC", "Hewlett Packard", "Qualys, Inc", "Synology Inc.", "NoMachine S.a.r.l.", 
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
-                 "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.")) and
+                 "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.",
+                 "Block 64 Corporation")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
@@ -232,7 +238,7 @@ process where event.action == "start" and
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
   not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*") and
   not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise") and 
-  not (process.name : "certutil.exe" and process.args : "-view" and process.args : "csv") and 
+  not (process.name : "certutil.exe" and process.args : ("-view", "-hashfile")) and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs") and
   not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework64\\*\\installutil.exe" and
        process.args : "?:\\Program Files\\Omnyx\\Messagehandlers\\JobAgents\\*\\Omnyx.MessageHandler.Host.exe")

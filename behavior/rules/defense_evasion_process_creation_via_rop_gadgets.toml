@@ -7,7 +7,7 @@ id = "4cd250a2-82a0-463b-adda-5256cee422ce"
 license = "Elastic License v2"
 name = "Process Creation via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -31,16 +31,21 @@ process where event.action == "start" and
                                                                   "*ntdll.dll!ZwCreateMailslotFile*", 
                                                                   "*ntdll.dll!*EnableLastKnownGood*", 
                                                                   "*ntdll.dll!*CreateEnclave*", 
-                                                                  "*ntdll.dll!ZwCreateTimer*")) and
+                                                                  "*ntdll.dll!ZwCreateTimer*",
+                                                                  "*ntdll.dll!ZwCreateKeyedEvent*")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
  not process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\SysWOW64\\WerFault.exe")
 '''
 
 min_endpoint_version = "8.8.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

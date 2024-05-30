@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5m
@@ -68,10 +68,14 @@ sequence with maxspan=5m
 '''
 
 min_endpoint_version = "8.8.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
 state = 0
 
 [[threat]]

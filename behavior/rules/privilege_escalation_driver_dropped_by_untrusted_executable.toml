@@ -7,13 +7,14 @@ id = "3f1cbf09-dba1-428d-8c84-a86db573889e"
 license = "Elastic License v2"
 name = "Driver Dropped by Untrusted Executable"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence with maxspan=5m 
  [process where event.action == "start" and 
   (process.code_signature.trusted == false or process.code_signature.exists == false) and 
-  (process.Ext.relative_file_creation_time <= 3600 or process.Ext.relative_file_name_modify_time <= 500)] as event0
+  (process.Ext.relative_file_creation_time <= 3600 or process.Ext.relative_file_name_modify_time <= 500) and
+  process.hash.sha256 != "bb3468b6c88b0553d039ec3c4e6a13aa9ce500d6962ca906dfda57b7deafcfa9"] as event0
  [file where event.action != "deletion" and
   (file.extension : "sys" or file.Ext.header_bytes : "4d5a*") and 
    process.entity_id == event0.process.entity_id and 

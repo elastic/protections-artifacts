@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 sequence with maxspan=5m
@@ -128,11 +128,15 @@ sequence with maxspan=5m
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

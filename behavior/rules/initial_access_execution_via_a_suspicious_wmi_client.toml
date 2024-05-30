@@ -7,14 +7,15 @@ id = "b0a0d293-f85e-4994-97e6-95541c0bc181"
 license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
   process.parent.name :"WmiPrvSE.exe" and
    (
-    process.Ext.effective_parent.name : ("excel.exe", "powerpnt.exe", "winword.exe", "mshta.exe", "cscript.exe",
-                                         "wscript.exe", "wmic.exe", "rundll32.exe", "regsvr32.exe", "msbuild.exe", "InstallUtil.exe") or
+    process.Ext.effective_parent.name : ("excel.exe", "powerpnt.exe", "winword.exe", "mshta.exe",
+                                         "wscript.exe", "wmic.exe", "rundll32.exe", "regsvr32.exe",
+                                         "msbuild.exe", "InstallUtil.exe") or
     process.Ext.effective_parent.executable : ("?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Users\\*\\AppData\\*", "?:\\Windows\\Microsoft.NET\\*")
     ) and 
   not (user.id : "S-1-5-18" and process.name : "powershell.exe") and 

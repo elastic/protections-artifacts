@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via Windows OpenSSH"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Ssh/"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and
  process.parent.executable : "?:\\windows\\system32\\OpenSSH\\ssh.exe" and
  process.parent.args == "-o" and process.parent.command_line : ("*ProxyCommand=*", "*LocalCommand=*") and
- not process.executable : "?:\\Windows\\system32\\conhost.exe"
+ not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe")
 '''
 
 min_endpoint_version = "7.16.0"

@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
@@ -60,9 +60,13 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
 '''
 
 min_endpoint_version = "8.7.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

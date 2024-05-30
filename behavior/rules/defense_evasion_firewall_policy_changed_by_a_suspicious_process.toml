@@ -8,7 +8,7 @@ id = "bf072c39-90bc-4b1b-9c78-1d8a9bd6f0e1"
 license = "Elastic License v2"
 name = "Firewall Policy Changed by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m 
@@ -24,7 +24,8 @@ sequence with maxspan=1m
 
    (process.code_signature.subject_name : "NetSupport Ltd" and process.Ext.relative_file_creation_time <= 500 and 
     not process.executable : ("?:\\Program Files\\NetSupport*.exe", "?:\\Program Files (x86)\\NetSupport*.exe"))
- )   
+ ) and
+ process.hash.sha256 != "0f418b6eda02552ef104a836a8ba812ddcfae11506dc96cae71b719046cd749c"
 ] as event0 
 [registry where 
   registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\FirewallRules\\*" and 

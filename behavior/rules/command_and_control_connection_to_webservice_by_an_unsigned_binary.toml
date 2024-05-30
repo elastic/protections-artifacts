@@ -7,7 +7,7 @@ id = "2c3efa34-fecd-4b3b-bdb6-30d547f2a1a4"
 license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,7 +15,8 @@ sequence by process.entity_id with maxspan=5m
 
   [process where event.action == "start" and
    not process.code_signature.trusted == true and
-   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300)]
+   (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
+   process.hash.sha256 != "7ce7b2c97b242169333c0920497299e070a5d19900f1751ccf691424e3572c0b"]
   [dns where
     dns.question.name :
     (
@@ -91,6 +92,7 @@ sequence by process.entity_id with maxspan=5m
         "i.ibb.co",
         "files.pythonhosted.org",
         "ip-api.com",
+        "demo.ip-api.com",
           "checkip.dyndns.org",
           "api.ipify.org",
           "whatismyip.akamai.com",

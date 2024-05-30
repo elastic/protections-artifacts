@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -22,11 +22,13 @@ process where event.action == "start" and
    (process.name : "autochk.exe" and not process.parent.name : "smss.exe") or
 
    (process.name : ("consent.exe", "RuntimeBroker.exe") and not process.parent.name : ("svchost.exe", "RuntimeBroker.exe") and
-    not process.parent.executable : "?:\\Program Files\\ThreatLocker\\threatlockerconsent.exe") or
+    not process.parent.executable :
+                 ("?:\\Program Files\\ThreatLocker\\threatlockerconsent.exe",
+                  "?:\\Program Files (x86)\\Workplace\\Components\\WorkplaceContainerComponent\\Current\\Workplace Container Helper.exe")) or
    (process.name : "SearchIndexer.exe" and not process.parent.name : ("services.exe", "SearchIndexer.exe")) or
    (process.name : "smss.exe" and not process.parent.name : ("System", "smss.exe", "sihost.exe")) or
    (process.name : "wininit.exe" and not process.parent.name : "smss.exe") or
-   (process.name : ("lsass.exe", "LsaIso.exe") and not process.parent.name : ("wininit.exe", "lsass.exe")) or
+   (process.name : ("lsass.exe", "LsaIso.exe") and not process.parent.name : ("wininit.exe", "lsass.exe", "services.exe")) or
    (process.name : "services.exe" and not process.parent.name : "wininit.exe") or
    (process.name : "spoolsv.exe" and not process.parent.name : ("services.exe", "spoolsv.exe")) or
    (process.name : "taskhost.exe" and not process.parent.name : ("services.exe", "svchost.exe")) or
@@ -42,7 +44,8 @@ process where event.action == "start" and
    (process.parent.name : "lsass.exe" and not process.name : ("lsass.exe", "WerFaultSecure.exe", "WerFault.exe", "efsui.exe") and
     not (process.code_signature.subject_name in ("NoMachine S.a.r.l.", "AuthLite, LLC") and process.code_signature.trusted == true) and
     not process.hash.sha256 : ("bfcb8f057dae3df9c656ec983d165c1571dbb5e19b6310cc0e5f1bff4c063c1e",
-                               "dd1731be5fccca0d15f2c8e4780debc2962e4c434a7a138fff631a6aa0165962")) or
+                               "dd1731be5fccca0d15f2c8e4780debc2962e4c434a7a138fff631a6aa0165962",
+                               "67f366015d701dcd609e1f40c6bcbe56e7d2b479ebc4229927e50674769a8ead")) or
    (process.parent.name : "autochk.exe" and not process.name:("chkdsk.exe", "doskey.exe", "WerFault.exe", "conhost.exe")) or
    (process.parent.name : "smss.exe" and
     not process.name : ("autochk.exe", "smss.exe", "csrss.exe", "wininit.exe", "winlogon.exe", "setupcl.exe", "WerFault.exe"))
@@ -67,6 +70,8 @@ process where event.action == "start" and
         process.executable : "?:\\WINDOWS\\system32\\SearchProtocolHost.exe" and process.command_line : "*UsGthrFltPipeMssGthrPipe*") and
    not (process.executable : "?:\\Windows\\System32\\SearchProtocolHost.exe" and
         process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe") and
+   not (process.name : "cmd.exe" and process.parent.executable : "?:\\Windows\\System32\\lsass.exe" and
+        process.args : "C:\\AdPasswordSync\\passwd.bat") and
    not (process.executable :
                 ("?:\\Program Files (x86)\\Tanium\\Tanium Client\\Patch\\tools\\TaniumFileInfo.exe",
                  "?:\\Program Files (x86)\\VIPRE Business Agent\\UrlInspectAddon.exe") and process.parent.name : "smss.exe")

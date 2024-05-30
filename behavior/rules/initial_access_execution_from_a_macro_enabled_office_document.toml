@@ -8,7 +8,7 @@ id = "1c4047ca-a69b-473f-a93e-5660e012d9a5"
 license = "Elastic License v2"
 name = "Execution from a Macro Enabled Office Document"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -64,7 +64,8 @@ process where event.action == "start" and
                              "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",
                              "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                              "?:\\Program Files\\Internet Explorer\\iexplore.exe",
-                             "?:\\Program Files\\7-Zip\\7z.exe")
+                             "?:\\Program Files\\7-Zip\\7z.exe",
+                             "?:\\Program Files (x86)\\Microsoft Office\\Office??\\MsoSync.exe")
 '''
 
 min_endpoint_version = "8.7.0"

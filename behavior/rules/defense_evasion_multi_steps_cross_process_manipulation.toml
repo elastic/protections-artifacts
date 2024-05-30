@@ -1,0 +1,101 @@
+[rule]
+description = """
+Identifies attempts to perform code injection steps by multiple processes to bypass events correlation by source
+process.
+"""
+id = "61e9e4cf-01c0-435a-a8ef-525265a0cb25"
+license = "Elastic License v2"
+name = "Multi Steps Cross Process Manipulation"
+os_list = ["windows"]
+reference = ["https://github.com/Maldev-Academy/Christmas/", "https://github.com/Kudaes/Split"]
+version = "1.0.4"
+
+query = '''
+sequence by Target.process.entity_id, process.Ext.api.parameters.address with maxspan=1m
+ [api where process.Ext.api.behaviors : "cross-process" and process.executable != null and
+  (
+    (process.Ext.api.name : ("VirtualAllocEx", "VirtualProtectEx", "MapViewOfFile*") and
+     process.Ext.api.parameters.protection : "*W*") or
+
+     process.Ext.api.name : "WriteProcessMemory"
+   ) and
+  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
+  not (process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.status : "trusted" and
+       process.Ext.api.parameters.size == 136) and
+  not (process.code_signature.subject_name : ("INCA Internet Co.,Ltd.", "Eclipse.org Foundation, Inc.", "Cellebrite Mobile Synchronization",
+       "Advanced Micro Devices Inc.") and process.code_signature.status : "trusted") and
+  not process.executable :
+              ("?:\\Program Files\\Common Files\\McAfee\\SystemCore\\mfehcs.exe",
+               "?:\\Program Files (x86)\\LogMeIn Rescue Applet\\*.tmp\ra64app.exe") and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "6ca08877cb8549baf067314c8358e4c5e301632564fcf10c1c6e40bd1da0e4a2" and
+  not process.thread.Ext.call_stack_final_user_module.path :
+                              ("?:\\Program Files\\*",
+                               "?:\\Program Files (x86)\\*",
+                               "\\Program Files\\*.dll",
+                               "\\Program Files (x86)\\*.dll",
+                               "?:\\windows\\system32\\hmpalert.dll",
+                               "?:\\windows\\syswow64\\hmpalert.dll",
+                               "?:\\windows\\system32\\*\\tmmon*.dll*",
+                               "?:\\Windows\\SysWOW64\\esensordbi.dll*",
+                               "?:\\Windows\\System32\\esensordbi.dll*",
+                               "?:\\Windows\\System32\\umppc*.dll*",
+                               "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
+                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*")
+ ] as event0
+ [api where process.Ext.api.behaviors : "cross-process" and process.executable != null and
+  (
+    (process.Ext.api.name : "VirtualProtectEx" and process.Ext.api.parameters.protection : "*X*" and
+     process.Ext.api.parameters.protection_old : "*W*") or
+
+     process.Ext.api.name : "WriteProcessMemory"
+   ) and
+  event0.process.Ext.api.name !=  process.Ext.api.name and event0.process.pid != process.pid and
+  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
+  not (process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.status : "trusted" and
+       process.Ext.api.parameters.size == 136) and
+  not (process.code_signature.subject_name : ("INCA Internet Co.,Ltd.", "Eclipse.org Foundation, Inc.", "Cellebrite Mobile Synchronization") and
+       process.code_signature.status : "trusted") and
+  not process.executable :
+              ("?:\\Program Files\\Common Files\\McAfee\\SystemCore\\mfehcs.exe",
+               "?:\\Program Files (x86)\\LogMeIn Rescue Applet\\*.tmp\ra64app.exe") and
+  not process.thread.Ext.call_stack_final_user_module.path :
+                              ("?:\\Program Files\\*",
+                               "?:\\Program Files (x86)\\*",
+                               "\\Program Files\\*.dll",
+                               "\\Program Files (x86)\\*.dll",
+                               "?:\\windows\\system32\\hmpalert.dll",
+                               "?:\\windows\\syswow64\\hmpalert.dll",
+                               "?:\\windows\\system32\\*\\tmmon*.dll*",
+                               "?:\\Windows\\SysWOW64\\esensordbi.dll*",
+                               "?:\\Windows\\System32\\esensordbi.dll*",
+                               "?:\\Windows\\System32\\umppc*.dll*",
+                               "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
+                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*")]
+'''
+
+min_endpoint_version = "8.11.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -8,7 +8,7 @@ id = "58b996a5-634c-4205-9ffa-a6f2b8ebc1ad"
 license = "Elastic License v2"
 name = "Potential Process Creation via ShellCode"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.action == "start" and
@@ -23,9 +23,13 @@ not (process.code_signature.trusted == true and
 '''
 
 min_endpoint_version = "8.8.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

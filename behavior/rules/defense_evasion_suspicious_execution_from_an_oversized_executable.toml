@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies the execution of commonly abused Microsoft binaries from an oversized parent executable. Malwares tend to
+increase the size of the binary payload beyond what some security tools are capable of handling due to file size
+limitations.
+"""
+id = "7a804cf1-aec7-474d-a776-7e78f6b14658"
+license = "Elastic License v2"
+name = "Suspicious Execution from an Oversized Executable"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1027/001/"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+[file where event.action != "deletion" and
+  (file.extension : ("exe", "com", "pif", "scr", "dll", "cpl", "ocx") or file.Ext.header_bytes : "4d5a*") and
+
+   /* larger than 10MB */
+   file.size >= 100000000 and
+
+  (
+   /* common initial access and execution processes */
+   process.name : ("winword.exe", "excel.exe", "powerpnt.exe", "cmd.exe", "powershell.exe", "cscript.exe", "wscript.exe",
+                   "mshta.exe", "rundll32.exe", "regsvr32.exe", "certutil.exe", "CertReq.exe", "curl.exe", "msbuild.exe",
+                   "installutil.exe", "regasm.exe", "expand.exe", "xcopy.exe", "chrome.exe", "brave.exe", "firefox.exe",
+                   "msedge.exe", "whale.exe", "browser.exe", "dragon.exe", "vivaldi.exe", "opera.exe") or
+
+    /* suspicious or user writable paths and unsigned processes */
+   (process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*", "\\Device\\Mup\\*") and
+    (process.code_signature.trusted == false or process.code_signature.exists == false))
+   ) and
+
+   /* excluding noisy patterns */
+   not file.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+   not process.executable :
+              ("?:\\Users\\*\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0\\rcedit-x64.exe",
+               "?:\\Users\\*\\Electron\\dist\\StrigoTool-Electron Setup 1.0.0.exe")
+ ] by file.path
+[process where event.action == "start" and 
+ process.name : ("cmd.exe", "powershell.exe", "cscript.exe", "wscript.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe",
+                 "certutil.exe", "CertReq.exe", "curl.exe", "msbuild.exe") and
+ not (process.name : "wscript.exe" and process.args : "C:\\Prntdrvr\\SFX\\silent.vbs") and
+ not (process.name : "cmd.exe" and
+      process.args : ("C:\\WINDOWS\\system32\\reg.exe ADD HKCU\\Software\\Classes\\GoSignDesktop.p7m /f",
+                      "USERNAME eq %USERNAME%", "lms version --json", "--output-encoding=bser",
+                      "imagename eq SteelSeriesGG.exe")) and
+ not (process.parent.code_signature.subject_name : ("KOBIL GmbH", "Shenzhen Tuozhu Technology Co., Ltd.", "Bose Professional") and
+      process.parent.code_signature.trusted == true)
+ ] by process.parent.executable
+'''
+
+min_endpoint_version = "8.11.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.001"
+name = "Binary Padding"
+reference = "https://attack.mitre.org/techniques/T1027/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

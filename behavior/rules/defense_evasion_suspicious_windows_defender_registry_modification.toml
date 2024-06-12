@@ -7,7 +7,7 @@ id = "56751d32-cded-41ad-a273-e6860820c4c3"
 license = "Elastic License v2"
 name = "Suspicious Windows Defender Registry Modification"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -31,7 +31,8 @@ sequence by process.entity_id with maxspan=5s
    and not process.executable :
              ("?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
               "?:\\Program Files\\Microsoft Security Client\\MsMpEng.exe",
-              "*\\Program Files*\\Windows Defender\\MsMpEng.exe")
+              "*\\Program Files*\\Windows Defender\\MsMpEng.exe",
+              "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\ConfigSecurityPolicy.exe")
    ]
    [registry where
     registry.value :

@@ -12,7 +12,7 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -54,7 +54,7 @@ sequence by process.entity_id with maxspan=1m
                     "5b01d964ced28c1ff850b4de05a71f386addd815a30c4a9ee210ef90619df58e",
                     "d2e98889031fa8e896b3f78e95f5f4e41757b87cf6117e4adf4f2147c81adaa9")
  ]
- [file where event.action != "deletion" and
+ [file where event.action != "deletion" and event.action != "open" and
   (file.extension : ("exe", "com", "dll") or file.Ext.header_bytes : "4d5a*") and
   file.path : ("?:\\Windows\\System32\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Program Files (x86)\\Microsoft\\*", "?:\\Program Files\\Microsoft\\*") and
   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and process.executable != null and

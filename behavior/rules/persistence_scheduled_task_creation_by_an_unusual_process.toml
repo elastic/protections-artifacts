@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=5m
@@ -66,7 +66,8 @@ sequence with maxspan=5m
                                       "?:\\ProgramData\\Lenovo\\LenovoNow\\Downloads\\LenovoNow.Updater.exe",
                                       "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoFirstRunExperiencePackage\\x86\\LenovoWelcomeTask.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe", 
-                                      "C:\\Banyan\\Canopy\\Leaf\\leaf_desktop_app.exe", 
+                                      "C:\\Banyan\\Canopy\\Leaf\\leaf_desktop_app.exe",
+                                      "?:\\windows\\system32\\msiexec.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 

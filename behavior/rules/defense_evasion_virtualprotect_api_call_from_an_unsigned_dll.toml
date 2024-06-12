@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id
@@ -90,7 +90,9 @@ sequence by process.entity_id
                 "914e04a05b4842aadec68f11fbeb449da244675f1e86b77a89feb906844de6c7",
                 "51baffc543b226dd4e812c8aa92691bef81a3a8a2b36cad87589875aa90804b4",
                 "6ceb5061feab0077222044e51f0163fb257941e54f37460f601093eb983b8236",
-                "51baffc543b226dd4e812c8aa92691bef81a3a8a2b36cad87589875aa90804b4")] as event0
+                "51baffc543b226dd4e812c8aa92691bef81a3a8a2b36cad87589875aa90804b4",
+                "7d69f790b2477cff7f8470f7adb1eaced119a51251321aa4a78999e6717c6829",
+                "c940bb89b28c6cc93642bc2eabfe4c90d3ad935ab77996963dcd39fe038fb78d")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

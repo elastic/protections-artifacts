@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -31,7 +31,8 @@ api where process.Ext.api.behaviors == "hollow_image" and
        process.executable : "?:\\Program Files\\Microsoft Office\\root\\Office*\\EXCEL.EXE") and
   not (process.code_signature.subject_name : ("Code Systems Corporation", "Essential Objects, Inc.", "JAM Software GmbH",
                                               "IMSI Design, LLC", "Nuance Communications, Inc.", "Rocket Software, Inc.", 
-                                              "Tracker Software Products (Canada) Ltd", "Sage Software, Inc.", "Azul Systems, Inc.") and
+                                              "Tracker Software Products (Canada) Ltd", "Sage Software, Inc.", "Azul Systems, Inc.",
+                                              "Essential Objects, Inc.") and
        process.code_signature.trusted == true) and
   not (process.parent.executable : ("?:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe", "?:\\Program Files\\Google\\Update\\GoogleUpdate.exe") and
        process.executable : ("?:\\Program Files (x86)\\Google\\Update\\*\\GoogleCrashHandler*.exe", "?:\\Program Files\\Google\\Update\\*\\GoogleCrashHandler*.exe")) and

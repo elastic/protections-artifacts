@@ -8,7 +8,7 @@ id = "971462bd-6f34-4199-b79b-b5e26644a177"
 license = "Elastic License v2"
 name = "Unsigned DLL from Suspicious Directory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 library where
@@ -71,7 +71,7 @@ library where
                   "?:\\Windows\\PLA\\*.dll",
                   "?:\\Windows\\Migration\\*.dll",
                   "?:\\Windows\\debug\\*.dll",
-		  "?:\\Windows\\hp\\*.dll",
+                  "?:\\Windows\\hp\\*.dll",
                   "?:\\Windows\\Cursors\\*.dll",
                   "?:\\Windows\\Containers\\*.dll",
                   "?:\\Windows\\Boot\\*.dll",
@@ -90,7 +90,8 @@ library where
                   "?:\\Windows\\LiveKernelReports\\*.dll",
                   "?:\\Windows\\ModemLogs\\*.dll",
                   "?:\\Windows\\ImmersiveControlPanel\\*.dll",
-                  "?:\\$Recycle.Bin\\*.dll") and
+                  "?:\\$Recycle.Bin\\*.dll",
+                  "?:\\aaAntiRansomElastic-DO-NOT-TOUCH-*") and
 
 	 /* DLL loaded from the process.executable current directory */
 	 endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
@@ -101,7 +102,8 @@ library where
 	 not (process.code_signature.trusted == true and
 	      process.code_signature.subject_name :
 	              ("Bedford, Freeman & Worth Publishing Group, LLC",
-	               "Delta Electronics, Inc.")) and
+	               "Delta Electronics, Inc.",
+	               "Hangzhou Hikvision Digital Tech.Co.,Ltd")) and
 	 not dll.hash.sha256 : "7aea82c8c38a88e7c66ccae246367c261a6c230b5ce4540c7970c8eb1d8dc6ca"
 '''
 

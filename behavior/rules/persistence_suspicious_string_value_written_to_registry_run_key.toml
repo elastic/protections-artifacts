@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious String Value Written to Registry Run Key"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 registry where registry.data.strings != null and
@@ -86,7 +86,9 @@ registry where registry.data.strings != null and
              "*:\\Users\\*\\Pictures\\*",
              "*:\\Users\\*\\Music\\*",
              "*:\\Users\\*\\Pictures\\*",
-             "*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*") and not
+             "*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
+             "\\\\*.exe",
+             "*javaw.exe* -jar *") and not
     registry.data.strings :
                    ("*rundll32.exe*advpack.dll,DelNodeRunDLL32*",
                     "*LogiLDA.dll,LogiFetch*",

@@ -7,7 +7,7 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -23,7 +23,8 @@ sequence by user.id with maxspan=5m
    not process.executable :
               ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*.exe",
                "?:\\Program Files\\SWSetup\\SP100309\\Lexus FW Upgrade 0007.exe") and
-
+   not (process.executable : "?:\\Users\\*\\AppData\\Roaming\\zozi-rpa-engine\\openjdk\\bin\\java.exe" and
+        file.path : "C:\\Project\\*.vbs") and
    (
      process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe",
                      "mspub.exe", "msaccess.exe", "certutil.exe", "tar.exe", "CertReq.exe", "xcopy.exe", 
@@ -44,7 +45,8 @@ sequence by user.id with maxspan=5m
   not process.parent.executable :
                     ("?:\\Program Files (x86)\\Virus Chaser\\pcms\\patch\\_incomming_files\\KDB_Trellix_Agent_BG.sfx.exe",
                      "?:\\Program Files (x86)\\UPS\\CrossWare\\CrossWare.exe",
-                     "?:\\Program Files\\UPS\\CrossWare\\CrossWare.exe") and
+                     "?:\\Program Files\\UPS\\CrossWare\\CrossWare.exe",
+                     "?:\\Program Files (x86)\\Common Files\\InstallShield\\Driver\\8\\Intel 32\\IDriver.exe") and
   not (process.parent.args : "-no_selfdeleter" and process.parent.args : "-IS_temp") and
   not (process.parent.args : "-removeonly" and process.parent.args : "-runfromtemp") and
   not (process.name : "wscript.exe" and process.parent.name : "cmd.exe" and

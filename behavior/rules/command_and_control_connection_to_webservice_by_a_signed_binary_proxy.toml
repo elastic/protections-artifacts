@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -153,11 +153,15 @@ sequence by process.entity_id with maxspan=5m
         "*.yandex.ru",
         "*.aternos.me",
         "cdn??.space",
-        "*.pcloud.com"
+        "*.pcloud.com",
+        "mediafire.zip",
+        "urlz.fr",
+        "api.github.com",
+        "rentry.co"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and
-         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com")) and 
+         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com", "api.github.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe")
   ]
 '''

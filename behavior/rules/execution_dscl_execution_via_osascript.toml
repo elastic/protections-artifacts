@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects the execution of the Dscl binary via Osascript in order to collect user information. The AMOS malware utilizes
+this technique in its AppleScripts in order to determine the current user.
+"""
+id = "7a7b94ce-be0f-4e2b-8af8-606199b5256e"
+license = "Elastic License v2"
+name = "Dscl Execution via Osascript"
+os_list = ["macos"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : "dscl" and process.parent.name : "osascript"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1033"
+name = "System Owner/User Discovery"
+reference = "https://attack.mitre.org/techniques/T1033/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -13,7 +13,7 @@ reference = [
     "https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/",
     "https://malpedia.caad.fkie.fraunhofer.de/details/win.plugx",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 registry where
@@ -22,7 +22,8 @@ registry where
  registry.path : ("HK*\\Software\\CLASSES\\ms-pu\\PROXY*", "HK*\\Software\\CLASSES\\ms-pu\\CLSID*") or
 
   /* PlugX Persist via Run key with specific program args */
- (registry.path : "HK*\\CurrentVersion\\Run\\*" and not process.executable : "?:\\Windows\\System32\\msiexec.exe" and
+ (registry.path : "HK*\\CurrentVersion\\Run\\*" and
+  not process.executable : ("?:\\Windows\\System32\\msiexec.exe", "?:\\Windows\\regedit.exe") and
   (registry.data.strings regex ".+exe. [0-9]{2,3}" or registry.data.strings : ("*.exe? -app", "*.exe? -net"))) or
 
   /* PlugX store internet status in Version value */

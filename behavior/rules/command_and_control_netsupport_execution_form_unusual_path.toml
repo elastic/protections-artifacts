@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies a suspicious execution of NetSupport remote access software from non-default paths. Adversaries may abuse the
+NetSupport RMM software to control a target victim machine.
+"""
+id = "f36c407e-27c1-4682-a322-73dd0cddf29d"
+license = "Elastic License v2"
+name = "NetSupport Execution form unusual Path"
+os_list = ["windows"]
+reference = ["https://www.netsupportsoftware.com/"]
+version = "1.0.1"
+
+query = '''
+process where process.pe.original_file_name : "client??.exe" and
+  (process.Ext.relative_file_creation_time <= 900 or process.Ext.relative_file_name_modify_time <= 900) and
+  process.code_signature.subject_name : "NetSupport Ltd" and
+  not process.executable : ("?:\\Program Files\\NetSupport*.exe", "?:\\Program Files (x86)\\NetSupport*.exe") and
+  not process.parent.executable : ("?:\\Program Files\\NetSupport*.exe", "?:\\Program Files (x86)\\NetSupport*.exe")
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1219"
+name = "Remote Access Software"
+reference = "https://attack.mitre.org/techniques/T1219/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

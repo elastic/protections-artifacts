@@ -7,7 +7,7 @@ id = "b2104624-d0e8-4864-8266-605056c6469a"
 license = "Elastic License v2"
 name = "Suspicious Remote Memory Allocation"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
@@ -26,7 +26,10 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
                                          "?:\\Windows\\System32\\umppc*.dll*", 
                                          "?:\\Windows\\FireEye\\AppMonitorDll*.dll*", 
                                          "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*", 
-                                         "?:\\windows\\system32\\hmpalert.dll!*")) and 
+                                         "?:\\windows\\system32\\hmpalert.dll!*",
+                                         "*ntdll.dll!NtCreateUserProcess*",
+                                         "c:\\windows\\system32\\wlidsvc.dll!SvchostPushServiceGlobals*",
+                                         "c:\\windows\\systemapps\\microsoft.aad.brokerplugin_*\\aad.core.dll!DllGetActivationFactory*")) and
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Kernel*") and 
   /* Cynet MemScanner, xSecuritas, Mcafee */
    not _arraysearch(process.thread.Ext.call_stack, $entry,
@@ -48,7 +51,10 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
    not (process.executable : "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and 
         process.parent.executable : ("?:\\Windows\\System32\\SecurityHealthSystray.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\FileCoAuth.exe") and 
         process.Ext.api.summary : "VirtualAllocEx*microsoftedgeupdate.exe,*") and 
-   not process.parent.executable : ("?:\\Program Files (x86)\\Embarcadero\\Studio\\*\\bin\\bds.exe", "?:\\Program Files\\Embarcadero\\Studio\\*\\bin\\bds.exe")
+   not process.parent.executable :
+               ("?:\\Program Files (x86)\\Embarcadero\\Studio\\*\\bin\\bds.exe",
+                "?:\\Program Files\\Embarcadero\\Studio\\*\\bin\\bds.exe",
+                "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Professional\\Common?\\IDE\\devenv.exe")
 '''
 
 min_endpoint_version = "8.8.0"

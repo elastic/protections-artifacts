@@ -13,11 +13,11 @@ reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 any where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
- process.executable != null and 
+ process.executable != null and Persistence.args != null and
   Persistence.args : ("*/.*", 
                         "/private/tmp/*", 
                         "/private/var/root/Library/HTTPStorages/*",
@@ -69,7 +69,8 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                       "/Library/Bitdefender/AVP/product/bin/bdredline",
                       "https://elastic.jamfcloud.com", 
                       "/Users/*/Library/Application Support/*",
-                      "/var/run/docker.sock") and not 
+                      "/var/run/docker.sock",
+                      "Location of the installed AutomationEngineSyncer executable (to be replaced by installer)") and not
   process.executable : ("/System/*",
                         "/Library/PrivilegedHelperTools/*", 
                         "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not
@@ -79,7 +80,13 @@ any where event.action == "launch_daemon" and (Persistence.runatload == true or 
                                        "com.apple.cfprefsd",
                                        "com.jetbrains.toolbox",
                                        "ksinstall",
-                                       "com.apple.shove")
+                                       "com.apple.shove",
+                                       "GoToAssistRemoteSupportDaemon",
+                                       "coreutils",
+                                       "com.sublimetext.4",
+                                       "com.apple.ditto",
+                                       "NodewareAgent") and not
+  Persistence.executable : "/Applications/AhnLab/ASTx/astxd"
 '''
 
 min_endpoint_version = "8.6.0"

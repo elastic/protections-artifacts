@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -31,6 +31,7 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                  "Yummy Interactive Inc", "Caliper Corporation", "Tencent Technology (Shenzhen) Company Limited")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*",
+                                        "?:\\Windows\\apppatch\\exploitblocker.dll*",
                                         "?:\\Windows\\AppPatch\\emet.dll!*",
                                         "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*"))
 '''

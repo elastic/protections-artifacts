@@ -7,7 +7,7 @@ id = "76da5dca-ffe5-4756-85ba-3ac2e6ccf623"
 license = "Elastic License v2"
 name = "Unusual DLL Extension Loaded by Rundll32 or Regsvr32"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
@@ -19,9 +19,10 @@ sequence by process.entity_id with maxspan=1s
                        "\\\\*\\FullCase\\pegasusimaging.activex.imagxpress*.dll"))
   ]
  [library where process.name : ("rundll32.exe", "regsvr32.exe") and
+  dll.hash.sha256 : "??*" and
   not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb", "*.scr", "*.dll.mui", "*.ime", "*.tsp", "*.rbf") and
   not (dll.name : ("*.ocx", "*.ax") and process.name : "regsvr32.exe") and
-  not dll.code_signature.trusted == true and
+  not dll.code_signature.status : ("trusted", "errorCode_endpoint*")  and
   not dll.path : ("?:\\Windows\\System32\\winspool.drv",
                   "?:\\Windows\\SysWOW64\\winspool.drv",
                   "?:\\Windows\\System32\\*.ime",
@@ -33,7 +34,12 @@ sequence by process.entity_id with maxspan=1s
   not dll.hash.sha256 : ("cfd375eb124d1fba73f2d46705a43ed30e8aaadca7627bab7718f674fb82df38",
                          "4af03da6cda5d673725b671dbb3fccfc4badc0651af9065216bdcddb0fef7adf",
                          "bf03c44224a2932e4c12ce02e12059f5c37b7d7ebfbbe4f2603b324c368ba2b9",
-                         "9e318b33d7ae4ece36cdcd345ff6815816f9efcaf9a9b943999c6d80ae043e91")
+                         "9e318b33d7ae4ece36cdcd345ff6815816f9efcaf9a9b943999c6d80ae043e91",
+                         "e209a8b0555f2adbb072105303d6da86c287313770c31b8e4f4b43b5e16cb9a9",
+                         "b57739398fc8bf80c3de2ca2f9c5b1e5d0287700b6411acc92aec674c1c8d60c",
+                         "42057c320546194514a3df24788264a1b9a6da32a0c7b6902c5afbbb0b4b9077",
+                         "ae9fca8e295ed4bc5ae2ef69504c3d3c69098c330f74c5a983cff19ab58a27a8",
+                         "79cf46fea3048f7f00076ddf3e16efba043dea592ca7ea5a60af92e652d37afc")
   ]
 '''
 

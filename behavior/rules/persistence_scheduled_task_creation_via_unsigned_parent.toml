@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation via Unsigned Parent"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by user.id with maxspan=3m
@@ -17,7 +17,11 @@ sequence by user.id with maxspan=3m
   not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
   not process.hash.sha256 : ("d0766b7caa8a7ee828f776116e564e5f231307cb748eb4b9164fa679a88185ca",
                              "6b509b774512fcd3581c321040119bf412a308c20d681575170a3a21078225b7",
-                             "84efcc024b5f6de6554c40033462b21ca550a240c84e46b36ebb972799aa8a8b")
+                             "84efcc024b5f6de6554c40033462b21ca550a240c84e46b36ebb972799aa8a8b",
+                             "5781e4524a79859f2f5097829d5a848a47529181a0cc34342f298d77ab31209f",
+                             "7e2afab5c7bda9ed6b308807757dbd5aecd572a02edb540b7cb8c98865d21278",
+                             "d678d9b1ecb942d88c39c23cd93884b28f6fe0792e2a122e8f1b00c2e34dde27",
+                             "830b7954516ca041fe9aba5e472023002236773aa9f2482a2025706b4536b8d0")
   ] by process.entity_id
  [process where event.action == "start" and
   (process.pe.original_file_name : ("schtasks.exe", "sctasks.exe", "cmd.exe", "powershell.exe") or 

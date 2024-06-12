@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -19,7 +19,7 @@ process where event.action == "start" and
   "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
   "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
   "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
-  "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*") or
+  "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
@@ -93,7 +93,8 @@ process where event.action == "start" and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and
   not process.parent.args :  "C:\\WINDOWS\\Runtime\\utility\\wrapper.vbs" and 
   not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs") and
-  not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824")
+  not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824") and
+  not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\Program Files (x86)\\CaseWare\\Template\\FinancialsIFRS\\Packager\\After\\0\\FinancialsIFRSCreateShortcuts.js")
 '''
 
 min_endpoint_version = "7.15.0"

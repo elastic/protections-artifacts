@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id
@@ -50,7 +50,7 @@ sequence by process.entity_id
                      "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE", 
                      "Link Data Security A/S", "Western Digital Technologies, Inc.", "Rockstar Games, Inc.",
                      "SEMPERIS INC.", "Micro-Star International CO., LTD.", "Kaseya Holdings Inc", "KASEYA US LLC",
-                     "Intel(R) Software Development Products", "Kodak Alaris Inc.") and
+                     "Intel(R) Software Development Products") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -93,7 +93,8 @@ sequence by process.entity_id
                     "54e55d6da825d709cf495eb18be10d8cbb92ac1904c1359999d53d3fa42161e2",
                     "07e79814fde31ff5968d5c0448014d931cd3a2e59b2ac841bc53a155c333a1b9",
                     "afcee50eace500b9b2c3dc4faab371fd040d769ba3a5197ef3a8762fe5457337",
-                    "e7883c7d57f5cfe7d1649ab138f62f5042f7acda8ed3c8664c9335c3ddba85c4") and
+                    "e7883c7d57f5cfe7d1649ab138f62f5042f7acda8ed3c8664c9335c3ddba85c4",
+                    "8982729121fa3b3e6c283437f5832916a5a3611374ac848368c6edaae5086257") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -162,13 +163,14 @@ sequence by process.entity_id
                           "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a",
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
                           "41c64?0c01833d*",
-                          "c6430c0148bacce0*",
+                          "c6430c0148ba*f87f0000833a00740c*",
                           "c6470c01833d*",
                           "a3b8eb*",
                           "a314a2e40585c*",
                           "488b9570ffffffc6420*",
                           "49bb60c0*",
-                          "488b5590c6420c01833d2bc9*",
+                          "488b5590c6420c01833d*",
+                          "41c6460c0148ba*7f0000833a00740c*",
                           "8be55d558bec83ec08c745f800000000*",
                           "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067", 
@@ -178,9 +180,13 @@ sequence by process.entity_id
                           "41c6470c0148ba*4c8b6d8849897508498bc5488b9548ffffff498957104881",
                           "c6460c01833db6e5e75f007406ff15eae8e65f488bd8e8aa38b25f488bc3488b4d8048894e104883c4785b5e5f415c415d415e415f5dc367611910090010e20c",
                           "49bb60c05eb7ff7f000048b9*",
-                          "488945984885c07507bac4020000eb2d6685db7505bbffff00000fb7d3488bc8448bca89542420448bc2488d058dc00000ff140785c0752cbad0020000488b8d",
+                          "488945984885c07507bac4020000eb2d6685db750*",
                           "*488b5588498956104883c4785b5e5f415c415d415e",
+                          "c6460c01833d*",
                           "898383080000c7837f080000010000006a0056ff9397080000*",
+                          "898383080000c7837f080000010000006a0056ff*",
+                          "49bbb014*f0000ba0c0000004c8d4c2450448d423441ffd349bb403*",
+                          "89434885c07507f0ff054b360c000f57c04489bb2c0200004c89bb400200004c89bb480200004489bb500200000f1183580200000f1183680200000f11837802",
                           "488944242048837c242000750e488d0d7e0f0000e8a1ffffffeb37488d15980f0000488b4c2420ff153d0f0000488944242848837c242800750e488d0d910f00",
                           "c6430c0148ba446a76e3fd7f0000833a00740c48b9988375e3fd7f0000ff11488b5580488953104883c4785b5e5f415c415d415e415f5dc30000001910090010",
                           "f7d20fca85c08af3a37002f103b8000000000fca0f95c01af08984243803000033b424e001000003c60fc8e9a50100004a8bc6c1ea0b8d94248c01000003023b",

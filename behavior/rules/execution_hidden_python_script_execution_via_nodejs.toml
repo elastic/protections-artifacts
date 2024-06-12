@@ -9,12 +9,13 @@ license = "Elastic License v2"
 name = "Hidden Python Script Execution via Nodejs"
 os_list = ["macos"]
 reference = ["https://x.com/dimitribest/status/1782609281897902426"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.args : "python*" and process.args : ("/Users/*/.*", "/tmp/.*", "/private/tmp/.*") and 
- process.args_count == 2 and process.name : "python*" and process.parent.name : "node"
+ process.args_count == 2 and process.name : "python*" and process.parent.name : "node" and
+ not process.args : "/Users/*/.vscode/*"
 '''
 
 min_endpoint_version = "8.10.2"

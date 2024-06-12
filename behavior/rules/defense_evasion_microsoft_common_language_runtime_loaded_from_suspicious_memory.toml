@@ -7,7 +7,7 @@ id = "ad2c6fcc-89d3-4939-85d9-d7114d6bbf14"
 license = "Elastic License v2"
 name = "Microsoft Common Language Runtime Loaded from Suspicious Memory"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -28,7 +28,8 @@ library where dll.name : "clr.dll" and
                 "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",
                 "?:\\Program Files (x86)\\PMP\\jre\\bin\\java.exe",
                 "?:\\Program Files\\ManageEngine\\PAM360\\jre\\bin\\java.exe",
-                "?:\\Program Files (x86)\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe") and
+                "?:\\Program Files (x86)\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe",
+                "?:\\Program Files\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes : ("c5f8774883ec10c5fb1104244883ec104889042449ba00000000000000004*",
                                                       "*488b8d48ffffff48894b104c8b658049894424084c896588c745c0*"))

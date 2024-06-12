@@ -1,31 +1,25 @@
 [rule]
 description = """
-Identifies attempts to load a library or call a memory management API from a thread that was previously in a sleep
-state. This may indicate an attempt to evade detection via time based evasion techniques.
+Identifies attempts to call a memory management API from a thread that was previously in a sleep state. This may
+indicate an attempt to evade detection via time based evasion techniques.
 """
 id = "47aec49c-4f8b-4245-8eae-7d615f30f154"
 license = "Elastic License v2"
 name = "Potential Evasion via Sleep Obfuscation"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
-any where 
- (event.category == "api" or 
-  (event.category == "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll", "vaultcli.dll", "ntdll.dll"))) and
+api where
+ process.Ext.api.name == "VirtualProtect" and process.Ext.api.behaviors == "execute_fluctuation" and
+ process.thread.Ext.call_stack_final_user_module.name == "ntdll.dll" and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!ZwProtectVirtualMemory*", "*ntdll.dll!NtProtectVirtualMemory*")) and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!ZwDelayExecution*", "*ntdll.dll!NtDelayExecution*")) and 
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\System32\\tquery.dll!ExceptInitialize+*") and 
- not process.executable : 
-            ("?:\\Program Files\\*.exe", 
-             "?:\\Program Files (x86)\\*.exe", 
-             "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe", 
-             "?:\\Windows\\Microsoft.NET\\Framework*\\ngentask.exe") and
- not (process.code_signature.subject_name : "SAP SE" and process.code_signature.trusted == true and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|dbghelp.dll|disp+work.exe|ntdll.dll|kernelbase.dll|disp+work.exe|kernel32.dll|ntdll.dll") and 
- not process.thread.Ext.call_stack_summary : "*kernelbase.dll|sechost.dll*" and process.Ext.api.name != "IoCreateDevice"
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernelbase.dll!SleepEx*") and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*ntdll.dll!KiUserApcDispatcher*")
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -56,4 +50,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

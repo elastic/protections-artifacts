@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -28,7 +28,10 @@ sequence by process.entity_id with maxspan=1m
   /* FACEIT Anti-Cheat Launcher */
   not (process.code_signature.subject_name : 
            ("FACE IT LIMITED", "Kaspersky Lab JSC", "Check Point Software Technologies Ltd.", "COGNOSPHERE PTE. LTD.", 
-            "Bright Star Engineering Inc.", "Carlson Software", "Electronic Arts, Inc.", "ESL Gaming GmbH", "FunPlus International AG") and
+            "Bright Star Engineering Inc.", "Carlson Software", "Electronic Arts, Inc.", "ESL Gaming GmbH", "FunPlus International AG",
+            "KURO TECHNOLOGY (HONG KONG) CO., LIMITED", "Exbo North LLC", "PROXIMA BETA PTE. LIMITED", "DVDFab Software Inc.",
+            "Carlson Software", "Asseco South Eastern Europe SA", "Palo Alto Networks (Netherlands) B.V.",
+            "UBISOFT ENTERTAINMENT INC.") and
        process.code_signature.trusted == true and
        process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
 
@@ -39,8 +42,14 @@ sequence by process.entity_id with maxspan=1m
                     $entry.symbol_info : ("?:\\Windows\\System32\\sysmain.dll!AgTwLoad*",
                                           "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\sysfer.dll*"))) and
   not (user.id : "S-1-5-18" and process.executable : "?:\\Program Files (x86)\\Acunetix\\*\\wvsc.exe") and
-  not (process.thread.Ext.call_stack_summary : "ntdll.dll|ebehmoni.dll" and
-       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*"))
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info: ("?:\\program files*\\avg\\antivirus\\aswhook.dll*",
+                                        "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*",
+                                        "?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*",
+                                        "?:\\Program Files\\ESET\\ESET Endpoint Antivirus\\ebehmoni.dll*",
+                                        "?:\\Program Files\\Avokado\\Viruskerajs\\ebehmoni.dll*",
+                                        "?:\\Windows\\System32\\sxwmon64.dll*",
+                                        "?:\\Program Files\\Palo Alto Networks\\Traps\\cysvc.dll*"))
   ]
  [any where
 
@@ -49,7 +58,9 @@ sequence by process.entity_id with maxspan=1m
 
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info: ("?:\\program files*\\avg\\antivirus\\aswhook.dll+*",
-                                        "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*"))]
+                                        "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*",
+                                        "?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*",
+                                        "?:\\Windows\\System32\\sxwmon64.dll*"))]
 '''
 
 min_endpoint_version = "8.7.0"

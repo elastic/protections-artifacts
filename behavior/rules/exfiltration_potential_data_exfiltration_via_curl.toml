@@ -1,0 +1,48 @@
+[rule]
+description = """
+Detects the use of curl to upload an archived file to an internet server. Threat actors often will collect data on a
+system and compress it in an archive file before exfiltrating the file back to their C2 server for review. Many threat
+actors have been seen utilizing curl to upload this archive file with the collected data to do this. Use of curl in this
+way while not inherently malicious should be considered highly abnormal and suspicious activity.
+"""
+id = "192ec591-1d00-4c16-a717-8a7481038d23"
+license = "Elastic License v2"
+name = "Potential Data Exfiltration via Curl"
+os_list = ["macos"]
+reference = [
+    "https://everything.curl.dev/usingcurl/uploads",
+    "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
+    "https://objective-see.org/blog/blog_0x66.html",
+]
+version = "1.0.27"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
+ process.args : ("-F", "-T", "-d", "--data-*") and 
+ process.args : ("*@*.zip", "*@*.gz", "*@*.tgz") and 
+ process.args : "http*" and
+ process.parent.name : ("osascript", "python*", "node", "ruby")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1048"
+name = "Exfiltration Over Alternative Protocol"
+reference = "https://attack.mitre.org/techniques/T1048/"
+
+
+[threat.tactic]
+id = "TA0010"
+name = "Exfiltration"
+reference = "https://attack.mitre.org/tactics/TA0010/"
+
+[internal]
+min_endpoint_version = "8.7.0"

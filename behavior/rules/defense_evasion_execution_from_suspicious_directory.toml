@@ -7,7 +7,7 @@ id = "9ba39516-651e-489f-8b6a-f5501e0c492d"
 license = "Elastic License v2"
 name = "Execution from Suspicious Directory"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -23,7 +23,9 @@ sequence by process.entity_id with maxspan=1m
           "?:\\Windows\\Logs\\*",
           "?:\\windows\\Help\\*",
           "?:\\Windows\\INF\\*",
-          "?:\\Windows\\System32\\spool\\drivers\\color\\*") or
+          "?:\\$Recycle.Bin\\*",
+          "?:\\Windows\\System32\\spool\\drivers\\color\\*",
+          "?:\\aaAntiRansomElastic-DO-NOT-TOUCH-*") or
 
    (process.executable : "?:\\Users\\*\\AppData\\Roaming\\*" and not process.executable : "?:\\Users\\*\\AppData\\Roaming\\*\\*") or
 
@@ -74,7 +76,8 @@ sequence by process.entity_id with maxspan=1m
           "?:\\PerfLogs\\*",
           "?:\\Windows\\Logs\\*",
           "?:\\windows\\Help\\*",
-          "?:\\Windows\\INF\\*") and
+          "?:\\Windows\\INF\\*",
+          "?:\\aaAntiRansomElastic-DO-NOT-TOUCH-*") and
 
    not dns.question.name :
               ("*.in-addr.arpa.",

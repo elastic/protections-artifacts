@@ -1213,7 +1213,7 @@ rule Linux_Trojan_Gafgyt_6a510422 {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "14cc92b99daa0c91aa09d9a7996ee5549a5cacd7be733960b2cf3681a7c2b628"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1233,7 +1233,7 @@ rule Linux_Trojan_Gafgyt_d2953f92 {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "14cc92b99daa0c91aa09d9a7996ee5549a5cacd7be733960b2cf3681a7c2b628"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1253,7 +1253,7 @@ rule Linux_Trojan_Gafgyt_6ae4b580 {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "14cc92b99daa0c91aa09d9a7996ee5549a5cacd7be733960b2cf3681a7c2b628"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1273,7 +1273,7 @@ rule Linux_Trojan_Gafgyt_d608cf3b {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "14cc92b99daa0c91aa09d9a7996ee5549a5cacd7be733960b2cf3681a7c2b628"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1293,7 +1293,7 @@ rule Linux_Trojan_Gafgyt_3f8cf56e {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "1878f0783085cc6beb2b81cfda304ec983374264ce54b6b98a51c09aea9f750d"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1313,7 +1313,7 @@ rule Linux_Trojan_Gafgyt_fb14e81f {
         last_modified = "2022-01-26"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "0fd07e6068a721774716eb4940e2c19faef02d5bdacf3b018bf5995fa98a3a27"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1333,7 +1333,7 @@ rule Linux_Trojan_Gafgyt_e09726dc {
         last_modified = "2022-01-26"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "1e64187b5e3b5fe71d34ea555ff31961404adad83f8e0bd1ce0aad056a878d73"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1353,7 +1353,7 @@ rule Linux_Trojan_Gafgyt_ad12b9b6 {
         last_modified = "2022-01-26"
         threat_name = "Linux.Trojan.Gafgyt"
         reference = "f0411131acfddb40ac8069164ce2808e9c8928709898d3fb5dc88036003fe9c8"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"

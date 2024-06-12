@@ -878,3 +878,43 @@ rule Linux_Cryptominer_Generic_36e404e2 {
         all of them
 }
 
+rule Linux_Cryptominer_Generic_947dcc5e {
+    meta:
+        author = "Elastic Security"
+        id = "947dcc5e-be4c-4d31-936f-63d466db2934"
+        fingerprint = "f6087a90a9064b505b60a1c53af008b025064f4a823501cae5f00bbe5157d67b"
+        creation_date = "2024-04-19"
+        last_modified = "2024-06-12"
+        threat_name = "Linux.Cryptominer.Generic"
+        reference_sample = "7c5a6ac425abe60e8ea5df5dfa8211a7c34a307048b4e677336b735237dcd8fd"
+        severity = 100
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { 28 00 00 0A 30 51 9F E5 04 20 94 E5 04 30 A0 E1 38 00 44 E2 00 40 94 E5 00 40 82 E5 04 20 93 E5 04 20 84 E5 0C 20 13 E5 00 30 83 E5 04 00 12 E3 04 30 83 E5 06 00 00 0A 04 10 C2 E3 08 00 12 E3 }
+    condition:
+        all of them
+}
+
+rule Linux_Cryptominer_Generic_b4c2d007 {
+    meta:
+        author = "Elastic Security"
+        id = "b4c2d007-9464-4b72-ae2d-b0f1aeaa6fca"
+        fingerprint = "364fa077b99cd32d790399fd9f06f99ffef19c37487ef8a4fd81bf36988ecaa6"
+        creation_date = "2024-04-19"
+        last_modified = "2024-06-12"
+        threat_name = "Linux.Cryptominer.Generic"
+        reference_sample = "e1e518ba226d30869e404b92bfa810bae27c8b1476766934961e80c44e39c738"
+        severity = 100
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { FD 03 00 91 F3 53 01 A9 F4 03 00 AA 20 74 40 F9 60 17 00 B4 20 10 42 79 F3 03 01 AA F9 6B 04 A9 40 17 00 34 62 62 40 39 F5 5B 02 A9 26 10 40 39 F7 63 03 A9 63 12 40 B9 FB 73 05 A9 3B A0 03 91 }
+    condition:
+        all of them
+}
+

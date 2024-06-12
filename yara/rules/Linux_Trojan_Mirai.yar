@@ -1708,7 +1708,7 @@ rule Linux_Trojan_Mirai_ad337d2f {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Mirai"
         reference = "012b717909a8b251ec1e0c284b3c795865a32a1f4b79706d2254a4eb289c30a7"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1728,7 +1728,7 @@ rule Linux_Trojan_Mirai_88a1b067 {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Mirai"
         reference = "1a62db02343edda916cbbf463d8e07ec2ad4509fd0f15a5f6946d0ec6c332dd9"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"
@@ -1748,7 +1748,7 @@ rule Linux_Trojan_Mirai_76bbc4ca {
         last_modified = "2021-09-16"
         threat_name = "Linux.Trojan.Mirai"
         reference = "1a9ff86a66d417678c387102932a71fd879972173901c04f3462de0e519c3b51"
-        severity = "100"
+        severity = 100
         arch_context = "x86"
         scan_context = "file, memory"
         license = "Elastic License v2"

@@ -2494,3 +2494,1051 @@ rule Windows_Generic_Threat_c374cd85 {
         all of them
 }
 
+rule Windows_Generic_Threat_7693d7fd {
+    meta:
+        author = "Elastic Security"
+        id = "7693d7fd-4161-4afb-8a8d-d487f2a7de5e"
+        fingerprint = "92489c8eb4f8a9da5e7bd858a47e20b342d70df1ba3a4769df06c434dc83d138"
+        creation_date = "2024-02-13"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "fc40cc5d0bd3722126302f74ace414e6934eca3a8a5c63a11feada2130b34b89"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 51 8B 45 08 83 65 FC 00 8B 00 0F B7 48 14 66 83 78 06 00 8D 4C 01 18 0F 86 9A 00 00 00 53 56 57 8D 59 24 8B 13 8B CA 8B F2 C1 E9 1D C1 EE 1E 8B FA 83 E1 01 83 E6 01 C1 EF 1F F7 C2 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_df5de012 {
+    meta:
+        author = "Elastic Security"
+        id = "df5de012-52b6-4558-a00b-2dbf052e34d3"
+        fingerprint = "ee293cda37e0f1c76f89a7d1e074c9591950299b2ae87cca11c6cf7fbfee1fc4"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "13c06d7b030a46c6bb6351f40184af9fafaf4c67b6a2627a45925dd17501d659"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 20 2C 3F 2C 2F 2C 37 2C 27 2C 3B 2C 2B 2C 33 2C 23 2C 3D 2C 2D 2C 35 2C 25 2C 39 2C 29 2C 31 2C 21 2C 3E 2C 2E 2C 36 2C 26 2C 3A 2C 2A 2C 32 2C 22 2C 3C 2C 2C 2C 34 2C 24 2C 38 2C 28 2C 30 2C 20 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_0e8530f5 {
+    meta:
+        author = "Elastic Security"
+        id = "0e8530f5-32ce-48a2-9413-5a8f4596ba12"
+        fingerprint = "33007c3793c74aaac45434cbd0b524973073a7223d68fae8da5cbd7296120739"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "9f44d9acf79ed4450195223a9da185c0b0e8a8ea661d365a3ddea38f2732e2b8"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 63 6D 64 20 2F 63 20 73 74 61 72 74 20 22 22 20 22 25 53 25 53 22 20 25 53 }
+        $a2 = { 76 68 61 50 20 71 20 65 71 30 75 61 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_ba807e3e {
+    meta:
+        author = "Elastic Security"
+        id = "ba807e3e-13d8-49e0-ad99-32994d490e8b"
+        fingerprint = "e6ea7577f8f21e778d21b4651bf55e66ec53fb6d80d68f2ab344261be50d03cc"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "cabd0633b37e6465ece334195ff4cc5c3f44cfe46211165efc07f4073aed1049"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 7D 4A 36 35 2B 7E 2E 2C 2F 37 2C 3D 31 7E 3B 3D 30 30 2F 2A 7E 3C 39 7E 2C 29 30 7E 35 30 7E 5A 4F 4B 7E 31 2F 3A 39 70 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_4578ee8c {
+    meta:
+        author = "Elastic Security"
+        id = "4578ee8c-9dfc-4fb2-b5dc-8f55b6ee26d0"
+        fingerprint = "3a40e6e8f35c5c114b1b0175723d9403c357bba7170c4350194d40d4a2c94c61"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "699fecdb0bf27994d67492dc480f4ba1320acdd75e5881afbc5f73c982453fed"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 73 65 72 2D 41 67 65 6E 74 3A 4D 6F 7A 69 6C 6C 61 2F 34 2E 30 20 28 63 6F 6D 70 61 74 69 62 6C 65 3B 20 4D 53 49 45 20 25 64 2E 30 3B 20 57 69 6E 64 6F 77 73 20 4E 54 20 25 64 2E 31 3B 20 53 56 31 29 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_ebf62328 {
+    meta:
+        author = "Elastic Security"
+        id = "ebf62328-f069-43f2-b943-6ddf64f04fb2"
+        fingerprint = "44cce86a986cbb051f1b94c2d5b54830cbe7de1f3387e207bd6b267a5166bbe7"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "dfce19aa2e1a3e983c3bfb2e4bbd7617b96d57602d7a6da6fee7b282e354c9e1"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 74 52 75 50 5B 5D 5F 5E 41 5C 41 5D 41 5E }
+        $a2 = { 5F 5E 41 5C 41 5E 41 5F 74 7A 75 78 }
+        $a3 = { 44 64 71 52 71 77 7C 61 69 41 66 6E 68 73 6F 72 48 60 6C 65 49 46 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_dcc622a4 {
+    meta:
+        author = "Elastic Security"
+        id = "dcc622a4-5c10-463b-a950-fc728f990bca"
+        fingerprint = "b47bd4baa68dc56948f29882cf5762b0af2d9f2a837349add4f5d0a8d4152cb2"
+        creation_date = "2024-02-14"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "94a3f10396c07783586070119becf0924de9a7caf449d6e07065837d54e6222d"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 5B 21 5D 20 45 72 72 6F 72 20 77 72 69 74 69 6E 67 20 73 68 65 6C 6C 63 6F 64 65 20 74 6F 20 74 68 65 20 74 61 72 67 65 74 20 64 72 69 76 65 72 2C 20 61 62 6F 72 74 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_046aa1ec {
+    meta:
+        author = "Elastic Security"
+        id = "046aa1ec-5134-4a03-85c2-048b5d363484"
+        fingerprint = "46591671500f83b6627a17368a0bbe43650da1dd58ba1a136a47818fe685bc68"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "c74cf499fb9298d43a6e64930addb1f8a8d8336c796b9bc02ffc260684ec60a2"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 C4 F4 D9 7D FE 66 8B 45 FE 80 CC 0C 66 89 45 FC D9 6D FC DF 7D F4 D9 6D FE 8B 45 F4 8B 55 F8 8B E5 5D C3 55 8B EC 51 33 D2 8D 5D 08 8B 03 83 C3 04 85 C0 74 03 03 50 04 49 75 F1 85 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_85c73807 {
+    meta:
+        author = "Elastic Security"
+        id = "85c73807-4181-4d4a-ba51-6ed923121486"
+        fingerprint = "8b63723aa1b89149c360048900a18e25a0a615f50cec1aaadca2578684f5bcb2"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "7f560a22c1f7511518656ac30350229f7a6847d26e1b3857e283f7dcee2604a0"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 53 56 57 89 4D FC 8B DA 8B F0 8B 7D 08 C6 86 18 01 00 00 00 8B C3 E8 15 01 00 00 84 C0 75 0E 8B 55 FC 8B C6 8B CF E8 45 F8 FF FF EB 0F 56 57 8B FE 8B F3 B9 47 00 00 00 F3 A5 5F 5E }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_642df623 {
+    meta:
+        author = "Elastic Security"
+        id = "642df623-00ae-48a9-8d61-aaa688606807"
+        fingerprint = "fb2c74f7e3e7f4e25173c375fe863e643183da4f5d718d61fdd0271fcc581deb"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "e5ba85d1a6a54df38b5fa655703c3457783f4a4f71e178f83d8aac878d4847da"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 50 B8 04 00 00 00 81 C4 04 F0 FF FF 50 48 75 F6 8B 45 FC 81 C4 3C FE FF FF 53 56 57 64 8B 05 30 00 00 00 8B 40 0C 8B 40 0C 8B 00 8B 00 8B 40 18 89 45 FC 33 C9 8B 45 FC 89 45 DC 8B 45 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_27a2994f {
+    meta:
+        author = "Elastic Security"
+        id = "27a2994f-18e4-4608-bda6-ee76b6afd357"
+        fingerprint = "33d3f5b2c5fed68b19e14d6a35ee8db4ba3d6d566c87e24fc7a9223235cbd0ee"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "e534914e06d90e119ce87f5abb446c57ec3473a29a7a9e7dc066fdc00dc68adc"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 53 56 57 83 7D 08 00 75 05 E9 88 00 00 00 6A 09 E8 D7 FD FF FF 83 C4 04 8B 45 08 83 E8 20 89 45 FC 8B 4D FC 8B 51 14 81 E2 FF FF 00 00 83 FA 04 74 41 8B 45 FC 83 78 14 01 74 38 8B }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_dbceec58 {
+    meta:
+        author = "Elastic Security"
+        id = "dbceec58-0b98-470c-8439-23aa26b4064f"
+        fingerprint = "5f470a7367ebbffebae8384aa552b3e9b1bda6bf4a3241bda047970341ee7c4c"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "fbec30528e6f261aebf0d41f3cd6d35fcc937f1e20e1070f99b1b327f02b91e0"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 14 83 7D 08 00 74 0C 83 7D 0C 00 74 06 83 7D 10 00 75 08 8B 45 08 E9 87 00 00 00 8B 45 08 89 45 FC 8B 45 0C 89 45 F8 8B 45 10 C1 E8 02 89 45 EC 83 65 F4 00 EB 07 8B 45 F4 40 89 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_7407eb79 {
+    meta:
+        author = "Elastic Security"
+        id = "7407eb79-69fd-4f5c-b883-ceb74fbdc9d5"
+        fingerprint = "f1dbb42fdd80020fa2b30beb50ded6b8b3fe4b023935cef9bd32b3cb0a095654"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "9ae0f053c8e2c4f4381eac8265170b79301d4a22ec1fdb86e5eb212c51a75d14"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 18 8B 45 08 8B 40 08 89 45 E8 8B 45 08 8B 40 0C 89 45 EC 8B 45 EC 83 C0 0C 89 45 F0 8B 45 F0 8B 00 89 45 F8 83 65 F4 00 E8 00 00 00 00 58 89 45 F4 8B 45 F8 3B 45 F0 74 31 8B 45 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_3613fa12 {
+    meta:
+        author = "Elastic Security"
+        id = "3613fa12-b559-4c3f-8049-11bacd5ffd0c"
+        fingerprint = "c66b5dad2e9b19be0bc67a652761d8f79ce85efde055cc412575c2d7c5583795"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "1403ec99f262c964e3de133a10815e34d2f104b113b0197ab43c6b7b40b536c0"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 89 4D FC 8D 45 08 50 8B 4D FC E8 4D 03 00 00 8B 45 FC 8B E5 5D C2 04 00 CC CC CC CC 55 8B EC 51 89 4D FC 8B 45 FC 8B E5 5D C3 CC CC 55 8B EC 51 89 4D FC 8B 45 08 50 8B 4D FC E8 FD }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_b125fff2 {
+    meta:
+        author = "Elastic Security"
+        id = "b125fff2-7b36-431f-8ed3-ccb6d4ff9483"
+        fingerprint = "e2562c480b3ab0f0e6c5d396bc5d0584481348c1dd8edaac4484d9cb5d4a2b2e"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "9c641c0c8c2fd8831ee4e3b29a2a65f070b54775e64821c50b8ccd387e602097"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 6F 00 00 0A 6F 70 00 00 0A 00 28 24 00 00 06 0A 06 2C 24 00 28 1B 00 00 06 0B 07 2C 19 00 28 CE 04 00 06 16 FE 01 0C 08 2C 0B 7E 03 00 00 04 6F D3 04 00 06 00 00 00 28 1A 00 00 06 00 28 18 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_d7e5ec2d {
+    meta:
+        author = "Elastic Security"
+        id = "d7e5ec2d-bcd1-41a3-80de-12808b9034c9"
+        fingerprint = "e679e6917c5055384c0492e4a8a7538b41e5239b78e2167b04fffa3693f036bb"
+        creation_date = "2024-02-20"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "fe711664a565566cbc710d5e678a9a30063a2db151ebec226e2abcd24c0a7e68"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 C4 F8 89 45 FC 8B 45 FC E8 17 FE FF FF 83 FA 00 75 03 83 F8 FF 77 16 8B 45 FC E8 F1 FE FF FF 83 FA 00 75 03 83 F8 FF 77 04 33 C0 EB 02 B0 01 88 45 FB 8A 45 FB 59 59 5D C3 8D 40 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_1636c2bf {
+    meta:
+        author = "Elastic Security"
+        id = "1636c2bf-5506-4651-9c4c-cd6454386301"
+        fingerprint = "b0cd9f484d4191d42091300be33c72a29c073c297b4e46811555fc6d1ab0f482"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "6e43916db43d8217214bbe4eb32ed3d82d0ac423cffc91d053a317a3dbe6dafb"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 00 00 0A 28 22 00 00 0A 80 19 00 00 04 28 3B 00 00 06 28 2D 00 00 0A 28 45 00 00 06 16 80 1D 00 00 04 7E 13 00 00 04 7E 15 00 00 04 16 7E 15 00 00 04 8E B7 16 14 FE 06 43 00 00 06 73 63 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_0a640296 {
+    meta:
+        author = "Elastic Security"
+        id = "0a640296-0813-4cd3-b55b-01b3689e73d9"
+        fingerprint = "3fa8712dbf0cdb0581fc312bcfa2e9ea50e04cccba6dc93f377c1b64e96784aa"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "3682eff62caaf2c90adef447d3ff48a3f9c34c571046f379d2eaf121976f1d07"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 00 00 0A 02 7B 0F 00 00 04 6F 29 00 00 0A 7D 10 00 00 04 02 7B 10 00 00 04 28 2A 00 00 0A 00 02 7B 08 00 00 04 7B 03 00 00 04 02 7B 10 00 00 04 6F 2B 00 00 0A 16 FE 01 0D 09 39 29 01 00 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_b1ef4828 {
+    meta:
+        author = "Elastic Security"
+        id = "b1ef4828-10bd-41f8-84b5-041bf3147c0b"
+        fingerprint = "e867d9a0a489d95898f85578c71d7411eac3142539fcc88df51d1cf048d351a9"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "29b20ff8ebad05e4a33c925251d08824ca155f5d9fa72d6f9e359e6ec6c61279"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 70 36 72 20 74 24 76 28 78 2C 7A 30 7C 34 7E 38 7E 3C 7E 40 7E 54 7E 74 7E 7C 5D }
+        $a2 = { 7E 30 7E 34 7E 43 7E 4F 7E 5A 7E 6E 7E 79 7E }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_48cbdc20 {
+    meta:
+        author = "Elastic Security"
+        id = "48cbdc20-386a-491e-8407-f7c4c348f2e9"
+        fingerprint = "98db38ebd05e99171489828491e6acfc7c4322283b325ed99429f366b0ee01a6"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "7a7704c64e64d3a1f76fc718d5b5a5e3d46beeeb62f0493f22e50865ddf66594"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 5E 69 69 69 4E 42 42 42 3E 2E 2E 2E 25 }
+        $a2 = { 24 2E 2E 2E 2F 41 41 41 3A 51 51 51 47 5D 5D 5D 54 69 69 69 62 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_420e1cdc {
+    meta:
+        author = "Elastic Security"
+        id = "420e1cdc-2d47-437a-986d-ff22d2fac978"
+        fingerprint = "33f35c5c73656fc5987c39fabefa1225fef1734f4217518a1b6e7a78669c90c5"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "b20254e03f7f1e79fec51d614ee0cfe0cb87432f3a53cf98cf8c047c13e2d774"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 56 8B 75 08 85 F6 74 5A ?? ?? ?? ?? ?? 83 F8 03 75 16 56 E8 ED 01 00 00 59 85 C0 56 74 36 50 E8 0C 02 00 00 59 59 EB 3A 83 F8 02 75 26 8D 45 08 50 8D 45 FC 50 56 E8 25 0F 00 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_4c37e16e {
+    meta:
+        author = "Elastic Security"
+        id = "4c37e16e-b7ca-449a-a09f-836706b2f66a"
+        fingerprint = "9fbd2883fb0140de50df755f7099a0dc3cf377ee350710108fef96c912f43460"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "d83a8ed5e192b3fe9d74f3a9966fa094d23676c7e6586c9240d97c252b8e4e74"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 2E 3F 41 56 43 44 72 6F 70 41 70 69 40 40 }
+        $a2 = { 2D 2D 77 77 6A 61 75 67 68 61 6C 76 6E 63 6A 77 69 61 6A 73 2D 2D }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_5be3a474 {
+    meta:
+        author = "Elastic Security"
+        id = "5be3a474-d12f-489f-a2a7-87d29687e2e6"
+        fingerprint = "8b220ea86ad3bbdcf6e2f976dc0bb84c1eb8cb1f3ad46ab5c9d19289952c912b"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "b902954d634307260d5bd8fb6248271f933c1cbc649aa2073bf05e79c1aedb66"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 53 56 57 8B F9 33 F6 8D 5F 02 66 8B 07 83 C7 02 66 3B C6 75 F5 8A 01 2B FB D1 FF 8D 5F FF 85 DB 7E 23 0F B6 F8 83 C1 02 66 8B 01 8D 49 02 66 2B C7 C7 45 FC 00 08 00 00 66 2B 45 FC }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_b191061e {
+    meta:
+        author = "Elastic Security"
+        id = "b191061e-7b83-4161-a1d4-05ab70ffe2be"
+        fingerprint = "5733de0357a6b5f6a3fe885786084c23707266b48e67b19dcddc48ed97e94207"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "bd4ef6fae7f29def8e5894bf05057653248f009422de85c1e425d04a0b2df258"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 2C 64 A1 30 00 00 00 33 D2 53 56 57 8B 40 0C 8B F2 89 4D E8 89 55 F4 89 75 F8 8B 58 0C 8B 7B 18 89 7D F0 85 FF 0F 84 34 01 00 00 C7 45 E0 60 00 00 00 8B 43 30 89 55 FC 89 55 EC }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_05f52e4d {
+    meta:
+        author = "Elastic Security"
+        id = "05f52e4d-d131-491a-a037-069b450e3b3e"
+        fingerprint = "f3d5f6dc1f9b51ce1700605c8a018000124d66a260771de0da1a321dc97872dd"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "e578b795f8ed77c1057d8e6b827f7426fd4881f02949bfc83bcad11fa7eb2403"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 00 00 06 73 45 00 00 0A 73 46 00 00 0A 6F 47 00 00 0A 14 FE 06 29 00 00 06 73 45 00 00 0A 73 46 00 00 0A 0B 14 FE 06 2A 00 00 06 73 45 00 00 0A 73 46 00 00 0A 0C 07 6F 47 00 00 0A 08 6F 47 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_c34e19e9 {
+    meta:
+        author = "Elastic Security"
+        id = "c34e19e9-c666-4fc5-bbb3-75f64d247899"
+        fingerprint = "148ffb1f73a3f337d188c78de638880ea595a812dfa7a0ada6dc66805637aeb3"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "f9048348a59d9f824b45b16b1fdba9bfeda513aa9fbe671442f84b81679232db"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 00 00 0A 73 18 00 00 0A 7E 02 00 00 04 17 8D 3A 00 00 01 25 16 1F 2C 9D 6F 28 00 00 0A 8E 69 6F 29 00 00 0A 9A 0A 7E 01 00 00 04 17 8D 3A 00 00 01 25 16 1F 2C 9D 6F 28 00 00 0A 73 18 00 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_e691eaa1 {
+    meta:
+        author = "Elastic Security"
+        id = "e691eaa1-06fa-478e-8c4c-95a7df3fd077"
+        fingerprint = "b940eb10e338f6d703a75cd77b4b455503ae0583f5a36b8115e659d05990fc3c"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "afa5f36860e69b9134b93e9ad32fed0a5923772e701437e1054ea98e76f28a77"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 8B C2 53 89 45 FC 8B D9 56 99 33 F6 2B C2 57 8B F8 D1 FF 85 FF 7E 2B 8B 55 FC 4A 03 D3 0F B6 02 8D 52 FF 8A 0C 1E ?? ?? ?? ?? ?? ?? ?? 88 04 1E 46 0F B6 C1 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_5e33bb4b {
+    meta:
+        author = "Elastic Security"
+        id = "5e33bb4b-830e-4814-b6cf-d5e5b4da7ada"
+        fingerprint = "a08b9db015f1b6f62252d456b1b0cd0fdec1e19cdd2bc1400fe2bf76150ea07b"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "13c06d7b030a46c6bb6351f40184af9fafaf4c67b6a2627a45925dd17501d659"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 43 3A 5C 55 73 65 72 73 5C 61 64 6D 69 6E 5C 44 65 73 6B 74 6F 70 5C 57 6F 72 6B 5C 46 69 6C 65 49 6E 73 74 61 6C 6C 65 72 5C 52 65 6C 65 61 73 65 5C 46 69 6C 65 49 6E 73 74 61 6C 6C 65 72 2E 70 64 62 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_be64ba10 {
+    meta:
+        author = "Elastic Security"
+        id = "be64ba10-ea9d-45df-8c9b-2facc825b652"
+        fingerprint = "9496099988cf4f854bf7f70bae158c6e17025a7537245c5f1d92a90f6b9bca67"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "24bb4fc117aa57fd170e878263973a392d094c94d3a5f651fad7528d5d73b58a"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 22 65 6E 63 72 79 70 74 65 64 5F 6B 65 79 22 3A 22 28 2E 2B 3F 29 22 }
+        $a2 = { 2E 3F 41 56 3C 6C 61 6D 62 64 61 5F 37 65 66 38 63 66 32 36 39 61 32 32 38 62 36 30 34 64 36 35 34 33 32 65 37 65 63 33 37 30 31 34 3E 40 40 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_7bb75582 {
+    meta:
+        author = "Elastic Security"
+        id = "7bb75582-ffcd-4a91-8816-811a3f9bdec8"
+        fingerprint = "326a08e467cbedb01c640232ad2f4da729894f09ccf5faba93926e1efded9b59"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "35f9698e9b9f611b3dd92466f18f97f4a8b4506ed6f10d4ac84303177f43522d"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 4B 45 59 5F 43 55 52 52 45 4E 54 5F 55 53 45 52 5C 53 6F 66 74 77 61 72 65 5C 4D 69 63 72 6F 73 6F 66 74 5C 57 69 6E 64 6F 77 73 5C 43 75 72 72 65 6E 74 56 65 72 73 69 6F 6E 5C 49 6E 74 65 72 6E 65 74 20 53 65 74 74 69 6E 67 73 5C 43 6F 6E 6E 65 63 74 69 6F 6E 73 20 5B 31 20 37 20 31 37 5D }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_59698796 {
+    meta:
+        author = "Elastic Security"
+        id = "59698796-0022-486a-a743-6931745f38a0"
+        fingerprint = "9260d02c3e6b163fd376445bd2a9c084ed85a5dbaf0509e15fff4e9c3d147f19"
+        creation_date = "2024-03-04"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "35f9698e9b9f611b3dd92466f18f97f4a8b4506ed6f10d4ac84303177f43522d"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 81 EC B8 04 00 00 ?? ?? ?? ?? ?? 33 C5 89 45 FC 56 68 00 04 00 00 0F 57 C0 C7 45 F8 00 00 00 00 8D 85 58 FB FF FF C7 85 54 FB FF FF 24 00 00 00 6A 00 50 8B F1 0F 11 45 D8 0F 11 45 E8 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_2ae9b09e {
+    meta:
+        author = "Elastic Security"
+        id = "2ae9b09e-b810-4bd2-9cb8-18b1d504eede"
+        fingerprint = "13ab32abf52bca58dfac79c09882ec4cb80b606693db19813d84e625bda93549"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "dc8f4784c368676cd411b7d618407c416d9e56d116dd3cd17c3f750e6cb60c40"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 51 8B 45 08 89 45 FC 8B 45 0C 89 45 F8 8B 45 0C 48 89 45 0C 83 7D F8 00 76 0F 8B 45 FC C6 00 00 8B 45 FC 40 89 45 FC EB DE 8B 45 08 C9 C3 6A 41 5A 0F B7 C1 66 3B D1 77 0C 66 83 F9 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_604a8763 {
+    meta:
+        author = "Elastic Security"
+        id = "604a8763-7ec1-4474-b238-2ebbaf24afa2"
+        fingerprint = "c74c1dc7588d01112c3995b17e9772af15fb1634ebfb417b8c0069ac1f334e74"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "2a51fb11032ec011448184a4f2837d05638a7673d16dcf5dcf4005de3f87883a"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 8B 45 0C 48 89 45 FC EB 07 8B 45 FC 48 89 45 FC 83 7D FC 00 7C 0B 8B 45 08 03 45 FC C6 00 00 EB E8 C9 C3 55 8B EC 83 EC 0C 8B 45 0C 89 45 FC 8B 45 08 3B 45 10 76 2F 8B 45 FC 89 45 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_f45b3f09 {
+    meta:
+        author = "Elastic Security"
+        id = "f45b3f09-4203-41f7-870e-d8ef5126c391"
+        fingerprint = "dfa72e0780e895ab5aa2369a425c64144e9bd435e55d8a0fefbe08121ae31df5"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "577f1dbd76030c7e44ed28c748551691d446e268189af94e1fa1545f06395178"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 33 ED 44 8B ED 48 89 6C 24 78 44 8B FD 48 89 AC 24 88 00 00 00 44 8B F5 44 8B E5 E8 43 04 00 00 48 8B F8 8D 75 01 ?? ?? ?? ?? ?? 66 39 07 75 1A 48 63 47 3C 48 8D 48 C0 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_3f390999 {
+    meta:
+        author = "Elastic Security"
+        id = "3f390999-601f-464e-8982-09553adee303"
+        fingerprint = "ccfd5fb305ea48d66f299311c5332587355258bdeeb25cb90c450e8e96df3052"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "1b6fc4eaef3515058f85551e7e5dffb68b9a0550cd7f9ebcbac158dac9ababf1"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 10 48 89 D9 48 8B 59 10 FF 61 08 0F 1F 40 00 49 89 CB C3 49 89 CA 41 8B 43 08 41 FF 23 C3 90 48 C1 E1 04 31 C0 81 E1 F0 0F 00 00 49 01 C8 4C 8D 0C 02 4E 8D 14 00 31 C9 45 8A 1C 0A 48 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_abd1c09d {
+    meta:
+        author = "Elastic Security"
+        id = "abd1c09d-ec66-45ee-b435-302c736cc1f9"
+        fingerprint = "2f75d8fa11f67f983e40ada50a07e8a6f1b6dfc663524e35a6526381e939d39f"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "3ff09d2352c2163465d8c86f94baa25ba85c35698a5e3fbc52bc95afc06b7e85"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 0C 8B D1 53 56 57 8B 7D 0C 83 FF 08 77 1A 85 FF 74 16 8B 5D 08 8B 4A 14 8B 72 10 2B CE 8D 04 3B 3B C1 72 11 C6 42 44 00 33 C0 33 D2 5F 5E 5B 8B E5 5D C2 08 00 0F 57 C0 66 0F 13 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_b7870213 {
+    meta:
+        author = "Elastic Security"
+        id = "b7870213-e235-4b2d-83c1-e3c7c486ee8d"
+        fingerprint = "c087f84c8572dba64da62c9f317969cbce46e78656e0a75489788add787c2781"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "04cb0d5eecea673acc575e54439398cc00e78cc54d8f43c4b9bc353e4fc4430d"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 75 28 6B 6E 4E 30 30 30 31 30 32 30 33 30 34 30 35 30 36 30 37 30 38 30 39 31 30 31 31 31 32 31 33 31 34 31 35 31 36 31 37 31 38 31 39 32 30 32 31 32 32 32 33 32 34 32 35 32 36 32 37 32 38 32 39 33 30 33 31 33 32 33 33 33 34 33 35 33 36 33 37 33 38 33 39 34 30 34 31 34 32 34 33 34 34 34 35 34 36 34 37 34 38 34 39 35 30 35 31 35 32 35 33 35 34 35 35 35 36 35 37 35 38 35 39 36 30 36 31 36 32 36 33 36 34 36 35 36 36 36 37 36 38 36 39 37 30 37 31 37 32 37 33 37 34 37 35 37 36 37 37 37 38 37 39 38 30 38 31 38 32 38 33 38 34 38 35 38 36 38 37 38 38 38 39 39 30 39 31 39 32 39 33 39 34 39 35 39 36 39 37 39 38 39 39 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_2bba6bae {
+    meta:
+        author = "Elastic Security"
+        id = "2bba6bae-7c6a-4b89-83d8-0656d7863820"
+        fingerprint = "85dc02cb74c481b5ecb144280827add9665138f0b5d479db5468a94b41e662a3"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "d9955c716371422750b77d64256dade6fbd028c8d965db05c0d889d953480373"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 36 35 20 37 39 20 34 31 20 36 39 20 36 34 20 34 38 20 36 43 20 37 37 20 34 39 20 36 41 20 36 46 20 36 37 20 34 39 20 36 42 20 37 30 20 35 38 20 35 36 20 34 33 20 34 39 20 37 33 20 34 39 20 34 33 20 34 41 20 36 38 20 36 32 20 34 37 20 36 33 20 36 39 20 34 46 20 36 39 20 34 31 20 36 39 20 35 32 20 35 37 20 35 32 20 34 35 20 35 35 20 33 30 20 34 35 20 36 39 20 34 39 20 34 38 20 33 30 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_5d3f297c {
+    meta:
+        author = "Elastic Security"
+        id = "5d3f297c-b812-401a-8671-2e00369cd6f2"
+        fingerprint = "ff90bfcb28bb3164fb11da5f35f289af679805f7e4047e48d97ae89e5b820dcd"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "885c8cd8f7ad93f0fd43ba4fb7f14d94dfdee3d223715da34a6e2fbb4d25b9f4"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 08 C7 45 F8 00 00 00 00 83 7D 08 00 74 4A 83 7D 0C 00 74 44 8B 45 0C 83 C0 01 50 6A 40 ?? ?? ?? ?? ?? ?? 89 45 F8 83 7D F8 00 74 2C C7 45 FC 00 00 00 00 EB 09 8B 4D FC 83 C1 01 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_4db75701 {
+    meta:
+        author = "Elastic Security"
+        id = "4db75701-e7d6-4231-ba00-e127da90bfce"
+        fingerprint = "d8637b329a212bf37367ba3cc3acf65c9b511d1f06d689d792c519324459530d"
+        creation_date = "2024-03-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "fa7847d21d5a350cf96d7ecbcf13dce63e6a0937971cfb479700c5b31850bba9"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 81 EC D0 02 00 00 80 79 20 08 41 8B F1 45 8B F0 4C 8B FA 48 8B F9 0F 84 3A 01 00 00 48 89 58 10 48 89 68 18 43 8D 04 40 48 63 C8 ?? ?? ?? ?? ?? 48 8D 8C 24 20 02 00 00 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_54a914c9 {
+    meta:
+        author = "Elastic Security"
+        id = "54a914c9-1b00-4cea-9b82-f7ed1df1305f"
+        fingerprint = "d3f4083c96130031ce9656ea31bf0914080c88f09c05f8b1168c60487af80c9b"
+        creation_date = "2024-03-25"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "c418c5ad8030985bb5067cda61caba3b7a0d24cb8d3f93fc09d452fbdf4174ec"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 20 48 89 CB 48 8B 43 08 4C 8B 48 30 4D 85 C9 74 16 48 8D 4B 10 0F B6 D2 48 83 C4 20 5B 5E 5F 5D 41 5C 49 FF E1 66 90 44 0F B6 40 10 41 80 F8 16 0F 84 81 00 00 00 41 80 F8 18 74 0B 48 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_38a88967 {
+    meta:
+        author = "Elastic Security"
+        id = "38a88967-db0e-4d68-9295-9108cbc98fb9"
+        fingerprint = "1fef2c4c2899bbf9f45732d23654f6437658de2c4dc78dc3d1ff5440b5c2cbcf"
+        creation_date = "2024-03-25"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "6e425eb1a27c4337f05d12992e33fe0047e30259380002797639d51ef9509739"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 60 E8 00 00 00 00 5B ?? ?? ?? ?? ?? ?? 8B 75 08 8B 7D 0C AD 50 53 89 C1 29 DB 29 C0 AC C1 E3 04 01 C3 AA 89 D8 ?? ?? ?? ?? ?? 85 C0 74 07 89 C2 C1 EA 18 31 D3 F7 D0 21 C3 E2 DF 87 DA }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_e8abb835 {
+    meta:
+        author = "Elastic Security"
+        id = "e8abb835-f0c1-4e27-a0ca-3a3cae3362df"
+        fingerprint = "ca8c2f4b16ebe1bb48c91a536d8aca98bed5592675eff9311e77d7e06dfe3c5b"
+        creation_date = "2024-03-26"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "e42262671325bec300afa722cefb584e477c3f2782c8d4c6402d6863df348cac"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 81 EC 28 05 00 00 66 44 0F 7F 84 24 10 05 00 00 66 0F 7F BC 24 00 05 00 00 0F 29 B4 24 F0 04 00 00 44 89 44 24 74 48 89 94 24 C8 00 00 00 48 89 CB 48 C7 44 24 78 00 00 00 00 0F 57 F6 0F 29 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_492d7223 {
+    meta:
+        author = "Elastic Security"
+        id = "492d7223-4e03-4a77-83e5-ed85e052f846"
+        fingerprint = "71a1bce450522a0a6ff38d2f84ab91e2e9db360736c2f7233124a0b0dc4d0431"
+        creation_date = "2024-03-26"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "c0d9c9297836aceb4400bcb0877d1df90ca387f18f735de195852a909c67b7ef"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 89 E5 53 57 56 83 EC 24 ?? ?? ?? ?? ?? 31 C9 85 C0 0F 94 C1 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 C8 40 FF E0 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_ea296356 {
+    meta:
+        author = "Elastic Security"
+        id = "ea296356-6533-4364-8ad1-3bbb538e3d61"
+        fingerprint = "a17ca2f95473517428867b4f68b8275ae84ef1ee39421e76887077e206b1ed51"
+        creation_date = "2024-05-22"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "4c48a0fe90f3da7bfdd32961da7771a0124b77e1ac1910168020babe8143e959"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 83 EC 0C 53 56 8B 75 08 8B C6 89 55 FC 99 2B C2 89 4D F8 8B D8 8B 45 FC 57 D1 FB 33 FF 8D 14 30 89 55 08 85 DB 7E 36 4A 0F 1F 44 00 00 8A 0C 38 8D 52 FF 0F B6 42 01 8B 75 FC 0F B6 80 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_aeaeb5cf {
+    meta:
+        author = "Elastic Security"
+        id = "aeaeb5cf-2683-4a88-b736-4b8873d92fc5"
+        fingerprint = "f6d32006747b083632f551c8ca182b6b4d67a8f130a118e61b0dd2f35d7d8477"
+        creation_date = "2024-05-22"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "f57d955d485904f0c729acff9db1de9cb42f32af993393d58538f07fa273b431"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 8B 4D 08 33 C0 66 39 01 74 0B 8D 49 00 40 66 83 3C 41 00 75 F8 8D 04 45 02 00 00 00 50 FF 75 0C 51 ?? ?? ?? ?? ?? 83 C4 0C 5D C3 CC CC 55 8B EC 6A 00 FF 75 08 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_c8424507 {
+    meta:
+        author = "Elastic Security"
+        id = "c8424507-34e1-4649-a4e4-3e0a0f62dfb0"
+        fingerprint = "8dfb14903b32c118492ae7e0aab9cf634c58ea93fcbc7759615209f61b3b3d6b"
+        creation_date = "2024-05-22"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "d556b02733385b823cfe4db7e562e90aa520e2e6fb00fceb76cc0a6a1ff47692"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 78 75 73 65 68 6F 62 69 6D 6F 7A 61 63 6F 67 6F 6A 69 68 6F 67 69 76 6F }
+        $a2 = { 62 65 6D 69 74 69 76 65 67 69 77 6F 6D 65 7A 75 76 65 62 61 67 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_9af87ddb {
+    meta:
+        author = "Elastic Security"
+        id = "9af87ddb-c3ed-44a5-b1a1-984b6f8a6065"
+        fingerprint = "1505b6299961c729077ffd90a4c7ed3180f55329952841fe7045056ea2919de8"
+        creation_date = "2024-05-23"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "b1fbc11744e21dc08599412887a3a966572614ce25ccd3c8c98f04bcbdda3898"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 28 00 00 0A 28 2C 00 00 06 11 06 17 D6 13 06 11 06 11 07 8E B7 32 98 06 17 D6 0A 20 E8 03 00 00 28 21 00 00 0A 7E 0F 00 00 04 3A 74 FF FF FF 2A 00 1B 30 04 00 96 00 00 00 1F 00 00 11 03 39 88 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_d7b57912 {
+    meta:
+        author = "Elastic Security"
+        id = "d7b57912-02b4-421a-8f93-9e8371314e68"
+        fingerprint = "36a3fecc918cd891d9c779f7ff54019908ba190853739c8059adb84233643a1c"
+        creation_date = "2024-05-23"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "0906599be152dd598c7f540498c44cc38efe9ea976731da05137ee6520288fe4"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 83 C4 B8 53 56 8B DA 89 45 FC 8D 45 FC ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 64 FF 30 64 89 20 8B C3 ?? ?? ?? ?? ?? 6A 00 6A 00 8D 45 F0 50 8B 45 FC }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_23d33b48 {
+    meta:
+        author = "Elastic Security"
+        id = "23d33b48-00f6-487f-a3e5-f41603fc982e"
+        fingerprint = "7a25301a1297337810240e8880febe525726c9b79a4a4bd81b1f856865097995"
+        creation_date = "2024-06-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "acbc22df07888498ae6f52f5458e3fb8e0682e443a8c2bc97177a0320b4e2098"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 83 7A 14 10 8B C2 53 56 57 8B F1 72 02 8B 02 83 7E 14 10 72 02 8B 0E 8B 5A 10 8D 56 10 8B 3A 53 50 89 55 FC 8B D7 51 ?? ?? ?? ?? ?? 8B D0 83 C4 0C 83 FA FF 74 30 3B FA 72 33 8B C7 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_4b0b73ce {
+    meta:
+        author = "Elastic Security"
+        id = "4b0b73ce-960d-40ce-ae85-5cf38d949f45"
+        fingerprint = "11c544f9f3a51ffcd361d6558754a64a8a38f3ce9385038880ab58c99769db88"
+        creation_date = "2024-06-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "236fc00cd7c75f70904239935ab90f51b03ff347798f56cec1bdd73a286b24c1"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 53 56 57 8B 7D 08 83 7F 18 00 C6 45 FF C9 74 54 ?? ?? ?? ?? ?? ?? 8D 9B 00 00 00 00 33 F6 83 7F 18 00 74 40 6A 0A FF D3 46 81 FE E8 03 00 00 7C ED 8B 07 8B 50 08 6A 01 8D 4D FF 51 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_1f2e969c {
+    meta:
+        author = "Elastic Security"
+        id = "1f2e969c-5d90-4bab-a06a-9cccb1946251"
+        fingerprint = "e7c872f2422fe54367900d69c9bb94d86db2bf001cbbe00ba6c801fb3d1e610e"
+        creation_date = "2024-06-05"
+        last_modified = "2024-06-12"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "7def75df729ed66511fbe91eadf15bc69a03618e78c48e27c35497db2a6a97ae"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 55 8B EC 51 53 8B 5A 10 56 8B F1 57 6A 78 89 75 FC C7 46 10 00 00 00 00 C7 46 14 0F 00 00 00 53 89 75 FC C6 06 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 33 C9 33 C0 89 7D FC 85 DB 7E 39 0F 1F 40 00 }
+    condition:
+        all of them
+}
+

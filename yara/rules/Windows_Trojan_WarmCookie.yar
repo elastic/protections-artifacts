@@ -6,6 +6,7 @@ rule Windows_Trojan_WarmCookie_7d32fa90 {
         creation_date = "2024-04-29"
         last_modified = "2024-05-08"
         threat_name = "Windows.Trojan.WarmCookie"
+        reference = "https://www.elastic.co/security-labs/dipping-into-danger"
         reference_sample = "ccde1ded028948f5cd3277d2d4af6b22fa33f53abde84ea2aa01f1872fad1d13"
         severity = 100
         arch_context = "x86"

@@ -1,0 +1,48 @@
+[rule]
+description = """
+Identifies when a process running as protected process loads an unsigned DLL. This may indicate an attempt to bypass
+Process Protection and inject malicious code.
+"""
+id = "e8ed06c7-3a70-40a7-85a5-4fc6a2203fce"
+license = "Elastic License v2"
+name = "Potential Protected Process DLL Injection via RPC"
+os_list = ["windows"]
+reference = ["https://github.com/Slowerzs/PPLSystem/tree/main"]
+version = "1.0.1"
+
+query = '''
+library where dll.Ext.defense_evasions : "Process Tampering: Code integrity violation" and
+  process.thread.Ext.call_stack_summary : "ntdll.dll|rpcrt4.dll|combase.dll|*"
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1211"
+name = "Exploitation for Defense Evasion"
+reference = "https://attack.mitre.org/techniques/T1211/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

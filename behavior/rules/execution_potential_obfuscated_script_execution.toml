@@ -8,7 +8,7 @@ id = "a279fa6c-61eb-49ea-926e-704db27855e8"
 license = "Elastic License v2"
 name = "Potential Obfuscated Script Execution"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=1m
@@ -33,7 +33,8 @@ sequence with maxspan=1m
                             "?:\\Program Files (x86)\\Windev\\AD_Voyager\\AD_voyager.exe",
                             "?:\\Program Files\\BackupClient\\BackupAndRecovery\\mms.exe",
                             "?:\\Program Files\\Velneo\\vClient.exe",
-                            "D:\\WINDEV\\AD_Voyager\\AD_voyager.exe")] as event0
+                            "D:\\WINDEV\\AD_Voyager\\AD_voyager.exe",
+                            "?:\\Program Files\\Automation Anywhere\\Bot Agent\\jre\\bin\\BotLauncher.exe")] as event0
  [process where event.action == "start" and process.args_count >= 2 and 
   (
    (process.Ext.relative_file_creation_time <= 500 and process.pe.original_file_name : ("node.exe", "AutoIt*.exe")) or 

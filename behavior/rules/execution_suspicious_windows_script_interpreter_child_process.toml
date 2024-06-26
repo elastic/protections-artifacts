@@ -7,7 +7,7 @@ id = "83da4fac-563a-4af8-8f32-5a3797a9068e"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.type == "start" and
@@ -48,7 +48,8 @@ process where event.type == "start" and
           process.parent.args : "?:\\Windows\\Options\\SWD\\MapHomeDrive_*.vbs" and process.name : "mshta.exe") and
      not (process.name : "rundll32.exe" and process.parent.args : "?:\\Program Files (x86)\\PCMatic\\PC Matic\\registerActiveX.wsf") and
      not process.command_line : "mshta.exe" and
-     not (process.executable : "?:\\Windows\\System32\\odbcconf.exe" and process.args : "configdsn")
+     not (process.executable : "?:\\Windows\\System32\\odbcconf.exe" and process.args : "configdsn") and
+     process.hash.sha256 != "13eacb4b57ac207f7f5c118915359a6e66a7f52f7154f8bb577f54b48b0d5e68"
 '''
 
 min_endpoint_version = "7.15.0"

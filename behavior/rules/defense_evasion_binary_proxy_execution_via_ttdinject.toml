@@ -9,13 +9,14 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via TTDInject"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Ttdinject/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and 
  (
  (process.parent.name : "TTDInject.EXE" and process.parent.args : "/Launch") or 
- (process.pe.original_file_name : "TTDInject.EXE" and not process.executable : "?:\\Windows\\Sys*\\ttdinject.exe")
+ (process.pe.original_file_name : "TTDInject.EXE" and process.args : "/Launch" and
+  not process.executable : "?:\\Windows\\Sys*\\ttdinject.exe")
  )
 '''
 

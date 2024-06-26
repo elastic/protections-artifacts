@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identifies when a Java archive is executed via a Windows Script. This may indicate an attempt to bypass application
+whitelisting by delivering malicious JAR file via a malicious Windows Jscript or Vbscript.
+"""
+id = "15b1d979-5be0-4e7f-9202-0c4cfd76b146"
+license = "Elastic License v2"
+name = "Suspicious Java Execution via a Windows Script"
+os_list = ["windows"]
+version = "1.0.29"
+
+query = '''
+process where event.action == "start" and
+  process.name : "Java*.exe" and process.executable : "?:\\Program Files*\\Java\\jre*\\bin\\java*.exe" and
+  process.args : "-jar" and process.parent.name : ("wscript.exe", "cscript.exe") and
+  process.command_line : ("*\\AppData\\*", "*\\Public\\*", "*\\ProgramData\\*")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

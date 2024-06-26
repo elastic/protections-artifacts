@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies attempts to access browser history and bookmarks files. Adversaries may enumerate information about browsers
+to learn more about compromised environments.
+"""
+id = "b66bbe30-dd0a-4c79-ade4-2700930f8c09"
+license = "Elastic License v2"
+name = "Potential Browser Information Discovery"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1217/"]
+version = "1.0.9"
+
+query = '''
+file where event.action == "open" and 
+process.executable != null and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and process.pid != 4 and
+ file.path :
+     ("*\\users\\*\\AppData\\Local\\*\\User Data\\Default\\History", 
+      "*\\users\\*\\AppData\\Local\\*\\User Data\\Default\\Bookmarks", 
+      "*\\Users\\*\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\*.default*\\places.sqlite", 
+      "*\\Users\\*\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\*.default*\\formhistory.sqlite") and
+ (
+  (process.code_signature.trusted == false and not process.code_signature.status : ("errorExpired", "errorCode_endpoint*")) or
+  process.code_signature.exists == false or
+  (process.code_signature.subject_name : "Microsoft*" and process.thread.Ext.call_stack_contains_unbacked == true and not process.name : "powershell.exe") or
+  process.executable :
+                ("?:\\Users\\Public\\*",
+                 "?:\\Users\\*\\Downloads\\*",
+                 "?:\\Windows\\Temp\\*",
+                 "?:\\Windows\\Tasks\\*",
+                 "?:\\ProgramData\\*",
+                 "?:\\Windows\\Microsoft.NET\\*")
+ ) and
+ not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "BrowserWorks Ltd", "SAP SE", "Time Doctor LLC", "Emsisoft Ltd") and
+      process.code_signature.trusted == true) and
+ not (process.code_signature.subject_name : "Shift Technologies Inc." and process.code_signature.status : "errorUntrustedRoot") and 
+ not process.executable :
+                  ("?:\\Program Files (x86)\\*.exe",
+                   "?:\\Program Files\\*.exe",
+                   "?:\\Windows\\System32\\svchost.exe",
+                   "?:\\Windows\\BitLockerDiscoveryVolumeContents\\BitLockerToGo.exe",
+                   "?:\\Users\\*\\User Data\\Default\\mozilla_downloads.exe",
+                   "?:\\Users\\*\\User Data\\Default\\chrome_downloads.exe",
+                   "?:\\Users\\*\\User Data\\Default\\msedge_downloads.exe") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                     $entry.symbol_info : ("*\\chrome.dll!GetHandleVerifier*",
+                                           "*\\chrome.dll!ChromeMain*",
+                                           "*\\nw.dll!sqlite3_dbdata_init*",
+                                           "*\\nw.dll!GetHandleVerifier*"))
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1217"
+name = "Browser Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1217/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.7.0"

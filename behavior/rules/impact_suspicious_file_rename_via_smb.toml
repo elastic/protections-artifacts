@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies an incoming SMB connection followed by a suspicious file rename operation. This may indicate a remote
+ransomware attack via the SMB protocol.
+"""
+id = "58b7beb4-0b8a-4196-a17d-7317620ef495"
+license = "Elastic License v2"
+name = "Suspicious File Rename via SMB"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=3s
+ [network where event.action == "connection_accepted" and destination.port == 445 and source.port >= 49152 and
+  process.pid == 4 and network.type == "ipv4" and not endswith(source.address, destination.address) and
+  source.ip != "127.0.0.1" and source.ip != "::1" ]
+ [file where event.action == "rename" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+  file.extension != null and file.Ext.entropy >= 6 and file.path : "C:\\Users\\*" and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx", "*.lnk", "*.txt") and
+  not file.extension : ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
+ [file where event.action == "rename" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+  file.extension != null and file.Ext.entropy >= 6 and file.path : "C:\\Users\\*" and
+  file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx", "*.lnk", "*.txt") and
+  not file.extension : ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
+'''
+
+actions = []
+min_endpoint_version = "8.4.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1486"
+name = "Data Encrypted for Impact"
+reference = "https://attack.mitre.org/techniques/T1486/"
+
+[[threat.technique]]
+id = "T1490"
+name = "Inhibit System Recovery"
+reference = "https://attack.mitre.org/techniques/T1490/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "8.4.0"

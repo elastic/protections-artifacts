@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution via Microsoft Common Console"
 os_list = ["windows"]
 reference = ["https://www.genians.co.kr/blog/threat_intelligence/facebook"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -18,11 +18,20 @@ process where event.action == "start" and
               ("?:\\Windows\\System32\\mmc.exe",
                "?:\\Windows\\System32\\wermgr.exe",
                "?:\\Windows\\System32\\WerFault.exe",
+               "?:\\Windows\\System32\\DWWIN.EXE",
                "?:\\Windows\\SysWOW64\\mmc.exe",
                "?:\\Program Files\\*.exe",
                "?:\\Program Files (x86)\\*.exe",
+               "?:\\Windows\\System32\\shrpubw.exe",
+               "?:\\Windows\\System32\\certreq.exe",
                "?:\\Windows\\System32\\spool\\drivers\\x64\\3\\*.EXE",
-               "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe")
+               "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+               "?:\\Program Files\\internet explorer\\iexplore.exe",
+               "?:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe") and
+ not (process.executable : "?:\\Windows\\explorer.exe" and process.args : "ms-settings:windowsupdate") and
+ not (process.pe.original_file_name == "DismHost.exe" and process.args : "{*}" and
+      process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
+ process.hash.sha256 != "7208b36f57e9af293043adcaf2180db10fff9e0bfffdbac81ad2ac5dbead6a30"
 '''
 
 min_endpoint_version = "7.16.0"

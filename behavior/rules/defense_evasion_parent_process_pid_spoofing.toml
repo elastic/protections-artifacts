@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Parent Process PID Spoofing"
 os_list = ["windows"]
 reference = ["https://blog.didierstevens.com/2017/03/20/"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 sequence with maxspan=5m
@@ -88,6 +88,8 @@ sequence with maxspan=5m
 
   not process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe" and
 
+  not (process.name : "cpptools.exe" and process.parent.executable : "?:\\Program Files\\Microsoft VS Code\\Code.exe") and
+
   not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev") and 
 
   not (process.executable : "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and 
@@ -121,9 +123,20 @@ sequence with maxspan=5m
                  "217fa613c4e129f20d1b20fd2ce5c7a7efbdf88e1e6121077057d0b14fe15450", 
                  "038d7b257b98421ad371189cf51d67f32ddad2de687c443a59ea74e4027bbf04", 
                  "590f3cc02628dcdb43d3ee00ecf1a86e0bfcefd26cb0ffcb809a67194b22fda6", 
-                 "ff7627eaa90ce994207d1d1d1b39ac8852b11f03a6adb86d915f4696401beca0") and
+                 "ff7627eaa90ce994207d1d1d1b39ac8852b11f03a6adb86d915f4696401beca0",
+                 "a0b1f604c335315b5ba5a598436bf6c8b05ce77742e2f1b102a8c7d11918408d",
+                 "f074a65751beb589b99ecffa2d4cefdd9c87c3641487d2baed4c9f85e75ffbc6",
+                 "5ea04862fe5e201e47e5aac29c19a1550612f82a048b402cd85435efd9d39d2a",
+                 "79f7c942f9b15b857abcb838123991ad756ea3bb846045ed3378e484428f74a3",
+                 "97effc20423d404cf3877cdb4af9be840a720962246408b2d7396362a9e5d613",
+                 "a4af59c1f044ff1290e47e74484163243591f56b7053c8b8d3e4ae320cecbac3",
+                 "941bc9193d9143d71e2c93803b0cbff511ec549f0c4f0093744cab6bedd4140a",
+                 "3f9075c30f63d67693f2f876212f702ddfe51834c73289718baf6e8fb2036039") and
 
-  not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe")
+  not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
+
+  not (process.executable : "?:\\Program Files\\Malwarebytes\\Anti-Malware\\Malwarebytes.exe" and
+       process.code_signature.subject_name == "Malwarebytes Inc." and process.code_signature.trusted == true)
   ] by process.parent.Ext.real.entity_id
 '''
 

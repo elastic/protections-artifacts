@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
@@ -137,7 +137,10 @@ process where event.action == "start" and
               "?:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe",
               "?:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe",
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\*_x64PdsmqConnector.exe",
-              "?:\\Program Files (x86)\\Emerson\\OpenEnterprise\\Bin\\OEOPCDAServer.exe") and
+              "?:\\Program Files (x86)\\Emerson\\OpenEnterprise\\Bin\\OEOPCDAServer.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\InstallUtil.exe",
+              "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -220,7 +223,17 @@ process where event.action == "start" and
                   "ee949cef3e7daf1cb4c695ab642b9e93dfb67fd47b8d21b52ffd22aec801baf5",
                   "4b18f6bbf232545f3ebe0ebb92ab5a3a7aaf6f3d49b754b29712cce013418576",
                   "9ba043914816f776d96c392b6792b16b9370f8e9f6466040ab708357a9993a9e",
-                  "df2b27c8bb3ecbbea46111e6357ea0380d0c476f3f214f1aa2c5052999397856") and
+                  "df2b27c8bb3ecbbea46111e6357ea0380d0c476f3f214f1aa2c5052999397856",
+                  "bc6a02eafc97388a59e06b78c684e71a2824a9242dd89ff4d8c94b08602c08a5",
+                  "94de1c9a5541d7e500d61692846b6bd2ee862eddbdc5dc43a99123be6b27b8f1",
+                  "fd190f0962c0902087e7ef9b6e3006a471adff36c1dba77b94e3f9cbf958dc54",
+                  "616aa61f0eb26582d62ac1ab839f974bf0791d0f9bdddaaae3593cac376ab95d",
+                  "a6a07aa438d8eacdc7d1502168d02b7d49bfeab6792c0c4363acbe0bcd7216ee",
+                  "9b83ddcae1aad934ec03f1479bbedbfffac1d592017daf6cedc1a3f7cdb782b2",
+                  "d9fd6944595083644a4711f0b18611d4547f0c75c89c944bb9de196d74375008",
+                  "a9f91a634178809eaf007aa15420ac5181e681636da8fdbe4946322103ca7b5f",
+                  "43f1ab077466acc126c00345eeb83eb95afea77cfb1d70b1f62b5db1ef29d365") and
+
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :

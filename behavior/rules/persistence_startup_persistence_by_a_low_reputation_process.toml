@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence by a Low Reputation Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -16,7 +16,15 @@ sequence by process.entity_id with maxspan=5m
  (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
  not process.code_signature.status : "errorCode_endpoint*" and
- process.hash.sha256 != "933129e6153f10ed921d772467507389fc4f5d58846b89d3d7b5799cb23eb9b6"]
+ not process.hash.sha256 :
+                 ("933129e6153f10ed921d772467507389fc4f5d58846b89d3d7b5799cb23eb9b6",
+                  "43eceb752381fc93992a317a3df6e3921f06ed5e45de808a75ffe3fe2e0afb89",
+                  "f40b81f1d192c9494f35353df39072debe72c1284e3d16859979476ba1fad96f",
+                  "d348833bf2d4666c5eff291d828d018bb70769dafdaf05347b63c5afcf5e2961",
+                  "339a9a4b49467f9797204a5e27d73a8d72cc6c91ff1e9132a01910b20a64a48b",
+                  "6a88b5179dd5560d3e11ba0962b23a414a9f26838a7a80472453437d821c8047",
+                  "a9a5e36f77e5031436d8eaf16a01bdb27dc301a632eda8b0c0613d8508dca5c2") and
+ not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18")]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (
     (registry.data.strings != null and

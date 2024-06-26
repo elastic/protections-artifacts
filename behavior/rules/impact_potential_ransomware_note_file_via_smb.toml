@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies an incoming SMB connection followed by the creation of a file with a name similar to ransomware note files.
+This may indicate a remote ransomware attack via the SMB protocol.
+"""
+id = "47356607-cb03-476d-b722-5199246904fe"
+license = "Elastic License v2"
+name = "Potential Ransomware Note File via SMB"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=3s
+ [network where event.action == "connection_accepted" and destination.port == 445 and source.port >= 49152 and
+  process.pid == 4 and network.type == "ipv4" and not endswith(source.address, destination.address) and
+  source.ip != "127.0.0.1" and source.ip != "::1" ]
+ [file where event.action == "creation" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+   file.extension : ("hta", "txt", "readme", "htm*") and file.path : "C:\\Users\\*" and
+    /* ransom file name keywords */
+    file.name : ("*read*me*", "*lock*", "*@*", "*RECOVER*", "*decrypt*", "*restore*file*", "*FILES_BACK*", "*how*to*") and
+    not file.name : "*:Zone.Identifier"]
+ [file where event.action == "creation" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+   file.extension : ("hta", "txt", "readme", "htm*") and file.path : "C:\\Users\\*" and
+    /* ransom file name keywords */
+    file.name : ("*read*me*", "*lock*", "*@*", "*RECOVER*", "*decrypt*", "*restore*file*", "*FILES_BACK*", "*how*to*") and
+    not file.name : "*:Zone.Identifier"]
+'''
+
+actions = []
+min_endpoint_version = "8.4.0"
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1485"
+name = "Data Destruction"
+reference = "https://attack.mitre.org/techniques/T1485/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "8.4.0"

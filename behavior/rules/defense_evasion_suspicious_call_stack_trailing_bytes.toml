@@ -4,7 +4,7 @@ id = "0c5fe593-39c8-436a-a5ec-7003267f9e0e"
 license = "Elastic License v2"
 name = "Suspicious Call Stack Trailing Bytes"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 any where process.executable != null and 
@@ -15,7 +15,9 @@ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_byt
   (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll"))
   ) and 
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
-                  $entry.callsite_trailing_bytes :"4883c428c390909090909090904c8bdc574883ec6049c743b8feffffff49895b1849897320488b05c9a024004833c44889442450488bfa488bd9488b521849c7")
+                  $entry.callsite_trailing_bytes :"4883c428c390909090909090904c8bdc574883ec6049c743b8feffffff49895b1849897320488b05c9a024004833c44889442450488bfa488bd9488b521849c7") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.callsite_leading_bytes :"3b4208750b498908488b01ff5008eb05bb024000808bc34883c4205bc34883ec3848c7442420feffffff488bc1488b094885c9740b48832000488b01ff501090")
 '''
 
 min_endpoint_version = "8.8.0"

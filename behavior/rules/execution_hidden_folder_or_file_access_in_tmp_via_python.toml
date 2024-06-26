@@ -9,13 +9,14 @@ license = "Elastic License v2"
 name = "Hidden Folder or File Access in Tmp via Python"
 os_list = ["macos"]
 reference = ["https://github.com/rapid7/metasploit-framework"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and 
     (process.parent.name : "python*" or process.Ext.effective_parent.name : "python*") and 
     process.name : ("mkdir", "osascript", "sh", "bash", "zsh") and
-    process.args : ("/tmp/.*", "/private/tmp/.*")
+    process.args : ("/tmp/.*", "/private/tmp/.*") and
+    process.args_count == 2
 '''
 
 min_endpoint_version = "8.5.0"

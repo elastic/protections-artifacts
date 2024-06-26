@@ -1,0 +1,77 @@
+[rule]
+description = """
+Identifies the creation of a .NET COM object in an unexpected Windows script interpreter. Adversaries may utilise .NET
+to call arbitrary Win32 APIs from scripts.
+"""
+id = "1e9ac3fe-edb4-d669-71ab-220acc092982"
+license = "Elastic License v2"
+name = ".NET COM object created in non-standard Windows Script Interpreter"
+os_list = ["windows"]
+reference = ["https://github.com/tyranid/DotNetToJScript"]
+version = "1.0.1"
+
+query = '''
+api where
+  not process.name : ("cscript.exe", "wscript.exe") and
+  process.code_signature.trusted == true and
+  process.code_signature.subject_name : "Microsoft*" and
+  process.Ext.api.name == "VirtualAlloc" and
+  process.Ext.api.parameters.allocation_type == "RESERVE" and
+  process.Ext.api.parameters.protection == "RWX" and
+  process.thread.Ext.call_stack_summary : (
+    /* .NET is allocating executable memory on behalf of a WSH script engine
+     * Note - this covers both .NET 2 and .NET 4 framework variants */
+    "*|mscoree.dll|combase.dll|jscript.dll|*",
+    "*|mscoree.dll|combase.dll|vbscript.dll|*",
+    /* These aren't WSH script engines - but the technique is likely still valid */
+    "*|mscoree.dll|combase.dll|jscript9.dll|*",
+    "*|mscoree.dll|combase.dll|chakra.dll|*"
+) and
+
+not (process.executable : "?:\\Windows\\SysWOW64\\msiexec.exe" and 
+     process.parent.executable : "?:\\Windows\\System32\\msiexec.exe" and 
+     process.command_line : "?:\\Windows\\syswow64\\MsiExec.exe -Embedding * Global\\MSI0000" and 
+     process.thread.Ext.call_stack_summary : "*|mscoree.dll|combase.dll|vbscript.dll|*|rpcrt4.dll|*") and
+     
+not (process.executable : "?:\\Program Files (x86)\\Internet Explorer\\iexplore.exe" and 
+     process.parent.executable : "?:\\Program Files\\Internet Explorer\\iexplore.exe" and 
+     process.command_line : "\"?:\\Program Files (x86)\\Internet Explorer\\IEXPLORE.EXE\" SCODEF:* CREDAT:* APPID:MSEdge /prefetch:2" and 
+     process.thread.Ext.call_stack_summary : "*|combase.dll|jscript9.dll|Unbacked|*")
+'''
+
+min_endpoint_version = "8.8.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.8.0"

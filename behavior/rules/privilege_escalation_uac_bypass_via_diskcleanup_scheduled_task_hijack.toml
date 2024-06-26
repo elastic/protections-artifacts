@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "UAC Bypass via DiskCleanup Scheduled Task Hijack"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/05/exploiting-environment-variables-in.html"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
- process.Ext.token.integrity_level_name == "high" and
+ process.Ext.token.integrity_level_name == "high" and process.hash.sha256 != null and
  process.args : "/autoclean" and process.args : "/d" and
  not process.executable : ("?:\\Windows\\System32\\cleanmgr.exe",
                            "?:\\Windows\\SysWOW64\\cleanmgr.exe",

@@ -7,7 +7,7 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -18,13 +18,23 @@ sequence by user.id with maxspan=5m
 
    not (process.code_signature.subject_name :
             ("AUTO/MATE, INC.", "TeamViewer*", "KOBIL Systems GmbH", "Ratiborus MSFree Inc.",
-             "Canon Electronics Inc.", "Johannes Schindelin", "Bomgar Corporation", "PFU LIMITED") and
+             "Canon Electronics Inc.", "Johannes Schindelin", "Bomgar Corporation", "PFU LIMITED",
+             "Learnpulse") and
         process.code_signature.trusted == true) and
    not process.executable :
               ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*.exe",
                "?:\\Program Files\\SWSetup\\SP100309\\Lexus FW Upgrade 0007.exe") and
+
    not (process.executable : "?:\\Users\\*\\AppData\\Roaming\\zozi-rpa-engine\\openjdk\\bin\\java.exe" and
         file.path : "C:\\Project\\*.vbs") and
+
+   not file.Ext.header_bytes :
+                 ("0d0a272d2d2d2d2d2d2d2d2d2d2d2d2d", "272a2a2a2a2a2a2a2a2a2a2a2a2a2a2a",
+                  "4966204e6f742049734f626a65637428", "4f6e204572726f7220526573756d6520",
+                  "53657420554143203d20437265617465", "53006500740020006f0062006a004600",
+                  "53006500740020005500410043002000", "4f4e204552524f5220524553554d4520",
+                  "4372656174654f626a65637428225773") and
+
    (
      process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe",
                      "mspub.exe", "msaccess.exe", "certutil.exe", "tar.exe", "CertReq.exe", "xcopy.exe", 

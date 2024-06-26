@@ -11,7 +11,7 @@ reference = [
     "https://moonlock.com/atomic-macos-stealer",
     "https://medium.com/@dineshdevadoss04/breaking-down-atomic-macos-stealer-amos-8cd5eea56024",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "ditto" and
@@ -19,7 +19,7 @@ process where event.type == "start" and event.action == "exec" and process.name 
  process.args : ("--sequesterRsrc", "--keepParent") and
  process.args : ("/Users/*", "/private/tmp/*", "/tmp/*") and
  process.args : "*.zip*" and
- not (process.parent.code_signature.trusted == true and process.parent.code_signature.team_id == "UBF8T346G9")
+ not (process.parent.code_signature.trusted == true and process.parent.code_signature.team_id : ("UBF8T346G9", "G4SSPX3CBL"))
 '''
 
 min_endpoint_version = "8.11.1"

@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -34,6 +34,7 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\svchost.exe",
 		  "?:\\Windows\\System32\\backgroundTaskHost.exe",
 		  "?:\\Windows\\SystemApps\\*.exe",
+		  "?:\\Windows\\System32\\LogonUI.exe",
 		  "?:\\Windows\\explorer.exe", 
 		  "?:\\Windows\\System32\\svchost.exe", 
 		  "?:\\Windows\\System32\\AppHostRegistrationVerifier.exe", 

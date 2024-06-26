@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies the creation of a transacted file by an unsigned DLL. This may indicate an attempt to use Transactional NTFS
+to execute arbitrary code in the address space of a running process, without committing the code to disk.
+"""
+id = "e80eb716-d5b0-4e85-b778-b9a4f3d6e303"
+license = "Elastic License v2"
+name = "Transacted File Activity via an Unsigned DLL"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[library where event.action == "load" and process.pid != 4 and not dll.code_signature.status : "trusted" and
+  (dll.Ext.relative_file_creation_time < 500 or
+   dll.Ext.relative_file_name_modify_time < 500 or
+   (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*")
+   )] as event0
+[file where event.action == "overwrite" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*\\kernel32.dll!CreateFileTransacted*") and
+ stringcontains~(process.thread.Ext.call_stack_summary, concat("kernel32.dll|", event0.dll.name))]
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -1,21 +1,23 @@
 [rule]
 description = """
-Identifies attempts to execute a Windows script via a malicious MMC Console File. Adversaries may use MSC files for
-initial access and execution.
+Identifies attempts to execute a Windows script via a malicious Microsoft Management Console File. Adversaries may use
+MSC files for execution and evasion.
 """
 id = "5b5926cf-03ad-476b-959c-a0d15cd1efe0"
 license = "Elastic License v2"
 name = "Windows Script Execution via MMC Console File"
 os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/grimresource"]
 version = "1.0.1"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and
-  process.executable : "?:\\Windows\\System32\\mmc.exe" and process.args : "*.msc"]
+  process.executable : "?:\\Windows\\System32\\mmc.exe" and process.args : "*.msc" and
+  not process.args : ("?:\\Windows\\System32\\*.msc", "?:\\Windows\\SysWOW64\\*.msc", "?:\\Program files\\*.msc", "?:\\Program Files (x86)\\*.msc")]
  [file where event.action in ("creation", "overwrite") and
-  process.executable :  "?:\\Windows\\System32\\mmc.exe" and file.name : "redirect[?]" and
-  file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\*\\redirect[?]"]
+  process.executable :  "?:\\Windows\\System32\\mmc.exe" and
+  file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\IE\\*"]
 '''
 
 min_endpoint_version = "7.15.0"
@@ -52,6 +54,23 @@ reference = "https://attack.mitre.org/techniques/T1059/007/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.014"
+name = "MMC"
+reference = "https://attack.mitre.org/techniques/T1218/014/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
 min_endpoint_version = "7.15.0"

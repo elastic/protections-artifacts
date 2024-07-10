@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects when a hidden process is executed, and initiates an outbound network connection. Threat actors may drop hidden
+payloads that will later be used to download additional payload stages or tools.
+"""
+id = "04ec0ec4-86c4-47e3-8c7b-8dad5f97532c"
+license = "Elastic License v2"
+name = "Hidden Process Execution followed by Network Connection"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+  [process where event.action == "exec" and event.type == "start" and
+   process.executable: ("/tmp/.*", "/var/tmp/.*", "/dev/shm/.*")]
+  [network where event.action in ("connection_attempted", "connection_accepted") and event.type == "start" and
+   process.name : ".*"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -64,7 +64,8 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechRuntime.exe",
 		  "?:\\Windows\\System32\\BackgroundTransferHost.exe",
 		  "?:\\Windows\\System32\\mousocoreworker.exe",
-		  "?:\\WINDOWS\\system32\\compattelrunner.exe") and
+		  "?:\\WINDOWS\\system32\\compattelrunner.exe",
+		  "?:\\Windows\\System32\\MicrosoftEdgeSH.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
@@ -89,9 +90,10 @@ sequence by process.entity_id with maxspan=5m
                 "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1",
                 "0a76f94c40fe2f576448432bb65fdd23e2aefbfc2f58478c1d7bb525ff285cd1",
                 "3d9e0143268f52aecaff76f81553c880ec9a353eb5a6e22bd6d34bad8251710c",
-                "cc08b9ba4eefdac9d120a69d2a4541908c2ba6d68387589e9e93dddd65a26606", 
-		"002a87f6a35a0aa2eca3c89b45b41b922e1aa4c0536a08a8f7f306421f828272", 
-                "37d66cf4990eabe4cfa65e4f73d673a03cbce33d1bdf7b64f0b661f4a0872b9a") and
+                "cc08b9ba4eefdac9d120a69d2a4541908c2ba6d68387589e9e93dddd65a26606",
+                "002a87f6a35a0aa2eca3c89b45b41b922e1aa4c0536a08a8f7f306421f828272",
+                "37d66cf4990eabe4cfa65e4f73d673a03cbce33d1bdf7b64f0b661f4a0872b9a",
+                "9bab004ea556e20b44e2c3eec09e1aebf4bec15f1797d092c8674d79ab77e2cc") and
    not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
         process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and

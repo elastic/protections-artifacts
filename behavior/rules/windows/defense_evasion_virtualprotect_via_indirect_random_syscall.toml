@@ -7,7 +7,7 @@ id = "2cb8bc8c-8eb7-418e-bb94-016460f8c6e1"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where 
@@ -29,12 +29,13 @@ api where
    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll!NtAccessCheck+0x14")
    ) and 
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll!*+0x14") and 
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("kernel", "Unknown") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("kernel", "Unknown", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.name : "kernel" and 
  not process.thread.Ext.call_stack_summary : ("Unbacked|Unknown|umppc*.dll|ntdll.dll", "Unbacked|umppc*.dll|ntdll.dll", "Unbacked|Unknown|ntdll.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll+0x*") and
  not process.thread.Ext.call_stack_summary : "Unbacked|kernelbase.dll|mfaphook64.dll|sfrhook64.dll*" and
- not (process.code_signature.subject_name : "Vectric Ltd." and process.code_signature.trusted == true) and
+ not (process.code_signature.subject_name : ("Vectric Ltd.", "Roblox Corporation", "Activision Publishing Inc") and
+     process.code_signature.trusted == true) and
  not process.thread.Ext.call_stack_final_user_module.path :
                  ("?:\\program files\\mozilla firefox\\firefox.exe", "?:\\program files (x86)\\mozilla firefox\\firefox.exe") and
  not process.thread.Ext.call_stack_summary :
@@ -42,7 +43,11 @@ api where
                     "Unbacked|kernelbase.dll|mfaphook.dll|sfrhook.dll|ntdll.dll|kernelbase.dll|mfaphook.dll|ntdll.dll|kernelbase.dll|ntdll.dll") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
                   $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC") and $entry.status : "trusted") and
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : "Undetermined"
+ not (process.executable : "?:\\Windows\\System32\\sppsvc.exe" and
+      process.parent.executable: "?:\\Windows\\System32\\services.exe" and
+      process.thread.Ext.call_stack_final_user_module.path : "?:\\Windows\\System32\\sppsvc.exe") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Mozilla Corporation") and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "62058a094a1bd82667e50e7e2d458747059bb14e1073d31d7f1310de9af6e333"
 '''
 
 min_endpoint_version = "8.10.0"

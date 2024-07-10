@@ -7,17 +7,18 @@ id = "1eae6aaf-7854-4fa7-8470-f19f87f9802a"
 license = "Elastic License v2"
 name = "Msiexec Execution via a Windows Script Interpreter"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=1m
- [process where event.action == "start" and
+ [process where event.action == "start" and not user.id : "S-1-5-18" and
   process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "mshta.exe", "cmstp.exe", "msxsl.exe") and
   not (process.name : "powershell.exe" and
        process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe",
                                     "?:\\Program Files (x86)\\ScreenConnect Client*\\ScreenConnect.WindowsBackstageShell.exe"))
   ] by process.entity_id
- [process where event.action == "start" and process.parent.name : "msiexec.exe"] by process.Ext.effective_parent.entity_id
+ [process where event.action == "start" and process.parent.name : "msiexec.exe" and
+  not (process.name : "regsvr32.exe" and user.id : "S-1-5-18")] by process.Ext.effective_parent.entity_id
 '''
 
 min_endpoint_version = "8.4.0"

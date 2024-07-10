@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 any where process.executable != null and 
@@ -19,10 +19,13 @@ any where process.executable != null and
                      "?:\\ProgramData\\Malwarebytes Endpoint Agent\\Plugins\\EDRPlugin\\Backup\\*.frb")) and
    not (process.executable : "?:\\Program Files\\ProfileUnity\\FlexApp\\ContainerService\\x64\\VirtFsService.exe" and
         process.code_signature.subject_name : "Liquidware Labs, Inc." and process.code_signature.trusted == true) and
+   not (process.executable : "?:\\Windows\\System32\\services.exe" and file.path : "?:\\Windows\\INF\\*.PNF") and
+   not (process.executable : "?:\\Windows\\System32\\services.exe" and
+        registry.path : "HKEY_USERS\\.DEFAULT\\Software\\Classes\\Local Settings\\MuiCache\\*") and
    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
         registry.path : 
 	        ("HKLM\\SOFTWARE\\Policies\\Microsoft\\SystemCertificates\\*", 
-		 "HKLM\\SOFTWARE\\Microsoft\\SystemCertificates\\*"))) or
+		     "HKLM\\SOFTWARE\\Microsoft\\SystemCertificates\\*"))) or
 
   (process.Ext.effective_parent.name : "TrustedInstaller.exe" and
    process.parent.name != null and process.hash.sha256 != null and
@@ -72,8 +75,12 @@ any where process.executable != null and
    not (process.executable : "?:\\Program Files (x86)\\Kaspersky Lab\\*.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Kaspersky Lab JSC")
  ) and
+
  not (process.executable : "?:\\Windows\\System32\\btservice.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name : "BeyondTrust Software, Inc")
+      process.code_signature.trusted == true and process.code_signature.subject_name : "BeyondTrust Software, Inc") and
+
+ not (process.executable : "?:\\Program Files\\Common Files\\McAfee\\AVSolution\\mcshield.exe" and
+      process.code_signature.trusted == true and process.code_signature.subject_name : "MUSARUBRA US LLC")
 '''
 
 min_endpoint_version = "8.4.0"

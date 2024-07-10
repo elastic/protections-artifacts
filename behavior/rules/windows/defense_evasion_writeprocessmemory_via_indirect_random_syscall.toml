@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies calls to WriteProcessMemory API from unusual NTDLL offsets. This may indicate an attempt to bypass API
+monitoring using Return Oriented Programming (ROP) assembly gadgets to execute a syscall instruction.
+"""
+id = "20106fed-9cb6-41ca-8ca2-ebf55da5fa18"
+license = "Elastic License v2"
+name = "WriteProcessMemory via Indirect Random Syscall"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where
+ process.Ext.api.name == "WriteProcessMemory" and
+ process.thread.Ext.call_stack_summary : "ntdll.dll|*" and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info: ("*\\ntdll.dll!NtWriteVirtualMemory*",
+                                       "*\\ntdll.dll!ZwWriteVirtualMemory*",
+                                       "*\\ntdll.dll+0x*",
+                                       ">:\\windows\\winsxs\\temp\\pendingdeletes\\$$deletemekernelbase.dll*!WriteProcessMemory*",
+                                       "*\\kernelbase.dll+0x*",
+                                       "*\\kernelbase.dll!WriteProcessMemory*",
+                                       "*\\ntdll.dll!ZwOpenProcess*", 
+                                       "*\\ntdll.dll!ZwQueryDefaultLocale*",
+                                       "*\\kernelbase.dll!CreateProcessInternalW*")) and
+ process.thread.Ext.call_stack_final_user_module.name != null and process.executable != null and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("kernel", "Unknown", "kernel|*", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\system32\\umppc*.dll", "?:\\windows\\syswow64\\ntdll.dll") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
+                  $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC", "Microsoft Windows Hardware Compatibility Publisher") and $entry.status : "trusted") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22"
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

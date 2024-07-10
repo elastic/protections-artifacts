@@ -7,7 +7,7 @@ id = "18a26e3e-e535-4d23-8ffa-a3cdba56d16e"
 license = "Elastic License v2"
 name = "Suspicious Parent-Child Relationship"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
@@ -54,7 +54,7 @@ process where event.action == "start" and
                    ("?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\AcroCEF\\AcroCEF.exe",
                     "?:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\*\\AcroCEF.exe",
                     "?:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe",
-                    "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe") and 
+                    "?:\\Program Files\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe") and
    not (process.name : "dwm.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true) and
    not (process.name : "SearchProtocolHost.exe" and process.parent.name : "rundll32.exe" and process.parent.args : "AppXDeploymentExtensions.OneCore.dll,ShellRefresh") and
    not (process.parent.executable : "?:\\Windows\\System32\\smss.exe" and process.parent.args : "-SpecialSession") and
@@ -74,7 +74,10 @@ process where event.action == "start" and
         process.args : "C:\\AdPasswordSync\\passwd.bat") and
    not (process.executable :
                 ("?:\\Program Files (x86)\\Tanium\\Tanium Client\\Patch\\tools\\TaniumFileInfo.exe",
-                 "?:\\Program Files (x86)\\VIPRE Business Agent\\UrlInspectAddon.exe") and process.parent.name : "smss.exe")
+                 "?:\\Program Files (x86)\\VIPRE Business Agent\\UrlInspectAddon.exe") and process.parent.name : "smss.exe") and
+   not (process.parent.name : "lsass.exe" and
+        process.executable : "?:\\Program Files\\McAfee\\Endpoint Encryption Agent\\MfeEpeHost.exe") and
+   not (process.parent.name : "lsass.exe" and process.code_signature.subject_name == "Secure Endpoints Inc." and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "7.15.0"

@@ -14,11 +14,11 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-process where event.type == "start" and event.action : ("exec", "exec_event") and
-process.parent.executable : ("/etc/update-motd.d/*", "/usr/lib/update-notifier/*") and (
+process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
+and (
   (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
     (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*"))) or
   (process.name : ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 

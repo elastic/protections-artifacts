@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -25,7 +25,7 @@ sequence by process.entity_id with maxspan=2m
                                  "?:\\program files*\\Microsoft\\*.dll", 
                                  "?:\\program files*\\Windows*.dll", 
                                  "?:\\program files*\\common files\\Microsoft*.dll") and 
-  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*", "Unknown") and
+  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*", "Unknown", "Undetermined") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*") and
   not (process.thread.Ext.call_stack_summary : "*ntdll.dll|kernelbase.dll|combase.dll|msvbvm60.dll*" and
        process.Ext.api.metadata.target_address_path : "?:\\windows\\syswow64\\mfc71u.dll") and

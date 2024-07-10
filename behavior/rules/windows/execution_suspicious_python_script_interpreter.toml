@@ -4,7 +4,7 @@ id = "20eaa6a3-6b80-48bc-9c48-a935138169f9"
 license = "Elastic License v2"
 name = "Suspicious Python Script Interpreter"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -19,7 +19,8 @@ sequence by process.entity_id with maxspan=1m
              "?:\\Users\\*\\AppData\\Local\\*\\Miniconda?\\python.exe",
              "?:\\*\\Anaconda?\\python*.exe",
              "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe", 
-             "?:\\ProgramData\\checkmk\\agent\\modules\\python*\\.venv\\Scripts\\python.exe") and
+             "?:\\ProgramData\\checkmk\\agent\\modules\\python*\\.venv\\Scripts\\python.exe",
+             "?:\\Users\\*\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.*\\LocalCache\\local-packages\\*\\Scripts\\dist\\LiveLinkATC*.exe") and
   not process.hash.sha256 : 
                    ("b80be3102561bf891454bd52673fdcd49d08b14c17061c077d6a88ca5ba3e9e3", 
                     "8e7bbf6e1bc3588f6d13b8372ca1bef37b6758b8a3a17bda424eba140dd4e8fe",
@@ -52,7 +53,11 @@ sequence by process.entity_id with maxspan=1m
                     "3d8595f90fb478cb0f3673a4e5162ac054638fe699a3879ad47514cf872077dd",
                     "87c927fb0f347bcb689d115e6515b285302d2253cab727924924b85da9056a9e", 
                     "ff6b583cfc19ea28e9d3580af49e6db71675a5869e27de5f2940580948258b32", 
-                    "31f692eaa4a205f52235f43ee69b23c6789b45ed11e5a831e9b9b460c3985867")
+                    "31f692eaa4a205f52235f43ee69b23c6789b45ed11e5a831e9b9b460c3985867",
+                    "3c2e7b09c5bd39f7c0dd7413d497825c4383fe02ad27410c2b7abf315f4fd91d",
+                    "129502c5d1e7c5ce49941fda604e654e69235cf5fe856fbf2a610303e8de6e26",
+                    "b0200d91dda15b6a76be5b57a247247fc5d6b5ba833b8b9f186d89745f1a82dd",
+                    "6f463847cc8951b63ae47381e308b380a981ee93e6ccc5a279474a59f2fa0e30")
   ]
  [library where dll.name : ("win32api*.pyd", "win32process.pyd", "win32security.pyd", "md.cp*-win32.pyd", "win32crypt.pyd", "win32net.pyd")]
 '''

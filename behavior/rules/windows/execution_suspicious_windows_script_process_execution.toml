@@ -7,7 +7,7 @@ id = "ffbab5db-73ae-42fd-a33f-36bf649f41cc"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Process Execution"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
@@ -56,7 +56,9 @@ sequence by process.entity_id with maxspan=3m
                                    "?:\\Program Files (x86)\\Kovai Ltd\\BizTalk360\\Service\\BHMCollect.exe") and
   not process.working_directory : ("?:\\Windows\\system32\\spool\\DRIVERS\\*", "?:\\windows\\system32\\driverstore\\filerepository\\*") and
   not process.command_line : "*AppData\\Roaming\\Nextech\\NxTSAddin\\ContingencyUninstallNXTSForCurrentUser.vbs*" and 
-  not (process.parent.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs" and process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\")
+  not (process.parent.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs" and process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\") and
+  not (process.name : "cscript.exe" and process.args : "D:\\Production Mid Server ??\\agent\\scripts\\WMI\\WMIRunner.js") and
+  not (process.name : "cscript.exe" and process.parent.name : "cmd.exe" and process.parent.args : "cscript //Nologo //T:?00 D:\\Production")
   ]
  [network where event.action == "connection_attempted"]
 '''

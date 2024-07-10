@@ -7,7 +7,7 @@ id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
 license = "Elastic License v2"
 name = "Potential Remote Code Injection"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid, process.thread.Ext.call_stack_final_user_module.name with maxspan=30s
@@ -19,7 +19,7 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
    not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
    not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\program files*\\cisco\\amp\\exprev\\protector*.dll*") and 
    not (process.code_signature.trusted == true and startswith~(process.thread.Ext.call_stack_final_user_module.path, process.executable)) and 
-   not (process.code_signature.trusted == true and process.thread.Ext.call_stack_final_user_module.name : "Unknown") and 
+   not (process.code_signature.trusted == true and process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined")) and
    not process.thread.Ext.call_stack_final_user_module.path :
                                          ("?:\\Program Files\\*",
                                           "?:\\Program Files (x86)\\*", 

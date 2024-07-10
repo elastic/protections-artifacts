@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies attempts to execute a Windows script via a malicious Microsoft Management Console File abusing an known XSS
+injection vulnerability in the APDS.dll resource. Adversaries may use MSC files for initial access and execution.
+"""
+id = "c1b4893e-49cb-4003-8e88-a7305c6bbf6d"
+license = "Elastic License v2"
+name = "Script Execution via APDS XSS Injection"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/grimresource",
+    "https://medium.com/@knownsec404team/from-http-domain-to-res-domain-xss-by-using-ie-adobes-pdf-activex-plugin-ba4f082c8199",
+]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  process.executable : "?:\\Windows\\System32\\mmc.exe" and process.args : "*.msc"]
+ [file where event.action == "open" and file.path : "?:\\Windows\\System32\\apds.dll"]
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.014"
+name = "MMC"
+reference = "https://attack.mitre.org/techniques/T1218/014/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

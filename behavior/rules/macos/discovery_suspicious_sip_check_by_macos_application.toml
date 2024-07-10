@@ -8,7 +8,7 @@ id = "70cefc8d-9619-4026-9f4e-abf9880e1cb7"
 license = "Elastic License v2"
 name = "Suspicious SIP check by macOS Application"
 os_list = ["macos"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -17,6 +17,7 @@ process where event.type == "start" and event.action == "exec" and
     (process.Ext.effective_parent.executable : "/*.app/*" or process.parent.executable : "/*.app/*")) or
   (process.name : "csrutil" and process.parent.name : "system_profiler" and 
     process.Ext.effective_parent.executable: "/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal")) and
+not process.parent.executable : "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM" and
 not process.Ext.effective_parent.executable : "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM"
 '''
 

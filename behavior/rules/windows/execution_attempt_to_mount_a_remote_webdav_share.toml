@@ -7,7 +7,7 @@ id = "0a364281-5edc-4f75-a839-48b150cec3f2"
 license = "Elastic License v2"
 name = "Attempt to Mount a Remote WebDav Share"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -16,7 +16,8 @@ process where event.action == "start" and
   (process.name : "net.exe" and process.args : "use" and 
    process.args : ("http*:*", "*webdav*") and process.args : "/user*@*" and not process.command_line : "*//localhost*") or
   (process.name : ("expand.exe", "xcopy.exe", "cmd.exe") and process.args : ("\\\\webdav*", "*DavWWWRoot*"))
- )
+ ) and
+ not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\Program Files\\Microsoft Office\\root\\Office16\\MLCFG32.CPL")
 '''
 
 min_endpoint_version = "7.16.0"

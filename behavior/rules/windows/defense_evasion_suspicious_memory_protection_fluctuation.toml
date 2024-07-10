@@ -7,14 +7,14 @@ id = "78165d05-f1d6-4c5c-bb4d-b618df979868"
 license = "Elastic License v2"
 name = "Suspicious Memory Protection Fluctuation"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
  [api where process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "R-X" and 
   process.executable != null and process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "unknown") and 
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("unknown", "Kernel") and 
+  not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "unknown", "Undetermined") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("unknown", "Kernel", "Undetermined") and
   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "WATERFOX LIMITED", "TRACKER SOFTWARE PRODUCTS (CANADA) LIMITED") and 
        process.code_signature.trusted == true) and 
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\xul.dll!worker*", "*\\xul.dll!XRE_GetBootstrap*")) and 

@@ -1,0 +1,59 @@
+[rule]
+description = """
+Detects when a script interpreter executes via a shell (sh, bash, zsh) or osascript with only a single argument, being
+the process name and followed immediately by a network connection. This activity occurs when script code gets piped to
+the interpreter via a shell and that code is intended to reach out to an external destination like a C2 server.
+"""
+id = "e413073c-4d6b-40d4-9ef1-b4de22d137d3"
+license = "Elastic License v2"
+name = "Payload Piped to Script Interpreter"
+os_list = ["macos"]
+reference = ["https://github.com/nnsee/fileless-elf-exec"]
+version = "1.0.10"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and
+  process.name : ("zsh", "sh", "bash", "python*", "terminal") and 
+  process.args == "-c"]
+[process where event.type == "start" and event.action == "exec" and 
+  process.name : ("python*", "perl*", "ruby*", "osascript") and 
+  process.parent.name : ("sh", "bash", "zsh", "osascript") and 
+  process.args : ("python*", "perl*", "ruby*", "osascript") and 
+  process.args_count == 1]
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.3.0"

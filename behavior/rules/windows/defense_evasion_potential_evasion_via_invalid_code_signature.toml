@@ -8,7 +8,7 @@ id = "f3f769b9-0695-49ed-ab6e-c8f199a7d2c8"
 license = "Elastic License v2"
 name = "Potential Evasion via Invalid Code Signature"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 any where
@@ -33,7 +33,9 @@ any where
              ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", 
               "?:\\Program Files (x86)\\Teams Installer\\Teams.exe", 
               "?:\\Program Files\\Microsoft Mouse and Keyboard Center\\CEIP.exe", 
-              "?:\\Program Files (x86)\\Microsoft Mouse and Keyboard Center\\CEIP.exe") and 
+              "?:\\Program Files (x86)\\Microsoft Mouse and Keyboard Center\\CEIP.exe") and
+ not (process.executable : "D:\\SteamLibrary\\steamapps\\common\\*" and
+      process.parent.executable : "C:\\Program Files (x86)\\Steam\\steam.exe") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("?:\\Program Files\\*.dll*",
                                            "?:\\Program Files (x86)\\*.dll*",

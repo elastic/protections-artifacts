@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://oddvar.moe/2018/04/10/persistence-using-globalflags-in-image-file-execution-options-hidden-from-autoruns-exe/",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 registry where registry.data.strings != null and process.executable != null and 
@@ -28,7 +28,12 @@ registry where registry.data.strings != null and process.executable != null and
            "?:\\Program Files (x86)\\Siemens\\WinCC\\bin\\CCHelpStarter.exe",
            "SppExtComObjPatcher.exe",
            "rundll32.exe SppExtComObjHook.dll,PatcherMain",
-           "rundll32.exe SECOPatcher.dll,PatcherMain") and
+           "rundll32.exe SECOPatcher.dll,PatcherMain",
+           "C:\\Windows\\System32\\systray.exe",
+           "C:\\Program Files (x86)\\CryptoLocker Prevention\\ShadowGuard.exe",
+           "\"C:\\Program Files\\SolarWinds\\Orion\\Licensing\\Migration.exe\" /hooked",
+           "\"C:\\Program Files (x86)\\FastTrack Software\\Admin By Request\\AdminByRequest.exe\" /AutoElevate",
+           "\"C:\\Program Files (x86)\\SolarWinds\\Orion\\Licensing\\Migration.exe\" /hooked") and
  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and registry.data.strings : "svchost.exe") and
  not process.executable :
              ("?:\\Program Files\\KMSpico\\AutoPico.exe",
@@ -44,7 +49,8 @@ registry where registry.data.strings != null and process.executable != null and
               "?:\\Program Files (x86)\\d7xTech\\Amphetamine\\Amphetamine.exe",
               "?:\\Program Files\\Netspark\\NsUpdate\\NsUpdate.exe",
               "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe", 
-              "?:\\Program Files (x86)\\Extegrity\\Exam4\\Exam4.exe") and
+              "?:\\Program Files (x86)\\Extegrity\\Exam4\\Exam4.exe",
+              "?:\\Program Files (x86)\\NAP Locked down browser\\JanisonReplayService.exe") and
  not (process.code_signature.subject_name : ("Patch My PC, LLC", "EXPRSVPN LLC") and process.code_signature.trusted == true)
 '''
 

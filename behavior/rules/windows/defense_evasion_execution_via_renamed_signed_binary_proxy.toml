@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Renamed Signed Binary Proxy"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
@@ -64,7 +64,9 @@ process where event.action == "start" and
           "\\Device\\HarddiskVolume*\\Program Files (x86)\\*.exe",
           "\\Device\\HarddiskVolume*\\Program Files\\*.exe"
         ) and
-  not (process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and process.parent.name : "msiexec.exe")
+  not (process.executable : "?:\\Windows\\Installer\\MSI*.tmp" and process.parent.name : "msiexec.exe") and
+  not (process.hash.sha256 == "505d886fff0542f600f8534d9691de02200b719f1b80487a84fa799e1b178696" and
+       process.executable == "C:\\spmwin\\regasm32.exe")
 '''
 
 min_endpoint_version = "7.15.0"

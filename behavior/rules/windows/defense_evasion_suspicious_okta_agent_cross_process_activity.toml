@@ -4,7 +4,7 @@ id = "137c9bcd-6be7-4a60-9a06-4e22eb70eded"
 license = "Elastic License v2"
 name = "Suspicious Okta Agent Cross Process Activity"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where
@@ -12,7 +12,7 @@ api where
  process.Ext.api.summary : ("*OktaVerify.exe*", "*OktaAgentService.exe*") and not process.Ext.api.behaviors : "parent-child" and
  process.Ext.api.metadata.target_address_name : "?*" and
  not process.Ext.api.metadata.target_address_name in ("PEB", "PEB32", "ProcessStartupInfo") and
- not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "Unknown") and
+ not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "Unknown", "Undetermined") and
  not (process.code_signature.status : "trusted" and startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name)) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\sys*\\kernelbase.dll!CreateProcess*") and
  not process.thread.Ext.call_stack_final_user_module.path :

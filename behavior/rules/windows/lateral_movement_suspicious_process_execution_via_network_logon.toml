@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -243,7 +243,8 @@ process where event.action == "start" and
                  "Arcserve (USA) LLC", "Hewlett Packard", "Qualys, Inc", "Synology Inc.", "NoMachine S.a.r.l.", 
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
                  "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.",
-                 "Block 64 Corporation")) and
+                 "Block 64 Corporation", "Kaseya Holdings Inc", "Schmidt's LOGIN GmbH", "QS solutions BV",
+                 "Yokogawa Electric Corporation")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
@@ -254,7 +255,9 @@ process where event.action == "start" and
   not (process.name : "certutil.exe" and process.args : ("-view", "-hashfile")) and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs") and
   not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework64\\*\\installutil.exe" and
-       process.args : "?:\\Program Files\\Omnyx\\Messagehandlers\\JobAgents\\*\\Omnyx.MessageHandler.Host.exe")
+       process.args : "?:\\Program Files\\Omnyx\\Messagehandlers\\JobAgents\\*\\Omnyx.MessageHandler.Host.exe") and
+  not (process.name : "cmd.exe" and process.command_line :("*curl*latest/meta-data/instance-id*", "*curl*metadata/instance?api-version*")) and
+  not (process.name : "cmd.exe" and process.command_line : "\"C:\\Windows\\system32\\cmd.exe\" /c \"\"C:\\Program Files (x86)\\Bottomline Technologies\\Transform Foundation Server\\Apache24\\bin\\httpd.exe\"  -V \"")
 '''
 
 min_endpoint_version = "8.6.0"

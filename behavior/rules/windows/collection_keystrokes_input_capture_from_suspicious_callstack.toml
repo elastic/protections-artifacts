@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Keystrokes Input Capture from Suspicious CallStack"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1056/001/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where
@@ -37,7 +37,7 @@ api where
                                "\\Program Files\\*",
                                "\\Program Files (x86)\\*",
                                "\\Windows\\*") and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Unknown" and
+  not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
   not process.Ext.api.parameters.hook_module : "?:\\windows\\systemapps\\shellexperiencehost_*\\devicesflowui.dll" and
   not process.executable : 
                    ("?:\\Program Files (x86)\\Image Express\\ixDrill\\ixDrill.exe", 

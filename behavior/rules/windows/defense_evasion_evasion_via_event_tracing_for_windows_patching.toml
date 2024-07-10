@@ -8,13 +8,15 @@ license = "Elastic License v2"
 name = "Evasion via Event Tracing for Windows Patching"
 os_list = ["windows"]
 reference = ["https://blog.xpnsec.com/hiding-your-dotnet-etw/"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name :  "WriteProcessMemory*" and
  process.Ext.api.summary : ("*ntdll.dll!Etw*", "*ntdll.dll!NtTrace*") and
  process.executable != null and
- not process.executable : ("?:\\Windows\\System32\\lsass.exe", "\\Device\\HarddiskVolume*\\Windows\\System32\\lsass.exe")
+ not process.executable : ("?:\\Windows\\System32\\lsass.exe",
+                           "\\Device\\HarddiskVolume*\\Windows\\System32\\lsass.exe",
+                           "?:\\Windows\\System32\\csrss.exe")
 '''
 
 min_endpoint_version = "8.8.0"

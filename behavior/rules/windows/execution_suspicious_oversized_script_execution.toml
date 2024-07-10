@@ -7,12 +7,12 @@ id = "7be3d607-5c11-4609-91b9-0a3cf10cac8e"
 license = "Elastic License v2"
 name = "Suspicious Oversized Script Execution"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=2m
  [file where event.action != "deletion" and
-  file.extension : ("js", "vbs", "jse", "vbe", "wsh", "hta") and
+  file.extension : ("js", "vbs", "jse", "vbe", "wsh", "hta", "wsf") and
   (
    process.name : ("explorer.exe", "cmd.exe", "powershell.exe", "winrar.exe", "expand.exe", "wscript.exe", "cscript.exe", "msiexec.exe",
                   "chrome.exe", "msedge.exe", "firefox.exe", "7zFM.exe", "7zG.exe", "python*.exe", "certutil.exe", "mshta.exe") or

@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies suspicious attempts to create a process in suspended state by an unsigned or untrusted binary. This behavior
+is consistent with remote code injection attacks.
+"""
+id = "391f1e23-9ee0-4fa4-82b7-a54bebfa077d"
+license = "Elastic License v2"
+name = "Suspicious Suspended Process Creation"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+
+ process.Ext.created_suspended == true and process.parent.executable != null and
+
+ process.parent.thread.Ext.call_stack_contains_unbacked == true and
+
+ process.parent.thread.Ext.call_stack_summary : ("*ntdll.dll|kernelbase.dll|Unbacked*", "*kernel32.dll|Unbacked*", "ntdll.dll|Unbacked*") and
+
+ (process.parent.code_signature.status != "trusted" or process.parent.name : "rundll32.exe") and
+ (
+  /* process starts a signed MS binary in suspended state */
+  process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") or
+
+  /* process starts a suspended instacne of itself */
+  (startswith~(process.executable, process.parent.executable) and
+   (
+    (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*") or
+    process.Ext.relative_file_creation_time <= 500)
+    )
+    and not process.parent.thread.Ext.call_stack_summary : "*system.ni.dll|Unbacked*"
+  ) and
+
+  not process.parent.executable :
+              ("?:\\Program Files\\rs2\\rs2Client\\rs2ClientService.exe",
+               "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe") and
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes :
+                            ("8945d08b45d08945f4837df400741a8b45fc8b80*",
+                             "8944246c8b44246c89442460488b8424b0050000*",
+                             "*85f60f95c10fb6c9898d940000004883bdd8000000007420*"))
+'''
+
+min_endpoint_version = "8.13.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.13.0"

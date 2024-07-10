@@ -7,7 +7,7 @@ id = "fdd3d1e9-e7d2-4226-9e7c-0f8e77acac6d"
 license = "Elastic License v2"
 name = "Suspicious API Call from a Script Interpreter"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -30,11 +30,11 @@ sequence by process.entity_id with maxspan=5m
  [api where
   process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "image_rwx") and
   not process.Ext.api.name : ("VirtualProtect", "NtQueueApcThread", "SetWindowsHookEx") and 
-  not process.thread.Ext.call_stack_summary : ("Unknown", "Unbacked") and 
+  not process.thread.Ext.call_stack_summary : ("Unknown", "Unbacked", "Undetermined") and
   not process.Ext.api.summary : "VirtualProtect*msvcr*.dll,*" and
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel", "epmpthe.dll")) and 
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*") and
-  not process.thread.Ext.call_stack_final_user_module.name : "Unknown" and
+  not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
   not process.thread.Ext.call_stack_final_user_module.path :
                                ("?:\\Program Files\\*.dll",
                                 "?:\\Program Files (x86)\\*.dll",

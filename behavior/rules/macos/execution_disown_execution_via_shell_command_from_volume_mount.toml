@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when disown is executed by a shell command with the responsible process having been executed from a volume
+mount. The use of the disown binary on macOS is in itself an anomaly and something that almost never occurs but when
+paired with being executed via a shell command from a volume mounted binary indicates malicious activity. Disown
+originates from unix and allows one to remove any and all jobs from the current shell. A threat actor may do this in
+order to ensure there are no current jobs executing or that may execute that could prevent their actions from completing
+or cause them to be noticed.
+"""
+id = "511bd55d-f845-45da-8b35-7dd9a40fa7b2"
+license = "Elastic License v2"
+name = "Disown execution via shell command from volume mount"
+os_list = ["macos"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.args : ("bash", "sh", "zsh") and 
+ process.args == "-c" and process.args : "*disown*" and process.parent.executable : "/Volumes/*"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

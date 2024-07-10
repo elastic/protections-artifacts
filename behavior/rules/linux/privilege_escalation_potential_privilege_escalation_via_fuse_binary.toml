@@ -1,0 +1,44 @@
+[rule]
+description = """
+This rule identifies the execution of the "fuse" binary by the root user, excluding cases where the user's group is not
+root or the parent process is sudo. Such behavior is likely considered anomalous and may suggest an attempt at privilege
+escalation, potentially leveraging the CVE-2023-0386 vulnerability.
+"""
+id = "fdb6fde5-3af3-4759-a4cc-2c6847b09565"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Fuse Binary"
+os_list = ["linux"]
+reference = [
+    "https://securityonline.info/poc-exploit-released-for-linux-kernel-privilege-escalation-cve-2023-0386-bug/",
+    "https://github.com/xkaneiki/CVE-2023-0386",
+]
+version = "1.0.12"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+process.parent.name == "fuse" and process.name == "fusermount" and
+user.id == 0 and not (group.id == 0 or process.name == "sudo")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

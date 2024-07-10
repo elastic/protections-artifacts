@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects potential malicious elevated command executions on macOS by monitoring processes spawned by authtrampoline,
+which handles macOS privilege escalation. It flags processes with untrusted or missing code signatures, commonly abused
+process names like osascript, curl, and dscl, as well as shell executions with suspicious arguments. The aim is to
+swiftly identify and respond to abnormal elevated activities on a macOS system.
+"""
+id = "2f7b4008-99c6-46e9-9d93-97a4b801ac91"
+license = "Elastic License v2"
+name = "Suspicious Elevated Command Execution"
+os_list = ["macos"]
+version = "1.0.5"
+
+query = '''
+process where event.type : "start" and event.action == "exec" and 
+ process.parent.name: "authtrampoline" and 
+ (
+  ((process.code_signature.trusted == false or process.code_signature.exists == false) and not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*")) or 
+  (process.name : ("osascript", "curl", "nscurl", "dscl", ".*")) or 
+  (process.name : ("sh", "bash", "zsh") and process.args : "-c" and 
+    process.args : ("dscl*", "curl*", "nscurl*", "osascript*", "/tmp/*", "/private/tmp/*", "/var/tmp/*"))
+ )
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.5.0"

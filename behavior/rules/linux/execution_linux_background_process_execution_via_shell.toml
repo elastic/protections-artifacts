@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when a binary located in a suspicious location gets executed by a shell interpreter and put in the background
+via the & operator. Malware may execute their payloads in the background in an effort to remain hidden.
+"""
+id = "21692d53-d4a5-462c-9ee6-2d8788411996"
+license = "Elastic License v2"
+name = "Linux Background Process Execution via Shell"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "exec" and event.type == "start" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
+process.args : ("/* &", "/*&") and process.args_count == 3 and
+process.parent.executable : ("/dev/shm/*", "/var/tmp/*", "/tmp/*", "/var/www/*") and not (
+  process.executable : "/tmp/newroot/*" or
+  process.command_line == "/bin/bash -c /opt/forticlient/fortitray &" or
+  process.parent.executable : "/var/www/splynx/*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

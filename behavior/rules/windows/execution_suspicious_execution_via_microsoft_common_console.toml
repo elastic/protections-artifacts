@@ -7,8 +7,11 @@ id = "6e5cb5a0-1439-481d-bcba-0c5307b4746b"
 license = "Elastic License v2"
 name = "Suspicious Execution via Microsoft Common Console"
 os_list = ["windows"]
-reference = ["https://www.genians.co.kr/blog/threat_intelligence/facebook"]
-version = "1.0.3"
+reference = [
+    "https://www.genians.co.kr/blog/threat_intelligence/facebook",
+    "https://www.elastic.co/security-labs/grimresource",
+]
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -27,7 +30,9 @@ process where event.action == "start" and
                "?:\\Windows\\System32\\spool\\drivers\\x64\\3\\*.EXE",
                "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                "?:\\Program Files\\internet explorer\\iexplore.exe",
-               "?:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe") and
+               "?:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe",
+               "?:\\windows\\system32\\VmConnect.exe",
+               "?:\\Windows\\System32\\Dism\\dismhost.exe") and
  not (process.executable : "?:\\Windows\\explorer.exe" and process.args : "ms-settings:windowsupdate") and
  not (process.pe.original_file_name == "DismHost.exe" and process.args : "{*}" and
       process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
@@ -89,6 +94,23 @@ reference = "https://attack.mitre.org/techniques/T1204/002/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.014"
+name = "MMC"
+reference = "https://attack.mitre.org/techniques/T1218/014/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
 min_endpoint_version = "7.16.0"

@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -28,7 +28,8 @@ process where event.action == "start" and process.executable != null and
       process.executable : "?:\\Program Files*\\Dell\\SARemediation\\*.exe") and 
  not (process.code_signature.status : "trusted" and 
       process.code_signature.subject_name : ("LENOVO", "Dell Inc", "Citrix Systems, Inc.", "Docker Inc", "Solarwinds Worldwide, LLC", 
-                                             "Binary Fortress Software Ltd", "Seagull Scientific Inc.", "Zoom Video Communications, Inc.")) and 
+                                             "Binary Fortress Software Ltd", "Seagull Scientific Inc.", "Zoom Video Communications, Inc.",
+                                             "Sangfor Technologies Inc.")) and
  not (process.Ext.effective_parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\Sys*\\sdiagnhost.exe") and 
       process.parent.thread.Ext.call_stack_summary : "*|seclogon.dll|*") and 
  not (startswith~(process.Ext.effective_parent.executable, process.executable) and process.executable : "?:\\Program Files*") and 

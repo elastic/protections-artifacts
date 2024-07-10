@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id
@@ -39,7 +39,8 @@ sequence by process.entity_id
               "0def9f7030a3f2b8a3e13cc755df45179237353018f2742b91193a3b0a488656", 
               "dadf1bfc7471d3c51a9a8f57f791b44785947324496711f54ba42257559b6fdb",
               "4ab2db239193ff9578bcc781779b0d43a3aa5262bb217699009f4190cab216a7",
-              "dadf1bfc7471d3c51a9a8f57f791b44785947324496711f54ba42257559b6fdb") and
+              "dadf1bfc7471d3c51a9a8f57f791b44785947324496711f54ba42257559b6fdb",
+              "8d39e6e50c2ef7aa7a62c3b57ee30a6a3e751ec1e288415f7a9b729126e10bc7") and
 
   not (process.executable : "?:\\Windows\\System32\\bcdedit.exe" and process.args : "/export") and 
   

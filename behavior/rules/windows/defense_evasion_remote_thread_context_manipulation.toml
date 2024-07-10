@@ -7,14 +7,16 @@ id = "c456266f-e920-4acb-9b32-711fa7b94ca5"
 license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 api where 
   process.Ext.api.name : ("SetThreadContext", "Wow64SetThreadContext") and 
   process.executable != null and 
   ((process.Ext.api.behaviors : "cross-process" and process.Ext.api.behaviors : "execute_shellcode") or process.Ext.api.behaviors : "hardware_breakpoint_set") and 
-  not process.Ext.api.summary : "*OSError*" and process.thread.Ext.call_stack_final_user_module.name != null and 
+  not process.Ext.api.summary : "*OSError*" and process.thread.Ext.call_stack_final_user_module.name != null and
+  (process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" or
+   process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|Unbacked") and
   not (process.code_signature.subject_name :
                ("Duncan Ogilvie", "International Business Machines Corporation", "COGNOSPHERE PTE. LTD.",
                 "CAPCOM CO., LTD.", "Larian Studios Games Ltd.", "Valve Corp.", "Rockstar Games, Inc.",
@@ -26,7 +28,7 @@ api where
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
                 "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
       process.code_signature.trusted == true) and 
- not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "dbgeng.dll") and
+ not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "dbgeng.dll", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "kernel|*") and 
  not (process.code_signature.trusted == true and stringcontains~(process.executable, process.thread.Ext.call_stack_final_user_module.path)) and 
  not process.thread.Ext.call_stack_final_user_module.path : 
@@ -37,7 +39,8 @@ api where
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                         ("31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b",
                          "766ac0f768c5b2acb19ecb8cf179c59d56b74d71437f5d1331408d9c827cfde8",
-                         "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95") and
+                         "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95",
+                         "b6a39ef455952471c935ea190a78eecf423fba2a49ffce1afdf737d58bb2c9d3") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
@@ -51,7 +54,17 @@ api where
                            "?:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe",
                            "?:\\Program Files (x86)\\WinHex 19.6 Portable\\WinHex64.exe",
                            "?:\\Program Files\\JetBrains\\*\\plugins\\go\\lib\\dlv\\windows\\dlv.exe") and
- not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe"
+ not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe" and
+ not (process.name : ("cmd.exe", "powershell.exe", "csc.exe") and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "conemuhk64.dll*")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info : ("?:\\program files (x86)\\steam\\gameoverlayrenderer64.dll*",
+                                        "?:\\program files\\windowsapps\\microsoft.windbg*\\amd64\\dbgeng.dll!DebugCreateEx*",
+                                        "*\\vsdebugeng.impl.dll!ImplDllCreateInstance*",
+                                        "?:\\program files\\windowsapps\\dolbylaboratories.dolbyaccess_*\\dlls\\x64\\dolbyaudioprocessing.dll*",
+                                        "?:\\program files\\windowsapps\\pythonsoftwarefoundation.python.*\\dlls\\sqlite3.dll!sqlite?_enable_shared_cache*",
+                                        "?:\\windows\\systemapps\\microsoft.windows.contentdeliverymanager_*\\contentdeliverymanager.background.dll!*")) and
+ not process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|gdb.exe|kernel32.dll|ntdll.dll", "ntdll.dll|bcrypt.dll")
 '''
 
 min_endpoint_version = "8.10.0"

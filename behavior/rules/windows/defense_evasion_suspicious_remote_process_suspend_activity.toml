@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies attempts to suspend a remote process via NtSuspendProcess or a remote thread via SuspendThread and where the
+target process is not a child process. Adversaries may use this technique to suspend endpoint security processes or
+hijack the execution flow of a running process.
+"""
+id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
+license = "Elastic License v2"
+name = "Suspicious Remote Process Suspend Activity"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
+
+ process.Ext.api.behaviors == "cross-process" and process.Ext.api.behaviors != "parent-child" and
+
+ process.Ext.api.summary != null and
+
+ /* provenance metadata exists */
+ process.thread.Ext.call_stack_final_user_module.name != null and
+
+ /* skip signed */
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+
+ /* excluding kernel and unknown */
+ not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "Unknown", "Undetermined") and
+
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unknown" and
+
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+                        ("3ca49b11a6b12e9efe8b12076d46f4c1c6e9b4fea44f7e572766a7845c6c24a3",
+                         "921b33e55f4a7c806fc1e0547398545ae943fa341ed0e8dc29b4c71d49ecac1a",
+                         "bf0a9f2845bc536de2693177e93c67a9467ba992cb08f9c66e34912f60fb910d",
+                         "6847711e7782729fac009ede5fc3ea5ed6ca54ff582eed3386c1f74d83e1a372",
+                         "fdef73d692e2e181075bf43a05cd7ebe551f6b1be31f4d471ff709f83a549612",
+                         "0e29025fd573a9d818d05a124f83b6fbe74bbb7c37b8149b43f577d5a74d2f02",
+                         "3ca49b11a6b12e9efe8b12076d46f4c1c6e9b4fea44f7e572766a7845c6c24a3",
+                         "921b33e55f4a7c806fc1e0547398545ae943fa341ed0e8dc29b4c71d49ecac1a",
+                         "bf0a9f2845bc536de2693177e93c67a9467ba992cb08f9c66e34912f60fb910d",
+                         "e3101d0ebb2656193086f9ebd53563a6cfd802226d13cdb434d4fb89b2cbab7d", 
+                         "9045446fe2a4d4e2807e309e47c75c297dd766d934ca60bf0dabb45dda1857c7", 
+                         "fed8a5e8e77bf2099334d7bd55b127027b1048c5039aba3825161f07fb8e0889") and
+
+ not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
+      process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))
+'''
+
+min_endpoint_version = "8.14.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

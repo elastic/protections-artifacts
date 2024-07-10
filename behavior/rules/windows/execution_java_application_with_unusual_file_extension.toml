@@ -7,7 +7,7 @@ id = "13615fd4-b220-4033-ab4f-8b16b9beae57"
 license = "Elastic License v2"
 name = "JAVA Application with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -16,7 +16,13 @@ sequence by process.entity_id with maxspan=5s
   (
    (process.args_count == 3 and process.args : "-jar") or 
    (process.args_count == 4 and process.args : ("-cp", "-classpath") and process.command_line : " *.* ")
-   )]
+   ) and
+  not process.executable : ("?:\\Program Files\\7edit.com\\7Edit *\\bin\\javaw.exe",
+                            "?:\\Program Files\\Angry IP Scanner\\jre\\bin\\javaw.exe",
+                            "?:\\Program Files\\Eclipse Adoptium\\jdk-*-hotspot\\bin\\javaw.exe") and
+  not process.parent.executable : "?:\\Program Files (x86)\\AssoSoftware\\AssoInvoice\\AssoInvoice.exe" and
+  not (process.code_signature.subject_name : ("BELLSOFT", "Eclipse.org Foundation, Inc.") and process.code_signature.trusted == true)
+  ]
 [network where event.action in ("connection_accepted", "connection_attempted") and
  not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",

@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects when curl is used to access a Telegram API endpoint. Several malware samples recently have been see utilizing
+Telegram as a C2 and payload delivery channel.
+"""
+id = "479a2a9e-caba-43ea-b28b-88b1b242edd2"
+license = "Elastic License v2"
+name = "Curl to Telegram API"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.name : "curl" and process.args : "*api.telegram.org*" and
+ not (process.parent.name : "Telegram" or process.Ext.effective_parent.name : "Telegram")
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.2"

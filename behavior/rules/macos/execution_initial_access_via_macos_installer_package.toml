@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 sequence with maxspan=1m
@@ -79,8 +79,6 @@ sequence with maxspan=1m
       (process.name == "xattr" and ((process.args : "com.apple.quarantine" and 
         process.args : ("-d", "-w", "-?d", "-?w")) or
         (process.args : "-c")) and process.args : "/tmp/*") or
-	  // convert a downloaded file from the temp folder to a plist
-	    (process.name == "plutil" and process.args : "-convert") or
       (process.name == "touch" and process.args : "/tmp/*") or
       (process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*/bin/curl*.amazonaws.com*",
                                                                                         "*/bin/curl*.cloudfront.net*",

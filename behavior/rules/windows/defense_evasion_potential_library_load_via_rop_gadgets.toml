@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 library where process.pid != 4 and
@@ -16,6 +16,7 @@ library where process.pid != 4 and
  process.thread.Ext.call_stack_summary : ("ntdll.dll|*", "win32u.dll|*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
                   $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
+                                       "*\\KernelBase.dll!KernelbasePostInit*", "*\\ntdll.dll!RtlCaptureStackBackTrace*",
                                       "*ntdll.dll*!*OpenThreadTokenEx*", "*ntdll.dll*!*DeviceIoControlFile*", "*ntdll.dll*!NtOpenProcess*",
                                       "*ntdll.dll*!*CreateUserProcess*", "*ntdll.dll*!NtTerminateProcess*", "*ntdll.dll*!NtAlpcOpenSenderProcess*",
                                       "*ntdll.dll*!*ReplyWaitReceivePortEx*", "*ntdll.dll*!NtSetInformationFile*", "*ntdll.dll!TpAllocPool*",
@@ -24,9 +25,11 @@ library where process.pid != 4 and
                                       "*kernel32.dll!CreateThread*", "*KernelBase.dll!CreateRemoteThread*", "*ntdll.dll!*SetInformationWorkerFactory*", "*ntdll.dll!TpReleaseCleanupGroupMembers*",
                                       "*ntdll.dll!NtReleaseWorkerFactoryWorker+*", "*ntdll.dll!ZwWaitForWorkViaWorkerFactory*",
                                       "*KernelBase.dll!MapViewOfFileEx*", "*ntdll.dll!NtdllDialogWndProc*", "*ntdll.dll!EtwRegisterSecurityProvider*",
-                                      "*ntdll.dll!NtMapUserPhysicalPagesScatter*", "?:\\Windows\\System32\\cyinjct.dll!CyProcessPreinitThunk*")) and
+                                      "*ntdll.dll!NtMapUserPhysicalPagesScatter*", "?:\\Windows\\System32\\cyinjct.dll!CyProcessPreinitThunk*",
+                                      "*\\ntdll.dll!ZwAlpcDeleteSecurityContext*", "*\\ntdll.dll!ZwAccessCheckAndAuditAlarm*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*")
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
+ not dll.path : "?:\\Windows\\assembly\\GAC_32\\System.Data\\*\\System.Data.dll"
 '''
 
 min_endpoint_version = "8.8.0"

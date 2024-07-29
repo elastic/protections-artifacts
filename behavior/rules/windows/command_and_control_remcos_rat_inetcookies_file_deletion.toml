@@ -8,12 +8,13 @@ license = "Elastic License v2"
 name = "Remcos RAT INETCookies File Deletion"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/software/S0332/", "https://any.run/malware-trends/remcos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 file where event.action == "deletion" and file.name : "container.dat" and user.id != "S-1-5-18" and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
- file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCookies\\container.dat"
+ file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCookies\\container.dat" and
+ not process.executable : "C:\\Program Files (x86)\\WinDirStat\\windirstat.exe"
 '''
 
 min_endpoint_version = "8.1.0"

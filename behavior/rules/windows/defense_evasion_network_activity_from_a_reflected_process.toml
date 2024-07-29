@@ -8,12 +8,14 @@ license = "Elastic License v2"
 name = "Network Activity from a Reflected Process"
 os_list = ["windows"]
 reference = ["https://www.deepinstinct.com/blog/dirty-vanity-a-new-approach-to-code-injection-edr-bypass"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and
-  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!RtlCreateProcessReflection*", "*ntdll.dll!RtlCloneUserProcess*"))]
+  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!RtlCreateProcessReflection*", "*ntdll.dll!RtlCloneUserProcess*")) and
+  not process.hash.sha256 : ("a2f3e8a8486d23662da129cd8c8fa9eb0ac0e2471ade3924aaac5c20d153fabb",
+                             "8c78b7a71ac20369a5bcd4fb462aee1d514f10afe87408bed3c2d786dd479b4d")]
  [any where
   (event.category : ("network", "dns") or (event.category == "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll")))]
 '''

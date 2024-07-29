@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -232,7 +232,11 @@ process where event.action == "start" and
                   "9b83ddcae1aad934ec03f1479bbedbfffac1d592017daf6cedc1a3f7cdb782b2",
                   "d9fd6944595083644a4711f0b18611d4547f0c75c89c944bb9de196d74375008",
                   "a9f91a634178809eaf007aa15420ac5181e681636da8fdbe4946322103ca7b5f",
-                  "43f1ab077466acc126c00345eeb83eb95afea77cfb1d70b1f62b5db1ef29d365") and
+                  "43f1ab077466acc126c00345eeb83eb95afea77cfb1d70b1f62b5db1ef29d365",
+                  "f471df28bb4694f4efc705c7d063a64f409be064ed58986682b4a97403df8d96",
+                  "5ee2f45d33fbe07958b8875a37756d0fe20b2643d5f926e60f009a0eec3ba9a8",
+                  "2fa78d3db5f0e1b5ecba97bb647889a210187e8af6ddc85aa3526c9c931521bb",
+                  "34c5c838199700dd344b8d606163ce4f05db72397c9aaf129f52b70b38c1d187") and
 
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
@@ -254,6 +258,7 @@ process where event.action == "start" and
   not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise") and 
   not (process.name : "certutil.exe" and process.args : ("-view", "-hashfile")) and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs") and
+  not (process.executable : "C:\\Windows\\System32\\inetSrv\\appCmd.exe" and process.args == "list" and process.args == "appPool") and
   not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework64\\*\\installutil.exe" and
        process.args : "?:\\Program Files\\Omnyx\\Messagehandlers\\JobAgents\\*\\Omnyx.MessageHandler.Host.exe") and
   not (process.name : "cmd.exe" and process.command_line :("*curl*latest/meta-data/instance-id*", "*curl*metadata/instance?api-version*")) and

@@ -7,7 +7,7 @@ id = "c567240c-445b-4000-9612-b5531e21e050"
 license = "Elastic License v2"
 name = "Connection to WebService by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -38,6 +38,7 @@ sequence by process.entity_id with maxspan=5m
      /* BlueIris - Camera IOT monitoring sw using telegram to upload pictures */
      not (process.name : "curl.exe" and process.parent.name : "cmd.exe" and process.parent.args : "C:\\BlueIris\\Telegram-Upload\\upload.cmd ") and
      not (process.name : "curl.exe" and process.parent.executable : "?:\\Program Files\\Neovim\\bin\\nvim.exe") and
+     not process.executable : "C:\\Program Files\\Git\\mingw64\\bin\\curl.exe" and
      not (process.name : "rundll32.exe" and
           process.args : ("?:\\Program Files\\Microsoft Office\\root\\*",
                           "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*",
@@ -50,8 +51,11 @@ sequence by process.entity_id with maxspan=5m
                           "?:\\PROGRA~2\\MICROS~2\\Office*\\*.CPL*",
                           "?:\\Windows\\System32\\mshtml.dll,PrintHTML", 
                           "?:\\PROGRA~?\\MICROS~?\\Office??\\MLCFG32.CPL,@0", 
-                          "AppXDeploymentExtensions.OneCore.dll,ShellRefresh")) and 
-      not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe", "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe")
+                          "AppXDeploymentExtensions.OneCore.dll,ShellRefresh")) and
+      not process.parent.executable : "C:\\Program Files\\Microsoft SQL Server\\150\\DTS\\Binn\\ISServerExec.exe" and
+      not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe", "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe") and
+      not (process.name : "powershell.exe" and process.parent.name : "wsmprovhost.exe" and
+           process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile")
   ]
   [dns where
     dns.question.name :

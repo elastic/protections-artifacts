@@ -7,15 +7,21 @@ os_list = ["windows"]
 reference = [
     "https://www.microsoft.com/en-us/security/blog/2024/04/22/analyzing-forest-blizzards-custom-post-compromise-tool-for-exploiting-cve-2022-38028-to-obtain-credentials/",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-file where file.path : "?:\\*\\Windows\\system32\\DriVerStoRe\\FiLeRePoSiToRy\\*\\MPDW-constraints.js" and
+file where file.path : "C:\\*\\Windows\\system32\\DriVerStoRe\\FiLeRePoSiToRy\\*\\MPDW-constraints.js" and
  not user.id : "S-1-5-18" and
- not process.executable : ("?:\\Windows\\System32\\taskhostw.exe",
-                           "?:\\Program Files\\Azure\\StorageSyncAgent\\FileSyncSvc.exe",
-                           "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe",
-                           "?:\\Windows\\System32\\cleanmgr.exe")
+ not file.path : "C:\\$WINDOWS.~BT\\NewOS\\Windows\\System32\\DriverStore\\FileRepository\\prnms*\\MPDW-constraints.js" and
+ not process.executable : ("C:\\Windows\\System32\\taskhostw.exe",
+                           "C:\\Program Files\\Azure\\StorageSyncAgent\\FileSyncSvc.exe",
+                           "C:\\Program Files (x86)\\IDriveWindows\\id_bglaunch.exe",
+                           "C:\\Program Files (x86)\\IBackupWindows\\ib_bglaunch.exe",
+                           "C:\\Windows\\System32\\SystemSettingsAdminFlows.exe",
+                           "C:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe",
+                           "C:\\Program Files\\Microsoft Deployment Toolkit\\Bin\\Microsoft.BDD.Catalog40.exe",
+                           "C:\\$WINDOWS.~BT\\Sources\\SetupHost.exe",
+                           "C:\\Windows\\System32\\cleanmgr.exe")
 '''
 
 min_endpoint_version = "7.16.0"

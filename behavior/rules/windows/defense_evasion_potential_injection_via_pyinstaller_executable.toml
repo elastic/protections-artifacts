@@ -4,7 +4,7 @@ id = "deb48ee3-8ce0-4ff7-a30b-041c5db024bb"
 license = "Elastic License v2"
 name = "Potential Injection via PyInstaller Executable"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where not process.code_signature.status : "trusted" and
@@ -12,7 +12,9 @@ api where not process.code_signature.status : "trusted" and
  (process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode") and
   process.thread.Ext.call_stack_summary :
                       ("ntdll.dll|kernelbase.dll|Unbacked",
-                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked") and
+                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                       "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|libffi-?.dll|_ctypes.pyd|*") and
   process.thread.Ext.call_stack_final_user_module.protection_provenance : "libffi*.dll" and
   process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*")) or
@@ -21,7 +23,8 @@ api where not process.code_signature.status : "trusted" and
    process.thread.Ext.call_stack_final_user_module.name : "libffi*.dll" and
    process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|libffi-?.dll|_ctypes.pyd|*",
                                             "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|libffi-?.dll|_ctypes.pyd|*"))
- )
+ ) and
+ not process.Ext.api.summary == "VirtualAlloc( NULL, 0x1c, COMMIT|RESERVE, RWX )"
 '''
 
 min_endpoint_version = "8.10.0"

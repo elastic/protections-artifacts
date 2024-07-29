@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -33,7 +33,9 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                   $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*",
                                         "?:\\Windows\\apppatch\\exploitblocker.dll*",
                                         "?:\\Windows\\AppPatch\\emet.dll!*",
-                                        "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*"))
+                                        "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*")) and
+ not process.executable : ("C:\\Program Files (x86)\\Cambridge\\CEPD - 17th Edition\\cepd17.exe",
+                           "C:\\Program Files (x86)\\SCRABBLE\\GHScrabble.exe")
 '''
 
 min_endpoint_version = "8.11.0"

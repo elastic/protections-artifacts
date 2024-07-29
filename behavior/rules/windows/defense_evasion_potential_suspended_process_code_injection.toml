@@ -7,7 +7,7 @@ id = "47167118-ba42-48e8-8555-dd50d98d21c4"
 license = "Elastic License v2"
 name = "Potential Suspended Process Code Injection"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name  == "WriteProcessMemory" and
@@ -27,7 +27,9 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
   not process.thread.Ext.call_stack_final_user_module.path :
                              ("?:\\windows\\assembly\\nativeimages_*.dll",
                               "?:\\program files\\*",
-                              "?:\\program files (x86)\\*") and
+                              "?:\\program files (x86)\\*",
+                              "c:\\windows\\apppatch\\ummon.dll",
+                              "c:\\windows\\apppatch\\apppatch64\\ummon.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : "mfehcthe.dll" and 
   /* once 8.15.0 schemas are added remove mfehcthe.dll exclusion and add the following line */
   /* add the following exclusion */
@@ -69,7 +71,9 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
                                    "2266a567ba921d1c2661258cd5b31150274cb781ac01413c34a471557123ba65", 
                                    "1f2e936a57994e16b457f249a64af4786877f7beaab003fb521a20e45031f408", 
                                    "e8eaf74988082b8c8222dabed68218069c8eb4e93acd3619a776bc28d39e5ce5", 
-                                   "39fdb47a5f349e06bbb7dc1cedcc81a051d1dffe373956871325f8327e858afa")
+                                   "39fdb47a5f349e06bbb7dc1cedcc81a051d1dffe373956871325f8327e858afa",
+                                   "f7af5eac1d34a2ddc619dd0c3172ec28334b8d79efc1f8ad758124b7e5aae0d5",
+                                   "8f3d19065d0d1295bbfbf7591aa02af3a5dc70fde74bac670c18ccd8f7306008")
 '''
 
 min_endpoint_version = "8.14.0"

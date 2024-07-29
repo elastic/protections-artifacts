@@ -1,0 +1,46 @@
+[rule]
+description = "Identifies shellcode injection from a LUA application. This may indicate an attempt to evade defenses."
+id = "677dac41-8a22-42a1-b24f-ed8db751695a"
+license = "Elastic License v2"
+name = "Shellcode Injection from a LUA Application"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[library where
+  (dll.Ext.relative_file_creation_time <= 3600 or
+   dll.Ext.relative_file_name_modify_time <= 3600 or
+   (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*")) and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*!luaopen_*")] by dll.hash.sha256
+[api where
+ process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx", "hook_api") and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*"] by process.thread.Ext.call_stack_final_user_module.hash.sha256
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

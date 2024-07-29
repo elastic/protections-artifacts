@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence with maxspan=5m
@@ -70,6 +70,7 @@ sequence with maxspan=5m
                                       "?:\\windows\\system32\\msiexec.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
+    not (process.name : "powershell.exe" and process.args : ("-nomeAgente", "& 'C:\\oracle_unified_agent\\scripts\\unified-agent-permissions.ps1' ; exit $($LASTEXITCODE)")) and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and 
     not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*tsworkspace,WorkspaceSilentSetup*")) and 
     not process.executable :

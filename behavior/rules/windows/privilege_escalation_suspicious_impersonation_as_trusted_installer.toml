@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 any where process.executable != null and 
@@ -80,7 +80,10 @@ any where process.executable != null and
       process.code_signature.trusted == true and process.code_signature.subject_name : "BeyondTrust Software, Inc") and
 
  not (process.executable : "?:\\Program Files\\Common Files\\McAfee\\AVSolution\\mcshield.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name : "MUSARUBRA US LLC")
+      process.code_signature.trusted == true and process.code_signature.subject_name : "MUSARUBRA US LLC") and
+
+ not (process.executable : "C:\\Program Files (x86)\\Panda Security\\WAC\\PSANHost.exe" and
+      process.code_signature.trusted == true and process.code_signature.subject_name == "Panda Security S.L.")
 '''
 
 min_endpoint_version = "8.4.0"

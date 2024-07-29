@@ -1,0 +1,84 @@
+[rule]
+description = """
+Identifies shellcode execution behavior from a powershell script interpreter. This may indicate the execution of a
+malicious powershell script or the result of a cross process injection targeting powershell.
+"""
+id = "98fffa16-53e1-4db9-9126-2d0441cac417"
+license = "Elastic License v2"
+name = "Shellcode Injection via PowerShell"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name : ("VirtualAlloc*", "VirtualProtect*", "WriteProcessMemory", "connect") and
+    process.name : ("powershell.exe", "pwsh.exe", "powershell_ise.exe") and
+    process.Ext.api.behaviors : ("shellcode", "allocate_shellcode") and
+    process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+    process.thread.Ext.call_stack_final_user_module.protection_provenance == "Unbacked" and
+    (process.Ext.api.name == "connect" or process.Ext.api.parameters.size >= 10000) and
+    not process.Ext.api.behaviors : "protection_fluctuation" and process.thread.Ext.call_stack_summary : "?*" and
+    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and
+
+    /* noisy patterns */
+    not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
+                     $entry.callsite_trailing_bytes :
+                                   ("*85f60f95c10fb6c9894dac488bcce82f000000908b45ac0fb6c0488b55a0c6420c01*",
+                                    "488dac24d00000004c8bb424a8000000*4c8b45f84d8d4e08*",
+                                    "*85f60f95c10fb6c9894dac488bcce82f000000908b45*")) and
+    not (process.thread.Ext.call_stack_summary  == "ntdll.dll|Unbacked" and
+         _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Unknown")) and
+    not process.thread.Ext.call_stack_summary : ("Unbacked", "*Unknown*") and
+    not _arraysearch(process.thread.Ext.call_stack, $entry,
+                     $entry.protection_provenance : ("Kernel", "clr.dll", "coreclr.dll", "fships.dll*", "Kernel|*", "tmmon.dll",
+                                                     "mfehcthe.dll", "mfehcs.exe|mfehcs.exe", "conemuhk64.dll", "tmmon64.dll", "dwadv.dll")) and
+    not _arraysearch(process.thread.Ext.call_stack, $entry,
+                     $entry.symbol_info : ("?:\\Program Files\\*.dll*", "?:\\Program Files (x86)\\*.dll*", "?:\\windows\\system32\\*\\tmmon*.dll*")) and
+    not (user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+         process.parent.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\services.exe") and
+         _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Unbacked"))
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

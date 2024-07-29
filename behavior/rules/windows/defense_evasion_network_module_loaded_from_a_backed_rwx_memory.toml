@@ -7,7 +7,7 @@ id = "a1d00ee9-64d6-440a-8940-fd2d940152a6"
 license = "Elastic License v2"
 name = "Network Module Loaded from a Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,7 +24,13 @@ sequence by process.entity_id with maxspan=1m
   not process.hash.sha256 :
                 ("a6061528b62fb3e57ecf48db7d9f760d7df3298aad6fe0231a1a97a5619490b7",
                  "edd35332ab97e86f70132ffa9d8e9cb47d79f12c3c50bf4eb5cf6de55c214d47",
-                 "b3f9c9d24914fb770551c6e8563cf93844f31630583a8fec2a529bc785284b92")
+                 "b3f9c9d24914fb770551c6e8563cf93844f31630583a8fec2a529bc785284b92",
+                 "e7815d360ab098fdd1f03f10f43f363c73a632e8866e304c72573cf1e6a0dec8",
+                 "ae7ef4fb23c6600ca6947226188a597083c0e65bece1db2884debb330addc0c3",
+                 "fc91558efb40b16dd9f6b0e93c972a0f1ff85cad3ddefdd7028c2628d75a9ab9",
+                 "423e7009c7f9f42166d27becc780bf72c551e2075391ce98d80f46a5abca0373",
+                 "53b381da45177f0a612c40e66e9da3231ba47027962feca5fa215aed8b688f57",
+                 "e6a734db7c225fba0b255f92bdf0b12d0d657b13c582d56e50e4d4ab8c59fbac")
 
   ]
  [library where dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll") and

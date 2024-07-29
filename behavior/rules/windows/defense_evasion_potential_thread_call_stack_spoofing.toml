@@ -7,7 +7,7 @@ id = "0cd206df-f54d-47e8-9276-d6a73bb65f47"
 license = "Elastic License v2"
 name = "Potential Thread Call Stack Spoofing"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 any where 
@@ -27,7 +27,8 @@ any where
    not process.thread.Ext.call_stack_summary :
                ("ntdll.dll|kernel32.dll|gdi32.dll|*|Unknown",
                 "ntdll.dll|kernel32.dll|imm32.dll|*|Unknown",
-                "ntdll.dll|kernel32.dll|ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|cns30m_d9ee6.dll|gdi32full.dll|user32.dll|ntdll.dll|Unknown|gdi32full.dll|gdi32.dll|msedge.dll|kernel32.dll|ntdll.dll")) or
+                "ntdll.dll|kernel32.dll|ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|cns30m_d9ee6.dll|gdi32full.dll|user32.dll|ntdll.dll|Unknown|gdi32full.dll|gdi32.dll|msedge.dll|kernel32.dll|ntdll.dll",
+                "ntdll.dll|kernel32.dll|ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|crypt32.dll|cryptext.dll|shell32.dll|shcore.dll|kernel32.dll|ntdll.dll")) or
 
    (event.category : "library" and _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info :  ("*kernel32.dll!SetDefaultCommConfigW+0x*", "*kernel32.dll!SortGetHandle*")) and 
     process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|kernel32.dll|ntdll.dll", "ntdll.dll|kernel32.dll|ntdll.dll", "ntdll.dll|kernel32.dll|*|kernel32.dll|ntdll.dll")) or 

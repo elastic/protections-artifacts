@@ -1,0 +1,81 @@
+[rule]
+description = """
+Detects applications making a curl request to a known public IP address lookup web service. Malware tends to perform
+this action to assess potential targets.
+"""
+id = "f4744b1a-3775-4387-8529-abc08076a612"
+license = "Elastic License v2"
+name = "External IP address discovery via Curl"
+os_list = ["macos"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.parent.executable : ("/Applications/*", "/Volumes/*") and 
+ process.name : ("curl", "nscurl") and 
+ process.command_line : 
+         (
+          "*ip-api.com*",
+          "*checkip.dyndns.org*",
+          "*api.ipify.org*",
+          "*whatismyip.akamai.com*",
+          "*bot.whatismyipaddress.com*",
+          "*ifcfg.me*",
+          "*ident.me*",
+          "*ipof.in*",
+          "*ip.tyk.nu*",
+          "*icanhazip.com*",
+          "*curlmyip.com*",
+          "*wgetip.com*",
+          "*eth0.me*",
+          "*ipecho.net*",
+          "*ip.appspot.com*",
+          "*api.myip.com*",
+          "*geoiptool.com*",
+          "*api.2ip.ua*",
+          "*api.ip.sb*",
+          "*ipinfo.io*",
+          "*checkip.amazonaws.com*",
+          "*wtfismyip.com*",
+          "*iplogger.*",
+          "*freegeoip.net*",
+          "*freegeoip.app*",
+          "*ipinfo.io*",
+          "*geoplugin.net*",
+          "*myip.dnsomatic.com*",
+          "*www.geoplugin.net*",
+          "*api64.ipify.org*",
+          "*ip4.seeip.org*",
+          "*.geojs.io*",
+          "*portmap.io*",
+          "*api.2ip.ua*",
+          "*api.db-ip.com*",
+          "*geolocation-db.com*",
+          "*httpbin.org*",
+          "*myip.opendns.com*"
+         ) and
+not process.parent.executable: "/Applications/Xcode.app/Contents/Developer/usr/bin/make"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1016"
+name = "System Network Configuration Discovery"
+reference = "https://attack.mitre.org/techniques/T1016/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.11.0"

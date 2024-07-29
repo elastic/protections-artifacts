@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies when the Windows installer process msiexec.exe creates a new persistence entry via the Run key or Startup
+folder and set to run a suspicious commands or file type.
+"""
+id = "9f7aece1-355c-4e72-a7ea-767d5cccb12d"
+license = "Elastic License v2"
+name = "Suspicious Startup Persistence via a Windows Installer"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+any where process.name : "msiexec.exe" and
+  (
+   (event.category == "registry" and event.action == "modification" and
+    registry.path : ("H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                     "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
+                     "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+                     "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*") and
+    registry.data.strings : ("*C:\\Users*\\*\\Contacts\\*", "*cmd*/c*", "*powershell*", "*node.exe*.js*", "*rundll32*",
+                             "*mshta.exe*", "*wscript.exe*", "*cscript.exe*", "*C:\\Users\\Public\\*") and
+    not registry.data.strings :
+                  ("rundll32.exe \"C:\\Program Files\\VMware\\VMware View\\Agent\\bin\\MessageFrameWork.dll\",EnvSyncW",
+                   "rundll32.exe DR*SVC.dll, EntryPointUserMessage",
+                   "rundll32.exe P*Svc.dll, EntryPointUserMessage",
+                   "C:\\Users\\Public\\RES\\RESPrinter\\FileWatcher.exe")) or
+
+    (event.category == "file" and event.action == "creation" and
+     file.extension : ("bat", "cmd", "js", "vbs", "wsh", "hta", "exe", "pif", "scr", "cpl", "jse", "vbe", "ps1") and
+     file.path : ("?:\\programdata\\microsoft\\windows\\start menu\\programs\\startup\\*",
+                  "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*"))
+  )
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.001"
+name = "Registry Run Keys / Startup Folder"
+reference = "https://attack.mitre.org/techniques/T1547/001/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

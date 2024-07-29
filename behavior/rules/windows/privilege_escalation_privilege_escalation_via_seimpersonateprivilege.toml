@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=3m
@@ -23,7 +23,9 @@ sequence with maxspan=3m
                  "?:\\Windows\\syswow64\\printfilterpipelinesvc.exe",
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\printfilterpipelinesvc.exe", 
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\wbem\\wmiprvse.exe") and 
-  not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\davclnt.dll,DavSetCookie")
+  not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\davclnt.dll,DavSetCookie") and
+  not (process.executable : "C:\\Windows\\System32\\conhost.exe" and
+       process.parent.executable : "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe")
   ] by process.entity_id
  [process where event.action == "start" and user.id : "S-1-5-18" and 
   (

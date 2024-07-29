@@ -1,0 +1,74 @@
+[rule]
+description = "Identifies the load of the Windows LDAP library and from a suspicious call stack trace."
+id = "21daeeb2-fb66-432e-9ca4-92e35f2c154c"
+license = "Elastic License v2"
+name = "Suspicious Windows LDAP Image Load"
+os_list = ["windows"]
+version = "1.0.6"
+
+query = '''
+library where dll.name : "wldap32.dll" and 
+ (
+  (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*LdrLoadDLL*") and
+    stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", process.name)) and
+    not _arraysearch(process.thread.Ext.call_stack, $entry,
+                                                   $entry.symbol_info : ("*LoadLibrary*",
+                                                                         "*LdrResolveDelayLoadedAPI*",
+                                                                         "*hmpalert.dll!CVCCP*",
+                                                                         "*LdrGetProcedureAddressEx*",
+                                                                         "?:\\Program Files (x86)\\*.dll*",
+                                                                         "?:\\Program Files\\*.dll*",
+                                                                         "*KernelBase.dll!CreateProcess*"))) or 
+
+    (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and 
+      process.thread.Ext.call_stack_summary : 
+                                    ("ntdll.dll|kernelbase.dll|Unbacked",
+                                     "ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll", 
+                                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked", 
+                                     "ntdll.dll|kernelbase.dll|Unbacked|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll",
+                                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked"))
+ ) and 
+
+ not process.executable : ("\\device\\mup\\*", "?:\\program files\\*", "?:\\program files (x86)\\*") and
+ not (process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true and 
+      process.thread.Ext.call_stack_summary : "*ntdll.dll|firefox.exe*") and
+ not (process.code_signature.subject_name : ("Code Systems Corporation", "Essential Objects, Inc", "Essential Objects, Inc.", "KOBIL GmbH") and
+      process.code_signature.trusted == true) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes :
+                         ("*8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b*",
+                          "c6430c01833d*5f007406ff1*",
+                          "48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
+                          "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
+                          "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65",
+                          "488944242048837c2420007520488b8424600200004883c050488bd0488d0d49180100e84c77ffffe9b6000000488b8424600200004883c0504c8b442420488b",
+                          "**45a848894590eb00488b4590488b5588c6420c01488b5588",
+                          "*488b5560c6420c01488b5560488b4d2048894a",
+                          "c6470c01833d6cf1b45f007406ff15f40cb45f8bf0e8b5e76f5f85f6400f95c6400fb6f64883bdc0000000007423488b8dc0000000e825ebe25e448bc0488b95",
+                          "488b5560c6420c01833db339f55f007406ff153b43f55f898584000000488b4d00e845000000908b8584000000488b5560c6420c01488b5560488b4d2048894a",
+                          "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
+                          "41c6460c01833d*",
+                          "*48897570488B4D00E84300000090488B4570488B5560*",
+                          "48894550488b4508488b4d5048894810488b4500ff5040488b4d088901488b8580000000488*",
+                          "48898424b80000004883bc24b8000000000f848d000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24", 
+                          "41c6470c01833d0*", "c6470c0148bad*", "488b55*c6420*", "41c6460c01833*", "85c0781e8b4424*", "8bd885c0781d*", "488b5b2f4885db75e44883*", 
+                          "4883c4405859*", "48894550488b*",  "48894568488b4*", "c6470c01833*", "488985800000004*", "41c6460c0148ba4*", "41c6460c0148ba1*",  "585b415941585a5859c30000*"))
+'''
+
+min_endpoint_version = "8.8.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.8.0"

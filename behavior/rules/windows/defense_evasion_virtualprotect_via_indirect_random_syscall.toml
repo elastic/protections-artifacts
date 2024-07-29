@@ -7,7 +7,7 @@ id = "2cb8bc8c-8eb7-418e-bb94-016460f8c6e1"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where 
@@ -30,14 +30,16 @@ api where
    ) and 
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll!*+0x14") and 
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("kernel", "Unknown", "Undetermined") and
- not process.thread.Ext.call_stack_final_user_module.name : "kernel" and 
+ not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown") and
  not process.thread.Ext.call_stack_summary : ("Unbacked|Unknown|umppc*.dll|ntdll.dll", "Unbacked|umppc*.dll|ntdll.dll", "Unbacked|Unknown|ntdll.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\system32\\ntdll.dll+0x*") and
  not process.thread.Ext.call_stack_summary : "Unbacked|kernelbase.dll|mfaphook64.dll|sfrhook64.dll*" and
  not (process.code_signature.subject_name : ("Vectric Ltd.", "Roblox Corporation", "Activision Publishing Inc") and
      process.code_signature.trusted == true) and
  not process.thread.Ext.call_stack_final_user_module.path :
-                 ("?:\\program files\\mozilla firefox\\firefox.exe", "?:\\program files (x86)\\mozilla firefox\\firefox.exe") and
+                 ("?:\\program files\\mozilla firefox\\firefox.exe",
+                  "?:\\program files (x86)\\mozilla firefox\\firefox.exe",
+                  "c:\\program files\\microsoft office\\office??\\msohtmed.exe") and
  not process.thread.Ext.call_stack_summary :
                    ("Unbacked|kernelbase.dll|pghook.dll|ntdll.dll|kernelbase.dll|ntdll.dll",
                     "Unbacked|kernelbase.dll|mfaphook.dll|sfrhook.dll|ntdll.dll|kernelbase.dll|mfaphook.dll|ntdll.dll|kernelbase.dll|ntdll.dll") and

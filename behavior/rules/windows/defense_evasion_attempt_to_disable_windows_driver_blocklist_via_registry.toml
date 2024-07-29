@@ -11,12 +11,13 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/microsoft-recommended-driver-block-rules",
     "https://www.unknowncheats.me/forum/anti-cheat-bypass/524561-windows-11-blacklisteddrivers-fix.html",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 registry where registry.path : "HKLM\\SYSTEM\\*ControlSet*\\CI\\Config\\VulnerableDriverBlocklistEnable" and
  registry.data.strings : "0" and
- not process.executable : "?:\\Windows\\System32\\SecurityHealthService.exe"
+ not process.executable : ("?:\\Windows\\System32\\SecurityHealthService.exe",
+                           "C:\\Program Files (x86)\\Common Files\\InstallShield\\engine\\?\\Intel 32\\IKernel.exe")
 '''
 
 min_endpoint_version = "7.15.0"

@@ -4,7 +4,7 @@ id = "9fda6a38-3822-45b6-b621-02f750e8cf0d"
 license = "Elastic License v2"
 name = "Shellcode Execution from Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -30,7 +30,16 @@ sequence by process.entity_id with maxspan=1m
                "beea6a901336753d2a9b8802a8cfa88da2619bebf9fafbef6bbab07b0d4eddcb",
                "dfde40ca8128e6cc3b046ede410be4734bc1ba552ce546e62bac40ad7d69dec0",
                "ba877ea99e9ebd794266529dc0228d279219516349fbbefc0bdd5dfd514eb52f",
-               "beea6a901336753d2a9b8802a8cfa88da2619bebf9fafbef6bbab07b0d4eddcb")] by dll.hash.sha256
+               "beea6a901336753d2a9b8802a8cfa88da2619bebf9fafbef6bbab07b0d4eddcb",
+               "3f2fb2aa90ca14fe598bd2ec32e2fc6818f5784fa0cd69160939b7394a4f8bdd",
+               "15efeb9a8ab4d7553ce58e825c7a7ac5852a5a217722d92bdec17a890c2e006d",
+               "efd601882adb9cba4adbce6770be1ff62302f3f10321657c527a9c647faccd15",
+               "c233341d1b6bee8a61c8748e956d8f9ec6c4c1bb93de0322639da46c8d9bbf92",
+               "de7585c96725bbe66e11c3c80aebb66cd61b901d6acf983b63c29e64e0cfbc9c",
+               "4c28bcbbbd54e0c7e43cb1cb9980918668ca6cab379ad114e9d1d4640b5ef154",
+               "19f75446ac56ee7bf3efe1cc25383fcab91a557f9b6257b39e496ec4a6ff8b2e",
+               "e2b761094a6f6300da32e861e8f42c359b22a0cf1d62ff3a2721882aa4d1c2c6",
+               "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx", "hook_api") and 
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and

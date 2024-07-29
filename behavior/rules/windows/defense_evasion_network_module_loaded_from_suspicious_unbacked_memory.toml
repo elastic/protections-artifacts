@@ -7,7 +7,7 @@ id = "aa265fbd-4c57-46ff-9e89-0635101cc50d"
 license = "Elastic License v2"
 name = "Network Module Loaded from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id
@@ -50,7 +50,8 @@ sequence by process.entity_id
                      "Kodak Alaris Inc.", "JAM Software GmbH", "UBISOFT ENTERTAINMENT INC.", "DASSAULT SYSTEMES SE", 
                      "Link Data Security A/S", "Western Digital Technologies, Inc.", "Rockstar Games, Inc.",
                      "SEMPERIS INC.", "Micro-Star International CO., LTD.", "Kaseya Holdings Inc", "KASEYA US LLC",
-                     "Intel(R) Software Development Products") and
+                     "Intel(R) Software Development Products", "Commvault Systems, Inc.", "AAC Infotray AG",
+                     "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -176,6 +177,7 @@ sequence by process.entity_id
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b08000050ff9393080000cc8b1c24c3ce0000087c00960046003a005c00500072006f0067", 
                           "488944242048837c24200075*", 
                           "c6430c01833d*",
+                          "*0000ba0c0000004c8d4c2450448d423441ffd3*",
                           "41c6470c0148ba*7f0000833a00740c48b9*",
                           "41c6470c0148ba*4c8b6d8849897508498bc5488b9548ffffff498957104881",
                           "c6460c01833db6e5e75f007406ff15eae8e65f488bd8e8aa38b25f488bc3488b4d8048894e104883c4785b5e5f415c415d415e415f5dc367611910090010e20c",
@@ -184,9 +186,13 @@ sequence by process.entity_id
                           "*488b5588498956104883c4785b5e5f415c415d415e",
                           "c6460c01833d*",
                           "898383080000c7837f080000010000006a0056ff9397080000*",
+                          "8be55d558bec83ec08c745f800000000c745fc02000000*",
                           "898383080000c7837f080000010000006a0056ff*",
                           "49bbb014*f0000ba0c0000004c8d4c2450448d423441ffd349bb403*",
                           "*00ba0c0000004c8d4c2450448d423441ffd349bb*",
+                          "*48bf7063107ef67f0000488b064889074883c6084883c708488b06488907415f415e415d415c41*",
+                          "84c07507e8b8836effeb498b45f88b55c089108b45e48945f4c70518c*",
+                          "498bd7488bcf4c8be8e819bbffff4533ff4d85ed0f84520200004c8b9760020000488d95e0000000440fb74424744533c9498bcd41ffd24c8be04885c00f8420",
                           "488943384885c07512ff15035608004c8d054ce80800e93fffffff4c3973407438663b6b1c7511488b5330488bcfff15d65a080085c07421488b4b40ff157857",
                           "89434885c07507f0ff054b360c000f57c04489bb2c0200004c89bb400200004c89bb480200004489bb500200000f1183580200000f1183680200000f11837802",
                           "488944242048837c242000750e488d0d7e0f0000e8a1ffffffeb37488d15980f0000488b4c2420ff153d0f0000488944242848837c242800750e488d0d910f00",
@@ -202,7 +208,10 @@ sequence by process.entity_id
                           "48890550cf4700483bc30f849e010000488d15f0ab3800488bc8ff15a7173600488b0d30cf4700488d15c1ab380048890532cf4700ff158c173600488b0d15cf",
                           "4889842470020000488d0d1e5e1100ff15c0fc10004889442458488d0dfc5d1100ff15aefc100048898424a0020000488d15cf5d1100488b4c2458ff159cfc10",
                           "488944242048837c242000750e488d0d7e0f0000e8a1ffffffeb37488d15980f0000488b4c2420ff153d0f0000488944242848837c242800750e488d0d910f00",
-                          "4885c0750bb8030000004883c4205bc3488d9318020000488bc8ff53084885c0750bb8040000004883c4205bc3488b4b10ffd033c04883c4205bc3cccccccccc"))
+                          "4885c0750bb8030000004883c4205bc3488d9318020000488bc8ff53084885c0750bb8040000004883c4205bc3488b4b10ffd033c04883c4205bc3cccccccccc",
+                          "488944242048837c242000750e488d0d7e0f0000e8a1ffffffeb37488d15980f0000488b4c2420ff153d0f0000488944242848837c242800750e488d0d910f00",
+                          "488b8d70ffffffc6410c01833d1479e65d007406ff1524cde55d488b8d70ffffff488b9528ffffff48895110488945b0ff1558ca1cfe8945c4488bcce8780000",
+                          "4c8bd04889442458488d05345d00004803c6488d4c2458ffd084c07407bac3020000eb2d6685db7505bb102700000fb7d3488d053fbd0000448bca8954242044"))
   ]
   until [process where event.action:"end"]
 '''

@@ -7,13 +7,13 @@ id = "d8c57cb7-bab6-41fa-9063-dcc8793c3955"
 license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 any where 
 (
  (event.category : "api" and
-  not process.Ext.api.name : ("IoCreateDevice", "Wow64SuspendThread", "ReadProcessMemory", "SuspendThread")) or
+  not process.Ext.api.name : ("IoCreateDevice", "Wow64SuspendThread", "ReadProcessMemory", "SuspendThread", "connect")) or
  (event.category : "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll"))
  ) and 
 
@@ -30,7 +30,8 @@ any where
                                          "*kernel32.dll!Wow64SetThreadContext*", "*kernel32.dll!ExitProcess*", "*kernel32.dll!WinExec*",
                                          "*kernel32.dll!CallbackMayRunLong*", "*kernel32.dll!BaseGenerateAppCompatData*", 
                                          "*mpclient.dll!MpUpdateServicePingRpc*", "*chrome.exe!IsSandboxedProcess*",
-                                         "*kernel32.dll!CreateActCtxWWorker*", "*kernel32.dll!Sleep*", "*kernel32.dll!BasepCheckAppCompat*",
+                                         "*kernel32.dll!CreateActCtxWWorker*", "*kernel32.dll!Sleep*",
+                                         "*kernel32.dll!BasepCheckAppCompat*", "*kernel32.dll!AddAtomW*",
                                          "*\\kernel32.dll!lstrlenW*", "*\\kernel32.dll!FindActCtxSectionGuidWorker*"))
 '''
 

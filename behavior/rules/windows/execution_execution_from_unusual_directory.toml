@@ -7,7 +7,7 @@ id = "16c84e67-e5e7-44ff-aefa-4d771bcafc0c"
 license = "Elastic License v2"
 name = "Execution from Unusual Directory"
 os_list = ["windows"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -125,6 +125,7 @@ process where event.action == "start" and
      process.args : ("?:\\Windows\\system32\\themecpl.dll,OpenThemeAction",
                      "?:\\Users\\Public\\IBM\\ClientSolutions\\Start_Programs\\Windows_*\\acsnative.dll*",
                      "?:\\WINDOWS\\System32\\shimgvw.dll,*",
+                     "C:\\WINDOWS\\system32\\dsquery.dll,OpenSavedDsQuery",
                      "?:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll*",
                      "?:\\Program Files\\CopyTrans HEIC for Windows\\CopyTransHEICforWindows.dll*",
                      "?:\\WINDOWS\\system32\\ieframe.dll,OpenURL",

@@ -1,0 +1,76 @@
+[rule]
+description = """
+Identifies attempts to perform a network connection from a suspicious unbacked memory block. This may be the result of
+code injection.
+"""
+id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
+license = "Elastic License v2"
+name = "Network Connect API from Unbacked Memory"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
+
+ process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+
+ process.thread.Ext.call_stack_summary :
+               ("ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked", "ntdll.dll|mswsock.dll|Unbacked") and
+
+ /* trailing bytes are not null */
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and
+
+ /* excluding signed final usermod and unknown or undetermined provenance */
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Unknown", "Unbacked") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+                                  ("02ecce804add1da0a9e7be506f7369d3d5753c51c80abe32b24be05c321c5ff7",
+                                   "f823fc285b259fd0a5391a5c807279e90fe5317e6cfd7b00a49f07c278832cbc", 
+                                   "236b9ab2b531da7312da1429cba1bd9f45cae4ed46cba1792924013b9919f8cf", 
+                                   "5d4708e841bdd2523c963e45932555ba98e203c6a99f242573f251374f73cb63", 
+                                   "ff4dd86a9ef8ccedd9a01dee516775eea75edcef0ff313b718df3dc4a026f395",
+                                   "0e675101b1814b932f8c1209b5e355636c18767da413a261667ce2bedd3c7914",
+                                   "aeda6c3b3b1dc1e91d1cbbea6863eaf5fe02eef74827fe533f4b7d55e388a9b1") and
+
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
+                  $entry.callsite_trailing_bytes :
+                       ("*85f60f95c10fb6c9894dac488bcce82f000000908b45*",
+                        "488b9550ffffffc6420c01833d3efbd15f007406ff150a18d15f89855cffffffe8a7f4535f908b8d5cffffff898d70ffffff83bd70ffffff000f95c10fb6c989")) and
+
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*", "*.ni.dll", "coreclr.dll", "Undetermined", "hmpalert.dll")
+'''
+
+min_endpoint_version = "8.13.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.13.0"

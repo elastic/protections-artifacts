@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence with maxspan=5m
@@ -62,7 +62,12 @@ sequence with maxspan=5m
                      "?:\\ProVation\\Utilities\\Database Utilities\\ProVation.DataExport*\\ProVation.DataExport.exe",
                      "\\Device\\Mup\\*\\Release\\CorrespondanceDownload.vshost.exe",
                      "?:\\Users\\*\\AppData\\Local\\Programs\\UiPath\\Studio\\UiPath.Studio.Project.exe",
-                     "D:\\*\\Exporter\\bin\\Debug\\Exporter.vshost.exe")
+                     "D:\\*\\Exporter\\bin\\Debug\\Exporter.vshost.exe",
+                     "C:\\Windows\\SysWOW64\\SmartDeploy\\ClientService.exe",
+                     "C:\\Program Files\\QSR\\NVivo 14\\NVivo.exe",
+                     "C:\\Program Files\\McCormick Systems\\McCormick Estimating\\MaintenanceUtility.exe",
+                     "D:\\PROGRAMS\\UiPath\\Studio\\UiPath.Studio.Project.exe",
+                     "C:\\Users\\*\\AppData\\Roaming\\GWP\\MSOffice-AddIns\\Deploy-MSOfficeAddIns.exe")
   ] by process.parent.entity_id
 [network where true] by process.entity_id
 '''

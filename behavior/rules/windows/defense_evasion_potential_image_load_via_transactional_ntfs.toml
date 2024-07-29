@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies attempts to load a library from a potentially transacted file. This is a technique that exploits
+Transactional NTFS to execute arbitrary code in the address space of a separate running process, without committing the
+code to disk.
+"""
+id = "edc23204-fd97-4c0f-8a2a-bb769370a7e3"
+license = "Elastic License v2"
+name = "Potential Image Load via Transactional NTFS"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+[library where event.action == "load" and process.pid != 4 and
+  dll.Ext.defense_evasions : "Process Tampering: Image is writable" and
+  dll.Ext.defense_evasions : "Process Tampering: Image has been accessed before mapping"] by process.entity_id as event0
+[api where
+  process.Ext.api.name in ("SetThreadContext", "Wow64SetThreadContext") and
+  process.executable != null and process.Ext.api.behaviors == "cross-process" and
+  stringcontains~(process.Ext.api.summary, event0.dll.name) and
+  process.thread.Ext.call_stack_final_user_module.name != null and
+  process.thread.Ext.call_stack_final_user_module.name != "Kernel"] by Target.process.entity_id
+'''
+
+min_endpoint_version = "8.12.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.12.0"

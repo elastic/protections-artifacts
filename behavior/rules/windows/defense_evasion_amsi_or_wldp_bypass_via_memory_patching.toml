@@ -12,7 +12,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell/blob/master/README.md#Patch-the-providers-DLL-of-Microsoft-MpOav.dll",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 api where
@@ -29,7 +29,8 @@ api where
                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
                      "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll", 
-                     "ntdll.dll|kernelbase.dll|*|_ctypes.pyd|python*.dll|Unknown|kernel32.dll|ntdll.dll") or
+                     "ntdll.dll|kernelbase.dll|*|_ctypes.pyd|python*.dll|Unknown|kernel32.dll|ntdll.dll",
+                     "ntdll.dll|*|vbe?.dll|*") or
 
   endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|Unbacked|", process.name)) or
 

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Executable Heap Allocation by Unsigned Module"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
@@ -37,7 +37,8 @@ sequence by process.entity_id with maxspan=3m
                "b759800c0fc0268415713a7600d4cfa5360b9fd294c3e5c2e51333bbd6a1e635", 
                "35d0bfd492577c765ed54b430be7961b322d16e218199de972df5a215bb7aac8", 
                "ad17b9409ac2b46f54c5fbd220d48d091ca7a1b8d91c20f15b00b93c6f6ca69d", 
-               "f917c048dc906a531b0b2711b6f83eb8470ed91b2af48ae84fd0ee98861683e4") and 
+               "f917c048dc906a531b0b2711b6f83eb8470ed91b2af48ae84fd0ee98861683e4",
+               "eecf3f9b300680b79f02225066335fdec259f0f16822ec5af4f0f040a658d6f0") and
   not dll.path :
              ("?:\\Program Files (x86)\\*",
               "?:\\Program Files\\*",

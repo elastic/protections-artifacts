@@ -33,8 +33,6 @@ def create_target_files(dir_path, num_set=15, fsize=100000):
             )
             print(f"Creating {file_path} for size = {fsize} bytes")
             with open(file_path, "wb") as fh:
-                file_header = bytes([0])
-            
                 match file_ext:
                     case "gif":
                         file_header = bytes([0x47, 0x49, 0x46, 0x38])
@@ -46,6 +44,8 @@ def create_target_files(dir_path, num_set=15, fsize=100000):
                         file_header = bytes([0x25, 0x50, 0x44, 0x46])
                     case "docx":
                         file_header = bytes([0x50, 0x4b])
+                    case _:
+                        file_header = bytes([0])
                 
                 fh.write(file_header)
                 fh.seek(fsize)

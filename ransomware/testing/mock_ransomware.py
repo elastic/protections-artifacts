@@ -33,7 +33,23 @@ def create_target_files(dir_path, num_set=15, fsize=100000):
             )
             print(f"Creating {file_path} for size = {fsize} bytes")
             with open(file_path, "wb") as fh:
-                fh.write(os.urandom(fsize))
+                match file_ext:
+                    case "gif":
+                        file_header = bytes([0x47, 0x49, 0x46, 0x38])
+                    case "doc":
+                        file_header = bytes([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1])
+                    case"jpg":
+                        file_header = bytes([0xff, 0xd8, 0xff])
+                    case "pdf":
+                        file_header = bytes([0x25, 0x50, 0x44, 0x46])
+                    case "docx":
+                        file_header = bytes([0x50, 0x4b])
+                    case _:
+                        file_header = bytes([0])
+                
+                fh.write(file_header)
+                fh.seek(fsize)
+                fh.write(bytes([0]))
 
     return len(os.listdir(dir_path))
 
@@ -46,19 +62,22 @@ def main():
     create_target_files(target_dir)
 
     mock_ransomware = os.path.join(cur_dir, "mock_ransomware.ps1")
-
-    print("Running mock ransomware (single process")
+    
+    print("Running mock ransomware (single process)")
     cmd_str = "powershell.exe -ExecutionPolicy Bypass %s -path %s -delay %s" % (
         mock_ransomware,
         target_dir,
         5,
     )
-
+    
     # Run ransomware
     print("Running {}".format(cmd_str))
-    subprocess.check_call(cmd_str)
 
-
+    try:
+        subprocess.check_call(cmd_str)
+    except subprocess.CalledProcessError as e:
+        print("mock_ransomware powershell subprocess did not complete")
+       
 if __name__ == "__main__":
     # Invoke main.
     main()

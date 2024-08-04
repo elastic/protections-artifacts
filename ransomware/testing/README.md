@@ -16,4 +16,6 @@ To begin this test, simply launch a Python interpreter and pass in the Python sc
 python mock_ransomware.py
 ```
 
+To avoid any issues with ransomware protection potentially filtering out the file activity that these scripts generate, please launch this script from either C:\ or the current user's desktop.
+
 If your environment is correctly configured, a ransomware detection or prevention alert (depending on your Windows endpoint policy configuration) will be generated and sent to Elasticsearch.

@@ -1,0 +1,66 @@
+[rule]
+description = """
+This rule identifies a process that executes a binary from an unusual location through a shell profile configuration.
+Threat actors can establish persistence by altering shell profile configurations to execute malicious commands or
+scripts upon user login. These modifications cause the shell launched during login to execute the malicious payload,
+resulting in a sequence where an authentication event is followed by the execution of a payload in a suspicious
+location.
+"""
+id = "47903010-d527-4200-b43d-971955a80924"
+license = "Elastic License v2"
+name = "Binary Execution from Unusual Location through Shell Profile"
+os_list = ["linux"]
+reference = [
+    "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=3s
+  [process where event.type == "change" and event.action == "uid_change" and (
+     process.name in ("su", "sudo", "sshd", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") or
+     process.name : ("python*", "php*", "perl*", "ruby*", "lua*")
+   ) and not (
+     process.executable : ("/srv/snp/docker/*", "/nix/store/*") or
+       process.args in (
+         "/usr/lib/ubuntu-advantage/apt_news.py", "/usr/lib/ubuntu-advantage/esm_cache.py", "apt-get", "apt",
+         "systemctl"
+      ) or
+       process.command_line : "su cloudendure -c /usr/bin/nice*"
+     )
+  ] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and process.executable : (
+     "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/srv/*", "/tmp/*",
+     "/var/tmp/*", "/var/log/*"
+   ) and process.args_count == 1 and
+   not process.executable : ("/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*")
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.004"
+name = "Unix Shell Configuration Modification"
+reference = "https://attack.mitre.org/techniques/T1546/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

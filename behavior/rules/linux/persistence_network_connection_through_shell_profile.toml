@@ -1,0 +1,86 @@
+[rule]
+description = """
+This rule identifies a network connection initiated by a process that was spawned as a child of an authentication event.
+Threat actors can establish persistence by altering shell profile configurations to execute malicious commands or
+scripts upon user login. These modifications cause the shell launched during login to execute the malicious payload,
+resulting in a sequence where an authentication event is followed by shell execution, which subsequently triggers the
+payload.
+"""
+id = "03d344f8-3a0c-4c2c-988f-cdba2aeadf0f"
+license = "Elastic License v2"
+name = "Network Connection through Shell Profile"
+os_list = ["linux"]
+reference = [
+    "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=3s
+  [process where event.type == "change" and event.action == "uid_change" and (
+     process.name in ("su", "sudo", "sshd", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") or
+     process.name : ("python*", "php*", "perl*", "ruby*", "lua*")
+   )
+  ] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.args_count == 1
+  ] by process.entity_id
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8", "172.31.0.0/16"
+       )
+     ) and not (
+       process.executable in (
+         "/usr/bin/pacman", "/usr/bin/kubectl", "/usr/bin/oci", "/usr/bin/ssh", "/usr/local/bin/ansible-galaxy",
+         "/usr/bin/last", "/usr/bin/node", "/usr/bin/groups", "/usr/bin/curl", "/usr/bin/wget", "/usr/bin/ansible-galaxy"
+      ) or
+       process.executable : ("/snap/*", "/usr/local/aws-cli/*") or
+       process.name == "lsnrctl"
+     )
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.004"
+name = "Unix Shell Configuration Modification"
+reference = "https://attack.mitre.org/techniques/T1546/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

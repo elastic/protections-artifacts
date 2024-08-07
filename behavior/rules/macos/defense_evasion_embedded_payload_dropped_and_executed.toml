@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when an executable file is modified in a temporary directory and immediately executed. We have observed several
+samples that bring additional payloads within their application structure or that embed another payload within their
+applications main binary dropping these payloads in the temporary directory and immediately executing them.
+"""
+id = "ec3abfa9-499a-40d7-a23d-413ce878db10"
+license = "Elastic License v2"
+name = "Embedded payload dropped and executed"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5s
+[file where event.action == "modification" and file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
+  file.path : ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and
+  not process.executable : "/Library/Developer/*"] by Effective_process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.executable : ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and process.args_count == 1] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.009"
+name = "Embedded Payloads"
+reference = "https://attack.mitre.org/techniques/T1027/009/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

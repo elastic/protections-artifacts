@@ -1,0 +1,93 @@
+[rule]
+description = """
+This rule detects network connections to external IP's immediatly after the process execution of a file within the
+message of the day (MOTD) configuration directory. This could be indicative of a persistence mechanism being established
+on the system.
+"""
+id = "a18e57c9-5627-4535-b994-64febc67c1e8"
+license = "Elastic License v2"
+name = "MOTD Execution Followed by Egress Network Connection"
+os_list = ["linux"]
+reference = [
+    "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
+   and not (
+     (process.name in ("wget", "curl") and process.args == "https://motd.ubuntu.com") or
+     process.executable : (
+       "/usr/bin/landscape-sysinfo", "/usr/bin/yum", "/usr/bin/cloud-id", "/etc/update-motd.d/*",
+       "/usr/lib/ubuntu-release-upgrader/check-new-release", "/snap/bin/canonical-livepatch"
+     ) or
+     process.parent.executable == "/usr/bin/timeout" or (
+       process.parent.executable == "/etc/update-motd.d/10-cloudpanel" and
+       process.executable == "/usr/bin/curl" and process.args : "https://*.cloudfront.net/"
+     )
+   )
+  ]
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8", "172.31.0.0/16"
+     )
+    )
+  ]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -8,13 +8,16 @@ id = "cd6e64ec-2890-4bd8-9d07-bef06465b06f"
 license = "Elastic License v2"
 name = "Linux Powershell Encoded Command"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.name == "pwsh" and
 process.args : ("-EncodedCommand", "-enc", "-E") and process.args : ("-nop", "-noprofile") and 
-length(process.command_line) >= 100 and not process.parent.name in ("node", "code", "code-insiders") and
-not process.parent.args : "*Invoke-Pester*"
+length(process.command_line) >= 100 and not (
+  process.parent.name in ("node", "code", "code-insiders") or
+  process.parent.args : "*Invoke-Pester*" or
+  process.parent.executable : "/data/user/docker/*"
+)
 '''
 
 min_endpoint_version = "7.15.0"

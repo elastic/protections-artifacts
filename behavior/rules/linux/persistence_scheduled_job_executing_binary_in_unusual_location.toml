@@ -1,0 +1,97 @@
+[rule]
+description = """
+This rule detects the systemd and cron process executing a binary in an unusual location. This behavior is commonly seen
+in malware that is attempting to evade detection by persisting as a system service or a cron job, executing a backdoor
+in non-standard locations.
+"""
+id = "f2a52d42-2410-468b-9910-26823c6ef822"
+license = "Elastic License v2"
+name = "Scheduled Job Executing Binary in Unusual Location"
+os_list = ["linux"]
+reference = ["https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.parent.name == "systemd" and process.args : (
+    "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
+  ) and process.args_count == 1) or
+  (process.parent.name == "cron" and process.name in (
+    "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish"
+    ) and process.args : "-c" and process.args : (
+    "/boot/*", "/dev/shm/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
+    )
+  )
+) and not (
+  process.command_line in (
+    "/bin/sh -c /etc/init.d/ntp ntptimeset &>/dev/null",
+    "sh -c /usr/lib/rsyslog/rsyslog-rotate logrotate_script /var/log/syslog"
+  ) or
+  process.command_line : ("*/etc/init.d/*start*", "*/etc/init.d/*reload*", "*/etc/init.d/*stop*", "*/etc/cron.daily/*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

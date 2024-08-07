@@ -1,0 +1,57 @@
+[rule]
+description = """
+Detects the attempt to access or open the users TCC database by the Osascript binary. This activity may indicate the
+presence of a malicious payload attempting to bypass TCC or gain awareness of system permissions in place.
+"""
+id = "e5c7649a-9585-4626-833c-90f96489a9ba"
+license = "Elastic License v2"
+name = "User TCC DB Access by Osascript"
+os_list = ["macos"]
+reference = ["https://github.com/cedowens/SwiftBelt-JXA/blob/main/SwiftBelt-JXA.js"]
+version = "1.0.2"
+
+query = '''
+file where event.action == "open" and process.executable != null and 
+ file.path : "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and
+ process.name : "osascript"
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1069"
+name = "Permission Groups Discovery"
+reference = "https://attack.mitre.org/techniques/T1069/"
+
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.10.2"

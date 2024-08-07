@@ -1,0 +1,46 @@
+[rule]
+description = """
+Adversaries can abuse Electron default configuration which allows executing code in the context of those Electron apps
+and thus inherit their TCC permissions. It’s a technique that doesn’t touch files of those apps so it also bypasses the
+new macOS Ventura App Protection mechanism.
+"""
+id = "f150809c-5f4b-4715-b4a6-4bc8b9929d65"
+license = "Elastic License v2"
+name = "Potential TCC Bypass via Electron Web Inspector API"
+os_list = ["macos"]
+reference = [
+    "https://infocondb.org/con/def-con/def-con-31/electronizing-macos-privacy-a-new-weapon-in-your-red-teaming-armory",
+    "https://github.com/r3ggi/electroniz3r",
+]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+ (
+  (process.executable : ("/Applications/*", "/Volumes/*") and process.command_line : "*--inspect=13337*") or
+  (process.parent.executable : ("/Applications/*", "/Volumes/*") and process.command_line : "*--inspect=13337*")
+ )
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

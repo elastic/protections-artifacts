@@ -1,0 +1,50 @@
+[rule]
+description = """
+Detects when an executable file is copied from a hidden directory on a volume mounted disk to the applications
+directory. Geacon samples have been observed utilizing this technique as a method for setting up persistence with the
+second stage payload prior to establishing persistence via the .zshrc file.
+"""
+id = "0facb446-7d95-4b27-bd40-490bbec5a95b"
+license = "Elastic License v2"
+name = "Suspicious executable copied from volume mount"
+os_list = ["macos"]
+reference = ["https://github.com/darkr4y/geacon"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and process.name : "cp" and 
+    process.args_count == 3 and process.args : ("cp", "/bin/cp", "/usr/bin/cp") and 
+    process.args : "/Volumes/*/.*" and process.args : "/Applications/*"] as event0
+  [file where event.action == "modification" and process.name : "cp" and file.path : "/Applications/*" and 
+    file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
+    stringcontains~(event0.process.command_line, file.name)]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

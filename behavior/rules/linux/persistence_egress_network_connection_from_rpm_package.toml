@@ -1,0 +1,103 @@
+[rule]
+description = """
+This rule monitors for egress network connections from processes that are executed from an RPM package parent. Attackers
+can backdoor an RPM package to establish initial access, or install a malicious RPM package to maintain persistence.
+"""
+id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
+license = "Elastic License v2"
+name = "Egress Network Connection from RPM Package"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and
+   process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.parent.args : "/var/tmp/rpm-tmp.*" and not (
+     process.executable == "/sbin/runuser" or
+     process.args : "/usr/local/cpanel/3rdparty/wp-toolkit/*" or
+     (process.executable == "/bin/sudo" and process.args in (
+       "https://global.endpoint.security.micro",
+       "https://global.endpoint.security.micros"
+       )
+     )
+   )
+  ] by process.entity_id
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8", "172.31.0.0/16"
+       )
+    )
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.002"
+name = "Compromise Software Supply Chain"
+reference = "https://attack.mitre.org/techniques/T1195/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

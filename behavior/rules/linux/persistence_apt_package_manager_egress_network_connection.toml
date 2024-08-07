@@ -1,0 +1,98 @@
+[rule]
+description = """
+Detects suspicious network events executed by the APT package manager, potentially indicating persistence through an APT
+backdoor. In Linux, APT (Advanced Package Tool) is a command-line utility used for handling packages on Debian-based
+systems, providing functions for installing, updating, upgrading, and removing software along with managing package
+repositories. Attackers can backdoor APT to gain persistence by injecting malicious code into scripts that APT runs,
+thereby ensuring continued unauthorized access or control each time APT is used for package management.
+"""
+id = "656f671c-6b21-4aed-8a13-4d492f97273b"
+license = "Elastic License v2"
+name = "APT Package Manager Egress Network Connection"
+os_list = ["linux"]
+reference = [
+    "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and (
+   process.name : (
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "php*",
+     "perl", "ruby", "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk"
+   ) or
+   process.executable : (
+     "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/srv/*",
+     "/tmp/*", "/var/tmp/*", "/var/log/*"
+     )
+   ) and descendant of [process where event.action == "exec" and process.name == "apt"] and not (
+     process.command_line in ("/usr/lib/apt/methods/http", "/usr/lib/apt/methods/https") or
+     process.name == "node" or
+     process.parent.executable : ("/var/lib/dpkg/*", "/var/lib/docker/*", "/usr/bin/supervisord") or
+     process.parent.name == "pip3"
+   )
+  ]
+  [network where event.action == "connection_attempted" and event.type == "start" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8", "172.31.0.0/16"
+       )
+     )
+  ]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.016"
+name = "Installer Packages"
+reference = "https://attack.mitre.org/techniques/T1546/016/"
+
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

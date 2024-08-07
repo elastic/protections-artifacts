@@ -8,13 +8,13 @@ id = "b7516495-66f9-4cb9-abb9-3cede7a0aed7"
 license = "Elastic License v2"
 name = "Untrusted Process Execution with invalid plist or code signature"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and process.code_signature.status : "invalid Info.plist (plist or signature have been modified)" and 
  process.code_signature.exists == true and 
  length(process.code_signature.team_id) == 0 and 
- not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*") and
+ not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*", "/Applications/AutoFirma.app/Contents/MacOS/AutoFirma") and
  not process.parent.executable : ("/Library/Developer/CoreSimulator/*", "/Applications/AutoFirma.app/Contents/MacOS/AutoFirma") and
  not process.Ext.effective_parent.executable : ("/Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/XPCServices/SimulatorTrampoline.xpc/Contents/MacOS/SimulatorTrampoline",
                                                 "/Applications/AutoFirma.app/Contents/MacOS/AutoFirma")

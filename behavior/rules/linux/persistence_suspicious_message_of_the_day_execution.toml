@@ -7,42 +7,22 @@ serial connection. Adversaries may create malicious MOTD files that grant them p
 user connects to the system by executing a backdoor script or command. This rule detects the execution of potentially
 malicious processes through the MOTD utility.
 """
-id = "b9b3922a-59ee-407c-8773-31b98bf9b18d"
+id = "b15d8277-ccd5-481b-82f8-c1681c5aada8"
 license = "Elastic License v2"
-name = "Suspicious Process Spawned from MOTD Detected"
+name = "Suspicious Message Of The Day Execution"
 os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
 ]
-version = "1.0.8"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
-and (
-  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
-    (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*"))) or
-  (process.name : ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
-    not process.args : ("-*z*", "-*l*")) or
-  (process.name : "python*" and process.args : "-c" and process.args : (
-     "*import*pty*spawn*", "*import*subprocess*call*"
-  )) or
-  (process.name : "perl*" and process.args : "-e" and process.args : "*socket*" and process.args : (
-     "*exec*", "*system*"
-  )) or
-  (process.name : "ruby*" and process.args : ("-e", "-rsocket") and process.args : (
-     "*TCPSocket.new*", "*TCPSocket.open*"
-  )) or
-  (process.name : "lua*" and process.args : "-e" and process.args : "*socket.tcp*" and process.args : (
-     "*io.popen*", "*os.execute*"
-  )) or
-  (process.name : "php*" and process.args : "-r" and process.args : "*fsockopen*" and process.args : "*/bin/*sh*") or 
-  (process.name : ("awk", "gawk", "mawk", "nawk") and process.args : "*/inet/tcp/*") or 
-  (process.name == "openssl" and process.args : ("*s_server*", "*s_client*") and process.args : (
-    "*-connect*", "*:*", "*-port*"
-  )) or
-  (process.name == "telnet")
-) and 
-not (process.parent.args : "--force" or process.args : ("/usr/games/lolcat", "/usr/bin/screenfetch"))
+and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args : (
+  "*nc*", "*netcat*", "*openssl*", "*telnet*", "*exec*", "*import*pty*spawn*", "*import*subprocess*call*", "*socket*",
+  "*system*", "*io.popen*", "*os.execute*", "*fsockopen*", "*/inet/tcp/*", "*/dev/tcp/*", "*/dev/udp/*", "*nohup*",
+  "*setsid*", "*/dev/shm/*"
+) and not process.args == "/usr/bin/cloud-id"
 '''
 
 min_endpoint_version = "7.15.0"
@@ -55,6 +35,23 @@ state = 0
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
 id = "T1037"
 name = "Boot or Logon Initialization Scripts"
 reference = "https://attack.mitre.org/techniques/T1037/"
@@ -64,6 +61,18 @@ reference = "https://attack.mitre.org/techniques/T1037/"
 id = "TA0003"
 name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
 min_endpoint_version = "7.15.0"

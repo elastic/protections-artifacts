@@ -7,7 +7,7 @@ id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "exec" and
@@ -19,7 +19,7 @@ process where event.action == "exec" and
             "com.apple.WebKit.GPU.Development",
             "com.apple.WebKit.Networking.Development",
             "com.apple.WebKit.Storage.Development")) and
- not process.executable : "/usr/local/jamf/bin/jamf" and
+ not process.executable : ("/usr/local/jamf/bin/jamf", "com.apple.WebKit.Networking.Development") and
  not process.parent.executable : ("/sbin/launchd", "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon") and
  not process.Ext.effective_parent.executable : ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                 "/System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd") and

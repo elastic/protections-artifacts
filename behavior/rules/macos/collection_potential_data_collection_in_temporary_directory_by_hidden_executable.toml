@@ -8,14 +8,16 @@ id = "a6994646-d314-4ee0-be1f-1d694dc969e7"
 license = "Elastic License v2"
 name = "Potential Data Collection in Temporary Directory by Hidden Executable"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id, file.path with maxspan=30s
   [file where event.action == "modification" and process.name : ".*" and 
-   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*")]
+   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
+   not process.executable : "/nix/store/*"]
   [file where event.action == "deletion" and process.name : ".*" and 
-   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*")]
+   file.path : ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
+   not process.executable : "/nix/store/*"]
 '''
 
 min_endpoint_version = "8.11.1"

@@ -7,11 +7,11 @@ id = "f4744b1a-3775-4387-8529-abc08076a612"
 license = "Elastic License v2"
 name = "External IP address discovery via Curl"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
- ((process.parent.executable : ("/Applications/*", "/Volumes/*")) or
+ ((process.parent.executable : ("/Applications/*", "/Volumes/*", "/private/var/folders/*")) or
   (process.parent.name : ("bash", "sh", "zsh") and process.Ext.effective_parent.name : ("terminal", "bash", "zsh", "sh"))) and
  process.name : ("curl", "nscurl") and 
  process.args == "-s" and
@@ -28,6 +28,7 @@ process where event.type == "start" and event.action == "exec" and
           "*ident.me*",
           "*ipof.in*",
           "*ip.tyk.nu*",
+          "*freeipapi.com*",
           "*icanhazip.com*",
           "*curlmyip.com*",
           "*wgetip.com*",

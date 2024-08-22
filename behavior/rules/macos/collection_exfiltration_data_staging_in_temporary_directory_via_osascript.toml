@@ -1,0 +1,42 @@
+[rule]
+description = """
+Detects when a directory gets created within a temporary directory and a file is created immediately after. This is a
+technique that has been observed being used by the most recent Atomic stealer samples in order to organize their data
+collection prior to exfiltration.
+"""
+id = "802d1796-7d9e-4e3c-911b-22281fdfea03"
+license = "Elastic License v2"
+name = "Exfiltration Data Staging in temporary directory via Osascript"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=3s
+[process where event.type == "start" and event.action == "exec" and process.name : "mkdir" and process.args == "-p" and 
+  process.args : ("/tmp/*", "/private/tmp/*") and
+  process.parent.name : "osascript"] by process.parent.entity_id
+[file where event.action == "modification" and process.name : "osascript" and file.path : ("/tmp/*", "/private/tmp/*")] by Effective_process.entity_id
+'''
+
+min_endpoint_version = "8.11.1"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1119"
+name = "Automated Collection"
+reference = "https://attack.mitre.org/techniques/T1119/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.11.1"

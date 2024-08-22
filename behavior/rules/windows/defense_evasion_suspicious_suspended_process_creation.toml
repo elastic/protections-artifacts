@@ -7,7 +7,7 @@ id = "391f1e23-9ee0-4fa4-82b7-a54bebfa077d"
 license = "Elastic License v2"
 name = "Suspicious Suspended Process Creation"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -35,6 +35,8 @@ process where event.action == "start" and
   not process.parent.executable :
               ("?:\\Program Files\\rs2\\rs2Client\\rs2ClientService.exe",
                "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe") and
+  not (process.command_line : "rundll32.exe \"C:\\Program Files\\Rapid7\\Insight Agent\\components\\armor\\common\\Armor\\mvarmor32.dll\",#1" and
+    process.parent.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|mvarmor64dynamic.dll|kernel32.dll|Unbacked") and
   not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes :
                             ("8945d08b45d08945f4837df400741a8b45fc8b80*",

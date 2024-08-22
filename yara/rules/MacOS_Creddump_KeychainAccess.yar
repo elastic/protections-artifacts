@@ -2,9 +2,9 @@ rule MacOS_Creddump_KeychainAccess_535c1511 {
     meta:
         author = "Elastic Security"
         id = "535c1511-5b45-4845-85c1-ec53f9787b96"
-        fingerprint = "713fd9a4ed51875cb2ce546f146e643fc7fccd2b2e280f0f2707de4eb4b70ee1"
+        fingerprint = "7c103fa75b24cdf322f6c7cf3ec56e8cc2b14666c9d9fb56a4b1a735efaf1b5b"
         creation_date = "2023-04-11"
-        last_modified = "2024-01-30"
+        last_modified = "2024-08-19"
         threat_name = "Macos.Creddump.KeychainAccess"
         severity = 100
         arch_context = "x86, arm64"
@@ -21,6 +21,6 @@ rule MacOS_Creddump_KeychainAccess_535c1511 {
         $strings7 = "SecKeychainItemCopyAccess" ascii wide nocase
         $strings8 = "Failed to get password" ascii wide nocase
     condition:
-        all of ($strings1, $strings2) or any of ($strings3, $strings4, $strings5) or all of ($strings6, $strings7, $strings8)
+        all of ($strings1, $strings2) or $strings4 or all of ($strings3, $strings5) or all of ($strings6, $strings7, $strings8)
 }
 

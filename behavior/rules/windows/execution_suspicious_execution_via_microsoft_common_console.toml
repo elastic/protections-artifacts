@@ -11,7 +11,7 @@ reference = [
     "https://www.genians.co.kr/blog/threat_intelligence/facebook",
     "https://www.elastic.co/security-labs/grimresource",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -32,7 +32,8 @@ process where event.action == "start" and
                "?:\\Program Files\\internet explorer\\iexplore.exe",
                "?:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe",
                "?:\\windows\\system32\\VmConnect.exe",
-               "?:\\Windows\\System32\\Dism\\dismhost.exe") and
+               "?:\\Windows\\System32\\Dism\\dismhost.exe",
+               "?:\\Windows\\System32\\DeviceProperties.exe") and
  not (process.executable : "?:\\Windows\\explorer.exe" and process.args : "ms-settings:windowsupdate") and
  not (process.pe.original_file_name == "DismHost.exe" and process.args : "{*}" and
       process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and

@@ -8,7 +8,7 @@ id = "35dedf0c-8db6-4d70-b2dc-a133b808211f"
 license = "Elastic License v2"
 name = "Binary Masquerading via Untrusted Path"
 os_list = ["windows"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
@@ -173,6 +173,8 @@ process where event.action == "start" and
                             "C:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
+  not (process.executable : "C:\\ProgramData\\baramundi\\bma\\Downloads\\Temp\\netsh.exe" and
+       process.args : "exec" and process.args : "\\\\*.txt") and
   not (process.code_signature.subject_name : ("JetBrains s.r.o.", "LG Electronics Inc.", "Timothy Hugh Perry", "Code Systems Corporation") and process.code_signature.trusted == true) and 
   not process.hash.sha256 :
                   ("7c621ec91b71d14494beddaae8edb67ed26baa257d750546772aa90653ad6016",

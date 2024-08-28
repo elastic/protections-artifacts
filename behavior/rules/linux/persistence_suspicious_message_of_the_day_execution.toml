@@ -14,7 +14,7 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
@@ -22,7 +22,7 @@ and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") 
   "*nc*", "*netcat*", "*openssl*", "*telnet*", "*exec*", "*import*pty*spawn*", "*import*subprocess*call*", "*socket*",
   "*system*", "*io.popen*", "*os.execute*", "*fsockopen*", "*/inet/tcp/*", "*/dev/tcp/*", "*/dev/udp/*", "*nohup*",
   "*setsid*", "*/dev/shm/*"
-) and not process.args == "/usr/bin/cloud-id"
+) and not process.args in ("/usr/bin/cloud-id", "/usr/bin/landscape-sysinfo")
 '''
 
 min_endpoint_version = "7.15.0"

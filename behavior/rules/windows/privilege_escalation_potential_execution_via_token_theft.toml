@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -29,7 +29,7 @@ process where event.action == "start" and process.executable != null and
  not (process.code_signature.status : "trusted" and 
       process.code_signature.subject_name : ("LENOVO", "Dell Inc", "Citrix Systems, Inc.", "Docker Inc", "Solarwinds Worldwide, LLC", 
                                              "Binary Fortress Software Ltd", "Seagull Scientific Inc.", "Zoom Video Communications, Inc.",
-                                             "Sangfor Technologies Inc.")) and
+                                             "Sangfor Technologies Inc.", "N-ABLE TECHNOLOGIES LTD")) and
  not (process.Ext.effective_parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\Sys*\\sdiagnhost.exe") and 
       process.parent.thread.Ext.call_stack_summary : "*|seclogon.dll|*") and 
  not (startswith~(process.Ext.effective_parent.executable, process.executable) and process.executable : "?:\\Program Files*") and 
@@ -55,7 +55,13 @@ process where event.action == "start" and process.executable != null and
                    "c42b1cdba6020d3858ce47c6a0d279045a741f21263bb417742371d0c04ae79a") and
  not (process.parent.executable : ("?:\\Program Files\\PowerShell\\*\\pwsh.exe", "?:\\Program Files (x86)\\PowerShell\\*\\pwsh.exe") and 
       process.Ext.effective_parent.executable : ("?:\\Program Files\\PowerShell\\*\\pwsh.exe", "?:\\Program Files (x86)\\PowerShell\\*\\pwsh.exe")) and
- not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488b5560c6420c01833d*")
+ not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488b5560c6420c01833d*") and
+ not process.Ext.effective_parent.executable :
+                               ("C:\\Program Files\\WingetUI\\UniGetUI.exe",
+                                "C:\\Program Files\\Synaptics\\SynTP\\SynTPEnh.exe",
+                                "C:\\Program Files\\Pulseway\\pcmonusertask.exe",
+                                "C:\\Program Files\\Seagull\\BarTender Suite\\PrintStation.exe",
+                                "C:\\Program Files (x86)\\Scalefusion\\Scalefusion MDM Agent\\bin\\OnlineClientService.exe")
 '''
 
 min_endpoint_version = "8.8.0"

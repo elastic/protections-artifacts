@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Windows Script Execution via MMC Console File"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/grimresource"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -16,7 +16,8 @@ sequence by process.entity_id with maxspan=1m
   process.executable : "?:\\Windows\\System32\\mmc.exe" and process.args : "*.msc" and
   not process.args : ("?:\\Windows\\System32\\*.msc", "?:\\Windows\\SysWOW64\\*.msc", "?:\\Program files\\*.msc", "?:\\Program Files (x86)\\*.msc") and
   not process.parent.executable : ("C:\\Windows\\System32\\ServerManager.exe", "C:\\Program Files (x86)\\Citrix\\System32\\wfshell.exe") and
-  not (process.working_directory : "C:\\Windows\\system32\\" and process.command_line : "\"C:\\Windows\\System32\\mmc.exe\" rrasmgmt.msc")
+  not (process.working_directory : "C:\\Windows\\system32\\" and process.command_line : "\"C:\\Windows\\System32\\mmc.exe\" rrasmgmt.msc") and
+  not process.parent.executable : "C:\\Program Files\\Devolutions\\Remote Desktop Manager\\RemoteDesktopManager.exe"
   ]
  [file where event.action in ("creation", "overwrite") and
   process.executable :  "?:\\Windows\\System32\\mmc.exe" and

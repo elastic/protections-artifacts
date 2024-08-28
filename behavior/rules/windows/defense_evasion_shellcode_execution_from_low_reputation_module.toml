@@ -4,7 +4,7 @@ id = "9fda6a38-3822-45b6-b621-02f750e8cf0d"
 license = "Elastic License v2"
 name = "Shellcode Execution from Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -39,7 +39,8 @@ sequence by process.entity_id with maxspan=1m
                "4c28bcbbbd54e0c7e43cb1cb9980918668ca6cab379ad114e9d1d4640b5ef154",
                "19f75446ac56ee7bf3efe1cc25383fcab91a557f9b6257b39e496ec4a6ff8b2e",
                "e2b761094a6f6300da32e861e8f42c359b22a0cf1d62ff3a2721882aa4d1c2c6",
-               "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561")] by dll.hash.sha256
+               "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561",
+               "ef14a3b57cd57f97fea9fcbf81b3350d0f11785ecc27e37085110f380ddcb17d")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx", "hook_api") and 
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and

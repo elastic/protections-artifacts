@@ -7,7 +7,7 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=3s
@@ -15,12 +15,13 @@ sequence with maxspan=3s
    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
    process.parent.args : "/var/tmp/rpm-tmp.*" and not (
      process.executable == "/sbin/runuser" or
-     process.args : "/usr/local/cpanel/3rdparty/wp-toolkit/*" or
+     process.args : ("/usr/local/cpanel/3rdparty/wp-toolkit/*", "/usr/bin/rpmkeys") or
      (process.executable == "/bin/sudo" and process.args in (
        "https://global.endpoint.security.micro",
        "https://global.endpoint.security.micros"
        )
-     )
+     ) or
+     (process.name == "curl" and process.args == "sudo" and process.args == "mdatp" and process.args == "--cacert")
    )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (

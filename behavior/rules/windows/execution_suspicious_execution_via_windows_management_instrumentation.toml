@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 process where event.action == "start" and
@@ -110,7 +110,7 @@ not (process.name : "regsvr32.exe" and process.command_line : "regsvr32.exe ?:\\
 not process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe" and 
 not (process.name : "rundll32.exe" and 
      process.command_line : "\"?:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher") and
-not (process.name : "schtasks.exe" and process.args : "cmd /c echo N | gpupdate /force") and
+not (process.name : "schtasks.exe" and process.args : ("cmd /c echo N | gpupdate /force", "shutdown /r /f /t *")) and
 not (process.name : "powershell.exe" and
      process.args : ("\\\\127.0.0.1\\admin$\\temp\\unregistered", "C:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1 -CacheNodeIdParam*"))
 '''

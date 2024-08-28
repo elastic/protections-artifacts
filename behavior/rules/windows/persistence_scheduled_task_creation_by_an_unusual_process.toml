@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task Creation by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence with maxspan=5m
@@ -95,7 +95,8 @@ sequence with maxspan=5m
                    "7b20331e03018ca74f0212aff3d5a1a66e2375188691df56c9b2b89ba84ad38b",
                    "dc3bcf4dee3b8c3ca0062284f53e5f717085bd3f3ac6b1ac70492425a7cf2474",
                    "81fac89743d43b741a009541a9c365ed3213f49cf6314d9c50418ab0d9e82528",
-                   "7d2c761823b183cd34a8c1c0b7b6f572d26a0265bfe65afe913faf60d27de844") and
+                   "7d2c761823b183cd34a8c1c0b7b6f572d26a0265bfe65afe913faf60d27de844",
+                   "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
     process.pe.original_file_name != "Adobe Installer"
@@ -110,7 +111,9 @@ sequence with maxspan=5m
               "?:\\Windows\\System32\\Tasks\\npcapwatchdog",
               "?:\\Windows\\System32\\Tasks\\ChocoUpgrade",
               "?:\\Windows\\System32\\Tasks\\ansible-ansible.windows.win_updates",
-              "?:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\PowerShell\\ScheduledJobs\\ansible-win-updates")) and
+              "?:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\PowerShell\\ScheduledJobs\\ansible-win-updates",
+              "?:\\WINDOWS\\System32\\Tasks\\PRISM Monitoring - System Data",
+              "?:\\Windows\\System32\\Tasks\\PRISM Cloud Monitoring - System Data")) and
 
     not (file.name : "Microsoft Office 1? Sync Maintenance for *" and file.size >= 5200 and file.size <= 5300 and
          Effective_process.name : ("winword.exe", "excel.exe", "powerpnt.exe")) and

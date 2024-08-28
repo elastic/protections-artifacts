@@ -13,7 +13,7 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=3s
@@ -37,7 +37,8 @@ sequence with maxspan=3s
      ) and not (
        process.executable in (
          "/usr/bin/pacman", "/usr/bin/kubectl", "/usr/bin/oci", "/usr/bin/ssh", "/usr/local/bin/ansible-galaxy",
-         "/usr/bin/last", "/usr/bin/node", "/usr/bin/groups", "/usr/bin/curl", "/usr/bin/wget", "/usr/bin/ansible-galaxy"
+         "/usr/bin/last", "/usr/bin/node", "/usr/bin/groups", "/usr/bin/curl", "/usr/bin/wget", "/usr/bin/ansible-galaxy",
+         "/opt/puppetlabs/puppet/bin/puppet", "/bin/yum", "/bin/dnf", "/usr/bin/lpstat", "/bin/lpstat"
       ) or
        process.executable : ("/snap/*", "/usr/local/aws-cli/*") or
        process.name == "lsnrctl"

@@ -4,7 +4,7 @@ id = "3899dd3b-f31a-4634-8467-55326cd87597"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -76,7 +76,9 @@ process where event.action == "start" and
    not (process.parent.args : "?:\\Users\\Prestige\\AppData\\Local\\Temp\\Rar$*\\KMS_VL_ALL_AIO.cmd  -elevated" and process.command_line : "*KMS_VL_ALL_AIO.cmd*") and
    not (process.parent.name : "cmd.exe" and
         process.parent.command_line : "*C:\\Program Files\\CheckPoint\\Harmony Connect\\resources\\build\\installation_scripts\\on_install\\on_install.bat*") and
-   not process.args : "iwr https://bmx-panels-check.s3.us-east-1.amazonaws.com/scripts/Start-SpeedTest.ps1 -UserAgent * -UseBasicParsing | invoke-expression"
+   not process.args : "iwr https://*.s3.us-east-1.amazonaws.com/scripts/Start-SpeedTest.ps1 -UserAgent * -UseBasicParsing | invoke-expression" and
+   not (process.parent.name : "wscript.exe" and
+        process.parent.args : "C:\\Program Files (x86)\\Telivy\\Telivy Agent\\telivy.js")
 '''
 
 min_endpoint_version = "7.15.0"

@@ -12,7 +12,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell/blob/master/README.md#Patch-the-providers-DLL-of-Microsoft-MpOav.dll",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 api where
@@ -46,10 +46,12 @@ api where
                            "?:\\Program Files\\nQueue\\iAPrintManager\\iAPrintManager.exe", 
                            "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe", 
                            "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe",
-                           "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe")
+                           "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Bitdefender SRL" and $entry.status : "trusted") and
+ not process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\apphelp.dll"
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -75,4 +77,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

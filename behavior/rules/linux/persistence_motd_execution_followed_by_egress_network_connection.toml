@@ -11,13 +11,13 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
    and not (
-     (process.name in ("wget", "curl") and process.args == "https://motd.ubuntu.com") or
+     (process.name in ("wget", "curl", "snapcraft-runner") and process.args == "https://motd.ubuntu.com") or
      process.executable : (
        "/usr/bin/landscape-sysinfo", "/usr/bin/yum", "/usr/bin/cloud-id", "/etc/update-motd.d/*",
        "/usr/lib/ubuntu-release-upgrader/check-new-release", "/snap/bin/canonical-livepatch"

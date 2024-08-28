@@ -7,7 +7,7 @@ id = "b1d79563-ef4c-4916-bf0f-221a20d743d3"
 license = "Elastic License v2"
 name = "Suspicious Windows API Proxy Call"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.behaviors : "proxy_call" and process.executable != null and 
@@ -23,7 +23,7 @@ api where process.Ext.api.behaviors : "proxy_call" and process.executable != nul
    process.Ext.api.behaviors : "image_indirect_call" or
    (process.Ext.api.behaviors : "hollow_image" and process.Ext.api.behaviors : "image_rop")
    ) and 
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*ntdll.dll!*RtlUnlockHeap*", "*ntdll.dll+0x*"))
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*ntdll.dll!*RtlUnlockHeap*", "*ntdll.dll+0x*", "*kernelbase.dll!AppXUpdatePackageCapabilities*"))
 '''
 
 min_endpoint_version = "8.10.0"

@@ -10,13 +10,17 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/init.d/*" and
 process.executable : (
   "./.*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/update-motd.d/*", "/run/*", "/srv/*", "/tmp/*", "/var/tmp/*",
   "/var/log/*", "/opt/.*"
+) and
+not (
+  process.executable == "/srv/bin/cnmaestro-ha" and process.parent.args == "/etc/init.d/cnmaestro-ha" and
+  process.parent.args == "start"
 )
 '''
 

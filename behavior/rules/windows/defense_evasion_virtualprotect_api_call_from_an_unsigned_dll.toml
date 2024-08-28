@@ -7,7 +7,7 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id
@@ -99,7 +99,17 @@ sequence by process.entity_id
                 "bcf909897a168ed514b0e631cfe1840ad715aa2e76b9445009c6a80ff030014e",
                 "9354d9bdbc7f0779a1a8693296171e13cbe6714c15c9c0f934c67e499fbcdff0",
                 "e2b761094a6f6300da32e861e8f42c359b22a0cf1d62ff3a2721882aa4d1c2c6",
-                "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561")] as event0
+                "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561",
+                "7287a20215b22493b65b0f7780c838d9c2b4aa37ed8808a4de8b44c4a96aaa92",
+                "91ac5c0721a13191a02c180e197a8e61b389287207b45e801c6538a44a171204",
+                "2bbc922dacb029a77984f0ce9d4c295597abb4f18ea012a79239e3c921268c2c",
+                "a6e0fb174145b55150ee26f0dba8e6217c4b6d0f11ba66885fccc8282adc96bc",
+                "46cff4393ff4354e0dee9acb2918f15746b950a982a84c2ec79da053dacce130",
+                "6494bd33f20a0873209046da850b66686a288e1a068182aaa9c0ecfbd24c07ce",
+                "db1b858ff3ff962013f65be4506d6d2185599a918c785c9b253716569ae7add4",
+                "bb9a0d54cf087fbcab1a6107f65b17dd772e0df512772091b3bf9b3a46a7b820",
+                "7847f045c77351e36b91b236fc790de994e4b6503b3053e2ce548470e40cc06c",
+                "f3775b076de9a86b7cf92a0347aaabfea383c7142c29cd67c064d4a4804649a4")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and
@@ -120,7 +130,9 @@ sequence by process.entity_id
     startswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unknown|", event0.dll.name)) or
 
     startswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unknown|kernelbase.dll|Unbacked|", event0.dll.name))
-  )
+  ) and
+  not (endswith~(process.thread.Ext.call_stack_final_user_module.name, process.name) and
+       process.Ext.api.behaviors : "self-modifying" and process.Ext.api.behaviors :"hollow_image")
  ]
  until [process where event.action:"end"]
 '''

@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -78,7 +78,7 @@ process where event.action == "start" and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and
-       process.parent.args : ("D:\\intersystems\\hsfoundation\\databases\\data\\ELSAInfoServer.vbs", "\\\\*\\NETLOGON\\*")) and
+       process.parent.args : ("D:\\intersystems\\hsfoundation\\databases\\data\\ELSAInfoServer.vbs", "\\\\*")) and
   not (process.parent.name : ("pwsh.exe", "powershell.exe") and process.args : "start" and
        process.args : "https://login.microsoftonline.com/*") and 
   not (process.args :  "?:\\Program Files\\Citrix\\Secure Access Client\\nsauto.exe" and process.parent.name : "userinit.exe") and
@@ -88,11 +88,14 @@ process where event.action == "start" and
              "https://auth.axis.com/oauth2/oauth-authorize*",
              "D:\\GitHub\\lilitech-cloud-app\\node_modules\\.bin\\*",
              "*--flat-playlist^*--no-cache-dir^*") and
-  not process.command_line : "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"" and
+  not process.command_line :
+               ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+                "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"") and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and
   not process.parent.args :  "C:\\WINDOWS\\Runtime\\utility\\wrapper.vbs" and 
-  not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs") and
+  not (process.parent.name : "wscript.exe" and
+       process.parent.args : ("C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs", "C:\\Windows\\System32\\gatherNetworkInfo.vbs")) and
   not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824") and
   not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\Program Files (x86)\\CaseWare\\Template\\FinancialsIFRS\\Packager\\After\\0\\FinancialsIFRSCreateShortcuts.js")
 '''

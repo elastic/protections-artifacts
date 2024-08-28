@@ -11,12 +11,13 @@ license = "Elastic License v2"
 name = "Udev Execution Followed by Egress Network Connection"
 os_list = ["linux"]
 reference = ["https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
-   descendant of [process where event.action == "exec" and process.name == "udevadm"]
+   descendant of [process where event.action == "exec" and process.name == "udevadm"] and
+   not process.parent.executable == "/etc/telegraf/get-service-status.sh"
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
@@ -26,7 +27,10 @@ sequence by process.entity_id with maxspan=3s
      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
      "FF00::/8", "172.31.0.0/16"
      )
-    ) and not (process.name == "go" or process.executable == "/usr/local/bin/rclone")
+    ) and not (
+    process.name == "go" or
+    process.executable : ("/usr/local/bin/rclone", "/var/lib/docker/overlay2/*gitlab-runner-helper")
+    )
   ]
 '''
 

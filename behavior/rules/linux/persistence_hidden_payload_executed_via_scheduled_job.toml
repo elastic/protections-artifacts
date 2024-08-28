@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Hidden Payload Executed via Scheduled Job"
 os_list = ["linux"]
 reference = ["https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -24,8 +24,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c autorestic -c /root/.autorestic.yml --ci cron"
   ) or
   process.command_line : "*/home/*/.*.*" or
-  process.args : ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*") or
-  process.executable : "/opt/eset/eei/bin/*"
+  process.args : ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*") or
+  process.executable : ("/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*")
 )
 '''
 

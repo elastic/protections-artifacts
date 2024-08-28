@@ -13,7 +13,7 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=3s
@@ -33,7 +33,9 @@ sequence with maxspan=3s
      "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/srv/*", "/tmp/*",
      "/var/tmp/*", "/var/log/*"
    ) and process.args_count == 1 and
-   not process.executable : ("/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*")
+   not process.executable : (
+     "/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*", "/var/tmp/cpuid/cpuid", "/tmp/.mount_*/jetbrains-toolbox"
+   )
   ] by process.parent.entity_id
 '''
 

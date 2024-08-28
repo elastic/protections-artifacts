@@ -10,14 +10,15 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Default DPKG Directory"
 os_list = ["linux"]
 reference = ["https://www.makeuseof.com/how-deb-packages-are-backdoored-how-to-detect-it/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
    process.parent.executable : "/var/lib/dpkg/info/*" and not (
      process.executable : ("/usr/sbin/runuser", "/opt/vivaldi/*", "/usr/bin/syslog-ng-update-virtualenv") or
-     process.parent.executable == "/var/lib/dpkg/info/falco.postinst"
+     process.parent.executable == "/var/lib/dpkg/info/falco.postinst" or
+     process.parent.executable : "/var/lib/dpkg/info/percona-server-server-*.postinst"
    )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (

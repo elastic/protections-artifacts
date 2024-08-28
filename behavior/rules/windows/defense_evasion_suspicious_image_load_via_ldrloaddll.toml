@@ -7,7 +7,7 @@ id = "2c4f5a78-a64f-4fcf-ac52-bf91fd9b82c8"
 license = "Elastic License v2"
 name = "Suspicious Image Load via LdrLoadDLL"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 library where
@@ -37,7 +37,9 @@ library where
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
                           "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65", 
                           "2048894538488b4d1048c1e103488b7d38488b7550f3a44c8b4d284d8b49484c8b45284d8b4040488b5528488b5220488b4d28488b8988000000ff95a0000000",
-                          "83c4209d61c38b1890906683fb1875158b580485db740e8b5b0c81fb33003200750331dbc331db4bc30000000000000000000000000000000000000000000000")) and
+                          "83c4209d61c38b1890906683fb1875158b580485db740e8b5b0c81fb33003200750331dbc331db4bc30000000000000000000000000000000000000000000000",
+                          "48c78424b000000000000000488b4424680fb7804805000066898424a0000000488b4424680fb7804805000066898424a2000000488b44246848054804000048",
+                          "48894568488b4d28488b456848894110488b4540ff50408bd0488b45288910488b8590000000488b40304889455848837d5800745b8b4d30ff5500488bd04883")) and
    not dll.path : ("?:\\Program Files\\*.dll", "?:\\Program Files (x86)\\*.dll",  "?:\\Windows\\assembly\\NativeImages_*.dll") and
    not process.code_signature.subject_name : ("ZOHO Corporation Private Limited", "Sophos Ltd", "Electronic Arts, Inc.", "Epic Games Inc.")
 '''

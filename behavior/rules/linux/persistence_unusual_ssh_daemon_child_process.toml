@@ -8,16 +8,22 @@ id = "94f548c8-cad2-4bc5-bf61-c0e42558ef65"
 license = "Elastic License v2"
 name = "Unusual SSH Daemon Child Process"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and process.parent.name == "sshd" and
-   not process.executable : ("/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*")] by process.entity_id
+   not process.executable : ("/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*")
+  ] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and process.executable : (
     "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/srv/*",
     "/tmp/*", "/var/tmp/*", "/var/log/*"
-    ) and process.args_count == 1 and not process.executable : "/tmp/VeeamApp*"
+    ) and process.args_count == 1 and not (
+      process.executable : (
+        "/tmp/VeeamApp*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/tmp/.mount_nvim.*"
+      ) or
+      process.parent.command_line == "bash -c /bin/bash; uname -a &> /dev/null"
+    )
   ] by process.parent.entity_id
 '''
 

@@ -8,12 +8,16 @@ license = "Elastic License v2"
 name = "Unusual Desktop Window Manager Child Process"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.github.io/0days-in-the-wild/0day-RCAs/2023/CVE-2023-36033.html"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and
  process.parent.executable : "?:\\Windows\\system32\\dwm.exe" and user.id : ("S-1-5-90-0-*", "S-1-5-18") and process.executable : "?:\\*" and 
- not process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\System32\\ISM.exe", "?:\\Windows\\system32\\dwm.exe")
+ not process.executable :
+              ("?:\\Windows\\System32\\WerFault.exe",
+               "?:\\Windows\\System32\\ISM.exe",
+               "?:\\Windows\\system32\\dwm.exe",
+               "?:\\Windows\\System32\\dgcvideo.exe")
 '''
 
 min_endpoint_version = "8.7.0"

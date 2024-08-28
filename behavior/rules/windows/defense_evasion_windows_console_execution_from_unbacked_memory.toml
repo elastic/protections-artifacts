@@ -8,7 +8,7 @@ id = "7b186a20-22eb-4ea2-81ec-6d15dd6ee341"
 license = "Elastic License v2"
 name = "Windows Console Execution from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=5m
@@ -24,7 +24,11 @@ sequence with maxspan=5m
                      ("?:\\ProgramData\\*.exe",
                       "?:\\Program Files\\*.exe",
                       "?:\\Program Files (x86)\\*.exe",
-                      "?:\\Windows\\LTSvc\\LTSVC.exe")) and
+                      "?:\\Windows\\LTSvc\\LTSVC.exe",
+                      "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe",
+                      "C:\\Windows\\SysWOW64\\SmartDeploy\\ClientService.exe",
+                      "I:\\RSA\\Microsoft Azure Recovery Services Agent\\bin\\cbengine.exe",
+                      "C:\\Drivers\\Nord\\NordSec ThreatProtection\\nordsec-threatprotection-service.exe")) and
   not (process.parent.executable : "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell.exe" and user.id : "S-1-5-18" and
        process.code_signature.trusted == true) and 
   not (process.code_signature.subject_name : "ProVation Medical" and process.code_signature.trusted == true) and 
@@ -67,7 +71,18 @@ sequence with maxspan=5m
                      "C:\\Program Files\\QSR\\NVivo 14\\NVivo.exe",
                      "C:\\Program Files\\McCormick Systems\\McCormick Estimating\\MaintenanceUtility.exe",
                      "D:\\PROGRAMS\\UiPath\\Studio\\UiPath.Studio.Project.exe",
-                     "C:\\Users\\*\\AppData\\Roaming\\GWP\\MSOffice-AddIns\\Deploy-MSOfficeAddIns.exe")
+                     "C:\\Users\\*\\AppData\\Roaming\\GWP\\MSOffice-AddIns\\Deploy-MSOfficeAddIns.exe",
+                     "C:\\Program Files\\Devolutions\\Remote Desktop Manager\\RemoteDesktopManager.exe",
+                     "C:\\Program Files\\QSR\\NVivo 14\\NVivo.exe",
+                     "C:\\Program Files (x86)\\Genetec SV Control Panel\\Control Panel\\SVControlPanel.exe",
+                     "D:\\PROGRAMS\\UiPath\\Studio\\UiPath.Studio.Project.exe",
+                     "C:\\Program Files (x86)\\Chocolatey GUI\\ChocolateyGui.exe",
+                     "C:\\Program Files\\Royal TS V7\\RoyalTS.exe") and
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes :
+                              ("c6460c01833d*e85ff0f95c00fb6c00fb6c0c6460c01488b559048895610488d65c85b5e5f415c415d415e415f",
+                               "c6460c01833d9c8c755e007406ff15a495755e85c00f95c00fb6c00fb6c0c6460c01488b559048895610488d65c85b5e5f415c415d415e415f5dc31910090010"))
+
   ] by process.parent.entity_id
 [network where true] by process.entity_id
 '''

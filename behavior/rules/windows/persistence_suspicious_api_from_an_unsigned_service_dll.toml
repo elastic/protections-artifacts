@@ -7,7 +7,7 @@ id = "1a16b12e-6719-4f58-8835-84880092f3a0"
 license = "Elastic License v2"
 name = "Suspicious API from an Unsigned Service DLL"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -17,7 +17,9 @@ sequence by process.entity_id with maxspan=2m
 
   (dll.code_signature.trusted == false or dll.code_signature.exists == false or dll.path : "\\Device\\Mup*") and
 
-  process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe")] as event0
+  process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe") and
+
+  dll.hash.sha256 != "c8bf101bab6d5400f892ee92f2e788a7096192a417707c4fa91f54ee2c29d394"] as event0
 [api where
 
  process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe") and

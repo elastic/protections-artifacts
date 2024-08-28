@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -30,7 +30,11 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
 
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unknown" and
 
- not process.thread.Ext.call_stack_final_user_module.path : "c:\\program files (x86)\\microsoft\\edge\\application\\msedge.exe" and
+ not process.thread.Ext.call_stack_final_user_module.path :
+                            ("c:\\program files (x86)\\microsoft\\edge\\application\\msedge.exe",
+                             "c:\\program files\\audinate\\dante activator\\dante activator.exe",
+                             "c:\\program files (x86)\\airtame\\airtame.exe",
+                             "c:\\program files (x86)\\mitel\\connect\\mitel.exe") and
 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                         ("3ca49b11a6b12e9efe8b12076d46f4c1c6e9b4fea44f7e572766a7845c6c24a3",
@@ -51,7 +55,17 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "224b1025c51438d2ce9343d15d3afc32698187c81dbde28e99a80d042ac8a0b9",
                          "e65e63d51b8fe0eeee53918ddb2a8105b5e396f52341074a7997bbed43311cec",
                          "b792d1243950e98d460fb5541fffc723d097d23cfa6830d70673cbea86623afb",
-                         "d7cc5804450a1be697c37440059b97e0911fb20d2ef068bfb458b54c46866151") and
+                         "d7cc5804450a1be697c37440059b97e0911fb20d2ef068bfb458b54c46866151",
+                         "d5685e38faccdf97ce6ffe4cf53cbfcf48bb20bf83abe316fba81d1abd093cb6",
+                         "4b3e16f6df41a2600ddde4769123151cd7c9dcf88b0d30c2e14cfad81f717529",
+                         "e825a252b5c5c9c2de8a6a6ade12a7f9cd0040f6a20e6ee44ba659034e6d5223",
+                         "5ae5860e24c1e9604efaedb9f57b733feff2a978b23a16751ba1f31ecc62aa6f",
+                         "71deb0afa24ddcb687951026e871121556cf114960833a38a00a8c07e9086357",
+                         "f6268995735c5aa33dc02e696992ecb0afda879170b90d3333a7ef27165b045f",
+                         "d94ad7bcd32ec7b48fe76a4293205c6eb17191b7882a631ccb4eeabee2a96bca",
+                         "ec673caa0c703cc3084887824b800502cd45b4a365c2f8d6cbc5175f0e938e1e",
+                         "ad76892733513d2f88eeb61ea18a9594defa52a82eab4fca0202752f651307af",
+                         "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))

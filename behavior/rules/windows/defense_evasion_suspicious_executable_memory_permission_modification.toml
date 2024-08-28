@@ -7,7 +7,7 @@ id = "c6e63ef1-e2d8-4703-80c7-a544f2aa5c6e"
 license = "Elastic License v2"
 name = "Suspicious Executable Memory Permission Modification"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and process.executable != null and
@@ -28,7 +28,9 @@ api where process.Ext.api.name == "VirtualProtect" and process.executable != nul
                                     "6ad6c03ac893bce8aeb65362c7615b7c74d457276ce6bdcde40a110178267fa3", 
                                     "f7c78dba07128af325d8da99138ebf78be163ecfb5da5b01fa6b65b96efecef1",
                                     "e0f97f4ca158dc6de279467dd469b7d9da6613de64c7e5ed34bdd9d358dd8a90") and
- not (process.code_signature.trusted == true and process.code_signature.subject_name : "Roblox Corporation")
+ not (process.code_signature.trusted == true and process.code_signature.subject_name : "Roblox Corporation") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
+                  $entry, $entry.subject_name: ("Bitdefender SRL", "Google LLC", "Mozilla Corporation") and $entry.status : "trusted")
 '''
 
 min_endpoint_version = "8.10.0"

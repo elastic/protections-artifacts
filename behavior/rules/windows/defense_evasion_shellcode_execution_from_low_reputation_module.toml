@@ -4,7 +4,7 @@ id = "9fda6a38-3822-45b6-b621-02f750e8cf0d"
 license = "Elastic License v2"
 name = "Shellcode Execution from Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -40,9 +40,20 @@ sequence by process.entity_id with maxspan=1m
                "19f75446ac56ee7bf3efe1cc25383fcab91a557f9b6257b39e496ec4a6ff8b2e",
                "e2b761094a6f6300da32e861e8f42c359b22a0cf1d62ff3a2721882aa4d1c2c6",
                "f0997f96bc59a9ff7d7fb8905b79996a179bfaad39a6113c9edf00135a96c561",
-               "ef14a3b57cd57f97fea9fcbf81b3350d0f11785ecc27e37085110f380ddcb17d")] by dll.hash.sha256
+               "ef14a3b57cd57f97fea9fcbf81b3350d0f11785ecc27e37085110f380ddcb17d",
+               "db3477572af5b5f353e723db1e7e8de9b743a120a145c3c26851e969ac34044d",
+               "5655e005145c8a0bd1648bae17d456f14321d054240486dff349253c2c8da087",
+               "d57cdf9fe51debc65441be155eddb663cebfaec1c0c91161234dd3398ca71b76",
+               "22ee08ed8c02358f994b5deba0940735b161f9a73ad60e4e57d10b9e1988ec83",
+               "88f0452c2ac66146139b87e60e9bb8a8b6a6566cbb9040e5e8ee1774e12f35ba",
+               "4379d68dde8fb1f022a870947d0524c0ed8a7b37bcfc49772a4d0a4e04158b7b",
+               "f7d7680d544e9e8da9b95c8905e5d2ca5adc2a3e700c2e1aa1f99287da0d184c",
+               "6f49e3558970540edfb187c59d32f3a27eecc6a48d87b49ad72c19495355f1db",
+               "bce30810240512dde3f6513b3734ae0f6b98c35ac5465e5e12262db8a086e37e",
+               "32394db9c0677d31efd0d684e969c6fab55fa1c47114c980a9e3f39ff85f2e58",
+               "fb6ec0f7104fec7d0963c53754e84dcb13d6d94c0d19762a2f161503ea5e3580")] by dll.hash.sha256
 [api where
- process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx", "hook_api") and 
+ process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and
  not (process.name : ("msiexec.exe", "setup.exe") and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003"))

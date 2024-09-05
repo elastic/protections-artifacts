@@ -7,7 +7,7 @@ id = "39224ead-14f3-4df3-b6ed-ec69dc17db3a"
 license = "Elastic License v2"
 name = "Untrusted DLL Loaded by a System Windows Process"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 library where 
@@ -34,7 +34,9 @@ library where
                 "?:\\Program Files (x86)\\Windows *", 
                 "?:\\Program Files\\Common Files\\Microsoft*",
                 "?:\\Program Files (x86)\\Common Files\\Microsoft*") and
-  not dll.hash.sha256 : "bf14ce30695de66d8040cb893ba72fb205add0404091cc889e5b4d18b368303b"
+  not dll.hash.sha256 :
+                ("bf14ce30695de66d8040cb893ba72fb205add0404091cc889e5b4d18b368303b",
+                 "94c62f5a203c21b8f7e100d95454d06081fca0bfda3e9259cd300a2f3b8c92b1")
 '''
 
 min_endpoint_version = "8.10.0"

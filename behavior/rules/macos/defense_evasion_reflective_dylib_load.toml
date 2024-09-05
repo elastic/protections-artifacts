@@ -14,7 +14,7 @@ reference = [
     "https://github.com/slyd0g/SwiftInMemoryLoading",
     "https://github.com/xpn/DyldDeNeuralyzer/tree/main",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 library where ((event.action == "load" and not dll.path : "?*") or 
@@ -33,6 +33,7 @@ library where ((event.action == "load" and not dll.path : "?*") or
        process.code_signature.trusted == true) and 
   not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
                                       "/Applications/Amazon Music.app/Contents/MacOS/Amazon Music",
+                                      "/Applications/MuseScore 4.app/Contents/MacOS/mscore",
                                       "/Applications/Sibelius.app/Contents/MacOS/Sibelius",
                                       "/Applications/GRAPHISOFT/ARCHICAD 24/ARCHICAD 24.app/Contents/MacOS/ARCHICAD",
                                       "/Applications/SoundFlow.app/Contents/Helpers/SoundFlow.app/Contents/MacOS/sfbackend",
@@ -40,6 +41,7 @@ library where ((event.action == "load" and not dll.path : "?*") or
   not process.executable : ("/System/*", 
                             "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp3.app/Contents/MacOS/ScanApp3",
                             "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
+                            "/Applications/MuseScore 4.app/Contents/MacOS/mscore",
                             "/Applications/Sibelius.app/Contents/MacOS/Sibelius",
                             "/Applications/Avid/AvidAudioServer/AvidAudioServer.app/Contents/MacOS/AvidAudioServer",
                             "/Applications/Ableton Live * Lite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner",

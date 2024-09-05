@@ -9,10 +9,10 @@ id = "c71b9783-ca42-4532-8eb3-e8f2fe32ff39"
 license = "Elastic License v2"
 name = "Linux Reverse Shell via Suspicious Utility"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-sequence by process.entity_id with maxspan=1s
+sequence by process.entity_id with maxspan=10s
   [process where event.type == "start" and event.action in ("fork", "exec") and (
     (process.name : "python*" and process.args : "-c" and process.args : (
      "*import*pty*spawn*", "*import*subprocess*call*"
@@ -27,12 +27,19 @@ sequence by process.entity_id with maxspan=1s
      "*io.popen*", "*os.execute*"
     )) or
     (process.name : "php*" and process.args : "-r" and process.args : "*fsockopen*" and process.args : "*/bin/*sh*") or 
+    (process.name == "node" and process.args == "-e" and process.args : "*spawn*sh*" and process.args : "*connect*") or
     (process.name : ("awk", "gawk", "mawk", "nawk") and process.args : "*/inet/tcp/*")
    )]
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name : ("python*", "php*", "perl", "ruby", "lua*", "*awk") and destination.ip != null and not cidrmatch(
-     destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1"
-   )]
+   process.name : ("python*", "php*", "perl", "ruby", "lua*", "*awk", "node") and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8"
+       )
+    )]
 '''
 
 min_endpoint_version = "8.5.0"

@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -34,7 +34,8 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                             ("c:\\program files (x86)\\microsoft\\edge\\application\\msedge.exe",
                              "c:\\program files\\audinate\\dante activator\\dante activator.exe",
                              "c:\\program files (x86)\\airtame\\airtame.exe",
-                             "c:\\program files (x86)\\mitel\\connect\\mitel.exe") and
+                             "c:\\program files (x86)\\mitel\\connect\\mitel.exe",
+                             "c:\\program files (x86)\\vex robotics\\vexcode v?\\vexcode v?.exe") and
 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                         ("3ca49b11a6b12e9efe8b12076d46f4c1c6e9b4fea44f7e572766a7845c6c24a3",
@@ -65,7 +66,10 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "d94ad7bcd32ec7b48fe76a4293205c6eb17191b7882a631ccb4eeabee2a96bca",
                          "ec673caa0c703cc3084887824b800502cd45b4a365c2f8d6cbc5175f0e938e1e",
                          "ad76892733513d2f88eeb61ea18a9594defa52a82eab4fca0202752f651307af",
-                         "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962") and
+                         "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962",
+                         "02bec18f77442249a7099ce975e81d7cb22481dd91717b5e5ae5b8fc62b95899",
+                         "bc30b686e6c101b1fd4c52caca31e01227fcea8dfe683de4abcd047ec2acca38",
+                         "a995140e5ee8d00e571c19654d4628a11a74b5804768da6e147c559fa3747e23") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))

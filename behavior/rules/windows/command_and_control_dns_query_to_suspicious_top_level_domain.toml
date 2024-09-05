@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,9 +21,9 @@ sequence by process.entity_id with maxspan=1m
      not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")) or
 
    process.executable :
-	        ("?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*", 
-		 "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",  
-		 "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*") or
+	        ("?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+	         "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+	         "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*") or
 
    process.name : ("powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe") or 
 
@@ -68,7 +68,8 @@ sequence by process.entity_id with maxspan=1m
                     "4b0f6852329ae6118124956e95c091fbf5c7592b8dd717c9163a07b72074c65d") and
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe", 
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
-                             "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe") and
+                             "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe",
+                             "?:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe") and
    not (process.name : "powershell.exe" and process.parent.executable : "?:\\Program Files\\Sophos\\Endpoint Defense\\SEDService.exe") and
    not (process.name : "powershell.exe" and process.args : "C:\\ProgramData\\NinjaRMMAgent\\uscripting\\customscript_gen_*.ps1")]
  [dns where

@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m
@@ -33,7 +33,7 @@ sequence with maxspan=1m
   not (process.executable : ("*\\Program Files (x86)\\*.exe", "*\\Program Files\\*.exe") and process.code_signature.trusted == true) and 
 
 
-  not (process.code_signature.subject_name : ("BeyondTrust Software, Inc", "Michael Maltsev", "BeyondTrust Software Inc", "Malwarebytes Inc.", "Malwarebytes Inc") and
+  not (process.code_signature.subject_name : ("BeyondTrust Software, Inc", "Michael Maltsev", "BeyondTrust Software Inc", "Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG") and
        process.code_signature.trusted == true) and
 
   not (process.name : ("devenv.exe", "PowerToys.exe", "notification_helper.exe", "cpptools.exe") and process.code_signature.trusted == true and 
@@ -64,7 +64,10 @@ sequence with maxspan=1m
                                          "97b930b2d7af917d9fba37c03709da1c929cb97ea6c43cda823702ad3f96786e") and
   not process.thread.Ext.call_stack_final_user_module.path :
                                       ("c:\\program files\\avecto\\privilege guard client\\pghook.dll",
-                                       "c:\\program files (x86)\\webroot\\wrsa.exe")
+                                       "c:\\program files (x86)\\webroot\\wrsa.exe") and
+  not (process.executable : "?:\\Windows\\System32\\wermgr.exe" and
+       process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
+       process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\windows.storage.dll")
   ] by process.entity_id
 '''
 

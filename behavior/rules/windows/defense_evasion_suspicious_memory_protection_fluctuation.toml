@@ -7,7 +7,7 @@ id = "78165d05-f1d6-4c5c-bb4d-b618df979868"
 license = "Elastic License v2"
 name = "Suspicious Memory Protection Fluctuation"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
@@ -35,7 +35,8 @@ sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=3
                                           "\\Windows\\assembly\\*") and 
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 : 
                                                ("a0d649241c61e72592a78effcece1557a07548fda6ac1741a53e69ee3e02946b", 
-                                                "649ede91f00d784ed1e397ece6e5f13dbe6cd9d86c06b424834c443c32727bae")
+                                                "649ede91f00d784ed1e397ece6e5f13dbe6cd9d86c06b424834c443c32727bae",
+                                                "adde1c4ba76c8e63844fac145f097002cbfc4b1af63656fb8cfbb8ebebc4375a")
   ]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "RW-"]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "R-X"]

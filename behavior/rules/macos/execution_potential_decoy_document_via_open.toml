@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when the native system binary 'open' is used to open a .doc or .pdf file in a temporary directory or via an
+unsigned or untrusted process. Decoy documents are often used to trick users into believing a file or executable is
+harmless and distract them from what the malware is doing behind the scenes.
+"""
+id = "3f2c51ce-5da8-4c9b-8a39-17677ed08eb9"
+license = "Elastic License v2"
+name = "Potential Decoy Document via Open"
+os_list = ["macos"]
+reference = [
+    "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/4a57b3dd5d28ad1bd79e927e04b20fd4d66934a0/ocean_lotus",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name : "open" and 
+ process.args : ("/tmp/*.doc*", "/tmp/*.pdf*", "/private/tmp/*.doc*", "/private/tmp/*.pdf*", "/Users/Shared/*.doc*", "/Users/Shared/*.pdf*")
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -4,7 +4,7 @@ id = "b8a0a3aa-0345-4035-b41d-f758a6c59a78"
 license = "Elastic License v2"
 name = "Command Shell Activity Started via RunDLL32"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.type == "start" and
@@ -29,7 +29,9 @@ process where event.type == "start" and
          process.args : "axecore.dll,RunJob_RunDll") and
     not process.parent.command_line :  "rundll32.exe \"C:\\Program Files (x86)\\Windows Shell\\fx_ws_main.dll\",ProcessDll s=hidedialog" and
     not (process.parent.command_line : "C:\\Windows\\system32\\rundll32.exe iernonce.dll,RunOnceExProcess" and
-         process.working_directory : "C:\\Windows\\system32\\")
+         process.working_directory : "C:\\Windows\\system32\\") and
+    not (process.parent.command_line : "\"C:\\WINDOWS\\System32\\rundll32.exe\" C:\\WINDOWS\\Lvgic10u.dll,Execute" and
+         process.command_line : "cmd /c C:\\WINDOWS\\System32\\rundll32.exe C:\\WINDOWS\\Lvgic10u.dll,ExecuteQuick")
 '''
 
 min_endpoint_version = "7.15.0"

@@ -7,17 +7,17 @@ id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
 license = "Elastic License v2"
 name = "Unusual File Written or Modified in Startup Folder"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 file where event.action != "deletion" and
-  process.pid != 4 and process.executable != null and 
+  process.pid != 4 and process.executable != null and
   file.name != null and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
   file.path : ("?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
                "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
   (
    /* file extensions rarely written to Startup folder by legit installers */
-   file.extension : ("exe", "com", "scr", "dll", "hta", "ps1", "cmd", "url", "wsh", "wsf", "vbe", "jse", "sick", "png", "jpg", "manifest", "ahk") or
+   file.extension : ("exe", "com", "scr", "dll", "hta", "ps1", "cmd", "url", "wsh", "wsf", "vbe", "jse", "sick", "png", "jpg", "manifest", "ahk", "jar") or
 
    /* suspicious file names */
    length(file.name) <= 6 or
@@ -42,9 +42,8 @@ file where event.action != "deletion" and
                 "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe",
                 "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*.exe",
                 "?:\\Program Files\\Windows Defender Advanced Threat Protection\\*.exe",
-                "?:\\Program Files\\*.exe",
-                "?:\\Program Files (x86)\\*.exe", 
                 "\\Device\\Mup\\*\\SysVol\\*") and
+    not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and not process.name : "javaw.exe") and
     not (process.name : "cmd.exe" and file.extension : "cmd") and
     not (process.code_signature.subject_name :
                  ("Intercontinental Exchange, Inc.", "Chocolatey Software, Inc.", "ONELAUNCH TECHNOLOGIES INC.", 

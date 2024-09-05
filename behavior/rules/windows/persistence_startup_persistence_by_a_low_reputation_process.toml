@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence by a Low Reputation Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -24,8 +24,24 @@ sequence by process.entity_id with maxspan=5m
                   "339a9a4b49467f9797204a5e27d73a8d72cc6c91ff1e9132a01910b20a64a48b",
                   "6a88b5179dd5560d3e11ba0962b23a414a9f26838a7a80472453437d821c8047",
                   "a9a5e36f77e5031436d8eaf16a01bdb27dc301a632eda8b0c0613d8508dca5c2",
-                  "a748e17d33fe2dd47371c3c1d9a6625eeb871a262e508d15cb81de62e1cce7ac") and
- not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18")]
+                  "a748e17d33fe2dd47371c3c1d9a6625eeb871a262e508d15cb81de62e1cce7ac",
+                  "035dfedcac91168ae84873a5eab6fc81cc914d2b8092babc162b019a885203e9",
+                  "4f2629239477b651b96a456ec867ffb8f316bc7d87bab911f137bf5f74514268",
+                  "901a1857c16856a3bf8854dbcd5813e15fc5cf5b13abee1ec9468c721977f415",
+                  "756c03e14eeea5ce275fa4e5efd5b2af4c18deff55b2c7622ce6c21c7f226332",
+                  "22ee08ed8c02358f994b5deba0940735b161f9a73ad60e4e57d10b9e1988ec83",
+                  "4626fe6b05a7582fb3c824bae7b17f7418ec7796fb3e9ef22cb88af5516e084b",
+                  "d57cdf9fe51debc65441be155eddb663cebfaec1c0c91161234dd3398ca71b76",
+                  "04c9afe31fa9fd8340d19b0c0dd11ad9387f5f3e38045a04e4cdb97c8ebfa90b",
+                  "d57cdf9fe51debc65441be155eddb663cebfaec1c0c91161234dd3398ca71b76",
+                  "7428a9ceb04e588440d4847f3896ca2e024964e5e22111f2726cdd8c9445e1f4",
+                  "a356832423f7fe4f2047daeefb33f968b8e2d6e87541e6d461baa4d0fc10fe76",
+                  "ca7a8dabbd526f20bc0a947e9fb1e68d47c5aaf339c677d4f8d6bc90d07c1298",
+                  "f1580a81a26f3b106f8c9169552191557037a019f4b6fd61ed86efc2ef2b0cc3",
+                  "ce5576f49666f06fbb6798ce23b127075b66d45bb05affa55c2ab875adad2069",
+                  "fb4e88e790fa47ba403b1142183e4288437963db487b56c7e02407fa2808cbec") and
+ not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18") and
+ not (process.executable : "?:\\Windows\\ccmcache\\*.exe" and process.parent.executable : "?:\\Windows\\CCM\\*.exe")]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (
     (registry.data.strings != null and

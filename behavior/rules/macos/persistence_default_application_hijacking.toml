@@ -1,0 +1,43 @@
+[rule]
+description = """
+Detects the abnormal invocation of a system application located in /System/Applications via the open binary. This
+abnormal activity may indicate the use of "default application hijacking" to persist and/or execute a malicious payload
+utilizing a bug that currently exists in the way macOS handles default apps and filetypes.
+"""
+id = "5d2c3833-a36a-483a-acea-5bf8cf363a81"
+license = "Elastic License v2"
+name = "Default Application Hijacking"
+os_list = ["macos"]
+reference = [
+    "https://medium.com/@marcusthebrody/a-new-macos-persistence-and-deception-technique-default-application-hijacking-52de66955a16",
+]
+version = "1.0.23"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.name : "open" and process.args == "-a" and process.args : "/System/Applications/*" and 
+ (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.11.0"

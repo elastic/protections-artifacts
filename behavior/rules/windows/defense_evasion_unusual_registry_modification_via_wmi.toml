@@ -4,7 +4,7 @@ id = "6a99f6e1-95bb-4d69-8743-23bfce24c7ae"
 license = "Elastic License v2"
 name = "Unusual Registry Modification via WMI"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
@@ -20,7 +20,8 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
               "HKLM\\SYSTEM\\*\\Control\\Session Manager\\PendingFileRenameOperations",
               "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MDM\\JobDB\\*\\UrlList",
               "HKLM\\SYSTEM\\ControlSet*\\Services\\EventLog\\*", 
-              "HKLM\\SOFTWARE\\MySoftware\\Capture Printer\\PrintingModule") and 
+              "HKLM\\SOFTWARE\\MySoftware\\Capture Printer\\PrintingModule",
+              "HKEY_USERS\\.DEFAULT\\Software\\Microsoft\\Windows\\CurrentVersion\\Group Policy Objects\\{*}Machine\\Software\\Policies\\Microsoft\\Windows\\SrpV2\\Exe\\*\\Value") and
  not registry.key : ("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Terminal Server\\TSAppAllowList\\Applications\\*",
                      "*Classes\\Local Settings\\MuiCache\\*",
                      "*Classes\\SystemFileAssociations\\*",
@@ -39,7 +40,9 @@ registry where process.executable : "?:\\Windows\\sys*\\wbem\\wmiprvse.exe" and
                      "*\\Services\\EventLog\\Business World*", 
                      "SYSTEM\\ControlSet*\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\*", 
                      "SOFTWARE\\Microsoft\\Internet Explorer\\Low Rights\\ElevationPolicy\\{8096ABF6-3761-4B76-B8E7-6B596AFE07EF}", 
-                     "SOFTWARE\\Microsoft\\Internet Explorer\\Low Rights\\ElevationPolicy\\{791C3483-6F9D-43C8-93CB-F469D9BF1658}")
+                     "SOFTWARE\\Microsoft\\Internet Explorer\\Low Rights\\ElevationPolicy\\{791C3483-6F9D-43C8-93CB-F469D9BF1658}") and
+ not (registry.data.strings : "C:\\WINDOWS\\system32\\SQLSRV32.dll" and registry.path : ("HKLM\\SOFTWARE\\ODBC\\*", "HKLM\\SOFTWARE\\WOW6432Node\\ODBC\\*")) and
+ not registry.data.strings : ("@Winlangdb.dll,-*", "?:\\pagefile.sys", "C:\\Program Files\\Windows Media Player\\wmplayer.exe")
 '''
 
 actions = []

@@ -1,0 +1,64 @@
+[rule]
+description = """
+Identifies unsigned code calling a 3rd party kernel driver function. Adversaries may bring a vulnerable or abusable
+driver onto a compromised machine to execute code with the highest privileges.
+"""
+id = "9c4bd6d6-9e2f-4ce2-8266-923e1799726c"
+license = "Elastic License v2"
+name = "Process Explorer Device Access by Unusual Process"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where
+  process.Ext.api.name == "DeviceIoControl" and
+  process.Ext.api.parameters.device : "\\Device\\PROCEXP*" and
+
+  not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe", "handle.exe") and
+       _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $caller, $caller.trusted == true and
+                     $caller.subject_name : "Microsoft Corporation")) and
+  not (process.name : ("procexp64.exe", "procexp.exe", "Handle64.exe", "Handle.exe") and process.code_signature.subject_name : "Microsoft Corporation" and
+       process.thread.Ext.call_stack_final_user_module.name : "Unknown" and process.code_signature.trusted == true) and
+  not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe") and
+       process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true) and
+  not process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\apphelp.dll"
+'''
+
+min_endpoint_version = "8.14.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

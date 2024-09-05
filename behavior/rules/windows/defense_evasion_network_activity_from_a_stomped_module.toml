@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -50,7 +50,8 @@ sequence by process.entity_id with maxspan=2m
          process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas", "COMMUNITY BRANDS PARENTCO")) and
     not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
                               "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe",
-                              "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe") and
+                              "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe",
+                              "?:\\Program Files (x86)\\Kantech\\Server_CE\\Bin\\RVPControl.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\dat\\Dexon\\Agent\\Agent.exe" and
          process.code_signature.subject_name : "Dexon Software S A" and process.code_signature.status : "errorExpired")
   ] as event0 

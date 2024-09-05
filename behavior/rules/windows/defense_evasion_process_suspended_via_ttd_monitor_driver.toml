@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies unsigned code calling an IOCTL in the TTD Monitor kernel driver to suspend a specific process by PID.
+Adversaries may abuse this driver to tamper with endpoint security solutions.
+"""
+id = "4953d091-dd91-4380-9531-e373a5bfffaf"
+license = "Elastic License v2"
+name = "Process Suspended via TTD Monitor Driver"
+os_list = ["windows"]
+reference = [
+    "https://www.sentinelone.com/labs/fin7-reboot-cybercrime-gang-enhances-ops-with-new-edr-bypasses-and-automated-attacks/",
+]
+version = "1.0.2"
+
+query = '''
+api where
+  process.Ext.api.name == "DeviceIoControl" and
+  process.Ext.api.parameters.device : "\\Device\\com_microsoft_idna_ProcLaunchMon" and
+  /* IOCTL 0x228034 to suspend a PID */
+  process.Ext.api.parameters.io_control_code == 2261044 and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $caller, $caller.trusted == true)
+'''
+
+min_endpoint_version = "8.14.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

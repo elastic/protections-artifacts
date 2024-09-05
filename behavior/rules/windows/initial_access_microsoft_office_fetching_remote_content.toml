@@ -8,7 +8,7 @@ id = "6b3aa7d9-08c6-4091-aa03-715d25b34000"
 license = "Elastic License v2"
 name = "Microsoft Office Fetching Remote Content"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=60s
@@ -27,7 +27,8 @@ sequence with maxspan=60s
              "?:\\windows\\splwow64.exe",
              "?:\\Program Files*\\Microsoft Office\\*.EXE",
              "?:\\Program Files*\\Microsoft Office\\root\\vfs\\ProgramFilesCommon*\\Microsoft Shared\\OFFICE??\\ai.exe",
-             "?:\\Program Files*\\Microsoft Azure Information Protection\\*.exe")] by process.parent.entity_id
+             "?:\\Program Files*\\Microsoft Azure Information Protection\\*.exe",
+             "?:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\acrotray.exe")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"

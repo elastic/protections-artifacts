@@ -8,13 +8,15 @@ uncommon commands invocations like this.
 """
 id = "266f9d58-2277-4e78-b551-7d07b3ed9020"
 license = "Elastic License v2"
-name = "Terminal closed with Pkill from volume mount"
+name = "Terminal closed with Pkill or Killall from volume mount"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "pkill" and 
- process.args : "Terminal" and (process.parent.executable : "/Volumes/*" or process.parent.name : ("bash", "sh", "zsh"))
+process where event.type == "start" and event.action == "exec" and process.name : ("pkill", "killall") and 
+ process.args : "Terminal" and (process.parent.executable : "/Volumes/*" or 
+                                process.parent.name : ("bash", "sh", "zsh") or 
+                                (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false))
 '''
 
 min_endpoint_version = "8.11.0"

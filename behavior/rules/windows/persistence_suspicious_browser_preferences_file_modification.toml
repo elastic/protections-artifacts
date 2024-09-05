@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies the modification of commonly used browsers settings via Preferences change. Adversaries may install a rogue
+browser extension or disable certain browser hardening settings to maintain persistence or evade restrictions.
+"""
+id = "5d51b060-3285-4e2f-9197-74f980a6cdb0"
+license = "Elastic License v2"
+name = "Suspicious Browser Preferences File Modification"
+os_list = ["windows"]
+reference = ["https://syntax-err0r.github.io/Silently_Install_Chrome_Extension.html"]
+version = "1.0.2"
+
+query = '''
+file where event.action == "overwrite" and file.name : ("Preferences", "Secure Preferences") and
+    process.executable != null and
+	 file.path :
+	         ("?:\\Users\\*\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Preferences", 
+	          "?:\\Users\\*\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Secure Preferences", 
+	          "?:\\users\\*\\appdata\\local\\microsoft\\edge\\user data\\default\\Preferences", 
+	          "?:\\users\\*\\appdata\\local\\microsoft\\edge\\user data\\default\\Secure Preferences") and
+	 not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-19") and
+	 not process.executable :
+	               ("?:\\Program Files\\*.exe",
+	                "?:\\Program Files (x86)\\*.exe",
+	                "C:\\Windows\\explorer.exe",
+	                "C:\\Windows\\System32\\xcopy.exe",
+	                "C:\\Windows\\System32\\Robocopy.exe",
+	                "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe") and
+	 not (process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true and
+	      process.executable : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
+	                            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge SxS\\Application\\msedge.exe",
+	                            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe",
+	                            "?:\\Users\\*\\AppData\\Local\\Temp\\IXP???.TMP\\MEDefaultPCReset.exe")) and
+	 not (process.code_signature.trusted == true and
+	      process.code_signature.subject_name :
+	                ("Google LLC", "PASSWORD BOSS LLC", "Piriform Ltd", "Piriform Software Ltd", "UiPath, Inc.",
+	                 "Gen Digital Inc.", "SOFT SOLUTIONS HUB LLC", "PIRIFORM SOFTWARE LIMITED", "SOFT SOLUTIONS HUB LLC",
+	                 "Guangxi Yunao Network Technology Co. Ltd."))
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1176"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.1.0"

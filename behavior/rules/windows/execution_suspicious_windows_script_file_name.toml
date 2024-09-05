@@ -7,11 +7,11 @@ id = "8c69476a-d8ea-46da-8052-6a4f9254125c"
 license = "Elastic License v2"
 name = "Suspicious Windows Script File Name"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
- process.pe.original_file_name : ("cscript.exe", "wscript.exe", "mshta.exe") and
+ (process.pe.original_file_name : ("cscript.exe", "wscript.exe", "mshta.exe") or (process.name : "javaw.exe" and process.args : "-jar")) and
  process.args_count >= 2 and
  process.command_line : ("*\\AppData\\*", "*\\outlook\\*", "*\\users\\public\\*", "*Menu\\Programs\\Startup\\*", "*\\Downloads\\*") and
  /* script name commonly used in phishing */
@@ -41,6 +41,14 @@ process where event.action == "start" and
       "*.doc.hta",
       "*.xls.hta",
       "*.jpg.hta",
+       "*.jpg.jar",
+       "*_jpg.jar",
+       "*.pdf.jar",
+       "*_pdf.jar",
+       "*.png.jar",
+       "*_png.jar",
+        "*.doc.jar",
+       "*_doc.jar",
       "*Receipt.js",
       "*Receipt.vbs",
       "*Delivery*.js",

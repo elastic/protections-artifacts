@@ -7,7 +7,7 @@ id = "65784f6e-247a-466b-bbfb-cd92024f7e82"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Execution"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -38,7 +38,7 @@ process where event.action == "start" and process.name : "powershell.exe" and
 
  not (process.args:"-NonInteractive" and process.args :"-InputFormat") and
  not (process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
-      not process.parent.name : ("explorer.exe", "python.exe")) and 
+      not process.parent.name : ("explorer.exe", "python.exe", "cmd.exe")) and
  not process.args : "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('cGFzc3dvcmQ='))" and 
  not process.command_line :
             ("*ConvertTo-Json*Write-Host*",
@@ -48,7 +48,7 @@ process where event.action == "start" and process.name : "powershell.exe" and
              "*System.Management.Automation.Host.Size*",
              "*JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQ*",
              "*chocolatey.org*",
-             "*Get-WmiObject*", 
+             "*Get-WmiObject*",
              "*artifacts.elastic.co*", 
              "*officecdn.microsoft.com*",
              "*CgAgACAAIAAgACAAIAAgACAAJABTAGMAcgBpAHAAdAAgACA*",
@@ -122,7 +122,9 @@ process where event.action == "start" and process.name : "powershell.exe" and
           "*//:sptth*",
           "*//:ptth*",
           "*$*=Get-Content*AppData*.SubString(*$*",
-          "*=cat *AppData*.substring(*);*$*"
+          "*=cat *AppData*.substring(*);*$*",
+          "*-join'';*|powershell*",
+          "*.Content;sleep *|powershell*"
         ) or
 
       (process.args : "-c" and process.args : "&{'*") or
@@ -136,7 +138,7 @@ process where event.action == "start" and process.name : "powershell.exe" and
       (process.command_line : ("*-encodedCommand*", "*Invoke-webrequest*", "*WebClient*", "*Reflection.Assembly*") and
        (process.parent.name : ("explorer.exe", "python.exe") or
         (process.parent.name : "cmd.exe" and
-         descendant of [process where event.action == "start" and process.executable : "?:\\Windows\\explorer.exe"])))
+         descendant of [process where event.action == "start" and process.name : ("explorer.exe", "python.exe")])))
      )
 '''
 

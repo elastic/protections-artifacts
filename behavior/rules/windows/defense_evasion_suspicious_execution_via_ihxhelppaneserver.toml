@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies suspicious execution via the IHxHelpPaneServer Component Object Interface. This may indicate an attempt to
+execute a process in the context of another active user session.
+"""
+id = "29355ac3-f5d0-46f4-858c-237713b1c462"
+license = "Elastic License v2"
+name = "Suspicious Execution via IHxHelpPaneServer"
+os_list = ["windows"]
+reference = [
+    "https://cicada-8.medium.com/process-injection-is-dead-long-live-ihxhelppaneserver-af8f20431b5d",
+    "https://github.com/CICADA8-Research/IHxExec/tree/main",
+]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+ process.parent.executable : "?:\\Windows\\HelpPane.exe" and process.parent.args == "-Embedding" and
+ not process.executable :
+                ("?:\\Windows\\System32\\WerFault.exe",
+                 "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                 "?:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+                 "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                 "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                 "?:\\Program Files\\internet explorer\\iexplore.exe",
+                 "?:\\Program Files (x86)\\internet explorer\\iexplore.exe",
+                 "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
+                 "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                 "?:\\Program Files (x86)\\RES Software\\Workspace Manager\\pwrgate.exe",
+                 "?:\\Program Files\\WindowsApps\\Microsoft.GetHelp_*\\GetHelp.exe",
+                 "?:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+                 "?:\\Program Files\\Firefox Developer Edition\\firefox.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Mozilla Firefox\\firefox.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Programs\\Opera\\opera.exe",
+                 "?:\\Users\\*\\AppData\\Local\\AVAST Software\\Browser\\Application\\AvastBrowser.exe",
+                 "?:\\Users\\*\\AppData\\Local\\AVG\\Browser\\Application\\AVGBrowser.exe",
+                 "\\\\?\\Volume{*}\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.003"
+name = "Distributed Component Object Model"
+reference = "https://attack.mitre.org/techniques/T1021/003/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=5s
@@ -22,7 +22,8 @@ sequence with maxspan=5s
   ) and 
   not process.executable : "?:\\Program Files (x86)\\SmartAdvocate\\SADocumentLauncher\\SADocumentLauncher.exe" and 
   not process.parent.executable : ("\\Device\\Mup\\*", "?:\\Program Files\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acspcoc.exe") and
-  not process.executable : "?:\\Program Files\\Python??\\python.exe"
+  not process.executable : "?:\\Program Files\\Python??\\python.exe" and
+  process.hash.sha256 != "204326fdd6483ebce82c889fce539b1782a645b225c0f2e9fc8d71139546f255"
   ] by process.entity_id
  [process where event.action == "start" and
   (

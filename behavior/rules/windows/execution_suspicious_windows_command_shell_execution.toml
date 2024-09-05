@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -19,7 +19,8 @@ process where event.action == "start" and
   "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
   "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
   "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
-  "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*") or
+  "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*",
+  "*curl --ntlm -u*", "*bat'; iwr $*", "*http*.Content;*", "*&(gcm i?x)*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
@@ -33,7 +34,9 @@ process where event.action == "start" and
    process.command_line :
            ("*&&S^eT *",
             "*&& set *&& set *&& set *&& set *&& set *&& call*",
-            "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*")) or
+            "**\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??\\u00??*",
+            "*sTArT /MiN *POWeRsheLl -WiNdowStYlE hIddeN*",
+            "*cURL -O *HtTP*.bat*")) or
 
    (process.parent.name : ("explorer.exe", "python.exe") and process.args : "copy" and
     process.args : "&&" and process.args : "\\\\*@*\\*")

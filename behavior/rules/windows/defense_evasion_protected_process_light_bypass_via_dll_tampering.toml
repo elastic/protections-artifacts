@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Protected Process Light Bypass via DLL Tampering"
 os_list = ["windows"]
 reference = ["https://googleprojectzero.blogspot.com/2018/08/windows-exploitation-tricks-exploiting.html"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id
@@ -36,8 +36,9 @@ sequence by process.entity_id
   not (dll.path :
            ("?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*",
             "?:\\Windows\\WinSxS\\amd64_microsoft-windows-hotpatches_*_hotpatch.dll",
-            "?:\\Windows\\System32\\win32k.sys") and
-       dll.code_signature.subject_name : "Microsoft Windows" and
+            "?:\\Windows\\System32\\win32k.sys",
+            "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*.exe") and
+       dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Windows Publisher") and
        dll.code_signature.trusted == true) and
   not dll.hash.sha256 :
               ("6f8761d35b531dde2e8fd60bdcfd16cee46d48b84a2e0c28fecd1b66675faf48",
@@ -57,7 +58,9 @@ sequence by process.entity_id
                "a5d83fffaac68fb3e924cba92d2f9f18c6377b4af21da00f32d5573aaab64d18",
                "600b4ddc2fae87aaa400992c8ea4998908651900345d0b18d9b7d1ce916e02a4",
                "42db05ee12cb94a0bc3676831f915bfbd71927a5bd2561a051c275038ba3f0ad",
-               "40eb09efd0fd767c665cd23360ece6a106e25d5bb692dcd16c63fe8ff1d29079")
+               "40eb09efd0fd767c665cd23360ece6a106e25d5bb692dcd16c63fe8ff1d29079",
+               "bc0715826ce01c4782065a28eaef6547dc60cd60b6069ef76e5a26635e510256",
+               "399ae476e53ad179f6238c0b7c8235d830490b0dbab981ac77ee73c4b35cf095")
   ]
   until [process where event.action == "end"]
 '''

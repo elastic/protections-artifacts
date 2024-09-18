@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 any where process.executable != null and
@@ -66,13 +66,16 @@ not process.executable :
                           "c3ff25000000005b14*7f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
                           "ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*", 
                           "c30f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
-                          "c341514150525166660f1f840000000000909090e81c0000005c004400650076006900630065005c00470047005300530052000000681a001c00488bc46a006a")) and
+                          "c341514150525166660f1f840000000000909090e81c0000005c004400650076006900630065005c00470047005300530052000000681a001c00488bc46a006a",
+                          "e99b3808200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes : 
-                                 ("ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*", 
-                                  "c30f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"))
+                                 ("ff2554000000cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc4ecc4c8bd1b8*",
+                                  "ff2500000000da12d2bdf97f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                                  "c30f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                                  "e9cb2e08200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"))
 '''
 
 min_endpoint_version = "8.8.0"

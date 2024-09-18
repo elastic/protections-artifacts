@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies the execution of a Java JAR application from suspicious file paths such as downloads and compression
+utilities extraction paths.
+"""
+id = "b5d02713-e392-47c4-b38b-10b68dbc00a6"
+license = "Elastic License v2"
+name = "JAVA Application Execution from Suspicious Paths"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+[process where event.action == "start" and
+  process.name : "javaw.exe" and process.args_count == 3 and process.args : "-jar" and
+  process.args :
+             ("C:\\Users\\*\\Downloads\\*.jar",
+              "c:\\Users\\*\\Desktop\\*.jar",
+              "C:\\Users\\*\\AppData\\Local\\Temp\\7z*\\",
+              "C:\\Users\\*\\AppData\\Local\\Temp\\Rar$*\\*",
+              "C:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*",
+              "C:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*")
+  ]
+[network where event.action in ("connection_accepted", "connection_attempted") and
+ not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8") and
+ not (process.executable : "C:\\Program Files\\Amazon Corretto\\jdk*\\bin\\javaw.exe" and destination.ip == "164.154.131.141") and
+ not (process.executable : "C:\\Program Files\\Zulu\\zulu-??\\bin\\javaw.exe" and destination.ip == "146.75.93.145")]
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.16.0"

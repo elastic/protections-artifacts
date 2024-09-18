@@ -1,0 +1,138 @@
+[rule]
+description = """
+Identifies private (JIT) code memory with fluctuating page protections. This may indicate an attempt to hide injected
+code from memory scanners.
+"""
+id = "30c72c75-43f9-4edb-bd6b-a32787082763"
+license = "Elastic License v2"
+name = "Potential Shellcode Fluctuation v1"
+os_list = ["windows"]
+version = "1.0.7"
+
+query = '''
+api where process.Ext.api.behaviors : ("execute_fluctuation", "write_fluctuation") and
+/* private memory only */
+process.Ext.api.metadata.target_address_name == "Unbacked" and process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+
+/* trusted executable */
+ process.code_signature.trusted == true and
+
+/* ignore second stage shellcode - this will trigger other rules */
+process.Ext.api.behaviors != "allocate_shellcode" and
+
+not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
+not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Unknown", "Kernel*", "Undetermined") and
+
+/* large payloads only */
+process.Ext.api.parameters.size > 66000 and
+
+/* trusted signer exclusions */
+not (
+  process.thread.Ext.call_stack_final_user_module.name : ("chakra.dll", "mpengine.dll", "pidgenx.dll", "ieshims.dll", "jscript9.dll") and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Microsoft Windows")
+) and
+
+not (
+  process.thread.Ext.call_stack_final_user_module.name : ("mso.dll", "appvisvsubsystems32.dll", "appvisvsubsystems64.dll", "msedgeupdate.dll", "msvbvm60.dll") and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Microsoft Corporation")
+) and
+
+not (
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and 
+    $entry.subject_name : (
+      "Microsoft Windows Hardware Compatibility Publisher",
+      "Microsoft Windows Software Compatibility Publisher",
+      "Avast Software s.r.o.",
+      "AVG Technologies USA, LLC",
+      "BeyondTrust Corporation",
+      "Bitdefender SRL",
+      "Carbon Black, Inc.",
+      "Check Point Software Technologies Ltd.",
+      "Cisco Systems, Inc.",
+      "ESET, spol. s r.o.",
+      "FireEye, Inc.",
+      "Kaspersky Lab",
+      "Kaspersky Lab JSC",
+      "AO Kaspersky Lab",
+      "McAfee, Inc.",
+      "Mozilla Corporation",
+      "Palo Alto Networks",
+      "SentinelOne Inc.",
+      "Sophos Limited",
+      "Symantec Corporation",
+      "Trend Micro, Inc.",
+      "VMware, Inc.",
+      "WithSecure Oyj",
+      "Fortinet Technologies (Canada) ULC",
+      "Fortinet Inc",
+      "Sentinel Labs, Inc.",
+      "VIPRE Security (ThreatTrack Security, Inc.)",
+      "Adobe Inc.",
+      "Codejock Technologies, LLC",
+      "Intel Corporation",
+      "Intel(R) Software Development Products",
+      "Johannes Schindelin", /* Git for Windows */
+      "Mozilla Corporation",
+      "SAP SE",
+      "VisualSVN Software Ltd.",
+      "SAS Institute Inc.",
+      "combit Software GmbH",
+      "PC SOFT INFORMATIQUE",
+      "PC SOFT INFORMATIQUE SAS",
+      "Configura Sverige AB"
+    )
+  )
+) and
+
+not process.thread.Ext.call_stack_summary : "*ntdll.dll|tmmon.dll|*" and
+
+/* untrusted exclusions */
+
+not (process.code_signature.subject_name == "OMICRON electronics GmbH" and
+  process.thread.Ext.call_stack_final_user_module.name == "toolkitpro.dll") and
+
+process.thread.Ext.call_stack_final_user_module.name != "jvm.dll" and
+
+not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("6593198214805d47df5726b153284326d71b9b4aa0dbb2242151bc740ca0a0d4",
+                                                                    "ad3eeeec77ddc069ddc0bc0531dc8c3da4b48eb15e9ed097e7568a8b16442ff3",
+                                                                    "0d82b0bc752e54e69467524c171cf50ca90786fac197f76792eb01ab341fd8b9",
+                                                                    "c49cf406c3b2fc29807dc710623f5bf740c54d7d2ebaa07803c3c227dc0e6917",
+                                                                    "ba6fdc007e5a23453c136283301b63743e92caa5742b67a34cdf5db483aa8741",
+                                                                    "51b74ca155761ff868d0f57b1d23490b4ce46719c0d6a72dd0c1f8efcabd1ec6",
+                                                                    "68f18d4e81a098435cc320173d1e57bd56f7a017ccbc9cc20e0e9c8bb50102d2",
+                                                                    "47876bc0823230667047227e5031f731e3579e7805348fd8c63b381e103bebd8",
+                                                                    "2cf71398291dccd79eef86a234b3644060adbf9477752c28358ee16558d75046",
+                                                                    "3112c2b909bce7ab9f19c35925ba4444b1c89f42bb76182efe98d20f46482746",
+                                                                    "ba2b1262c4492d32c7f1e4713f8b22e855315414395e4d32e9ec369845279792",
+                                                                    "e4a0aa2bb7e9003d1f436e1fcc783c4949f38e24d0d9b960ae9411609fe9c0a6",
+                                                                    "bde4966990afdde03df017bd79889a11cabb522577952f1fe6f6f0dbd85cfc09",
+                                                                    "45793df158cace910d48a620d380f390ae5a09ecf1bcfefe11e6a029ddb0be53")
+'''
+
+max_endpoint_version = "8.14.1"
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

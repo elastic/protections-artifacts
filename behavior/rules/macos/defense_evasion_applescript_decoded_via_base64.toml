@@ -7,14 +7,14 @@ id = "9602ed93-b5cf-4397-ba37-6e752082847c"
 license = "Elastic License v2"
 name = "AppleScript decoded via Base64"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5s
 [process where event.type == "start" and event.action == "exec" and process.parent.name : "osascript" and 
   process.name : ("bash", "zsh", "sh") and process.args == "-c"] by process.entity_id
-[process where event.type == "start" and event.action == "exec" and process.name : "base64" and 
-  process.command_line : "*-d*"] by process.parent.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name : ("bash", "zsh", "sh", "base64") and 
+  process.command_line : "*base64*-d*"] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.11.0"

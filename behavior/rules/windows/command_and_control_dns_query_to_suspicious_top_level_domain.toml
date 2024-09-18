@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.23"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,11 +25,11 @@ sequence by process.entity_id with maxspan=1m
 	         "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
 	         "?:\\Users\\*\\AppData\\Local\\Temp\\Rar$*") or
 
-   process.name : ("powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe") or 
+   process.name : ("powershell.exe", "wscript.exe", "cscript.exe", "rundll32.exe") or
 
    (process.Ext.relative_file_creation_time <= 500 and process.pe.original_file_name : ("node.exe", "AutoIt*.exe"))
-   ) and 
-   
+   ) and
+
    not (process.name : "rundll32.exe" and
         process.args : ("?:\\windows\\system32\\davclnt.dll,DavSetCookie",
                         "?:\\Windows\\SysWOW64\\davclnt.dll,DavSetCookie",
@@ -40,7 +40,7 @@ sequence by process.entity_id with maxspan=1m
                         "?:\\Program Files\\*",
                         "?:\\Program Files (x86)\\*",
                         "?:\\PROGRA~?\\MICROS~?\\*",
-                        "?:\\WINDOWS\\Sys*\\shell32.dll,#44", 
+                        "?:\\WINDOWS\\Sys*\\shell32.dll,#44",
                         "?:\\PROGRA~?\\MICROS~2\\Office*\\MLCFG32.CPL,@0")) and
    not process.hash.sha256 :
                    ("19a9ed41a69c74f130f53572aa1b07b1fa35d93a408dcf9d3f16f0fd72dd1e69",
@@ -65,15 +65,17 @@ sequence by process.entity_id with maxspan=1m
                     "8ca10f59fe3c6c1b44331f7a7378f717481d58fbad53d7ea25894469ef563e0c",
                     "a68a4b4101bb097f886548b13991db8d71f9cfb55801c403ad7b57844bbc288f",
                     "b25fc6258895702c5fd0297cba15b1bd733b5443e7f6f43137877198f27b1322",
-                    "4b0f6852329ae6118124956e95c091fbf5c7592b8dd717c9163a07b72074c65d") and
-   not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe", 
+                    "4b0f6852329ae6118124956e95c091fbf5c7592b8dd717c9163a07b72074c65d",
+                    "143d4b9e429bb10860298c16feab3bf0f132e26547ee28eecd1f7de9f5cf926c") and
+   not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe",
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
                              "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe",
-                             "?:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe") and
+                             "?:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe",
+                             "?:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe") and
    not (process.name : "powershell.exe" and process.parent.executable : "?:\\Program Files\\Sophos\\Endpoint Defense\\SEDService.exe") and
    not (process.name : "powershell.exe" and process.args : "C:\\ProgramData\\NinjaRMMAgent\\uscripting\\customscript_gen_*.ps1")]
  [dns where
-  dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion", 
+  dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion",
                        "*.monster", "*.cyou", "*.quest", "*.cc", "*.bar", "*.cfd", "*.click", "*.cam",
                        "*.surf", "*.tk", "*.shop", "*.club", "*.icu", "*.pw", "*.ws", "*.rest", "*.hair",
                        "*.mom", "*.beauty", "*.boats", "*.online", "*.fun") and

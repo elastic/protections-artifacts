@@ -8,7 +8,7 @@ id = "901f0c30-a7c5-40a5-80e3-a50c6744632f"
 license = "Elastic License v2"
 name = "RunDLL32/Regsvr32 Loads Dropped Executable"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence with maxspan=1m
@@ -42,7 +42,9 @@ sequence with maxspan=1m
     not dll.path : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
     not (dll.pe.original_file_name == "RbkVssProvider.dll" and dll.path : "?:\\Windows\\Temp\\rubrik_vmware*\\RbkVssProvider.dll") and
     not dll.pe.imphash : "7ce8b277ed3218e26a4bab54ca4af843" and
-    not dll.hash.sha256 : "2a95cf7d3189920f30bc35b0ca2ee50097d8b9d959582fee913e3f0125feec3b"] by dll.path
+    not dll.hash.sha256 : "2a95cf7d3189920f30bc35b0ca2ee50097d8b9d959582fee913e3f0125feec3b" and
+    not (process.name : "regsvr32.exe" and
+        dll.path : "C:\\Oracle\\product\\instantclient_*.dll" and dll.pe.original_file_name : "OraOLEDB*.dll")] by dll.path
 '''
 
 min_endpoint_version = "7.16.0"

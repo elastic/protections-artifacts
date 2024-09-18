@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
@@ -27,7 +27,14 @@ sequence by process.entity_id with maxspan=3m
               "C:\\Steam\\steamapps\\common\\Farlight 84\\WindowsClient\\Solarland\\Binaries\\Win64\\SolarlandClient-Win64-Shipping.exe", 
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\icst_service.inf_amd64_*\\intel_cst_helper_service.exe", 
               "?:\\Windows\\Lenovo\\ImController\\Service\\Lenovo.Modern.ImController.exe") and 
- not process.parent.executable : "?:\\Program Files (x86)\\AlwaysUp\\AlwaysUpService.exe"             
+ not process.parent.executable :
+                   ("?:\\Program Files (x86)\\AlwaysUp\\AlwaysUpService.exe",
+                    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe") and
+ not process.hash.sha256 in ("bd406a9fb94d3df79d119a4fa4eb61b9acd353485f55a449057456aca3dc5ae3",
+                             "9184a73a0d00316c291e0d9216392750428a97db293224f8a7bbcc28ba6b784c",
+                             "f7aeb0122edab1c96b28cee06f9bb51f5fd7293390a39360627cf503dac5f1d6",
+                             "c056d0962b9ef7bec9be8968338f4c682cf356d6a2bde8fc61da79e3833a7940",
+                             "e64d67bc9ec0473510138f3f8b1d8e230cea22225b30d9149dad1efbbe0b42c8")
  ]
 [api where process.Ext.api.name :"VirtualAlloc" and
   process.Ext.api.parameters.protection : "*X*" and process.executable != null and

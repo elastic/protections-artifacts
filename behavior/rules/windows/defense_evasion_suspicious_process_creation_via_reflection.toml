@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Suspicious Process Creation via Reflection"
 os_list = ["windows"]
 reference = ["https://www.deepinstinct.com/blog/dirty-vanity-a-new-approach-to-code-injection-edr-bypass"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-process where event.action == "start" and
+process where event.action == "start" and process.parent.executable != null and
  descendant of [process where event.action == "start" and
                  _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!RtlCreateProcessReflection*", "*ntdll.dll!RtlCloneUserProcess*"))] and
  not (process.executable : ("?:\\WINDOWS\\SysWOW64\\WerFault.exe", "?:\\WINDOWS\\system32\\WerFault.exe") and
@@ -22,7 +22,9 @@ process where event.action == "start" and
       process.code_signature.subject_name : ("Tencent Technology(Shenzhen) Company Limited", "Logitech Inc")) and
  not (process.parent.executable : ("?:\\WINDOWS\\SysWOW64\\WerFault.exe", "?:\\WINDOWS\\system32\\WerFault.exe") and
       process.parent.thread.Ext.call_stack_summary : "*faultrep.dll*") and
- not (process.executable : "C:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe" and process.parent.executable : "C:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe")
+ not (process.executable : "C:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe" and process.parent.executable : "C:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe") and
+  not (process.executable : "\\Device\\HarddiskVolume?\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe" and
+       process.parent.executable : "\\Device\\HarddiskVolume?\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe")
 '''
 
 min_endpoint_version = "8.7.0"

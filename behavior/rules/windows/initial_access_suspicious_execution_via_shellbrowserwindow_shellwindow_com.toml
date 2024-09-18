@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution via ShellBrowserWindow/ShellWindow COM"
 os_list = ["windows"]
 reference = ["https://blog.f-secure.com/dechaining-macros-and-evading-edr/"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by user.id with maxspan=5s
@@ -44,7 +44,8 @@ sequence by user.id with maxspan=5s
                "RegAsm.exe",
                "AddInProcess.exe") and
 
-     not (process.name : "wscript.exe" and process.args :  "\\\\DC\\netlogon\\*.vbs")]
+     not (process.name : "wscript.exe" and process.args :  "\\\\DC\\netlogon\\*.vbs") and
+     not (process.name : "rundll32.exe" and process.command_line : "C:\\Windows\\system32\\Rundll32.exe Prnntfy.dll,AsyncUILoaderEntry Local*")]
 '''
 
 min_endpoint_version = "7.15.0"

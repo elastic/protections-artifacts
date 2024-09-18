@@ -8,7 +8,7 @@ id = "4388a77b-4ddf-4e15-8314-ecf96c77807a"
 license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -47,7 +47,7 @@ sequence by process.entity_id with maxspan=2m
                                       "c:\\windows\\syswow64\\hmpalert.dll") and
     not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and  
          process.code_signature.trusted == true and 
-         process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas", "COMMUNITY BRANDS PARENTCO")) and
+         process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas", "COMMUNITY BRANDS PARENTCO", "Johnson Controls")) and
     not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
                               "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe",
                               "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe",

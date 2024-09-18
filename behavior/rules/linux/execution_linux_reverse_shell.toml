@@ -7,10 +7,10 @@ id = "52206861-4570-4b8b-a73e-4ef0ea379a4c"
 license = "Elastic License v2"
 name = "Linux Reverse Shell"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-sequence with maxspan=1s
+sequence with maxspan=5s
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
    process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and destination.ip != null and 
    not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1")] by process.entity_id

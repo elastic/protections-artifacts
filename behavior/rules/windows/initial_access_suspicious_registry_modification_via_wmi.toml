@@ -9,11 +9,11 @@ license = "Elastic License v2"
 name = "Suspicious Registry Modification via WMI"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/regprov/stdregprov"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 registry where event.action== "modification" and
- process.name :"WmiPrvSE.exe" and
+ process.name :"WmiPrvSE.exe" and registry.data.strings : "?*" and
    (
      Effective_process.name :
                     ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
@@ -113,7 +113,8 @@ registry where event.action== "modification" and
      "HKEY_USERS\\S-1-12-1-*_Classes\\CLSID\\*\\LocalServer32\\",
      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA"
-     )
+     ) and
+     not registry.path : "HKLM\\SYSTEM\\ControlSet001\\Control\\Terminal Server\\WinStations\\RDP-Tcp\\InitialProgram"
 '''
 
 min_endpoint_version = "8.4.0"

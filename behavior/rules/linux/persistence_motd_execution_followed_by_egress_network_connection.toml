@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -25,7 +25,8 @@ sequence by process.entity_id with maxspan=3s
      process.parent.executable == "/usr/bin/timeout" or (
        process.parent.executable == "/etc/update-motd.d/10-cloudpanel" and
        process.executable == "/usr/bin/curl" and process.args : "https://*.cloudfront.net/"
-     )
+     ) or
+     (process.parent.executable == "/etc/update-motd.d/50-motd-news" and process.args == "https://motd.ubuntu.com")
    )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (

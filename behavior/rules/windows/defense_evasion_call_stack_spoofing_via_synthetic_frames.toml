@@ -7,7 +7,7 @@ id = "d8c57cb7-bab6-41fa-9063-dcc8793c3955"
 license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 any where 
@@ -33,7 +33,7 @@ any where
                                          "*kernel32.dll!CreateActCtxWWorker*", "*kernel32.dll!Sleep*",
                                          "*kernel32.dll!BasepCheckAppCompat*", "*kernel32.dll!AddAtomW*",
                                          "*\\kernel32.dll!lstrlenW*", "*\\kernel32.dll!FindActCtxSectionGuidWorker*",
-                                         "*\\kernel32.dll!OpenPrivateNamespaceW*"))
+                                         "*\\kernel32.dll!OpenPrivateNamespaceW*", "*\\kernel32.dll!DeactivateActCtxWorke*"))
 '''
 
 min_endpoint_version = "8.10.0"

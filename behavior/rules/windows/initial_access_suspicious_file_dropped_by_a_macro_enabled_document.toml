@@ -8,14 +8,15 @@ id = "9eca0b31-cf47-4120-afe9-9badb0c308e0"
 license = "Elastic License v2"
 name = "Suspicious File Dropped by a Macro Enabled Document"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 file where event.action != "deletion" and event.action != "open" and
    process.name : ("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "mspub.exe", "fltldr.exe", "visio.exe") and
    process.thread.Ext.call_stack_summary : "*|vbe?.dll*" and
    (file.extension : ("exe", "pif", "scr", "iso", "rar", "zip", "7z", "img", "vhd", "js", "vbs", "wsh", "hta", "cpl", "jse", "vbe", "bat", "cmd", "dll") or
-    file.Ext.header_bytes : ("4d5a*", "TVqQ*", "406563686F*", "3c736372697074206c616e6775616765", "76617220*"))
+    file.Ext.header_bytes : ("4d5a*", "TVqQ*", "406563686F*", "3c736372697074206c616e6775616765", "76617220*")) and
+   not (file.extension == "zip" and file.Ext.header_bytes == "504b0506000000000000000000000000")
 '''
 
 min_endpoint_version = "8.7.0"

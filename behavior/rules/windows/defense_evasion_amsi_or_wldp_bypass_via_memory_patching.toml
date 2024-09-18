@@ -12,7 +12,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell/blob/master/README.md#Patch-the-providers-DLL-of-Microsoft-MpOav.dll",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 api where
@@ -50,7 +50,8 @@ api where
                            "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Bitdefender SRL" and $entry.status : "trusted") and
  not process.thread.Ext.call_stack_final_user_module.path : ("c:\\windows\\system32\\apphelp.dll",
-                                                             "c:\\program files\\bitdefender\\endpoint security\\bdhkm\\*\\bdhkm64.dll")
+                                                             "c:\\program files\\bitdefender\\endpoint security\\bdhkm\\*\\bdhkm64.dll",
+                                                             "c:\\program files (x86)\\internet explorer\\ieshims.dll")
 '''
 
 min_endpoint_version = "8.10.0"

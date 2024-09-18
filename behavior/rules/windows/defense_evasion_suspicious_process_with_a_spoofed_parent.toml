@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -61,7 +61,8 @@ sequence with maxspan=1m
                                          "b1179b4476d19f8861c5f331b0805fc47fe86101875abf87ca7805d9d0523db5",
                                          "9ab9db0eb58feb23271a6ecce89bc3de36df95a6304a7f91c02260067d9b88c4",
                                          "74eaa6197dc723f93cdb509a2ce59ffd4b302e9117585d32d56b8c4255253f50",
-                                         "97b930b2d7af917d9fba37c03709da1c929cb97ea6c43cda823702ad3f96786e") and
+                                         "97b930b2d7af917d9fba37c03709da1c929cb97ea6c43cda823702ad3f96786e",
+                                         "913f3371d4aa9f77d0e7cc480918558aac95f148d77e4f5475c0db4f73194863") and
   not process.thread.Ext.call_stack_final_user_module.path :
                                       ("c:\\program files\\avecto\\privilege guard client\\pghook.dll",
                                        "c:\\program files (x86)\\webroot\\wrsa.exe") and

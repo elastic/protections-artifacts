@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -31,16 +31,11 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
  not process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unknown" and
 
  not process.thread.Ext.call_stack_final_user_module.path :
-                            ("c:\\program files (x86)\\microsoft\\edge\\application\\msedge.exe",
-                             "c:\\program files\\audinate\\dante activator\\dante activator.exe",
-                             "c:\\program files (x86)\\airtame\\airtame.exe",
-                             "c:\\program files (x86)\\mitel\\connect\\mitel.exe",
-                             "c:\\program files (x86)\\vex robotics\\vexcode v?\\vexcode v?.exe") and
+                                   ("c:\\program files (x86)\\*", "c:\\program files\\*",
+                                    "c:\\windows\\assembly\\nativeimages_*\\system.directoryservices.ni.dll") and
 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
-                        ("3ca49b11a6b12e9efe8b12076d46f4c1c6e9b4fea44f7e572766a7845c6c24a3",
-                         "921b33e55f4a7c806fc1e0547398545ae943fa341ed0e8dc29b4c71d49ecac1a",
-                         "bf0a9f2845bc536de2693177e93c67a9467ba992cb08f9c66e34912f60fb910d",
+                        (
                          "6847711e7782729fac009ede5fc3ea5ed6ca54ff582eed3386c1f74d83e1a372",
                          "fdef73d692e2e181075bf43a05cd7ebe551f6b1be31f4d471ff709f83a549612",
                          "0e29025fd573a9d818d05a124f83b6fbe74bbb7c37b8149b43f577d5a74d2f02",
@@ -69,7 +64,28 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "4a23537d3523441a06b705bca6a7bd601c450b17a0586d669b07fd86c1dc0962",
                          "02bec18f77442249a7099ce975e81d7cb22481dd91717b5e5ae5b8fc62b95899",
                          "bc30b686e6c101b1fd4c52caca31e01227fcea8dfe683de4abcd047ec2acca38",
-                         "a995140e5ee8d00e571c19654d4628a11a74b5804768da6e147c559fa3747e23") and
+                         "a995140e5ee8d00e571c19654d4628a11a74b5804768da6e147c559fa3747e23",
+                         "94bb9904694212c5b1fd037bf10af23557129862626e1dc45b719926be69690b",
+                         "024e8872d37aa6656057abbbdc87a6d5e62f2e3d59c9d6de91fbea00e25407ae",
+                         "9783d83df9cce5aa741b47495d48c62c1cb2d4521e4ba0c9d059e7f241dd0186",
+                         "c6d97ee3652cfc438830ca0e18e7ea96462fa09505ae0ce4ac422950c1272e81",
+                         "ccae2a12091763da594e0ceb83e3aa438bccf2449b2dc91c916232ba2117ae22",
+                         "b2a99e7f7f7d0edba76da01959988b3b006b9741d1617e7e290b74866a494cdc",
+                         "a41d8d34646abd09ef570b8c87a8d36f19a2cffcbe77ea5d1128d6206851c9d8",
+                         "e0037ab4d9764fffad985ed44468b93c8dc9aed366a25a651c83e9c5d6f99fc7",
+                         "40949e20630ce1c955f0911995de98c3772828c9a37f257c01a29ed62b5be072",
+                         "928bd69d852de58f8cf42a37f79c7f4769000ba8ed1c918717d6430be531f5c7",
+                         "b72ba56ae1e3f1c81904f837f98b5c7e054da66923236ce2270fd2fa501bb427",
+                         "a82b08fb68efd8d93b7849b7180ad414f98c24a5ba56f431dc7a7ff572c6db72",
+                         "a6992d2b1ebc09656a991a8337abefb46c9c4376088a97ddf0e3fe50dd1a80c3",
+                         "8e67ae6684baca7f02857efc5463bc1da94506ea20577d9e1c0860a0c02a07a1",
+                         "76d338198d607ac1432157b18f85367f402b5404983a2c9ca071062e4dcdba33",
+                         "838d44c0a68c5d849a582b5f36e33db2dca89e743ce48e6af68df31c8ac93e26",
+                         "2e85b02876568f7e1c9a61075373f98e7e754de6acc6ff0e6b847b598f3a66f5",
+                         "27c7d20101e03ec0850cdd58f89b8d5e8494e8c0790919c778947ca14ee68a0d",
+                         "c12ade1fc56f70f780e4ed0175dd74da5c8b28807b57de9ba25ee376e4f37533",
+                         "a94f89d7829129fe15722723a8a41295aca9f1be4d4a531d19fd7a470c282511",
+                         "3db86e281aba8818f67ae4026ec184952791896450c4505515e2bf0787aa47f6") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))

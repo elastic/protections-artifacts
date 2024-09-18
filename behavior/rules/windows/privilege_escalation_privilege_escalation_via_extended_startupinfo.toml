@@ -12,7 +12,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1134.002/T1134.002.md",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -28,6 +28,7 @@ process where event.action == "start" and
                            "?:\\Windows\\SysWOW64\\WerFault.exe",
                            "?:\\Windows\\System32\\WerFaultSecure.exe",
                            "?:\\Windows\\SysWOW64\\WerFaultSecure.exe",
+                           "\\\\?\\Volume{*}\\Windows\\Sys*\\WerFault.exe",
                            "?:\\Windows\\System32\\Wermgr.exe",
                            "?:\\Windows\\SysWOW64\\Wermgr.exe",
                            "?:\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",

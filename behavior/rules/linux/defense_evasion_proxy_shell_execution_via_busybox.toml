@@ -1,0 +1,61 @@
+[rule]
+description = """
+Detects the execution of a shell through Busybox. Attackers may use this technique to execute shells while attempting to
+evade detection.
+"""
+id = "895ed985-a6ae-4ebe-b688-7ca8cd6e2e23"
+license = "Elastic License v2"
+name = "Proxy Shell Execution via Busybox"
+os_list = ["linux"]
+reference = ["https://gtfobins.github.io/gtfobins/busybox/"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.name == "busybox" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and not (
+  process.args == "-c" or
+  process.parent.args : (
+    "crond", "/usr/sbin/crond", "/local-registrator.sh", "/var/atlassian/application-data/bamboo-agent*"
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

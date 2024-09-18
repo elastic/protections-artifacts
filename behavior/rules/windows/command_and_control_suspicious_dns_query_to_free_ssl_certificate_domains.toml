@@ -7,7 +7,7 @@ id = "88f6c3d4-112e-4fad-b3ef-33095c954b63"
 license = "Elastic License v2"
 name = "Suspicious DNS Query to Free SSL Certificate Domains"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -66,7 +66,8 @@ sequence by process.entity_id with maxspan=5m
 		  "?:\\Windows\\System32\\mousocoreworker.exe",
 		  "?:\\WINDOWS\\system32\\compattelrunner.exe",
 		  "?:\\Windows\\System32\\MicrosoftEdgeSH.exe",
-		  "?:\\Windows\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\OneDrive\\OneDriveStandaloneUpdater.exe") and
+		  "?:\\Windows\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\OneDrive\\OneDriveStandaloneUpdater.exe",
+		  "?:\\Windows\\System32\\drivers\\Intel\\ICPS\\IntelConnectivityNetworkService.exe") and
    not (process.executable :
               ("?:\\Windows\\Sys*\\ping.exe",
                "?:\\Windows\\system32\\nslookup.exe") and process.args_count >= 2) and
@@ -102,7 +103,8 @@ sequence by process.entity_id with maxspan=5m
    not (process.executable : "?:\\WINDOWS\\system32\\wermgr.exe" and
         process.args : "-upload" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
    not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "Secure By Design Inc.", "Intel(R) pGFX *", 
-                                               "Specops Software Inc.", "Flexera Software LLC", "N-ABLE TECHNOLOGIES LTD", "N-ABLE TECHNOLOGIES LTD") and
+                                               "Specops Software Inc.", "Flexera Software LLC", "N-ABLE TECHNOLOGIES LTD", "N-ABLE TECHNOLOGIES LTD",
+                                               "8bit Solutions LLC", "Intel Corporation", "GTB Technologies, Inc.") and
         process.code_signature.trusted == true) and
    not (process.name : "powershell.exe" and user.id == "S-1-5-18") and
    not (process.executable : "?:\\Windows\\System32\\mstsc.exe" and

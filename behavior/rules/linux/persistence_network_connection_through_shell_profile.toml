@@ -13,14 +13,14 @@ os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "change" and event.action == "uid_change" and (
      process.name in ("su", "sudo", "sshd", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") or
      process.name : ("python*", "php*", "perl*", "ruby*", "lua*")
-   )
+   ) and not process.command_line == "su - ansible"
   ] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
@@ -40,7 +40,7 @@ sequence with maxspan=3s
          "/usr/bin/last", "/usr/bin/node", "/usr/bin/groups", "/usr/bin/curl", "/usr/bin/wget", "/usr/bin/ansible-galaxy",
          "/opt/puppetlabs/puppet/bin/puppet", "/bin/yum", "/bin/dnf", "/usr/bin/lpstat", "/bin/lpstat"
       ) or
-       process.executable : ("/snap/*", "/usr/local/aws-cli/*") or
+       process.executable : ("/snap/*", "/usr/local/aws-cli/*", "/home/*/big/dataenvrc/azure-cli-env/bin/python*") or
        process.name == "lsnrctl"
      )
   ] by process.parent.entity_id

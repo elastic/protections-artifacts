@@ -1,0 +1,67 @@
+[rule]
+description = """
+This rule detects the execution of the `kill` or `pkill` command from a binary located in an unusual location. Miners
+and other types of malware may attempt to kill competing processes to maintain control of the system.
+"""
+id = "b9935dcc-e885-4954-9999-3c016b990737"
+license = "Elastic License v2"
+name = "Kill Command Executed from Binary in Unusual Location"
+os_list = ["linux", "macos"]
+reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
+process.parent.executable : ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*") and not (
+  process.parent.executable : (
+    "/tmp/newroot/*", "/tmp/JobScheduler-Agent-start_rib-*", "/tmp/ubuntu-release-upgrader-*", "./src/e2e-tests/ci.sh",
+    "./restart.sh", "./appium-docker-android/start.sh"
+  ) or
+  process.parent.name : ("check_openvpnauthentication", "python*", "vmis-launcher")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.006"
+name = "Indicator Blocking"
+reference = "https://attack.mitre.org/techniques/T1562/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

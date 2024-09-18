@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -35,7 +35,7 @@ process where event.action == "start" and process.executable != null and
  not (startswith~(process.Ext.effective_parent.executable, process.executable) and process.executable : "?:\\Program Files*") and 
  not (startswith~(process.Ext.effective_parent.executable, process.parent.executable) and process.code_signature.status : "trusted" and 
       not process.code_signature.subject_name : "Microsoft*") and 
- not (process.Ext.effective_parent.name : "dllhost.exe" and process.name : "powershell.exe" and 
+ not (process.Ext.effective_parent.name : ("dllhost.exe", "powershell.exe") and process.name : "powershell.exe" and
       process.command_line : "*CQAZQB4AGUAYwBfAHcAcgBhAHAAcABlAHIAIAA9*") and 
  not (process.parent.executable : "?:\\Windows\\System32\\wsmprovhost.exe" and process.Ext.effective_parent.executable : "?:\\Windows\\System32\\wsmprovhost.exe") and 
  not (process.parent.executable : "?:\\windows\\system32\\inetsrv\\w3wp.exe" and 
@@ -63,7 +63,9 @@ process where event.action == "start" and process.executable != null and
                                 "C:\\Program Files\\Seagull\\BarTender Suite\\PrintStation.exe",
                                 "C:\\Program Files\\UniGetUI\\UniGetUI.exe",
                                 "C:\\Program Files (x86)\\Scalefusion\\Scalefusion MDM Agent\\bin\\OnlineClientService.exe",
-                                "C:\\Program Files\\Veeam\\Endpoint Backup\\Veeam.Endpoint.RecoveryMedia.exe")
+                                "C:\\Program Files\\Veeam\\Endpoint Backup\\Veeam.Endpoint.RecoveryMedia.exe") and
+ not (process.Ext.effective_parent.executable : "C:\\LeanServer\\SentinelRecorder\\RecordingService.exe" and
+     process.executable : "C:\\Windows\\System32\\netsh.exe")
 '''
 
 min_endpoint_version = "8.8.0"

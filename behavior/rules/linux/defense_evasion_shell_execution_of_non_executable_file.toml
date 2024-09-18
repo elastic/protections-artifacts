@@ -7,7 +7,7 @@ id = "4c61fca2-6f77-474d-a537-2d7fd9ec75e0"
 license = "Elastic License v2"
 name = "Shell Execution of Non-Executable File"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.args_count == 2 and
@@ -15,8 +15,8 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
   "/bin/bash", "/usr/bin/bash", "/bin/sh", "/usr/bin/sh", "/bin/dash", "/usr/bin/dash", "/bin/zsh", "/usr/bin/zsh",
   "/bin/tcsh", "/usr/bin/tcsh", "/bin/csh", "/usr/bin/csh", "/bin/ksh", "/usr/bin/ksh", "/bin/fish", "/usr/bin/fish"
 ) and process.args : ("*.pid", "*.txt", "*.json", "*.bin", "*.log", "*.dat") and not (
-  process.args : "/opt/config/example.txt" or
-  process.parent.args : "/sbin/init"
+  process.args : ("/opt/config/example.txt", "/var/lib/git/beinformed.git/subgit/authors.txt") or
+  process.parent.args : "/sbin/init" 
 )
 '''
 

@@ -11,13 +11,14 @@ reference = [
     "https://cicada-8.medium.com/process-injection-is-dead-long-live-ihxhelppaneserver-af8f20431b5d",
     "https://github.com/CICADA8-Research/IHxExec/tree/main",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
  process.parent.executable : "?:\\Windows\\HelpPane.exe" and process.parent.args == "-Embedding" and
  not process.executable :
-                ("?:\\Windows\\System32\\WerFault.exe",
+                ("?:\\Windows\\HelpPane.exe",
+                 "?:\\Windows\\System32\\WerFault.exe",
                  "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                  "?:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
                  "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -35,7 +36,10 @@ process where event.action == "start" and
                  "?:\\Users\\*\\AppData\\Local\\Programs\\Opera\\opera.exe",
                  "?:\\Users\\*\\AppData\\Local\\AVAST Software\\Browser\\Application\\AvastBrowser.exe",
                  "?:\\Users\\*\\AppData\\Local\\AVG\\Browser\\Application\\AVGBrowser.exe",
-                 "\\\\?\\Volume{*}\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe")
+                 "\\\\?\\Volume{*}\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe") and
+ not (process.code_signature.trusted == true and
+      process.code_signature.subject_name :
+              ("Google LLC", "Mozilla Corporation", "Wave*", "Brave Software, Inc.", "Opera Norway AS", "AVG Technologies USA, LLC"))
 '''
 
 min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "76da5dca-ffe5-4756-85ba-3ac2e6ccf623"
 license = "Elastic License v2"
 name = "Unusual DLL Extension Loaded by Rundll32 or Regsvr32"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
@@ -31,7 +31,8 @@ sequence by process.entity_id with maxspan=1s
                   "?:\\Program Files (x86)\\*",
                   "?:\\Program Files\\*",
                   "?:\\Windows\\SysWOW64\\*.bpl",
-                  "\\\\?\\Volume{*}\\Windows\\SysWOW64\\winspool.drv") and
+                  "\\\\?\\Volume{*}\\Windows\\SysWOW64\\winspool.drv",
+                  "C:\\ProgramData\\docker\\windowsfilter\\*\\Files\\Windows\\SysWOW64\\winspool.drv") and
   not dll.hash.sha256 : ("cfd375eb124d1fba73f2d46705a43ed30e8aaadca7627bab7718f674fb82df38",
                          "4af03da6cda5d673725b671dbb3fccfc4badc0651af9065216bdcddb0fef7adf",
                          "bf03c44224a2932e4c12ce02e12059f5c37b7d7ebfbbe4f2603b324c368ba2b9",

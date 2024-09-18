@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Multi Steps Cross Process Manipulation"
 os_list = ["windows"]
 reference = ["https://github.com/Maldev-Academy/Christmas/", "https://github.com/Kudaes/Split"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by Target.process.entity_id, process.Ext.api.parameters.address with maxspan=1m
@@ -40,7 +40,8 @@ sequence by Target.process.entity_id, process.Ext.api.parameters.address with ma
                                "?:\\Windows\\System32\\esensordbi.dll*",
                                "?:\\Windows\\System32\\umppc*.dll*",
                                "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
-                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*")
+                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*",
+                               "?:\\windows\\system32\\mavinject.exe")
  ] as event0
  [api where process.Ext.api.behaviors : "cross-process" and process.executable != null and
   (

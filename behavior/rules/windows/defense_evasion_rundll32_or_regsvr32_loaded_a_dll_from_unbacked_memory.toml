@@ -7,7 +7,7 @@ id = "226df8a0-6ef8-4965-91b4-7ce64078c206"
 license = "Elastic License v2"
 name = "Rundll32 or Regsvr32 Loaded a DLL from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id
@@ -17,7 +17,7 @@ sequence by process.entity_id
   not (process.name : "rundll32.exe" and
        process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and process.parent.executable : "?:\\Windows\\Sys*\\msiexec.exe") and
 
-  not (process.executable : "?:\\Windows\\sys*\\rundll32.exe" and
+  not (process.executable : ("?:\\Windows\\sys*\\rundll32.exe", "\\\\?\\Volume{*}\\Windows\\Sys*\\rundll32.exe") and
        process.args : ("--type=gpu-process", "--enable-speech-input", "--type=utility", "--no-sandbox")) and
 
   not (process.command_line : "\"C:\\Windows\\sys*\\rundll32.exe\"  --enable-speech-input --enable-media-stream --no-sandbox" and

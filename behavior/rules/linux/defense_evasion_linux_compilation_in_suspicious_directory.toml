@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects the compilation of a binary file in a suspicious directory. Attackers may compile kernel exploits or other
+software on the target system, to ensure the architecture of the payload matches the target's architecture. Compilation
+to one of these directories can be an indication of malicious activity.
+"""
+id = "52001df2-a3bf-411d-a09c-5f36a9f976b8"
+license = "Elastic License v2"
+name = "Linux Compilation in Suspicious Directory"
+os_list = ["linux"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=10s
+  [process where event.action == "exec" and event.type == "start" and
+    process.name in ("gcc", "g++", "cc") and not process.parent.name in ("go", "cgo")] as event0
+  [file where event.action == "creation" and process.name == "ld" and
+    file.path : "/dev/shm/*" and stringcontains~(event0.process.command_line, file.name)]
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.004"
+name = "Compile After Delivery"
+reference = "https://attack.mitre.org/techniques/T1027/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.5.0"

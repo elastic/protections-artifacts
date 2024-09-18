@@ -1,0 +1,53 @@
+[rule]
+description = """
+Detects when a dylib is loaded from a temporary directory by a binary that is not located in the temporary directory as
+well. Dylibs on macOS are loaded from within the applications directory structure itself or the system frameworks or
+system libraries path. Loading a dylib from a place like /tmp is highly suspicious and should be considered a sign of
+malicious activity.
+"""
+id = "d00b9def-6d8b-4cea-bd93-bbf487f01681"
+license = "Elastic License v2"
+name = "Suspicious Dylib Load from Temporary Directory"
+os_list = ["macos"]
+reference = [
+    "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/4a57b3dd5d28ad1bd79e927e04b20fd4d66934a0/ocean_lotus",
+]
+version = "1.0.3"
+
+query = '''
+library where event.action == "load" and dll.path : ("/tmp/*", "/private/tmp/*") and
+ (dll.code_signature.exists == false or dll.code_signature.trusted == false) and
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and
+ (process.executable : ("/Users/Shared/*", 
+                        "/private/var/root/*", 
+                        "/var/tmp/*", 
+                        "/var/lib/*", 
+                        "/var/root/*",
+                        "/Library/WebServer/*",
+                        "/Library/Graphics/*",
+                        "/Library/Fonts/*") or
+  process.name : "com.apple.*")
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1129"
+name = "Shared Modules"
+reference = "https://attack.mitre.org/techniques/T1129/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

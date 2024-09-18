@@ -1,0 +1,43 @@
+[rule]
+description = """
+This rule detects potential privilege escalation attempts through Looney Tunables (CVE-2023-4911). Looney Tunables is a
+buffer overflow vulnerability in GNU C Library's dynamic loader's processing of the GLIBC_TUNABLES environment variable.
+"""
+id = "f0bc87ef-4acd-4dda-aff2-c13d80939e66"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via CVE-2023-4911"
+os_list = ["linux"]
+reference = [
+    "https://blog.qualys.com/vulnerabilities-threat-research/2023/10/03/cve-2023-4911-looney-tunables-local-privilege-escalation-in-the-glibcs-ld-so",
+]
+version = "1.0.3"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=5s
+ [process where event.action == "exec" and process.env_vars : "*GLIBC_TUNABLES=glibc.*=glibc.*=*"]
+ [process where event.action == "exec" and process.env_vars : "*GLIBC_TUNABLES=glibc.*=glibc.*=*"]
+ [process where event.action == "exec" and process.env_vars : "*GLIBC_TUNABLES=glibc.*=glibc.*=*"]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.6.0"

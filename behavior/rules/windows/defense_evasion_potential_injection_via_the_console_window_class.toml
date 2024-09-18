@@ -11,13 +11,14 @@ reference = [
     "https://modexp.wordpress.com/2018/09/12/process-injection-user-data/",
     "https://github.com/odzhan/injection/tree/master/conhost",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
  process.parent.name : "conhost.exe" and
  process.parent.thread.Ext.call_stack_contains_unbacked == true and
- process.parent.thread.Ext.call_stack_summary : "*kernelbase.dll|Unbacked*"
+ process.parent.thread.Ext.call_stack_summary : "*kernelbase.dll|Unbacked*" and
+ not process.executable : "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe"
 '''
 
 min_endpoint_version = "8.8.0"

@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects when an unsigned binary is executed within the Applications directory via a shell with no command line
+arguments. Recent Geacon samples have been observed executing second stage payloads in this way via the .zshrc
+persistence mechanism.
+"""
+id = "e9aa04eb-7d71-4c6e-aa86-f1f7c3003b67"
+license = "Elastic License v2"
+name = "Suspicious unsigned Application execution via Shell"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and 
+ process.executable : "/Applications/*" and process.code_signature.exists == false and 
+ process.args : "/Applications/*" and process.args_count == 1 and 
+ process.parent.name : ("bash", "zsh", "sh") and process.parent.args_count == 0 and
+ not process.args : "/Applications/*.app/*"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

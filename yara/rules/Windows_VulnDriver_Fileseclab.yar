@@ -1,10 +1,10 @@
-rule Windows_Vulndriver_Fileseclab_4a21229a {
+rule Windows_VulnDriver_Fileseclab_4a21229a {
     meta:
         author = "Elastic Security"
         id = "4a21229a-8847-4909-b3cd-69b4078a4825"
         fingerprint = "dcbdbd375bae3d9206a82bbffa9f803492ed9588333075d93fad4b9f3261be7b"
         creation_date = "2024-03-05"
-        last_modified = "2024-03-21"
+        last_modified = "2024-09-30"
         threat_name = "Windows.VulnDriver.Fileseclab"
         reference_sample = "ae55a0e93e5ef3948adecf20fa55b0f555dcf40589917a5bfbaa732075f0cc12"
         severity = 100

@@ -1,10 +1,10 @@
-rule Windows_Vulndriver_FidDrv_e7875a5a {
+rule Windows_VulnDriver_FidDrv_e7875a5a {
     meta:
         author = "Elastic Security"
         id = "e7875a5a-5a88-4bc3-9cfc-91b446dcc6aa"
         fingerprint = "ed9ef63a9e2434a30f22f679edb99b9104eb4397968d84599c7828102312025e"
         creation_date = "2023-07-25"
-        last_modified = "2023-07-25"
+        last_modified = "2024-09-30"
         description = "Detects Intel's R/W MSR driver (fiddrv64.sys)"
         threat_name = "Windows.VulnDriver.FidDrv"
         reference_sample = "4bf4cced4209c73aa37a9e2bf9ff27d458d8d7201eefa6f6ad4849ee276ad158"

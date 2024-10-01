@@ -80,3 +80,67 @@ rule Windows_Trojan_Smokeloader_de52ed44 {
         all of them
 }
 
+rule Windows_Trojan_Smokeloader_bf391fe0 {
+    meta:
+        author = "Elastic Security"
+        id = "bf391fe0-7e7f-4f29-8a8c-c13aa2c1eef1"
+        fingerprint = "513355978aca1f1dd21c199c7fbf72a59639ad08d0c8712d7d076a67da737ab5"
+        creation_date = "2024-08-27"
+        last_modified = "2024-09-30"
+        threat_name = "Windows.Trojan.Smokeloader"
+        reference_sample = "fe2489230d024f5e0e7d0da0210f93e70248dc282192c092cbb5e0eddc7bd528"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 8A 54 3C 18 0F B6 C2 03 F0 23 F1 8A 44 34 18 88 44 3C 18 88 54 34 18 0F B6 4C 3C 18 }
+        $b = { 8D 87 77 05 00 00 50 8B 44 24 18 05 36 01 00 00 50 }
+    condition:
+        any of them
+}
+
+rule Windows_Trojan_Smokeloader_a01aa3ab {
+    meta:
+        author = "Elastic Security"
+        id = "a01aa3ab-b1d8-4cd1-8349-ff105e285f5d"
+        fingerprint = "75b4fd2ace9aa87dab9fef950171a566bed8355ae4f7076755fa5293c68936a6"
+        creation_date = "2024-08-27"
+        last_modified = "2024-09-30"
+        threat_name = "Windows.Trojan.Smokeloader"
+        reference_sample = "3a189a736cfdfbb1e3789326c35cecfa901a2adccc08c66c5de1cac8e4c1791b"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 83 A6 43 0C 00 00 00 83 A6 3F 0C 00 00 00 45 33 C9 45 8D 41 04 33 D2 33 C9 }
+        $b = { 42 0F B6 14 0C 41 8D 04 12 44 0F B6 D0 42 8A 04 14 42 88 04 0C 42 88 14 14 42 0F B6 }
+    condition:
+        any of them
+}
+
+rule Windows_Trojan_Smokeloader_62eb5427 {
+    meta:
+        author = "Elastic Security"
+        id = "62eb5427-0488-4c6c-aefc-00f4120bd2a9"
+        fingerprint = "eb9b8149997deb5701c51d6cac58e03a111c23cba2cc1bb4abcfaa56f201cc08"
+        creation_date = "2024-08-27"
+        last_modified = "2024-09-30"
+        threat_name = "Windows.Trojan.Smokeloader"
+        reference_sample = "21e7fcce8ffb7826108800b6aee21d6b8ea9275975b639ed5ca9f8ddd747329e"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { C7 45 FC 00 00 00 00 8B 45 08 03 40 3C 8B 40 78 03 45 08 50 8B 48 18 8B 50 20 03 55 08 }
+        $b = { 8B 7D F4 89 F1 B8 19 04 00 00 F2 66 AF }
+        $c = { C7 44 05 D0 53 6C 65 65 8B 45 C8 83 C0 04 89 45 C8 }
+    condition:
+        any of them
+}
+

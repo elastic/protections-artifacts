@@ -7,7 +7,8 @@ id = "18d82674-08d0-408e-801b-468e1b06298f"
 license = "Elastic License v2"
 name = "Suspicious Execution via setsid and nohup"
 os_list = ["linux"]
-version = "1.0.2"
+reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("setsid", "nohup") and

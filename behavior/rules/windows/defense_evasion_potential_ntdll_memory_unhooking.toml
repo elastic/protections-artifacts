@@ -9,9 +9,10 @@ license = "Elastic License v2"
 name = "Potential NTDLL Memory Unhooking"
 os_list = ["windows"]
 reference = [
+    "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,7 +32,7 @@ sequence by process.entity_id with maxspan=1m
             "Bright Star Engineering Inc.", "Carlson Software", "Electronic Arts, Inc.", "ESL Gaming GmbH", "FunPlus International AG",
             "KURO TECHNOLOGY (HONG KONG) CO., LIMITED", "Exbo North LLC", "PROXIMA BETA PTE. LIMITED", "DVDFab Software Inc.",
             "Carlson Software", "Asseco South Eastern Europe SA", "Palo Alto Networks (Netherlands) B.V.",
-            "UBISOFT ENTERTAINMENT INC.") and
+            "UBISOFT ENTERTAINMENT INC.", "Vidus Technology Limited", "FingerTas Solutions Co.,Ltd", "KRAFTON, Inc.") and
        process.code_signature.trusted == true and
        process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
 

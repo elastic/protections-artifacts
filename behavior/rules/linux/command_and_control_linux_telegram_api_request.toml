@@ -1,0 +1,50 @@
+[rule]
+description = """
+This rule detects when a process executes the `curl` or `wget` command with an argument that includes the
+`api.telegram.org` domain. This may indicate command and control behavior.
+"""
+id = "87bee79f-cf0b-43a0-884a-a7a4ddbd4599"
+license = "Elastic License v2"
+name = "Linux Telegram API Request"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget") and
+process.command_line like "*api.telegram.org*" and not (
+  process.parent.executable like (
+    "/usr/bin/bash", "/bin/bash", "/usr/lib/zabbix/*", "/bin/sh", "/root/ftp_to_telegram.sh", "/home/*/Noti/check-vsd.sh",
+    "/usr/local/*", "/opt/error_monitor/error_monitor.sh", "/home/*/policy-finder-import-contract-testing.sh"
+  ) or
+  process.parent.name in ("policy-finder-import-contract-staging.sh", "ladp_locked_users.sh", "getInfo") or
+  process.command_line like "curl -s --max-time 10 -d*text=Job integrasi datamart siis indicar mobi*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

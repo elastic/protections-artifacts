@@ -7,7 +7,7 @@ id = "f5bbe671-5351-4566-b708-6e09d1de7dd2"
 license = "Elastic License v2"
 name = "Remote Memory Write to a non Child Process"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.executable != null and
@@ -33,7 +33,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
                                 "\\Windows\\SysWOW64\\*.dll",
                                 "?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll",
                                 "?:\\Windows\\FireEye\\AppMonitorDll.dll") and
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                    ("13849cf3af6792db8ee9afd988a0185950577d7035ef27723f660276ad800dc6",
                                     "1b2ce9281d1a6396f835db683dffac3256d62153370c60b78e5b81eada0ad390",
                                     "7214d926419fe847a4795a74f9b73209990e4927bb5b56128cf30703be68cde7",
@@ -44,7 +44,10 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
                                     "85dff7bdde3597606208be42bd0bede8e738253023a9fb1c03b6ffb86a0b1b02",
                                     "2ed817febe174e07e0f52acfd7731b65cb9e5bef35603ea3898a2dcb382f2a31",
                                     "843f99e90dd28e1a6e1aa5fb023670f7c6b0846a737047ae464cc32c66600c14",
-                                    "8b27c7fef77ed2646b9ad74d360da1fe610e89e19e08adb7a5133e391d3fd49a")
+                                    "8b27c7fef77ed2646b9ad74d360da1fe610e89e19e08adb7a5133e391d3fd49a",
+                                    "2fec0c389dd0932c59eee19ca24c720b6521603e5ead78e3e070aa561b73be32",
+                                    "ec363d03afa97033dc91cbf7c9a491fc693189f7a0a19bffc631bcb7dc715b47",
+                                    "9c09a7502fa9775a76415a20948d6ef1b55b9240e71adde7a4487ecbfd038fcd")
 '''
 
 min_endpoint_version = "8.10.0"

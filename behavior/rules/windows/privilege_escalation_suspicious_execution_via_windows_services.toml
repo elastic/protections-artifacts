@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -187,7 +187,8 @@ process where event.action == "start" and
    not (process.executable : "?:\\Windows\\*.exe" and process.code_signature.status : ("errorExpired", "errorCode_endpoint*", "errorChaining")) and
    not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*") and 
    not (process.executable : "?:\\Windows\\Temp\\*" and process.code_signature.trusted == true) and
-   not process.executable : ("?:\\Windows\\System32\\sppsvc.exe", "?:\\Windows\\ise-exec-svc.exe")
+   not process.executable : ("?:\\Windows\\System32\\sppsvc.exe", "?:\\Windows\\ise-exec-svc.exe") and
+   not (process.name == "cmd.exe" and process.command_line like "*pzaS5TZXJ2aWNlTmFtZSA9ICJPMjRBVVRIIjs*")
 '''
 
 min_endpoint_version = "7.15.0"

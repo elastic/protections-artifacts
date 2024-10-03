@@ -8,8 +8,11 @@ id = "4d21b212-1046-41fc-98f1-b4c175594fb2"
 license = "Elastic License v2"
 name = "Suspicious Executable Heap Allocation"
 os_list = ["windows"]
-reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
-version = "1.0.18"
+reference = [
+    "https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate",
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+]
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=3m

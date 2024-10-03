@@ -12,8 +12,9 @@ os_list = ["macos"]
 reference = [
     "https://medium.com/red-teaming-with-a-blue-team-mentality/a-brief-look-at-macos-detections-and-post-infection-analysis-b0ede7ecfeb9",
     "https://objective-see.org/blog",
+    "https://www.elastic.co/security-labs/DPRK-strikes-using-a-new-variant-of-rustbucket",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 persistence where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -71,6 +72,8 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                       "/Users/*/Library/Application Support/*",
                       "/var/run/docker.sock",
                       "Location of the installed AutomationEngineSyncer executable (to be replaced by installer)") and not
+  Effective_process.executable : ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                  "/Library/Kandji/Kandji Agent.app/Contents/Helpers/Kandji Library Manager.app/Contents/MacOS/kandji-library-manager") and not
   process.executable : ("/System/*",
                         "/Library/PrivilegedHelperTools/*", 
                         "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not
@@ -89,7 +92,7 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
   Persistence.executable : "/Applications/AhnLab/ASTx/astxd"
 '''
 
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.11.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -130,4 +133,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.11.0"

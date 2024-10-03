@@ -9,8 +9,11 @@ id = "b9d6cfad-4d18-49a4-a653-47d26fda4431"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via LogonUI"
 os_list = ["windows"]
-reference = ["https://googleprojectzero.github.io/0days-in-the-wild/0day-RCAs/2023/CVE-2023-36033.html"]
-version = "1.0.1"
+reference = [
+    "https://googleprojectzero.github.io/0days-in-the-wild/0day-RCAs/2023/CVE-2023-36033.html",
+    "https://www.elastic.co/security-labs/itw-windows-lpe-0days-insights-and-detection-strategies",
+]
+version = "1.0.2"
 
 query = '''
 library where process.executable : "?:\\Windows\\System32\\LogonUI.exe" and user.id : "S-1-5-18" and 

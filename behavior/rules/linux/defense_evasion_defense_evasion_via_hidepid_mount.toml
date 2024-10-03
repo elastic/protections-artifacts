@@ -1,0 +1,57 @@
+[rule]
+description = """
+Detects the use of the hidepid parameter in the mount process. This technique is used to hide processes from other users
+on the system, which in turn can be used to evade detection.
+"""
+id = "03195b53-de40-4a18-b727-6fb7ac3f94b7"
+license = "Elastic License v2"
+name = "Defense Evasion via Hidepid Mount"
+os_list = ["linux"]
+reference = ["https://linux-audit.com/linux-system-hardening-adding-hidepid-to-proc/"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "mount" and
+process.args == "-o" and process.args : "*hidepid=2*" and
+not process.parent.args == "/opt/cloudlinux/venv/bin/python3"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

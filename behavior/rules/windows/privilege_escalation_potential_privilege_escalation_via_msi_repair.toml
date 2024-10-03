@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies a browser process navigates to the Microsoft Help page followed by spawning an elevated process. This may
+indicate a successful exploitation for privilege escalation abusing a vulnerable Windows Installer repair setup.
+"""
+id = "e02f4cc7-ca8a-4b5b-83a9-479f83aa74b3"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via MSI Repair"
+os_list = ["windows"]
+reference = ["https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and process.Ext.token.integrity_level_name == "system" and
+ process.parent.name in~ ("chrome.exe", "msedge.exe", "brave.exe", "whale.exe", "browser.exe", "dragon.exe", "vivaldi.exe",
+                          "opera.exe", "iexplore", "firefox.exe", "waterfox.exe", "iexplore.exe", "tor.exe", "safari.exe") and
+ process.parent.command_line like "*go.microsoft.com*" and
+ not process.executable like 
+            ("?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+             "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+             "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+             "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
+             "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

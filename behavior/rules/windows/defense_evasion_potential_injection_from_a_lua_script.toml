@@ -4,7 +4,7 @@ id = "88c2aeed-e5c1-4e0d-98d4-e22ff972e55b"
 license = "Elastic License v2"
 name = "Potential Injection from a LUA Script"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -18,7 +18,8 @@ api where
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                                              ("423bde5692d39b68e38292439962804537e673aebf946c1cc12dcf4f34712939",
                                               "3b3558c408c57be332c9595624f6d49413fe0dd43d3d5fa4626041851f77216a") and
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "c:\\program files\\wireshark\\lua??.dll!*")
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "c:\\program files\\wireshark\\lua??.dll!*") and
+  not (process.code_signature.trusted == true and process.code_signature.subject_name == "COJALI SL")
 '''
 
 min_endpoint_version = "8.10.0"

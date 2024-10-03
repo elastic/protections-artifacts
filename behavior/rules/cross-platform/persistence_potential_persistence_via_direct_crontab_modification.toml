@@ -8,14 +8,16 @@ id = "b3bcbab6-e216-4d70-bdee-2b69affbb386"
 license = "Elastic License v2"
 name = "Potential Persistence via Direct Crontab Modification"
 os_list = ["linux", "macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name == "crontab" and process.args == "-" and (
-  process.parent.executable : (
-    "./*", "/dev/shm/*", "/tmp/*", "/var/tmp/*", "/boot/*", "/etc/cron*", "/etc/init.d/*", "/etc/update-motd.d/*",
-    "/srv/*", "/var/log/*", "/var/www/*"
-  )
+process where event.type == "start" and event.action == "exec" and process.name == "crontab" and process.args == "-" and
+process.parent.executable like (
+  "./*", "/dev/shm/*", "/tmp/*", "/var/tmp/*", "/boot/*", "/etc/cron*", "/etc/init.d/*", "/etc/update-motd.d/*",
+  "/srv/*", "/var/log/*", "/var/www/*", "/home/*/.*"
+) and not (
+  process.parent.executable == "/var/www/html/admin/modules/iotserver/bin/check_license.php" or
+  process.parent.command_line == "/bin/bash +x ./ninja-deb-uninstall.sh"
 )
 '''
 

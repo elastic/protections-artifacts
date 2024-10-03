@@ -7,16 +7,17 @@ id = "00a97e57-4834-47ec-880d-48ce3783e0b4"
 license = "Elastic License v2"
 name = "Linux Reverse Shell via Child"
 os_list = ["linux"]
-version = "1.0.4"
+reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
+version = "1.0.5"
 
 query = '''
-sequence by process.entity_id with maxspan=1s
+sequence by process.entity_id with maxspan=5s
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and destination.ip != null and 
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and destination.ip != null and 
    not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1")]
   [process where event.type == "start" and event.action == "exec" and 
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
-     (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*")
+     (process.args in ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args like "*exec*")
    )]
 '''
 

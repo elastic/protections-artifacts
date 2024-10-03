@@ -7,21 +7,21 @@ id = "9cfa09d4-099b-4a4b-a4bd-025612f1eabc"
 license = "Elastic License v2"
 name = "Image ROP from Unusual Microsoft Module"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.behaviors == "native_api" and process.Ext.api.behaviors == "image_rop" and
  process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "SetThreadContext", "SuspendThread", "VirtualProtectEx") and
- process.Ext.token.integrity_level_name != "low" and not process.Ext.api.behaviors : "image_rwx" and
- process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\*.dll" and 
+ process.Ext.token.integrity_level_name != "low" and not process.Ext.api.behaviors == "image_rwx" and
+ process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\*.dll" and
  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
-              $entry.trusted == true and $entry.subject_name : ("Microsoft Corporation", "Microsoft Windows")) and
+              $entry.trusted == true and $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows")) and
  /* trailing bytes in the final user module */
  _arraysearch(process.thread.Ext.call_stack, $entry,
               stringcontains~($entry.symbol_info, process.thread.Ext.call_stack_final_user_module.name) and $entry.callsite_trailing_bytes : "?*") and
- not process.thread.Ext.call_stack_final_user_module.name : ("Unbacked", "Unknown") and
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("kernel", "kernel|*") and
- not process.thread.Ext.call_stack_final_user_module.path :
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unbacked", "Unknown") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
+ not process.thread.Ext.call_stack_final_user_module.path in
                                      ("c:\\windows\\system32\\apphelp.dll",
                                       "c:\\windows\\system32\\shcore.dll",
                                       "c:\\windows\\system32\\msvcp?00.dll", 

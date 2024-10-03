@@ -9,23 +9,27 @@ id = "e8b2afe5-37a9-468c-a6fb-f178d46cb698"
 license = "Elastic License v2"
 name = "Hidden Payload Executed via Scheduled Job"
 os_list = ["linux"]
-reference = ["https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/"]
-version = "1.0.4"
+reference = [
+    "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
+    "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
+]
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
   (process.parent.name == "cron" and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-   process.args : "-c" and process.args : "*/.*" and not process.args : ("*/.*/*", "*/.*;*")) or
-  (process.parent.name == "systemd" and process.args : "*/.*" and process.args_count == 1)
+   process.args == "-c" and process.args like "*/.*" and not process.args like ("*/.*/*", "*/.*;*")) or
+  (process.parent.name == "systemd" and process.args like "*/.*" and process.args_count == 1)
 ) and not (
   process.command_line in (
     "/bin/sh -c /bin/bash /root/rotate.sh rotate /root/.vault-token",
     "/bin/sh -c crontab -l > $HOME/.crontab",
     "/bin/sh -c autorestic -c /root/.autorestic.yml --ci cron"
   ) or
-  process.command_line : "*/home/*/.*.*" or
-  process.args : ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*") or
-  process.executable : ("/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*")
+  process.command_line like ("*/home/*/.*.*", "*/opt/invgate/insight-agent/*") or
+  process.args like ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*") or
+  process.executable like ("/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*") or
+  process.name == "riptide-agent"
 )
 '''
 

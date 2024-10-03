@@ -1,0 +1,149 @@
+[rule]
+description = """
+This rule detects the execution of the echo command to write data to potential persistence files, decode base64/32/16
+and hex content or establish connections to a potential C2. The echo command is used to display a line of text or write
+data to a file. Threat actors may abuse the echo command to write data to files or file descriptors that are executed
+(by other processes or services) to establish persistence or escalate privileges.
+"""
+id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
+license = "Elastic License v2"
+name = "Suspicious Echo Execution"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+process.args == "-c" and process.command_line like "*echo *" and process.command_line like (
+  "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
+  "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
+  "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*autostart*",
+  "*udev*", "*nohup*", "*xxd *", "*/etc/shadow*"
+) and
+process.parent.executable != null and
+not (
+  process.args like (
+    "*/dev/tcp/127.0.0.1/*", "/opt/rapid7/ir_agent/components/insight_agent/common/ir_agent*", "printf*",
+    "*/etc/init.d/XS-Nanny-Watch-Dog*"
+  ) or
+  process.parent.name in (
+    "make", "code", "terraform", "pyinfra", "fzf", "bwrap", "start_pxcontroller_pxstorage.py", "timeout", "sshd",
+    "ansible-playbook", "nessus-agent-module", "app", "nessusd", "executor", "armor", "cockpit-bridge",
+    "rapid7_endpoint_broker", "sudo", "zabbix_agent2", "cbram", "tm_sandbox", "cybereason-activeconsole", "find",
+    "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2"
+  ) or
+  process.parent.name like "please_go*" or
+  process.parent.executable like (
+    "/tmp/newroot/*", "/nix/store/*", "/opt/Tanium/TaniumClient/extensions/comply/jre/bin/java",
+    "/opt/nessus_agent/sbin/nessus-service", "/var/www/splynx/queue/splynx_queue", "/usr/sbin/ScanAssistant",
+    "/opt/tripwire/agent/plugins/twexec/twexec", "/usr/bin/supervisord", "/usr/local/bin/goss", "/opt/quest/kace/bin/KacePatch",
+    "/u01/app/oracle.ahf/common/venv/bin/python3", "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.10",
+    "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.11", "/opt/MicroStrategy/install/_jre/bin/java",
+    "/opt/tripwire/agent/twagent", "/oracle/oracle.ahf/common/venv/bin/python3.10",
+    "/u01/app/oracle.ahf/common/venv/bin/python3.10", "/sas/SASHome/SASFoundation/9.4/utilities/bin/elssrv",
+    "/d01/oracle/EBS/fs2/EBSapps/10.1.2/bin/rwrun", "/opt/Cimcor/CimTrak/CimTrakAgent/CimTrakAgent.bin", "/usr/bin/xargs",
+    "/usr/bin/vncserver", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/GC_Ext/GC/gc_linux_service",
+    "/u00/oracle.ahf/common/venv/bin/python3", "/usr/local/bin/cyrisma/App/jre/bin/java"
+  ) or
+  process.parent.command_line in (
+    "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"
+  ) or
+  process.command_line like (
+    "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*",
+    "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci;",
+    "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production",
+    "*/opt/oracle/instantclient", "*message*log*rotate*"
+  ) or
+  process.parent.command_line like ("*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init") or
+  (process.parent.name == "php" and process.command_line : "*psql*") or
+  (process.parent.name == "sudo" and process.parent.args : "*command_start_*") or
+  process.parent.args like ("/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.004"
+name = "Unix Shell Configuration Modification"
+reference = "https://attack.mitre.org/techniques/T1546/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

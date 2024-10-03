@@ -7,7 +7,8 @@ id = "fdd3d1e9-e7d2-4226-9e7c-0f8e77acac6d"
 license = "Elastic License v2"
 name = "Suspicious API Call from a Script Interpreter"
 os_list = ["windows"]
-version = "1.0.11"
+reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -25,7 +26,9 @@ sequence by process.entity_id with maxspan=5m
                  "?:\\Program Files (x86)\\AdoptOpenJDK\\jdk-*\\bin\\java.exe")
   ) and 
   not (process.name : ("cscript.exe", "wscript.exe") and
-       process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*",  "\\\\*\\NETLOGON\\*", "\\\\*\\SysVol\\*"))
+       process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*",  "\\\\*\\NETLOGON\\*", "\\\\*\\SysVol\\*")) and
+
+  not process.executable == "C:\\Program Files\\MuleSoft\\RPABuilder\\NgCore\\bin\\3rdParty\\AutoIt3.exe"
   ]
  [api where
   process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "image_rwx") and
@@ -46,7 +49,8 @@ sequence by process.entity_id with maxspan=5m
                                 "\\Windows\\System32\\*.dll",
                                 "\\Windows\\SysWOW64\\*.dll",
                                 "*\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll",
-                                "*\\Windows\\FireEye\\AppMonitorDll.dll")]
+                                "*\\Windows\\FireEye\\AppMonitorDll.dll") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "8851b734602eb00da5b1cfc1e40d38f1cb32e0add2df257ff9d7dbd520b4d5da"]
 '''
 
 min_endpoint_version = "8.10.0"

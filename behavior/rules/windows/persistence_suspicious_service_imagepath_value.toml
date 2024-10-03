@@ -7,7 +7,7 @@ id = "d6bb94ed-3df3-426f-8274-f6c4fb9b864d"
 license = "Elastic License v2"
 name = "Suspicious Service ImagePath Value"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 registry where registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePath" and
@@ -19,7 +19,8 @@ registry where registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\ImagePa
 
    not registry.data.strings :
                      ("?:\\Windows\\system32\\rundll32.exe ?:\\Windows\\SYSTEM32\\INTERP~2.DLL,eb_service",
-                      "%SystemRoot%\\System32\\rundll32.exe \"C:\\Windows\\Downloaded Program Files\\urxdialer.dll\",EmergencyCleanup")
+                      "%SystemRoot%\\System32\\rundll32.exe \"C:\\Windows\\Downloaded Program Files\\urxdialer.dll\",EmergencyCleanup",
+                      "%COMSPEC% /Q /c start*pzaS5TZXJ2aWNlTmFtZSA9ICJPMjRBVVRIIjs*")
 '''
 
 actions = []

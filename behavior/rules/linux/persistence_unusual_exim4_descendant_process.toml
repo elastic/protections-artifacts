@@ -12,7 +12,7 @@ reference = [
     "https://www.qualys.com/2021/05/04/21nails/21nails.txt",
     "https://blog.qualys.com/vulnerabilities-threat-research/2021/05/04/21nails-multiple-vulnerabilities-in-exim-mail-server",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -20,16 +20,18 @@ descendant of [process where event.action == "exec" and process.name == "exim4"]
 not (
   process.name in (
     "exim4", "start-stop-daemon", "run-parts", "systemctl", "update-exim4.conf", "install", "plymouth", "readlink",
-    "grep"
+    "grep", "stat", "cmake", "gcc", "cppcheck", "sort"
   ) or
-  process.executable : (
+  process.executable like (
     "/var/lib/docker/*", "/usr/bin/gpg-connect-agent", "/usr/bin/dpkg", "/bin/sed", "/bin/basename", "/usr/bin/date",
     "/usr/bin/runc", "/usr/bin/tr", "/sbin/modprobe", "/usr/bin/test", "/usr/bin/gdbus"
   ) or
-  process.parent.name in ("update-exim4.conf", "apt-key", "apt-get") or
-  (process.executable == "/usr/bin/ls" and process.command_line : "*/proc/*/exe") or
+  process.parent.name in (
+    "update-exim4.conf", "apt-key", "apt-get", "git", "lynis", "make", "gcc", "sarg", "cmake", "aarch64-tq-linux-gcc"
+  ) or
+  (process.executable == "/usr/bin/ls" and process.command_line like "*/proc/*/exe") or
   process.command_line == "rm -f /run/exim4/exim.pid" or
-  process.parent.args : "/usr/bin/test*"
+  process.parent.args like "/usr/bin/test*"
 )
 '''
 

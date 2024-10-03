@@ -4,7 +4,7 @@ id = "c73a1b0d-bd00-4574-8e98-79c75e918eff"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via Node.js"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name : ("VirtualProtect*", "WriteProcessMemory", "VirtualAlloc*", "MapViewOfFile*") and 
@@ -16,7 +16,7 @@ api where process.Ext.api.name : ("VirtualProtect*", "WriteProcessMemory", "Virt
   (process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.size >= 10000 and
    process.Ext.api.parameters.protection == "RWX")
   ) and
-  not (process.code_signature.subject_name in ("Reolink Innovation Inc.", "Sky International AG", "Ferox Games B.V.", "Tobii AB") and
+  not (process.code_signature.subject_name in ("Reolink Innovation Inc.", "Sky International AG", "Ferox Games B.V.", "Tobii AB", "Unify Software and Solutions GmbH & Co. KG") and
     process.code_signature.trusted == true) and
   not process.executable : ("C:\\Program Files\\*.exe", "C:\\Program Files (x86)\\*.exe", "D:\\BioStar 2(x64)\\ta\\nodejs-win64\\node.exe") and
   not process.thread.Ext.call_stack_final_user_module.path : ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*") and

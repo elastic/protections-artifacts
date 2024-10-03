@@ -5,39 +5,40 @@ user keystrokes to intercept credentials or other information from the user as t
 """
 id = "7ae180e1-e08f-40c2-82db-f274f688eea2"
 license = "Elastic License v2"
-name = "keystroke Messages Hooking via SetWindowsHookEx"
+name = "Keystroke Messages Hooking via SetWindowsHookEx"
 os_list = ["windows"]
 reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa",
+    "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
-api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and 
+api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and not process.code_signature.status : "trusted" and
  process.thread.Ext.call_stack_summary : "?*" and process.executable != null and
  not process.Ext.api.parameters.hook_module : ("?:\\Program Files\\*.dll", "?:\\Program Files (x86)\\*.dll") and
- not process.thread.Ext.call_stack_summary : 
-                               ("*user32.dll|explorer.exe|user32.dll*", 
-                                "*user32.dll|tabskb.dll|kernel32.dll*", 
-                                "*user32.dll|taskbar.dll*", 
-                                "win32u.dll|user32.dll|pilotshubapp.dll", 
-                                "*win32u.dll|user32.dll|mtb.exe|mfc90u.dll|mtb.exe*", 
-                                "win32u.dll|user32.dll|powertoy*", 
-                                "win32u.dll|user32.dll|rdclientax.dl*", 
+ not process.thread.Ext.call_stack_summary :
+                               ("*user32.dll|explorer.exe|user32.dll*",
+                                "*user32.dll|tabskb.dll|kernel32.dll*",
+                                "*user32.dll|taskbar.dll*",
+                                "win32u.dll|user32.dll|pilotshubapp.dll",
+                                "*win32u.dll|user32.dll|mtb.exe|mfc90u.dll|mtb.exe*",
+                                "win32u.dll|user32.dll|powertoy*",
+                                "win32u.dll|user32.dll|rdclientax.dl*",
                                 "*qt6gui.dll|qt6core.dll*",
                                 "win32u.dll|user32.dll|rwsfoundation_x64.dll|ucrtbase.dll|kernel32.dll|ntdll.dll",
                                 "win32u.dll|user32.dll|autohotkey*.exe|kernel32.dll|ntdll.dll") and
- not process.thread.Ext.call_stack_final_user_module.path : 
-                        ("?:\\Program Files\\*", 
-                         "?:\\Program Files (x86)\\*", 
-                         "?:\\windows\\system32\\*", 
-                         "?:\\windows\\syswow64\\*", 
-                         "\\Program Files\\*", 
-                         "\\Program Files (x86)\\*", 
-                         "\\windows\\system32\\*", 
-                         "\\windows\\syswow64\\*", 
+ not process.thread.Ext.call_stack_final_user_module.path :
+                        ("?:\\Program Files\\*",
+                         "?:\\Program Files (x86)\\*",
+                         "?:\\windows\\system32\\*",
+                         "?:\\windows\\syswow64\\*",
+                         "\\Program Files\\*",
+                         "\\Program Files (x86)\\*",
+                         "\\windows\\system32\\*",
+                         "\\windows\\syswow64\\*",
                          "?:\\windows\\explorer.exe",
                          "\\windows\\explorer.exe",
                          "*\\windows\\systemapps\\*",
@@ -50,7 +51,7 @@ api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.paramet
                          "\\Windows\\WinSxS\\*.dll",
                          "\\windows\\assembly\\*.dll",
                          "\\windows\\shellexperiences\\*.dll",
-                         "?:\\progra~?\\citrix\\icacli~?\\vdkbhook.dll", 
+                         "?:\\progra~?\\citrix\\icacli~?\\vdkbhook.dll",
                          "?:\\windows\\shellexperiences\\*.dll",
                          "\\windows\\shellexperiences\\*.dll",
                          "?:\\windows\\jmesoft\\keyhook.dll",

@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -85,7 +85,10 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "27c7d20101e03ec0850cdd58f89b8d5e8494e8c0790919c778947ca14ee68a0d",
                          "c12ade1fc56f70f780e4ed0175dd74da5c8b28807b57de9ba25ee376e4f37533",
                          "a94f89d7829129fe15722723a8a41295aca9f1be4d4a531d19fd7a470c282511",
-                         "3db86e281aba8818f67ae4026ec184952791896450c4505515e2bf0787aa47f6") and
+                         "3db86e281aba8818f67ae4026ec184952791896450c4505515e2bf0787aa47f6",
+                         "38da0d335a49473fe31894c02aef49ae053abb7951c5307ccbbb314c7b8601b7",
+                         "92c068146977d26a656c462af52dba4ce6e36b21ea5787b1fbf778414c3b6f75",
+                         "ac8c1db990bd2c5612b2929c097ed5c3e4bc047158d9d7a39c57723c614dd51e") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))

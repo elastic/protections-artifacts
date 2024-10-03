@@ -7,7 +7,11 @@ id = "8858facd-72b7-495c-831c-4d8ad12a8bf0"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.26"
+reference = [
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+    "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
+]
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id
@@ -116,7 +120,11 @@ sequence by process.entity_id
                 "27f491fa95c2ec81f2e4f8fc2f324e29c51bb1ff992bda75b95a31e7f0dd0a9d",
                 "db13610e5c21fdf78d2d77a747ad7764b5a3314adcea5e537d1084ad02ef0a41",
                 "5dca0feb6095a5351ef9ddfd90a525ccd75a62a512a1ae1db7559f3927dbe11f",
-                "607231e9502c95a43cf96deb6b0a2e2d9104b3211f797bfec32680c5ac4b8606")] as event0
+                "607231e9502c95a43cf96deb6b0a2e2d9104b3211f797bfec32680c5ac4b8606",
+                "c69120ae89bbb6a46e0344dc64fc80939b1d2080f7c2637e68369cdd5bf41bc6",
+                "4427a983dde3160e9e4d9a542eeb0e2cb8806116b8576180de2886089069a27e",
+                "8f50545234724876e4d0f7474cd324a6a41903d708cfd6f4b91fbdbea2310677",
+                "b3d1d2dd7f9b54201ff06d56ec7f94d615df946a9a8a0c027a7151fc5c492189")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

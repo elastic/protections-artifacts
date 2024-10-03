@@ -8,8 +8,11 @@ id = "280557d4-403b-49e5-a4eb-e043a6ae7674"
 license = "Elastic License v2"
 name = "Registry or File Modification from Suspicious Memory"
 os_list = ["windows"]
-reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.18"
+reference = [
+    "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
+    "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
+]
+version = "1.0.19"
 
 query = '''
 any where event.category : ("registry", "file") and event.action != "deletion" and 

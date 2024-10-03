@@ -9,8 +9,11 @@ id = "47e5595e-1920-4fdd-9a1c-cf712e1112d1"
 license = "Elastic License v2"
 name = "At Utility Launched through Udevadm"
 os_list = ["linux"]
-reference = ["https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/"]
-version = "1.0.2"
+reference = [
+    "https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/",
+    "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
+]
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "udevadm" and

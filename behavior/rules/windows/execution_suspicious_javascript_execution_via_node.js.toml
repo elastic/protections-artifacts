@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious JavaScript Execution via Node.js"
 os_list = ["windows"]
 reference = ["https://nodejs.org"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.action == "start" and
@@ -23,11 +23,21 @@ process where event.action == "start" and
           ("try{require('./_postinstall')}catch(e){}",
            "try{require('./postinstall')}catch(e){}",
            "--package",
+           ".home",
            "?:\\Program Files\\*",
            "?:\\Program Files (x86)\\*") and
   not (process.args : "--input" and process.args : "--output") and
   not (process.args : "-e" and process.args : "json") and
-  not process.args :"C:\\Users\\*\\.pkg-cache\\v3.4\\fetched-v18.5.0-win-x64"
+  not process.args :"C:\\Users\\*\\.pkg-cache\\v3.4\\fetched-v18.5.0-win-x64" and
+  not process.executable like
+               ("D:\\others works\\visual studio\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
+                "D:\\VS Installation\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
+                "D:\\VS 2022 installation\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
+                "C:\\Users\\*\\AppData\\Roaming\\nvm\\v*\\node.exe",
+                "C:\\sts-4.17.1.RELEASE\\.node\\node-v18.12.1-win-x64\\node.exe",
+                "D:\\ehtasham\\visual studio\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
+                "E:\\VS 22 Installed here\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
+                "D:\\VS 22 instaslled here\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe")
 '''
 
 min_endpoint_version = "7.15.0"

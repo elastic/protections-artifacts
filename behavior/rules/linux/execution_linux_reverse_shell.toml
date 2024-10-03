@@ -7,13 +7,21 @@ id = "52206861-4570-4b8b-a73e-4ef0ea379a4c"
 license = "Elastic License v2"
 name = "Linux Reverse Shell"
 os_list = ["linux"]
-version = "1.0.5"
+reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5s
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and destination.ip != null and 
-   not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1")] by process.entity_id
+   process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and 
+   not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8"
+     )
+   )] by process.entity_id
   [process where event.type == "start" and event.action in ("exec", "fork") and 
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
      (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*")

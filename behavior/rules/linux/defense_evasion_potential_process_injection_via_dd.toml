@@ -1,0 +1,59 @@
+[rule]
+description = """
+This rule detects the use of the `dd` command to read or write to the `/proc/<pid>/mem` file. This activity can be used
+to inject code into a running process without the need for `ptrace`. This technique is used by malware to evade
+detection.
+"""
+id = "38108046-32a6-407f-b5fd-6943ffdcdab0"
+license = "Elastic License v2"
+name = "Potential Process Injection via dd"
+os_list = ["linux"]
+reference = ["https://cyber.aon.com/aon_cyber_labs/linux-based-inter-process-code-injection-without-ptrace2/"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "dd" and
+process.args : "if=*" and process.args : "of=/proc/*/mem*"
+// add if noisy
+// and process.args : "seek=*"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

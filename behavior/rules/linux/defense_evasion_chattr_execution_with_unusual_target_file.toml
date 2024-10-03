@@ -1,0 +1,65 @@
+[rule]
+description = """
+This rule detects the execution of the `chattr` command with an unusual target file. The `chattr` command is used to
+change file attributes, and is often used by attackers to hide files or directories or mark them as immutable and/or
+undeletable.
+"""
+id = "831513aa-8320-484f-9275-5b46c57760f0"
+license = "Elastic License v2"
+name = "Chattr Execution with Unusual Target File"
+os_list = ["linux"]
+reference = [
+    "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
+]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
+  "/root/.ssh/*", "/home/*/.ssh/*", "/etc/ld.so.preload", "/dev/shm/*", "/tmp/*", "/var/spool/cron*", "/etc/cron*",
+  "/etc/init.d/*", "/etc/rc.local", "/etc/passwd", "/etc/shadow", "/etc/group", "/etc/sudoers", "/etc/sudoers.d/*",
+  "/etc/ssh/*", "/var/tmp/*", "/usr/bin/*", "/bin/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*",
+  "/usr/lib/*", "/usr/local/lib/*", "/lib/*", "/lib64/*", "/usr/lib64/*", "/usr/local/lib64/*", "/etc/*"
+) and
+not (
+  process.args : (
+    "/*chattr", // excluding entries where absolute path is added to chattr command
+    "/etc/resolv.conf", "/etc/resolv-secure.conf" // commonly used to ensure resolv.conf is not modified by the system
+  ) or
+  process.parent.executable in ("/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys") or
+  process.parent.args : ("/var/lib/waagent/*", "/opt/tableau/tableau_server/*") or
+  (
+    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args in (
+      "/var/spool/cron/root", "/var/spool/cron", "/etc/crontab", "/etc/ld.so.preload", "/etc/hosts", "/etc/fstab",
+      "/etc/ssh/sshd_config", "/etc/sssd/sssd.conf", "/etc/vxagent/involflt"
+    )
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1222"
+name = "File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/"
+[[threat.technique.subtechnique]]
+id = "T1222.002"
+name = "Linux and Mac File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

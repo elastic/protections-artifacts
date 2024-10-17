@@ -11,7 +11,7 @@ reference = [
     "https://dtm.uk/wuauclt/",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -19,7 +19,11 @@ sequence by process.entity_id with maxspan=1m
   (process.pe.original_file_name == "wuauclt.exe" or process.name : "wuauclt.exe") and
    process.parent.executable != null and
    process.args : "/RunHandlerComServer" and process.args : "/UpdateDeploymentProvider" and
-   not process.parent.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\MoUsoCoreWorker.exe")]
+   not process.parent.executable :
+                    ("?:\\Windows\\System32\\svchost.exe",
+                     "?:\\Windows\\System32\\MoUsoCoreWorker.exe",
+                     "\\Device\\HarddiskVolume*\\Windows\\System32\\svchost.exe",
+                     "\\Device\\HarddiskVolume*\\Windows\\System32\\MoUsoCoreWorker.exe")]
  [library where
   not (dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") and dll.code_signature.trusted == true) and
   not (dll.code_signature.trusted == true and

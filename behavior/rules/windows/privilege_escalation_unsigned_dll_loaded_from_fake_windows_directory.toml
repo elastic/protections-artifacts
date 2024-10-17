@@ -1,0 +1,72 @@
+[rule]
+description = """
+Identifies when a process running from a trusted path attempts to load a library from a fake Windows directory. This may
+indicate an attempt to elevate privileges via remapping of the ROOT drive using the NtCreateSymbolicLinkObject API.
+"""
+id = "6b35ae63-8ba1-4cbb-bdf0-e6040ccb3170"
+license = "Elastic License v2"
+name = "Unsigned DLL Loaded from Fake Windows Directory"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/itw-windows-lpe-0days-insights-and-detection-strategies"]
+version = "1.0.2"
+
+query = '''
+library where
+ (dll.code_signature.trusted == false or dll.code_signature.exists == false) and
+ (dll.Ext.relative_file_creation_time <= 3600 or dll.Ext.relative_file_name_modify_time <= 3600) and
+ process.executable : ("C:\\Windows\\System32\\*.exe", "C:\\Windows\\SysWOW64\\*.exe", "C:\\Program Files*") and
+ (
+   (dll.path :
+        ("C:\\*\\Windows\\System32\\*",
+         "C:\\*\\Windows\\SysWOW64\\*",
+         "C:\\*\\Windows\\WinSxS\\*",
+         "C:\\*\\Windows\\assembly\\*") and
+    not dll.path :
+         ("C:\\Windows\\assembly\\*",
+          "C:\\Windows\\Microsoft.NET\\*",
+          "C:\\Windows\\WinSxS\\*",
+          "C:\\Windows\\System32\\*",
+          "C:\\Windows\\SysWOW64\\*",
+          "C:\\$WINDOWS.~BT\\NewOS\\Windows\\System32\\migration\\*.dll",
+          "C:\\$WINDOWS.~BT\\NewOS\\Windows\\SysWOW64\\migration\\*.dll",
+          "C:\\ProgramData\\docker\\windowsfilter\\*\\Files\\Windows\\System32\\*.dll",
+          "C:\\ProgramData\\docker\\windowsfilter\\*\\Files\\Windows\\SysWOW64\\*.dll",
+          "C:\\$WINDOWS.~BT\\NewOS\\Windows\\System32\\migration\\*.dll",
+          "C:\\$WINDOWS.~BT\\NewOS\\Windows\\SysWOW64\\migration\\*.dll")) or 
+
+  /* user writable and can be abused for root drive remap */
+  dll.path : "?:\\Windows\\System32\\tasks\\*"
+  )
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL Search Order Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.4.0"

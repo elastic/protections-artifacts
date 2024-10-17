@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -45,7 +45,9 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                         "*8bc641c6470c01488b558849895710488d65c85b5e5f415c41",
                         "488b9550ffffffc6420c01833d3efbd15f007406ff150a18d15f89855cffffffe8a7f4535f908b8d5cffffff898d70ffffff83bd70ffffff000f95c10fb6c989")) and
 
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*", "*.ni.dll", "coreclr.dll", "Undetermined", "hmpalert.dll")
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*", "*.ni.dll", "coreclr.dll", "Undetermined", "hmpalert.dll") and
+
+ not process.executable == "C:\\Program Files\\Veeam\\Backup and Replication\\Backup\\Veeam.Backup.Service.exe"
 '''
 
 min_endpoint_version = "8.13.0"

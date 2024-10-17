@@ -14,7 +14,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=3s
@@ -44,7 +44,7 @@ sequence with maxspan=3s
          "/usr/bin/zypper"
       ) or
        process.executable like ("/snap/*", "/usr/local/aws-cli/*", "/home/*/big/dataenvrc/azure-cli-env/bin/python*") or
-       process.name == "lsnrctl"
+       process.name in ("lsnrctl", "poetry", "pgbackrest", "mysql", "tcpdump")
      )
   ] by process.parent.entity_id
 '''

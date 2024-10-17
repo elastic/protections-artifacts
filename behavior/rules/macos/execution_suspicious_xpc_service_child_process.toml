@@ -9,7 +9,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://objective-see.org/blog/blog_0x59.html",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and process.parent.name : "com.*" and 
@@ -29,6 +29,7 @@ process where event.type == "start" and process.parent.name : "com.*" and
                                  "/Library/SystemExtensions/*") and not 
     process.parent.name : ("com.docker.*", "com.todyl.SGNWatchDog") and not
     process.command_line : ("sh -c /bin/cp /Library/Preferences/SystemConfiguration/preferences.plist /Library/Preferences/SystemConfiguration/preferences.plist.old",
+                            "/bin/sh -c git-upload-pack*",
                             "*sh -c */Library/Application Support/HmaProVpn/hub/userinit.sh*") and 
     not process.Ext.effective_parent.executable : "/Library/Application Support/PasswordManager/com.trendmicro.consumer.pwmsvc"
 '''

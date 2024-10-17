@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
@@ -27,6 +27,11 @@ not (
   ) or
   process.parent.executable in ("/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys") or
   process.parent.args : ("/var/lib/waagent/*", "/opt/tableau/tableau_server/*") or
+  process.parent.command_line in ("/bin/bash /usr/sbin/libpam", "sh clean") or
+  process.command_line in (
+    "chattr +i /etc/pam.d/common-auth", "chattr -i /etc/pam.d/common-auth", "chattr -i /etc/fstab",
+    "chattr +i /etc/pam.d/password-auth", "chattr -i /etc/pam.d/password-auth"
+  ) or
   (
     process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args in (
       "/var/spool/cron/root", "/var/spool/cron", "/etc/crontab", "/etc/ld.so.preload", "/etc/hosts", "/etc/fstab",

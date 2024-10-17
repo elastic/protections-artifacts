@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/globally-distributed-stealers"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -19,7 +19,8 @@ sequence by process.entity_id with maxspan=5m
    (process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
    not process.hash.sha256 : ("7ce7b2c97b242169333c0920497299e070a5d19900f1751ccf691424e3572c0b",
                               "21f061b2c1a9d86b25355ed5a4a52302e9797bd83c19b7ff7bffb6312e4b20ae",
-                              "13b83cc30cafdf1158c5916ed147baeccd974a5998268d331454e839684136dd")]
+                              "13b83cc30cafdf1158c5916ed147baeccd974a5998268d331454e839684136dd",
+                              "eef030ce340a68e7f9370146b5ae770c2545dd7e66359dae8b82222f7e7868e1")]
   [dns where
     dns.question.name :
     (
@@ -144,7 +145,8 @@ sequence by process.entity_id with maxspan=5m
           "*.ngrok-free.app",
           "www.myexternalip.com",
           "cdn??.space",
-          "msdl.microsoft.com"
+          "msdl.microsoft.com", 
+          "steamcommunity.com"
     )
   ]
 '''

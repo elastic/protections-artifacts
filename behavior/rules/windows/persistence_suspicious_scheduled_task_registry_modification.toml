@@ -8,14 +8,15 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Registry Modification"
 os_list = ["windows"]
 reference = ["https://github.com/netero1010/GhostTask/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 registry where event.action == "modification" and registry.data.strings != "null" and process.executable != null and 
  process.thread.Ext.call_stack_summary  : "?*" and 
  registry.path : "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks\\*Actions*" and 
  not (process.executable : ("?:\\Windows\\system32\\svchost.exe", "\\Device\\HarddiskVolume*\\Windows\\System32\\svchost.exe") and 
-      process.thread.Ext.call_stack_summary : "*schedsvc.dll*")
+      process.thread.Ext.call_stack_summary : "*schedsvc.dll*")  and
+ not process.executable like "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe"
 '''
 
 min_endpoint_version = "8.7.0"

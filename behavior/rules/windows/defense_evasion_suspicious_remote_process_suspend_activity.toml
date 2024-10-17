@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -32,7 +32,9 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
 
  not process.thread.Ext.call_stack_final_user_module.path :
                                    ("c:\\program files (x86)\\*", "c:\\program files\\*",
-                                    "c:\\windows\\assembly\\nativeimages_*\\system.directoryservices.ni.dll") and
+                                    "c:\\windows\\assembly\\nativeimages_*\\system.directoryservices.ni.dll",
+                                    "c:\\windows\\assembly\\nativeimages_v*\\miguicontrols\\*\\miguicontrols.ni.dll",
+                                    "C:\\windows\\system32\\crashcollector.exe", "c:\\windows\\system32\\crashcollector.exe") and
 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                         (
@@ -88,10 +90,21 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "3db86e281aba8818f67ae4026ec184952791896450c4505515e2bf0787aa47f6",
                          "38da0d335a49473fe31894c02aef49ae053abb7951c5307ccbbb314c7b8601b7",
                          "92c068146977d26a656c462af52dba4ce6e36b21ea5787b1fbf778414c3b6f75",
-                         "ac8c1db990bd2c5612b2929c097ed5c3e4bc047158d9d7a39c57723c614dd51e") and
+                         "ac8c1db990bd2c5612b2929c097ed5c3e4bc047158d9d7a39c57723c614dd51e",
+                         "6a05773105b10471c6d1b3ee9044b5d161bc6b5d2a9fbbde5d4bc217c58c003d",
+                         "9ef2eeb69dfcbfe53cae8727f7f48ec580c4da4a22f84952353159a74ebef566",
+                         "6b766ffee9ee5ebeee3830a90870afca99a79e7611fd81f2e4afab009513a3dc",
+                         "ca8e711eab79c01a3618039370b4434faebe32b1f0143aebef786da0a53cb031",
+                         "6cb3d7575d70a9c23fd2480fa0f973ff633844b7ca4261af607e1188bdb52d10",
+                         "3413cfc1180ca6948b1ddf3595148e17ef4b4552297e595cb4281b63dbd4515b",
+                         "c90796c07e8febb88895c41d2efff0b31fd6b75448909222a47c42d038851e8a",
+                         "d0fd1d51c6f211610768b17be7940d24c1d0c170fffb84e3683d3aa837a2ce8a",
+                         "6645b5bc9db6514dd8eab204193c95fd6af4836da1b4b2814cdd703081013ece") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
-      process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*"))
+      process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*")) and
+
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\dbgcore.dll!MiniDumpWriteDump*")
 '''
 
 min_endpoint_version = "8.14.0"

@@ -1,0 +1,42 @@
+[rule]
+description = "Remote enumeration of security products may be a precursor to lateral movement."
+id = "2a9793b5-0d04-469c-ac66-38388c6b81ff"
+license = "Elastic License v2"
+name = "Suspicious Remote Security Product Enumeration"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where
+  process.Ext.api.name in ("IWbemServices::CreateInstanceEnum", "IWbemServices::CreateInstanceEnumAsync") and
+  process.Ext.api.parameters.operation in ("AntiVirusProduct", "Win32_DeviceGuard") and
+  process.Ext.api.metadata.client_is_local == false
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1518"
+name = "Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/"
+[[threat.technique.subtechnique]]
+id = "T1518.001"
+name = "Security Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/001/"
+
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.15.0"

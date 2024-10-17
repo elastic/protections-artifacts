@@ -14,25 +14,30 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and process.parent.name == "apt" and
    process.args == "-c" and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")
   ] by process.entity_id
-  [process where event.type == "start" and event.action == "exec" and process.name like (
-     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "php*",
-     "perl", "ruby", "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk"
-   ) or process.executable like (
-     "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/srv/*",
-     "/tmp/*", "/var/tmp/*", "/var/log/*"
+  [process where event.type == "start" and event.action == "exec" and (
+     process.name like (
+       "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "php*",
+       "perl", "ruby", "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk"
+     ) or process.executable like (
+       "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/srv/*",
+       "/tmp/*", "/var/tmp/*", "/var/log/*"
+     )
    ) and not (
      process.parent.executable like (
        "/run/k3s/containerd*", "/tmp/newroot/*", "/usr/share/debconf/frontend", "/var/tmp/buildah*"
       ) or
      process.executable like ("/usr/lib/venv-salt-minion/bin/python.original", "./merged/var/lib/containers/*") or
-     process.command_line == "python3 /usr/sbin/omv-mkaptidx"
+     process.command_line in (
+       "python3 /usr/sbin/omv-mkaptidx",
+       "sh -c apt-get indextargets -o Dir::State::lists=/var/lib/apt/lists/ --format='$(FILENAME)' 'Created-By: Packages'"
+     )
     )
   ] by process.parent.entity_id
 '''

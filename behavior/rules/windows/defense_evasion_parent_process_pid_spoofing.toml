@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 sequence with maxspan=5m
@@ -139,7 +139,9 @@ sequence with maxspan=5m
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
 
   not (process.executable : "?:\\Program Files\\Malwarebytes\\Anti-Malware\\Malwarebytes.exe" and
-       process.code_signature.subject_name == "Malwarebytes Inc." and process.code_signature.trusted == true)
+       process.code_signature.subject_name == "Malwarebytes Inc." and process.code_signature.trusted == true) and
+
+  not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe")
   ] by process.parent.Ext.real.entity_id
 '''
 

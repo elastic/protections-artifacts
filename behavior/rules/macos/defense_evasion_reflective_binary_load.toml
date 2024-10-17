@@ -11,7 +11,7 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 file where event.type != "deletion" and 
@@ -53,8 +53,9 @@ not process.executable : ("/System/*",
                           "/usr/bin/auvaltool",
                           "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp.app/Contents/MacOS/ScanApp",
                           "/Applications/TouchDesigner.app/Contents/MacOS/TouchDesigner",
-                          "/Applications/Ableton Live 11 Suite.app/Contents/MacOS/Live",
-                          "/Applications/Ableton Live 11 Suite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner")
+                          "/Applications/Ableton Live * Standard.app/Contents/MacOS/Live",
+                          "/Applications/Ableton Live * Suite.app/Contents/MacOS/Live",
+                          "/Applications/Ableton Live * Suite.app/Contents/App-Resources/Extensions/PluginScanner/Ableton Plugin Scanner")
 '''
 
 min_endpoint_version = "8.11.0"

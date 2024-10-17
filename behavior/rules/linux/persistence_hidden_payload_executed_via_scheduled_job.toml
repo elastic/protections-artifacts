@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -24,12 +24,19 @@ process where event.type == "start" and event.action == "exec" and (
   process.command_line in (
     "/bin/sh -c /bin/bash /root/rotate.sh rotate /root/.vault-token",
     "/bin/sh -c crontab -l > $HOME/.crontab",
-    "/bin/sh -c autorestic -c /root/.autorestic.yml --ci cron"
+    "/bin/sh -c autorestic -c /root/.autorestic.yml --ci cron",
+    "/bin/sh -c /root/.dbbackup.sh",
+    "/bin/sh -c bash /root/.stafftimerDatabase.sh",
+    "/bin/sh -c bash /root/.db-backup.sh"
   ) or
   process.command_line like ("*/home/*/.*.*", "*/opt/invgate/insight-agent/*") or
   process.args like ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*") or
-  process.executable like ("/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*") or
-  process.name == "riptide-agent"
+  process.executable like (
+    "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*",
+    "/home/*/.local/share/JetBrains/Toolbox/apps/goland/bin/goland",
+    "/tmp/newroot/home/*/.local/share/JetBrains/*"
+  ) or
+  process.name in ("riptide-agent", "zellij")
 )
 '''
 

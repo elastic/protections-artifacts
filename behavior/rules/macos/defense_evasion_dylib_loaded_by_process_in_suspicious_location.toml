@@ -10,7 +10,7 @@ id = "b97ecb91-b4bb-480e-a855-47f2a9ec107c"
 license = "Elastic License v2"
 name = "Dylib Loaded by Process in Suspicious Location"
 os_list = ["macos"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 library where event.action == "load" and
@@ -32,7 +32,8 @@ library where event.action == "load" and
                         "/private/var/folders/*",
                         "/Library/Services/GPGServices.service/Contents/MacOS/GPGServices",
                         "/private/tmp/PKInstallSandbox*") and not
-  dll.path : ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", "/private/var/root/Library/Caches/ms-playwright/*")
+  dll.path : ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", "/private/var/root/Library/Caches/ms-playwright/*",
+              "/Library/Developer/*")
 '''
 
 min_endpoint_version = "8.7.0"

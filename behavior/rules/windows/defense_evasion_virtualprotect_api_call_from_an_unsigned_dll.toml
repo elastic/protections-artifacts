@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by process.entity_id
@@ -124,7 +124,9 @@ sequence by process.entity_id
                 "c69120ae89bbb6a46e0344dc64fc80939b1d2080f7c2637e68369cdd5bf41bc6",
                 "4427a983dde3160e9e4d9a542eeb0e2cb8806116b8576180de2886089069a27e",
                 "8f50545234724876e4d0f7474cd324a6a41903d708cfd6f4b91fbdbea2310677",
-                "b3d1d2dd7f9b54201ff06d56ec7f94d615df946a9a8a0c027a7151fc5c492189")] as event0
+                "b3d1d2dd7f9b54201ff06d56ec7f94d615df946a9a8a0c027a7151fc5c492189",
+                "05a1c85e38e77ea888fefaaab8655ee05350ba9e9cfbf266f645509e7976e9f9",
+                "5cda028106bde1c95339145bce9fc68a3d68d91a108e6776a0eff86d0f2dadc6")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

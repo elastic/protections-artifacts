@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -18,7 +18,7 @@ process.args == "-c" and process.command_line like "*echo *" and process.command
   "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
   "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
   "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*autostart*",
-  "*udev*", "*nohup*", "*xxd *", "*/etc/shadow*"
+  "*udev*", "*xxd *", "*/etc/shadow*"
 ) and
 process.parent.executable != null and
 not (
@@ -43,7 +43,8 @@ not (
     "/u01/app/oracle.ahf/common/venv/bin/python3.10", "/sas/SASHome/SASFoundation/9.4/utilities/bin/elssrv",
     "/d01/oracle/EBS/fs2/EBSapps/10.1.2/bin/rwrun", "/opt/Cimcor/CimTrak/CimTrakAgent/CimTrakAgent.bin", "/usr/bin/xargs",
     "/usr/bin/vncserver", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/GC_Ext/GC/gc_linux_service",
-    "/u00/oracle.ahf/common/venv/bin/python3", "/usr/local/bin/cyrisma/App/jre/bin/java"
+    "/u00/oracle.ahf/common/venv/bin/python3", "/usr/local/bin/cyrisma/App/jre/bin/java",
+    "/data/app/grid/*/perl/bin/perl", "/usr/bin/containerd", "/etc/init.d/init.ohasd", "/opt/CyberCNSAgent/cybercnsagent_linux"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"
@@ -52,11 +53,20 @@ not (
     "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*",
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci;",
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production",
-    "*/opt/oracle/instantclient", "*message*log*rotate*"
+    "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;",
+    "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
+    "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf"
   ) or
   process.parent.command_line like ("*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init") or
-  (process.parent.name == "php" and process.command_line : "*psql*") or
-  (process.parent.name == "sudo" and process.parent.args : "*command_start_*") or
+  (process.parent.name == "php" and process.command_line like "*psql*") or
+  (process.parent.name == "sudo" and process.parent.args like "*command_start_*") or
+  (process.parent.executable == "/usr/lib/systemd/systemd" and
+   process.command_line like ("sh -c LANG=C; echo * | openssl base64 -d -A | /bin/bash", "*/etc/init.d/init.ohasd*")
+  ) or
+  (process.parent.name == "python3" and process.command_line like "*/var/data/backup*") or
+  (process.parent.executable like "/var/lib/docker/overlay2*" and process.command_line like "*dummy*") or
+  (process.parent.executable == "/usr/sbin/httpd" and process.command_line like "*nagios*") or
+  (process.parent.command_line == "php /var/www/html/artisan app:init" and process.command_line like "*coolify*") or
   process.parent.args like ("/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py")
 )
 '''

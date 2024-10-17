@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -31,13 +31,21 @@ process where event.action == "start" and
   process.args : ("/qn", "-qn", "-q", "/q") and
   process.command_line : ("*transforms=http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
 
- (process.pe.original_file_name : "msiexec.exe" and
+ (process.name : "powershell.exe" and process.command_line : "*WindowsInstaller*" and
+  process.command_line : "*http*" and process.command_line : "*InstallProduct*")  or
+
+ (process.name : "msiexec.exe" and
+  process.parent.name : ("explorer.exe", "python.exe") and process.args : ("/i", "-i") and
+  process.command_line : "*http*") or
+
+ ((process.pe.original_file_name : "msiexec.exe" or process.name : "msiexec.exe") and
   process.command_line : "*http*" and process.args_count <= 5 and
   (
    (process.args : ("/i", "-i") and process.args : ("/q", "/quiet", "/qn", "-q", "-quiet", "-qn", "-Q+")) or
    process.args : ("*-Q-I*", "*-I-Q*", "*/q-i*", "*-q/i*", "*/q/i*") or
    (process.parent.name : "cmd.exe" and process.parent.args : "/v/r*")
-   ) and
+   )
+    and
   not descendant of
        [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
   not process.Ext.token.integrity_level_name == "system")

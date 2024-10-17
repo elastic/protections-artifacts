@@ -7,7 +7,7 @@ id = "bae6545b-f93a-43f0-8e0a-f09ccc0198e5"
 license = "Elastic License v2"
 name = "VirtualProtect via Image ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name : "VirtualProtect" and process.Ext.api.behaviors : "image_rop" and
@@ -31,7 +31,10 @@ api where process.Ext.api.name : "VirtualProtect" and process.Ext.api.behaviors 
   not (process.code_signature.trusted == true and process.code_signature.subject_name : "SEIKO EPSON CORPORATION") and
 
   not (process.Ext.api.metadata.target_address_name == "vcswbfstorageadapter.dll" and
-       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\wbiosrvc.dll")
+       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\wbiosrvc.dll") and
+
+  not (process.Ext.api.metadata.target_address_name == "koaxcj_c.dll" and
+       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\mstscax.dll")
 '''
 
 min_endpoint_version = "8.10.0"

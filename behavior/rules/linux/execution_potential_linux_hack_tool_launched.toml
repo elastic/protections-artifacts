@@ -8,10 +8,10 @@ id = "3337a10c-e950-4827-a44e-96a688fba221"
 license = "Elastic License v2"
 name = "Potential Linux Hack Tool Launched"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-process where event.action in ("exec", "exec_event") and event.type == "start" and process.name in (
+process where event.type == "start" and event.action == "exec" and process.name in (
   // exploitation frameworks
   "crackmapexec", "msfconsole", "msfvenom", "sliver-client", "sliver-server", "havoc",
   // network scanners (nmap left out to reduce noise)
@@ -23,7 +23,7 @@ process where event.action in ("exec", "exec_event") and event.type == "start" a
   // exploitation tools
   "sqlmap", "commix", "yersinia",
   // cracking and brute forcing
-  "john", "hashcat", "hydra", "ncrack", "cewl", "fcrackzip", "rainbowcrack",
+  "john", "hashcat", "ncrack", "cewl", "fcrackzip", "rainbowcrack",
   // host and network
   "linenum.sh", "linpeas.sh", "pspy32", "pspy32s", "pspy64", "pspy64s", "binwalk", "evil-winrm"
 )

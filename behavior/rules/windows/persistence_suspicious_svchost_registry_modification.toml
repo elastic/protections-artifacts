@@ -7,7 +7,7 @@ id = "055ce112-f2ad-418b-bce1-5fbe46e703fc"
 license = "Elastic License v2"
 name = "Suspicious Svchost Registry Modification"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost" and
@@ -32,7 +32,8 @@ registry where registry.key : "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\
               "?:\\Windows\\Regedit.exe",
               "?:\\Windows\\VeeamVssSupport\\VeeamGuestHelper.exe",
               "?:\\Program Files\\ForeScout SecureConnector\\SecureConnector.exe",
-              "?:\\Program Files\\UVK - Ultra Virus Killer\\UVK_en64.exe")
+              "?:\\Program Files\\UVK - Ultra Virus Killer\\UVK_en64.exe",
+              "C:\\Windows\\SoftwareDistribution\\Download\\Install\\osrssinst.exe")
 '''
 
 min_endpoint_version = "8.0.0"

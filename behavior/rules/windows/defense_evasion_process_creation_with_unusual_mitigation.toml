@@ -11,7 +11,7 @@ reference = [
     "https://blog.xpnsec.com/protecting-your-malware/",
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -33,7 +33,9 @@ process where event.type == "start" and process.executable != null and
     not process.parent.thread.Ext.call_stack_summary : ("*kernelbase.dll*", "*rpcrt4.dll*", "ntdll.dll|tmmon64.dll"))
  ) and 
  not (process.Ext.token.integrity_level_name : "system" and 
-      process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.exe") and 
+      process.executable :
+               ("?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.exe",
+                "\\Device\\HarddiskVolume*\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.exe")) and
  not (process.code_signature.subject_name : ("Microsoft Windows Defender Advanced Threat Protection", "Wavesor Software (Eightpoint Technologies Ltd. SEZC)") and 
       process.code_signature.status : "trusted" and process.Ext.token.integrity_level_name : "system") and 
  not (process.parent.executable : "?:\\Windows\\System32\\hv*.exe" and process.executable : "?:\\Windows\\System32\\hv*.exe") and 

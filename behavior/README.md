@@ -20,20 +20,21 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.72 | f0798c0e5f2c470f1cb6c32be094af4ab0dd97699b75677b6a980a1676467bfb |
-| production-rules-macos-v1 | 1.0.72 | 9d86d62a056542724a4644f6e7d4a7ac3de572efbba79c922a96107e4c12137a |
-| production-rules-windows-v1 | 1.0.72 | bbfd9fb090eee3c1ff40a2d50c1a16f459e2dfe1e6e5365a96aab0a10fd1f3c4 |
+| production-rules-linux-v1 | 1.0.73 | 9196f0c9c85bdd903a72669af99321f3a9929aaae7592d47e8feaf845f343beb |
+| production-rules-macos-v1 | 1.0.73 | 250e43c88e27be40ee6dd399c9987b06df4fba8deb83d45f646cab0ef2abbc39 |
+| production-rules-windows-v1 | 1.0.73 | e6e3a54a2fcdd6fe13dad732e3919471146de80d0c03a82724376a98d7141f38 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.72', '1.0.71') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.73', '1.0.72') by OS/MITRE Tactic.
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |         0 |       1 |       0 |                 1 |
-| Defense Evasion      |         2 |       7 |       0 |                 9 |
-| Persistence          |         0 |       1 |       0 |                 1 |
+| Defense Evasion      |         1 |       0 |       0 |                 1 |
+| Discovery            |         1 |       0 |       0 |                 1 |
+| Impact               |         1 |       0 |       0 |                 1 |
+| Persistence          |         1 |       0 |       0 |                 1 |
 | Privilege Escalation |         1 |       0 |       0 |                 1 |
-| Total by OS          |         3 |       9 |       0 |                12 |
+| Total by OS          |         5 |       0 |       0 |                 5 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
@@ -42,16 +43,16 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Collection           |        11 |       0 |       5 |                16 |
 | Command and Control  |        31 |       7 |      27 |                65 |
 | Credential Access    |        42 |       3 |      24 |                69 |
-| Defense Evasion      |       250 |      24 |      48 |               322 |
-| Discovery            |         7 |       1 |       4 |                12 |
+| Defense Evasion      |       251 |      24 |      48 |               323 |
+| Discovery            |         8 |       1 |       4 |                13 |
 | Execution            |        62 |      22 |      70 |               154 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
-| Impact               |        17 |       2 |       2 |                21 |
+| Impact               |        18 |       2 |       2 |                22 |
 | Initial Access       |        52 |       2 |       2 |                56 |
 | Lateral Movement     |         8 |       1 |       1 |                10 |
-| Persistence          |        54 |      25 |      19 |                98 |
-| Privilege Escalation |        59 |       8 |       8 |                75 |
-| Total by OS          |       593 |      95 |     211 |               899 |
+| Persistence          |        55 |      24 |      19 |                98 |
+| Privilege Escalation |        60 |       8 |       8 |                76 |
+| Total by OS          |       598 |      94 |     211 |               903 |
 
 
 

@@ -20,21 +20,13 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.73 | 9196f0c9c85bdd903a72669af99321f3a9929aaae7592d47e8feaf845f343beb |
-| production-rules-macos-v1 | 1.0.73 | 250e43c88e27be40ee6dd399c9987b06df4fba8deb83d45f646cab0ef2abbc39 |
-| production-rules-windows-v1 | 1.0.73 | e6e3a54a2fcdd6fe13dad732e3919471146de80d0c03a82724376a98d7141f38 |
+| production-rules-linux-v1 | 1.0.74 | 83e0acc86460c1ad4caf0d6a8e346469b2c89bd090eb6ae019c5afbebe7e8bce |
+| production-rules-macos-v1 | 1.0.74 | 2810dcad0ca2c7a8b9acb344abebd345e3f0a97e573a3c8494eb0912ef19d59c |
+| production-rules-windows-v1 | 1.0.74 | 92d31e7cd14109e7fc950c85f82b09156374924287c12d1754c8a9b3223a9e23 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.73', '1.0.72') by OS/MITRE Tactic.
-| Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
-|----------------------|-----------|---------|---------|-------------------|
-| Defense Evasion      |         1 |       0 |       0 |                 1 |
-| Discovery            |         1 |       0 |       0 |                 1 |
-| Impact               |         1 |       0 |       0 |                 1 |
-| Persistence          |         1 |       0 |       0 |                 1 |
-| Privilege Escalation |         1 |       0 |       0 |                 1 |
-| Total by OS          |         5 |       0 |       0 |                 5 |
+Note: No rule updates have been made between versions ('1.0.74', '1.0.73') by OS/MITRE Tactic.
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 

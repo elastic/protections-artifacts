@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -98,7 +98,9 @@ process where event.action == "start" and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and
   not process.parent.args like  "C:\\WINDOWS\\Runtime\\utility\\wrapper.vbs" and
-  not (process.args like "C:\\Windows\\TEMP\\nessus_*.TMP" and process.parent.name == "WmiPrvSE.exe") and
+  not (process.args : "C:\\Windows\\TEMP\\nessus_*.TMP" and process.parent.name : "WmiPrvSE.exe") and
+  not (process.parent.name : "WmiPrvSe.exe" and 
+       process.args : "& {$j = sajb {$ErrorActionPreference = 'SilentlyContinue';$ErrorActionPreference = 'SilentlyContinue';$jars = $(Get-ChildItem -Path 'C:\\*' -Recurse -Include '*.jar','*.war','*.ear'*") and 
   not (process.parent.name : "wscript.exe" and
        process.parent.args : ("C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs", "C:\\Windows\\System32\\gatherNetworkInfo.vbs")) and
   not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824") and

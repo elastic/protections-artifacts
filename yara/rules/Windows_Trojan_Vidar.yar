@@ -65,3 +65,51 @@ rule Windows_Trojan_Vidar_32fea8da {
         all of them
 }
 
+rule Windows_Trojan_Vidar_c374cd85 {
+    meta:
+        author = "Elastic Security"
+        id = "c374cd85-714b-47c5-8645-cc7918fa2ff1"
+        fingerprint = "4936566b7f3f8250b068aa8e4a9b745c3e9ce2fa35164a94e77b31068d3d6ebf"
+        creation_date = "2024-01-31"
+        last_modified = "2024-10-14"
+        threat_name = "Windows.Trojan.Vidar"
+        reference_sample = "1c677585a8b724332849c411ffe2563b2b753fd6699c210f0720352f52a6ab72"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 83 EC 0C 53 8B 5E 74 39 9E 44 01 00 00 75 07 33 C0 E9 88 00 00 00 57 8B BE E0 00 00 00 85 FF 74 79 8B 8E E4 00 00 00 85 C9 74 6F 8B 86 44 01 00 00 8B D0 03 C7 8D 4C 01 F8 2B D3 89 4D }
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Vidar_65d3d7e5 {
+    meta:
+        author = "Elastic Security"
+        id = "65d3d7e5-2a5f-4434-8578-6ccaa4528086"
+        fingerprint = "249ba1f0078792d3b4cb61b6c7e902b327305a1398a3c88f1720ad8e6c30fe57"
+        creation_date = "2024-10-14"
+        last_modified = "2024-10-24"
+        threat_name = "Windows.Trojan.Vidar"
+        reference_sample = "83d7c2b437a5cbb314c457d3b7737305dadb2bc02d6562a98a8a8994061fe929"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $str_1 = "avghooka.dll" wide fullword
+        $str_2 = "api_log.dll" wide fullword
+        $str_3 = "babyfox.dll" ascii fullword
+        $str_4 = "vksaver.dll" ascii fullword
+        $str_5 = "delays.tmp" wide fullword
+        $str_6 = "\\Monero\\wallet.keys" ascii fullword
+        $str_7 = "wallet_path" ascii fullword
+        $str_8 = "Hong Lee" ascii fullword
+        $str_9 = "milozs" ascii fullword
+    condition:
+        6 of them
+}
+

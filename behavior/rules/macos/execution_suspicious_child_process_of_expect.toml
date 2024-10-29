@@ -10,13 +10,13 @@ id = "e1b837f1-625b-4494-a489-20356b6dedc0"
 license = "Elastic License v2"
 name = "Suspicious Child Process of Expect"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name : "expect" and 
- ((process.name : ("curl", "nscurl", "osascript", "security", "node", "ruby")) or 
+ ((process.name in ("curl", "nscurl", "osascript", "security", "node", "ruby")) or 
   (process.code_signature.trusted == false or process.code_signature.exists == false)) and
- not process.Ext.effective_parent.executable like "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"
+ process.Ext.effective_parent.executable != "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"
 '''
 
 min_endpoint_version = "8.11.0"

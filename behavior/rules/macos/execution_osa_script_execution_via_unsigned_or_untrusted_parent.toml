@@ -7,12 +7,12 @@ id = "ad05c280-9e40-4006-904f-952949ac92a8"
 license = "Elastic License v2"
 name = "OSA Script Execution via Unsigned or Untrusted Parent"
 os_list = ["macos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.name : "osascript" and 
- process.args == "-e" and process.args_count == 3 and 
+ process.args == "-e" and process.args_count == 3 and
  process.command_line == null and
  process.parent.executable : ("/Applications/*", "/Volumes/*", "/Users/*/Applications/*") and
  (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)

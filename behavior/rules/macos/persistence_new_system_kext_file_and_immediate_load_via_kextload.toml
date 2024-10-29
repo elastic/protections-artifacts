@@ -8,12 +8,12 @@ id = "de869aa1-c63a-451e-a953-7069ec39ba60"
 license = "Elastic License v2"
 name = "New System Kext File and Immediate Load via KextLoad"
 os_list = ["macos"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.parent.pid with maxspan=20s
 [process where event.type == "start" and event.action == "exec" and 
-    process.name : ("mv", "cp") and 
+    process.name in ("mv", "cp") and
     process.args : "/System/Library/Extensions/*.kext"]
 [process where event.type == "start" and event.action == "exec" and 
     process.name : "kextload"]

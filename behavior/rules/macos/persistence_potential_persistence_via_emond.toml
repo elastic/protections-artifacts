@@ -12,12 +12,12 @@ reference = [
     "https://www.elastic.co/security-labs/handy-elastic-tools-for-the-enthusiastic-detection-engineer",
     "https://www.xorrior.com/emond-persistence/",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.type == "start" and
  process.parent.name : "emond" and
- process.name : (
+ process.name in (
    "bash",
    "dash",
    "sh",

@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Decoy document creation via Curl"
 os_list = ["macos"]
 reference = ["https://www.kandji.io/blog/todoswift-disguises-malware-download-behind-bitcoin-pdf"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-file where event.action == "modification" and file.path : ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and 
- file.extension : ("pdf", "doc") and process.name : ("curl", "nscurl")
+file where event.action == "modification" and file.path like ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and
+ file.extension in~ ("pdf", "doc") and process.name in ("curl", "nscurl")
 '''
 
 min_endpoint_version = "8.11.0"

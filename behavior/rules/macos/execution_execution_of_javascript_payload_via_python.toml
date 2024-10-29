@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Execution of JavaScript Payload via Python"
 os_list = ["macos"]
 reference = ["https://github.com/MythicAgents/medusa"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-process where event.action == "exec" and process.name : "osascript" and
+process where event.action == "exec" and process.name == "osascript" and
  process.parent.name : "python*" and
- process.args == "-l" and process.args : "JavaScript*" and 
- not process.command_line : "osascript -l JavaScript -e ObjC.import('Foundation'); ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('ManagedInstalls').objectForKey('ManagedInstallDir'))" and
- not process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", 
+ process.args == "-l" and process.args : "JavaScript*" and
+ not process.command_line == "osascript -l JavaScript -e ObjC.import('Foundation'); ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('ManagedInstalls').objectForKey('ManagedInstallDir'))" and
+ not process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
 '''

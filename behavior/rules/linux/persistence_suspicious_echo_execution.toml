@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -18,19 +18,19 @@ process.args == "-c" and process.command_line like "*echo *" and process.command
   "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
   "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile*",
   "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*autostart*",
-  "*udev*", "*xxd *", "*/etc/shadow*"
+  "*xxd *", "*/etc/shadow*"
 ) and
 process.parent.executable != null and
 not (
   process.args like (
     "*/dev/tcp/127.0.0.1/*", "/opt/rapid7/ir_agent/components/insight_agent/common/ir_agent*", "printf*",
-    "*/etc/init.d/XS-Nanny-Watch-Dog*"
+    "*/etc/init.d/XS-Nanny-Watch-Dog*", "LANG=C*"
   ) or
   process.parent.name in (
     "make", "code", "terraform", "pyinfra", "fzf", "bwrap", "start_pxcontroller_pxstorage.py", "timeout", "sshd",
     "ansible-playbook", "nessus-agent-module", "app", "nessusd", "executor", "armor", "cockpit-bridge",
     "rapid7_endpoint_broker", "sudo", "zabbix_agent2", "cbram", "tm_sandbox", "cybereason-activeconsole", "find",
-    "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2"
+    "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2", "vzctl", "cursor"
   ) or
   process.parent.name like "please_go*" or
   process.parent.executable like (
@@ -44,20 +44,24 @@ not (
     "/d01/oracle/EBS/fs2/EBSapps/10.1.2/bin/rwrun", "/opt/Cimcor/CimTrak/CimTrakAgent/CimTrakAgent.bin", "/usr/bin/xargs",
     "/usr/bin/vncserver", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/GC_Ext/GC/gc_linux_service",
     "/u00/oracle.ahf/common/venv/bin/python3", "/usr/local/bin/cyrisma/App/jre/bin/java",
-    "/data/app/grid/*/perl/bin/perl", "/usr/bin/containerd", "/etc/init.d/init.ohasd", "/opt/CyberCNSAgent/cybercnsagent_linux"
+    "/data/app/grid/*/perl/bin/perl", "/usr/bin/containerd", "/etc/init.d/init.ohasd", "/opt/CyberCNSAgent/cybercnsagent_linux",
+    "/vz/*", "/usr/libexec/openssh/sshd-session", "/opt/lockdown/goss/goss", "/opt/oracle.ahf/common/venv/bin/python*"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"
   ) or
   process.command_line like (
-    "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*",
+    "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*", "*/dev/tcp/localhost/*",
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci;",
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production",
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;",
     "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
-    "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf"
+    "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf",
+    "sh -c *clsecho*"
   ) or
-  process.parent.command_line like ("*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init") or
+  process.parent.command_line like (
+    "*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init", "bash -c su -c *"
+  ) or
   (process.parent.name == "php" and process.command_line like "*psql*") or
   (process.parent.name == "sudo" and process.parent.args like "*command_start_*") or
   (process.parent.executable == "/usr/lib/systemd/systemd" and
@@ -67,7 +71,9 @@ not (
   (process.parent.executable like "/var/lib/docker/overlay2*" and process.command_line like "*dummy*") or
   (process.parent.executable == "/usr/sbin/httpd" and process.command_line like "*nagios*") or
   (process.parent.command_line == "php /var/www/html/artisan app:init" and process.command_line like "*coolify*") or
-  process.parent.args like ("/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py")
+  process.parent.args like (
+    "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py", "/tmp/kubectl*.yaml"
+  )
 )
 '''
 

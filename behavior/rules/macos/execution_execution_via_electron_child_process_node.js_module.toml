@@ -12,11 +12,11 @@ reference = [
     "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
     "https://nodejs.org/api/child_process.html",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "exec" and
- process.args : "-e" and process.command_line : "*require*child_process*" and
+ process.args == "-e" and process.command_line : "*require*child_process*" and
  not process.executable :
              ("/usr/bin/grep",
               "/Applications/Docker.app/Contents/Resources/bin/docker",

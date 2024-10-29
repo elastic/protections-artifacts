@@ -8,12 +8,12 @@ id = "10076d7d-9ee0-44b7-99c7-9ed24c7ccf1b"
 license = "Elastic License v2"
 name = "Discovery command output written to a suspicious file"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
 [process where event.type == "start" and event.action == "exec" and process.parent.name : ("bash", "sh", "zsh") and 
-  process.name : ("whoami", "ifconfig", "system_profiler", "dscl", "arch", "csrutil") and process.args_count == 1] as event0
+  process.name in ("whoami", "ifconfig", "system_profiler", "dscl", "arch", "csrutil") and process.args_count == 1] as event0
 [file where event.action == "modification" and file.path : ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/*/.*") and 
   not file.Ext.header_bytes : "*" and stringcontains~(event0.process.command_line, file.name)]
 '''

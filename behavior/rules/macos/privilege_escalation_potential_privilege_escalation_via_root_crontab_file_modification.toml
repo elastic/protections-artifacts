@@ -11,11 +11,11 @@ reference = [
     "https://phoenhex.re/2017-06-09/pwn2own-diskarbitrationd-privesc",
     "https://www.exploit-db.com/exploits/42146",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 file where event.type != "deletion" and
- file.path : "/private/var/at/tabs/root" and not process.executable : "/usr/bin/crontab"
+ file.path == "/private/var/at/tabs/root" and not process.executable == "/usr/bin/crontab"
 '''
 
 min_endpoint_version = "7.15.0"

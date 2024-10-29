@@ -7,7 +7,7 @@ id = "96ffa829-b9fc-4456-be96-2b59b8facaed"
 license = "Elastic License v2"
 name = "VirtualAlloc API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id
@@ -50,7 +50,11 @@ sequence by process.entity_id
                 "0ec17d0e628cd5c9475c88164c642c6fe62322ca62facb0c3937029a39099d31",
                 "ad9b9dd4f424e50bbdf126ed94fdaa75b122889766420c56ebbca1b7622af746",
                 "db3477572af5b5f353e723db1e7e8de9b743a120a145c3c26851e969ac34044d",
-                "864cf2c41bb85ec2e5b461ce4e04df53381a35a7f7c61a16078bee2a82bcedc4")
+                "864cf2c41bb85ec2e5b461ce4e04df53381a35a7f7c61a16078bee2a82bcedc4",
+                "0e1c7395639deafecf99e79d394ff29f7399ccb4cde50b1e5e19861d2ea3aa70",
+                "5ada6b6a5802d17c6cc599907542b231f15d9b39f79dc6693b32cee308a12e5c",
+                "17ddddc4b4d3a6e902b3e84dcd4d3eb4f349efc3c207bb99cd65d71549802b63",
+                "0e1c7395639deafecf99e79d394ff29f7399ccb4cde50b1e5e19861d2ea3aa70")
  ] as event0
 [api where
   process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection : "*X*" and

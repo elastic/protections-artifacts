@@ -7,12 +7,12 @@ id = "479a2a9e-caba-43ea-b28b-88b1b242edd2"
 license = "Elastic License v2"
 name = "Curl to Telegram API"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.name : "curl" and process.args : "*api.telegram.org*" and
- not (process.parent.name : "Telegram" or process.Ext.effective_parent.name : "Telegram")
+ not (process.parent.name == "Telegram" or process.Ext.effective_parent.name == "Telegram")
 '''
 
 min_endpoint_version = "8.10.2"

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious executable copied from volume mount"
 os_list = ["macos"]
 reference = ["https://github.com/darkr4y/geacon"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -17,7 +17,7 @@ sequence by process.entity_id with maxspan=3s
     process.args_count == 3 and process.args : ("cp", "/bin/cp", "/usr/bin/cp") and 
     process.args : "/Volumes/*/.*" and process.args : "/Applications/*"] as event0
   [file where event.action == "modification" and process.name : "cp" and file.path : "/Applications/*" and 
-    file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
+    file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
     stringcontains~(event0.process.command_line, file.name)]
 '''
 

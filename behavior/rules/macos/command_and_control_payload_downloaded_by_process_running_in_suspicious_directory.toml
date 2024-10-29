@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Payload Downloaded by Process Running in Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://objective-see.com/blog/blog_0x69.html"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
   [process where event.action == "exec" and 
-   process.name : ("curl", "nscurl") and process.args : "http*://*/*" and 
+   process.name in ("curl", "nscurl") and process.args : "http*://*/*" and
     descendant of [
-      process where event.action : "exec" and
+      process where event.action == "exec" and
         process.executable : (
           "/tmp/*",
           "/Users/*/Library/Preferences/*",

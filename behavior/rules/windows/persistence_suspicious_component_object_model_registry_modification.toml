@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies Component Object Model (COM) hijacking via registry modification. Adversaries may establish persistence by
+executing malicious content triggered by hijacked references to COM objects.
+"""
+id = "d02ebf45-64b8-4824-96b3-d7b9e27ab980"
+license = "Elastic License v2"
+name = "Suspicious Component Object Model Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/",
+]
+version = "1.0.9"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  (
+   (process.Ext.relative_file_creation_time <= 600 and not process.code_signature.status like ("trusted", "errorExpired", "errorCode_endpoint*")) or
+   process.name in~ ("cscript.exe", "wscript.exe", "powershell.exe", "rundll32.exe")
+  ) and
+  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe", "?:\\Windows\\Installer\\MSI*.tmp") and
+  not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\Installer\\MSI*.tmp,zzzzInvokeManagedCustomActionOutOfProc") and
+  not process.executable like "\\Device\\HarddiskVolume*.exe" and
+  not (process.name == "rundll32.exe" and process.args in ("printui.dll,PrintUIEntryDPIAware", "fdprint,InvokeTask")) and
+  not process.hash.sha256 in ("49833d2820afb1d7409dfbd916480f2cdf5787d2e2d94166725beb9064922d5d",
+                              "2cea4ede340af90ace6f7ad569170a3741bb18f22b9c9c306cab37397f74144a")]
+ [registry where event.action == "modification" and
+  process.executable != null and registry.data.strings != null and
+  registry.path : ("HKEY_USERS\\*Classes\\*\\InprocServer32\\",
+                   "HKEY_USERS\\*Classes\\*\\DelegateExecute\\",
+                   "HKEY_USERS\\*Classes\\*\\TreatAs\\",
+                   "HKEY_USERS\\*Classes\\CLSID\\*\\ScriptletURL\\") and
+   not registry.data.strings :
+             ("dfshim.dll",
+              "mscoree.dll",
+              "*:\\Program Files\\*",
+              "*:\\Program Files (x86)\\*",
+              "*:\\PROGRA~2\\*",
+              "*:\\PROGRA~1\\*",
+              "%SystemRoot%\\Sys*\\shdocvw.dll",
+              "%SYSTEMROOT%\\sys*\\shell32.dll",
+              " %SystemRoot%\\system32\\shdocvw.dll",
+              "?:\\WINDOWS\\Sys*\\mscoree.dll",
+              "C:\\Hansen\\HV*.ocx",
+              "C:\\Atlog\\Land2Map\\Land2Map 2018\\*",
+              "C:\\TraffiCAD Print and Cut\\bridge32.exe",
+              "?:\\Windows\\system32\\jscript.dll",
+              "?:\\Windows\\system32\\urlmon.dll",
+              "{EDBF22EA-0810-46C208519-6FE5077DA965}",
+              "C:\\WINDOWS\\TEMP\\ControlCredentialProvider\\ControlCredentialProvider.dll",
+              "?:\\windows\\SysWow64\\*.OCX",
+              "?:\\Users\\*\\AppData\\Local\\Microsoft\\BingWallpaperApp\\BingVisualSearchContextMenu.dll",
+              "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\FileSyncShell*.dll")]
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.015"
+name = "Component Object Model Hijacking"
+reference = "https://attack.mitre.org/techniques/T1546/015/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.4.0"

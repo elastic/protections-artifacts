@@ -8,14 +8,14 @@ id = "ec3abfa9-499a-40d7-a23d-413ce878db10"
 license = "Elastic License v2"
 name = "Embedded payload dropped and executed"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5s
-[file where event.action == "modification" and file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
-  file.path : ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and
-  not process.executable : "/Library/Developer/*"] by Effective_process.entity_id
-[process where event.type == "start" and event.action == "exec" and process.executable : ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and process.args_count == 1] by process.parent.entity_id
+[file where event.action == "modification" and file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
+  file.path like ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and
+  not process.executable like "/Library/Developer/*"] by Effective_process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.executable like ("/tmp/*", "/private/tmp/*", "/Users/Shared/*") and process.args_count == 1] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.11.0"

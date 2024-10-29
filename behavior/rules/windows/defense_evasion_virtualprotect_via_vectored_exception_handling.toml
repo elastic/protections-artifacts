@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "VirtualProtect via Vectored Exception Handling"
 os_list = ["windows"]
 reference = ["https://github.com/lem0nSec/ShellGhost"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.behaviors : ("execute_fluctuation", "hollow_unbacked") and
@@ -29,7 +29,9 @@ api where process.Ext.api.behaviors : ("execute_fluctuation", "hollow_unbacked")
 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                                         ("fdb0c7af2ab2e821787222517531068ad01e333fe91e54d59bb80a8f49eb0bec",
-                                         "e4a0aa2bb7e9003d1f436e1fcc783c4949f38e24d0d9b960ae9411609fe9c0a6")
+                                         "e4a0aa2bb7e9003d1f436e1fcc783c4949f38e24d0d9b960ae9411609fe9c0a6",
+                                         "03a8cfcb10a61492b540734147888867f43e501322e17202bca8bfb4065197a7",
+                                         "db1bb8b11da98f97a9dcd58d4c204d82c0c059a45e54c13f59ef8a6cc84549fc")
 '''
 
 min_endpoint_version = "8.10.0"

@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -29,8 +29,11 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c bash /root/.stafftimerDatabase.sh",
     "/bin/sh -c bash /root/.db-backup.sh"
   ) or
-  process.command_line like ("*/home/*/.*.*", "*/opt/invgate/insight-agent/*") or
-  process.args like ("/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*") or
+  process.command_line like ("*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*") or
+  process.args like (
+    "/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*", "cd ~/.unison*",
+    "/home/raulsiim/.local/share/JetBrains/Toolbox/apps/intellij-idea-community-edition/bin/idea"
+  ) or
   process.executable like (
     "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*",
     "/home/*/.local/share/JetBrains/Toolbox/apps/goland/bin/goland",

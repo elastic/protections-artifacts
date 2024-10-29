@@ -1,0 +1,77 @@
+[rule]
+description = """
+This rule detects the execution of the systemctl command to start a cron service via an unusual parent process. Malwares
+are known to use this technique to evade detection and maintain persistence on the system.
+"""
+id = "3ee903d9-6839-48d6-9437-3823b77bbeaa"
+license = "Elastic License v2"
+name = "Cron(d) Service Started by Unusual Parent"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "systemctl" and
+process.args == "start" and process.args in ("cron.service", "crond.service", "cron", "crond") and
+process.parent.executable != null and
+not process.parent.name in (
+  "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "cron", "sudo", "deb-systemd-invoke", "efs.postinst",
+  "cron.postinst", "run-document-server.sh", "invoke-rc.d"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

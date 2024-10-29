@@ -14,13 +14,15 @@ reference = [
     "https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
-   descendant of [process where event.action == "exec" and process.name == "udevadm"] and
-   not process.parent.executable == "/etc/telegraf/get-service-status.sh"
+   descendant of [process where event.action == "exec" and process.name == "udevadm"] and not (
+     process.parent.executable == "/etc/telegraf/get-service-status.sh" or
+     process.args == "/sbin/vz-motd"
+   )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(

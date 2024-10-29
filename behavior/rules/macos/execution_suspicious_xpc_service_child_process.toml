@@ -9,14 +9,15 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://objective-see.org/blog/blog_0x59.html",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.type == "start" and process.parent.name : "com.*" and 
-    ((process.name : ("bash", "sh", "zsh") and process.args : "-c") or 
-    process.name : ("curl", "nscurl", "osascript", "python*", "tclsh*")) and not 
-    process.executable : "/Applications/*" and not 
-    process.parent.executable : ("/Applications/*", 
+    ((process.name in ("bash", "sh", "zsh") and process.args == "-c") or
+    process.name like ("curl", "nscurl", "osascript", "python*", "tclsh*")) and not
+    process.executable like "/Applications/*" and not 
+    process.parent.executable like 
+                                ("/Applications/*", 
                                  "/Library/PrivilegedHelperTools/*", 
                                  "/System/*", 
                                  "/private/var/db/com.apple.xpc.*", 
@@ -27,11 +28,10 @@ process where event.type == "start" and process.parent.name : "com.*" and
                                  "/Library/Application Support/AvastSecureLine/components/update/com.avast.osx.secureline.update-agent",
                                  "/usr/libexec/*", 
                                  "/Library/SystemExtensions/*") and not 
-    process.parent.name : ("com.docker.*", "com.todyl.SGNWatchDog") and not
-    process.command_line : ("sh -c /bin/cp /Library/Preferences/SystemConfiguration/preferences.plist /Library/Preferences/SystemConfiguration/preferences.plist.old",
-                            "/bin/sh -c git-upload-pack*",
-                            "*sh -c */Library/Application Support/HmaProVpn/hub/userinit.sh*") and 
-    not process.Ext.effective_parent.executable : "/Library/Application Support/PasswordManager/com.trendmicro.consumer.pwmsvc"
+    process.parent.name like ("com.docker.*", "com.todyl.SGNWatchDog") and not
+    process.command_line like ("sh -c /bin/cp /Library/Preferences/SystemConfiguration/preferences.plist /Library/Preferences/SystemConfiguration/preferences.plist.old",
+                               "/bin/sh -c git-upload-pack*", "*sh -c */Library/Application Support/HmaProVpn/hub/userinit.sh*") and 
+    not process.Ext.effective_parent.executable == "/Library/Application Support/PasswordManager/com.trendmicro.consumer.pwmsvc"
 '''
 
 min_endpoint_version = "8.7.0"

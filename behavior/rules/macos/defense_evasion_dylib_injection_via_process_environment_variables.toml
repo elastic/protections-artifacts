@@ -13,13 +13,13 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-  process.env_vars : ("DYLD_INSERT_LIBRARIES=?*", 
-                      "LD_PRELOAD=?*") and 
-  not process.env_vars : ("DYLD_INSERT_LIBRARIES=",
+  process.env_vars like ("DYLD_INSERT_LIBRARIES=?*", "LD_PRELOAD=?*") and
+  not process.env_vars like
+                         ("DYLD_INSERT_LIBRARIES=",
                           "*=/var/folders/*/mjit_build_dir.dylib",
                           "LD_PRELOAD=",
                           "DYLD_INSERT_LIBRARIES=/System/*",
@@ -32,15 +32,16 @@ process where event.type == "start" and event.action == "exec" and
                           "*=/Library/Frameworks/R.framework/Resources/lib/libR.dylib",
                           "*=/usr/local/Cellar/coreutils/*/libexec/coreutils/libstdbuf.so",
                           "*=/Applications/Xcode.app/*") and 
-  not process.executable : "/Applications/Xcode.app/*" and 
-  not process.parent.executable : ("/usr/bin/xcrun", 
+  not process.executable like "/Applications/Xcode.app/*" and
+  not process.parent.executable like
+                                  ("/usr/bin/xcrun",
                                    "/Applications/Xcode.app/*",
                                    "/Applications/Xcode-*.app/*", 
                                    "/Library/Developer/CommandLineTools/usr/bin/make",
                                    "/Users/*/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64",
                                    "/Library/Printers/Canon/CUPS_Printer/Bins/Bins.bundle/Contents/Library/capdftopdl",
                                    "/Applications/Android Studio.app/Contents/MacOS/studio") and
-  not process.Ext.effective_parent.executable : "/Applications/RStudio.app/Contents/MacOS/RStudio"
+  not process.Ext.effective_parent.executable == "/Applications/RStudio.app/Contents/MacOS/RStudio"
 '''
 
 min_endpoint_version = "8.7.0"

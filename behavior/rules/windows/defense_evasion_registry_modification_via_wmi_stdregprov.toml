@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies registry modification using the Windows Management Instrumentation SrdRegProv provider. Adversaries may
+leverage WMI to modiy system configuration via registry changes.
+"""
+id = "325933f6-e0b9-4cd2-bc4f-a91d78f97f1d"
+license = "Elastic License v2"
+name = "Registry Modification via WMI StdRegProv"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where
+  process.Ext.api.name == "IWbemServices::ExecMethod" and user.id != "S-1-5-18" and
+   process.Ext.api.parameters.operation : ("*StdRegProv::Set*", "*StdRegProv::Create*") and
+
+   process.executable != "C:\\Program Files (x86)\\GreenwayTR\\GMTGC.exe" and
+
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name in ("Reason Cybersecurity Inc.", "Micro-Star International CO., LTD.", "Lansweeper NV")) and 
+       
+   not (process.executable == "C:\\Windows\\SysWOW64\\wscript.exe" and process.parent.executable == "C:\\Windows\\SysWOW64\\cmd.exe" and
+        process.command_line in ("WSCRIPT /B parseXML.vbs base_agentdata.xml agentdata.xml", "WSCRIPT /B ae_scan.vbs agentdata")) and
+
+   not (process.executable == "C:\\Windows\\System32\\wscript.exe" and process.parent.executable == "C:\\Windows\\System32\\gpscript.exe" and
+        process.command_line : "*\\\\*\\sysvol\\*") and
+
+   not (process.executable : "C:\\Windows\\System32\\svchost.exe" and
+        process.command_line in~ ("C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Winmgmt") and
+        process.parent.executable : "C:\\Windows\\System32\\services.exe") and
+
+   not (process.executable == "C:\\Windows\\System32\\cscript.exe" and
+        process.command_line like "cscript.exe //Nologo C:\\Users\\*\\AppData\\Local\\Programs\\*\\resources\\regedit\\vbs\\reg*.wsf A")
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.15.0"

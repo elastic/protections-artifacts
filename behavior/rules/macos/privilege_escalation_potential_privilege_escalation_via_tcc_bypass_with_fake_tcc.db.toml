@@ -12,13 +12,13 @@ reference = [
     "https://www.elastic.co/security-labs/inital-research-of-jokerspy",
     "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 file where file.name : "TCC.db" and 
 process.executable != null and not
-event.action : ("open", "deletion") and
-not process.executable : (
+event.action in ("open", "deletion") and
+not process.executable like (
   "/Applications/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/Support/tccd",
   "/System/Library/PrivateFrameworks/TCC.framework/*",
   "/usr/bin/sysdiagnose",
@@ -31,9 +31,10 @@ not process.executable : (
   "/System/Library/PrivateFrameworks/SystemMigration.framework/Versions/A/Resources/systemmigrationd",
   "/Applications/FortiClient.app/Contents/Frameworks/FortiClient Helper (Renderer).app/Contents/MacOS/FortiClient Helper (Renderer)",
   "/usr/libexec/xpcproxy", "/sbin/launchd") and 
-not file.path : "/Volumes/*" and 
-not (event.action == "modification" and file.path : "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and not file.path : "/Users/*/*/Library/*") and
-not file.path : ("/Users/*/Library/Developer/CoreSimulator/Devices/*/data/Library/TCC/TCC.db", 
+not file.path like "/Volumes/*" and
+not (event.action == "modification" and file.path like "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and not file.path like "/Users/*/*/Library/*") and
+not file.path like
+                ("/Users/*/Library/Developer/CoreSimulator/Devices/*/data/Library/TCC/TCC.db",
                  "/Users/*/Library/Developer/Xcode/UserData/Previews/Simulator Devices/*/data/Library/TCC/TCC.db",
                  "/private/var/folders/*/com.apple.desktopservices.ArchiveService/TemporaryItems/NSIRD_ArchiveService_*/logs/Accessibility/TCC.db")
 '''

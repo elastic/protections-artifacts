@@ -7,14 +7,14 @@ id = "a9b01a60-0d26-4b53-b043-1e995ba5c6d1"
 license = "Elastic License v2"
 name = "User Discovery Command Execution from Volume Mount"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m
  [process where event.type == "start" and event.action == "exec" and 
    process.executable : "/Volumes/*"] by process.entity_id
  [process where event.type == "start" and event.action == "exec" and 
-   process.parent.executable : "/Volumes/*" and process.name : ("whoami", "dscl", "uname")] by process.parent.entity_id
+   process.parent.executable : "/Volumes/*" and process.name in ("whoami", "dscl", "uname")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.7.0"

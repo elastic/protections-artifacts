@@ -11,13 +11,13 @@ reference = [
     "https://slyd0g.medium.com/understanding-and-defending-against-reflective-code-loading-on-macos-e2e83211e48f",
     "https://github.com/slyd0g/SwiftInMemoryLoading",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 file where event.type != "deletion" and 
 file.name : "NSCreateObjectFileImageFromMemory-*" and 
 not process.name == null and
-not (process.name : ("osx-x86_64", 
+not (process.name in ("osx-x86_64",
                      "Setup",
                      "oahd-helper",
                      "ArtPro",
@@ -27,14 +27,15 @@ not (process.name : ("osx-x86_64",
                      "pluginrunner",
                      "Install") and 
      process.code_signature.trusted == true) and 
-not Effective_process.executable : ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
+not Effective_process.executable in ("/Applications/Monotype desktop app/Monotype desktop app.app/Contents/MacOS/masMonitor",
                                     "/Applications/Amazon Music.app/Contents/MacOS/Amazon Music",
                                     "/Applications/MuseScore 4.app/Contents/MacOS/mscore",
                                     "/Applications/Sibelius.app/Contents/MacOS/Sibelius",
                                     "/Applications/GRAPHISOFT/ARCHICAD 24/ARCHICAD 24.app/Contents/MacOS/ARCHICAD",
                                     "/Applications/SoundFlow.app/Contents/Helpers/SoundFlow.app/Contents/MacOS/sfbackend",
                                     "/Applications/iZotope Product Portal.app/Contents/MacOS/Product Portal") and
-not process.executable : ("/System/*", 
+not process.executable like
+                         ("/System/*",
                           "/Library/Application Support/Native Instruments/Komplete Kontrol/ScanApp3.app/Contents/MacOS/ScanApp3",
                           "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X",
                           "/Applications/MuseScore 4.app/Contents/MacOS/mscore",

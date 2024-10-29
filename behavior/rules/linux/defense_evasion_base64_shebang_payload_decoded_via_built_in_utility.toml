@@ -1,0 +1,89 @@
+[rule]
+description = """
+This rule identifies when a built-in utility decodes a payload containing a shebang line (e.g. `#!/bin/sh` or
+`#!/bin/python`). Malware authors may attempt to evade detection and trick users into executing malicious code by
+encoding and obfuscating their payloads.
+"""
+id = "e659b4b9-5bbf-4839-96b9-b489334b4ca1"
+license = "Elastic License v2"
+name = "Base64 Shebang Payload Decoded via Built-in Utility"
+os_list = ["linux"]
+reference = ["https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1140/T1140.yaml"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
+  (process.name == "base64" and process.args : "*-*d*") or
+  (process.name == "openssl" and process.args == "enc" and process.args in ("-d", "-base64")) or
+  (process.name : "python*" and
+    (process.args == "base64" and process.args in ("-d", "-u", "-t")) or
+    (process.args == "-c" and process.args : "*base64*" and process.args : "*b64decode*")
+  ) or
+  (process.name : "perl*" and process.args : "*decode_base64*") or
+  (process.name : "ruby*" and process.args == "-e" and process.args : "*Base64.decode64*")
+) and process.command_line : (
+  // python and python3
+  "*IyEvdXNyL2Jpbi9weXRob24*", "*IyEvYmluL3B5dGhvbg*", "*IyEvdXNyL2Jpbi9weXRob24z*", "*IyEvYmluL3B5dGhvbjM*",
+  // bash and dash
+  "*IyEvdXNyL2Jpbi9iYXNo*", "*IyEvYmluL2Jhc2g*", "IyEvdXNyL2Jpbi9kYXNo*", "*IyEvYmluL2Rhc2g*",
+  // zsh and fish
+  "*IyEvdXNyL2Jpbi96c2g*", "*IyEvYmluL3pzaA*", "IyEvdXNyL2Jpbi9maXNo*", "*IyEvYmluL2Zpc2g*",
+  // sh
+  "*IyEvdXNyL2Jpbi9zaA*", "*IyEvYmluL3No*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

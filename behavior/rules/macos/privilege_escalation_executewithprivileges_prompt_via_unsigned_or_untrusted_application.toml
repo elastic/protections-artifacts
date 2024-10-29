@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "ExecuteWithPrivileges Prompt via Unsigned or Untrusted Application"
 os_list = ["macos"]
 reference = ["https://securelist.com/new-macos-backdoor-crypto-stealer/111778/"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-process where event.type : "start" and event.action == "exec" and process.name: "security_authtrampoline" and 
- process.args : ("/Applications/*", "/Volumes/*") and process.args : "auth*" and 
+process where event.type == "start" and event.action == "exec" and process.name == "security_authtrampoline" and
+ process.args like ("/Applications/*", "/Volumes/*") and process.args like "auth*" and
  (process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false) and 
- process.Ext.effective_parent.executable : ("/Applications/*", "/Volumes/*")
+ process.Ext.effective_parent.executable like ("/Applications/*", "/Volumes/*")
 '''
 
 min_endpoint_version = "8.10.2"

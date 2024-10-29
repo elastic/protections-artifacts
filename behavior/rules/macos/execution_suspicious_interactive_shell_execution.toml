@@ -8,17 +8,17 @@ id = "71c3d317-7c92-4bd7-bbb1-b6ff62f94ebe"
 license = "Elastic License v2"
 name = "Suspicious Interactive Shell Execution"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=30s
 [network where event.type == "start" and event.action == "connection_attempted" and 
-  process.name : (".*", "osascript", "ruby*", "python*")] by process.entity_id
+  process.name like (".*", "osascript", "ruby*", "python*")] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and 
-  process.name : ("bash",  "sh", "zsh") and 
+  process.name in ("bash",  "sh", "zsh") and
   process.args : ("/bin/bash", "/usr/bin/bash", "/bin/sh", "/usr/bin/sh", "/bin/zsh", "/usr/bin/zsh") and 
   process.args : "-i" and process.args_count == 2 and
-  process.parent.name : (".*", "osascript", "ruby*", "python*")] by process.parent.entity_id
+  process.parent.name like (".*", "osascript", "ruby*", "python*")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.3.0"

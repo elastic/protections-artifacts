@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -37,7 +37,14 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
  not process.executable : ("C:\\Program Files (x86)\\Cambridge\\CEPD - 17th Edition\\cepd17.exe",
                            "C:\\Program Files (x86)\\SCRABBLE\\GHScrabble.exe",
                            "C:\\Program Files (x86)\\Kofax\\Power PDF 31\\NPDFLM.exe",
-                           "C:\\Program Files (x86)\\Common Files\\ExpertGPS\\ExpertGPS.exe") and
+                           "C:\\Program Files (x86)\\Common Files\\ExpertGPS\\ExpertGPS.exe",
+                           "C:\\Program Files (x86)\\IBH softec GmbH\\S57W\\S57W.exe",
+                           "C:\\Program Files (x86)\\Microsoft Games\\Age of Empires III\\age3y.exe",
+                           "C:\\Program Files (x86)\\TheLearningPit\\LogixPro\\LPovl.exe",
+                           "C:\\Program Files (x86)\\iLok License Manager\\iLok License Manager.exe",
+                           "C:\\Program Files (x86)\\Common Files\\PACE\\Services\\LicenseServices\\LDSvc.exe",
+                           "C:\\Program Files (x86)\\NWPS\\SwitchPortMapper\\spmap.exe",
+                           "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\t6zm.exe") and
 
  not (process.executable : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" and dll.name == "ws2_32.dll" and
       process.thread.Ext.call_stack_summary == "Unbacked" and

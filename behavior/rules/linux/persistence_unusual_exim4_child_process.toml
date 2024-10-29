@@ -1,0 +1,63 @@
+[rule]
+description = """
+This rule detects the execution of unusual commands via a descendant process of exim4. Attackers may use descendant
+processes of exim4 to evade detection and establish persistence or execute post-exploitation commands on a target
+system.
+"""
+id = "e40b5e63-b737-49a3-9e38-1d8aef72c9e7"
+license = "Elastic License v2"
+name = "Unusual Exim4 Child Process"
+os_list = ["linux"]
+reference = [
+    "https://www.qualys.com/2021/05/04/21nails/21nails.txt",
+    "https://blog.qualys.com/vulnerabilities-threat-research/2021/05/04/21nails-multiple-vulnerabilities-in-exim-mail-server",
+]
+version = "1.0.8"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.name == "exim4" and
+not (
+  process.name in (
+    "exim4", "start-stop-daemon", "run-parts", "systemctl", "update-exim4.conf", "install", "plymouth", "readlink",
+    "grep", "stat", "cmake", "gcc", "cppcheck", "sort", "sshd"
+  ) or
+  process.executable like (
+    "/var/lib/docker/*", "/usr/bin/gpg-connect-agent", "/usr/bin/dpkg", "/bin/sed", "/bin/basename", "/usr/bin/date",
+    "/usr/bin/runc", "/usr/bin/tr", "/sbin/modprobe", "/usr/bin/test", "/usr/bin/gdbus"
+  ) or
+  process.parent.name in (
+    "update-exim4.conf", "apt-key", "apt-get", "git", "lynis", "make", "gcc", "sarg", "cmake", "aarch64-tq-linux-gcc"
+  ) or
+  (process.executable == "/usr/bin/ls" and process.command_line like "*/proc/*/exe") or
+  process.command_line == "rm -f /run/exim4/exim.pid" or
+  process.parent.args like "/usr/bin/test*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+
+[[threat.technique]]
+id = "T1554"
+name = "Compromise Host Software Binary"
+reference = "https://attack.mitre.org/techniques/T1554/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

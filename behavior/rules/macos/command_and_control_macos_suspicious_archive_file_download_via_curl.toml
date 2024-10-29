@@ -8,7 +8,7 @@ id = "5c5bcd83-1734-4d5e-a027-09aaf485b837"
 license = "Elastic License v2"
 name = "MacOS Suspicious Archive File Download via Curl"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name : "curl" and
@@ -24,8 +24,8 @@ not process.args : ("http*://localhost*",
                     "*github.com/elastic/*",
                     "http*://127.0.0.1*", 
                     "http*://0.0.0.0*") and 
-not process.parent.executable : "/Library/Developer/*" and
-not process.Ext.effective_parent.executable : "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM"
+not process.parent.executable like "/Library/Developer/*" and
+not process.Ext.effective_parent.executable == "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM"
 '''
 
 min_endpoint_version = "8.5.0"

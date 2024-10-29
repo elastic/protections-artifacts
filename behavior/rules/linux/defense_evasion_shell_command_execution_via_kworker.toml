@@ -9,7 +9,7 @@ id = "94943f02-5580-4d1d-a763-09e958bd0f57"
 license = "Elastic License v2"
 name = "Shell Command Execution via Kworker"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.parent.name like "kworker*" and 
@@ -17,11 +17,9 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
 process.args : "*sh" and process.args_count >= 3 and process.command_line : (
   "*ip*", "*whoami*", "*id*", "*hostname*", "*touch*", "*curl*", "*wget*", "*chmod*", "*busybox*", "*chattr*", "*echo*",
   "*python*", "*php*", "*perl*", "*ruby*", "*lua*", "*openssl*", "*nc*", "*netcat*", "*ncat*"
-) and not process.command_line like (
-  "sh -c /bin/true",
-  "sh -c /sbin/modprobe --ignore-install nf_conntrack  && /sbin/sysctl --quiet --pattern 'net[.]netfilter[.]nf_conntrack.*' --system",
-  "sh -c /usr/sbin/modprobe --ignore-install nf_conntrack  && /usr/sbin/sysctl --quiet --pattern 'net[.]netfilter[.]nf_conntrack.*' --system",
-  "sh -c /sbin/modprobe --ignore-install nfsv4  && { /sbin/sysctl 2> /dev/null -q --pattern 'fs.nfs.(nfs_callback_tcpport|idmap_cache_timeout)' --system ; exit 0; }"
+) and not (
+  process.command_line == "sh -c /bin/true" or
+  process.args like ("/sbin/modprobe *", "/usr/sbin/modprobe *")
 )
 '''
 

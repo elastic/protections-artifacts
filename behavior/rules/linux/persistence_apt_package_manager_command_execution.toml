@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=5s
@@ -31,7 +31,8 @@ sequence with maxspan=5s
      )
    ) and not (
      process.parent.executable like (
-       "/run/k3s/containerd*", "/tmp/newroot/*", "/usr/share/debconf/frontend", "/var/tmp/buildah*"
+       "/run/k3s/containerd*", "/tmp/newroot/*", "/usr/share/debconf/frontend", "/var/tmp/buildah*", "./merged/*",
+       "./*/vz/root/*"
       ) or
      process.executable like ("/usr/lib/venv-salt-minion/bin/python.original", "./merged/var/lib/containers/*") or
      process.command_line in (

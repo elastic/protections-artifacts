@@ -1,0 +1,58 @@
+[rule]
+description = """
+This rule detects the enabling of write access to the Model Specific Registers (MSR) through the modprobe command. The
+MSR provides a mechanism for the operating system to interact with the processor's hardware. Enabling write access to
+the MSR may allow an attacker to modify the processor's configuration. This activity is seen by adversaries as a way to
+increase mining performance or to bypass security mechanisms.
+"""
+id = "4342c282-ee21-4140-8e27-4e0f551489ef"
+license = "Elastic License v2"
+name = "MSR Write Access Enabled"
+os_list = ["linux"]
+reference = ["https://linux.die.net/man/8/modprobe"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "modprobe" and
+process.args == "msr" and process.args == "allow_writes=on"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1496"
+name = "Resource Hijacking"
+reference = "https://attack.mitre.org/techniques/T1496/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

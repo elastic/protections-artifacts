@@ -8,26 +8,26 @@ id = "ffda6af2-fa65-4ef6-88a4-318b396844fe"
 license = "Elastic License v2"
 name = "Suspicious Stop of TCCD via Launchctl"
 os_list = ["macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and 
     (
         (
-            process.name : "launchctl" and 
-            process.args : "stop" and 
+            process.name == "launchctl" and
+            process.args : "stop" and
             process.args : "com.apple.tccd"
         ) or 
         (
-            process.name : ("sh", "zsh", "bash") and 
-            process.args : "-c" and 
-            process.args : "*com.apple.tccd"
+            process.name in ("sh", "zsh", "bash") and
+            process.args == "-c" and
+            process.args like "*com.apple.tccd"
         )
     ) and not 
-process.parent.executable : ("/sbin/launchd", 
+process.parent.executable in ("/sbin/launchd",
                              "/usr/local/jamf/bin/jamf", 
                              "/usr/bin/sudo") and not 
-process.Ext.effective_parent.executable : ("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", 
+process.Ext.effective_parent.executable in ("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
                                            "/usr/local/jamf/bin/jamf", 
                                            "/Applications/iTerm.app/Contents/MacOS/iTerm2")
 '''

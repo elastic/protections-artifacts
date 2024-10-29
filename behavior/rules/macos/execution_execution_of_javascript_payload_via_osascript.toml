@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "Execution of Javascript Payload via Osascript"
 os_list = ["macos"]
 reference = ["https://github.com/MythicAgents/apfell"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "exec" and process.name : "osascript" and
  process.parent.name : "osascript" and
- process.args == "-l" and process.args : "JavaScript*" and 
- not process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", 
+ process.args == "-l" and process.args : "JavaScript*" and
+ not process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
 '''

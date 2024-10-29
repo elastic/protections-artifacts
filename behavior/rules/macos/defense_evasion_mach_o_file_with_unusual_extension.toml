@@ -7,30 +7,30 @@ id = "9c5c3957-f8cb-4225-ad07-e5a6325eafb2"
 license = "Elastic License v2"
 name = "Mach-O File with Unusual Extension"
 os_list = ["macos"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
-file where event.action : ("modification", "rename", "open") and
+file where event.action in ("modification", "rename", "open") and
 
- file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and
+ file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
 
  (
    /* common image file extensions */
-   file.extension : ("jpg", "jpeg", "emf", "tiff", "gif", "png", "bmp", "fpx", "eps", "svg", "inf") or
+   file.extension in~ ("jpg", "jpeg", "emf", "tiff", "gif", "png", "bmp", "fpx", "eps", "svg", "inf") or
 
    /* common audio and video file extensions */
-   file.extension : ("mp3", "wav", "avi", "mpeg", "flv", "wma", "wmv", "mov", "mp4", "3gp") or
+   file.extension in~ ("mp3", "wav", "avi", "mpeg", "flv", "wma", "wmv", "mov", "mp4", "3gp") or
 
    /* common document file extensions */
-   file.extension : ("txt", "pdf", "doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx", "hwp", "html") or
+   file.extension in~ ("txt", "pdf", "doc", "docx", "rtf", "ppt", "pptx", "xls", "xlsx", "hwp", "html") or
 
    /* common log, txt and temporary file extensions */
-   file.extension : ("log", "conf", "txt", "nib", "ts")
+   file.extension in~ ("log", "conf", "txt", "nib", "ts")
   ) and
-  not (process.executable : ("/bin/cp", "/bin/bash") and file.path : "/Library/PrivilegedHelperTools/us.zoom.ZoomDaemon.tmp") and
+  not (process.executable in ("/bin/cp", "/bin/bash") and file.path == "/Library/PrivilegedHelperTools/us.zoom.ZoomDaemon.tmp") and
   not (file.path : ("/Users/*/Library/Caches/*", "/private/var/folders/*", "/Library/Application Support/CrashPlan/conf/tmp/*") and file.name : "jna*.tmp") and
-  not (process.name : ("javaapplicationstub", "jspawnhelper", "java") and file.name : "jna*.tmp") and
-  not Effective_process.executable : "/Applications/Cisco Secure Endpoint/Secure Endpoint Service.app/Contents/MacOS/ampdaemon"
+  not (process.name in ("javaapplicationstub", "jspawnhelper", "java") and file.name like "jna*.tmp") and
+  not Effective_process.executable == "/Applications/Cisco Secure Endpoint/Secure Endpoint Service.app/Contents/MacOS/ampdaemon"
 '''
 
 min_endpoint_version = "8.10.2"

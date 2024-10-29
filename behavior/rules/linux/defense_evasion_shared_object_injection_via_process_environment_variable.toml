@@ -1,0 +1,120 @@
+[rule]
+description = """
+This rule detects the use of process environment variables LD_PRELOAD to inject a shared library into a binary at or
+prior to execution. A threat actor may do this to load a malicious shared library for persistence, privilege escalation,
+and defense evasion. This activity is not common and should indicate malicious or suspicious behavior.
+"""
+id = "f6f74bd6-414a-4f22-89ec-c045d634a805"
+license = "Elastic License v2"
+name = "Shared Object Injection via Process Environment Variable"
+os_list = ["linux"]
+reference = ["https://attack.mitre.org/techniques/T1574/006/"]
+version = "1.0.33"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
+  (
+    (
+      process.env_vars like ("LD_PRELOAD=/tmp/*.so", 
+                          "LD_PRELOAD=./*.so", 
+                          "LD_PRELOAD=$LD_PRELOAD*",  
+                          "LD_PRELOAD=$*LD_PRELOAD*")
+    ) or 
+    (
+      process.command_line : ("./*") and 
+      process.env_vars : ("LD_PRELOAD=/home/*",
+                          "LD_PRELAOD=/tmp/*",
+                          "LD_PRELOAD=/dev/shm/*",
+                          "LD_PRELOAD=/run/*")
+    ) or 
+    (
+      process.executable : ("/bin/busybox", 
+                            "/usr/bin/busybox", 
+                            "/bin/vi", 
+                            "/usr/bin/vi") and 
+      process.env_vars : "LD_PRELOAD=*.so"
+    ) or 
+    (
+      process.args_count <= 1 and 
+      process.parent.name : ("bash", "sh") and
+      process.env_vars : ("LD_PRELOAD=/home/*",
+                          "LD_PRELAOD=/tmp/*",
+                          "LD_PRELOAD=/dev/shm/*",
+                          "LD_PRELOAD=/run/*")
+    )
+  ) and not (
+  process.env_vars like (
+    "LD_PRELOAD=", "LD_LIBRARY_PATH=", "LD_PRELOAD=/tmp/pressure-vessel-libs-*/${LIB}/gameoverlayrenderer.so",
+    "LD_PRELOAD=*/.mount_*", "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2",
+    "LD_PRELOAD=/opt/deepinstinct/bin/libDeepInterception.so"
+  ) or
+  process.parent.command_line == "runc init" or
+  process.parent.executable like (
+    "/usr/local/bin/fluentd", "/nix/store/*", "/usr/lib/pressure-vessel/from-host/bin/pressure-vessel-adverb", 
+    "/opt/tm/toolchains/*"
+  ) or
+  process.executable == "/usr/bin/adb"
+)
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

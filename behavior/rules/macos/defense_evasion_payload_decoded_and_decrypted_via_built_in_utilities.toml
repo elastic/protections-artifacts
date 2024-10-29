@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Payload Decoded and Decrypted via Built-In Utilities"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/", "https://attack.mitre.org/software/S0402/"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "exec" and process.name == "openssl" and
@@ -20,7 +20,7 @@ process where event.action == "exec" and process.name == "openssl" and
     // openssl decrypting input data
     process.args : "-d" and
     process.args_count > 4 and
-  not process.Ext.effective_parent.executable : ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+  not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                  "/Applications/iTerm.app/Contents/MacOS/iTerm2",
                                                  "/usr/local/jamf/bin/jamf",
                                                  "/Library/Addigy/go-agent")

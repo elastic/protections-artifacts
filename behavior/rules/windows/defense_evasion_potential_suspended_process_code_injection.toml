@@ -7,7 +7,7 @@ id = "47167118-ba42-48e8-8555-dd50d98d21c4"
 license = "Elastic License v2"
 name = "Potential Suspended Process Code Injection"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name  == "WriteProcessMemory" and
@@ -29,7 +29,9 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
                               "?:\\program files\\*",
                               "?:\\program files (x86)\\*",
                               "c:\\windows\\apppatch\\ummon.dll",
-                              "c:\\windows\\apppatch\\apppatch64\\ummon.dll") and
+                              "c:\\windows\\apppatch\\apppatch64\\ummon.dll",
+                              "c:\\windows\\system32\\ctiuser.dll",
+                              "c:\\windows\\syswow64\\ctiuser.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : "mfehcthe.dll" and 
   /* once 8.15.0 schemas are added remove mfehcthe.dll exclusion and add the following line */
   /* add the following exclusion */
@@ -77,7 +79,12 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
                                    "d6b771bedda261bcfe9dd1d1402b7d33b5cd2764cd53d941957e32920cfbeb19",
                                    "3e02857de5a59331e1f7fc7e1ddf5ae58e8680d298bb44b49bd316e0b3a1f024",
                                    "954b4385cf4faecfbf9cd04e01c059eb09113a78ee727149b63a65b495a28a6c",
-                                   "8851b734602eb00da5b1cfc1e40d38f1cb32e0add2df257ff9d7dbd520b4d5da")
+                                   "8851b734602eb00da5b1cfc1e40d38f1cb32e0add2df257ff9d7dbd520b4d5da",
+                                   "b2d86212afab00e7b9bf19b7931277130b653c9258ac419a7a24d749471ea5ac",
+                                   "5231df995d71991ee4108937bb12e4d3f344a96fb0c4cd82c14e18061d6c4730",
+                                   "4daef5be9503c580697b36b0b60a702c109e23840c0632ca00ef4a233603018e",
+                                   "fd788a077e026905f1565e0d2a65dfc6c55699c098a59879d6b0b3f3b8459ae8",
+                                   "dc641636d5d782b31d29ce823e951d1a2164c86ee06bf2f65a841360fb7af356")
 '''
 
 min_endpoint_version = "8.14.0"

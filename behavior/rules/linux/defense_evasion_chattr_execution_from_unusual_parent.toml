@@ -11,14 +11,14 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and
 (process.parent.executable : ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*") or process.parent.name : ".*") and
 process.args : ("-*i*", "+*i*", "+*u*", "-*u*") and not (
   process.parent.name == "." or
-  process.parent.executable like ("./scannerYaraALFA*", "/tmp/newroot/lib/systemd/systemd")
+  process.parent.executable like ("./scannerYaraALFA*", "/tmp/newroot/lib/systemd/systemd", "./ldap2sshkeys")
 )
 '''
 

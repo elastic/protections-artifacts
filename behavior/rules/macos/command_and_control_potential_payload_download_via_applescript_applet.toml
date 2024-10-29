@@ -14,12 +14,12 @@ reference = [
     "https://attack.mitre.org/techniques/T1553/001/",
     "https://attack.mitre.org/techniques/T1105/",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and 
-  process.name : ("curl", "nscurl") and 
-  (process.Ext.effective_parent.name : "applet" or process.parent.name : "applet") and
+  process.name in ("curl", "nscurl") and
+  (process.Ext.effective_parent.name == "applet" or process.parent.name == "applet") and
   not process.args : "POST"
 '''
 

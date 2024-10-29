@@ -10,10 +10,10 @@ license = "Elastic License v2"
 name = "Suspicious Curl to Google App Script Endpoint"
 os_list = ["macos"]
 reference = ["https://www.google.com/script/start/", "https://attack.mitre.org/techniques/T1105/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
-process where event.type == "start" and process.name : ("curl", "nscurl") and process.args : "https://script.google.com/*"
+process where event.type == "start" and process.name in ("curl", "nscurl") and process.args like "https://script.google.com/*"
 '''
 
 min_endpoint_version = "7.15.0"

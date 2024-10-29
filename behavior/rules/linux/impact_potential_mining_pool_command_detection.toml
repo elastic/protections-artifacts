@@ -1,0 +1,78 @@
+[rule]
+description = """
+This rule detects the execution of a process with potential mining pool commandline arguments. Adversaries may leverage
+the resources of compromised systems to mine cryptocurrency, to generate revenue. This activity may impact system
+performance and availability.
+"""
+id = "fcc42a61-4507-4918-867b-d673e5b065dc"
+license = "Elastic License v2"
+name = "Potential Mining Pool Command Detection"
+os_list = ["linux"]
+reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.command_line like (
+  "*cnpool.cc*", "*lindon-pool.win*", "*supportxmr.com*", "*comgandalph3000.com*", "*minergate.com*",
+  "*fjhan.club*", "*emercoin.com*", "*poolto.be*", "*520fjh.org*", "*xmrpool.xyz*", "*simka.pw*", "*noobxmr.com*",
+  "*miner.rocks*", "*minerpool.pw*", "*minemonero.gq*", "*usxmrpool.com*", "*moneroocean.stream*", "*mypool.online*",
+  "*xmrpool.de*", "*emergate.net*", "*ip28.net*", "*mine.bz*", "*dwarfpool.com*", "*xmrig.com*", "*koto-pool.work*",
+  "*monerorx.com*", "*zarabotaibitok.ru*", "*mining-help.ru*", "*mine2gether.com*", "*moneropool.com*", "*viaxmr.com*",
+  "*minerrocks.com*", "*miningpoolhub.com*", "*cortins.tk*", "*pooldd.com*", "*unmineable.com*", "*f2pool.com*",
+  "*graef.in*", "*nanopool.org*", "*myxmr.pw*", "*ratchetmining.com*", "*cryptmonero.com*", "*xmrminer.cc*",
+  "*riefly.id*", "*iwanttoearn.money*", "*herominers.com*", "*xmrpool.me*", "*miners.pro*", "*luckpool.net*",
+  "*twotouchauthentication.online*", "*hashvault.pro*", "*4i7i.com*", "*miningocean.org*", "*2miners.com*",
+  "*xmrpool.eu*", "*monerpool.org*", "*joulecoin.org*", "*suprnova.cc*", "*monerocean.stream*", "*bohemianpool.com*", 
+  "*crypto-pool.fr*", "*xmr.pt*", "*alimabi.cn*", "*teracycle.net*", "*monerogb.com*", "*armornetwork.org*",
+  "*emercoin.net*", "*poolmining.org*", "*minexmr.cn*", "*moriaxmr.com*", "*ethereumpool.co*", "*minercircle.com*",
+  "*prohash.net*", "*zer0day.ru*", "*crypto-pool.info*", "*pool.support*", "*siamining.com*", "*5b6b7b.ru*",
+  "*c3pool.com*", "*somec.cc*", "*hellominer.com*", "*usa-138.com*", "*mixpools.org*", "*xmrpool.net*",
+  "*moneroworld.com*", "*minerxmr.ru*", "*d5pool.us*", "*hashcity.org*", "*hex7e4.ru*", "*zpool.ca*", "*minexmr.com*",
+  "*monerohash.com*", "*multipool.us*", "*moneropool.nl*", "*nbminer.com*", "*ppxxmr.com*", "*xmrfast.com*",
+  "*webhop.net*", "*ethpool.org*", "*slushpool.com*", "*antpool.com*"
+) and not (
+  process.parent.name in ("sendmail", "postfix-local", "check-quota", "zmcontrol", "find", "timeout", "php") or
+  process.name == "timeout" or
+  process.command_line like "*zpool.cache*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1496"
+name = "Resource Hijacking"
+reference = "https://attack.mitre.org/techniques/T1496/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

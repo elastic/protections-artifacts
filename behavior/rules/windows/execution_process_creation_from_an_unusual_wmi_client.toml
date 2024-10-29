@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identify attempts to create a process calling the WMI Win32_Process Create Method. Adversaries may use WMI to indirectly
+spawn a child process.
+"""
+id = "2cbb7988-4fea-4242-a0c0-25f4dd068946"
+license = "Elastic License v2"
+name = "Process Creation from an Unusual WMI Client"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
+version = "1.0.1"
+
+query = '''
+api where
+  process.Ext.api.name == "IWbemServices::ExecMethod" and
+  process.Ext.api.parameters.operation : "*Win32_Process::Create*" and
+
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name in ("TENABLE, INC.", "Autodesk, Inc.", "Archer Technologies﻿ LLC", "Opera Norway AS", 
+      "Beijing Qihu Technology Co., Ltd.", "ACD Systems International Inc.", "CS.NIWC-ATLANTIC.001", "Check Point Software Technologies Ltd.")) and
+  not process.executable in~
+                ("C:\\Program Files\\RSA Archer\\Services\\ArcherTech.JobFramework.Job.exe",
+                 "C:\\Program Files\\Microsoft Configuration Manager\\bin\\x64\\smsexec.exe", 
+                 "C:\\Windows\\System32\\wbem\\WMIC.exe") and 
+  not (process.name == "powershell.exe" and process.parent.executable == "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe") and 
+  not (process.executable : "C:\\Windows\\System32\\svchost.exe" and
+       process.parent.executable : "C:\\Windows\\System32\\services.exe" and
+       process.command_line :
+                      ("C:\\windows\\system32\\svchost.exe -k netsvcs -p",
+                       "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Winmgmt",
+                       "C:\\Windows\\system32\\svchost.exe -k winmgmt -s Winmgmt"))
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.15.0"

@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identify attempts to create a process calling the WMI Win32_Process Terminate Method. Adversaries may use WMI to
+terminate a process.
+"""
+id = "7a018284-7553-4d8d-81e7-5db803b90b39"
+license = "Elastic License v2"
+name = "Process Termination from an Unusual WMI Client"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
+version = "1.0.1"
+
+query = '''
+api where
+  process.Ext.api.name == "IWbemServices::ExecMethod" and
+  process.Ext.api.parameters.operation like "*Win32_Process*::Terminate*" and
+
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name in ("Reason Cybersecurity Inc.", "Micro-Star International CO., LTD.", "Lansweeper NV", "Connectwise, LLC", "Traderlink Italia Srl")) and
+  not process.parent.executable in
+                ("C:\\Program Files (x86)\\Citrix\\System32\\wfshell.exe",
+                 "C:\\Program Files\\Sisense\\DataConnectors\\JVMContainer\\Sisense.JVMConnectorsContainer.exe") and
+  not (process.executable : ("C:\\Windows\\SysWOW64\\msiexec.exe", "C:\\Windows\\System32\\msiexec.exe", "C:\\Windows\\SysWOW64\\wbem\\WMIC.exe") and 
+       process.parent.executable : ("C:\\Windows\\System32\\msiexec.exe", "C:\\Windows\\SysWOW64\\msiexec.exe")) and 
+  not process.executable : ("\\Device\\Mup\\*.exe", 
+                            "C:\\Program Files (x86)\\Litmus Learning\\ATS Engine\\ATS.Engine.exe", 
+                            "C:\\Program Files\\Microsoft Office\\root\\Office??\\MSACCESS.EXE") and
+  not (process.executable == "C:\\Windows\\System32\\wscript.exe" and
+       process.parent.executable == "C:\\Windows\\SysWOW64\\cscript.exe" and
+       process.command_line like "\"C:\\windows\\sysnative\\wscript.exe\" \"C:\\Users\\*\\AppData\\Local\\Temp\\*\\OffScrubc2r.vbs\" \"/ALL\" /ChangedHostBitness")
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.15.0"

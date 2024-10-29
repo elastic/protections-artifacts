@@ -7,13 +7,14 @@ id = "58370744-f52b-4f28-aa06-469efd1e1825"
 license = "Elastic License v2"
 name = "Sensitive File Access followed by Compression"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
-[file where event.action == "open" and not file.name : ("System.keychain", "login.keychain-db")]
-[file where event.action == "modification" and file.extension : ("zip", "gzip", "gz") and 
-  file.path : ("/Users/Shared/*",
+[file where event.action == "open" and not file.name in~ ("System.keychain", "login.keychain-db")]
+[file where event.action == "modification" and file.extension in~ ("zip", "gzip", "gz") and
+  file.path like
+              ("/Users/Shared/*",
                "/Library/Logs/*",
                "/Users/*/Library/Logs/*",
                "/Library/WebServer/*",
@@ -26,7 +27,7 @@ sequence by process.entity_id with maxspan=15s
                "/tmp/*",
                "/var/tmp/*",
                "/private/tmp/*") and
-    not file.path : "/Library/Logs/CrashReporter/*"]
+    not file.path like "/Library/Logs/CrashReporter/*"]
 '''
 
 min_endpoint_version = "8.11.1"

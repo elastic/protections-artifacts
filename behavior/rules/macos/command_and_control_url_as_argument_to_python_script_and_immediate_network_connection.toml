@@ -7,7 +7,7 @@ id = "d230b7d8-b5cf-4d94-ba4c-4635f8c0497c"
 license = "Elastic License v2"
 name = "URL as argument to Python Script and Immediate Network Connection"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -15,7 +15,7 @@ sequence by process.entity_id with maxspan=30s
   process.args : "python*" and process.args : ("/Users/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*") and 
   process.args : "http*" and 
   process.args_count <= 3 and 
-  not process.name : ("curl", "nscurl", "wget", "git", "git-remote-http", "http", "hg")]
+  not process.name in ("curl", "nscurl", "wget", "git", "git-remote-http", "http", "hg")]
 [network where event.type == "start"]
 '''
 

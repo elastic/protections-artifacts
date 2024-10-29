@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Dylib Load via SSH-Keygen"
 os_list = ["macos"]
 reference = ["https://medium.com/@D00MFist/generate-keys-or-generate-dylib-loads-c99ed48f323d"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
-process where event.type == "start" and process.name : "ssh-keygen" and process.args == "-D"
+process where event.type == "start" and process.name : "ssh-keygen" and process.args : "-D"
 '''
 
 min_endpoint_version = "7.17.0"

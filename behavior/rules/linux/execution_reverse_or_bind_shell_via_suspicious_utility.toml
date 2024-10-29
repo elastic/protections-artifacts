@@ -1,0 +1,63 @@
+[rule]
+description = """
+Detects the creation of a reverse or bind shell through suspicious utilities. Attackers may spawn reverse or bind shells
+to establish persistence onto a target system.
+"""
+id = "bb330560-0042-48a5-8232-7f2012d6e440"
+license = "Elastic License v2"
+name = "Reverse or Bind Shell via Suspicious Utility"
+os_list = ["linux"]
+reference = [
+    "https://gtfobins.github.io/#+non-interactive%20bind%20shell",
+    "https://gtfobins.github.io/#+non-interactive%20reverse%20shell",
+]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.name == "nmap" and process.args : "--script=/tmp/tmp.*") or
+  (process.name : "lua*" and process.args == "-e" and process.args : "*socket*") or
+  (process.name in ("awk", "gawk", "nawk") and process.args : "*/inet/tcp*") or
+  (process.name in ("rvim", "vim", "vimdiff", "rview", "view") and process.args == "-c" and process.args : "*socket*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

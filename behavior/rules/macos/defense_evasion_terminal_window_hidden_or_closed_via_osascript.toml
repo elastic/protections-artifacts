@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Terminal Window Hidden or Closed via Osascript"
 os_list = ["macos"]
 reference = ["https://medium.com/@dineshdevadoss04/breaking-down-atomic-macos-stealer-amos-8cd5eea56024"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "osascript" and 
- process.args == "-e" and 
+process where event.type == "start" and event.action == "exec" and process.name == "osascript" and
+ process.args == "-e" and
  (process.command_line : "*Terminal* visible*window*false*" or process.command_line : "*Terminal* to*close*first*window*")
 '''
 

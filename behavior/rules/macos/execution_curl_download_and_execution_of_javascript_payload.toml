@@ -9,17 +9,18 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
   [process where event.action == "exec" and
-    process.name : ("curl", "nscurl") and 
-    process.args : "http*" and
-    not process.args : "https*//support-sp.apple.com/*"]
-  [process where event.action == "exec" and process.name : "osascript" and
-    (process.command_line : "*osascript -l JavaScript" or process.command_line : "*osascript -l JavaScript *.js") and
-    not process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
+    process.name in ("curl", "nscurl") and
+    process.args like "http*" and
+    not process.args like "https*//support-sp.apple.com/*"]
+  [process where event.action == "exec" and process.name == "osascript" and
+    (process.command_line : "*osascript -l JavaScript*" or process.command_line : "*osascript -l JavaScript *.js*") and
+    not process.Ext.effective_parent.executable in
+                                                  ("/usr/local/jamf/bin/jamf",
                                                    "/Library/Addigy/auditor",
                                                    "/Applications/Alacritty.app/Contents/MacOS/alacritty",
                                                    "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 

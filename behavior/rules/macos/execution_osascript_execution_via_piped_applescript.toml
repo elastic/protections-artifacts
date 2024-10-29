@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Osascript Execution via Piped AppleScript"
 os_list = ["macos"]
 reference = ["https://blog.kandji.io/malware-cuckoo-infostealer-spyware"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : ("sh", "bash", "zsh") and 
+process where event.type == "start" and event.action == "exec" and process.name in ("sh", "bash", "zsh") and
  process.args == "-c" and process.command_line : "*osascript*<<EOD*"
 '''
 

@@ -13,17 +13,17 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-vpn-trojan-covid",
     "https://attack.mitre.org/techniques/T1105/",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-process.name : ("curl", "nscurl") and process.args : ("-o", "--output", "--download", "-dl", "-dir", "--directory") and 
+process.name in ("curl", "nscurl") and process.args : ("-o", "--output", "--download", "-dl", "-dir", "--directory") and
 process.args regex~ """http.*:\/\/[0-9]{2,3}.[0-9]{2,3}.[0-9]{2,3}.[0-9]{2,3}\/.*""" and 
-process.parent.name : ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and 
-process.Ext.effective_parent.executable : "/Applications/*" and 
+process.parent.name like ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and
+process.Ext.effective_parent.executable like "/Applications/*" and
 process.args_count <= 10 and 
-not process.args : "/Applications/*" and
-not process.Ext.effective_parent.executable : "/Applications/iTerm.app/Contents/MacOS/iTerm2"
+not process.args like "/Applications/*" and
+not process.Ext.effective_parent.executable == "/Applications/iTerm.app/Contents/MacOS/iTerm2"
 '''
 
 min_endpoint_version = "8.5.0"

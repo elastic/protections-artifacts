@@ -1,0 +1,65 @@
+[rule]
+description = """
+This rule detects process masquerading through the use of the `exec` command. The `exec` command can be used in
+conjunction with the `-a` flag to change the name of the process in the process table. This technique is used by malware
+to hide the true identity of a process from security tools and analysts.
+"""
+id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
+license = "Elastic License v2"
+name = "Potential Process Masquerading via Exec"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+process.args == "-c" and process.command_line : "* exec -a *" and not (
+  process.executable like ("/nix/store/*", "/tmp/newroot/*") or
+  process.parent.executable in ("/opt/warpdotdev/warp-terminal/warp", "/opt/sp/serverpilot/stats/bin/sp-stats") or
+  process.command_line : ("*/tmp/fzf-args*", "/opt/sp/serverpilot/*", "*/opt/forticlientems/*", "*WarpTerminal*") or
+  process.args in (
+    "exec -a sp-monitor /opt/sp/serverpilot/monitor/bin/monitor",
+    "exec -a sp-stats /opt/sp/serverpilot/stats/bin/sp-stats"
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

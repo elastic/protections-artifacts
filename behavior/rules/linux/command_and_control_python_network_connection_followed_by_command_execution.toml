@@ -1,0 +1,98 @@
+[rule]
+description = """
+Detects network connections originating from Python, followed by a suspicious command execution. This behavior is
+consistent with Python-based agents such as Medusa connecting to a C2 framework such as Mythic. The agent polls the C2
+for commands through a web request, after which the command gets executed.
+"""
+id = "b86c5998-3068-43e8-bfb5-ecb593e34ca9"
+license = "Elastic License v2"
+name = "Python Network Connection Followed by Command Execution"
+os_list = ["linux"]
+version = "1.0.10"
+
+query = '''
+sequence with maxspan=5s
+  [network where event.type == "start" and event.action == "connection_attempted" and process.name like "python*" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8"
+     )
+   )
+  ] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and process.parent.name like "python*" and
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
+   process.parent.args_count < 3 and process.args like (
+     "*whoami*", "* wget *", "* chmod *", "* busybox *", "* chattr *", "* php*", "* perl*", "* ruby*", "* lua*",
+     "*netcat *", "*ncat *", "*/dev/shm/*", "* base64 *", "*base32*"
+   ) and not (
+     process.parent.executable like (
+       "/opt/code/localstack/.venv/bin/python", "/opt/imunify360*", "/var/www/kyb/*/env/bin/python3",
+       "/opt/saltstack/salt/bin/python*", "/usr/lib/venv-salt-minion/bin/python.original"
+     ) or
+     process.parent.args in ("/sbin/mount.efs", "/usr/local/bin/cloud_updater.py") or
+     process.command_line in (
+       "/bin/sh -c echo $(ls /home/) root 2>/dev/null",
+       "/bin/sh -c (dir 2>&1 *`|echo CMD);&<# rem #>echo powershell",
+       "/bin/sh -c chmod 744 /tmp/import_gpgkey.sh"
+     ) or
+     process.parent.command_line in (
+       "/opt/imunify360/venv/bin/python3 -m im360.run", "python3 /app_v2/user_monitor_v2.2.py"
+    ) or
+     process.args like ("*openssl*", "/home/*/connect.sh*", "*scraper*", "*crawler*", "*X-aws-ec2-metadata-token:*") or
+     process.parent.command_line like ("*scraper*", "*crawler*", "*ansible*")
+   )
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

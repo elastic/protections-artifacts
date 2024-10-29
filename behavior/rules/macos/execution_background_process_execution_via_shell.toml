@@ -7,14 +7,15 @@ id = "603ac59e-9cca-4c48-9750-e38399079043"
 license = "Elastic License v2"
 name = "Background Process Execution via Shell"
 os_list = ["macos"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-    process.name : ("bash", "sh", "zsh", "tclsh*") and 
-    process.args : "-c" and process.args : ("/* &", "/*&") and 
+    process.name like ("bash", "sh", "zsh", "tclsh*") and
+    process.args == "-c" and process.args like ("/* &", "/*&") and
     process.args_count == 3 and 
-    process.parent.executable : ("/private/tmp/*", 
+    process.parent.executable like 
+                                ("/private/tmp/*", 
                                  "/var/tmp/*", 
                                  "/tmp/*", 
                                  "/var/folders/*", 

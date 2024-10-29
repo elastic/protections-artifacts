@@ -5,12 +5,12 @@ id = "d169079a-3495-40ce-9fde-387852b201de"
 license = "Elastic License v2"
 name = "Initial Access Discovery via Applet Executable"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  (process.Ext.effective_parent.name : "applet" or process.parent.name : "applet") and 
- process.name : ("whoami", "sw_vers", "arch", "uname")
+ process.name in ("whoami", "sw_vers", "arch", "uname")
 '''
 
 min_endpoint_version = "8.7.0"

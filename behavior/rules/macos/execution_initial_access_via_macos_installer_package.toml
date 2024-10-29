@@ -10,12 +10,13 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 sequence with maxspan=1m
-  [process where event.action == "exec" and process.name : ("installer", "package_script_service") and not 
-    process.args : ("/Library/Application Support/JAMF/Downloads/*",
+  [process where event.action == "exec" and process.name in ("installer", "package_script_service") and not
+    process.args like
+                   ("/Library/Application Support/JAMF/Downloads/*",
                     "/tmp/KSInstallAction.*",
                     "/tmp/FLEXnet", 
                     "./Epson Scanner Monitor.pkg",
@@ -23,23 +24,24 @@ sequence with maxspan=1m
                     "./Epson Scanner ICA Driver.pkg",
                     "/tmp/PKInstallSandbox.*/Scripts/com.epson.pkg.eventmanager.*/Epson Scanner Monitor.pkg",
                     "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
-    process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
+    process.parent.executable in ("/usr/local/ltechagent/ltupdate",
                                  "/sbin/launchd", 
                                  "/Users/*/Library/Caches/*",
                                  "/Library/PrivilegedHelperTools/*",
                                  "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                  "/private/var/folders/*/download/ARMDCHammer") and not
-    process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf", 
+    process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
                                                "/Volumes/Fiery Software Manager/Fiery Software Manager.app/Contents/MacOS/Fiery Software Manager")]
-  [process where event.action : ("exec", "fork") and
+  [process where event.action in ("exec", "fork") and
 
     // Descendant of macOS installer process
     descendant of [
         process where event.action == "exec" and
-        process.name : ("Installer", "package_script_service") and not
-        process.args : ("/Library/Application Support/JAMF/Downloads/*", 
+        process.name in ("Installer", "package_script_service") and not
+        process.args like
+                       ("/Library/Application Support/JAMF/Downloads/*",
                         "/tmp/KSInstallAction.*",
                         "/tmp/PKInstallSandbox.*/Scripts/com.epson.pkg.eventmanager.*/Epson Scanner Monitor.pkg",
                         "./Epson Scanner Monitor.pkg",
@@ -48,13 +50,14 @@ sequence with maxspan=1m
                         "./Epson Event Manager.pkg",
                         "./Epson Scanner ICA Driver.pkg",
                         "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
-        process.parent.executable : ("/usr/local/ltechagent/ltupdate", 
+        process.parent.executable like
+                                    ("/usr/local/ltechagent/ltupdate",
                                      "/sbin/launchd", 
                                      "/Users/*/Library/Caches/*",
                                      "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                      "/Library/PrivilegedHelperTools/*",
                                      "/private/var/folders/*/download/ARMDCHammer") and not
-        process.Ext.effective_parent.executable : ("/usr/local/jamf/bin/jamf",
+        process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
                                                    "/Volumes/Mac_User_SW/Fiery Master Installer.app/Contents/MacOS/Fiery Master Installer",
@@ -63,7 +66,7 @@ sequence with maxspan=1m
 
     (
       // curl scope limited to silver-sparrows to reduce noise
-      (process.name : ("curl", "nscurl") and process.command_line : ("*.amazonaws.com*", 
+      (process.name in ("curl", "nscurl") and process.command_line : ("*.amazonaws.com*",
                                                          "*.cloudfront.net*", 
                                                          "*raw.githubusercontent.com*")) or
       // No hang up executed with a bash command
@@ -78,9 +81,9 @@ sequence with maxspan=1m
       // xattr used to change extended attributes for a file
       (process.name == "xattr" and ((process.args : "com.apple.quarantine" and 
         process.args : ("-d", "-w", "-?d", "-?w")) or
-        (process.args : "-c")) and process.args : "/tmp/*") or
+        (process.args == "-c")) and process.args : "/tmp/*") or
       (process.name == "touch" and process.args : "/tmp/*") or
-      (process.name : ("bash", "sh", "zsh") and process.args : "-c" and process.args : ("*/bin/curl*.amazonaws.com*",
+      (process.name in ("bash", "sh", "zsh") and process.args == "-c" and process.args : ("*/bin/curl*.amazonaws.com*",
                                                                                         "*/bin/curl*.cloudfront.net*",
                                                                                         "*/bin/curl*raw.githubusercontent.com*",
                                                                                         "*/bin/osascript*",
@@ -97,7 +100,7 @@ sequence with maxspan=1m
                                      "/Users/*/Library/Caches/*",
                                      "/Library/PrivilegedHelperTools/*",
                                      "/private/var/folders/*/download/ARMDCHammer") and not
-    process.Ext.effective_parent.executable : ("/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+    process.Ext.effective_parent.executable in ("/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                "/Volumes/Mac_User_SW/Fiery Master Installer.app/Contents/MacOS/Fiery Master Installer",
                                                "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",

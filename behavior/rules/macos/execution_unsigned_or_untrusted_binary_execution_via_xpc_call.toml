@@ -9,15 +9,15 @@ id = "ecd7fb9b-4a70-4a8f-8035-2df7fc90cfd5"
 license = "Elastic License v2"
 name = "Unsigned or Untrusted Binary Execution via XPC call"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type : "start" and event.action == "exec" and 
- process.Ext.effective_parent.name : "xpcproxy" and 
- process.parent.name : ("sh", "zsh", "bash") and 
+process where event.type == "start" and event.action == "exec" and
+ process.Ext.effective_parent.name == "xpcproxy" and
+ process.parent.name in ("sh", "zsh", "bash") and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and 
  process.args_count <= 2 and 
- process.executable : ("/Volumes/*", "/Applications/*", "/Users/Shared/*", "/Library/Application Support/*", "/Users/*/Library/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*") and 
+ process.executable like ("/Volumes/*", "/Applications/*", "/Users/Shared/*", "/Library/Application Support/*", "/Users/*/Library/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*") and
  not process.name : "python*"
 '''
 

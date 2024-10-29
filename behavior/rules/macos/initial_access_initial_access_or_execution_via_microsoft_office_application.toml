@@ -8,20 +8,20 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "exec" and
   descendant of [
     process where event.action == "exec" and
-    process.name: (
+    process.name in (
       "Microsoft Word",
       "Microsoft Excel",
       "Microsoft PowerPoint",
       "Microsoft OneNote"
     )
   ] and
-  process.name : (
+  process.name in (
     "curl",
     "nscurl",
     "bash",
@@ -44,7 +44,7 @@ process where event.action == "exec" and
   ) and
 
   // Filter FPs related to product version discovery and Office error reporting behavior
-  not process.args:
+  not process.args like
     (
       "ProductVersion",
       "hw.model",
@@ -61,7 +61,7 @@ process where event.action == "exec" and
       "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*"
     ) and
 
-   not process.parent.executable :
+   not process.parent.executable like
         (
           "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
           "/usr/local/Privacy-i/PISupervisor",
@@ -70,9 +70,9 @@ process where event.action == "exec" and
           "/opt/jc/bin/jumpcloud-agent",
           "/usr/sbin/networksetup"
         ) and
-   not (process.name : "sh" and process.command_line : "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
+   not (process.name == "sh" and process.command_line like "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
 
-   not process.Ext.effective_parent.executable : (
+   not process.Ext.effective_parent.executable in (
         "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
         "/Applications/Docker.app/Contents/MacOS/com.docker.backend",
         "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",

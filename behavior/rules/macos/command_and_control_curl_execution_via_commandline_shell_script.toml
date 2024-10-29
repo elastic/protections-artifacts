@@ -14,17 +14,17 @@ reference = [
     "https://www.sentinelone.com/blog/coming-out-of-your-shell-from-shlayer-to-zshlayer/",
     "https://www.uptycs.com/blog/macos-bashed-apples-of-shlayer-and-bundlore",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "fork" and 
-  process.name : ("bash", "sh", "zsh") and 
-  process.args == "-c" and process.args_count == 3 and 
+  process.name in ("bash", "sh", "zsh") and
+  process.args == "-c" and process.args_count == 3 and
   process.command_line == null and 
   process.parent.name : ("bash", "sh", "zsh")]
 [process where event.type == "start" and event.action == "exec" and 
-  process.name : ("curl", "nscurl")]
+  process.name in ("curl", "nscurl")]
 '''
 
 min_endpoint_version = "8.7.0"

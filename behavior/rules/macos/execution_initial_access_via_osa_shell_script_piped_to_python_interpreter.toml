@@ -8,14 +8,14 @@ id = "2aade342-d45b-4297-a0e0-4cf0962c9042"
 license = "Elastic License v2"
 name = "Initial Access via OSA Shell Script Piped to Python Interpreter"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and 
   process.name : "osascript" and 
-  process.args : "-e" and process.command_line : "*python*"]
-[network where event.type == "start" and event.action : "connection_attempted" and 
+  process.args == "-e" and process.command_line : "*python*"]
+[network where event.type == "start" and event.action == "connection_attempted" and
   process.name : "python*" and
   not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",

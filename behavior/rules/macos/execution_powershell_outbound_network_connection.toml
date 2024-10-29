@@ -7,12 +7,12 @@ id = "53aa049c-72d1-4ddf-b089-a86059642a35"
 license = "Elastic License v2"
 name = "Powershell Outbound Network Connection"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [process where event.type == "start" and event.action == "exec" and process.name : "pwsh"]
-[network where event.type == "start" and process.name : "pwsh" and event.action : "connection_attempted" and
+[network where event.type == "start" and process.name : "pwsh" and event.action == "connection_attempted" and
    not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
        "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",

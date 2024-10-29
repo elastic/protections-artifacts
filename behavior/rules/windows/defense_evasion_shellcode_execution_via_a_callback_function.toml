@@ -1,0 +1,85 @@
+[rule]
+description = """
+Identifies attemtps to call Windows memory management APIs from unusual Microsoft call back function. This may indicate
+an attempt to execute shellcode.
+"""
+id = "976d1f98-59ab-452c-858b-cb1596355564"
+license = "Elastic License v2"
+name = "Shellcode Execution via a CallBack Function"
+os_list = ["windows"]
+reference = ["https://github.com/ChaitanyaHaritash/Callback_Shellcode_Injection/tree/main"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory","VirtualProtectEx", "VirtualAllocEx") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "kernel") and
+ process.thread.Ext.call_stack_final_user_module.name != null and
+
+ /* most abused callBack functions */
+ _arraysearch(process.thread.Ext.call_stack, $entry,
+              $entry.symbol_info like
+                                  ("c:\\windows\\sys?????\\user32.dll!EnumChildWindows+*",
+                                   "c:\\windows\\sys?????\\user32.dll!EnumWindows+*",
+                                   "c:\\windows\\sys?????\\user32.dll!EnumDesktopW+*",
+                                   "c:\\windows\\sys?????\\user32.dll!EnumDesktopWindows*",
+                                   "c:\\windows\\sys?????\\user32.dll!EnumThreadWindows*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumDateFormatsA*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumSystemCodePages?*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumSystemGeoID*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumSystemLanguageGroups*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumSystemLocales*",
+                                   "c:\\windows\\sys?????\\kernel32.dll!EnumUILanguages*")) and
+
+ (
+  (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false or $entry.subject_name in ("AutoIt Consulting Ltd", "Python Software Foundation", "The MathWorks, Inc.")) and
+   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "Unbacked+*" and $entry.protection == "RWX" and
+              stringcontains~($entry.protection_provenance, process.thread.Ext.call_stack_final_user_module.protection_provenance))) or
+
+  (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false or $entry.subject_name in ("AutoIt Consulting Ltd", "Python Software Foundation", "The MathWorks, Inc.")) and
+   stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|", process.thread.Ext.call_stack_final_user_module.protection_provenance))) or
+
+  (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false or $entry.subject_name in ("AutoIt Consulting Ltd", "Python Software Foundation", "The MathWorks, Inc.")) and
+   stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|Unbacked|user32.dll|", process.thread.Ext.call_stack_final_user_module.protection_provenance))) or
+
+  (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false or $entry.subject_name in ("AutoIt Consulting Ltd", "Python Software Foundation", "The MathWorks, Inc.")) and
+   stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|Unbacked|user32.dll|", process.thread.Ext.call_stack_final_user_module.protection_provenance))) or
+
+  (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+   stringcontains~(process.thread.Ext.call_stack_summary, concat(process.thread.Ext.call_stack_final_user_module.name, "|user32.dll|")) and
+   _arraysearch(process.thread.Ext.call_stack, $entry,
+              stringcontains~($entry.symbol_info, process.thread.Ext.call_stack_final_user_module.name) and ($entry.callsite_trailing_bytes : "?*" or $entry.protection == "RWX")))
+
+  ) and
+
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info like
+                                  ("c:\\windows\\sys?????\\ntdll.dll!KiUserCallbackDispatcher+*",
+                                   "c:\\windows\\sys?????\\user32.dll!CreateDialogIndirectParam*",
+                                   "c:\\windows\\sys?????\\user32.dll!AddClipboardFormatListener*",
+                                   "c:\\windows\\sys?????\\user32.dll!DialogBoxParam*",
+                                   "c:\\windows\\sys?????\\user32.dll!DialogBoxIndirectParam*"))
+'''
+
+min_endpoint_version = "8.14.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

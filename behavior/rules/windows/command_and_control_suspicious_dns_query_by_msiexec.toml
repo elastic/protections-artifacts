@@ -1,0 +1,67 @@
+[rule]
+description = """
+Identifies DNS queries by MSIEXEC to suspicious DNS domains related to potentially unwanted software delivered via
+Windows installers.
+"""
+id = "8212cb3a-52a3-4bd9-9074-d0c3488cab6b"
+license = "Elastic License v2"
+name = "Suspicious DNS Query by MSIEXEC"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+dns where process.name : "msiexec.exe" and
+  dns.question.name like ("check-key.com", "key-needs.com", "key-crack.com", "get-lic.com", "get-license?.com",
+                          "software-license?.com", "*.postomodelo.com", "to-license?.com", "lifehackov.ru",
+                          "cld.pt", "to-lic.com", "downloader.yandex.net", "clck.yandex.ru")
+'''
+
+min_endpoint_version = "7.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.16.0"

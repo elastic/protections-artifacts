@@ -1,0 +1,84 @@
+[rule]
+description = """
+This rule detects the execution of a command or binary through the run-parts binary. Run-parts is a utility that runs
+all the executable files in a directory. Attackers may use this technique to execute binaries while attempting to evade
+detection.
+"""
+id = "e8f9661a-a418-45ea-91cc-e2fa705e2ade"
+license = "Elastic License v2"
+name = "Potential Proxy Execution via Run-parts"
+os_list = ["linux"]
+reference = ["https://gtfobins.github.io/gtfobins/run-parts/"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.name == "run-parts" and
+process.parent.command_line like ("/*run-parts *", "run-parts *") and process.parent.args_count < 3 and not (
+  process.executable : (
+    "/usr/lib/*", "/ns/*", "/var/lib/docker/overlay2/*", "/vz/*", "/run/containerd/*", "/etc/*", "/data/docker/*",
+    "/home/*/docker/overlay2/*", "/usr/share/*", "/usr/bin/*", "/bin/*", "/usr/sbin/*", "/sbin/*", "/tmp/newroot/*"
+  ) or
+  process.name in (
+    "su", "logger", "avahi-daemon", "sendmail", "avahi-daemon-check-dns.sh", "grub-mkconfig", "initramfs-tools",
+    "apt-auto-removal", "uninvention-policy-result", "unattended-upgrades", "post-update.d/proxmox-boot-sync",
+    "zz-proxmox-boot", "flash-kernel", "mdadm.finalrd", "dkms_autoinstaller", "frontend", "update-grub-legacy-ec2",
+    "runwsgi"
+  ) or
+  process.args : (
+    "/etc/network/if-*", "/etc/cron.hourly/0anacron", "/etc/resolvconf/update-libc.d/postfix", "/etc/ssl/certs",
+    "/etc/ca-certificates/update.d/certhash"
+  ) or
+  process.parent.args : (
+    "/etc/cron*", "/etc/update-motd.d/*", "/etc/ca-certificates/update.d/*", "/ns/sbin/*", "/etc/periodic/*",
+    "/ns/bin/*", "/opt/local/cron/periodic/*", "/etc/logrotate.d/*", "/usr/share/univention-monitoring-client/scripts/*",
+    "/home/*/scripts/cron*", "/etc/apt/post-invoke.d", "/etc/network/if-up.d", "/etc/letsencrypt/hooks/renew.d",
+    "/config/etc/letsencrypt/renewal-hooks/deploy/" 
+  ) or
+  process.command_line in (
+    "run-parts --lsbsysinit /etc/update-motd.d", "/bin/run-parts /etc/run_once",
+    "run-parts /usr/lib/vmware/viewagent/bin/uninstall",
+    "run-parts /scripts"
+  ) or
+  process.parent.command_line == "run-parts --lsbsysinit /etc/update-motd.d"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

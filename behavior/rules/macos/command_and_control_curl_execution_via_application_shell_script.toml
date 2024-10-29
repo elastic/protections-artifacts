@@ -14,14 +14,14 @@ reference = [
     "https://www.sentinelone.com/blog/from-the-front-lines-new-macos-covid-malware-masquerades-as-apple-wears-face-of-apt/",
     "https://github.com/D00MFist/Mystikal/blob/main/Modules/DMG.py",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
-[process where event.type == "start" and event.action == "fork" and process.name : ("bash", "sh", "zsh", "tclsh*") and 
+[process where event.type == "start" and event.action == "fork" and process.name like ("bash", "sh", "zsh", "tclsh*") and
   process.args_count == 2 and process.args : ("/Applications/*", "/Volumes/*", "/Users/*/Applications/*") and 
   process.parent.name : ("bash", "sh", "zsh", "tclsh*")]
-[process where event.type == "start" and event.action == "exec" and process.name : ("curl", "nscurl*") and 
+[process where event.type == "start" and event.action == "exec" and process.name like ("curl", "nscurl*") and
   process.args : ("-o", 
                   "--output", 
                   "--download", 

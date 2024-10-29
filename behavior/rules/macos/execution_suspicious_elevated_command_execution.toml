@@ -9,16 +9,16 @@ id = "2f7b4008-99c6-46e9-9d93-97a4b801ac91"
 license = "Elastic License v2"
 name = "Suspicious Elevated Command Execution"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-process where event.type : "start" and event.action == "exec" and 
- process.parent.name: "authtrampoline" and 
+process where event.type == "start" and event.action == "exec" and
+ process.parent.name == "authtrampoline" and
  (
   ((process.code_signature.trusted == false or process.code_signature.exists == false) and not process.executable : ("/opt/homebrew/*", "/usr/local/Cellar/*")) or 
-  (process.name : ("osascript", "curl", "nscurl", "dscl", ".*")) or 
-  (process.name : ("sh", "bash", "zsh") and process.args : "-c" and 
-    process.args : ("dscl*", "curl*", "nscurl*", "osascript*", "/tmp/*", "/private/tmp/*", "/var/tmp/*"))
+  (process.name like ("osascript", "curl", "nscurl", "dscl", ".*")) or
+  (process.name in ("sh", "bash", "zsh") and process.args == "-c" and
+    process.args like ("dscl*", "curl*", "nscurl*", "osascript*", "/tmp/*", "/private/tmp/*", "/var/tmp/*"))
  )
 '''
 

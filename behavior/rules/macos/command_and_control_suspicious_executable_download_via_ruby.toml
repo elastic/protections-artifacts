@@ -9,20 +9,20 @@ license = "Elastic License v2"
 name = "Suspicious Executable Download via Ruby"
 os_list = ["macos"]
 reference = ["https://www.mandiant.com/resources/blog/north-korea-supply-chain"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [network where event.type == "start" and process.name : "ruby"]
 [file where event.action != "deletion" and process.name : "ruby" and 
- file.Ext.header_bytes : ("cffaedfe*", "cafebabe*") and 
- not file.extension : ("dylib", "so", "bundle") and 
+ file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
+ not file.extension in~ ("dylib", "so", "bundle") and
  not file.path : ("/opt/homebrew/*", 
                   "/usr/local/Cellar/*",
                   "/Users/*/Library/Caches/*") and
  not file.name : ("fsevent_watch", "DTBiOSSDK") and
  not process.executable : ("/Users/*/.rvm/*", "/Users/*/.rbenv/*") and
- not Effective_process.executable : "/Applications/Android Studio.app/Contents/MacOS/studio"]
+ not Effective_process.executable == "/Applications/Android Studio.app/Contents/MacOS/studio"]
 '''
 
 min_endpoint_version = "8.10.2"

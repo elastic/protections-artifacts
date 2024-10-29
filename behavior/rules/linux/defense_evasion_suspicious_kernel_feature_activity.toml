@@ -1,0 +1,112 @@
+[rule]
+description = """
+This rule detects the modification and reading of kernel features through built-in commands. Attackers may collect
+information, disable or weaken Linux kernel protections. For example, an attacker may modify ASLR protection by
+disabling `kernel.randomize_va_space`, allow ptrace by setting `kernel.yama.ptrace_scope` to 0, or disable the NMI
+watchdog by setting `kernel.nmi_watchdog` to 0. These changes may be used to impair defenses and evade detection.
+"""
+id = "dbbd7fb0-8b29-4c96-901d-166dff728a3b"
+license = "Elastic License v2"
+name = "Suspicious Kernel Feature Activity"
+os_list = ["linux"]
+reference = [
+    "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
+    "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
+]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.args : (
+  "*/etc/sysctl.conf*", "*/etc/sysctl.d/*", "*/proc/sys/kernel/nmi_watchdog*",
+  "*/proc/sys/vm/nr_hugepages*", "*/proc/sys/kernel/yama/ptrace_scope*",
+  "*/proc/sys/kernel/randomize_va_space*", "*/proc/sys/vm/drop_caches*",
+  "*/proc/sys/kernel/sysrq*", "*grsecurity*", "*exec-shield*",
+  "*kernel.randomize_va_space*", "*kernel.yama.ptrace_scope*",
+  "*kernel.nmi_watchdog*", "*vm.nr_hugepages*", "*vm.drop_caches*",
+  "*kernel.sysrq*"
+) and
+process.parent.executable != null and 
+(
+  (process.name == "tee" and process.args like "-*a*") or // also detects --append
+  (process.name == "cat" and not process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")) or
+  (process.name == "grep" and process.args_count == 3 and not process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")) or
+  (process.name == "sysctl" and process.args like ("*-w*", "*--write*", "*=*")) or
+  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and process.args : "*echo *")
+) and not (
+  process.executable like ("/vz/*", "/run/containerd/*", "/var/lib/docker/*") or
+  process.parent.executable like (
+    "/usr/sbin/crond", "/dev/fd/*", "/proc/self/fd/*", "/usr/sbin/cron", "/opt/chef*", "/opt/puppetlabs/*",
+    "/var/ossec/bin/wazuh-modulesd", "/opt/nessus_agent/sbin/nessus-agent-module", "/usr/lib/systemd/systemd",
+    "/bin/su", "/opt/rapid7/*", "/usr/bin/cl-linksafe-reconfigure", "/usr/sbin/sshd", "/usr/bin/su",
+    "/opt/Tanium/TaniumClient/extensions/comply/jre/bin/java", "/pro/bin/sys/install/config/setEPortRange.sh",
+    "/opt/nessus/sbin/nessusd", "/usr/bin/sudo", "/usr/sbin/ScanAssistant", "/usr/bin/peri/disk_perf",
+    "/tmp/JobScheduler-Agent-tia*.sh", "/u01/app/oracle*", "/usr/local/qcloud/*", "/tmp/CVU_19_resource_*checkmemlock.sh",
+    "/usr/local/qualys/cloud-agent/bin/qualys-scan-util", "/oracle/oracle*", "/opt/oracle/*",
+    "/opt/illumio_ven/system/etc/init.d/illumio-firewall", "/usr/local/qualys/cloud-agent/bin/qualys-cloud-agent",
+    "/usr/bin/xfce4-session", "/usr/bin/oracle-database-preinstall-19c-verify", "/usr/sap/hostctrl/exe/saposcol",
+    "./disk_perf", "/usr/bin/tlp-stat", "/usr/sbin/tuned", "/usr/sbin/gdm", "/usr/bin/containerd-shim-runc-v2",
+    "/opt/CyberCNSAgent/cybercnsagent_linux", "/vz/root/*", "/run/containerd/*", "/var/lib/docker/*",
+    "/var/www/batch/bin/python*", "/usr/libexec/*"
+  ) or
+  process.parent.args like (
+    "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",
+    "./disk_perf", "/root/clearmem.sh", "/usr/sbin/tuned"
+  ) or
+  process.args like "*nessus_su_*" or
+  process.parent.command_line in (
+    "/usr/bin/sudo -n /bin/cat /etc/sysctl.conf", "/bin/sh /root/clearmem.sh", "/bin/sh /usr/bin/peri/disk_perf",
+    "bash -x /usr/bin/peri/disk_perf", "runc init", "/bin/bash ./domain_join.sh"
+  ) or
+  (
+    process.parent.executable == "/bin/sh" and process.executable == "/usr/sbin/sysctl" and
+    process.command_line == "sysctl -w vm.drop_caches=3"
+  ) or
+  process.parent.name in ("sudo", "antidot-base.postinst", "vz-cpt-action", "find", "installsupergrp.sh", "criu") or
+  process.parent.command_line like ("*puppet*agent*", "*cis_level*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.006"
+name = "Indicator Blocking"
+reference = "https://attack.mitre.org/techniques/T1562/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

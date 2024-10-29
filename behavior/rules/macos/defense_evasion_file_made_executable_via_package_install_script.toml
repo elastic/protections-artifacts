@@ -8,18 +8,18 @@ id = "75f5d51a-218f-4d5b-80e5-eb74e498fde4"
 license = "Elastic License v2"
 name = "File Made Executable via Package Install Script"
 os_list = ["macos"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.parent.pid with maxspan=30s
 [process where event.type == "start" and event.action == "fork" and 
-    process.name : ("bash", "zsh", "sh", "python*", "tclsh*") and 
+    process.name like ("bash", "zsh", "sh", "python*", "tclsh*") and
     process.args : "/tmp/PKInstallSandbox.*/Scripts/*/postinstall" and 
     process.args : ("/Users/*", "/Volumes/*") and not
     process.args : "/Applications/Adobe Acrobat DC"]
 [process where event.type == "start" and event.action == "exec" and 
-    process.name : "chmod" and 
-    process.args : ("+x", "a+x", "0777", "777") and
+    process.name == "chmod" and 
+    process.args in~ ("+x", "a+x", "0777", "777") and
     process.args : ("/private/tmp/*", 
                     "/var/tmp/*", 
                     "/var/lib/*",
@@ -33,8 +33,8 @@ sequence by process.parent.pid with maxspan=30s
                     "/Library/WebServer/*",
                     "/Library/Fonts/*",
                     "/usr/local/bin/*") and
-    process.parent.name : ("bash", "zsh", "sh", "python*", "tclsh*", "osascript") and not
-    process.command_line : "chmod +x decompress"]
+    process.parent.name like ("bash", "zsh", "sh", "python*", "tclsh*", "osascript") and not
+    process.command_line == "chmod +x decompress"]
 '''
 
 min_endpoint_version = "8.1.0"

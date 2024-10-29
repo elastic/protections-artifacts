@@ -1,0 +1,61 @@
+[rule]
+description = """
+This rule detects potential process masquerading as a kernel process. Attackers may leverage the `exec -a` command to
+change the name of a process to mimic a kernel process, such as `kworker`, `ksoftirqd`, or `kthreadd`. When `exec` is
+spawned directly, it will kill the currently running shell, and continue to run as the masqueraded process. This leads
+to spawning a process with only one process argument, which is the name of a kernel thread (hence the brackets). This
+technique is used by malware to hide the true identity of a process from security tools and analysts.
+"""
+id = "fb2c3240-4cbe-413e-be78-5427807b618b"
+license = "Elastic License v2"
+name = "Process Masquerading as Kernel Process"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.args_count == 1 and
+process.command_line like "[*]" and not (
+  process.executable like "/opt/splunk*" or
+  process.parent.executable like "/opt/splunk*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

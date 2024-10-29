@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -29,14 +29,21 @@ api where
             "?:\\Windows\\System32\\svchost.exe",
             "?:\\Program Files\\Windows Defender\\MpCmdRun.exe")) or
 
-   (process.executable : ("?:\\Windows\\System32\\MRT.exe", "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe") and
-    process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) or
+   (process.executable :
+               ("?:\\Windows\\System32\\MRT.exe",
+                "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe",
+                "?:\\Windows\\SysWOW64\\systeminfo.exe",
+                "?:\\Windows\\System32\\systeminfo.exe",
+                "?:\\Program Files\\Windows Defender\\MpCmdRun.exe",
+                "C:\\Program Files\\Windows Defender\\MsMpEng.exe",
+                "C:\\Program Files\\Microsoft Visual Studio\\20??\\Professional\\Common?\\IDE\\devenv.exe") and
+    process.code_signature.subject_name in ("Microsoft Windows", "Microsoft Corporation") and process.code_signature.trusted == true) or
 
    (process.executable : ("?:\\$Windows.~??\\Sources\\SetupHost.exe", "?:\\$WINDOWS.~??\\Sources\\mighost.exe") and
     process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) or
 
-   (process.executable : "C:\\Windows\\System32\\svchost.exe" and user.id == "S-1-5-18" and
-    process.parent.executable : "?:\\Windows\\System32\\services.exe" and process.command_line like "* -p -s Winmgmt*") or
+   (process.executable : "C:\\Windows\\System32\\svchost.exe" and user.id in ("S-1-5-18", "S-1-5-19") and
+    process.parent.executable : "?:\\Windows\\System32\\services.exe" and process.command_line like ("* -p -s Winmgmt*", "*LocalServiceNetworkRestricted*")) or
 
    (process.executable : "C:\\Program Files (x86)\\Ivanti\\EPM Agent\\Inventory\\ldiscn32.exe" and
     process.code_signature.subject_name == "Ivanti, Inc." and process.code_signature.trusted == true) or
@@ -51,8 +58,11 @@ api where
     process.parent.executable : "?:\\Windows\\System32\\services.exe") or
 
    (process.executable : "?:\\Windows\\System32\\CompatTelRunner.exe" and
-    process.parent.executable : ("?:\\Windows\\System32\\CompatTelRunner.exe", "?:\\Windows\\System32\\svchost.exe") and
-    process.command_line like ("*-m:appraiser.dll -f:UpdateAvStatus*", "*m:appraiser.dll -f:DoScheduledTelemetryRun*")) or
+    process.parent.executable :
+             ("?:\\Windows\\System32\\CompatTelRunner.exe",
+              "?:\\Windows\\System32\\svchost.exe",
+              "C:\\Windows\\CCM\\CcmExec.exe",
+              "C:\\Windows\\SysWOW64\\CheckNetIsolation.exe")) or
 
    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and process.Ext.api.parameters.operation == "Win32_DeviceGuard" and
     process.parent.executable like "?:\\Program Files\\Microsoft Cloud Managed Desktop Extension\\CMDExtension\\Microsoft.Management.Services.CloudManagedDesktop.Agent.exe") or
@@ -66,6 +76,9 @@ api where
     process.parent.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
     user.id == "S-1-5-18" and process.command_line like "*HexProductState*") or
 
+   (process.name == "powershell.exe" and
+    process.Ext.api.parameters.operation == "Win32_DeviceGuard" and process.parent.executable : "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe") or
+
    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
     process.parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\System32\\cmd.exe", "?:\\Program Files\\Mesh Agent\\MeshAgent.exe") and
     process.command_line in ("powershell",
@@ -73,7 +86,19 @@ api where
                              "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" ",
                              "\"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command import-module ActiveDirectory")) or
 
-   (process.code_signature.subject_name == "CPUID" and process.code_signature.trusted == true)
+   (process.code_signature.subject_name in ("CPUID", "Lakeside Software, LLC", "CYBELSOFT", "Connectwise, LLC",
+    "Corsair Memory, Inc.", "Ivanti, Inc.", "POINTWARE INFORMATICA LTDA", "ASUSTeK COMPUTER INC.", "Snow Software AB",
+    "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd") and
+    process.code_signature.trusted == true) or
+
+    process.executable :
+             ("C:\\Program Files (x86)\\Varian\\KeystoneAgent\\VMS.Keystone.DeploymentAgent.exe",
+              "C:\\Program Files\\FusionInventory-Agent\\perl\\bin\\perl.exe",
+              "C:\\Program Files\\FusionInventory-Agent\\perl\\bin\\fusioninventory-agent.exe",
+              "C:\\Program Files (x86)\\Varian\\KeystoneAgent\\VMS.Keystone.DeploymentAgent.exe") or
+
+    (process.parent.executable : "?:\\Windows\\System32\\WmiPrvSe.exe" and process.name == "powershell.exe" and
+     process.command_line : "\"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -NoLogo -Noninteractive -NoProfile  -ExecutionPolicy Bypass \"& 'C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1'\"")
   )
 '''
 

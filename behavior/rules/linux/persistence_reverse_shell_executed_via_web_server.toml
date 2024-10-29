@@ -1,0 +1,103 @@
+[rule]
+description = """
+This rule detects the execution of a reverse shell through a web server parent, or a user associated to a web server
+technology. Attackers may upload a web shell to a web server to gain initial access, or maintain access to a system.
+"""
+id = "79165167-8419-4755-80c7-b151e08eee37"
+license = "Elastic License v2"
+name = "Reverse Shell Executed via Web Server"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and (
+     process.parent.name in ("apache", "nginx", "apache2", "httpd", "lighttpd", "caddy") or
+     user.name in (
+       "apache", "www-data", "httpd", "nobody", "nginx", "lighttpd",
+       "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+     ) or
+     user.id in (99, 65534, 33, 498, 99, 48)
+    ) and (
+      (process.args : "*python*" and process.args : ("*import*pty*spawn*", "*import*subprocess*call*")) or
+      (process.args : "*perl*" and process.args : "*socket*" and process.args : ("*exec*", "*system*")) or
+      (process.args : "*ruby*" and process.args : ("*TCPSocket.new*", "*TCPSocket.open*")) or
+      (process.args : "*lua*" and process.args : "*socket.tcp*" and process.args : ("*io.popen*", "*os.execute*")) or
+      (process.args : "*php*" and process.args : "*fsockopen*" and process.args : "*sh*") or
+      (process.args : "*node*" and process.args : "*spawn*sh*" and process.args : "*connect*") or
+      (process.args : "*awk*" and process.args : "*/inet/tcp/*") or
+      (process.args : "*nc*" and process.args regex~ """[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}""") or
+      (process.args : "*socat*" and process.args : ("*exec*", "*tty*", "*file*") and process.args : ("*tcp*", "*udp*", "*openssl*")) or
+      (process.args : "*sh*" and process.args : ("*/net/tcp*", "*/dev/tcp/*", "*/dev/udp/*")) or
+      (process.args : ("*vim*", "*view*") and process.args : "*socket*") or
+      (process.args : "*busybox*")
+    ) and not process.executable == "/opt/gam/gam"
+  ] by process.entity_id
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8"
+       )
+   )
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

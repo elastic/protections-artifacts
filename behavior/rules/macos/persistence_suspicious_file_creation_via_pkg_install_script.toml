@@ -11,18 +11,19 @@ license = "Elastic License v2"
 name = "Suspicious File Creation via Pkg Install Script"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x51.html"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
-[process where event.type == "start" and process.name : ("bash", "sh", "zsh") and 
+[process where event.type == "start" and process.name in ("bash", "sh", "zsh") and
   process.args : ("/tmp/PKInstallSandbox.*/Scripts/com.*/preinstall", "/tmp/PKInstallSandbox.*/Scripts/*/postinstall") and
   process.args : ("/Users/*", "/Volumes/*") and not
   process.args : "/Users/*/Library/Caches/*"]
-[file where event.action != "deletion" and process.name : ("mv", "cp") and 
-  (file.extension : ("py", "js", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or 
-    file.Ext.header_bytes : ("cffaedfe*", "cafebabe*")) and 
-  file.path : ("/private/etc/*",
+[file where event.action != "deletion" and process.name in ("mv", "cp") and
+  (file.extension in~ ("py", "js", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or
+    file.Ext.header_bytes like ("cffaedfe*", "cafebabe*")) and
+  file.path like
+              ("/private/etc/*",
                "/var/tmp/*", 
                "/tmp/*", 
                "/var/folders/*", 
@@ -37,8 +38,8 @@ sequence by process.entity_id with maxspan=30s
                "/Library/WebServer/*",
                "/Library/Fonts/*",
                "/usr/local/bin/*") and not
-  file.name : "CodeResources" and not
-  file.path : ("/private/tmp/org.gpgtools/MacGPG2/libexec/pinentry-mac.app",
+  file.name == "CodeResources" and not
+  file.path in ("/private/tmp/org.gpgtools/MacGPG2/libexec/pinentry-mac.app",
                "/private/tmp/org.gpgtools/gpgmailloader_install/GPGMailLoader.signed.mailbundle/Contents/MacOS/GPGMailLoader")]
 '''
 

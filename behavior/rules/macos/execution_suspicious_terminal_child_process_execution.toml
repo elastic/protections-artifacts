@@ -11,15 +11,16 @@ license = "Elastic License v2"
 name = "Suspicious Terminal Child Process Execution"
 os_list = ["macos"]
 reference = ["https://cedowens.medium.com/give-me-some-macos-context-c13aecbd4c5b"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
 user.name == "root" and 
-process.parent.name : "terminal" and
-process.name : ("terminal", "zsh", "bash", "sh", "tclsh*") and 
-process.args : "-c" and 
-process.args : ("/private/tmp/*", 
+process.parent.name == "terminal" and
+process.name like ("terminal", "zsh", "bash", "sh", "tclsh*") and
+process.args == "-c" and
+process.args like 
+               ("/private/tmp/*", 
                 "/var/tmp/*", 
                 "/tmp/*", 
                 "/var/folders/*", 

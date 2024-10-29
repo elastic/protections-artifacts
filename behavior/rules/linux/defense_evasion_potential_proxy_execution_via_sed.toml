@@ -1,0 +1,60 @@
+[rule]
+description = """
+This rule detects the execution of a command or binary through the Sed binary. Attackers may use this technique to
+execute commands while attempting to evade detection.
+"""
+id = "272cf3e7-fd3f-442b-a781-f9e864fb1d4c"
+license = "Elastic License v2"
+name = "Potential Proxy Execution via Sed"
+os_list = ["linux"]
+reference = ["https://gtfobins.github.io/gtfobins/sed/"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and process.parent.name == "sed" and
+   process.parent.args == "-n" and not process.args like "s/*"] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and
+   process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.parent.args == "-c"] by process.parent.entity_id
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

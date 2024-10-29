@@ -9,10 +9,10 @@ license = "Elastic License v2"
 name = "Potential Code Injection via Remote Thread"
 os_list = ["macos"]
 reference = ["http://newosxbook.com/src.jl?tree=listings&file=inject.c"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
-process where event.action : "remote_thread" and
+process where event.action == "remote_thread" and
  not process.executable :
           ("/usr/libexec/rosetta/debugserver",
            "/Library/Developer/CoreSimulator/*/RemoteInjectionAgent",

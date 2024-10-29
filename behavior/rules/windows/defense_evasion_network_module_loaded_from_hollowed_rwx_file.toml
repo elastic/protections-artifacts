@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies attempts to load a library from a memory section with read, write and execute permissions and backed by the
+process image file name. This may indicate image hollowing or unpacking from suspicious memory sections.
+"""
+id = "3ba99618-aa88-4550-af14-901f0a606e0b"
+license = "Elastic License v2"
+name = "Network Module Loaded from Hollowed RWX File"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [api where process.Ext.api.behaviors : "hollow_image" and not process.code_signature.status : ("trusted", "errorCode_endpoint*") and
+  stringcontains~(process.executable, process.Ext.api.metadata.target_address_path) and
+  process.Ext.api.parameters.protection : "RWX" and
+  stringcontains~(process.thread.Ext.call_stack_final_user_module.path, process.executable) and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                ("cca09edd7355f857101abfb3028f1637b7dac900741256877206bbbe6554dee2",
+                                 "48eb88531d956af0a31bb50cbcb1e0cff2991662ebb7eabec180e07507d305d5") and
+  process.parent.executable != "C:\\Program Files\\Lambert Instruments\\LIFA\\Capture.exe"]
+ [library where dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll") and
+  not process.thread.Ext.call_stack_contains_unbacked == true and
+  process.thread.Ext.call_stack_summary : "?*" and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and stringcontains~($entry.symbol_info, process.name)) and
+  not process.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+	                $entry.protection : "RWX" and
+	                $entry.symbol_info : ("?:\\Windows\\Temp\\*", "?:\\Windows\\Installer\\*", "?:\\Users\\*\\AppData\\Local\\Temp\\MSI*.tmp!*",
+	                                      "?:\\Windows\\System32\\*", "?:\\Windows\\Syswow64\\*", "?:\\Program Files*")) and
+  not (process.name : "msiexec.exe" and process.thread.Ext.call_stack_summary : "*|isrt.dll|*") and
+  not process.thread.Ext.call_stack_summary : ("*ntdll.dll|kernelbase.dll|issetup.dll|*", "*ntdll.dll|kernelbase.dll|irsetup.exe*")]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -7,15 +7,15 @@ id = "41dcfe9e-9170-4ffe-b620-351736366ced"
 license = "Elastic License v2"
 name = "Possible JAVA Reverse Shell"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=5s
 [network where event.action in ("connection_accepted", "connection_attempted") and 
- process.name : ("java", "javaw")] by process.entity_id
+ process.name in ("java", "javaw")] by process.entity_id
 [process where event.action == "start" and process.parent.name : "java" and
  process.parent.args : "-jar" and
- process.name : ("bash", "sh", "zsh")] by process.parent.entity_id
+ process.name in ("bash", "sh", "zsh")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.7.0"

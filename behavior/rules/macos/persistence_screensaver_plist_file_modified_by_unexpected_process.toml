@@ -12,7 +12,7 @@ reference = [
     "https://posts.specterops.io/saving-your-access-d562bf5bf90b",
     "https://github.com/D00MFist/PersistentJXA",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=30s
@@ -30,7 +30,7 @@ sequence with maxspan=30s
       "/System/Library/CoreServices/ManagedClient.app/Contents/Resources/MCXCompositor",
       "/System/Library/CoreServices/ManagedClient.app/Contents/MacOS/ManagedClient"
       ) and
-    not Effective_process.executable : ("/usr/local/jamf/bin/jamf",
+    not Effective_process.executable in ("/usr/local/jamf/bin/jamf",
                                         "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
   [process where event.action == "exec" and
     process.name == "killall" and process.args : "cfprefsd"]

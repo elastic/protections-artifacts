@@ -1,0 +1,73 @@
+[rule]
+description = """
+This rule detects the execution of a command or binary through the systemd-run binary. Systemd-run can schedule commands
+to be executed in the background through systemd. Attackers may use this technique to execute commands while attempting
+to evade detection.
+"""
+id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
+license = "Elastic License v2"
+name = "Potential Proxy Execution via Systemd-run"
+os_list = ["linux"]
+version = "1.0.7"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
+process.parent.args_count < 3 and process.parent.name != null and not (
+  process.parent.executable in (
+    "/usr/lib/systemd", "/lib/systemd/systemd", "/opt/saltstack/salt/run/run", "/etc/update-motd.d/70-available-updates",
+    "/tmp/newroot/usr/libexec/ptyxis-agent", "/usr/local/sbin/clamscan.sh", "/opt/sentinelone/bin/sentinelone-agent",
+    "/usr/local/bin/salt-minion", "/var/vanta/launcher", "/opt/traps/bin/pmd", "/usr/sbin/gdm", "/usr/bin/salt-minion"
+  ) or
+  process.parent.name like "python*" or
+  process.parent.name in (
+    "udevadm", "daemon.start", "snap", "systemd", "ptyxis-agent", "run-slack", "run-firefox", "dbus.service", "k3s-server",
+    "systemd-udevd"
+  ) or
+  process.command_line in (
+    "/usr/bin/systemd-run /usr/bin/systemctl start man-db-cache-update",
+    "systemd-run env"
+  ) or
+  process.parent.command_line like ("*/var/lib/waagent/*", "bash ./run.sh") or
+  process.args in ("--help", "list-timers", "/usr/lib/udev/kdump-udev-throttler")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

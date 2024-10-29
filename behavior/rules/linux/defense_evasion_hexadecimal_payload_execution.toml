@@ -7,7 +7,7 @@ id = "f2d206e0-97c9-484b-8b6a-5eecd82fbfdc"
 license = "Elastic License v2"
 name = "Hexadecimal Payload Execution"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -30,7 +30,7 @@ length(process.command_line) > 50 and not (
     "./testssl.sh"
   ) or
   process.parent.command_line == "xargs printf" or
-  process.name in ("systemctl", "ln", "gdb", "su") or
+  process.name in ("systemctl", "ln", "gdb", "su", "vzctl") or
   process.executable like ("/var/lib/docker/overlay2*", "/vz/root/*", "/run/containerd/*")
 )
 '''

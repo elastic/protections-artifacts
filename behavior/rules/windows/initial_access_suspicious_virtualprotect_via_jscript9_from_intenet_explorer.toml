@@ -1,0 +1,121 @@
+[rule]
+description = """
+Identifies attempt to call VirtualProtect by Internet Explorer browser or from Jscript9 with unusual properties. This
+may indicate an attempt to exploit a vulnerability for initial access and execution.
+"""
+id = "9c0a744f-d6f5-49d6-9c26-077ea8dd2b59"
+license = "Elastic License v2"
+name = "Suspicious VirtualProtect via Jscript9 from Intenet Explorer"
+os_list = ["windows"]
+reference = [
+    "https://asec.ahnlab.com/en/83877/",
+    "https://medium.com/s2wblog/unmasking-cve-2024-38178-the-silent-threat-of-windows-scripting-engine-91ad954dbf83",
+]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and
+ process.executable : ("C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe", "C:\\Program Files\\Internet Explorer\\iexplore.exe") and 
+ (process.Ext.api.parameters.protection in ("RWX", "R-X") and process.Ext.api.parameters.protection_old == "RW-") and   
+ (
+  process.thread.Ext.call_stack_summary like "ntdll.dll|*kernelbase.dll|Unbacked|jscript9.dll|*" or 
+  process.thread.Ext.call_stack_final_user_module.name == "jscript9.dll"
+  ) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel", "Kernel|*", "snxhk.dll")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info:
+                   ("c:\\windows\\sys?????\\rtworkq.dll!RtwqScheduleWorkItem*",
+                    "c:\\program files\\java\\jre8\\bin\\server\\jvm.dll*",
+                    "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*",
+                    "c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
+ process.Ext.api.metadata.target_address_path != "c:\\program files\\cerner\\ietools (64-bit)\\ietools.dll" and
+ not process.thread.Ext.call_stack_final_user_module.path like 
+                                     ("c:\\windows\\syswow64\\msvbvm??.dll", 
+                                      "c:\\windows\\microsoft.net\\frameworkv*\\mscorwks.dll", 
+                                      "c:\\windows\\syswow64\\mfcore.dll") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+    $entry.subject_name in (
+      "Microsoft Windows Hardware Compatibility Publisher",
+      "Microsoft Windows Software Compatibility Publisher",
+      "Avast Software s.r.o.",
+      "AVG Technologies USA, LLC",
+      "BeyondTrust Corporation",
+      "Bitdefender SRL",
+      "Cylance, Inc.",
+      "Carbon Black, Inc.",
+      "Check Point Software Technologies Ltd.",
+      "Cisco Systems, Inc.",
+      "ESET, spol. s r.o.",
+      "Ivanti, Inc.",
+      "FireEye, Inc.",
+      "Kaspersky Lab",
+      "Kaspersky Lab JSC",
+      "AO Kaspersky Lab",
+      "McAfee, Inc.",
+      "Mozilla Corporation",
+      "Palo Alto Networks",
+      "SentinelOne Inc.",
+      "Sophos Limited",
+      "Symantec Corporation",
+      "Trend Micro, Inc.",
+      "VMware, Inc.",
+      "WithSecure Oyj",
+      "Fortinet Technologies (Canada) ULC",
+      "Fortinet Inc",
+      "Sentinel Labs, Inc.",
+      "VIPRE Security (ThreatTrack Security, Inc.)",
+      "Adobe Inc.",
+      "Codejock Technologies, LLC",
+      "Intel Corporation",
+      "Intel(R) Software Development Products",
+      "Johannes Schindelin", /* Git for Windows */
+      "Mozilla Corporation",
+      "SAP SE",
+      "VisualSVN Software Ltd.",
+      "SAS Institute Inc.",
+      "combit Software GmbH",
+      "PC SOFT INFORMATIQUE",
+      "PC SOFT INFORMATIQUE SAS",
+      "Configura Sverige AB",
+      "MUSARUBRA US LLC",
+      "Trellix"
+    )) and
+
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.callsite_trailing_bytes : "4c8b5424484883c460415941585a594883ec2041ff124883c420415a5d5b5e5f415f415e415d415cc30f1*")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1189"
+name = "Drive-by Compromise"
+reference = "https://attack.mitre.org/techniques/T1189/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

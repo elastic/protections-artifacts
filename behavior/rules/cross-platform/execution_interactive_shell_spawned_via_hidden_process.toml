@@ -8,12 +8,12 @@ id = "8d6b1c6b-fd51-4a56-bc34-ea91f9921651"
 license = "Elastic License v2"
 name = "Interactive shell spawned via hidden process"
 os_list = ["linux", "macos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : ("bash", "sh", "zsh") and 
- process.args == "-i" and process.args_count == 2 and 
- process.parent.name : ".*"
+process where event.type == "start" and event.action == "exec" and process.name in ("bash", "sh", "zsh") and
+ process.args : "-i" and process.args_count == 2 and
+ process.parent.name like ".*"
 '''
 
 min_endpoint_version = "8.11.0"

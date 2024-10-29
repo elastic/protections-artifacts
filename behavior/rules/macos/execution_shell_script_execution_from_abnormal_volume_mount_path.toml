@@ -11,17 +11,16 @@ license = "Elastic License v2"
 name = "Shell Script Execution from abnormal Volume Mount Path"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-process.name : ("bash", "sh", "zsh", "tclsh*") and 
-process.args : "/Volumes/*/Contents/*" and 
+process.name like ("bash", "sh", "zsh", "tclsh*") and
+process.args like "/Volumes/*/Contents/*" and 
 process.args_count <= 3 and
-process.parent.executable : "/Volumes/*" and not 
-process.args : ("/Volumes/*/Contents/MacOS/*",
-                "/Volumes/*/Contents/Eclipse/*") and not
-process.Ext.effective_parent.executable : "/Volumes/*"
+process.parent.executable like "/Volumes/*" and not 
+process.args like ("/Volumes/*/Contents/MacOS/*", "/Volumes/*/Contents/Eclipse/*") and not
+process.Ext.effective_parent.executable like "/Volumes/*"
 '''
 
 min_endpoint_version = "8.5.0"

@@ -11,11 +11,11 @@ os_list = ["macos"]
 reference = [
     "https://medium.com/@marcusthebrody/a-new-macos-persistence-and-deception-technique-default-application-hijacking-52de66955a16",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
- process.name : "open" and process.args == "-a" and process.args : "/System/Applications/*" and 
+ process.name : "open" and process.args : "-a" and process.args : "/System/Applications/*" and
  (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)
 '''
 

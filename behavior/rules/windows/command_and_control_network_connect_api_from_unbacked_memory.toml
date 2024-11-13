@@ -7,15 +7,25 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
 
  process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ (
+  process.thread.Ext.call_stack_summary :
+               ("ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked",
+                "ntdll.dll|mswsock.dll|Unbacked",
+                "wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked",
+                "wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|Unbacked") or
 
- process.thread.Ext.call_stack_summary :
-               ("ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked", "ntdll.dll|mswsock.dll|Unbacked") and
+  ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+   startswith~(process.thread.Ext.call_stack_summary, concat("wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked|", process.name))) or
+
+   ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+    startswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked", process.name)))
+ ) and
 
  /* trailing bytes are not null */
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and
@@ -37,7 +47,12 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "7f28d5f5d96183ed01c345fdc5d28e82ae255aa19ecb329ab9fa9ecdf10f79de",
                                    "5ec183e4e31a18a7788ffa4514e1e555d458725e4521160221ea36df5e29a35f",
                                    "5d1ace7a28fb13f34a4f56045f41285b2f07764f42e09fc4d5ce72b10ffbed38",
-                                   "df13445949901d9f43575ad8fd5005a490e9a2fa68e27e26e6ea6d4014b83635") and
+                                   "df13445949901d9f43575ad8fd5005a490e9a2fa68e27e26e6ea6d4014b83635",
+                                   "8b354c30a6fccb12963cf2bf06fcf60efcc2bef7e3b735cab36f4b26e8cd105b",
+                                   "c809da8be3cad745801f3668df829bddc39e7ffb0c526fe98ada697b60811922",
+                                   "b4e067d5b1f09821e7a3b6106547ee23572f64e604ffa29041b8cbc7e63b58a7",
+                                   "dcfa8e77235026558f65e6ab82d2b9e69768f023204062f628234b2b5506fd32",
+                                   "617b0977d387472a4ca0948f1ba19640a21d1fa1dca52e3047c5e630af231062") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :

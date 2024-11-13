@@ -8,7 +8,7 @@ id = "dc1cee03-4923-4c6b-b00b-8a5c323bb753"
 license = "Elastic License v2"
 name = "File Downloaded via Curl or Wget to Hidden Directory"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -17,12 +17,18 @@ process where event.type == "start" and event.action == "exec" and (
   (process.name == "curl" and process.args in ("--output", "-o") and
    process.args like ("/tmp*/.*", "/var/tmp*/.*", "/dev/shm/*"))
 ) and not (
-  process.parent.executable in ("/Tools/aw_api.sh", "tools/dialyzer/run.sh") or
+  process.parent.executable in (
+    "/Tools/aw_api.sh", "tools/dialyzer/run.sh", "/bin/kubectl", "/srv/kube-proxy-run", "/srv/kubelet/run"
+  ) or
+  process.parent.executable like "/run/containerd/*" or
   process.parent.command_line in ("bash /usr/bin/maldet -u", "runc init") or
-  process.command_line like ("*/tmp/.dialyzer_analysis*", "*.ansible*") or
+  process.command_line like (
+    "*/tmp/.dialyzer_analysis*", "*.ansible*", "curl -s https://gist.githubusercontent.com/*bashrc_downlord"
+  ) or
   process.args like (
     "https://release-registry.services.sentry.io/apps/sentry-cli/*package=sentry-cli",
-    "https*github*astral-sh/rye/*"
+    "https*github*astral-sh/rye/*",
+    "https://github.com/codecrafters-io/*"
   )
 )
 '''

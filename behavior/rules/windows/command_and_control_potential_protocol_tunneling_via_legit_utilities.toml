@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Protocol Tunneling via Legit Utilities"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,11 @@ process where event.action == "start" and
 
   (process.executable : "?:\\Windows\\System32\\OpenSSH\\ssh.exe" and process.command_line : ("*127.0.0.*", "*:localhost:*"))
  )
-and not (process.code_signature.subject_name : "ninjaRMM LLC" and process.code_signature.status : "trusted")
+and not (process.code_signature.subject_name : "ninjaRMM LLC" and process.code_signature.status : "trusted") and
+not (process.name:"ssh.exe" and process.args in ("22000:127.0.0.1:1466", "localhost:8897:localhost:8897", "22000:127.0.0.1:1466",
+                                                 "10005:localhost:5050", "localhost:8897:localhost:8897", "59000:localhost:5901",
+                                                 "-L30000:localhost:30000", "7779:localhost:7779", "5000:localhost:5000",
+                                                 "8888:localhost:8888"))
 '''
 
 min_endpoint_version = "7.15.0"

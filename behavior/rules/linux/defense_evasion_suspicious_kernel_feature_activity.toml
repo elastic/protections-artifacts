@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.6"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -46,7 +46,8 @@ process.parent.executable != null and
     "/usr/bin/xfce4-session", "/usr/bin/oracle-database-preinstall-19c-verify", "/usr/sap/hostctrl/exe/saposcol",
     "./disk_perf", "/usr/bin/tlp-stat", "/usr/sbin/tuned", "/usr/sbin/gdm", "/usr/bin/containerd-shim-runc-v2",
     "/opt/CyberCNSAgent/cybercnsagent_linux", "/vz/root/*", "/run/containerd/*", "/var/lib/docker/*",
-    "/var/www/batch/bin/python*", "/usr/libexec/*"
+    "/var/www/batch/bin/python*", "/usr/libexec/*", "/opt/oracle.ahf/common/venv/bin/python*",
+    "/var/opt/oracle/oracle.ahf/common/venv/bin/python*", "/etc/init.d/oracle"
   ) or
   process.parent.args like (
     "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",
@@ -61,7 +62,10 @@ process.parent.executable != null and
     process.parent.executable == "/bin/sh" and process.executable == "/usr/sbin/sysctl" and
     process.command_line == "sysctl -w vm.drop_caches=3"
   ) or
-  process.parent.name in ("sudo", "antidot-base.postinst", "vz-cpt-action", "find", "installsupergrp.sh", "criu") or
+  process.parent.name in (
+    "sudo", "antidot-base.postinst", "vz-cpt-action", "find", "installsupergrp.sh", "criu", "vpfs_mounts",
+    "hugepages_kernelpar_settingsSLES15.sh"
+  ) or
   process.parent.command_line like ("*puppet*agent*", "*cis_level*")
 )
 '''

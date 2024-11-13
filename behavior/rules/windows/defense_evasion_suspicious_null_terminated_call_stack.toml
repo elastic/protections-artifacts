@@ -8,17 +8,20 @@ license = "Elastic License v2"
 name = "Suspicious Null Terminated Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-api where 
+api where
    process.Ext.api.name : "VirtualProtect" and process.Ext.token.integrity_level_name != "low" and
-   process.thread.Ext.call_stack_summary : "ntdll.dll|Unbacked" and 
-   process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and 
+   process.thread.Ext.call_stack_summary : "ntdll.dll|Unbacked" and
+   process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and
    (
-    process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unbacked" or 
-    ((process.code_signature.trusted == false or process.code_signature.exists == false) and 
-      stringcontains~(process.thread.Ext.call_stack_final_user_module.protection_provenance, process.name))
+    process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unbacked" or
+
+    ((process.code_signature.trusted == false or process.code_signature.exists == false) and
+      stringcontains~(process.thread.Ext.call_stack_final_user_module.protection_provenance, process.name)) or
+
+    _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name in ("Microsoft Windows", "Microsoft Corporation"))
     ) and 
 _arraysearch(process.thread.Ext.call_stack, $entry, 
              $entry.callsite_trailing_bytes : "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") and 

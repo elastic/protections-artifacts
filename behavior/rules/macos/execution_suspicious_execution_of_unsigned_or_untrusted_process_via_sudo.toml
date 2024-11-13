@@ -11,12 +11,12 @@ license = "Elastic License v2"
 name = "Suspicious Execution of Unsigned or Untrusted Process via Sudo"
 os_list = ["macos"]
 reference = ["https://x.com/moonlock_lab/status/1815640547551306015"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=5s
 [process where event.type == "start" and event.action == "exec" and process.name : "sudo" and 
-  process.args : "-S"] by process.entity_id
+  process.args == "-S"] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and process.parent.name : "sudo" and 
   (process.code_signature.trusted == false or process.code_signature.exists == false)] by process.parent.entity_id
 '''

@@ -13,7 +13,7 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -22,6 +22,7 @@ process where event.type == "start" and event.action == "exec" and
                          ("DYLD_INSERT_LIBRARIES=",
                           "*=/var/folders/*/mjit_build_dir.dylib",
                           "LD_PRELOAD=",
+                          "LD_PRELOAD=<null>",
                           "DYLD_INSERT_LIBRARIES=/System/*",
                           "*=/opt/homebrew/*",
                           "*=libjemalloc.so.2*",

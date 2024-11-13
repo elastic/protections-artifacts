@@ -16,14 +16,17 @@ reference = [
     "https://gist.github.com/stong/c8847ef27910ae344a7b5408d9840ee1",
     "https://github.com/RickdeJager/cupshax/blob/main/cupshax.py",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=10s
   [process where event.type == "start" and event.action == "exec" and process.parent.name == "foomatic-rip" and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")] by process.entity_id
   [file where event.type != "deletion" and
-   not (process.name == "gs" and file.path like ("/tmp/gs_*", "/var/spool/cups/tmp/gs_*"))] by process.parent.entity_id
+   not (process.name == "gs" and file.path like (
+     "/tmp/gs_*", "/var/spool/cups/tmp/gs_*", "/tmp/newroot/tmp/gs_*"
+     )
+   )] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.6.0"

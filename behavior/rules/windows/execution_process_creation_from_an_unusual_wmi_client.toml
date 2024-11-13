@@ -28,7 +28,9 @@ api where
        process.command_line :
                       ("C:\\windows\\system32\\svchost.exe -k netsvcs -p",
                        "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Winmgmt",
-                       "C:\\Windows\\system32\\svchost.exe -k winmgmt -s Winmgmt"))
+                       "C:\\Windows\\system32\\svchost.exe -k winmgmt -s Winmgmt",
+                       "C:\\WINDOWS\\system32\\svchost.exe -k netsvcs -s Winmgmt")) and
+  not (process.name == "powershell.exe" and process.command_line : "powershell  -encodedcommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgAKAFQAcgB5ACAAewAKAEkAbgB2AG8AawBlAC0AVwBtAGkATQBlAHQAaABvAGQAIAAtAFAAYQB0AGgAIAB3AGkAbgAzADIAXwBwAHIAbwBjAGUAcwBzACAALQBOAGEAbQBlACAAYwByAGUAYQB0AGUAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAJwAiAEMAOgBcAFUAcwBlAHIAcwBcAEEAZABtAGkAbgBpAHMAdAByAGEAdABlAHUAcgAuAEgARABWAC0AMgAwADAANABcAEEAcABwAEQAYQB0AGEAXABMAG8AYwBhAGwALwBBAGMAdABpAHYAZQBCAGEAYwBrAHUAcAA*")
 '''
 
 min_endpoint_version = "8.15.0"

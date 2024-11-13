@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 any where process.executable != null and 
@@ -86,7 +86,11 @@ any where process.executable != null and
       process.code_signature.trusted == true and process.code_signature.subject_name == "Panda Security S.L.") and
 
  not (process.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe" and
-     process.parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe")
+      process.parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe") and
+
+ not (process.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe" and
+      process.parent.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe" and
+      process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.4.0"

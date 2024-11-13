@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -30,7 +30,8 @@ not (
     "make", "code", "terraform", "pyinfra", "fzf", "bwrap", "start_pxcontroller_pxstorage.py", "timeout", "sshd",
     "ansible-playbook", "nessus-agent-module", "app", "nessusd", "executor", "armor", "cockpit-bridge",
     "rapid7_endpoint_broker", "sudo", "zabbix_agent2", "cbram", "tm_sandbox", "cybereason-activeconsole", "find",
-    "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2", "vzctl", "cursor"
+    "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2", "vzctl", "cursor",
+    "exiftool"
   ) or
   process.parent.name like "please_go*" or
   process.parent.executable like (
@@ -45,7 +46,9 @@ not (
     "/usr/bin/vncserver", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/GC_Ext/GC/gc_linux_service",
     "/u00/oracle.ahf/common/venv/bin/python3", "/usr/local/bin/cyrisma/App/jre/bin/java",
     "/data/app/grid/*/perl/bin/perl", "/usr/bin/containerd", "/etc/init.d/init.ohasd", "/opt/CyberCNSAgent/cybercnsagent_linux",
-    "/vz/*", "/usr/libexec/openssh/sshd-session", "/opt/lockdown/goss/goss", "/opt/oracle.ahf/common/venv/bin/python*"
+    "/vz/*", "/usr/libexec/openssh/sshd-session", "/opt/lockdown/goss/goss", "/opt/oracle.ahf/common/venv/bin/python*",
+    "/usr/bin/awk", "/usr/sbin/registercloudguest", "/var/opt/oracle/oracle.ahf/common/venv/bin/python*",
+    "/opt/pwx/oci/rootfs/usr/local/bin/run_as_io_flusher.sh"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"
@@ -72,7 +75,8 @@ not (
   (process.parent.executable == "/usr/sbin/httpd" and process.command_line like "*nagios*") or
   (process.parent.command_line == "php /var/www/html/artisan app:init" and process.command_line like "*coolify*") or
   process.parent.args like (
-    "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py", "/tmp/kubectl*.yaml"
+    "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
+    "/tmp/kubectl*.yaml", "./mmicro-control.pl"
   )
 )
 '''

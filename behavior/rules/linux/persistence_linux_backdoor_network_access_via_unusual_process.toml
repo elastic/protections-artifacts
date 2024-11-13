@@ -14,16 +14,20 @@ reference = [
     "https://www.elastic.co/security-labs/a-peek-behind-the-bpfdoor",
     "https://www.zdnet.com/article/rotajakiro-a-linux-backdoor-that-has-flown-under-the-radar-for-years/",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
- [process where event.type == "start" and 
-  (process.executable : ("/dev/shm/*", "/run/shm/*") or process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+""") and 
-   not process.args : "/usr/lib/systemd/systemd-executor" and
-   not process.parent.executable : ("/usr/lib/systemd/systemd", "/lib/systemd/systemd") and
-   not ((process.command_line : ("runc init", "/usr/bin/runc init")) or 
-        (process.args : "init" and process.working_directory : "/var/lib/docker*"))]
+ [process where event.type == "start" and event.action == "exec" and (
+    process.executable like~ ("/dev/shm/*", "/run/shm/*") or
+    process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+"""
+  ) and not (
+    process.args == "/usr/lib/systemd/systemd-executor" or
+    process.parent.executable in ("/usr/lib/systemd/systemd", "/lib/systemd/systemd") or
+    process.executable like "/dev/shm/gitlab/*run" or
+    process.command_line in ("runc init", "/usr/bin/runc init", "/proc/self/exe init") or 
+    (process.args == "init" and process.working_directory like~ "/var/lib/docker*")
+  )]
  [network where event.type == "start" and event.action == "connection_accepted" and not (
     destination.ip == "0.0.0.0" or
     cidrmatch(source.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",

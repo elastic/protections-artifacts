@@ -8,7 +8,7 @@ id = "b3bcbab6-e216-4d70-bdee-2b69affbb386"
 license = "Elastic License v2"
 name = "Potential Persistence via Direct Crontab Modification"
 os_list = ["linux", "macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "crontab" and process.args == "-" and
@@ -18,7 +18,8 @@ process.parent.executable like (
 ) and not (
   process.parent.executable in (
     "/var/www/html/admin/modules/iotserver/bin/check_license.php",
-    "/tmp/newroot/opt/puppetlabs/puppet/bin/puppet"
+    "/tmp/newroot/opt/puppetlabs/puppet/bin/puppet",
+    "/tmp/package/install.sh"
   ) or
   process.parent.command_line == "/bin/bash +x ./ninja-deb-uninstall.sh" or
   process.parent.name == "bundle"

@@ -11,7 +11,7 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -42,7 +42,12 @@ sequence by process.entity_id with maxspan=5m
                   "ca7a8dabbd526f20bc0a947e9fb1e68d47c5aaf339c677d4f8d6bc90d07c1298",
                   "f1580a81a26f3b106f8c9169552191557037a019f4b6fd61ed86efc2ef2b0cc3",
                   "ce5576f49666f06fbb6798ce23b127075b66d45bb05affa55c2ab875adad2069",
-                  "fb4e88e790fa47ba403b1142183e4288437963db487b56c7e02407fa2808cbec") and
+                  "fb4e88e790fa47ba403b1142183e4288437963db487b56c7e02407fa2808cbec",
+                  "7810ddb62441ed631136ed2e0d5c4a0f7ebe1fdb00b7db32f6952222ecef2b36",
+                  "f112a55944329900e670033dc84560703fa4e271bf5be13cc5a14da603155548",
+                  "a7bf2135d423ef1a84c35780bb8208a85df23c7228dbb2e3d5b9d5aec989ad2b",
+                  "4997ec399b1292a8698366c605ebfaf72cb5089682a75c408978cb87c8d3a5a3",
+                  "6680172392ee701a714d14bb010a00a054e102c664152bfc244dd74d0e32694d") and
  not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18") and
  not (process.executable : "?:\\Windows\\ccmcache\\*.exe" and process.parent.executable : "?:\\Windows\\CCM\\*.exe")]
  [any where event.category : ("registry", "file") and event.action != "deletion" and

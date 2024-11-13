@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion via Invalid Code Signature"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 any where
@@ -48,10 +48,11 @@ any where
                                            "?:\\Windows\\System32\\umppc*.dll*",
                                            "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
                                            "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*",
-                                           "?:\\windows\\system32\\hmpalert.dll!*"))
+                                           "?:\\windows\\system32\\hmpalert.dll!*")) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "234360be58be376a77169fcc447cf8cbcba959f5c1db256ea2a50eeb92e65f44"
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -81,4 +82,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

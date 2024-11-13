@@ -8,7 +8,7 @@ id = "fa71e336-0177-4732-b58b-53eb4a87a286"
 license = "Elastic License v2"
 name = "Suspicious Download and Redirect by Web Server"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -25,14 +25,14 @@ process where event.type == "start" and event.action == "exec" and (
 ) and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
 process.args == "-c" and process.args : ("wget *", "curl *") and
-process.command_line : ("*>*", "*>>*", "*<*", "*<<*") and
-process.command_line : (
-  "*|*", "*;*", "*/tmp/*", "*/var/tmp/*", "*/dev/shm/*", "*/var/www/*", "*/run/*", "*/var/run/*", "*/home/*", "* nc *",
+process.command_line like ("*>*", "*<*") and
+process.command_line like (
+  "*|*sh *", "*;*", "*/tmp/*", "*/var/tmp/*", "*/dev/shm/*", "*/var/www/*", "*/run/*", "*/var/run/*", "*/home/*",
   "* netcat *", "* ncat *", "*python*", "* php*", "*perl*", "*ruby*", "*echo *", "*/dev/tcp*", "*/dev/udp/*", "*cat *",
   "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*", "*TCPSocket.open*", "*io.popen*", "*os.execute*",
   "*fsockopen*", "*disown*", "*/etc/cron*", "*/etc/rc.local*", "*/etc/init.d*", "*/etc/update-motd.d*", "*/etc/ld.so*",
   "*/etc/sudoers*", "*base64 *", "*base32 *", "*/etc/profile*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*",
-  "*~/.ssh/*", "*nohup*", "*xxd *", "*/etc/shadow*", "*chattr *"
+  "*~/.ssh/*", "*nohup*", "*xxd *", "*/etc/shadow*", "*chattr *", "* nc *"
 ) and not (
   process.parent.name in ("cron", "crond") or
   process.parent.executable : "/opt/puppetlabs/*" or

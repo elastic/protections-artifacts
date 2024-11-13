@@ -13,11 +13,12 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
-process where event.action == "start" and
-(
+sequence with maxspan=1m
+[process where event.action == "start" and
+ (
  ((process.pe.original_file_name : "devinit.dll" or process.name : "devinit.exe") and
    process.args : "msi-install" and process.command_line : "*http*") or
 
@@ -29,7 +30,7 @@ process where event.action == "start" and
 
  (process.name : "msiexec.exe" and process.args :("/i", "-i") and
   process.args : ("/qn", "-qn", "-q", "/q") and
-  process.command_line : ("*transforms=http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
+  process.command_line : ("*transforms*http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
 
  (process.name : "powershell.exe" and process.command_line : "*WindowsInstaller*" and
   process.command_line : "*http*" and process.command_line : "*InstallProduct*")  or
@@ -50,7 +51,13 @@ process where event.action == "start" and
        [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
   not process.Ext.token.integrity_level_name == "system")
 ) and
-not process.args : ("https://download.microsoft.com/download/*.msi", "APIURL=http*")
+not process.args : ("https://download.microsoft.com/download/*.msi", "APIURL=http*")]
+[process where event.action in ("start", "already_running") and
+ (
+  (process.name : "msiexec.exe" and process.args == "/V") or
+
+  (process.parent.name : "msiexec.exe" and process.parent.args == "/V")
+  )]
 '''
 
 min_endpoint_version = "7.15.0"
@@ -58,11 +65,17 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"
 field = "process.entity_id"
 state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

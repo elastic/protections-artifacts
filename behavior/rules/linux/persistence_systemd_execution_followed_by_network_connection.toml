@@ -7,7 +7,7 @@ id = "6644d936-36a2-4d21-95f3-4826e6b61b9b"
 license = "Elastic License v2"
 name = "Systemd Execution Followed by Network Connection"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=3s
@@ -37,13 +37,14 @@ sequence with maxspan=3s
      "FF00::/8", "172.31.0.0/16"
      ) or
      process.executable in (
-       "/var/auvik/bin/agent", "/opt/jc_user_ro/jumpcloud-remote-assist/jumpcloud-assist-launcher",
+       "/var/auvik/bin/agent", "/opt/jc_user_ro/jumpcloud-remote-assist/jumpcloud-assist-launcher", "/bin/dnf",
        "/usr/bin/gnome-shell", "/usr/bin/dnf", "/usr/bin/ubuntu-report", "/usr/share/elastic-agent/bin/elastic-agent",
-       "/usr/sbin/subscription-manager", "/usr/bin/yum"
+       "/usr/sbin/subscription-manager", "/usr/bin/yum", "/opt/acronis/bin/adp-agent", "/var/cfengine/bin/cf-execd",
+       "/sbin/subscription-manager"
      ) or
      process.executable like (
        "/opt/acronis/bin/updater", "/nix/store/*", "/proxydefender/sc2psd", "/home*/jre/current/bin/java",
-       "/var/lib/elastic-agent/data/elastic-agent*/components/agentbeat"
+       "/var/lib/elastic-agent/data/elastic-agent*/components/agentbeat", "/usr/sap/*/sldreg", "/tmp/newroot/*"
      )
    )
   ] by process.parent.entity_id

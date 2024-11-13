@@ -8,15 +8,20 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
 process.args == "-c" and process.command_line : "* exec -a *" and not (
   process.executable like ("/nix/store/*", "/tmp/newroot/*") or
-  process.parent.executable in ("/opt/warpdotdev/warp-terminal/warp", "/opt/sp/serverpilot/stats/bin/sp-stats") or
-  process.command_line : ("*/tmp/fzf-args*", "/opt/sp/serverpilot/*", "*/opt/forticlientems/*", "*WarpTerminal*") or
+  process.parent.executable in (
+    "/opt/warpdotdev/warp-terminal/warp", "/opt/sp/serverpilot/stats/bin/sp-stats", "/bin/bcompare",
+    "/usr/NX/bin/nxnode.bin", "/usr/bin/gnome-shell", "/var/lib/dpkg/info/udev.postinst"
+  ) or
+  process.command_line like (
+    "*/tmp/fzf-args*", "/opt/sp/serverpilot/*", "*/opt/forticlientems/*", "*WarpTerminal*", "/bin/bash -c exec -a bash*"
+  ) or
   process.args in (
     "exec -a sp-monitor /opt/sp/serverpilot/monitor/bin/monitor",
     "exec -a sp-stats /opt/sp/serverpilot/stats/bin/sp-stats"

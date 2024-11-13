@@ -7,7 +7,7 @@ id = "2f4275f8-b305-455d-9f1f-c67574cc6b38"
 license = "Elastic License v2"
 name = "Suspicious Named Pipe Creation"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mkfifo" and 
@@ -21,7 +21,7 @@ process.args like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") and not (
     "/tmp/phpstderr", "/var/run/*", "/tmp/pg_cluster@15-main", "/tmp/pg_cluster@15-audit", "/tmp/amazon-kinesis-*",
     "/tmp/scalr-agent/*", "/tmp/com_pipe", "/tmp/agent_linux_x86_64.sh.pipe.*", "/tmp/protopipe-*", "/var/tmp/dracut*",
     "--version", "--help", "-v", "-V", "version", "/tmp/newrelic-infra.log", "/var/tmp/.oracle/npohasd*", "/dest/*",
-    "/opt/Symantec/*", "/tmp/fzf*"
+    "/opt/Symantec/*", "/tmp/fzf*", "/var/tmp/portage/sys-apps/portage-*", "/tmp/elasticsearch*"
   ) or
   process.command_line like (
     "mkfifo*.json", "mkfifo*.txt", "mkfifo*.fifo", "mkfifo*/pipes/std*", "mkfifo*-m*600*/tmp/circleci.*/pipe",

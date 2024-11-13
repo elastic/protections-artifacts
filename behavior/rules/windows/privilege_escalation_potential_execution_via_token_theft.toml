@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -65,7 +65,10 @@ process where event.action == "start" and process.executable != null and
                                 "C:\\Program Files (x86)\\Scalefusion\\Scalefusion MDM Agent\\bin\\OnlineClientService.exe",
                                 "C:\\Program Files\\Veeam\\Endpoint Backup\\Veeam.Endpoint.RecoveryMedia.exe") and
  not (process.Ext.effective_parent.executable : "C:\\LeanServer\\SentinelRecorder\\RecordingService.exe" and
-     process.executable : "C:\\Windows\\System32\\netsh.exe")
+     process.executable : "C:\\Windows\\System32\\netsh.exe") and
+ not (process.executable : "C:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\MavInject32.exe" and
+      process.parent.executable : "C:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\OfficeClickToRun.exe") and
+ not process.parent.executable : "C:\\Program Files\\IIS\\Microsoft Web Deploy\\MsDepSvc.exe"
 '''
 
 min_endpoint_version = "8.8.0"

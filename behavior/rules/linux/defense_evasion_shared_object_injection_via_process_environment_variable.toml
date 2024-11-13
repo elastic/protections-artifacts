@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -46,14 +46,15 @@ process where event.type == "start" and event.action == "exec" and process.env_v
   process.env_vars like (
     "LD_PRELOAD=", "LD_LIBRARY_PATH=", "LD_PRELOAD=/tmp/pressure-vessel-libs-*/${LIB}/gameoverlayrenderer.so",
     "LD_PRELOAD=*/.mount_*", "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2",
-    "LD_PRELOAD=/opt/deepinstinct/bin/libDeepInterception.so"
+    "LD_PRELOAD=/opt/deepinstinct/bin/libDeepInterception.so", "LD_PRELOAD=/usr/lib/preloadable_libiconv.so"
   ) or
   process.parent.command_line == "runc init" or
   process.parent.executable like (
     "/usr/local/bin/fluentd", "/nix/store/*", "/usr/lib/pressure-vessel/from-host/bin/pressure-vessel-adverb", 
     "/opt/tm/toolchains/*"
   ) or
-  process.executable == "/usr/bin/adb"
+  process.executable == "/usr/bin/adb" or
+  process.executable like "/tmp/newroot/*"
 )
 '''
 

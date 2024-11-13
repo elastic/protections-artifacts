@@ -7,7 +7,7 @@ id = "20106fed-9cb6-41ca-8ca2-ebf55da5fa18"
 license = "Elastic License v2"
 name = "WriteProcessMemory via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where
@@ -29,7 +29,10 @@ api where
  not process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\system32\\umppc*.dll", "?:\\windows\\syswow64\\ntdll.dll") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
                   $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC", "Microsoft Windows Hardware Compatibility Publisher") and $entry.status : "trusted") and
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22"
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                              ("47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22",
+                                               "d1e49681e09cedf8a5751538273bc69d2c78d50469e8bc95203fc2643fa17a5f",
+                                               "00e8784a6e1e1dce13d49e2e978adaccfed74f9846d43feb1ad94c1aff52dfc3")
 '''
 
 min_endpoint_version = "8.10.0"

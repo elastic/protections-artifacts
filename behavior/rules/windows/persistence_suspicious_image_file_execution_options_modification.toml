@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://oddvar.moe/2018/04/10/persistence-using-globalflags-in-image-file-execution-options-hidden-from-autoruns-exe/",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 registry where registry.data.strings != null and process.executable != null and 
@@ -50,8 +50,10 @@ registry where registry.data.strings != null and process.executable != null and
               "?:\\Program Files\\Netspark\\NsUpdate\\NsUpdate.exe",
               "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe", 
               "?:\\Program Files (x86)\\Extegrity\\Exam4\\Exam4.exe",
-              "?:\\Program Files (x86)\\NAP Locked down browser\\JanisonReplayService.exe") and
- not (process.code_signature.subject_name : ("Patch My PC, LLC", "EXPRSVPN LLC", "Nasiboot_USB") and process.code_signature.trusted == true)
+              "?:\\Program Files (x86)\\NAP Locked down browser\\JanisonReplayService.exe",
+              "?:\\Program Files (x86)\\Common Files\\VAudio\\Audckq32.exe",
+              "?:\\Program Files (x86)\\ExpressVPN\\ExpressVPNUpdater.exe") and
+ not (process.code_signature.subject_name : ("Patch My PC, LLC", "EXPRSVPN LLC", "Nasiboot_USB", "FastTrack Software Aps") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.0.0"

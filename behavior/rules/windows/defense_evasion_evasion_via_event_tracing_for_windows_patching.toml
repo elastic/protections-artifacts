@@ -11,7 +11,7 @@ reference = [
     "https://blog.xpnsec.com/hiding-your-dotnet-etw/",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 api where process.Ext.api.name :  "WriteProcessMemory*" and
@@ -19,10 +19,15 @@ api where process.Ext.api.name :  "WriteProcessMemory*" and
  process.executable != null and
  not process.executable : ("?:\\Windows\\System32\\lsass.exe",
                            "\\Device\\HarddiskVolume*\\Windows\\System32\\lsass.exe",
-                           "?:\\Windows\\System32\\csrss.exe")
+                           "?:\\Windows\\System32\\csrss.exe") and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "7d678faf97ffbd27c01161ec6aaf9854226bef44ef70542e973aae004a85ea16" and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "SentinelOne Inc."))
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -52,4 +57,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

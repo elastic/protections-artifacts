@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
@@ -66,7 +66,9 @@ not (process.name : ("powershell.exe", "cmd.exe") and
      "*AFMAUgBFAEcAXwBVAE4ASwBOAE8AVwBOAF8ASgBPAEkATg*", "*bgBlAHMAcwB1AHMAXwBhAHoAdQByAGUAXwBhA*",
      "*EncodedCommand QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQA*", "*\\admeScript.ps1\\*", "*\\\\127.0.0.1\\ADMIN$\\apckscanner-*",
      "*QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQAZQBmAGkAbgBpAHQAaQBvAG4AIABAACcACgB1AHMAaQBuAGcAIABTAHkAcwB0AGUAbQA7A*",
-     "*\\\\127.0.0.1\\admin$\\temp\\unregistered*", "*System.Security.Principal.NTAccount*\\ADMIN$\\d42*")) and
+     "*\\\\127.0.0.1\\admin$\\temp\\unregistered*", "*System.Security.Principal.NTAccount*\\ADMIN$\\d42*",
+     "*metadata/instance?api-version*", "*C:\\WINDOWS\\Temp\\csat\\*", "*google.internal/computeMetadata/v1/instance/*",
+     "*/opc/v2/instance*", "*254/opc/v1/instance*", "Powershell.exe Invoke-Expression 'Enable-PSRemoting -Force'")) and
 
 not (process.name : "cmd.exe" and process.command_line : ("*echo*Spiceworks\\spiceworks_upload.vbs*", "*\\psscript_output_*", "*SNC_isWmi*")) and
 
@@ -87,7 +89,7 @@ not (process.pe.original_file_name == "360se.exe" and process.code_signature.tru
 not (process.code_signature.trusted == true and 
      process.code_signature.subject_name : 
                     ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.", "Chocolatey Software, Inc.", 
-		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.", "Thomson Reuters Corporation")) and
+		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.", "Thomson Reuters Corporation", "Hornetsecurity GmbH")) and
 
 not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
 
@@ -102,7 +104,8 @@ not process.hash.sha256 :
                  "0d6f7b29a06cb188ce67bd99ec0a3d1fa7dda2d64a69b3279ec90e04d35c8bfb",
                  "24863db91f7f1222c8310160e78f2c6c8a0ed9b4c18640029e65e3a3a3c1944d",
                  "2733a27117ec81c7f867c4b1a6a800011fa432e45b7e95656c37ee05ca68c592",
-                 "8e597fdafc174a30633cc470b763f6ba65e79aada99adc394df745913fe41111") and
+                 "8e597fdafc174a30633cc470b763f6ba65e79aada99adc394df745913fe41111",
+                 "34c5c838199700dd344b8d606163ce4f05db72397c9aaf129f52b70b38c1d187") and
 
 not process.executable : "?:\\ProgramData\\Microsoft Azure Site Recovery\\Mobility Service\\WMISSH\\*.exe" and 
 

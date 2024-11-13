@@ -14,7 +14,7 @@ reference = [
     "https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -25,17 +25,19 @@ sequence by process.entity_id with maxspan=3s
    )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (
-     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip == null or
+     destination.ip == "0.0.0.0" or
+     cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
      "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
      "FF00::/8", "172.31.0.0/16"
-     )
-    ) and not (
-    process.name == "go" or
-    process.executable : ("/usr/local/bin/rclone", "/var/lib/docker/overlay2/*gitlab-runner-helper")
-    )
+     ) or
+     process.name == "go" or
+     process.executable like "/var/lib/docker/overlay2/*gitlab-runner-helper" or
+     process.executable in ("/usr/local/bin/rclone", "/usr/lib/git/git-remote-https", "/usr/lib/apt/methods/https")
+   )
   ]
 '''
 

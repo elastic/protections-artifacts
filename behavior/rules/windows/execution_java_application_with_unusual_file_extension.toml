@@ -7,7 +7,7 @@ id = "13615fd4-b220-4033-ab4f-8b16b9beae57"
 license = "Elastic License v2"
 name = "JAVA Application with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -21,6 +21,7 @@ sequence by process.entity_id with maxspan=5s
                             "?:\\Program Files\\Angry IP Scanner\\jre\\bin\\javaw.exe",
                             "?:\\Program Files\\Eclipse Adoptium\\jdk-*-hotspot\\bin\\javaw.exe",
                             "C:\\Program Files\\Java\\jdk-11\\bin\\javaw.exe",
+                            "C:\\Program Files\\Zulu\\zulu-8\\bin\\javaw.exe",
                             "C:\\Program Files\\AdoptOpenJDK\\jre*-hotspot\\bin\\javaw.exe") and
   not process.parent.executable : "?:\\Program Files (x86)\\AssoSoftware\\AssoInvoice\\AssoInvoice.exe" and
   not (process.code_signature.subject_name : ("BELLSOFT", "Eclipse.org Foundation, Inc.") and process.code_signature.trusted == true) and

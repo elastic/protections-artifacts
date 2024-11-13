@@ -8,26 +8,25 @@ license = "Elastic License v2"
 name = "Shared Object Load via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+library%20load"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
-  (process.name == "bash" and process.args == "-c" and process.args : "*enable*-f*.so*") or
-  (process.name == "openssl" and process.args == "-engine" and process.args : "*.so*") or
-  (process.name : "python*" and process.args == "-c" and process.args : "*cdll.LoadLibrary*.so*") or
-  (process.name : "ruby*" and process.args == "-e" and process.args : "*Fiddle.dlopen*.so*") or 
+  (process.name == "bash" and process.args == "-c" and process.args like "*enable*-f*.so*") or
+  (process.name == "openssl" and process.args == "-engine" and process.args like "*.so*") or
+  (process.name like "python*" and process.args == "-c" and process.args like "*cdll.LoadLibrary*.so*") or
+  (process.name like "ruby*" and process.args == "-e" and process.args like "*Fiddle.dlopen*.so*") or 
   (process.name in ("gdb", "gimp", "rview", "rvim", "view", "vim", "vimdiff") and
-   process.args : "*cdll.LoadLibrary*.so*") or
+   process.args like "*cdll.LoadLibrary*.so*") or
   (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-   process.args == "-c" and
-   process.args : ("*openssl*-engine*.so*", "*cdll.LoadLibrary*.so*", "*ruby*-e**Fiddle.dlopen*.so*")
+   process.args == "-c" and process.args like ("*cdll.LoadLibrary*.so*", "*ruby*-e**Fiddle.dlopen*.so*")
   )
 ) and
 not (
   process.parent.executable like (
     "/root/.cache/bazel/_bazel_root/install/*", "/opt/Xilinx/PetaLinux/*", "/usr/bin/find", "/bin/find"
   ) or
-  process.parent.name in ("make", "process-wrapper")
+  process.parent.name in ("make", "process-wrapper", "bwrap")
 )
 '''
 

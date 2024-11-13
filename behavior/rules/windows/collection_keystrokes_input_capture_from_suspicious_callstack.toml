@@ -11,11 +11,11 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where
- process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and not process.code_signature.status : "trusted" and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  (
   process.Ext.api.name : "GetAsyncKeyState" or
   (process.Ext.api.name : "RegisterRawInputDevices" and
@@ -29,6 +29,7 @@ api where
             "*win32u.dll|user32.dll|Unknown|*",
             "win32u.dll|Unbacked|*",
             "*win32u.dll|user32.dll|Unbacked|*",
+            "win32u.dll|user32.dll|Unbacked",
             "*|python*.dll*",
             "Unknown",
             "Unbacked") and 

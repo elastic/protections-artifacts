@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -21,7 +21,8 @@ process where event.action == "start" and
   "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
   "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*",
   "*curl --ntlm -u*", "*bat'; iwr $*", "*http*.Content;*", "*&(gcm i?x)*", "*!*!*!*!*!*!*", "*&& !*!!*", "*for %? in (?) do @set*",
-  "*QUIT>>?&FTP/s:*") or
+  "*QUIT>>?&FTP/s:*", "*iwr -Uri*Start-Process*", "*irm https*| iex*", "*^S^T^a*",
+  "* /v /c *&&set *&&set *&&set *&&set *&&set*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
@@ -66,6 +67,7 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
                  "?:\\Program Files\\NetBeans-*\\netbeans\\bin\\netbeans*.exe",
                  "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
+                 "C:\\Program Files (x86)\\Microsoft Visual Studio\\20??\\Enterprise\\Common?\\IDE\\devenv.exe",
                  "?:\\Program Files (x86)\\Tier2Tickets\\button_gui.exe",
                  "?:\\Program Files (x86)\\Helpdesk Button\\button_gui.exe",
                  "?:\\VTSPortable\\VTS\\jre\\bin\\javaw.exe",

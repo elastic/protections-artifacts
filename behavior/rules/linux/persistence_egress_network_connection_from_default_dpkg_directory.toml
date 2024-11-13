@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Default DPKG Directory"
 os_list = ["linux"]
 reference = ["https://www.makeuseof.com/how-deb-packages-are-backdoored-how-to-detect-it/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=3s
@@ -26,13 +26,16 @@ sequence with maxspan=3s
    )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
-   destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+   destination.ip == null or
+   destination.ip == "0.0.0.0" or
+   cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
      "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
      "FF00::/8", "172.31.0.0/16"
-     )
+     ) or
+     process.executable in ("/usr/bin/apt-get", "/bin/apt-get")
    )] by process.parent.entity_id
 '''
 

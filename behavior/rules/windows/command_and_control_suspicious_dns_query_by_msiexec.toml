@@ -7,13 +7,13 @@ id = "8212cb3a-52a3-4bd9-9074-d0c3488cab6b"
 license = "Elastic License v2"
 name = "Suspicious DNS Query by MSIEXEC"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 dns where process.name : "msiexec.exe" and
   dns.question.name like ("check-key.com", "key-needs.com", "key-crack.com", "get-lic.com", "get-license?.com",
                           "software-license?.com", "*.postomodelo.com", "to-license?.com", "lifehackov.ru",
-                          "cld.pt", "to-lic.com", "downloader.yandex.net", "clck.yandex.ru")
+                          "cld.pt", "to-lic.com", "downloader.yandex.net", "clck.yandex.ru", "key-needs.com")
 '''
 
 min_endpoint_version = "7.16.0"

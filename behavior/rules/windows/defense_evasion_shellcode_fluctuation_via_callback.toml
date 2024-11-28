@@ -7,12 +7,13 @@ id = "2909b5bc-c975-4dbe-ac79-4029a2c5763f"
 license = "Elastic License v2"
 name = "Shellcode Fluctuation via CallBack"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.behaviors in ("execute_fluctuation", "write_fluctuation") and 
  process.Ext.api.behaviors == "proxy_call" and
- process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll" and
+ process.thread.Ext.call_stack_summary in
+            ("ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll", "ntdll.dll|kernelbase.dll|ntdll.dll|Unknown") and
  (process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\ntdll.dll" or
   process.thread.Ext.call_stack_final_user_module.name == "Undetermined")
 '''

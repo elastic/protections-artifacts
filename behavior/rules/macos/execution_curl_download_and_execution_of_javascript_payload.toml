@@ -9,26 +9,23 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
-sequence by process.parent.entity_id with maxspan=1m
+sequence by process.parent.entity_id with maxspan=15s
   [process where event.action == "exec" and
-    process.name in ("curl", "nscurl") and
-    process.args like "http*" and
-    not process.args like "https*//support-sp.apple.com/*"]
+    process.name like ("curl", "nscurl") and process.parent.name like~ ("bash", "zsh", "sh", "Terminal")]
   [process where event.action == "exec" and process.name == "osascript" and
-    (process.command_line : "*osascript -l JavaScript*" or process.command_line : "*osascript -l JavaScript *.js*") and
+    (process.args == "-e" or process.args == "-l") and
     not process.Ext.effective_parent.executable in
                                                   ("/usr/local/jamf/bin/jamf",
                                                    "/Library/Addigy/auditor",
-                                                   "/Applications/Alacritty.app/Contents/MacOS/alacritty",
                                                    "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")]
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -54,4 +51,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"

@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies suspicious API calls from a Windows Installer module. This behavior is consistent with code injection
+attacks.
+"""
+id = "43e9d254-28e9-463d-9bc3-5e51721d4b8a"
+license = "Elastic License v2"
+name = "Suspicious API call via a Windows Installer Module"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.name : "msiexec.exe" and
+   process.Ext.api.name in ("WriteProcessMemory", "VirtualProtectEx", "VirtualProtect", "VirtualAlloc", "VirtualAllocEx","MapViewOfFile", "MapViewOfFile2", "SetThreadContext", "SuspendThread") and
+   process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\installer\\*" and
+   /* unsigned or untrusted code signature */
+   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+
+   /* noisy patterns - VP and WPM due to Image Load and Process Creation */
+   not (process.Ext.api.metadata.target_address_name in ("ProcessStartupInfo", "PEB", "PEB32", "Data") and process.Ext.api.parameters.size <= 4544) and
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                             "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*",
+                                             "?:\\windows\\sys?????\\kernelbase.dll!CreateProcess*")) and
+   not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes in ("5a8bf850528b338b432003c28b08894b208b431c03c28b08894b1c03f28b4b0c03ca8d431c505756ffd15a580343088bf8528bf08b46fc83c0042bf08956088b"))
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

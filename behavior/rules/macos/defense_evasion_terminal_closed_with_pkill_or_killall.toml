@@ -10,14 +10,15 @@ id = "266f9d58-2277-4e78-b551-7d07b3ed9020"
 license = "Elastic License v2"
 name = "Terminal closed with Pkill or Killall"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("pkill", "killall") and
  process.args : "Terminal" and (process.parent.executable like "/Volumes/*" or 
                                 process.parent.name in ("bash", "sh", "zsh") or 
                                 (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)) and
- process.Ext.effective_parent.executable != "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"
+ not process.Ext.effective_parent.executable like ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                                   "/usr/local/jamf/bin/jamf")
 '''
 
 min_endpoint_version = "8.11.0"

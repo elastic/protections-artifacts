@@ -10,10 +10,18 @@ id = "b97ecb91-b4bb-480e-a855-47f2a9ec107c"
 license = "Elastic License v2"
 name = "Dylib Loaded by Process in Suspicious Location"
 os_list = ["macos"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
-library where event.action == "load" and
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and 
+  not process.executable : ("/private/tmp/KSInstallAction*",
+                            "/private/var/root/Library/Caches/ms-playwright/*",
+                            "/Users/Shared/Epic Games/MagicTheGathering/MTGA.app/Contents/MacOS/MTGA",
+                            "/private/var/folders/*",
+                            "/Library/Services/GPGServices.service/Contents/MacOS/GPGServices",
+                            "/private/tmp/PKInstallSandbox*")]
+[library where event.action == "load" and
   process.executable : ("/var/tmp/*", 
                         "/var/lib/*", 
                         "/tmp/*", 
@@ -25,15 +33,10 @@ library where event.action == "load" and
                         "/private/var/root/*",
                         "/Library/WebServer/*", 
                         "/Library/Fonts/*") and 
-  not dll.code_signature.trusted == true and 
-  not process.executable : ("/private/tmp/KSInstallAction*",
-                            "/private/var/root/Library/Caches/ms-playwright/*",
-                            "/Users/Shared/Epic Games/MagicTheGathering/MTGA.app/Contents/MacOS/MTGA",
-                            "/private/var/folders/*",
-                            "/Library/Services/GPGServices.service/Contents/MacOS/GPGServices",
-                            "/private/tmp/PKInstallSandbox*") and not
-  dll.path : ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", "/private/var/root/Library/Caches/ms-playwright/*",
-              "/Library/Developer/*", "/usr/lib/libobjc-trampolines.dylib")
+  not dll.code_signature.trusted == true and not
+  dll.path : ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", 
+              "/private/var/root/Library/Caches/ms-playwright/*", "/Library/Developer/*", 
+              "/usr/lib/libobjc-trampolines.dylib")]
 '''
 
 min_endpoint_version = "8.11.0"

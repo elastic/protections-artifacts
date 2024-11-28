@@ -8,7 +8,7 @@ id = "4abb4f46-2066-4769-b073-dca491067e1b"
 license = "Elastic License v2"
 name = "Powershell Encoded Command"
 os_list = ["macos"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and process.args in~ ("-EncodedCommand", "-enc") and
@@ -16,6 +16,7 @@ process where event.type == "start" and process.args in~ ("-EncodedCommand", "-e
  not process.args like "/Applications/Visual Studio Code.app/*" and
  not process.executable : "/Applications/Docker.app/Contents/Resources/bin/docker" and
  not process.parent.executable in ("/Applications/Docker.app/Contents/Resources/bin/com.docker.cli",
+                                   "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper.app/Contents/MacOS/Code Helper",
                                    "/Applications/Docker.app/Contents/Resources/bin/docker") and
  not process.Ext.effective_parent.name == "electron" and
  not ((process.name == "zsh" and process.parent.name == "zsh") or

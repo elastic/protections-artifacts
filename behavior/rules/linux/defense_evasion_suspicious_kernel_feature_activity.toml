@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -47,7 +47,9 @@ process.parent.executable != null and
     "./disk_perf", "/usr/bin/tlp-stat", "/usr/sbin/tuned", "/usr/sbin/gdm", "/usr/bin/containerd-shim-runc-v2",
     "/opt/CyberCNSAgent/cybercnsagent_linux", "/vz/root/*", "/run/containerd/*", "/var/lib/docker/*",
     "/var/www/batch/bin/python*", "/usr/libexec/*", "/opt/oracle.ahf/common/venv/bin/python*",
-    "/var/opt/oracle/oracle.ahf/common/venv/bin/python*", "/etc/init.d/oracle"
+    "/var/opt/oracle/oracle.ahf/common/venv/bin/python*", "/etc/init.d/oracle", "/usr/bin/fzf",
+    "/opt/eset/efs/lib/install_scripts/check_start.sh", "/var/tmp/foreman-ssh-cmd-*/script",
+    "/usr/openv/pdde/vpfs/bin/vpfs_config.sh", "/data/ora04/dba/scripts/hugepages_kernelpar_settings*.sh"
   ) or
   process.parent.args like (
     "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",
@@ -56,7 +58,7 @@ process.parent.executable != null and
   process.args like "*nessus_su_*" or
   process.parent.command_line in (
     "/usr/bin/sudo -n /bin/cat /etc/sysctl.conf", "/bin/sh /root/clearmem.sh", "/bin/sh /usr/bin/peri/disk_perf",
-    "bash -x /usr/bin/peri/disk_perf", "runc init", "/bin/bash ./domain_join.sh"
+    "bash -x /usr/bin/peri/disk_perf", "runc init", "/bin/bash ./domain_join.sh", "*/tmp/.ansible/ansible-tmp-*"
   ) or
   (
     process.parent.executable == "/bin/sh" and process.executable == "/usr/sbin/sysctl" and

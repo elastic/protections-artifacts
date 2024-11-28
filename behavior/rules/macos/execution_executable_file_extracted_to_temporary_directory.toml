@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://www.jamf.com/blog/cryptojacking-macos-malware-discovered-by-jamf-threat-labs/?utm_source=twitter&utm_medium=social&utm_campaign=blog-promo&utm_content=2023-02-23_shared_",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 file where event.action != "deletion" and 
@@ -20,6 +20,9 @@ file where event.action != "deletion" and
  file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
  not file.path : "/private/var/tmp/*bazel*" and
  not Effective_process.executable : ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                     "/Applications/NinjaRMMAgent/programfiles/ninjarmm-macagent",
+                                     "/Applications/Utilities/NacAgent.app/Contents/MacOS/NacAgent",
+                                     "/Applications/Warp.app/Contents/MacOS/stable",
                                      "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
                                      "/Library/Kandji/Kandji Agent.app/Contents/Helpers/Kandji Library Manager.app/Contents/MacOS/kandji-library-manager",
                                      "/opt/jc/bin/jumpcloud-agent")

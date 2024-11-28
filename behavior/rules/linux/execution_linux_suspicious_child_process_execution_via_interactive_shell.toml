@@ -8,19 +8,19 @@ id = "aa02591f-c9e6-4317-841e-0b075b9515ff"
 license = "Elastic License v2"
 name = "Linux Suspicious Child Process Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.args : "-i" and process.args_count <= 2 and
+process where event.type == "start" and event.action == "exec" and process.args like "-i" and process.args_count <= 2 and
 process.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.parent.args_count > 1 and
-process.parent.name : (
+process.parent.name like (
   "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "php*",
   "perl", "ruby", "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk"
-) and not process.parent.args : (
-  "echo*| sudo -S su; sudo su;*SHELL -i",
-  "/usr/share/kali-menu/exec-in-shell",
-  "/usr/bin/kali-treecd",
-  "pipenv"
+) and not (
+  process.parent.args like (
+    "echo*| sudo -S su; sudo su;*SHELL -i", "/usr/share/kali-menu/exec-in-shell", "/usr/bin/kali-treecd", "pipenv"
+  ) or
+  process.parent.command_line == "/bin/sh -c bash -i </dev/tty >/dev/tty 2>/dev/tty"
 )
 '''
 

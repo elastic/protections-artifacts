@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -35,7 +35,7 @@ process where event.type == "start" and event.action == "exec" and (
     "/home/raulsiim/.local/share/JetBrains/Toolbox/apps/intellij-idea-community-edition/bin/idea"
   ) or
   process.executable like (
-    "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*",
+    "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*", "/opt/gotify/gotify-linux-amd64",
     "/home/*/.local/share/JetBrains/Toolbox/apps/goland/bin/goland", "/home/*/.linuxbrew/opt/etcd/bin/etcd",
     "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa"
   ) or

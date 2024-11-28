@@ -9,35 +9,25 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
-process where event.action == "exec" and
-  process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
-  process.args : ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and
-
-  /* noisy FPs */
-  not (process.parent.name : "timeout" and 
-   process.executable : ("/var/lib/docker/overlay*", 
-                         "/opt/kubernetes/data/containerd/*")) and
-  not process.command_line : ("*/dev/tcp/sirh_db/*", 
-                              "*/dev/tcp/itom-vault/8200*", 
-                              "*/dev/tcp/remoteiot.com/*", 
-                              "*dev/tcp/elk.stag.one/*", 
-                              "*dev/tcp/kafka/*", 
-                              "*/dev/tcp/$0/$1*",
-                              "*/dev/tcp/::1/*",
-                              "*/dev/tcp/livelog.default.svc.cluster.local*",
-                              "*/dev/tcp/db.default.svc.cluster.local*", 
-                              "*/dev/tcp/127.*", 
-                              "*/dev/udp/127.*", 
-                              "*/dev/tcp/localhost/*") and
-  not process.parent.command_line : "runc init" and
-  not (process.args : "/dev/tcp/nomzk-client-svc/*" and
-      process.executable : "/opt/cdf/data/containerd/state/io.containerd.runtime.v2.task/k8s.io/*/rootfs/usr/bin/bash") and
-  not (process.args : "</dev/tcp/THICIPTSZP*.com/17472" and process.parent.name : "timeout") and
-  not process.parent.executable like "/opt/cdf/data/containerd/*" and
-  not (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*")
+process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
+process.command_line like~ ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and not (
+  process.parent.name == "timeout" or
+  process.command_line like~ (
+    "*/dev/tcp/sirh_db/*", "*/dev/tcp/itom-vault/8200*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*",
+    "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/::1/*", "*/dev/tcp/livelog.default.svc.cluster.local*",
+    "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*"
+  ) or
+  process.parent.command_line == "runc init" or
+  process.parent.executable like "/opt/cdf/data/containerd/*" or
+  (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*") or
+  (
+    process.args like "/dev/tcp/nomzk-client-svc/*" and
+    process.executable like "/opt/cdf/data/containerd/state/io.containerd.runtime.v2.task/k8s.io/*/rootfs/usr/bin/bash"
+  )
+)
 '''
 
 min_endpoint_version = "7.15.0"

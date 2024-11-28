@@ -13,7 +13,7 @@ reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -26,7 +26,8 @@ not (
     "/usr/sbin/runc", "/usr/libexec/snapd/snap-confine", "/var/lib/snapd/snap/bin/direnv", "/usr/lib/systemd/systemd",
     "/usr/bin/runc", "/usr/bin/login"
   ) or
-  (process.parent.name == "init" and process.args == "/usr/lib/systemd/systemd-executor")
+  (process.parent.name == "init" and process.args == "/usr/lib/systemd/systemd-executor") or
+  (process.parent.name like "python*" and process.args == "-m" and process.args == "test.regrtest" and process.args == "--pgo")
 )
 '''
 

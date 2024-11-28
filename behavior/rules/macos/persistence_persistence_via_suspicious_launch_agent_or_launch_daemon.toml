@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog",
     "https://www.elastic.co/security-labs/DPRK-strikes-using-a-new-variant-of-rustbucket",
 ]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 persistence where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -73,8 +73,10 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                       "/var/run/docker.sock",
                       "Location of the installed AutomationEngineSyncer executable (to be replaced by installer)") and not
   Effective_process.executable : ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                  "/usr/local/sbin/FileWave.app/Contents/MacOS/fwcld",
                                   "/Library/Kandji/Kandji Agent.app/Contents/Helpers/Kandji Library Manager.app/Contents/MacOS/kandji-library-manager") and not
   process.executable : ("/System/*",
+                        "/usr/local/sbin/FileWave.app/Contents/MacOS/fwcld",
                         "/Library/PrivilegedHelperTools/*", 
                         "/private/tmp/KSInstallAction.*/Install Google Software Update.app/Contents/Helpers/ksinstall") and not
   process.code_signature.signing_id : ("com.bomgar.bomgar-scc", 

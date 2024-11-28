@@ -8,7 +8,7 @@ id = "1a2596ff-a5e7-4562-af17-97dbaf9284d5"
 license = "Elastic License v2"
 name = "Python Network Connection Followed by File Creation"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -24,6 +24,7 @@ sequence by process.entity_id with maxspan=5s
    )
   ]
   [file where event.type == "creation" and event.action == "creation" and file.extension == null and not (
+     process.executable in ("/etc/cron.daily/0yum-daily.cron", "/tmp/trivy") or
      file.name like ("tmp*", "*;*", "METADATA", "LICENSE") or
      file.path like (
        "/home/*", "/tmp/*", "/var/tmp/*", "/var/*", "/opt/*", "/etc/*", "/app*", "/run/*", "/root/*", "/nss/*",

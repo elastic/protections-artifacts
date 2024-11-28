@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence with maxspan=1m
@@ -51,7 +51,14 @@ sequence with maxspan=1m
        [process where event.action == "start" and process.name : "*setup*" and process.code_signature.trusted == true] and
   not process.Ext.token.integrity_level_name == "system")
 ) and
-not process.args : ("https://download.microsoft.com/download/*.msi", "APIURL=http*")]
+not process.args :
+          ("https://download.microsoft.com/download/*.msi",
+           "APIURL=http*",
+           "TRANSFORMS=C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\\\Updates\\UEMSAgent.mst",
+           "SERVERNAME=*.manageengine.com", 
+           "C:\\Program Files (x86)\\ManageEngine\\UEMS_DistributionServer\\\\Updates\\UEMSDistributionServer.msi") and 
+not process.parent.executable : "C:\\Program Files (x86)\\Novell\\ZENworks\\bin\\ZenworksWindowsService.exe"
+]
 [process where event.action in ("start", "already_running") and
  (
   (process.name : "msiexec.exe" and process.args == "/V") or

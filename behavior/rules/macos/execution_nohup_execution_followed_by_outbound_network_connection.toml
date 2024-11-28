@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Nohup Execution followed by Outbound Network Connection"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -35,7 +35,7 @@ sequence by process.parent.entity_id with maxspan=30s
        "FE80::/10", "FF00::/8")]
 '''
 
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -78,4 +78,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.6.0"
+min_endpoint_version = "8.16.0"

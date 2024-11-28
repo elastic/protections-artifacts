@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -46,7 +46,14 @@ api where
   not process.executable : 
                    ("?:\\Program Files (x86)\\Image Express\\ixDrill\\ixDrill.exe", 
                     "?:\\Windows\\System32\\DellTPad\\ApMsgFwd.exe", 
-                    "?:\\Windows\\System32\\FMAPP.exe")
+                    "?:\\Windows\\System32\\FMAPP.exe",
+                    "?:\\Program Files (x86)\\Power Automate Desktop\\PAD.Console.Host.exe",
+                    "?:\\Program Files (x86)\\SuperPuTTY\\SuperPutty.exe",
+                    "?:\\Program Files\\SuperPuTTY*\\SuperPutty.exe") and
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name in ("Grammarly, Inc.", "HP Inc.", "Proofpoint, Inc.", "ETH Zürich", "Learnpulse",
+        "Qisda Corporation", "ONELAUNCH TECHNOLOGIES INC.", "Laserfiche", "ARTICULATE GLOBAL, LLC", "ARTICULATE GLOBAL, LLC",
+        "Connectwise, LLC"))
 '''
 
 min_endpoint_version = "8.12.0"

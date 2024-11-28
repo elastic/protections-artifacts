@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Default DPKG Directory"
 os_list = ["linux"]
 reference = ["https://www.makeuseof.com/how-deb-packages-are-backdoored-how-to-detect-it/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=3s
@@ -22,6 +22,7 @@ sequence with maxspan=3s
        "/var/lib/dpkg/info/percona-server-server-*.postinst", "/var/lib/dpkg/info/vivaldi*",
        "/var/lib/dpkg/info/percona-xtradb-cluster-server*", "/var/lib/dpkg/info/univention-updater*"
      ) or
+     process.parent.name in ("mdatp.postinst", "mdatp.postrm") or
      process.args like "/var/lib/dpkg/info/percona-xtradb-cluster-server-*.postinst"
    )
   ] by process.entity_id

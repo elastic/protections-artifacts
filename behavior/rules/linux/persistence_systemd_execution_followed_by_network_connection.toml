@@ -7,7 +7,7 @@ id = "6644d936-36a2-4d21-95f3-4826e6b61b9b"
 license = "Elastic License v2"
 name = "Systemd Execution Followed by Network Connection"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=3s
@@ -44,7 +44,8 @@ sequence with maxspan=3s
      ) or
      process.executable like (
        "/opt/acronis/bin/updater", "/nix/store/*", "/proxydefender/sc2psd", "/home*/jre/current/bin/java",
-       "/var/lib/elastic-agent/data/elastic-agent*/components/agentbeat", "/usr/sap/*/sldreg", "/tmp/newroot/*"
+       "/var/lib/elastic-agent/data/elastic-agent*/components/agentbeat", "/usr/sap/*/sldreg", "/tmp/newroot/*",
+       "/usr/lib/snapd/snapd"
      )
    )
   ] by process.parent.entity_id

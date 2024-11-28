@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies the execution of a Windows Installer via transforms from unusual parent process. Adversaries may abuse
+Windows installer transforms to hijack the normal execution of a legit installer for initial access and execution.
+"""
+id = "4b2f842b-8a9e-4e9d-91ae-0ef875efd561"
+license = "Elastic License v2"
+name = "Execution via Windows Installer Transforms"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/msi/about-transforms"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+[process where event.action == "start" and user.id != "S-1-5-18" and
+ (process.pe.original_file_name == "msiexec.exe" or process.name : "msiexec.exe") and
+ process.args : ("/i*", "-i*") and process.args : ("/q*", "-q*") and
+ process.command_line : "*transforms*=*" and
+ (process.parent.code_signature.subject_name in ("Microsoft Corporation", "Microsoft Windows") or process.parent.name : "python*.exe")]
+[process where event.action in ("start", "already_running") and
+ (
+  (process.name : "msiexec.exe" and process.args == "/V") or
+
+  (process.parent.name : "msiexec.exe" and process.parent.args == "/V")
+  )]
+'''
+
+min_endpoint_version = "8.14.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

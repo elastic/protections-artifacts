@@ -1,0 +1,110 @@
+[rule]
+description = """
+Identifies when a process attempts to allocate shellcode memory region using VirtualProtect API changing memory
+protections from RW to RX.
+"""
+id = "8fcf2b81-8322-423b-a1b4-6bba722f599a"
+license = "Elastic License v2"
+name = "Suspicious Memory Protection Change via VirtualProtect"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
+ process.Ext.api.behaviors == "allocate_shellcode" and
+ process.Ext.api.parameters.protection == "R-X" and process.Ext.api.parameters.protection_old == "RW-" and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+
+ not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+      process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Unknown*", "Undetermined*", "system.core.ni.dll")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance == "Kernel" and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info:
+                   ("c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*",
+                    "c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                    "c:\\windows\\sys?????\\ntdll.dll!RtlpCreateProcessRegistryInfo*")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                    ("da9f98de697f863e5351b86289b21de70e61a74d7533ee97bc08dd42c6972a91",
+                     "bbff088a88a0a754dc9d312e52ef7e60dd93537d78d73f79c89aa5b5091457fc",
+                     "6db01eb9b17b85c5b4de9f888060c0ea96d03bd6da195b0ba1b990700c9d23f7",
+                     "34e6d971c034222a417995d8e1e8fdd9f8781795c9c289bd86c499a439f34c88",
+                     "0696e0617a028101d85db50a4f109fac15be3e1ebe122b94f805763d8008ddfc",
+                     "fee37bdeecc597ad9e0f13264e9ac12df3ad41f8d76a41da6e38349ed66ab35e",
+                     "c434208894f07f604b852f29b8edc3a58c4de63de783373733e72b2b73f33be9",
+                     "3cd00f456f51829eda119e0e133acc1e45a5930d61fc335a2e9aa688a836a24d",
+                     "9ac13f9bc5564fd8a1eab5f7c945dce1c27940dd63a913108eac64481ddde6af",
+                     "5438c19007ad96da0a969c0c0caaf00aa06375f1a6e85073f91a1392af94d059",
+                     "dfee8783677d5661c873d1dd3b0fabb5ad6cc7c9638cb9390f728b0a4ac14574",
+                     "704bc9a084989871a567abc638aec57b3c6514ef1e31ceacd0fb347551a7aaf4",
+                     "a844247b7cdcac1a5f61c604e4db111b274616c0eb19a70cdfb073c8c2f3b375",
+                     "1d2ccc2e25e1b645f63dfe93d191aa9fe1b14fa0296f922ae467766c1c64d633",
+                     "93f53280052d0f700259b42a62f8658d9b2a741b54063f277e9b83264448fb21",
+                     "de38e935cf249af5669d57ef9670ba4b9f324774fae9fd9cceb37b238305a155",
+                     "a8448fdad13341552eddecdbef4225015aa9940abe47d52d358a36f7bae57cc1",
+                     "33eaea61f37f63d950de5a3ab6708d832e6d2fa9375d9e721d8278237702d5b7",
+                     "67766e574baa86eb8317623acc2957e8e28944bb801a8c10a0fa9d29fdb4cfd3",
+                     "518c87f58a6c4d9826e9ef8fbb7f4213882fa70822675610d45aea2464502a57",
+                     "cbbc5dab18edc344d05c01d4d08819fbc0a68a78741956831752986009b69e16",
+                     "a0d9f666f5e253031b5364c955c120b6b917749645b9e97bd8cc324597d450d4",
+                     "b0968a364408aad11a33343cb9fdf66b994dbd251cc64237f8894d66efe96f19",
+                     "3b03f447beade5d3c5ef56b2fc3d43215466f8757ce0d3ce7dd3c2afa8a73541",
+                     "929cbeec5ba36a2e42080d31dfe7297fb1a0f4239060004283639182a8e62c74",
+                     "fa0b17d4c411a5011e094154e7f1bbd2e9237448df8a2b27e321bd1b2a3ab3f1",
+                     "5231df995d71991ee4108937bb12e4d3f344a96fb0c4cd82c14e18061d6c4730",
+                     "4ad4ff7561647775372cafe7c52ba85d610dbc901a45f1a576764dfa11a9fa7a",
+                     "b3012d6bb5dd8e91932d92808ea86363709148173096fe49181718c1890814cf",
+                     "79dafa6bf1054b901448a76f7f441d4c458f5eb2b6e9ab87e39632fb313c0d84",
+                     "891113b49c9876f9e46d445ff0534e48573e0e518d53b7161a381664df32ba77",
+                     "e2818bd313264a3086cdc2b8719d101bca6fc7de60058a12add40597cbb86691",
+                     "e9900d7fe38d9dc0a8438ac9ca79aba24403136c6c415028c223f13d97fb844d",
+                     "ffb16922d5db2b348ec146cf7b737c63ea22aa74604017d8cd5c53a1cb1e4f8f", 
+                     "d5d17575f4bec6ab674a9cac56fba5fd696576f23fc1b22e32629bcafba92ad3", 
+                     "667e71f17a13ac8140fcfad2cc1e3485ef9ea9fb2c9d9bda305347d4c92df7b2", 
+                     "6d72df875440edd9216e2e3f0fb500776064a6f2e412f8d118e410760dff3685", 
+                     "02f9581f9b917ac8535bce97462ad587608fd42227eae4d8ee54ab7a4bf742fd", 
+                     "852c5f7920c409c8736d6deaab4df397d5d3ff121764a9d8cf125b12dd5b08db", 
+                     "7e22ce3aff89b105e5d3cbb793ea2aa9daeb45dfb888ec2bea3f9571b1b90c2b", 
+                     "5181e6b10dd813812eb827884b62221a96f065ede5f2a6ac2bca251f3557f204", 
+                     "fe204b15ca9d02b89e4fbb5adc308e59005c2f998864e92ec68ba3982af241f6", 
+                     "6a31d5d8358cd60014233b39f33f2dda2cf6cc5c4883ba1501dc37644d2b51b4", 
+                     "778bdf088806162198b71dde1c0009b051c8433127c12fab3f8d9ac86c6f14ac", 
+                     "2be574f0197236b43260253d5c805097817d563b18ec08aa832d3d0d79bab4eb", 
+                     "2437b4361fade61d1c8ae7c9faa6a8b22223e65a58480227d0ec55a383dc486d", 
+                     "e1eb85821ebc1cdb879fbaa564c9d0a416aa7d4cb27fe8f4831c3956775c754c", 
+                     "fe204b15ca9d02b89e4fbb5adc308e59005c2f998864e92ec68ba3982af241f6", 
+                     "b3d665fa5452b58a2238f57188aa9310a01a1e3c2b884269c2bccb0bdadabd41", 
+                     "4b0e2b9fb85295f5f587c2f96d697918e2a9cbd95813be9c764f8d8c19270c65", 
+                     "0738dc614d751b3b08125c03a920fc243a3e5eea4f16d3374d8d94a6e2454477", 
+                     "e1eb85821ebc1cdb879fbaa564c9d0a416aa7d4cb27fe8f4831c3956775c754c") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, 
+                  $entry.trusted == true and $entry.subject_name in ("Carbon Black, Inc.", "MUSARUBRA US LLC", "Microsoft Windows Hardware Compatibility Publisher"))
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

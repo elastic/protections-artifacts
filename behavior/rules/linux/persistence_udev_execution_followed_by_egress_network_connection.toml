@@ -14,7 +14,7 @@ reference = [
     "https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -36,7 +36,9 @@ sequence by process.entity_id with maxspan=3s
      ) or
      process.name == "go" or
      process.executable like "/var/lib/docker/overlay2/*gitlab-runner-helper" or
-     process.executable in ("/usr/local/bin/rclone", "/usr/lib/git/git-remote-https", "/usr/lib/apt/methods/https")
+     process.executable in (
+       "/usr/local/bin/rclone", "/usr/lib/git/git-remote-https", "/usr/lib/apt/methods/https", "/usr/lib/apt/methods/http"
+     )
    )
   ]
 '''

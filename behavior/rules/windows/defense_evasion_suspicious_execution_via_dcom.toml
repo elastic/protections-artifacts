@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence with maxspan=1m
@@ -104,7 +104,8 @@ sequence with maxspan=1m
                 "?:\\Windows\\SysWOW64\\PresentationHost.exe",
                 "?:\\Program Files (x86)\\BL\\BL\\ACTIVEX.OUT.OF.PROCESS\\*.exe", 
                 "?:\\Program Files (x86)\\Minitab\\Minitab *\\Mtb.exe", 
-                "?:\\Program Files (x86)\\Common Files\\InstallShield\\Driver\\*\\IDriver.exe") and
+                "?:\\Program Files (x86)\\Common Files\\InstallShield\\Driver\\*\\IDriver.exe",
+                "?:\\Program Files\\Kerio\\Outlook Connector (Offline Edition)\\KoffBackend.exe") and
 
    not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
 

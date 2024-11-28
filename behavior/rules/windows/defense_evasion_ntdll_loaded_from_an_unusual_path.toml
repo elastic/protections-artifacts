@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 library where dll.pe.original_file_name : "ntdll.dll" and
@@ -25,7 +25,8 @@ library where dll.pe.original_file_name : "ntdll.dll" and
                  "\\Device\\vmsmb\\VSMB-{*}\\os\\windows\\*\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*",
                  "?:\\ProgramData\\Microsoft\\Windows\\Containers\\BaseImages\\*\\Files\\Windows\\System32\\ntdll.dll",
-                 "?:\\Windows\\WinSxS\\Temp\\InFlight\\*\\ntdll.dll") and
+                 "?:\\Windows\\WinSxS\\Temp\\InFlight\\*\\ntdll.dll",
+                 "?:\\$Windows.~BT\\NewOS\\Windows\\WinSxS\\amd64_microsoft-windows-ntdll_*\\ntdll.dll") and
  not (process.code_signature.subject_name : ("INCA Internet Co.,Ltd.", "NEXON Korea Corporation.", "Acronis International GmbH") and 
       process.code_signature.trusted == true) and
  not (process.executable : "C:\\Windows\\System32\\smss.exe" and dll.path : "?:\\ProgramData\\docker\\windowsfilter\\*\\Files\\Windows\\System32\\ntdll.dll")

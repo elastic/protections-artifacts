@@ -7,7 +7,7 @@ id = "58370744-f52b-4f28-aa06-469efd1e1825"
 license = "Elastic License v2"
 name = "Sensitive File Access followed by Compression"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -27,7 +27,8 @@ sequence by process.entity_id with maxspan=15s
                "/tmp/*",
                "/var/tmp/*",
                "/private/tmp/*") and
-    not file.path like "/Library/Logs/CrashReporter/*"]
+  not file.path like ("/Library/Logs/CrashReporter/*",
+                      "/private/tmp/publish.*")]
 '''
 
 min_endpoint_version = "8.11.1"

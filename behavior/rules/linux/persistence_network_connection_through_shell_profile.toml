@@ -14,7 +14,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=3s
@@ -42,7 +42,7 @@ sequence with maxspan=3s
        process.executable in (
          "/usr/bin/pacman", "/usr/bin/kubectl", "/usr/bin/oci", "/usr/bin/ssh", "/usr/local/bin/ansible-galaxy",
          "/usr/bin/last", "/usr/bin/node", "/usr/bin/groups", "/usr/bin/curl", "/usr/bin/wget", "/usr/bin/ansible-galaxy",
-         "/opt/puppetlabs/puppet/bin/puppet", "/bin/yum", "/bin/dnf", "/usr/bin/lpstat", "/bin/lpstat",
+         "/opt/puppetlabs/puppet/bin/puppet", "/bin/yum", "/bin/dnf", "/usr/bin/lpstat", "/bin/lpstat", "/usr/bin/kinit",
          "/usr/sbin/freeradius", "/usr/bin/htop", "/usr/lib/postgresql/14/bin/psql", "/usr/bin/mongodump",
          "/usr/bin/zypper", "/usr/bin/dnf", "/usr/bin/speedtest", "/usr/bin/dig", "/usr/bin/aws", "/usr/bin/w"
       ) or

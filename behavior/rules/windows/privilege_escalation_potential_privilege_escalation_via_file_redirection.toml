@@ -12,7 +12,7 @@ reference = [
     "https://googleprojectzero.blogspot.com/2018/04/windows-exploitation-tricks-exploiting.html",
     "https://i.blackhat.com/EU-21/Thursday/EU-21-Yan-From-Logic-to-Memory-Winning-the-Solitaire-in-Reparse-Points.pdf",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -69,6 +69,7 @@ sequence by process.entity_id with maxspan=1m
                    "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\msedgeupdate.dll",
                    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\*",
                    "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\MicrosoftEdgeUpdate.exe",
+                   "?:\\Program Files (x86)\\Microsoft\\Temp\\EU*.tmp\\MicrosoftEdgeUpdateBroker.exe",
                    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\Flash.ocx",
                    "?:\\Windows\\SysWOW64\\Macromed\\Flash\\FlashUtil_ActiveX.dll") and
   not (process.executable : "?:\\Windows\\splwow64.exe" and file.path : "?:\\Windows\\System32\\spool\\drivers\\*") and

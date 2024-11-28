@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies when the Microsoft HTML Help Executable (hh.exe) creates a suspicious child process. Adversaries may conceal
+malicious code in a CHM file and deliver it to a victim for execution.
+"""
+id = "f79a18a4-e8d8-481f-bf66-04941f7b549a"
+license = "Elastic License v2"
+name = "Suspicious Microsoft HTML Help Descendant"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1218/001/"]
+version = "1.0.4"
+
+query = '''
+process where event.action == "start" and
+ process.parent.executable : "?:\\Windows\\hh.exe" and
+ (
+  process.name : ("wscript.exe", "cscript.exe", "cmd.exe", "powershell.exe", "rundll32.exe",
+                  "regsvr32.exe", "mshta.exe", "msiexec.exe", "msbuild.exe", "conhost.exe", "curl.exe", "xcopy.exe", "expand.exe") or
+  (process.Ext.relative_file_creation_time <= 500 and (process.code_signature.trusted == false or process.code_signature.exists == false)) or
+  process.pe.original_file_name: ("wscript.exe", "cscript.exe", "cmd.exe", "powershell.exe", "rundll32.exe",
+                                  "regsvr32.exe", "mshta.exe", "msiexec.exe", "msbuild.exe", "conhost.exe", "curl.exe", "xcopy.exe", "expand.exe")
+  ) and
+  not (process.executable : "C:\\Windows\\system32\\conhost.exe" and
+       process.command_line : "\\??\\C:\\Windows\\system32\\conhost.exe 0xffffffff -ForceV1") and
+  not process.hash.sha256 in ("4535320c5b9596a6210109f68c647dbdbd0289ba63286fd389dea910855491f1",
+                              "9440e89e0ea081e3016d6c604a746c74ffd0dbbf5c4c1e03d544a5128d6e1ade",
+                              "7902fc0d4483b5bffed560455539f1dd0ea26380318ca4d5e04e5c8c4a7e545d",
+                              "cb35afb097cf36892dead09b39ea8dbe2d552daf9b489843e8835e9d7715e418") and
+  not (process.executable : ("C:\\Windows\\SysWOW64\\cmd.exe", "C:\\Windows\\SysWOW64\\regsvr32.exe", "C:\\Windows\\SysWOW64\\*\\powershell.exe") and
+       not process.parent.name : "hh.exe")
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.001"
+name = "Compiled HTML File"
+reference = "https://attack.mitre.org/techniques/T1218/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

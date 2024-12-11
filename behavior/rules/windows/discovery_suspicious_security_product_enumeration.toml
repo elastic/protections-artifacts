@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -48,7 +48,7 @@ api where
    (process.executable : "C:\\Program Files (x86)\\Ivanti\\EPM Agent\\Inventory\\ldiscn32.exe" and
     process.code_signature.subject_name == "Ivanti, Inc." and process.code_signature.trusted == true) or
 
-   (process.executable like "C:\\Program Files (x86)\\ASUS\\AsusFanControlService\\*\\AsusFanControlService.exe" and
+   (process.executable : "C:\\Program Files (x86)\\ASUS\\AsusFanControlService\\*\\AsusFanControlService.exe" and
     process.code_signature.subject_name == "ASUSTeK COMPUTER INC." and process.code_signature.trusted == true) or
 
    (process.executable :

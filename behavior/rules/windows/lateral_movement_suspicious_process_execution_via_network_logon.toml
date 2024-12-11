@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 process where event.action == "start" and
@@ -142,7 +142,9 @@ process where event.action == "start" and
               "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\InstallUtil.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe",
-              "?:\\Windows\\System32\\Dism\\DismHost.exe") and
+              "?:\\Windows\\System32\\Dism\\DismHost.exe",
+              "C:\\Windows\\System32\\taskkill.exe",
+              "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\MSBuild\\Current\\Bin\\MSBuild.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -174,11 +176,16 @@ process where event.action == "start" and
                     "*ccpa-temp*oval_registry*",
                     "*certstorename=MY*",
                     "*/latest/api/token*-TimeoutSec*",
+                    "*http://169.254.169.254/opc/v1/instance*",
+                    "*http://169.254.169.254/metadata/instance*",
+                    "*http://metadata.google.internal/computeMetadata/v1/instance/*",
                     "*\\program files (x86)\\citrix\\Licensing\\WebServicesForLicensing\\*",
                     "*JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQBuAGMAZQA9ACIAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQAiADsARwBlAHQALQBIAG8AdABmAGkAeAAgAHwAIABTAGUAbABlAGMAdAAtAE8AY*")) and
   not (process.name : "cmd.exe" and process.parent.name : "WmiPrvSe.exe" and
        process.args : (" > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
                        "} > \\\\127.0.0.1\\c$\\temp\\gsa\\Production",
+                       "chcp 65001 & E:\\Tableau\\Tableau",
+                       "chcp 65001 & E:\\Tableau",
                        "(x86)\\citrix\\Licensing\\WebServicesForLicensing\\Apache\\bin\\httpd.exe  -V  > \\\\127.0.0.1\\c$\\temp\\gsasandbox\\SandBox")) and
   not process.hash.sha256 :
                  ("06078b8b840b4591535566d18d5f88b201c4cb8e033361095f7fd37d058e6962",
@@ -240,7 +247,17 @@ process where event.action == "start" and
                   "2fa78d3db5f0e1b5ecba97bb647889a210187e8af6ddc85aa3526c9c931521bb",
                   "34c5c838199700dd344b8d606163ce4f05db72397c9aaf129f52b70b38c1d187",
                   "8a6e5c27f90819134d21c17f4680fdb52e05564839bbe82f68c696aef73f029b",
-                  "d6308dd79e9574448d1550774edcd17d5dc572b2b6f2560f5485c1c78a58add7") and
+                  "d6308dd79e9574448d1550774edcd17d5dc572b2b6f2560f5485c1c78a58add7",
+                  "9d52534f18feeb98882df9c8da098302f11628538c54a93e51d13ebbc97e72eb",
+                  "09d948909e0e712a698f9e4f7d28b8ef97c12f6e02f3001687644389ec7627a6",
+                  "6160c38b1196b5b45c0cbf16db4adbc4c30167b4b6183104c4bb2fb62c98e59f",
+                  "df601377e3c85f60df06a5a1b3be87ec2b1892580be86bd39d51e42c03bee2b1",
+                  "e67b1ea15857439dddc7158df9c58adb66b36ddc09063da0e3e52d017b532df1",
+                  "9c86d5f9a7a50a37d46a93b851dc1ca4a473134aafd9a0db654f8e3c100e54b6",
+                  "585001fba1b844aef5999adb267dc1e52d8ea7f53b4855f6234406b9fea97a81",
+                  "16a4e05159d7aba10ab658d27f36459a4b33135f52456eaab4495884611b1f9e",
+                  "29f9c146fc0813ee93da780174595db769cbe63c127330379b51edf94d3c752c",
+                  "eb20ea30c8c33b74eb18dff92eb78e6dcdd2db884348a64b423213bfecbeea17") and
 
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
@@ -252,7 +269,7 @@ process where event.action == "start" and
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
                  "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.",
                  "Block 64 Corporation", "Kaseya Holdings Inc", "Schmidt's LOGIN GmbH", "QS solutions BV",
-                 "Yokogawa Electric Corporation")) and
+                 "Yokogawa Electric Corporation", "IDERI GmbH", "Ledger SAS", "Netwrix Corporation")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and

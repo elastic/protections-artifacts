@@ -1,0 +1,96 @@
+[rule]
+description = "Identifies attempt to allocate or execute Shellcode from a module with low or unknown reputation."
+id = "99d3049e-f4af-46a7-9406-33482955bec9"
+license = "Elastic License v2"
+name = "Unbacked Shellcode from Unsigned Module"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/pikabot-i-choose-you",
+    "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
+]
+version = "1.0.1"
+
+query = '''
+api where
+ process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode") and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ process.thread.Ext.call_stack_final_user_module.protection_provenance_path != null and
+ process.thread.Ext.call_stack_summary :
+                    ("ntdll.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.status == "errorBadDigest" or $entry.exists == false) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
+                                                ("c:\\windows\\microsoft.net\\framework*\\clr.dll",
+                                                 "c:\\program files (x86)\\adobe\\acrobat*\\acrobat\\acrobat.dll") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                 ("a8d979460e970e84eacce36b8a68ae5f6b9cc0fe16e05a6209b4ead52b81b021",
+                                  "c434208894f07f604b852f29b8edc3a58c4de63de783373733e72b2b73f33be9",
+                                  "cb79e99da5b41d61302c941ed1dbe8c5d354dc789b10d9ec69892b27900b7279",
+                                  "fdad52e85048040319faaa2cd1546346957f86343c4b89d30153edb7a8fd0b90",
+                                  "69310b1df649a25d78941704536805393e6b17e011e763e0e80e023baaccccd6",
+                                  "b5480453a6e4cac87a9ac05459dfe57f0a72e591afc19c0b5686a2de02c7c346",
+                                  "5d20266760e95e56b12705e69e58d09625b9c5e2e94b2f706cebaa275598446a",
+                                  "ed3730a3436454022e8cf1a27569babef8c9c348ea875f1df80cba9b743365c9",
+                                  "4077289062777cf8e60bd81a2efe1350eeb60301679b3c236863cae7b4d8cc5a",
+                                  "616217f667bd2dc9e27d066239f83b3f5554b0ff10edc002ee63e3fcf62cc5d8",
+                                  "60ebc86c2dd03056ad48adc6d2468fd54c548a55d2d305577eb7e079d90ac13f",
+                                  "3cd00f456f51829eda119e0e133acc1e45a5930d61fc335a2e9aa688a836a24d",
+                                  "97d97c37d51be172951ed8a98f6fa0c2b7a2c9df14a44d0abf971d73e46e9373",
+                                  "891113b49c9876f9e46d445ff0534e48573e0e518d53b7161a381664df32ba77",
+                                  "a3b4a357f5b068add25ea0b2ed8e566ab2e6f4359df83b18f525b54490ec3f28",
+                                  "2ffc321b0cb1f6b89fe09c597c94cd30e82f405cb982234d6383061b8ea6b12e",
+                                  "93f53280052d0f700259b42a62f8658d9b2a741b54063f277e9b83264448fb21",
+                                  "bd0e0a6f9e5e73cbd5637c6efada0efcc030ebb86a3a00df9dd03db1e7a533b7",
+                                  "fc48fcbdb74be72b6222883f11b59ab9f2e6019a6c6565d7de183a08e77df47f",
+                                  "430cb452335968804d57225c0e887bd2194ee1c55d160a6df2f62d0c326b47ee",
+                                  "898e78d91da372f9f5039601581b3aadf9e62a06dd005a2851ce20275780e4b1",
+                                  "0f7c82d426b124fb9a21cda05184e0860bc400dc354f9aaafb1c9af84b7363e2", 
+                                  "67445d47d7e70e7b0f94b752f027e04a5453b5b14ea56c433660b27d016a734d", 
+                                  "fdf036edcd2fc6997a6eeaac4b58e4b533cd6abdf15d18a53621832bff038be0", 
+                                  "e3868e9daf4d9e34bf5b2f48bf5cab45e9b88e39cea578edb01cd96607eecf09", 
+                                  "c5473c258cc2619ff88c16c9062f7feb29e66b3ecf205cf640b5abcaf316a487", 
+                                  "27bb524de82dbab7461e09329afebb0361127494abb3782bbafdb9d9986df9c2", 
+                                  "8f63c4fee17990a9988a6fc0a32635095226588e79cfcbbcbcb89afc021b7f71", 
+                                  "38d155e2cac8c63774e1706307b29b1058c2479871c9331157370d67c53f0cbb", 
+                                  "0738dc614d751b3b08125c03a920fc243a3e5eea4f16d3374d8d94a6e2454477", 
+                                  "86699ebbcdbee712a4b798391b178a19ec18e0631bbc74875eda70af21b1da7e", 
+                                  "3b283e5b05e232abab6e8144e3eb58ad456ad496d284e88f749cb8d6df2c0f62", 
+                                  "a0d9f666f5e253031b5364c955c120b6b917749645b9e97bd8cc324597d450d4", 
+                                  "4fd048ceaf8dff00bfb27851ea00d31d713ae72367e91bbf95607fac82fb8b38", 
+                                  "de38e935cf249af5669d57ef9670ba4b9f324774fae9fd9cceb37b238305a155", 
+                                  "11a970455d4536e4c4cdd655b864f5b01e7e8421b329196e0d878be2430cd20d", 
+                                  "1b5d9cec668335295c8e575bcedf4afcedbc445d8ccf8374c9380188965e78e3", 
+                                  "9becd39f90077a5ab064681c0a1be139d15be9ce434bacd48cd1dc894d3911cb", 
+                                  "5438c19007ad96da0a969c0c0caaf00aa06375f1a6e85073f91a1392af94d059") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("isrt.dll", "issetup.dll", "dbexpida.dll", "cyinjct.dll") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("c:\\windows\\installer\\msi*.tmp", "c:\\program files\\*", "c:\\program files (x86)\\*")
+'''
+
+min_endpoint_version = "8.14.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

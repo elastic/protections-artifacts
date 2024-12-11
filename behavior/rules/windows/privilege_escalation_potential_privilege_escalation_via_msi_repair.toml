@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via MSI Repair"
 os_list = ["windows"]
 reference = ["https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and process.Ext.token.integrity_level_name == "system" and
  process.parent.name in~ ("chrome.exe", "msedge.exe", "brave.exe", "whale.exe", "browser.exe", "dragon.exe", "vivaldi.exe",
                           "opera.exe", "iexplore", "firefox.exe", "waterfox.exe", "iexplore.exe", "tor.exe", "safari.exe") and
  process.parent.command_line like "*go.microsoft.com*" and
- not process.executable like 
+ not process.executable :
             ("?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
              "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
              "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",

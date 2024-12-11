@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Payload Decoded via CertUtil"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Certutil/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -17,7 +17,9 @@ process where event.action == "start" and
  not (user.id : "S-1-5-18" and process.args : "-decode" and
       process.parent.args : "?:\\ProgramData\\CentraStage\\AEMAgent\\Temp\\*.bat") and
  not (user.id : "S-1-5-18" and process.command_line : "certutil  -decode getSignatureInfo.base64 getSignatureInfo.ps1 ") and
- not (process.command_line : "certutil  -f -decode C:\\WINDOWS\\Temp\\csat\\csat_dwnldr.txt C:\\WINDOWS\\Temp\\csat\\csat_dwnldr.exe")
+ not process.command_line :
+              ("certutil  -f -decode C:\\WINDOWS\\Temp\\csat\\csat_dwnldr.txt C:\\WINDOWS\\Temp\\csat\\csat_dwnldr.exe",
+               "certutil  -decode \"c:\\HVworking\\checkSignature.base64\" \"c:\\HVworking\\checkSignature.bat\"")
 '''
 
 min_endpoint_version = "7.15.0"

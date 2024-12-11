@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/revisiting-blister-new-developments-of-the-blister-loader",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.action == "start" and
@@ -47,7 +47,13 @@ process where event.action == "start" and
                                        "*dataclen.dll!?Purge*", 
                                        "*dataclen.dll!DllCanUnloadNow*", 
                                        "*shell32.dll!AssocCreateForClasses*")) and
- not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll" and 
+ not process.parent.thread.Ext.call_stack_summary in
+                                ("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|wow64win.dll|ntdll.dll",
+                                 "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|dtframe32.dll",
+                                 "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|acrord32.exe|ntdll.dll|kernel32.dll|ntdll.dll",
+                                 "ntdll.dll|kernelbase.dll|kernel32.dll|werfault.exe|kernel32.dll|ntdll.dll",
+                                 "ntdll.dll|kernelbase.dll|hmpalert.dll|kernelbase.dll|kernel32.dll|werfault.exe|kernel32.dll|ntdll.dll",
+                                 "ntdll.dll|kernelbase.dll|kernel32.dll|Unknown|cbscore.dll|wcp.dll|ucrtbase.dll|wcp.dll|ntdll.dll|wcp.dll|cbscore.dll|tiworker.exe|rpcrt4.dll|combase.dll|rpcrt4.dll|combase.dll|rpcrt4.dll") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "488945???88b4d*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                   $entry.callsite_trailing_bytes : "48894550488b4508488b4d5048894810488b4500ff5040488b4d088901488b8580000000488b40304889454048837d40000f84b5000000488b45008b08488b45")

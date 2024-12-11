@@ -1,0 +1,89 @@
+[rule]
+description = """
+Identifies attempts to map the whole content of a file in a memory region with execute permissions. This may indicate an
+attempt to allocate and write malicious code via memory mapping.
+"""
+id = "20a1f655-498a-4a73-8793-9f7ed14b9601"
+license = "Elastic License v2"
+name = "Suspicious Executable Memory Mapping"
+os_list = ["windows"]
+reference = [
+    "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile2",
+    "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2") and
+ /* map the whole file to an executable memory region */
+ process.Ext.api.parameters.size == 0 and process.Ext.api.behaviors == "allocate_shellcode" and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.exists == false or $entry.status == "errorBadDigest") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("Kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                       ("a79bfb466cabfef1a4faaf2eedbf0e823bf372f2a1f6f33e803702ff080f72f3",
+                                        "9d3b9a942d4f7573f9f2f8197f3ca9254d483bd12226975476befe1c203544bb",
+                                        "69c45175ecfd25af023f96ac0bb2c45e6a95e3ba8a5a50ee7969ccab14825c44",
+                                        "2faef17891b413fd63fc34c019a22401cce33e11da3a788de787dccaed1238ec",
+                                        "dc98b14cbb25ef1937217da4fde5e2cc13f4702b31a6bc481d8de2bd87ac0525",
+                                        "1b5d9cec668335295c8e575bcedf4afcedbc445d8ccf8374c9380188965e78e3",
+                                        "18d1bae077da62bb5cf5bfa6a6c5c38ac9ade57f098ea2b357fab477e85f1c25",
+                                        "d842b440338e59201a4e2d32779768d0f892cd131eeca904e155bd063158f71a",
+                                        "9a0c65932e4f71dd850e16c5e2830463745e65c4b25f0d0731fe3fc5b94104f6",
+                                        "72d2010ee14567e9d0c68c3411ba1bfee8b875ddbda6b5a467c28c9e83ebf557",
+                                        "6ec60215507d4e671f743164a247362da212acd65f9e0cfb676abb0f9a428dfa",
+                                        "f11e2c3e87d9f4531fb68664cfea76f7691f26986921f6b83b13d8a0531e673c",
+                                        "9709ff9eb1e712145214525d692bd46380099959597cb85bf9716c71385d6446",
+                                        "9176d1c98c87da7f22ef6e88b04669b84a952a506745e854bfabe56642ead659",
+                                        "c8b1026e1c6dbeab082c587a796e5deffb0e0d04d9be52ff6e445a5d69a4e790",
+                                        "a43a04d10b713edbc053a286a329c958b345d713153e52beeac73c99cb44a2c4",
+                                        "6016f8944c4f2a47420474792ea88b4c49584529e8b257509249a5b7cb011a78",
+                                        "e4494c9e346ab2c96feb4933521a1cbcc8e802b93c379aed2f7d5b2f82fc35f8",
+                                        "983b1815934cdcca7fc2af14ba6b199bc1bd591e60e2550c98702efa454b26e5",
+                                        "05e6e9c54e4da2adb0482b97bb4bbf1930ec229ea9266df0cbcc0d1847311ace",
+                                        "905830b92cb86d3fa457f8f6f9c839aa85f05cc76daaeb0ab1b44b86b2455a85",
+                                        "ff225f43ea5fef79d7565533e3e40c78d92c7547ce9c948a817f237ebef96ea3", 
+                                        "533b27ac86fd52e44fa98b86cd96b65c60a3c0873eacc0a51a0e748df32131b6", 
+                                        "017978d00b820a0cd38cfa904408e4271b0cacd56cfdee0bb7945cf875a2fb1e", 
+                                        "59652dc55748c18aba7c575a2b41cd4128d0ab06809deaf553b725bacf13f60f", 
+                                        "796494dcea0b9e1b1de25be0a8f6d6e7b1b87401ba606b269443898007a703fe", 
+                                        "8b07e35fbd5831d66fe7f424cda4953acd3446917ac58f8469c511e77f0df40e", 
+                                        "be8c2d187ebef266f75475c85125a7877acc19e70f4a45dfe14c31bfc349296f", 
+                                        "a7d279cbfa959b5621b453c4d84e48033a79aa7da2cb85bb1f436ed2afd156ec", 
+                                        "25477c0dad4e07def9d4a693fb410e9bf0b70531883b2dbbcfa7d5d6383deff9", 
+                                        "a7d279cbfa959b5621b453c4d84e48033a79aa7da2cb85bb1f436ed2afd156ec", 
+                                        "6c53d38e6caa9e1dfb08f2eb52659080611e45949b46627f47ab60fc4fb3a52e", 
+                                        "ff20e643e1de23efaad7c274ffb68fa489e896151ec5b21064cfa6500ea62cc2", 
+                                        "62dfa53f3ff9247583b48c9d1f431faaa8bceeed5bdf23558f7ce4a39039f5a4", 
+                                        "ac36cd643420ab05628f3622de55a23291f77081c50e6ef1337487baea3360d1", 
+                                        "df13445949901d9f43575ad8fd5005a490e9a2fa68e27e26e6ea6d4014b83635",
+                                        "7f015c5673eec28b83637794b24199fe3b630ac94e49085994435787bac995c4",
+                                        "07c69656044fb6ac4f57f0847be8230727f5258235b2106cbb0c15af86ffa444",
+                                        "1bba7ad14b8b976dcaf39a004b4c6cf677032648fdf98e4aae9bddc2ccd69c6f",
+                                        "afe907b872bbaa92da07b7cfe203763892061fca683637fe4df25666b28e97ee") and
+ not process.thread.Ext.call_stack_final_user_module.path like ("?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*.ni.dll", "?:\\program files\\*")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

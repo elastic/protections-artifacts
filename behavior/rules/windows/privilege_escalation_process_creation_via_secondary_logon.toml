@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies process creation with alternate credentials. Adversaries may create a new process with a different token to
+escalate privileges and bypass access controls.
+"""
+id = "bd21aaa8-09d6-47d3-ba8d-78a8570199c5"
+license = "Elastic License v2"
+name = "Process Creation via Secondary Logon"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1134/002/"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+[any where event.category == "authentication" and event.action == "log_on" and
+ process.Ext.session_info.logon_type in ("Interactive", "NewCredentials", "NetworkCleartext") and
+ user.effective.id like ("S-1-5-21*", "S-1-12-*") and user.id like ("S-1-5-21*", "S-1-12-*") and
+ process.executable != null and not process.executable : "?:\\Windows\\System32\\svchost.exe" and
+ cidrmatch(source.ip, "127.0.0.0/8", "::1")] by process.entity_id
+[process where event.action == "start" and
+ process.Ext.session_info.logon_type in ("Interactive", "NewCredentials", "NetworkCleartext") and
+ process.parent.thread.Ext.call_stack_summary like "ntdll.dll|*|seclogon.dll|rpcrt4.dll|*" and
+ not (process.code_signature.trusted == true and
+      process.code_signature.subject_name in ("ZOHO Corporation Private Limited", "Bomgar Corporation", "ISL Online Ltd.",
+      "Google LLC", "SCHNEIDER ELECTRIC USA, INC.", "N-ABLE TECHNOLOGIES LTD")) and
+ not process.executable :
+               ("C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
+                "C:\\Program Files (x86)\\Varian\\OCS\\15.6\\VMS.Varis.Vishnu.exe") and
+ not (process.name == "rundll32.exe" and
+      process.args : ("C:\\WINDOWS\\System32\\SHELL32.dll,RunAsNewUser_RunDLL",
+                      "C:\\Program Files\\Adobe\\Acrobat DC\\Acrobat\\ANCUtility.dll,removeAppxInUserContext"))
+ ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.15.0"

@@ -1,0 +1,68 @@
+[rule]
+description = """
+Identifies when a process attempts to allocate or execute shellcode from an unbacked memory and where the protection
+provenance of that memory region is coming from the parent process.
+"""
+id = "631df705-0636-4f83-8374-24d61307735e"
+license = "Elastic License v2"
+name = "Shellcode Injection with Parent as Provenance"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
+ process.Ext.api.behaviors != "cross-process" and process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.protection_provenance_path != null and
+ startswith~(process.thread.Ext.call_stack_final_user_module.protection_provenance_path, process.parent.executable) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                             ("e9b488ad3101d386a3b2248db0c0dfe43c83fd856c55d181264da762f5352f38",
+                              "4ad4ff7561647775372cafe7c52ba85d610dbc901a45f1a576764dfa11a9fa7a",
+                              "10f3e16e8428f3d411f099fc4ff6e5b6f3ece29a0fc8fc606e7148e2f9bfc84b",
+                              "83fecf04fc83a08c78e4f5faad39c4b4ecb806c2b777c58998bfc9ea560f17ca",
+                              "6a31d5d8358cd60014233b39f33f2dda2cf6cc5c4883ba1501dc37644d2b51b4",
+                              "83fecf04fc83a08c78e4f5faad39c4b4ecb806c2b777c58998bfc9ea560f17ca",
+                              "02f9581f9b917ac8535bce97462ad587608fd42227eae4d8ee54ab7a4bf742fd",
+                              "b3d665fa5452b58a2238f57188aa9310a01a1e3c2b884269c2bccb0bdadabd41",
+                              "6d72df875440edd9216e2e3f0fb500776064a6f2e412f8d118e410760dff3685",
+                              "6a31d5d8358cd60014233b39f33f2dda2cf6cc5c4883ba1501dc37644d2b51b4",
+                              "27c7d20101e03ec0850cdd58f89b8d5e8494e8c0790919c778947ca14ee68a0d",
+                              "38e175cd1d4a2acd6ee0f04b2045c6260a7362a1cde2c77bca5887e0811edd2f", 
+                              "3ec7799d1f23fc6c0beea6f237f801dbdd59aac6faa7a22ecf88ba54c8fc9a80", 
+                              "e54d84398581083d4a4c2ca95056cbfffc1183d54fedfb4cf1b68bf1b4495839", 
+                              "43e216dbaf5aaad2d0b7d63dd14a9ce5b060390271e46fedbe59c671cfb28714", 
+                              "a8448fdad13341552eddecdbef4225015aa9940abe47d52d358a36f7bae57cc1", 
+                              "b18aa0c98922563f5996fb0497446873f7030d0511ffb77388ea882b4f98a924", 
+                              "ec673caa0c703cc3084887824b800502cd45b4a365c2f8d6cbc5175f0e938e1e", 
+                              "fee37bdeecc597ad9e0f13264e9ac12df3ad41f8d76a41da6e38349ed66ab35e", 
+                              "ce00bc44c975337198e7d3d353b8a1789a1221697754957752a63bbf547f1334")
+'''
+
+min_endpoint_version = "8.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.15.0"

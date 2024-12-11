@@ -7,13 +7,13 @@ id = "c8591841-6b50-42ea-a6c2-7f88b19897f0"
 license = "Elastic License v2"
 name = "Shadow Copy Deletion via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where
   process.Ext.api.name like "IWbemServices::DeleteInstance*" and
   process.Ext.api.parameters.operation like "Win32_ShadowCopy.*" and
-  not (process.executable like ("?:\\Program Files\\Veeam\\Backup and Replication\\*.exe", "?:\\Program Files (x86)\\Veeam\\Backup and Replication\\*.exe") and
+  not (process.executable : ("?:\\Program Files\\Veeam\\Backup and Replication\\*.exe", "?:\\Program Files (x86)\\Veeam\\Backup and Replication\\*.exe") and
        process.code_signature.subject_name in ("Veeam Software Group GmbH", "Veeam Software AG") and process.code_signature.trusted == true)
 '''
 

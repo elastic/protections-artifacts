@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -49,7 +49,9 @@ process.parent.executable != null and
     "/var/www/batch/bin/python*", "/usr/libexec/*", "/opt/oracle.ahf/common/venv/bin/python*",
     "/var/opt/oracle/oracle.ahf/common/venv/bin/python*", "/etc/init.d/oracle", "/usr/bin/fzf",
     "/opt/eset/efs/lib/install_scripts/check_start.sh", "/var/tmp/foreman-ssh-cmd-*/script",
-    "/usr/openv/pdde/vpfs/bin/vpfs_config.sh", "/data/ora04/dba/scripts/hugepages_kernelpar_settings*.sh"
+    "/usr/openv/pdde/vpfs/bin/vpfs_config.sh", "/data/ora04/dba/scripts/hugepages_kernelpar_settings*.sh",
+    "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/sublime_text/sublime_text",
+    "/opt/illumio_ven/bin/init_Environment"
   ) or
   process.parent.args like (
     "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",

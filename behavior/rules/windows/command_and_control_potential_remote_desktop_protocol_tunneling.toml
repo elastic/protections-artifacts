@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies remote interactive logon attempt with from the localhost as a source address. This may indicate the
+initiation of a Remote Desktop Tunneling session.
+"""
+id = "2ad77d41-b36a-49b2-a54b-7be157e7a8c3"
+license = "Elastic License v2"
+name = "Potential Remote Desktop Protocol Tunneling"
+os_list = ["windows"]
+reference = [
+    "https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/",
+    "https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES/blob/4ceed2f4706daf601c212a8f91c113dd85349a2c/Command%20and%20Control/DE_RDP_Tunneling_4624.evtx",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=2m
+ [api where process.Ext.api.name == "connect" and process.Ext.api.summary like "connect( ipv4, tcp, 127.0.*, 3389 )" and
+  not (process.code_signature.trusted == true and process.code_signature.subject_name in ("UiPath, Inc.", "Automation Anywhere, Inc.", "Google LLC", "Tanium Inc.",
+      "Mozilla Corporation", "Nmap Software LLC", "N-ABLE TECHNOLOGIES LTD", "Connectwise, LLC", "Datto, LLC", "Zabbix SIA")) and
+  not process.executable :
+                 ("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                  "C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe")]
+ [any where event.category == "authentication" and event.action == "log_on" and
+  process.Ext.session_info.logon_type in ("RemoteInteractive", "Network") and cidrmatch(source.ip, "127.0.0.0/8", "::1")]
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1572"
+name = "Protocol Tunneling"
+reference = "https://attack.mitre.org/techniques/T1572/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.15.0"

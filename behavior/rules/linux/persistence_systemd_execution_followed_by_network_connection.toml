@@ -7,7 +7,7 @@ id = "6644d936-36a2-4d21-95f3-4826e6b61b9b"
 license = "Elastic License v2"
 name = "Systemd Execution Followed by Network Connection"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=3s
@@ -17,7 +17,7 @@ sequence with maxspan=3s
        "/usr/lib/*", "/usr/lib64/*", "/var/lib/*", "/snap/*", "/tmp/newroot/*", "/usr/libexec/*", "/usr/local/*",
        "/home/*", "/jboss/software/*", "/usr/share/code/code", "/usr/share/codium/codium", "/", "/lib/systemd/systemd",
        "/usr/share/logstash/bin/logstash", "/etc/cp/watchdog/cp-nano-watchdog", "/etc/cron.daily/exim4-base",
-       "/usr/share/ec2-instance-connect/eic_harvest_hostkeys"
+       "/usr/share/ec2-instance-connect/eic_harvest_hostkeys", "/etc/cavalcade/bin/cavalcade"
      ) or 
      process.args in (
        "/etc/update-motd.d/50-motd-news", "/usr/lib/ubuntu-advantage/esm_cache.py", "start", "reload", "stop", 

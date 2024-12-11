@@ -7,7 +7,7 @@ id = "9f25e346-e484-4772-8502-9a769d9a0c0c"
 license = "Elastic License v2"
 name = "Windows API Call from a Stomped Microsoft Module"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "SetThreadContext", "SuspendThread", "VirtualProtectEx") and
@@ -50,7 +50,9 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProce
                                          "c:\\windows\\system32\\userdataaccountapis.dll",
                                          "c:\\windows\\system32\\taskapis.dll",
                                          "c:\\windows\\system32\\wldap32.dll",
-                                         "c:\\windows\\system32\\lockscreendata.dll") and
+                                         "c:\\windows\\system32\\lockscreendata.dll",
+                                         "c:\\windows\\system32\\gpprefcl.dll",
+                                         "c:\\windows\\system32\\xpsservices.dll") and
  not process.parent.executable :
                     ("C:\\Program Files (x86)\\Bit4id\\UKC\\UKC\\bin\\kchain.exe",
                      "C:\\Program Files (x86)\\N-able Technologies\\AutomationManagerAgent\\AutomationManager.AgentService.exe")

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 any where 
@@ -36,7 +36,12 @@ any where
                                          "*\\kernel32.dll!lstrlenW*", "*\\kernel32.dll!FindActCtxSectionGuidWorker*",
                                          "*\\kernel32.dll!OpenPrivateNamespaceW*", "*\\kernel32.dll!DeactivateActCtxWorke*",
                                          "c:\\windows\\system32\\kernel32.dll!QuirkIsEnabled3Worker*")) and
-   process.thread.Ext.call_stack_final_user_module.hash.sha256 != "a18cf3049c015dbc6a145a92dd2fe791abc95130c668cffab4a153076fac619f"
+   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                          ("a18cf3049c015dbc6a145a92dd2fe791abc95130c668cffab4a153076fac619f",
+                                           "d9adb2a675996b3c4b989878d933aea86cfc7846c4fbcee8dcee576b5b0945de",
+                                           "e663cd268b7d966c3bde07dbbc81e76f522c9d48089aceeba550c6ebe076942e",
+                                           "2528d1f6cd08474df88ac5bbbaf0ff46ad8592757951a8823eb30a79e68bec28",
+                                           "d962d6d77c2bd492cbbc01852d92d1a785a64dde7c302b4ce1c4c8abe6a8c03a")
 '''
 
 min_endpoint_version = "8.10.0"

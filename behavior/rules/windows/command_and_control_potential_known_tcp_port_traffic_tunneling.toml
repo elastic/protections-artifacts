@@ -1,0 +1,69 @@
+[rule]
+description = """
+Identifies attempts to connect to the loopback address on known ports, This may indicate the initiation of network
+traffic tunneling session.
+"""
+id = "81dcf03a-75e9-4582-8e19-d776f35c8166"
+license = "Elastic License v2"
+name = "Potential Known TCP Port Traffic Tunneling"
+os_list = ["windows"]
+reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "connect" and process.executable != null and
+ process.Ext.api.summary like ("connect( ipv4, tcp, 127.0.*", "connect( ipv6, tcp, ::ffff:127.0.0*") and
+ process.Ext.api.summary like ("*, 3389 )", "*, 22 )", "*, 445 )", "*, 21 )", "*, 3389 )", "*, 9222 )", "*, 9223 )") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                  $entry.trusted == true and not $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows")) and
+ not (process.code_signature.trusted == true and 
+      process.code_signature.subject_name in ("Veeam Software Group GmbH", "Connectwise, LLC", "ConnectWise, Inc.", "Datto Inc", "Datto, LLC",
+      "Check Point Software Technologies Ltd.", "Dell Technologies Inc.", "Tanium Inc.", "Paessler AG", "Carbon Black, Inc.", "KASEYA HOLDINGS INC.", "OutSystems, Inc.")) and
+ not process.executable : ("C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe",
+                           "C:\\Windows\\System32\\OpenSSH\\ssh-keyscan.exe",
+                           "C:\\Program Files\\FujiFilm\\MC\\opt\\appli\\curl.exe",
+                           "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+                           "C:\\Program Files (x86)\\SolarWinds\\Agent\\Plugins\\JobEngine\\SWJobEngineWorker2.exe",
+                           "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                           "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                           "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+                           "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                           "C:\\Program Files (x86)\\Tanium\\Tanium Client\\python??\\TPython.exe",
+                           "C:\\Program Files (x86)\\Google\\Chrome Remote Desktop\\*\\remoting_host.exe",
+                           "C:\\Program Files (x86)\\CheckPoint\\Endpoint Connect\\TracSrvWrapper.exe",
+                           "C:\\Program Files (x86)\\UPS\\WSTD\\WSBrowser\\msedgewebview2.exe",
+                           "C:\\Program Files (x86)\\Microsoft Azure Site Recovery\\agent\\evtcollforw.exe",
+                           "C:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe",
+                           "C:\\Program Files\\WindowsApps\\DuckDuckGo.DesktopBrowser_*\\WindowsBrowser\\WebView2\\msedgewebview2.exe") and
+ not (process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
+      process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe" and
+      process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe\" -Version ?.? -s -NoLogo -NoProfile") and 
+ not process.thread.Ext.call_stack_final_user_module.path : ("c:\\programdata\\microsoft\\windows defender advanced threat protection\\platform\\*\\sense?ds.dll") and 
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("c6628a00fd21cf370030095e592be94d89a3d804cccf7b9ad653e2f3ab3c6206", 
+                                                                     "292e6e6c7d9db5889c170cc71245ced1e8843599673a973841b7d47aa151efb6", 
+                                                                     "3607f581d9fccb08493a5d5c9932605aa1045f0ca27d67c00386320ab18d023c", 
+                                                                     "c11ea5ee55b87823d21833ace951ae975dd850846974445572380cfbbade23cc")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1572"
+name = "Protocol Tunneling"
+reference = "https://attack.mitre.org/techniques/T1572/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

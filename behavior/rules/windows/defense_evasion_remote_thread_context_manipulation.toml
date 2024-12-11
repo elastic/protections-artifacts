@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 api where 
@@ -41,7 +41,14 @@ api where
                         ("31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b",
                          "766ac0f768c5b2acb19ecb8cf179c59d56b74d71437f5d1331408d9c827cfde8",
                          "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95",
-                         "b6a39ef455952471c935ea190a78eecf423fba2a49ffce1afdf737d58bb2c9d3") and
+                         "b6a39ef455952471c935ea190a78eecf423fba2a49ffce1afdf737d58bb2c9d3",
+                         "062a170de010b5be0840dd92a9ad43da1d1e09738956cffce78368305afe885b",
+                         "2c5e3525840ef01510583ecc37f876791b2d6e73fbe8099c93ab0f5787ba626d",
+                         "655d6df92eef4c947498456d40b7856cbe72ede8c6432072f968207817825b52",
+                         "8b451b88d2cc91b079251e2347abb84d2b09712512fa9e57d9de35e93c751863",
+                         "615ac4399eed0a26e5cd9bba4e7dcf661400fb0546dce067523fe275351d3b04",
+                         "22a8ae4f904366c8f42d8da22df28c755cefd28ab34268c77275229964e34c66",
+                         "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
@@ -65,7 +72,10 @@ api where
                                         "?:\\program files\\windowsapps\\dolbylaboratories.dolbyaccess_*\\dlls\\x64\\dolbyaudioprocessing.dll*",
                                         "?:\\program files\\windowsapps\\pythonsoftwarefoundation.python.*\\dlls\\sqlite3.dll!sqlite?_enable_shared_cache*",
                                         "?:\\windows\\systemapps\\microsoft.windows.contentdeliverymanager_*\\contentdeliverymanager.background.dll!*")) and
- not process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|gdb.exe|kernel32.dll|ntdll.dll", "ntdll.dll|bcrypt.dll")
+ not process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|gdb.exe|kernel32.dll|ntdll.dll", "ntdll.dll|bcrypt.dll") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher"))
 '''
 
 min_endpoint_version = "8.10.0"

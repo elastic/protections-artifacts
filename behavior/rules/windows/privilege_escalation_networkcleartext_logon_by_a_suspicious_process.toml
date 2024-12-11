@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies NetworkCleartext logon attempt by an unusual process. Adversaries may leverage compromised credentials to
+bypass access controls.
+"""
+id = "07ca9f3f-50b9-4b2f-ae18-e500d21fe73d"
+license = "Elastic License v2"
+name = "NetworkCleartext Logon by a Suspicious Process"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1134/002/"]
+version = "1.0.2"
+
+query = '''
+authentication where event.action == "log_on" and
+ process.Ext.session_info.logon_type == "NetworkCleartext" and process.executable : "C:\\*" and
+ user.id like ("S-1-5-21*", "S-1-12-*") and (user.effective.id != null and user.effective.id like ("S-1-5-21*", "S-1-12-*")) and
+ not (process.code_signature.trusted == true and 
+      process.code_signature.subject_name in ("Varonis Systems, Inc.", "Remote Access World SAS", "TSplus SAS", "Solarwinds Worldwide, LLC")) and
+ not process.executable :
+            ("C:\\Windows\\System32\\inetsrv\\w3wp.exe",
+             "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
+             "C:\\Windows\\System32\\mmc.exe",
+             "C:\\Windows\\System32\\wsmprovhost.exe",
+             "C:\\Program Files (x86)\\Admin Arsenal\\PDQ Inventory\\PDQInventoryService.exe",
+             "C:\\Program Files\\Microsoft SQL Server\\*\\SQLAGENT.EXE",
+             "C:\\Program Files\\*\\Microsoft.Mashup.Container.NetFX45.exe",
+             "C:\\Program Files\\On-premises data gateway\\Microsoft.PowerBI.EnterpriseGateway.exe",
+             "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security Center\\klbackup.exe",
+             "C:\\Windows\\System32\\inetsrv\\InetMgr.exe",
+             "C:\\Program Files\\Microsoft Office Servers\\1?.?\\Bin\\mssdmn.exe",
+             "C:\\Program Files\\Microsoft SQL Server\\*\\msmdsrv.exe",
+             "C:\\Program Files\\Microsoft Office Servers\\*\\Bin\\mssdmn.exe",
+             "C:\\Program Files (x86)\\Rittal\\RiZone\\Core\\Core.Server.exe",
+             "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
+             "C:\\Program Files\\Microsoft SQL Server Reporting Services\\SSRS\\Management\\RSManagement.exe",
+             "C:\\Program Files (x86)\\Varonis\\DatAdvantage\\IDU Server\\Support Assistant\\Varonis.Automation.CLI.exe")
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.001"
+name = "Token Impersonation/Theft"
+reference = "https://attack.mitre.org/techniques/T1134/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1134.002"
+name = "Create Process with Token"
+reference = "https://attack.mitre.org/techniques/T1134/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.15.0"

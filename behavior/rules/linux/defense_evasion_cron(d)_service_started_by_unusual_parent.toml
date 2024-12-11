@@ -7,15 +7,17 @@ id = "3ee903d9-6839-48d6-9437-3823b77bbeaa"
 license = "Elastic License v2"
 name = "Cron(d) Service Started by Unusual Parent"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemctl" and
 process.args == "start" and process.args in ("cron.service", "crond.service", "cron", "crond") and
-process.parent.executable != null and
-not process.parent.name in (
-  "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "cron", "sudo", "deb-systemd-invoke", "efs.postinst",
-  "cron.postinst", "run-document-server.sh", "invoke-rc.d"
+process.parent.executable != null and not (
+  process.parent.name in (
+    "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "cron", "sudo", "deb-systemd-invoke", "efs.postinst",
+    "cron.postinst", "run-document-server.sh", "invoke-rc.d"
+  ) or
+  process.parent.executable == "/opt/deepfence/start_deepfence_agent.sh"
 )
 '''
 

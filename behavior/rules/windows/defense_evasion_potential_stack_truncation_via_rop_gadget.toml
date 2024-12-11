@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies call stacks that are unexpectedly short and contain Return Oriented Programming (ROP) gadgets. This may be an
+attempt to conceal the true source of the call.
+"""
+id = "b899ec6b-51d0-4e7e-8739-d44dda37f260"
+license = "Elastic License v2"
+name = "Potential Stack Truncation via ROP Gadget"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where
+
+process.Ext.api.behaviors == "truncated_stack" and
+process.Ext.api.behaviors == "image_rop" and process.thread.Ext.call_stack_summary != null and
+process.Ext.api.name != "SetWindowsHookEx" and
+
+/* OS exception handling */
+process.Ext.api.summary != "NtSuspendProcess( Self )" and
+
+not process.thread.Ext.call_stack_summary in ("ntdll.dll|kernelbase.dll|ws2_32.dll", "ntdll.dll|user32.dll") and
+
+not _arraysearch(process.thread.Ext.call_stack, $entry,
+  $entry.symbol_info : (
+    /* behaviors introduced by 3rd party hooks */
+    "?:\\windows\\*\\ntdll.dll!LdrInitializeThunk*",
+    "?:\\windows\\*\\ntdll.dll!RtlUserThreadStart",
+    /* covered by other rules */
+    "?:\\windows\\*\\ntdll.dll!??TestAlert*",
+    /* other */
+    "?:\\windows\\system32\\ntdll.dll!ZwDeviceIoControlFile*",
+    "?:\\windows\\system32\\ntdll.dll!KiUserInvertedFunctionTable*",
+    "?:\\windows\\system32\\user32.dll!gSharedInfo*"
+  )
+)
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

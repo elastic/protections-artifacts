@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id
@@ -37,7 +37,7 @@ sequence by process.entity_id
                           "VICON INDUSTRIES, INC.")) and
 
   not (dll.name : "chrome_elf.dll" and dll.pe.original_file_name : "chrome_elf.dll") and
-  not dll.pe.imphash : ("8ed92d81df1fc6d13329436de2be9225", "71db138be05fb8109bd4d1747f7fab68") and
+  not dll.pe.imphash : ("8ed92d81df1fc6d13329436de2be9225", "71db138be05fb8109bd4d1747f7fab68", "e569e6f445d32ba23766ad67d1e3787f") and
   not dll.hash.sha256 : 
                ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9", 
                 "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea", 
@@ -126,7 +126,23 @@ sequence by process.entity_id
                 "8f50545234724876e4d0f7474cd324a6a41903d708cfd6f4b91fbdbea2310677",
                 "b3d1d2dd7f9b54201ff06d56ec7f94d615df946a9a8a0c027a7151fc5c492189",
                 "05a1c85e38e77ea888fefaaab8655ee05350ba9e9cfbf266f645509e7976e9f9",
-                "5cda028106bde1c95339145bce9fc68a3d68d91a108e6776a0eff86d0f2dadc6")] as event0
+                "5cda028106bde1c95339145bce9fc68a3d68d91a108e6776a0eff86d0f2dadc6",
+                "f0195ab7a1ab08727a620fd823616a90f8353fa1f26845ab3c041413e530f30e",
+                "3d171205aec848f93b721891806ff86b36ba639923067f6e5dabc4cf500f5831",
+                "00d9f3b238b62f4d2fc0d4695daf4f60c9622ef579fe02b71f2c55a17affd7a1",
+                "76e835100baeb7f65c2a393400a57ae1f8c9f64558381718f88873d268c09dec",
+                "339ef4de29fb5490255709dbfe87a758e63a61958d6a67149a00670e4bd30cd9",
+                "f265795af9bb3cebcf9db6113dff5cf45c55999c23a89efd5845c4b0a06d4c73",
+                "b93d06bba60f41b73a7603f174689c85f97824131d003bd6220322935e7c36dd",
+                "0fc69ec74ebb08384816ed511d255082293a4e9ed2d6780fd7ae0fe0fa7d45f3",
+                "98472d7cc481f1676c44d37ba5c5db1fbb146c68ae1b63e4d2ea32dd3c5dff90",
+                "1cbdc698c9bfb8f6685c0426b062e5ed4ab56c9f68e7e9379ad72a8f17acab5d",
+                "1cbdc698c9bfb8f6685c0426b062e5ed4ab56c9f68e7e9379ad72a8f17acab5d",
+                "cca09edd7355f857101abfb3028f1637b7dac900741256877206bbbe6554dee2",
+                "dcde73e553222c96f7fc630fea2dce27266ce4854b08313ab518ef7f223d556a",
+                "092a2e07c83239ca52924a954e9ba1febb22d15dd11aafaa4935ba8a3fbc1069",
+                "1e38e061ee5fcd4a76c591c24a39da005dc5fd58062ef8fadfe1ade95bfdbd4c",
+                "d839d7b05b9b66e83bc265aa90a4f454c9a4ee091e21c6d23ab4e33c33cbc33f")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

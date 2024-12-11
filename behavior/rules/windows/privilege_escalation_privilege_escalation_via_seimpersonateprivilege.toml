@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=3m
@@ -45,7 +45,7 @@ sequence with maxspan=3m
    ) and
    not (process.executable : "?:\\Program Files (x86)\\Lenovo\\System Update\\uncsetting.exe" and
         process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\csc.exe") and
-   not (process.executable like "C:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe" and
+   not (process.executable : "C:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe" and
         process.parent.executable == "C:\\Windows\\System32\\appidcertstorecheck.exe") and
     not (process.executable == "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and
          process.parent.executable in

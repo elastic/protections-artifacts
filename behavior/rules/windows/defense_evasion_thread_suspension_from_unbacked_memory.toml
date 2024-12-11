@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies attempts to suspend a thread in the current process from suspicious unbacked memory. Adversaries may use this
+technique to hijack the execution of legitimate threads.
+"""
+id = "8cee3db8-2cbd-477e-9673-dd103952ddbb"
+license = "Elastic License v2"
+name = "Thread Suspension from Unbacked Memory"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "SuspendThread" and process.Ext.api.summary == "SuspendThread( Self )" and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ process.thread.Ext.call_stack_final_user_module.protection_provenance_path != null and
+ process.thread.Ext.call_stack_summary :
+                    ("ntdll.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("bbff088a88a0a754dc9d312e52ef7e60dd93537d78d73f79c89aa5b5091457fc")
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

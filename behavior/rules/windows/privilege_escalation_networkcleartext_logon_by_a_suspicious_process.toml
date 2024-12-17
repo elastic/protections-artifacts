@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "NetworkCleartext Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 authentication where event.action == "log_on" and
  process.Ext.session_info.logon_type == "NetworkCleartext" and process.executable : "C:\\*" and
  user.id like ("S-1-5-21*", "S-1-12-*") and (user.effective.id != null and user.effective.id like ("S-1-5-21*", "S-1-12-*")) and
- not (process.code_signature.trusted == true and 
+ not (process.code_signature.trusted == true and
       process.code_signature.subject_name in ("Varonis Systems, Inc.", "Remote Access World SAS", "TSplus SAS", "Solarwinds Worldwide, LLC")) and
  not process.executable :
             ("C:\\Windows\\System32\\inetsrv\\w3wp.exe",
@@ -36,7 +36,7 @@ authentication where event.action == "log_on" and
              "C:\\Program Files (x86)\\Varonis\\DatAdvantage\\IDU Server\\Support Assistant\\Varonis.Automation.CLI.exe")
 '''
 
-min_endpoint_version = "8.15.0"
+min_endpoint_version = "8.15.1"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -67,4 +67,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "8.15.0"
+min_endpoint_version = "8.15.1"

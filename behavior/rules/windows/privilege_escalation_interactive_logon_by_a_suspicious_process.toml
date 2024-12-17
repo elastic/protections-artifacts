@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Interactive Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 authentication where event.action == "log_on" and event.code == "4624" and
@@ -64,14 +64,14 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Program Files (x86)\\KIC H\\KIC.exe",
              "C:\\Windows\\System32\\CloudExperienceHostBroker.exe",
              "C:\\Windows\\System32\\Autologon64.exe",
-             "C:\\Program Files (x86)\\Microsoft Visual Studio\\20??\\Enterprise\\Common?\\IDE\\CommonExtensions\\Microsoft\\SSAS\\LocalServer\\msmdsrv.exe", 
+             "C:\\Program Files (x86)\\Microsoft Visual Studio\\20??\\Enterprise\\Common?\\IDE\\CommonExtensions\\Microsoft\\SSAS\\LocalServer\\msmdsrv.exe",
              "C:\\Program Files (x86)\\AMG Resources\\SDDT\\*\\Support Desk Domain Tools.exe",
              "C:\\Program Files\\Microsoft SQL Server Reporting Services\\*\\ReportingServicesService.exe",
              "C:\\Program Files (x86)\\Merge Healthcare\\Client\\Client.exe",
              "C:\\Program Files\\RunAsTool\\RunAsTool.exe")
 '''
 
-min_endpoint_version = "8.15.0"
+min_endpoint_version = "8.15.1"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -102,4 +102,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "8.15.0"
+min_endpoint_version = "8.15.1"

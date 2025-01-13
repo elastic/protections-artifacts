@@ -20,39 +20,37 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.79 | 996a760a9dfd15f64419ea3a38a341b8ef37ac8d7c60811891aac743305ebd65 |
-| production-rules-macos-v1 | 1.0.79 | be34756a32b592aa86538c8580bbd848b07e839619a2f3b7565071c340dfd27f |
-| production-rules-windows-v1 | 1.0.79 | 5aba5bf979505d57b2af9f1295f30edd8f34b50f1099bd3cee8c3e9b7042ed6e |
+| production-rules-linux-v1 | 1.0.80 | 89f0cf962cd80391de3a58c8bf83bcafed5894e272dab17cf0402095f930ea63 |
+| production-rules-macos-v1 | 1.0.80 | 9737a2204afdf4d272d09d4400ff4fff0609d07bfb0b2609ef9b8d13455dd106 |
+| production-rules-windows-v1 | 1.0.80 | 6d18ae386c799ee23f28058825b651080a1021986fca087a3b4600ef62cd4453 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.78', '1.0.77') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.80', '1.0.79') by OS/MITRE Tactic.
 
-| Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
-|----------------------|-----------|---------|---------|-------------------|
-| Command and Control  |         2 |       0 |       0 |                 2 |
-| Credential Access    |         1 |       0 |       0 |                 1 |
-| Defense Evasion      |         5 |       0 |       0 |                 5 |
-| Privilege Escalation |         4 |       0 |       0 |                 4 |
-| Total by OS          |        12 |       0 |       0 |                12 |
+| Tactic          |   Windows |   Linux |   macOS |   Total by Tactic |
+|-----------------|-----------|---------|---------|-------------------|
+| Defense Evasion |         2 |       0 |       0 |                 2 |
+| Execution       |         1 |       0 |       0 |                 1 |
+| Total by OS     |         3 |       0 |       0 |                 3 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Collection           |        11 |       0 |       6 |                17 |
-| Command and Control  |        34 |      11 |      27 |                72 |
+| Collection           |        11 |       0 |       5 |                16 |
+| Command and Control  |        34 |      11 |      26 |                71 |
 | Credential Access    |        45 |       4 |      24 |                73 |
-| Defense Evasion      |       263 |      42 |      44 |               349 |
+| Defense Evasion      |       265 |      42 |      44 |               351 |
 | Discovery            |         8 |       1 |       4 |                13 |
-| Execution            |        64 |      35 |      71 |               170 |
+| Execution            |        65 |      35 |      71 |               171 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
 | Impact               |        18 |       4 |       2 |                24 |
 | Initial Access       |        54 |       2 |       2 |                58 |
 | Lateral Movement     |         8 |       1 |       1 |                10 |
 | Persistence          |        56 |      29 |      17 |               102 |
 | Privilege Escalation |        65 |       8 |       8 |                81 |
-| Total by OS          |       626 |     137 |     207 |               970 |
+| Total by OS          |       629 |     137 |     205 |               971 |
 
 
 ### The Zen of Security Rules

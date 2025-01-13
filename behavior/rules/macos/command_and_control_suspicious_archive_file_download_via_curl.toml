@@ -8,24 +8,24 @@ id = "5c5bcd83-1734-4d5e-a027-09aaf485b837"
 license = "Elastic License v2"
 name = "Suspicious Archive File Download via Curl"
 os_list = ["macos"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "curl" and
-process.args : ("-L", "--location") and
-process.args : ("-k",  "--insecure") and
-process.args : ("-o", "--output") and 
-process.args : ("/*.zip", "/*.gz", "/*.tgz") and 
-process.args : "http*" and 
-not process.args : ("http*://localhost*", 
-                    "https://*.newrelic.com*",
-                    "x-app-license-key*",
-                    "--user-agent",
-                    "*github.com/elastic/*",
-                    "http*://127.0.0.1*", 
-                    "http*://0.0.0.0*") and 
-not process.parent.executable like "/Library/Developer/*" and
-not process.Ext.effective_parent.executable == "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM"
+process where event.type == "start" and event.action == "exec" and process.name == "curl" and
+ process.args in ("-L", "--location") and
+ process.args in ("-k",  "--insecure") and
+ process.args in ("-o", "--output") and 
+ process.args like~ ("/*.zip", "/*.gz", "/*.tgz") and 
+ process.args like~ "http*" and 
+ not process.args like~ ("http*://localhost*", 
+                         "https://*.newrelic.com*",
+                         "x-app-license-key*",
+                         "--user-agent",
+                         "*github.com/elastic/*",
+                         "http*://127.0.0.1*", 
+                          "http*://0.0.0.0*") and 
+ not process.parent.executable like "/Library/Developer/*" and
+ not process.Ext.effective_parent.executable == "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM"
 '''
 
 min_endpoint_version = "8.5.0"

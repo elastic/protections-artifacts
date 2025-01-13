@@ -12,12 +12,13 @@ reference = [
     "https://github.com/MythicAgents/poseidon/blob/master/Payload_Type/poseidon/poseidon/agentfunctions/clipboard.go",
     "https://github.com/MythicAgents/poseidon/blob/master/Payload_Type/poseidon/poseidon/agentfunctions/clipboard_monitor.go",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-sequence by process.entity_id with maxspan=5s
-[process where event.type == "start" and event.action like ("exec", "fork") and process.args : "xpcproxy" and 
-  process.args : "com.apple.pasteboard*" and process.args_count == 2]
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "fork" and process.name == "launchd" and 
+  process.args like "xpcproxy" and process.args like "com.apple.pasteboard*" and 
+  process.args_count == 2]
 [process where event.type == "start" and event.action == "exec" and 
   (process.code_signature.trusted == false or process.code_signature.exists == false)]
 '''

@@ -9,14 +9,14 @@ license = "Elastic License v2"
 name = "Suspicious macOS Application Hidden Executable File"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x73.html", "https://attack.mitre.org/techniques/T1564/001/"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 file where event.action in ("modification", "rename") and
-file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
-file.path : ("/Library/Application Support/*", "/Users/*/Library/Application Support/*") and 
-process.executable : ("/Applications/*/Contents/MacOS/*", "/Users/*/Applications/*/Contents/MacOS/*") and 
-file.name like ".*"
+ file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
+ file.path like~ ("/Library/Application Support/*", "/Users/*/Library/Application Support/*") and 
+ process.executable like~ ("/Applications/*/Contents/MacOS/*", "/Users/*/Applications/*/Contents/MacOS/*") and 
+ file.name like~ ".*"
 '''
 
 min_endpoint_version = "8.8.0"

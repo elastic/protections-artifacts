@@ -9,14 +9,14 @@ id = "ac494288-08e1-4597-9a04-3526144de479"
 license = "Elastic License v2"
 name = "Execution of Self-Signed Binary from Volume Mount"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.code_signature.signing_id regex~ """[A-Za-z0-9\_\s]{2,}\-[a-z0-9]{40}""" and
  process.code_signature.trusted == false and 
  process.args_count <= 2 and 
- process.executable : "/Volumes/*"
+ process.executable like "/Volumes/*"
 '''
 
 min_endpoint_version = "8.5.0"

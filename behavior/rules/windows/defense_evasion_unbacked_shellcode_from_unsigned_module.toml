@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where
@@ -66,9 +66,22 @@ api where
                                   "11a970455d4536e4c4cdd655b864f5b01e7e8421b329196e0d878be2430cd20d", 
                                   "1b5d9cec668335295c8e575bcedf4afcedbc445d8ccf8374c9380188965e78e3", 
                                   "9becd39f90077a5ab064681c0a1be139d15be9ce434bacd48cd1dc894d3911cb", 
-                                  "5438c19007ad96da0a969c0c0caaf00aa06375f1a6e85073f91a1392af94d059") and
+                                  "5438c19007ad96da0a969c0c0caaf00aa06375f1a6e85073f91a1392af94d059",
+                                  "86ccc87140479b5631c2e9c66b54739db1761d82449eba225064d91e99dcab16",
+                                  "462ddeb363a05574fc5e670a5f6e040ecdf6eaf3de6f5b495b1e11e105b1913b",
+                                  "152f3801c03c08bdbad67bab16d14c0fb118bf335e1ba215b096cc75a299f84f",
+                                  "aba42c861e070696ee85392586e5d6d7d7abcf8bba798ee6a571cc49c22201b6",
+                                  "00fe581520c7a22a461b3ce78cd5e48bcf05e2bb1c60f4e9e2b4cd81d0e07760",
+                                  "288bd8098f36110c8cc10c1508f1f23e0916bd36fad592f74518b7f3b06f3788",
+                                  "de15024667157e9d84dda0785332c22d69a87199798373ec3c9c2d1f3df650f5",
+                                  "59cc348f9711525abd54e88df810150e3a9a20910387427e208e4d74d5362027",
+                                  "1d1cfd19249c06adefa0ff104d3f5db7f48568993c540576ef1930210793c975") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("isrt.dll", "issetup.dll", "dbexpida.dll", "cyinjct.dll") and
- not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("c:\\windows\\installer\\msi*.tmp", "c:\\program files\\*", "c:\\program files (x86)\\*")
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
+                                                                 ("c:\\windows\\installer\\msi*.tmp",
+                                                                  "c:\\windows\\assembly\\nativeimages_*",
+                                                                  "c:\\program files\\*",
+                                                                  "c:\\program files (x86)\\*")
 '''
 
 min_endpoint_version = "8.14.2"

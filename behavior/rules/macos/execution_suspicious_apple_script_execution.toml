@@ -8,17 +8,17 @@ license = "Elastic License v2"
 name = "Suspicious Apple Script Execution"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "exec" and
- process.name : "osascript" and
- process.args : "JavaScript" and
- process.command_line : "*eval(*" and
- process.command_line : ("*initWithDataEncoding*", "*dataWithContentsOfURL*", "*URLWithString*", "*http*")
+ process.name == "osascript" and
+ process.args like~ "JavaScript" and
+ process.command_line like~ "*eval(*" and
+ process.command_line like~ ("*initWithDataEncoding*", "*dataWithContentsOfURL*", "*URLWithString*", "*http*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -51,4 +51,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

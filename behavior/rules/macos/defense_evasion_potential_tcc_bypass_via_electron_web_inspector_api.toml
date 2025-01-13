@@ -12,13 +12,13 @@ reference = [
     "https://infocondb.org/con/def-con/def-con-31/electronizing-macos-privacy-a-new-weapon-in-your-red-teaming-armory",
     "https://github.com/r3ggi/electroniz3r",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
  (
-  (process.executable : ("/Applications/*", "/Volumes/*") and process.command_line : "*--inspect=13337*") or
-  (process.parent.executable : ("/Applications/*", "/Volumes/*") and process.command_line : "*--inspect=13337*")
+  (process.executable like ("/Applications/*", "/Volumes/*") and process.command_line like~ "*--inspect=13337*") or
+  (process.parent.executable like ("/Applications/*", "/Volumes/*") and process.command_line like~ "*--inspect=13337*")
  )
 '''
 

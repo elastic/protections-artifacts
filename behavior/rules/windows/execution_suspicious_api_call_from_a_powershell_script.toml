@@ -1,0 +1,72 @@
+[rule]
+description = "Detects PowerShell scripts calling dual-purpose Win32 APIs."
+id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
+license = "Elastic License v2"
+name = "Suspicious API Call from a PowerShell Script"
+os_list = ["windows"]
+version = "1.0.9"
+
+query = '''
+api where
+event.provider == "Microsoft-Windows-Threat-Intelligence" and
+process.name in~ ("powershell.exe", "pwsh.exe", "powershell_ise.exe") and
+
+/* PowerShell Script JIT - and incidental .NET assemblies */
+process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+process.thread.Ext.call_stack_final_user_module.protection_provenance in ("clr.dll", "mscorwks.dll", "coreclr.dll") and
+
+/* filesystem enumeration activity */
+not process.Ext.api.summary like "IoCreateDevice( \\FileSystem\\*, (null) )" and
+
+/* exclude nop operations */
+not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.protection_old == "RWX") and
+
+/* Citrix GPO Scripts */
+not (process.parent.executable : "C:\\Windows\\System32\\gpscript.exe" and
+  process.Ext.api.summary in ("VirtualProtect( Unbacked, 0x10, RWX, RW- )", "WriteProcessMemory( Self, Unbacked, 0x10 )", "WriteProcessMemory( Self, Data, 0x10 )")) and
+
+/* cybersecurity tools */
+not (process.Ext.api.name == "VirtualAlloc" and process.parent.executable : ("C:\\Program Files (x86)\\CyberCNSAgent\\cybercnsagent.exe", "C:\\Program Files\\Velociraptor\\Velociraptor.exe")) and
+
+/* module listing */
+not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and
+  process.parent.executable : ("*\\Lenovo\\*\\BGHelper.exe", "*\\Octopus\\*\\Calamari.exe")) and
+
+/* WPM triggers multiple times at process creation */
+not (process.Ext.api.name == "WriteProcessMemory" and
+     process.Ext.api.metadata.target_address_name in ("PEB", "PEB32", "ProcessStartupInfo", "Data") and
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("?:\\windows\\*\\kernelbase.dll!CreateProcess*", "Unknown")))
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

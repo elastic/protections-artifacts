@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 any where process.executable != null and 
@@ -90,7 +90,9 @@ any where process.executable != null and
 
  not (process.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe" and
       process.parent.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe" and
-      process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true)
+      process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
+ not (process.executable : "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security for Windows Server\\kavfswp.exe" and
+      process.code_signature.subject_name == "Kaspersky Lab JSC" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.4.0"

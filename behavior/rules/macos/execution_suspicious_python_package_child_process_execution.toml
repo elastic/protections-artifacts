@@ -10,24 +10,24 @@ os_list = ["macos"]
 reference = [
     "https://blog.sonatype.com/new-pymafka-malicious-package-drops-cobalt-strike-on-macos-windows-linux",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=1m
-[process where event.type == "start" and process.name : "python*" and process.args : "*/lib/python*/site-packages/*" and not
- process.args : ("*/lib/python*/site-packages/pip", 
-                 "*/lib/python*/site-packages/pipenv/*", 
-                 "/Users/*/.platformio/packages/*", 
-                 "*/lib/python*/site-packages/pip/*", 
-                 "/Applications/*", 
-                 "/private/var/folders/*")] by process.entity_id
-[process where event.type == "start" and event.action == "exec" and process.parent.name : "python*" and 
-  ((process.name in ("bash", "sh", "zsh") and process.args == "-c" and process.args : ("*curl*", "*wget*", "*osascript*", "*whoami*", "*nohup*")) or
-  (process.name : "osascript") or (process.name : "curl") or (process.name : "wget") or 
-  (process.name : "cp") or (process.name : "mv"))] by process.parent.entity_id
+[process where event.type == "start" and process.name like~ "python*" and process.args like~ "*/lib/python*/site-packages/*" and not
+ process.args like~ ("*/lib/python*/site-packages/pip", 
+                     "*/lib/python*/site-packages/pipenv/*", 
+                     "/Users/*/.platformio/packages/*", 
+                     "*/lib/python*/site-packages/pip/*", 
+                     "/Applications/*", 
+                     "/private/var/folders/*")] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.parent.name like~ "python*" and 
+  ((process.name in ("bash", "sh", "zsh") and process.args == "-c" and process.args like~ ("*curl*", "*wget*", "*osascript*", "*whoami*", "*nohup*")) or
+  (process.name == "osascript") or (process.name == "curl") or (process.name == "wget") or 
+  (process.name == "cp") or (process.name == "mv"))] by process.parent.entity_id
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -58,4 +58,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

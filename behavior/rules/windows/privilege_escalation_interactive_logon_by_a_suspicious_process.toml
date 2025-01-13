@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Interactive Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 authentication where event.action == "log_on" and event.code == "4624" and
@@ -22,11 +22,13 @@ authentication where event.action == "log_on" and event.code == "4624" and
             "COC COC COMPANY LIMITED", "Given Imaging Ltd", "Luis Cobian Dorta", "Brave Software, Inc.", "CyberArk Software Ltd.",
             "Kofax, Inc.", "Education Management Solutions LLC", "Seagull Scientific, Inc", "Ivanti, Inc.", "Opera Norway AS",
             "PDQ.com Corporation", "itelio GmbH", "Mozilla Corporation", "Vivaldi Technologies AS", "GoTo Technologies USA, LLC",
-            "Devolutions Inc", "Seagull Scientific Inc.", "Senior Sistemas S/A", "Rsupport Co., Ltd.")) and
+            "Devolutions Inc", "Seagull Scientific Inc.", "Senior Sistemas S/A", "Rsupport Co., Ltd.", "Redwood Software, Inc.",
+            "CA Software Österreich GmbH", "ECI Software Solutions, Inc.", "ISL Online Ltd.", "DATEV eG")) and
  not process.executable :
             ("C:\\Windows\\System32\\winlogon.exe",
              "C:\\Windows\\System32\\wininit.exe",
              "C:\\Windows\\System32\\lsass.exe",
+             "C:\\Windows\\System32\\RuntimeBroker.exe",
              "C:\\Windows\\explorer.exe",
              "C:\\Windows\\System32\\ServerManager.exe",
              "C:\\Windows\\System32\\svchost.exe",
@@ -39,11 +41,8 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
              "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
              "C:\\Program Files\\Microsoft\\Kerberos Configuration Manager for SQL Server\\KerberosConfigMgr.exe",
-             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\cpms..tion_*\\CPMSPROD.exe",
-             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\merg...app_*\\Client.exe",
-             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\micr..tion_*\\Microsoft.Online.CSE.Hybrid.App.exe",
-             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\chec..tion_*\\CheckWriter.exe",
-             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\rscc..tion_*\\RSC Count.exe",
+             "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\*.exe",
+             "C:\\Users\\*\\AppData\\Local\\Temp\\SPMigrationAgentSetup*\\SPMigrationAgentSetup\\Microsoft.SharePoint.Migration.ClientInstaller.exe",
              "C:\\Program Files\\Microsoft SQL Server\\*\\ReportingServicesService.exe",
              "C:\\Program Files\\Microsoft SQL Server Reporting Services\\SSRS\\Portal\\RSPortal.exe",
              "C:\\Program Files (x86)\\HCL\\AppScan Enterprise\\AgentHost.exe",
@@ -68,7 +67,12 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Program Files (x86)\\AMG Resources\\SDDT\\*\\Support Desk Domain Tools.exe",
              "C:\\Program Files\\Microsoft SQL Server Reporting Services\\*\\ReportingServicesService.exe",
              "C:\\Program Files (x86)\\Merge Healthcare\\Client\\Client.exe",
-             "C:\\Program Files\\RunAsTool\\RunAsTool.exe")
+             "C:\\Program Files\\RunAsTool\\RunAsTool.exe",
+             "C:\\Program Files\\cubus\\Performance Analytics\\Server\\EVServer.exe",
+             "C:\\Program Files (x86)\\Gladinet Cloud Enterprise\\monitor\\GladinetCloudMonitor.exe",
+             "C:\\Program Files\\Seagull\\BarTender Suite\\bartend.exe",
+             "C:\\Program Files (x86)\\Seagull\\BarTender UltraLite\\BarTend.exe",
+             "C:\\Program Files\\Canary\\Identity\\CanaryIdentity.exe")
 '''
 
 min_endpoint_version = "8.15.1"

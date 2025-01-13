@@ -11,15 +11,15 @@ license = "Elastic License v2"
 name = "Suspicious PrivilegedHelperTool Activity"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/bypass-tcc-via-privileged-helpers-aka-cve-2020-10008/"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and 
   event.action ==  "exec" and user.name == "root" and 
-  process.parent.executable : "/Library/PrivilegedHelperTools/*" and 
+  process.parent.executable like "/Library/PrivilegedHelperTools/*" and 
   (
     /* shell and common lolbins */
-   (((process.name like ("bash", "zsh", "sh", "tclsh*") and process.args == "-c" and process.args : ("/tmp/*",
+   (((process.name like~ ("bash", "zsh", "sh", "tclsh*") and process.args == "-c" and process.args like~ ("/tmp/*",
                                                                                                  "*/bin/curl *",
                                                                                                  "*/bin/nscurl*", 
                                                                                                  "*/bin/osascript *",
@@ -27,8 +27,8 @@ process where event.type == "start" and
                                                                                                  "osascript*",
                                                                                                  "python*",
                                                                                                  "curl*")) or 
-      process.name like ("python*", "tclsh*", "osascript", "osacompile", "curl", "nscurl", "wget", "tccd")) and not
-      process.command_line : ("*remove*", "*unload*", "*/Library/Application Support/JAMF/Composer/Sources/*", "*https://www.google.com*")) or   
+      process.name like~ ("python*", "tclsh*", "osascript", "osacompile", "curl", "nscurl", "wget", "tccd")) and not
+      process.command_line like~ ("*remove*", "*unload*", "*/Library/Application Support/JAMF/Composer/Sources/*", "*https://www.google.com*")) or   
    /* unsigned or untrusted macO */
    (process.code_signature.exists == false or process.code_signature.trusted == false) 
   ) and not

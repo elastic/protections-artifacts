@@ -8,19 +8,19 @@ id = "6e47b750-72c4-4af9-ad7b-0fc846df64d3"
 license = "Elastic License v2"
 name = "Quarantine Attribute Deleted via Untrusted Binary"
 os_list = ["macos"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=1m
  [process where event.action == "exec" and
   (process.code_signature.trusted == false or process.code_signature.exists == false) and
-  not process.hash.sha256 : "2d3aa19d6f012c1a4ebc5907a05b06cf0d43a1499107020f59847ea2638c8649"] by process.entity_id
+  not process.hash.sha256 == "2d3aa19d6f012c1a4ebc5907a05b06cf0d43a1499107020f59847ea2638c8649"] by process.entity_id
  [process where event.action == "exec" and
-  process.args : "*xattr" and
-  process.name like ("bash", "sh", "zsh", "xattr", "python*", "osascript") and
+  process.args like~ "*xattr" and
+  process.name like~ ("bash", "sh", "zsh", "xattr", "python*", "osascript") and
   (
-    (process.args : "com.apple.quarantine" and process.args : ("-d", "-w", "-?d", "-?w")) or
-    (process.args == "-c" and not process.args : "github.com/pkg/xattr")
+    (process.args like "com.apple.quarantine" and process.args like~ ("-d", "-w", "-?d", "-?w")) or
+    (process.args == "-c" and not process.args like "github.com/pkg/xattr")
   )
   ] by process.parent.entity_id
 '''

@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
@@ -67,7 +67,14 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
                                           "Microsoft Windows Software Compatibility Publisher",
                                           "FastTrack Software ApS",  "FastTrack Software Aps", "Promon AS", "PC Matic, Inc")) and
-   process.thread.Ext.call_stack_final_user_module.hash.sha256 != "b4f289b5bf0beb59e7ba8d00b45ffaa582114c22a959bb8912cd8b903748f91b"
+   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("b4f289b5bf0beb59e7ba8d00b45ffaa582114c22a959bb8912cd8b903748f91b",
+                                                                       "b950277c03155ffef055fd2fb6c9afe2022ac6402f8e04ece92f34bedf5bc194",
+                                                                       "289ccce952e8a5ad4eae60fbfcfc239a2c6a45386655466ce45f77c9422533da",
+                                                                       "8d80ea047a89300017544fc28a402c6f45b7369413c51c7b352af69db503d9bb",
+                                                                       "b88d6fdb2641981675e1066f0767a8f263c5c4dcc5fccddbb948cdbe4165aef4",
+                                                                       "90db33e5c6f2d0e3f60de07821413a24d31ceec26c83b447ff3a3607ebc67079") and
+   not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                    $entry.trusted == true and not $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows"))
 '''
 
 min_endpoint_version = "8.10.0"

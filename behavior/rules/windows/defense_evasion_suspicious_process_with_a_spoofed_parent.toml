@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=1m
@@ -68,7 +68,9 @@ sequence with maxspan=1m
                                        "c:\\program files (x86)\\webroot\\wrsa.exe") and
   not (process.executable : "?:\\Windows\\System32\\wermgr.exe" and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
-       process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\windows.storage.dll")
+       process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\windows.storage.dll") and
+
+  not (process.executable : "C:\\Windows\\System32\\sihost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.entity_id
 '''
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "exec" and
@@ -21,7 +21,7 @@ process where event.action == "exec" and
       "Microsoft OneNote"
     )
   ] and
-  process.name in (
+  process.name like~ (
     "curl",
     "nscurl",
     "bash",
@@ -42,9 +42,8 @@ process where event.action == "exec" and
     "funzip",
     "popen"
   ) and
-
   // Filter FPs related to product version discovery and Office error reporting behavior
-  not process.args like
+  not process.args like~
     (
       "ProductVersion",
       "hw.model",
@@ -60,8 +59,7 @@ process where event.action == "exec" and
       "ps aux | grep 'ToDesk_Desktop' | grep -v grep",
       "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*"
     ) and
-
-   not process.parent.executable like
+   not process.parent.executable like~
         (
           "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
           "/usr/local/Privacy-i/PISupervisor",
@@ -70,12 +68,12 @@ process where event.action == "exec" and
           "/opt/jc/bin/jumpcloud-agent",
           "/usr/sbin/networksetup"
         ) and
-   not (process.name == "sh" and process.command_line like "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
-
-   not process.Ext.effective_parent.executable in (
+   not (process.name == "sh" and process.command_line like~ "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
+   not process.Ext.effective_parent.executable like~ (
         "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
         "/Applications/Docker.app/Contents/MacOS/com.docker.backend",
         "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+        "/Applications/Microsoft Defender.app/Contents/MacOS/wdavdaemon",
         "/usr/local/Privacy-i/PISupervisor",
         "/Library/Addigy/auditor",
         "/Library/Elastic/Agent/*",

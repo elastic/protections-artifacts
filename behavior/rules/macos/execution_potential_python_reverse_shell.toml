@@ -8,15 +8,15 @@ id = "01898b20-1504-49d1-98b2-777e32c207be"
 license = "Elastic License v2"
 name = "Potential Python Reverse Shell"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-sequence by process.entity_id with maxspan=1m
+sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and 
-  process.name : "python*" and 
+  process.name like~ "python*" and 
   process.args == "-c" and
-  process.args : ("*import*pty.spawn*", "*import*subprocess.call*")]
-[network where event.type == "start" and event.action == "connection_attempted" and
+  process.args like~ ("*import*pty.spawn*", "*import*subprocess.call*")]
+[network where event.type == "start" and event.type == "start" and
    not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
        "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
@@ -24,7 +24,7 @@ sequence by process.entity_id with maxspan=1m
        "FE80::/10", "FF00::/8")]
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -57,4 +57,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"

@@ -8,29 +8,29 @@ id = "cd3a06dc-58c3-4d57-a03a-0d8991f237e7"
 license = "Elastic License v2"
 name = "Suspicious File Overwrite and Modification via Echo"
 os_list = ["macos"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=20s
 [process where event.type == "start" and event.action == "exec" and 
     process.name in ("bash", "sh", "zsh") and
     process.args == "-c" and
-    process.args : ("echo* > /.*", 
-                    "echo* > /usr/local/bin/*", 
-                    "echo* > ~/.*", 
-                    "echo* > /tmp/*", 
-                    "echo* > /var/root/*", 
-                    "echo* > /private/tmp/*", 
-                    "echo* > /var/tmp/*", 
-                    "echo* > /var/folders/*", 
-                    "echo* > /Library/*", 
-                    "echo* > /Users/*", 
-                    "echo* > ~/*") and 
+    process.args like~ ("echo* > /.*", 
+                        "echo* > /usr/local/bin/*", 
+                        "echo* > ~/.*", 
+                        "echo* > /tmp/*", 
+                        "echo* > /var/root/*", 
+                        "echo* > /private/tmp/*", 
+                        "echo* > /var/tmp/*", 
+                        "echo* > /var/folders/*", 
+                        "echo* > /Library/*", 
+                        "echo* > /Users/*", 
+                        "echo* > ~/*") and 
     process.args_count <= 3 and 
     process.Ext.effective_parent.name == null and 
-    not process.parent.executable : ("/Library/Developer/*", "/Applications/Xcode.app/Contents/*")]
+    not process.parent.executable like ("/Library/Developer/*", "/Applications/Xcode.app/Contents/*")]
 [file where event.action == "modification" and process.name in ("sh", "zsh", "bash") and
-    not file.path : ("/private/tmp/docker-desktop-privileged*/exitcode.txt", "/Users/*/Library/Logs/zoom.us/crashlog/usage.txt")]
+    not file.path like~ ("/private/tmp/docker-desktop-privileged*/exitcode.txt", "/Users/*/Library/Logs/zoom.us/crashlog/usage.txt")]
 '''
 
 min_endpoint_version = "8.5.0"

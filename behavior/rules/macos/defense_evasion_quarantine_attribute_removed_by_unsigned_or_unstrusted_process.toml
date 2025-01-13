@@ -12,17 +12,17 @@ reference = [
     "https://nixhacker.com/security-protection-in-macos-1/",
     "https://eclecticlight.co/2020/10/29/quarantine-and-the-quarantine-flag/",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 file where event.action == "extended_attributes_delete" and process.executable != null and
-(process.code_signature.trusted == false or process.code_signature.exists == false) and not
-process.executable : ("/usr/bin/xattr", 
-                      "/System/*", 
-                      "/private/tmp/KSInstallAction.*/*/Install Google Software Update.app/Contents/Helpers/ksinstall",
-                      "/Applications/CEWE Fotoschau.app/Contents/MacOS/FotoPlus",
-                      "/Applications/.com.bomgar.scc.*/Remote Support Customer Client.app/Contents/MacOS/sdcust") and not
-file.path : "/private/var/folders/*"
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ not process.executable like~ ("/usr/bin/xattr", 
+                               "/System/*", 
+                               "/private/tmp/KSInstallAction.*/*/Install Google Software Update.app/Contents/Helpers/ksinstall",
+                               "/Applications/CEWE Fotoschau.app/Contents/MacOS/FotoPlus",
+                               "/Applications/.com.bomgar.scc.*/Remote Support Customer Client.app/Contents/MacOS/sdcust") and 
+ not file.path like "/private/var/folders/*"
 '''
 
 min_endpoint_version = "8.3.0"

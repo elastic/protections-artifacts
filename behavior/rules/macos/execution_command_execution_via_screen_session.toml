@@ -7,12 +7,12 @@ id = "232c03d2-ff5d-4ec5-88b5-5926dc491e91"
 license = "Elastic License v2"
 name = "Command Execution via Screen Session"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.name == "screen" and
- process.args in~ ("/bin/bash", "/usr/bin/bash", "/bin/sh", "/usr/bin/sh", "/bin/zsh", "/usr/bin/zsh", "bash", "sh", "zsh") and
+ process.args in ("/bin/bash", "/usr/bin/bash", "/bin/sh", "/usr/bin/sh", "/bin/zsh", "/usr/bin/zsh", "bash", "sh", "zsh") and
  process.args == "-c" and
  not process.Ext.effective_parent.executable == "/Applications/kitty.app/Contents/MacOS/kitty"
 '''

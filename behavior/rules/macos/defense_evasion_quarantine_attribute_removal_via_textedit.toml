@@ -5,17 +5,17 @@ TextEdit to remove the quarantine attribute from files.
 """
 id = "0c33446f-8d07-41c3-805f-885df2bc60ed"
 license = "Elastic License v2"
-name = "Quarantine Attrib Removal via TextEdit"
+name = "Quarantine Attribute Removal via TextEdit"
 os_list = ["macos"]
 reference = [
     "https://github.com/cedowens/JXA-RemoveQuarantine",
     "https://lapcatsoftware.com/articles/sandbox-escape.html",
     "https://lapcatsoftware.com/articles/sandbox-escape2.html",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-file where event.action == "extended_attributes_delete" and process.name : "TextEdit"
+file where event.action == "extended_attributes_delete" and process.name == "TextEdit"
 '''
 
 min_endpoint_version = "8.10.2"

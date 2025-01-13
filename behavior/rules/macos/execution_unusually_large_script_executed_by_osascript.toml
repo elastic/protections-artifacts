@@ -9,10 +9,10 @@ id = "40d4b42d-ad3a-478d-88cd-d440fa45cd81"
 license = "Elastic License v2"
 name = "Unusually Large Script Executed by Osascript"
 os_list = ["macos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "osascript" and 
+process where event.type == "start" and event.action == "exec" and process.name == "osascript" and 
  process.args == "-e" and process.args_count > 40
 '''
 

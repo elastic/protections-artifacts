@@ -7,14 +7,14 @@ id = "603ac59e-9cca-4c48-9750-e38399079043"
 license = "Elastic License v2"
 name = "Background Process Execution via Shell"
 os_list = ["macos"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-    process.name like ("bash", "sh", "zsh", "tclsh*") and
-    process.args == "-c" and process.args like ("/* &", "/*&") and
+    process.name like~ ("bash", "sh", "zsh", "tclsh*") and
+    process.args == "-c" and process.args like~ ("/* &", "/*&") and
     process.args_count == 3 and 
-    process.parent.executable like 
+    process.parent.executable like~ 
                                 ("/private/tmp/*", 
                                  "/var/tmp/*", 
                                  "/tmp/*", 
@@ -31,7 +31,7 @@ process where event.type == "start" and event.action == "exec" and
                                  "/usr/local/bin/*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -57,4 +57,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

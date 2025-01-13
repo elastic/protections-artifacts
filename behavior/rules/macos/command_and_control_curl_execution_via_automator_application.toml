@@ -8,14 +8,14 @@ id = "3540b77a-80a6-42ea-b7f4-714291a28a62"
 license = "Elastic License v2"
 name = "Curl Execution via Automator Application"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and process.parent.name : ("Application Stub", "Automator Application Stub") and 
+process where event.type == "start" and process.parent.name in ("Application Stub", "Automator Application Stub") and 
  (
-  (process.name like ("sh", "bash", "zsh", "tclsh*") and
+  (process.name like~ ("sh", "bash", "zsh", "tclsh*") and
     process.args == "-c" and
-    process.args like ("curl*", "nscurl*")) or
+    process.args like~ ("curl*", "nscurl*")) or
   (process.name in ("curl", "nscurl"))
  )
 '''

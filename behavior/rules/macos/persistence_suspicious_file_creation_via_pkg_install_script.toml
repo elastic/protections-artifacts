@@ -11,17 +11,17 @@ license = "Elastic License v2"
 name = "Suspicious File Creation via Pkg Install Script"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x51.html"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and process.name in ("bash", "sh", "zsh") and
-  process.args : ("/tmp/PKInstallSandbox.*/Scripts/com.*/preinstall", "/tmp/PKInstallSandbox.*/Scripts/*/postinstall") and
-  process.args : ("/Users/*", "/Volumes/*") and not
-  process.args : "/Users/*/Library/Caches/*"]
+  process.args like~ ("/tmp/PKInstallSandbox.*/Scripts/com.*/preinstall", "/tmp/PKInstallSandbox.*/Scripts/*/postinstall") and
+  process.args like ("/Users/*", "/Volumes/*") and not
+  process.args like~ "/Users/*/Library/Caches/*"]
 [file where event.action != "deletion" and process.name in ("mv", "cp") and
-  (file.extension in~ ("py", "js", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or
-    file.Ext.header_bytes like ("cffaedfe*", "cafebabe*")) and
+  (file.extension in ("py", "js", "sh", "scpt", "terminal", "tcl", "app", "pkg", "dmg", "command") or
+    file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*")) and
   file.path like
               ("/private/etc/*",
                "/var/tmp/*", 

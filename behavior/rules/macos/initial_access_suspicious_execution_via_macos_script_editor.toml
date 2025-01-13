@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution via macOS Script Editor"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/macos-red-teaming-initial-access-via-applescript-url/"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.action == "exec" and
@@ -16,10 +16,10 @@ process where event.action == "exec" and
  process.parent.executable == "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor" and
 
  // Suspicious processes spawned by the Script Editor
- (process.name like ("curl", "nscurl", "bash", "sh", "zsh", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "popen") or
+ (process.name like~ ("curl", "nscurl", "bash", "sh", "zsh", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "popen") or
 
   // Process masquerading as Apple but has an invalid signature
-  (process.name : "com.apple.*" and not process.code_signature.signing_id like "com.apple.*")
+  (process.name like~ "com.apple.*" and not process.code_signature.signing_id like~ "com.apple.*")
  ) and
  not process.Ext.effective_parent.executable == "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor"
 '''

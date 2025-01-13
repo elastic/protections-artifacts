@@ -8,7 +8,7 @@ id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
 license = "Elastic License v2"
 name = "Potential Proxy Execution via Systemd-run"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
@@ -19,12 +19,16 @@ process.parent.args_count < 3 and process.parent.name != null and not (
     "/usr/local/bin/salt-minion", "/var/vanta/launcher", "/opt/traps/bin/pmd", "/usr/sbin/gdm", "/usr/bin/salt-minion",
     "/opt/GC_Ext/GC/gc_linux_service"
   ) or
+  process.parent.executable like "/opt/tableau/tableau_server/packages/scripts.*/after-install" or
   process.parent.name like ("python*", "platform-python*") or
   process.parent.name in (
     "udevadm", "daemon.start", "snap", "systemd", "ptyxis-agent", "run-slack", "run-firefox", "dbus.service", "k3s-server",
-    "systemd-udevd", "kubelet", "hyperkube", "kthreadd", "gnome-shell", "xdg-desktop-portal"
+    "systemd-udevd", "kubelet", "hyperkube", "kthreadd", "gnome-shell", "xdg-desktop-portal", "firefox", "picus_updater",
+    "rpm-ostree"
   ) or
-  process.command_line in ("/usr/bin/systemd-run /usr/bin/systemctl start man-db-cache-update", "systemd-run env") or
+  process.command_line in (
+    "/usr/bin/systemd-run /usr/bin/systemctl start man-db-cache-update", "systemd-run env", "systemd-run --user dalla open spain"
+  ) or
   process.parent.command_line == "runc init" or
   process.parent.command_line like ("*/var/lib/waagent/*", "bash ./run.sh") or
   process.args in ("--help", "list-timers", "/usr/lib/udev/kdump-udev-throttler")

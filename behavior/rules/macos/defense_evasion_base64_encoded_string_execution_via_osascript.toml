@@ -5,18 +5,18 @@ and some encode the script using base64 in order to avoid detection.
 """
 id = "32b43493-dd69-47b3-ad63-34242aeebe39"
 license = "Elastic License v2"
-name = "Base64 encoded string execution via Osascript"
+name = "Base64 Encoded String Execution via Osascript"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "osascript" and
  process.args == "-e" and
  process.args regex~ ".*[A-Za-z]/?+?=?=?\\s.*" and 
- process.command_line : "*base64*" and
+ process.command_line like~ "*base64*" and
  process.args_count == 3 and
  not process.parent.code_signature.team_id == "9BNSXJN65R" and
- not process.Ext.effective_parent.executable : "/Applications/Docker.app/Contents/MacOS/com.docker.backend"
+ not process.Ext.effective_parent.executable like "/Applications/Docker.app/Contents/MacOS/com.docker.backend"
 '''
 
 min_endpoint_version = "8.11.0"

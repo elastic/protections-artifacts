@@ -10,13 +10,15 @@ license = "Elastic License v2"
 name = "Suspicious Curl to Google App Script Endpoint"
 os_list = ["macos"]
 reference = ["https://www.google.com/script/start/", "https://attack.mitre.org/techniques/T1105/"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
-process where event.type == "start" and process.name in ("curl", "nscurl") and process.args like "https://script.google.com/*"
+sequence by process.entity_id with maxspan=15s
+[process where event.type == "start" and process.name in ("curl", "nscurl")]
+[network where event.type == "start" and process.name in ("curl", "nscurl") and destination.domain in ("script.google.com", "script.google.com.")]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -37,4 +39,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.16.0"

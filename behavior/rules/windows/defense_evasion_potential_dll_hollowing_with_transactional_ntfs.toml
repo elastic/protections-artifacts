@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies attempts to load a transacted file. This is a technique that exploits Transactional NTFS to execute arbitrary
+code in the address space of a running process, without committing the code to disk.
+"""
+id = "7f61cf66-1363-4b2a-8f82-73cc2bd46b17"
+license = "Elastic License v2"
+name = "Potential DLL Hollowing with Transactional NTFS"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+library where event.action == "load" and process.pid != 4 and
+ dll.Ext.defense_evasions == "Process Tampering: Image belongs to a transaction" and
+ dll.Ext.defense_evasions == "Process Tampering: Image has been accessed before mapping"
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

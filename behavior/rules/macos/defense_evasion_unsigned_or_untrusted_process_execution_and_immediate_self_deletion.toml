@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Unsigned or Untrusted Process Execution and Immediate Self-Deletion"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/techniques/T1070/004/"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and 
-  process.executable : ("/Applications/*", "/Volumes/*") and
+  process.executable like ("/Applications/*", "/Volumes/*") and
   (process.code_signature.trusted == false or process.code_signature.exists == false)]
 [file where event.action == "deletion" and startswith~(file.path,process.executable)]
 '''

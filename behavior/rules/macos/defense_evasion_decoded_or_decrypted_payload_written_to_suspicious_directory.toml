@@ -9,44 +9,44 @@ license = "Elastic License v2"
 name = "Decoded or Decrypted Payload Written to Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "exec" and
-  ((process.name : "openssl" and process.args : "-out" and process.args : "enc" and process.args : ("-d", "-base64") and
-    process.args : ("/tmp/*", 
-                    "/Users/*/.*",
-                    "/Applications/*/.*",
-                    "/private/tmp/*", 
-                    "/var/tmp/*", 
-                    "/var/folders/*", 
-                    "/Users/Shared/*",
-                    "/Library/Graphics/*",
-                    "/Users/*/Library/Preferences/*",
-                    "/Users/*/Library/Services/*", 
-                    "/Library/Containers/*", 
-                    "/var/root/*", 
-                    "/var/lib/*",
-                    "/Library/WebServer/*",
-                    "/Library/Fonts/*")) or 
-   (process.name : "base64" and process.args : "-d" and 
-    process.args : ("/tmp/*", 
-                    "*/.*",
-                    "/private/tmp/*", 
-                    "/var/tmp/*", 
-                    "/var/folders/*", 
-                    "/Users/Shared/*", 
-                    "/Library/Graphics/*",
-                    "/Users/*/Library/Preferences/*",
-                    "/Users/*/Library/Services/*", 
-                    "/Library/Containers/*", 
-                    "/var/root/*", 
-                    "/var/lib/*",
-                    "/Library/WebServer/*",
-                    "/Library/Fonts/*")))
+  ((process.name == "openssl" and process.args like~ "-out" and process.args like~ "enc" and process.args in ("-d", "-base64") and
+    process.args like~ ("/tmp/*", 
+                        "/Users/*/.*",
+                        "/Applications/*/.*",
+                        "/private/tmp/*", 
+                        "/var/tmp/*", 
+                        "/var/folders/*", 
+                        "/Users/Shared/*",
+                        "/Library/Graphics/*",
+                        "/Users/*/Library/Preferences/*",
+                        "/Users/*/Library/Services/*", 
+                        "/Library/Containers/*", 
+                        "/var/root/*", 
+                        "/var/lib/*",
+                        "/Library/WebServer/*",
+                        "/Library/Fonts/*")) or 
+   (process.name == "base64" and process.args == "-d" and 
+    process.args like~ ("/tmp/*", 
+                        "*/.*",
+                        "/private/tmp/*", 
+                        "/var/tmp/*", 
+                        "/var/folders/*", 
+                        "/Users/Shared/*", 
+                        "/Library/Graphics/*",
+                        "/Users/*/Library/Preferences/*",
+                        "/Users/*/Library/Services/*", 
+                        "/Library/Containers/*", 
+                        "/var/root/*", 
+                        "/var/lib/*",
+                        "/Library/WebServer/*",
+                        "/Library/Fonts/*")))
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -99,4 +99,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

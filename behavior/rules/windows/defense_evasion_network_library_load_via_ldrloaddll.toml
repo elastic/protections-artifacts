@@ -4,14 +4,17 @@ id = "1d11bfcd-b3dd-41f6-b770-fb7cca437019"
 license = "Elastic License v2"
 name = "Network Library Load via LdrLoadDLL"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [library where not dll.code_signature.status == "trusted" and 
   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
   not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\*") and 
-  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")] as event0
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+  not dll.hash.sha256 in ("4bbe61307e8baa6e782c271361a41905f8ef2f7cdf62fa8fb4f4844860f3dc3d",
+                          "5bcea56e9f25b53dfbf71d41f157647263a71754fb5c3b8b607c34c4d66d2e26",
+                          "14da1fbca85ff2b8ac19ab63f4b7019614865ce8d87bce68100c97174b786ff5")] as event0
  [library where
    dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll") and 
    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*LdrLoadDLL*") and

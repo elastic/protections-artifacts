@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Proxy Execution via PHP"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/php/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -26,7 +26,8 @@ and not (
   process.command_line in (
     "sh -c mysql --version 2>/dev/null", "sh -c locale -a", "locale -a", "stty -a", "datadog-ipc-helper",
     "sh -c whereis -b traceroute", "sh -c git describe --always --tags --abbrev=0", "sh -c git rev-parse --short HEAD",
-    "/usr/sbin/sendmail -t -i", "sh -c /usr/sbin/sendmail -t -i", "sh -c stty -a | grep columns", "whereis -b traceroute"
+    "/usr/sbin/sendmail -t -i", "sh -c /usr/sbin/sendmail -t -i", "sh -c stty -a | grep columns", "whereis -b traceroute",
+    "sh -c /usr/sbin/sendmail -t -i ", "sh -c exec rpm -q --queryformat '%{VERSION}.%{RELEASE}' SecurityCenter"
   ) or
   process.args : "/var/lib/asterisk/bin/backup.php*" or
   process.executable in ("/usr/bin/newrelic-daemon", "/usr/bin/git") or 

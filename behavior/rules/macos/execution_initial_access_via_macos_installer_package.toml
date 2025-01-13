@@ -10,12 +10,12 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 sequence with maxspan=1m
   [process where event.action == "exec" and process.name in ("installer", "package_script_service") and not
-    process.args like
+    process.args like~
                    ("/Library/Application Support/JAMF/Downloads/*",
                     "/tmp/KSInstallAction.*",
                     "/tmp/FLEXnet", 
@@ -24,12 +24,12 @@ sequence with maxspan=1m
                     "./Epson Scanner ICA Driver.pkg",
                     "/tmp/PKInstallSandbox.*/Scripts/com.epson.pkg.eventmanager.*/Epson Scanner Monitor.pkg",
                     "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
-    process.parent.executable in ("/usr/local/ltechagent/ltupdate",
-                                  "/sbin/launchd", 
-                                  "/Users/*/Library/Caches/*",
-                                  "/Library/PrivilegedHelperTools/*",
-                                  "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
-                                  "/private/var/folders/*/download/ARMDCHammer") and not
+    process.parent.executable like~ ("/usr/local/ltechagent/ltupdate",
+                                     "/sbin/launchd", 
+                                     "/Users/*/Library/Caches/*",
+                                     "/Library/PrivilegedHelperTools/*",
+                                     "/Applications/Epson Software/EPSON Software Updater.app/Contents/MacOS/EPSON Software Updater",
+                                     "/private/var/folders/*/download/ARMDCHammer") and not
     process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
                                                 "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon",
                                                 "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
@@ -41,7 +41,7 @@ sequence with maxspan=1m
     descendant of [
         process where event.action == "exec" and
         process.name in ("Installer", "package_script_service") and not
-        process.args like
+        process.args like~
                        ("/Library/Application Support/JAMF/Downloads/*",
                         "/tmp/KSInstallAction.*",
                         "/tmp/PKInstallSandbox.*/Scripts/com.epson.pkg.eventmanager.*/Epson Scanner Monitor.pkg",
@@ -51,7 +51,7 @@ sequence with maxspan=1m
                         "./Epson Event Manager.pkg",
                         "./Epson Scanner ICA Driver.pkg",
                         "/Library/Addigy/ansible/packages/TeamViewer Host */TeamViewer_Host.pkg") and not
-        process.parent.executable like
+        process.parent.executable like~
                                     ("/usr/local/ltechagent/ltupdate",
                                      "/sbin/launchd", 
                                      "/Users/*/Library/Caches/*",

@@ -8,17 +8,17 @@ license = "Elastic License v2"
 name = "Suspicious Electron Command Execution"
 os_list = ["macos"]
 reference = ["https://medium.com/@MalFuzzer/one-electron-to-rule-them-all-dc2e9b263daf"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec"  and 
- process.command_line : ("*--gpu-launcher=?*", 
-                         "*--utility-cmd-prefix=?*", 
-                         "*--browser-subprocess-path=?*", 
-                         "*--renderer-cmd-prefix=?*")
+ process.command_line like~ ("*--gpu-launcher=?*", 
+                             "*--utility-cmd-prefix=?*", 
+                             "*--browser-subprocess-path=?*", 
+                             "*--renderer-cmd-prefix=?*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -44,4 +44,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

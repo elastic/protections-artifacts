@@ -9,17 +9,17 @@ license = "Elastic License v2"
 name = "Potential Masquerading as System Binary"
 os_list = ["macos"]
 reference = ["https://www.jamf.com/blog/cryptojacking-macos-malware-discovered-by-jamf-threat-labs"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-  process.args : "/System/*" and 
-  process.parent.name : ("bash", "sh", "zsh") and 
+  process.args like "/System/*" and 
+  process.parent.name in ("bash", "sh", "zsh") and 
   process.args_count == 1 and not 
-  process.executable : ("/System/*", "/usr/libexec/*", "/usr/bin/*", "/usr/sbin/*", "/bin/*", "/sbin/*")
+  process.executable like ("/System/*", "/usr/libexec/*", "/usr/bin/*", "/usr/sbin/*", "/bin/*", "/sbin/*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -62,4 +62,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Proxy Shell Execution via Busybox"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/busybox/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "busybox" and
@@ -16,7 +16,9 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
   process.args == "-c" or
   process.parent.args : (
     "crond", "/usr/sbin/crond", "/local-registrator.sh", "/var/atlassian/application-data/bamboo-agent*"
-  )
+  ) or
+  process.parent.command_line == "sh /readonly-config/fix-split-brain.sh" or
+  process.command_line == "bash /etc/kafka/docker/run"
 )
 '''
 

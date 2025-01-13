@@ -6,16 +6,16 @@ collection prior to exfiltration.
 """
 id = "802d1796-7d9e-4e3c-911b-22281fdfea03"
 license = "Elastic License v2"
-name = "Exfiltration Data Staging in temporary directory via Osascript"
+name = "Exfiltration Data Staging in Temporary Directory via Osascript"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-sequence with maxspan=3s
-[process where event.type == "start" and event.action == "exec" and process.name : "mkdir" and process.args : "-p" and
-  process.args : ("/tmp/*", "/private/tmp/*") and
-  process.parent.name : "osascript"] by process.parent.entity_id
-[file where event.action == "modification" and process.name : "osascript" and file.path : ("/tmp/*", "/private/tmp/*")] by Effective_process.entity_id
+sequence with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name == "mkdir" and process.args == "-p" and
+  process.args like ("/tmp/*", "/private/tmp/*") and
+  process.parent.name == "osascript"] by process.parent.entity_id
+[file where event.action == "modification" and process.name == "osascript" and file.path like ("/tmp/*", "/private/tmp/*")] by Effective_process.entity_id
 '''
 
 min_endpoint_version = "8.11.1"

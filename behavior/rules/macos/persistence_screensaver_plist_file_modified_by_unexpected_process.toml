@@ -12,26 +12,26 @@ reference = [
     "https://posts.specterops.io/saving-your-access-d562bf5bf90b",
     "https://github.com/D00MFist/PersistentJXA",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=30s
   [file where event.action != "deletion" and
-    file.name: "com.apple.screensaver.*.plist" and
-    file.path : (
+    file.name like "com.apple.screensaver.*.plist" and
+    file.path like~ (
       "/Users/*/Library/Preferences/ByHost/*",
       "/Library/Managed Preferences/*",
       "/System/Library/Preferences/*"
       ) and
     /* Filter OS processes modifying screensaver plist files */
-    not process.executable : (
+    not process.executable like (
       "/usr/sbin/cfprefsd",
       "/usr/libexec/xpcproxy",
       "/System/Library/CoreServices/ManagedClient.app/Contents/Resources/MCXCompositor",
       "/System/Library/CoreServices/ManagedClient.app/Contents/MacOS/ManagedClient"
       ) and
     not Effective_process.executable in ("/usr/local/jamf/bin/jamf",
-                                        "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
+                                         "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
   [process where event.action == "exec" and
     process.name == "killall" and process.args : "cfprefsd"]
 '''

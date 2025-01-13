@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "NetworkCleartext Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 authentication where event.action == "log_on" and
@@ -25,6 +25,7 @@ authentication where event.action == "log_on" and
              "C:\\Program Files\\Microsoft SQL Server\\*\\SQLAGENT.EXE",
              "C:\\Program Files\\*\\Microsoft.Mashup.Container.NetFX45.exe",
              "C:\\Program Files\\On-premises data gateway\\Microsoft.PowerBI.EnterpriseGateway.exe",
+             "C:\\Program Files\\Microsoft SQL Server Reporting Services\\SSRS\\Portal\\RSPortal.exe",
              "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security Center\\klbackup.exe",
              "C:\\Windows\\System32\\inetsrv\\InetMgr.exe",
              "C:\\Program Files\\Microsoft Office Servers\\1?.?\\Bin\\mssdmn.exe",
@@ -33,7 +34,9 @@ authentication where event.action == "log_on" and
              "C:\\Program Files (x86)\\Rittal\\RiZone\\Core\\Core.Server.exe",
              "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
              "C:\\Program Files\\Microsoft SQL Server Reporting Services\\SSRS\\Management\\RSManagement.exe",
-             "C:\\Program Files (x86)\\Varonis\\DatAdvantage\\IDU Server\\Support Assistant\\Varonis.Automation.CLI.exe")
+             "C:\\Program Files (x86)\\Varonis\\DatAdvantage\\IDU Server\\Support Assistant\\Varonis.Automation.CLI.exe",
+             "C:\\Program Files (x86)\\Microsoft Power BI Desktop\\bin\\Microsoft.Mashup.Container.NetFX45.exe",
+             "C:\\Program Files\\Cerberus LLC\\Cerberus FTP Server\\CerberusGUI.exe")
 '''
 
 min_endpoint_version = "8.15.1"

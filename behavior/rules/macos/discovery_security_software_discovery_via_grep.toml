@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Security Software Discovery via Grep"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4F.html"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.type == "start" and
@@ -17,27 +17,27 @@ process where event.type == "start" and
   (process.name in ("bash", "sh", "zsh") and process.args == "-c")
 ) and
 process.args in~ ("Little Snitch",
-                "CbOsxSensorService",
-                "CbDefense",
-                "ESET",
-                "Littlesnitch",
-                "elastic-endpoint",
-                "falcond",
-                "SentinelOne",
-                "lulu",
-                "WhatsYourSign",
-                "KnockKnock",
-                "reikey",
-                "OverSight",
-                "KextViewr",
-                "blockblock",
-                "Netiquette",
-                "processmonitor",
-                "filemonitor") and not 
+                  "CbOsxSensorService",
+                  "CbDefense",
+                  "ESET",
+                  "Littlesnitch",
+                  "elastic-endpoint",
+                  "falcond",
+                  "SentinelOne",
+                  "lulu",
+                  "WhatsYourSign",
+                  "KnockKnock",
+                  "reikey",
+                  "OverSight",
+                  "KextViewr",
+                  "blockblock",
+                  "Netiquette",
+                  "processmonitor",
+                  "filemonitor") and not 
 process.parent.executable like "/Library/Application Support/*" and not
 process.Ext.effective_parent.executable in ("/usr/local/jamf/bin/jamf",
-                                           "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
-                                           "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
+                                            "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                            "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
 '''
 
 min_endpoint_version = "8.5.0"

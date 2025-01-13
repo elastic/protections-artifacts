@@ -1,23 +1,22 @@
 [rule]
 description = """
 Detects when a hidden executable creates and then immediately deletes a temporary file within a temporary directory like
-/tmp. We have observed threat actors doing this on systems and is indicative of sensitive file or data collection,
-exfiltration and prompt deletion.
+/tmp. We have observed threat actors doing this for data collection, exfiltration and prompt deletion.
 """
 id = "a6994646-d314-4ee0-be1f-1d694dc969e7"
 license = "Elastic License v2"
 name = "Potential Data Collection in Temporary Directory by Hidden Executable"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id, file.path with maxspan=30s
-  [file where event.action == "modification" and process.name like ".*" and
-   file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
-   not process.executable like "/nix/store/*"]
-  [file where event.action == "deletion" and process.name like ".*" and
-   file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
-   not process.executable like "/nix/store/*"]
+[file where event.action == "modification" and process.name like~ ".*" and
+ file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
+ not process.executable like "/nix/store/*"]
+[file where event.action == "deletion" and process.name like~ ".*" and
+ file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*") and
+ not process.executable like "/nix/store/*"]
 '''
 
 min_endpoint_version = "8.11.1"

@@ -7,7 +7,7 @@ id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "exec" and
@@ -19,7 +19,7 @@ process where event.action == "exec" and
             "com.apple.WebKit.GPU.Development",
             "com.apple.WebKit.Networking.Development",
             "com.apple.WebKit.Storage.Development")) and
- not process.executable like ("/usr/local/jamf/bin/jamf", "com.apple.WebKit.Networking.Development", "/Library/Application Support/JAMF/Remote Assist/jamfRemoteAssistLauncher",
+ not process.executable like~ ("/usr/local/jamf/bin/jamf", "com.apple.WebKit.Networking.Development", "/Library/Application Support/JAMF/Remote Assist/jamfRemoteAssistLauncher",
                            "/Library/Application Support/JAMF/Remote Assist/jamfRemoteAssistConnectorUI.app/Contents/MacOS/jamfRemoteAssistConnectorUI",
                            "/Users/*/Library/Caches/ms-playwright/*") and
  not process.parent.executable in ("/sbin/launchd", "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon") and

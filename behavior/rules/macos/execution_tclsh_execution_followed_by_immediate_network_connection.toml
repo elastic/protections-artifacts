@@ -10,13 +10,13 @@ license = "Elastic License v2"
 name = "Tclsh Execution followed by immediate Network Connection"
 os_list = ["macos"]
 reference = ["https://posts.specterops.io/dylib-loads-that-tickle-your-fancy-d25196addd8c"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
-[process where event.type == "start" and event.action == "exec" and process.name like "tclsh*" and
-  not process.parent.executable : "/usr/bin/sudo"]
-[network where event.type == "start" and process.name like "tclsh*"]
+[process where event.type == "start" and event.action == "exec" and process.name like~ "tclsh*" and
+  not process.parent.executable like "/usr/bin/sudo"]
+[network where event.type == "start" and process.name like~ "tclsh*"]
 '''
 
 min_endpoint_version = "8.16.0"

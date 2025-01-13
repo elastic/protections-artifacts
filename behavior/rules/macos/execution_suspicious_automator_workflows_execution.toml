@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Automator Workflows Execution"
 os_list = ["macos"]
 reference = ["https://posts.specterops.io/persistent-jxa-66e1c3cd1cf5"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=30s
@@ -17,7 +17,7 @@ sequence with maxspan=30s
  [network where process.name == "com.apple.automator.runner"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -43,4 +43,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.16.0"

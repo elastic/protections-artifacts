@@ -7,18 +7,18 @@ id = "41dcfe9e-9170-4ffe-b620-351736366ced"
 license = "Elastic License v2"
 name = "Possible JAVA Reverse Shell"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5s
 [network where event.action in ("connection_accepted", "connection_attempted") and 
  process.name in ("java", "javaw")] by process.entity_id
-[process where event.action == "start" and process.parent.name : "java" and
- process.parent.args : "-jar" and
+[process where event.action == "start" and process.parent.name like "java" and
+ process.parent.args like~ "-jar" and
  process.name in ("bash", "sh", "zsh")] by process.parent.entity_id
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -51,4 +51,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.16.0"

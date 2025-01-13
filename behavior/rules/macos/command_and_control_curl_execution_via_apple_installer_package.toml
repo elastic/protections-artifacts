@@ -9,13 +9,13 @@ id = "a4a66e7f-b81a-4a2c-8f33-28a6807314a9"
 license = "Elastic License v2"
 name = "Curl Execution via Apple Installer Package"
 os_list = ["macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and 
-  process.name in ("curl", "nscurl") and process.args : ("-o", "--output", "--download", "-dl", "-dir", "--directory") and
+  process.name in ("curl", "nscurl") and process.args in ("-o", "--output", "--download", "-dl", "-dir", "--directory") and
   process.Ext.effective_parent.name in ("installer", "package_script_service") and
-  not process.args : ("https://agents.addigy.com/*", "https://pkg.devkitpro.org/packages/*")
+  not process.args like ("https://agents.addigy.com/*", "https://pkg.devkitpro.org/packages/*")
 '''
 
 min_endpoint_version = "8.5.0"

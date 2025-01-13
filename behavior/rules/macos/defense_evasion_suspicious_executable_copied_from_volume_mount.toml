@@ -6,18 +6,18 @@ second stage payload prior to establishing persistence via the .zshrc file.
 """
 id = "0facb446-7d95-4b27-bd40-490bbec5a95b"
 license = "Elastic License v2"
-name = "Suspicious executable copied from volume mount"
+name = "Suspicious Executable Copied from Volume Mount"
 os_list = ["macos"]
 reference = ["https://github.com/darkr4y/geacon"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
-  [process where event.type == "start" and event.action == "exec" and process.name : "cp" and 
-    process.args_count == 3 and process.args : ("cp", "/bin/cp", "/usr/bin/cp") and 
-    process.args : "/Volumes/*/.*" and process.args : "/Applications/*"] as event0
-  [file where event.action == "modification" and process.name : "cp" and file.path : "/Applications/*" and 
-    file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
+  [process where event.type == "start" and event.action == "exec" and process.name == "cp" and 
+    process.args_count == 3 and process.args in ("cp", "/bin/cp", "/usr/bin/cp") and 
+    process.args like~ "/Volumes/*/.*" and process.args like "/Applications/*"] as event0
+  [file where event.action == "modification" and process.name == "cp" and file.path like "/Applications/*" and 
+    file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
     stringcontains~(event0.process.command_line, file.name)]
 '''
 

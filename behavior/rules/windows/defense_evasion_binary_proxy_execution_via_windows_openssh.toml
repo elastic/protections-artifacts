@@ -8,18 +8,19 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via Windows OpenSSH"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Ssh/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
 (
- (process.parent.executable : "?:\\windows\\system32\\OpenSSH\\ssh.exe" and
+ (process.parent.executable : ("?:\\windows\\system32\\OpenSSH\\ssh.exe", "C:\\Windows\\System32\\OpenSSH\\sftp.exe") and
  process.parent.args == "-o" and process.parent.command_line : ("*ProxyCommand=*", "*LocalCommand=*") and
  not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe", "C:\\Windows\\System32\\OpenSSH\\ssh.exe")) or
 
- (process.executable : "?:\\windows\\system32\\OpenSSH\\ssh.exe" and
+ (process.executable : ("?:\\windows\\system32\\OpenSSH\\ssh.exe", "C:\\Windows\\System32\\OpenSSH\\sftp.exe") and
   process.parent.name : ("explorer.exe", "python.exe", "conhost.exe") and
-  process.command_line : ("*Command=powershell*", "*schtasks*create*", "*LocalCommand=@echo off &&*", "*Command=cmd /c*") )
+  process.command_line : ("*Command=*powershell*", "*schtasks*create*", "*LocalCommand=@echo off &&*",
+                          "*Command=cmd /c*", "*ProxyCommand=*cmd.exe *", "*Command=\"cmd /c*", "*LocalCommand=scp*&&*", "*LocalCommand=?scp*&&*") )
 )
 '''
 

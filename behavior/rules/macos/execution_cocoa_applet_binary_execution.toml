@@ -12,11 +12,11 @@ os_list = ["macos"]
 reference = [
     "https://www.bitdefender.com/blog/labs/new-macos-backdoor-written-in-rust-shows-possible-link-with-windows-ransomware-group/",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
- (process.name : "cocoaapplet" or process.parent.name : "cocoaapplet")
+ (process.name == "cocoaapplet" or process.parent.name == "cocoaapplet")
 '''
 
 min_endpoint_version = "8.11.0"

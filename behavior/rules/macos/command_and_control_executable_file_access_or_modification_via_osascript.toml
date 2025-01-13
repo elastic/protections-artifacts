@@ -7,12 +7,12 @@ id = "cb3fe671-de31-41f4-bf71-3a39b024fd0e"
 license = "Elastic License v2"
 name = "Executable File Access or Modification via Osascript"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.action != "deletion" and 
- file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
- process.name : "osascript"
+ file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
+ process.name == "osascript"
 '''
 
 min_endpoint_version = "8.10.2"

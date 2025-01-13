@@ -11,12 +11,12 @@ license = "Elastic License v2"
 name = "Suspicious OpenSSL Execution via macOS Application"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x70.html", "https://attack.mitre.org/techniques/T1140/"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
 [process where event.type == "start" and process.name in ("bash", "sh", "zsh") and
-  process.args like ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and
+  process.args like~ ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and
   process.args like ("/Applications/*", "/Volumes/*") and
   process.args_count <= 2] 
 [process where event.type == "start" and process.name == "openssl" and

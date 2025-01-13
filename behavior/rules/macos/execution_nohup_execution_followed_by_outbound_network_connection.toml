@@ -10,23 +10,23 @@ license = "Elastic License v2"
 name = "Nohup Execution followed by Outbound Network Connection"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
 [process where event.type == "start" and 
   process.name == "nohup" and
-  ((process.command_line : ("*/tmp/*",
-                            "*/var/tmp/*",
-                            "*/private/var/tmp/*",
-                            "*/var/folders/*", 
-                            "*/Users/Shared/*", 
-                            "*/Library/*", 
-                            "*/var/root/*", 
-                            "*/usr/local/bin/*", 
-                            "*/Applications/*")) or
-   (process.args : "npm" and process.args : "install")) and
-  process.parent.name like ("bash", "sh", "zsh", "tclsh*", "terminal", "python*", "osascript") and
+  ((process.command_line like~ ("*/tmp/*",
+                                "*/var/tmp/*",
+                                "*/private/var/tmp/*",
+                                "*/var/folders/*", 
+                                "*/Users/Shared/*", 
+                                "*/Library/*", 
+                                "*/var/root/*", 
+                                "*/usr/local/bin/*", 
+                                "*/Applications/*")) or
+   (process.args like~ "npm" and process.args like~ "install")) and
+  process.parent.name like~ ("bash", "sh", "zsh", "tclsh*", "terminal", "python*", "osascript") and
   not process.Ext.effective_parent.executable == "/Applications/SteelSeries GG/SteelSeries GG.app/Contents/MacOS/SteelSeries GG"]
 [network where event.type == "start" and not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",

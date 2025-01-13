@@ -12,11 +12,11 @@ reference = [
     "https://jhftss.github.io/CVE-2022-26712-The-POC-For-SIP-Bypass-Is-Even-Tweetable/",
     "https://support.apple.com/en-us/HT213256",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.action == "exec" and
- (process.name : "shove" or process.code_signature.signing_id : "com.apple.shove") and process.args : "-x"
+ (process.name == "shove" or process.code_signature.signing_id like "com.apple.shove") and process.args == "-x"
 '''
 
 min_endpoint_version = "8.1.0"

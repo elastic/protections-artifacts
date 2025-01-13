@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "Unusual Dylib Load from Users Shared Directory"
 os_list = ["macos"]
 reference = ["https://www.huntress.com/blog/lightspy-malware-variant-targeting-macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-library where event.action == "load" and dll.path : "/usr/local/lib/*" and 
+library where event.action == "load" and dll.path like "/usr/local/lib/*" and 
  (process.executable like "/Users/Shared/*" or Effective_process.executable like "/Users/Shared/*")
 '''
 

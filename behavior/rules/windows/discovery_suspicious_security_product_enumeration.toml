@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.9"
 
 query = '''
 api where
@@ -42,8 +42,7 @@ api where
    (process.executable : ("?:\\$Windows.~??\\Sources\\SetupHost.exe", "?:\\$WINDOWS.~??\\Sources\\mighost.exe") and
     process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) or
 
-   (process.executable : "C:\\Windows\\System32\\svchost.exe" and user.id in ("S-1-5-18", "S-1-5-19") and
-    process.parent.executable : "?:\\Windows\\System32\\services.exe" and process.command_line like ("* -p -s Winmgmt*", "*LocalServiceNetworkRestricted*")) or
+   (process.executable : "C:\\Windows\\System32\\svchost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe") or
 
    (process.executable : "C:\\Program Files (x86)\\Ivanti\\EPM Agent\\Inventory\\ldiscn32.exe" and
     process.code_signature.subject_name == "Ivanti, Inc." and process.code_signature.trusted == true) or
@@ -56,13 +55,6 @@ api where
              "?:\\Windows\\SysWOW64\\EasyResume.exe",
              "?:\\Windows\\SysWOW64\\Lenovo\\PowerMgr\\EasyResume.exe") and
     process.parent.executable : "?:\\Windows\\System32\\services.exe") or
-
-   (process.executable : "?:\\Windows\\System32\\CompatTelRunner.exe" and
-    process.parent.executable :
-             ("?:\\Windows\\System32\\CompatTelRunner.exe",
-              "?:\\Windows\\System32\\svchost.exe",
-              "C:\\Windows\\CCM\\CcmExec.exe",
-              "C:\\Windows\\SysWOW64\\CheckNetIsolation.exe")) or
 
    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and process.Ext.api.parameters.operation == "Win32_DeviceGuard" and
     process.parent.executable like "?:\\Program Files\\Microsoft Cloud Managed Desktop Extension\\CMDExtension\\Microsoft.Management.Services.CloudManagedDesktop.Agent.exe") or
@@ -88,17 +80,48 @@ api where
 
    (process.code_signature.subject_name in ("CPUID", "Lakeside Software, LLC", "CYBELSOFT", "Connectwise, LLC",
     "Corsair Memory, Inc.", "Ivanti, Inc.", "POINTWARE INFORMATICA LTDA", "ASUSTeK COMPUTER INC.", "Snow Software AB",
-    "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd") and
+    "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd", "WithSecure Oyj", "Trend Micro, Inc.", "Belarc, Inc.",
+    "KASEYA HOLDINGS INC.", "Elliptic Laboratories ASA") and
     process.code_signature.trusted == true) or
 
     process.executable :
              ("C:\\Program Files (x86)\\Varian\\KeystoneAgent\\VMS.Keystone.DeploymentAgent.exe",
               "C:\\Program Files\\FusionInventory-Agent\\perl\\bin\\perl.exe",
               "C:\\Program Files\\FusionInventory-Agent\\perl\\bin\\fusioninventory-agent.exe",
-              "C:\\Program Files (x86)\\Varian\\KeystoneAgent\\VMS.Keystone.DeploymentAgent.exe") or
+              "C:\\Program Files (x86)\\Varian\\KeystoneAgent\\VMS.Keystone.DeploymentAgent.exe",
+              "C:\\Program Files\\AzureConnectedMachineAgent\\GCArcService2\\GC\\gc_worker.exe",
+              "C:\\Program Files (x86)\\Belarc\\BelarcAdvisor\\BelarcAdvisor.exe",
+              "C:\\Program Files (x86)\\FusionInventory-Agent\\perl\\bin\\fusioninventory-agent.exe",
+              "C:\\Windows\\System32\\CompatTelRunner.exe",
+              "C:\\Windows\\SysWOW64\\systeminfo.exe",
+              "C:\\Windows\\System32\\systeminfo.exe",
+              "C:\\Program Files\\Windows Defender\\MpCmdRun.exe",
+              "C:\\Program Files (x86)\\Kaseya\\KSAASS*\\AgentMon.exe",
+              "C:\\Program Files\\BMC Software\\Client Management\\Client\\bin\\mtxagent.exe",
+              "C:\\Program Files (x86)\\LANDesk\\LDClient\\LDISCN32.EXE",
+              "C:\\Program Files\\GLPI-Agent\\perl\\bin\\glpi-agent.exe",
+              "C:\\Program Files (x86)\\GLPI-Agent\\perl\\bin\\glpi-agent.exe",
+              "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe",
+              "C:\\Program Files (x86)\\Google\\Chrome\\Application\\*\\elevation_service.exe",
+              "C:\\Program Files\\Microsoft Visual Studio\\20??\\Enterprise\\Common?\\IDE\\devenv.exe",
+              "C:\\Program Files (x86)\\OSTotoSoft\\DriverTalent\\HardWareReport.exe",
+              "C:\\Windows\\System32\\UsoClient.exe",
+              "C:\\Windows\\CCM\\CcmExec.exe",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.*\\mscorsvw.exe",
+              "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.*\\MpCmdRun.exe") or
 
     (process.parent.executable : "?:\\Windows\\System32\\WmiPrvSe.exe" and process.name == "powershell.exe" and
-     process.command_line : "\"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -NoLogo -Noninteractive -NoProfile  -ExecutionPolicy Bypass \"& 'C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1'\"")
+     process.command_line : "\"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -NoLogo -Noninteractive -NoProfile  -ExecutionPolicy Bypass \"& 'C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1'\"") or
+
+    (process.name : "powershell.exe" and
+     process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe", "C:\\Windows\\System32\\EVENTSENTRY\\eventsentry_svc_x64.exe")) or
+
+    (process.name : "powershell.exe" and
+     process.command_line : ("powershell  Get-CimInstance –ClassName Win32_DeviceGuard –Namespace root\\Microsoft\\Windows\\DeviceGuard")) or 
+
+     (process.name : "powershell.exe" and 
+      process.parent.executable : ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
+                                   "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe"))
   )
 '''
 

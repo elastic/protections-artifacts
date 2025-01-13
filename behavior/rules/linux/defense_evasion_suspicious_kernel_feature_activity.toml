@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -51,11 +51,11 @@ process.parent.executable != null and
     "/opt/eset/efs/lib/install_scripts/check_start.sh", "/var/tmp/foreman-ssh-cmd-*/script",
     "/usr/openv/pdde/vpfs/bin/vpfs_config.sh", "/data/ora04/dba/scripts/hugepages_kernelpar_settings*.sh",
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/sublime_text/sublime_text",
-    "/opt/illumio_ven/bin/init_Environment"
+    "/opt/illumio_ven/bin/init_Environment", "/usr/local/VMOptimizationTools/sangfor_set_vmconfig.sh"
   ) or
   process.parent.args like (
     "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",
-    "./disk_perf", "/root/clearmem.sh", "/usr/sbin/tuned"
+    "./disk_perf", "/root/clearmem.sh", "/usr/sbin/tuned", "/home/*/.ansible/tmp/ansible-tmp-*", "/var/opt/BESClient/*"
   ) or
   process.args like "*nessus_su_*" or
   process.parent.command_line in (

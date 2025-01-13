@@ -9,13 +9,13 @@ or cause them to be noticed.
 """
 id = "511bd55d-f845-45da-8b35-7dd9a40fa7b2"
 license = "Elastic License v2"
-name = "Disown execution via shell command from volume mount"
+name = "Disown Execution via Shell Command from Volume Mount"
 os_list = ["macos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.args : ("bash", "sh", "zsh") and 
- process.args == "-c" and process.args : "*disown*" and process.parent.executable : "/Volumes/*"
+process where event.type == "start" and event.action == "exec" and process.args in ("bash", "sh", "zsh") and 
+ process.args == "-c" and process.args like~ "*disown*" and process.parent.executable like "/Volumes/*"
 '''
 
 min_endpoint_version = "8.11.0"

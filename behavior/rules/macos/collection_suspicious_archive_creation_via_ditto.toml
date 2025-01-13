@@ -11,13 +11,13 @@ reference = [
     "https://moonlock.com/atomic-macos-stealer",
     "https://medium.com/@dineshdevadoss04/breaking-down-atomic-macos-stealer-amos-8cd5eea56024",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "ditto" and
- process.args in ("-c", "-k", "--sequesterRsrc", "--keepParent") and
- process.args : ("/Users/*", "/private/tmp/*", "/tmp/*", "/var/folders/*") and
- process.args : "*.zip*" and
+process where event.type == "start" and event.action == "exec" and process.name == "ditto" and
+ process.args in~ ("-c", "-k", "--sequesterRsrc", "--keepParent") and
+ process.args like ("/Users/*", "/private/tmp/*", "/tmp/*", "/var/folders/*") and
+ process.args like~ "*.zip*" and
  (process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false) and
  not process.parent.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*") and 
  not process.Ext.effective_parent.executable == "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon"

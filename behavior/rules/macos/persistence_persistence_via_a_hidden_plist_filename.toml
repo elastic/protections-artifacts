@@ -11,13 +11,13 @@ reference = [
     "https://www.welivesecurity.com/2022/07/19/i-see-what-you-did-there-look-cloudmensis-macos-spyware/",
     "https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 file where event.type != "deletion" and
 
   /* plist file name starts with dot char */
-  file.path :
+  file.path like~
   (
     "/System/Library/LaunchAgents/.*.plist",
     "/Library/LaunchAgents/.*.plist",
@@ -27,11 +27,11 @@ file where event.type != "deletion" and
   ) and
 
   /* FPs */
-  not (file.name : ".chef-com*.plist" and process.executable : "/opt/chef/embedded/bin/ruby") and
-  not (process.executable : ("/usr/bin/sed", "/bin/bash") and file.name : ".!*!*.plist")
+  not (file.name like ".chef-com*.plist" and process.executable like "/opt/chef/embedded/bin/ruby") and
+  not (process.executable in ("/usr/bin/sed", "/bin/bash") and file.name : ".!*!*.plist")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -84,4 +84,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

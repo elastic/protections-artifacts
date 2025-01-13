@@ -5,13 +5,13 @@ or untrusted binary.
 """
 id = "28611239-08e6-47d5-a88b-76136670788c"
 license = "Elastic License v2"
-name = "Network file unzipped via Unsigned or Untrusted binary"
+name = "Network File Unzipped via Unsigned or Untrusted Binary"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "unzip" and 
- process.args: "/*/CFNetworkDownload*" and process.args : "-d" and 
+ process.args: "/*/CFNetworkDownload*" and process.args == "-d" and 
  (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false) and
  not process.parent.name == "figma_agent"
 '''

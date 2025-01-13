@@ -7,33 +7,33 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence with maxspan=3m
  [file where event.action == "mount" and
-  not (process.executable : "/usr/libexec/lsd" and file.path : "/private/var/folders/*/AppTranslocation/*")] as event0
+  not (process.executable like "/usr/libexec/lsd" and file.path like~ "/private/var/folders/*/AppTranslocation/*")] as event0
  [process where event.action == "exec" and 
   (startswith (process.args, event0.file.path) or 
    startswith (process.parent.args, event0.file.path)) and
   (process.code_signature.trusted == false or
-   (process.name like ("curl", "nscurl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or
-   (process.name : "chmod" and process.args : ("+x", "a+x", "0777", "777")) or
+   (process.name in ("curl", "nscurl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or
+   (process.name == "chmod" and process.args in ("+x", "a+x", "0777", "777")) or
    (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
     (process.args == "-c" or process.args_count <= 2))) and not
-  process.args : ("/tmp/PKInstallSandbox.*/Scripts/*", 
-                  "/Library/Apple/System/Library/InstallerSandboxes/.*",
-                  "/nix/store/*",
-                  "/Volumes/DBeaver Community/DBeaver.app/Contents/Eclipse/jre/Contents/Home/bin/java -version 2>&1",
-                  "/Volumes/LogiTuneUpdater-*/LogiTuneInstaller.app/Contents/Resources/uninstall_daemon.sh",
-                  "/Volumes/LogiTuneInstaller/LogiTuneInstaller.app/Contents/Resources/uninstall_daemon.sh",
-                  "/private/var/folders/*",
-                  "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
-                  "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 
-  process.parent.executable : ("/sbin/launchd",
-                               "/usr/bin/sudo",
-                               "/Library/PrivilegedHelperTools/*",
-                               "/Volumes/Eclipse Installer/Eclipse Installer.app/Contents/MacOS/eclipse-inst") and not
+  process.args like~ ("/tmp/PKInstallSandbox.*/Scripts/*", 
+                      "/Library/Apple/System/Library/InstallerSandboxes/.*",
+                      "/nix/store/*",
+                      "/Volumes/DBeaver Community/DBeaver.app/Contents/Eclipse/jre/Contents/Home/bin/java -version 2>&1",
+                      "/Volumes/LogiTuneUpdater-*/LogiTuneInstaller.app/Contents/Resources/uninstall_daemon.sh",
+                      "/Volumes/LogiTuneInstaller/LogiTuneInstaller.app/Contents/Resources/uninstall_daemon.sh",
+                      "/private/var/folders/*",
+                      "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
+                      "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 
+  process.parent.executable like~ ("/sbin/launchd",
+                                   "/usr/bin/sudo",
+                                   "/Library/PrivilegedHelperTools/*",
+                                   "/Volumes/Eclipse Installer/Eclipse Installer.app/Contents/MacOS/eclipse-inst") and not
   process.Ext.effective_parent.executable in 
                                             ("/Volumes/EPSON/Install Navi.app/Contents/MacOS/Install Navi",
                                              "/usr/local/jamf/bin/jamf",

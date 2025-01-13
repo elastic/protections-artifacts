@@ -14,23 +14,23 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "curl" and 
- process.args : ("-F", "-T", "-d", "--data*") and 
- process.args : ("*@/*.zip", "*@/*.gz", "*@/*.tgz", "b64=@*") and 
- process.args : "http*" and
- (process.parent.name : ("osascript", "python*", "node", "ruby", "bash", "sh", "zsh") or (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)) and
- not process.args : ("*http://127.0.0.1*", 
-                     "*https://127.0.0.1*", 
-                     "*http://localhost*", 
-                     "*https://localhost*", 
-                     "*https://*cloud.es.io*",
-                     "*@/exec-result.json", 
-                     "*https://storage.googleapis.com/detonate-prod/*",
-                     "*https://storage.googleapis.com/detonate-ci/*",
-                     "*https://*elastic-cloud.com*")
+process where event.type == "start" and event.action == "exec" and process.name == "curl" and 
+ process.args like~ ("-F", "-T", "-d", "--data*") and 
+ process.args like~ ("*@/*.zip", "*@/*.gz", "*@/*.tgz", "b64=@*") and 
+ process.args like~ "http*" and
+ (process.parent.name like~ ("osascript", "python*", "node", "ruby", "bash", "sh", "zsh") or (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)) and
+ not process.args like~ ("*http://127.0.0.1*", 
+                         "*https://127.0.0.1*", 
+                         "*http://localhost*", 
+                         "*https://localhost*", 
+                         "*https://*cloud.es.io*",
+                         "*@/exec-result.json", 
+                         "*https://storage.googleapis.com/detonate-prod/*",
+                         "*https://storage.googleapis.com/detonate-ci/*",
+                         "*https://*elastic-cloud.com*")
 '''
 
 min_endpoint_version = "8.11.0"

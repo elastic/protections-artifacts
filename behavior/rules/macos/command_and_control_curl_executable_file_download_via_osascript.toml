@@ -8,10 +8,10 @@ id = "883cbfd8-278a-403c-907a-aefb02da0429"
 license = "Elastic License v2"
 name = "Curl Executable File Download via Osascript"
 os_list = ["macos"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
-file where event.action != "deletion" and file.Ext.header_bytes like ("cffaedfe*", "cafebabe*") and
+file where event.action == "modification" and file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
  process.name in ("curl", "nscurl") and Effective_process.name == "osascript"
 '''
 

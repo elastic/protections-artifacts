@@ -5,17 +5,17 @@ file quarantine bit.
 """
 id = "c43102bc-f307-48a4-bfc5-a02444b3fed2"
 license = "Elastic License v2"
-name = "Suspicious file quarantine removal via Find"
+name = "Suspicious File Quarantine Removal via Find"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=3s
-[process where event.type == "start" and event.action == "exec" and process.name : "find" and 
-  process.args : ("-exec", "-execdir") and 
-  process.args : "*com.apple.quarantine*"] by process.parent.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name == "find" and 
+  process.args in~ ("-exec", "-execdir") and 
+  process.args like~ "*com.apple.quarantine*"] by process.parent.entity_id
 [file where event.action == "extended_attributes_delete" and 
-  process.executable: "/usr/bin/xattr"] by Effective_process.entity_id
+  process.executable like "/usr/bin/xattr"] by Effective_process.entity_id
 '''
 
 min_endpoint_version = "8.11.0"

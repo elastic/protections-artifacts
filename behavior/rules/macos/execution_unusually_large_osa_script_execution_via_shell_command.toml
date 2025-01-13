@@ -12,16 +12,16 @@ os_list = ["macos"]
 reference = [
     "https://www.virustotal.com/gui/file/748a7efffe738497c188b44c09335da7f93683a7bf0bc2dacc0f08783b03ce8b",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=3s
 [process where event.type == "start" and event.action == "exec" and process.name in ("bash", "sh", "zsh") and
   process.args == "-c" and process.args_count == 3 and
   process.command_line == null] by process.entity_id
-[process where event.type == "start" and event.action == "exec" and process.name : "osascript" and 
+[process where event.type == "start" and event.action == "exec" and process.name == "osascript" and 
   process.args == "-e" and process.args_count == 3 and
-  process.command_line == null and process.parent.name : ("bash", "zsh", "sh")] by process.parent.entity_id
+  process.command_line == null and process.parent.name in ("bash", "zsh", "sh")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.11.0"

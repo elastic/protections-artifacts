@@ -12,12 +12,12 @@ reference = [
     "https://www.elastic.co/security-labs/handy-elastic-tools-for-the-enthusiastic-detection-engineer",
     "https://www.xorrior.com/emond-persistence/",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.type == "start" and
- process.parent.name : "emond" and
- process.name in (
+ process.parent.name == "emond" and
+ process.name like~ (
    "bash",
    "dash",
    "sh",
@@ -46,7 +46,7 @@ process where event.type == "start" and
    "tcl*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -72,4 +72,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

@@ -11,27 +11,27 @@ reference = [
     "https://cedowens.medium.com/remotely-dumping-chrome-cookies-revisited-b25343257209",
     "https://github.com/cedowens/Dump-Chrome-Cookies",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
-process where event.action == "exec" and process.name in ("Google Chrome", "Brave Browser", "Microsoft Edge") and process.args : "--load-extension=/*" and
+process where event.action == "exec" and process.name in ("Google Chrome", "Brave Browser", "Microsoft Edge") and process.args like~ "--load-extension=/*" and
 
  /* Cypress extension */
- not (process.args : "--load-extension=/Users/*/Library/Application Support/Cypress/*" and
-      process.parent.executable : ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Users/*/Library/Caches/Cypress/*/Cypress.app/Contents/MacOS/Cypress")) and
- not process.parent.executable : ("/Users/*/Library/Caches/Cypress/*/Cypress.app/Contents/MacOS/Cypress",
-                                  "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
-                                  "/Applications/Cypress.app/Contents/MacOS/Cypress",
-                                  "/Users/*/Projects/accessibility-dev/node_modules/chromedriver/lib/chromedriver/chromedriver",
-                                  "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
-                                  "/Applications/Katalon Studio.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
-                                  "/Applications/Katalon Studio PE.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
-                                  "/Users/*/Katalon Studio Engine.app/Contents/Eclipse/configuration/resources/temp/webdriver/chromedriver",
-                                  "/usr/local/bin/chromedriver") and
- not process.args : "--app=https://app2.atera.com"
+ not (process.args like~ "--load-extension=/Users/*/Library/Application Support/Cypress/*" and
+      process.parent.executable like~ ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/Users/*/Library/Caches/Cypress/*/Cypress.app/Contents/MacOS/Cypress")) and
+ not process.parent.executable like ("/Users/*/Library/Caches/Cypress/*/Cypress.app/Contents/MacOS/Cypress",
+                                     "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
+                                     "/Applications/Cypress.app/Contents/MacOS/Cypress",
+                                     "/Users/*/Projects/accessibility-dev/node_modules/chromedriver/lib/chromedriver/chromedriver",
+                                     "/opt/homebrew/Caskroom/chromedriver/*/chromedriver",
+                                     "/Applications/Katalon Studio.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
+                                     "/Applications/Katalon Studio PE.app/Contents/Eclipse/configuration/resources/drivers/chromedriver_mac/chromedriver",
+                                     "/Users/*/Katalon Studio Engine.app/Contents/Eclipse/configuration/resources/temp/webdriver/chromedriver",
+                                     "/usr/local/bin/chromedriver") and
+ not process.args like~ "--app=https://app2.atera.com"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -52,4 +52,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

@@ -9,18 +9,18 @@ license = "Elastic License v2"
 name = "Abnormal Auval Child Process Execution"
 os_list = ["macos"]
 reference = ["https://posts.specterops.io/audio-unit-plug-ins-896d3434a882"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and (process.parent.name in ("auval", "auvaltool") or
  process.Ext.effective_parent.name in ("auval", "auvaltool")) and
- process.name in ("curl",
-                 "nscurl", 
-                 "osascript", 
-                 "bash", 
-                 "sh", 
-                 "zsh", 
-                 "python*") and 
+ process.name like~ ("curl",
+                    "nscurl", 
+                    "osascript", 
+                    "bash", 
+                    "sh", 
+                    "zsh", 
+                    "python*") and 
  not process.command_line == "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X" and
  not process.Ext.effective_parent.executable == "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X"
 '''

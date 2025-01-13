@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -68,7 +68,11 @@ sequence by process.entity_id with maxspan=1m
                     "a68a4b4101bb097f886548b13991db8d71f9cfb55801c403ad7b57844bbc288f",
                     "b25fc6258895702c5fd0297cba15b1bd733b5443e7f6f43137877198f27b1322",
                     "4b0f6852329ae6118124956e95c091fbf5c7592b8dd717c9163a07b72074c65d",
-                    "143d4b9e429bb10860298c16feab3bf0f132e26547ee28eecd1f7de9f5cf926c") and
+                    "143d4b9e429bb10860298c16feab3bf0f132e26547ee28eecd1f7de9f5cf926c",
+                    "3b49c90ff2571e045cb5fd985b7397b37d7bb83e58729a0b4e44b0e5543135df",
+                    "ca2a11a3fbebc36ff3a3ec7428263f07a3aeb09db2215f882a66a7c1c61d9e6f",
+                    "6b1880dce6f28d4a79f4fa3be148ee55793e679485c3db156d26abd6d277b44a",
+                    "d3a1446ff14a77a4beb61f4db93afec24a6daa8fad566ddbddbc74943169b5b1") and
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe",
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
                              "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe",
@@ -80,10 +84,10 @@ sequence by process.entity_id with maxspan=1m
  [dns where
   dns.question.name : ("*.top", "*.buzz", "*.xyz", "*.rest", "*.ml", "*.cf", "*.gq", "*.ga", "*.onion",
                        "*.monster", "*.cyou", "*.quest", "*.cc", "*.bar", "*.cfd", "*.click", "*.cam",
-                       "*.surf", "*.tk", "*.shop", "*.club", "*.icu", "*.pw", "*.ws", "*.rest", "*.hair",
-                       "*.mom", "*.beauty", "*.boats", "*.online", "*.fun", "*.life", "*.boats", "*.store",
-                       "*.hair", "*.skin", "*.motorcycles", "*.cyou", "*.christmas", "*.lol", "*.makeup",
-                       "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty") and
+                       "*.surf", "*.tk", "*.shop", "*.club", "*.icu", "*.pw", "*.ws",
+                      "*.online", "*.fun", "*.life", "*.boats", "*.store",
+                       "*.hair", "*.skin", "*.motorcycles", "*.christmas", "*.lol", "*.makeup",
+                       "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty", "*.biz") and
   not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz")]
 '''
 

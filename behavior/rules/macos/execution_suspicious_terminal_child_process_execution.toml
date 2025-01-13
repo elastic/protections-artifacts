@@ -11,15 +11,15 @@ license = "Elastic License v2"
 name = "Suspicious Terminal Child Process Execution"
 os_list = ["macos"]
 reference = ["https://cedowens.medium.com/give-me-some-macos-context-c13aecbd4c5b"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-user.name == "root" and 
-process.parent.name == "terminal" and
-process.name like ("terminal", "zsh", "bash", "sh", "tclsh*") and
-process.args == "-c" and
-process.args like 
+ user.name == "root" and 
+ process.parent.name like~ "terminal" and
+ process.name like~ ("terminal", "zsh", "bash", "sh", "tclsh*") and
+ process.args == "-c" and
+ process.args like~ 
                ("/private/tmp/*", 
                 "/var/tmp/*", 
                 "/tmp/*", 
@@ -35,7 +35,7 @@ process.args like
                 "/Users/*/Applications/*")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -61,4 +61,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

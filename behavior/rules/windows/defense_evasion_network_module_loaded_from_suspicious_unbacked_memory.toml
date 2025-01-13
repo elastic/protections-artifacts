@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 sequence by process.entity_id
@@ -57,7 +57,7 @@ sequence by process.entity_id
                      "SEMPERIS INC.", "Micro-Star International CO., LTD.", "Kaseya Holdings Inc", "KASEYA US LLC",
                      "Intel(R) Software Development Products", "Commvault Systems, Inc.", "AAC Infotray AG",
                      "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED", "ClaimMaster Software LLC", "Cellebrite DI LTD",
-                     "Riot Games, Inc.", "Autodesk, Inc.") and
+                     "Riot Games, Inc.", "Autodesk, Inc.", "ACCA software S.p.A.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : ("msedge.exe", "msedgewebview2.exe") and
@@ -204,6 +204,7 @@ sequence by process.entity_id
                           "49bbb014*f0000ba0c0000004c8d4c2450448d423441ffd349bb403*",
                           "*00ba0c0000004c8d4c2450448d423441ffd349bb*",
                           "*48bf7063107ef67f0000488b064889074883c6084883c708488b06488907415f415e415d415c41*",
+                          "1bd1a3300a*f9bc00fa3cab8000000000f98c28d14400f95c00fca0fca8984242403*",
                           "84c07507e8b8836effeb498b45f88b55c089108b45e48945f4c70518c*",
                           "488b8d70ffffffc6410c01833df07bca5e007406ff15a47fc95e488b8d70ffffff488b9528ffffff48895110488945b0ff15804ce6fe8945c4488bcce8780000",
                           "498bd7488bcf4c8be8e819bbffff4533ff4d85ed0f84520200004c8b9760020000488d95e0000000440fb74424744533c9498bcd41ffd24c8be04885c00f8420",
@@ -229,7 +230,9 @@ sequence by process.entity_id
                           "86f285c00f94c28b9424c0020000a33028*",
                           "488944242848837c242800750bff9424be03000089442430eb27488d8c2470010000ff9424ce030000488944242848837c242800750bff9424be030000894424",
                           "4c8bf04885c00f84cc00000083fb027c22488d4c2458c74424585b57485dc744245c2047504166c74424600a00ff9570010000488d542468498bceff55384c8b",
-                          "488bc84885c075098d41034883c4205bc3488b4308488d9318020000ffd04885c0750bb8040000004883c4205bc3488b4b10ffd033c04883c4205bc3cccc488b"))
+                          "488bc84885c075098d41034883c4205bc3488b4308488d9318020000ffd04885c0750bb8040000004883c4205bc3488b4b10ffd033c04883c4205bc3cccc488b",
+                          "48be84*7f0000488b064889074883c6084883c708488b06488907415f415e415d415c415b415a415941585f5e5d5c5b5*",
+                          "488d15d1832000488bc8ff1590651700488905a1a7280048833d99a72800000f84ab000000488d1524010000488d0d85a72800e8483a120085c0754be87f79f1"))
   ]
   until [process where event.action:"end"]
 '''

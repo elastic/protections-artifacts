@@ -7,20 +7,21 @@ id = "f4744b1a-3775-4387-8529-abc08076a612"
 license = "Elastic License v2"
 name = "External IP address discovery via Curl"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  ((process.parent.executable like ("/Applications/*", "/Volumes/*", "/private/var/folders/*")) or
-  (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name in ("terminal", "bash", "zsh", "sh"))) and
+  (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name in~ ("terminal", "bash", "zsh", "sh"))) and
  process.name in ("curl", "nscurl") and
  process.args == "-s" and
  process.args_count == 3 and
- process.command_line like
+ process.command_line like~
          (
           "*ip-api.com*",
           "*checkip.dyndns.org*",
           "*api.ipify.org*",
+          "*api.npoint.io*",
           "*whatismyip.akamai.com*",
           "*bot.whatismyipaddress.com*",
           "*ifcfg.me*",
@@ -47,6 +48,7 @@ process where event.type == "start" and event.action == "exec" and
           "*freegeoip.app*",
           "*ipinfo.io*",
           "*geoplugin.net*",
+          "*myip.ipip.net*",
           "*myip.dnsomatic.com*",
           "*www.geoplugin.net*",
           "*api64.ipify.org*",
@@ -61,10 +63,10 @@ process where event.type == "start" and event.action == "exec" and
          ) and
 not process.parent.executable == "/Applications/Xcode.app/Contents/Developer/usr/bin/make" and
 not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
-                                               "/usr/local/jamf/bin/jamf")
+                                                "/usr/local/jamf/bin/jamf")
 '''
 
-min_endpoint_version = "8.11.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -85,4 +87,4 @@ name = "Discovery"
 reference = "https://attack.mitre.org/tactics/TA0007/"
 
 [internal]
-min_endpoint_version = "8.11.0"
+min_endpoint_version = "8.16.0"

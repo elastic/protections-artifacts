@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by process.entity_id
@@ -142,7 +142,14 @@ sequence by process.entity_id
                 "dcde73e553222c96f7fc630fea2dce27266ce4854b08313ab518ef7f223d556a",
                 "092a2e07c83239ca52924a954e9ba1febb22d15dd11aafaa4935ba8a3fbc1069",
                 "1e38e061ee5fcd4a76c591c24a39da005dc5fd58062ef8fadfe1ade95bfdbd4c",
-                "d839d7b05b9b66e83bc265aa90a4f454c9a4ee091e21c6d23ab4e33c33cbc33f")] as event0
+                "d839d7b05b9b66e83bc265aa90a4f454c9a4ee091e21c6d23ab4e33c33cbc33f",
+                "922c83ec412dc9ee37656f21d84e3258243d335bef986ae5d74927e5c0ecd27a",
+                "cbf1c1b827a8c05bba40cb1bdbb71ad51eb1a0c071bdbeccfb781444451443f9",
+                "e81c3c30ebc9c3ae3f437c2ed500b6dc113f578b3bac89f1332c13937ba54045",
+                "72286940fba44782f217568010ed10339274edf0ab14cc51cb6a236830c2a480",
+                "3dabae0e8b4212cb36ea3b40e3cbfd3e3fb122285a66e1e943e115b84a9e218f",
+                "3e8113e392f7436b370ef0806a32de6b6d2522d36b0a611e854f1a4030dcef6c",
+                "daf15c51b9c2bf35c6f9b9a17d18d8572d6e2ce99c282ed96bec96b35cfa6fe8")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and
@@ -164,8 +171,7 @@ sequence by process.entity_id
 
     startswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unknown|kernelbase.dll|Unbacked|", event0.dll.name))
   ) and
-  not (endswith~(process.thread.Ext.call_stack_final_user_module.name, process.name) and
-       process.Ext.api.behaviors : "self-modifying" and process.Ext.api.behaviors :"hollow_image")
+  not (endswith~(process.thread.Ext.call_stack_final_user_module.name, process.name) and process.Ext.api.behaviors : "self-modifying")
  ]
  until [process where event.action:"end"]
 '''

@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "User TCC DB Access by Osascript"
 os_list = ["macos"]
 reference = ["https://github.com/cedowens/SwiftBelt-JXA/blob/main/SwiftBelt-JXA.js"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 file where event.action == "open" and process.executable != null and 
- file.path : "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and
- process.name : "osascript"
+ file.path like~ "/Users/*/Library/Application Support/com.apple.TCC/TCC.db" and
+ process.name == "osascript"
 '''
 
 min_endpoint_version = "8.10.2"

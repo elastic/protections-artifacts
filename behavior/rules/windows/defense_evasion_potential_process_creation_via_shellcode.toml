@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and
@@ -22,7 +22,10 @@ process.parent.thread.Ext.call_stack_contains_unbacked == true and
   _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*kernel32.dll!WinExec*")) and
 
 not (process.code_signature.trusted == true and
-     process.code_signature.subject_name : ("GIGA-BYTE TECHNOLOGY CO., LTD.", "Intuit Inc", "Ramsauer und Stuermer Software GmbH"))
+     process.code_signature.subject_name : ("GIGA-BYTE TECHNOLOGY CO., LTD.", "Intuit Inc", "Ramsauer und Stuermer Software GmbH")) and
+
+not (process.executable : "C:\\Windows\\System32\\sc.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
+     process.command_line : "sc start LenovoPcManagerService")
 '''
 
 min_endpoint_version = "8.8.0"

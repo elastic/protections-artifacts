@@ -14,14 +14,14 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://medium.com/dwarves-foundation/xpc-services-on-macos-app-using-swift-657922d425cd",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and 
-process.executable : "/Applications/*" and 
-process.args : "xpcproxy" and 
-process.args : "application.com.*" and 
-process.parent.executable : "/sbin/launchd" and 
+process.executable like "/Applications/*" and 
+process.args like "xpcproxy" and 
+process.args like~ "application.com.*" and 
+process.parent.executable like "/sbin/launchd" and 
 (process.code_signature.trusted == false or process.code_signature.exists == false)
 '''
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Known TCP Port Traffic Tunneling"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.1"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.executable != null and
@@ -18,7 +18,7 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                   $entry.trusted == true and not $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows")) and
  not (process.code_signature.trusted == true and 
       process.code_signature.subject_name in ("Veeam Software Group GmbH", "Connectwise, LLC", "ConnectWise, Inc.", "Datto Inc", "Datto, LLC",
-      "Check Point Software Technologies Ltd.", "Dell Technologies Inc.", "Tanium Inc.", "Paessler AG", "Carbon Black, Inc.", "KASEYA HOLDINGS INC.", "OutSystems, Inc.")) and
+      "Check Point Software Technologies Ltd.", "Dell Technologies Inc.", "Tanium Inc.", "Paessler AG", "Carbon Black, Inc.", "KASEYA HOLDINGS INC.", "OutSystems, Inc.", "d.velop AG")) and
  not process.executable : ("C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe",
                            "C:\\Windows\\System32\\OpenSSH\\ssh-keyscan.exe",
                            "C:\\Program Files\\FujiFilm\\MC\\opt\\appli\\curl.exe",
@@ -34,7 +34,8 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                            "C:\\Program Files (x86)\\UPS\\WSTD\\WSBrowser\\msedgewebview2.exe",
                            "C:\\Program Files (x86)\\Microsoft Azure Site Recovery\\agent\\evtcollforw.exe",
                            "C:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe",
-                           "C:\\Program Files\\WindowsApps\\DuckDuckGo.DesktopBrowser_*\\WindowsBrowser\\WebView2\\msedgewebview2.exe") and
+                           "C:\\Program Files\\WindowsApps\\DuckDuckGo.DesktopBrowser_*\\WindowsBrowser\\WebView2\\msedgewebview2.exe",
+                           "C:\\Program Files\\nChannel\\SyncManager\\SyncManagerProcess\\SyncManagerExecute\\SyncManagerExecute.exe") and
  not (process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
       process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe" and
       process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe\" -Version ?.? -s -NoLogo -NoProfile") and 
@@ -42,7 +43,8 @@ api where process.Ext.api.name == "connect" and process.executable != null and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("c6628a00fd21cf370030095e592be94d89a3d804cccf7b9ad653e2f3ab3c6206", 
                                                                      "292e6e6c7d9db5889c170cc71245ced1e8843599673a973841b7d47aa151efb6", 
                                                                      "3607f581d9fccb08493a5d5c9932605aa1045f0ca27d67c00386320ab18d023c", 
-                                                                     "c11ea5ee55b87823d21833ace951ae975dd850846974445572380cfbbade23cc")
+                                                                     "c11ea5ee55b87823d21833ace951ae975dd850846974445572380cfbbade23cc",
+                                                                     "2d92a1193c4aafe8b0f151a074c5953f202c8d6f04cd242e7602f38ffff82fa2")
 '''
 
 min_endpoint_version = "8.10.0"

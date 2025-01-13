@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Kill Command Executed from Binary in Unusual Location"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
@@ -18,7 +18,7 @@ process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") an
     "/tmp/home-manager-build*/generation/activate", "/tmp/wpsupgrade.prerm"
   ) or
   process.executable like "./merged/*" or
-  process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher") or
+  process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun") or
   process.command_line == "pkill -f /nop"
 )
 '''

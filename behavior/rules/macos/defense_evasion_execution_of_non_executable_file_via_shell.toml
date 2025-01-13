@@ -7,17 +7,17 @@ id = "c0770406-7ede-4049-a7a1-999c15fb60bd"
 license = "Elastic License v2"
 name = "Execution of Non-Executable File via Shell"
 os_list = ["macos"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
-    process.name in ("bash", "sh", "zsh") and
-    process.args : ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and 
-    process.args : ("/*.pid", "/*.plist", "/*.txt", "/*.json", "/*.tmp", "/*.bin", "/*.js", "/*.nib", "/*.log", "/*.dat") and 
-    process.args_count == 2
+ process.name in ("bash", "sh", "zsh") and
+ process.args like~ ("*/bin/bash", "*/bin/sh", "*/bin/zsh") and 
+ process.args like~ ("/*.pid", "/*.plist", "/*.txt", "/*.json", "/*.tmp", "/*.bin", "/*.js", "/*.nib", "/*.log", "/*.dat") and 
+ process.args_count == 2
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -55,4 +55,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

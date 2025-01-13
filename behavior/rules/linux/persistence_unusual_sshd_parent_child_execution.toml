@@ -8,7 +8,7 @@ id = "94f548c8-cad2-4bc5-bf61-c0e42558ef65"
 license = "Elastic License v2"
 name = "Unusual SSHD Parent/Child Execution"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=3s
@@ -22,7 +22,8 @@ sequence with maxspan=3s
       process.executable : (
         "/tmp/VeeamApp*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/tmp/.mount_nvim.*"
       ) or
-      process.parent.command_line == "bash -c /bin/bash; uname -a &> /dev/null"
+      process.parent.command_line == "bash -c /bin/bash; uname -a &> /dev/null" or
+      process.parent.name == "jem"
     )
   ] by process.parent.entity_id
 '''

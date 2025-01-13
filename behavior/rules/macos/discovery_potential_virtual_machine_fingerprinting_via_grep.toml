@@ -8,15 +8,15 @@ license = "Elastic License v2"
 name = "Potential Virtual Machine Fingerprinting via Grep"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4F.html"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.type == "start" and process.name in ("grep", "egrep") and 
- (process.command_line : "*parallels*" and process.command_line : "*virtualbox*" and process.command_line : "*vmware*") and
+ (process.command_line like~ "*parallels*" and process.command_line like~ "*virtualbox*" and process.command_line like~ "*vmware*") and
  not process.parent.executable in ("/Applications/Docker.app/Contents/MacOS/Docker", "/usr/libexec/kcare/virt-what")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -47,4 +47,4 @@ name = "Discovery"
 reference = "https://attack.mitre.org/tactics/TA0007/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

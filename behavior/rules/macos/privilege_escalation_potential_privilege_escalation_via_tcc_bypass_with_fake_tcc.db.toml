@@ -12,13 +12,13 @@ reference = [
     "https://www.elastic.co/security-labs/inital-research-of-jokerspy",
     "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 file where file.name : "TCC.db" and 
 process.executable != null and not
 event.action in ("open", "deletion") and
-not process.executable like (
+not process.executable like~ (
   "/Applications/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/Support/tccd",
   "/System/Library/PrivateFrameworks/TCC.framework/*",
   "/usr/bin/sysdiagnose",
@@ -39,7 +39,7 @@ not file.path like
                  "/private/var/folders/*/com.apple.desktopservices.ArchiveService/TemporaryItems/NSIRD_ArchiveService_*/logs/Accessibility/TCC.db")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -60,4 +60,4 @@ name = "Privilege Escalation"
 reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

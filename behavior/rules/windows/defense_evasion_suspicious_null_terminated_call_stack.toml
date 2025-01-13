@@ -8,13 +8,14 @@ license = "Elastic License v2"
 name = "Suspicious Null Terminated Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
    process.Ext.api.name : "VirtualProtect" and process.Ext.token.integrity_level_name != "low" and
    process.thread.Ext.call_stack_summary in ("ntdll.dll|Unbacked", "ntdll.dll|kernelbase.dll|Unbacked") and
    process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and
+   process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
    (
     process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unbacked" or
 
@@ -27,7 +28,7 @@ _arraysearch(process.thread.Ext.call_stack, $entry,
              $entry.callsite_trailing_bytes : "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") and 
 _arraysearch(process.thread.Ext.call_stack, $entry, 
              $entry.callsite_leading_bytes : "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") and
-/* Steam */
+/* Steam and printing related user mode drivers */
 not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
               ("c434208894f07f604b852f29b8edc3a58c4de63de783373733e72b2b73f33be9",
                "5438c19007ad96da0a969c0c0caaf00aa06375f1a6e85073f91a1392af94d059",
@@ -36,7 +37,34 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                "93f53280052d0f700259b42a62f8658d9b2a741b54063f277e9b83264448fb21",
                "0696e0617a028101d85db50a4f109fac15be3e1ebe122b94f805763d8008ddfc",
                "115d7fdc184219a5cfe13a82d1d193d8dca5e5ccdeaaeed41c157754593aa2c1",
-               "68e6c21a97c2a0824ff75961a771605dacbd73f17e33e8e7265741535a3818c3")
+               "68e6c21a97c2a0824ff75961a771605dacbd73f17e33e8e7265741535a3818c3",
+               "fa58bd623614e537aeb918300f1e240c1d23eb7a3ec0d61f275568303b0d7aa7",
+               "c547ad0c67524371f40db48c998db222f3b75cef21109c62aea28227df8a6f2c",
+               "97e0827d64aa6dd145f68102900c47fb3f3ee5a75c346b0fc637359786ec95a7",
+               "016a8cdb4c207947ce2efe00310de94d322c6928ffb664134b23037403c41c0b",
+               "71fec41b60762106b2cb2bc8e387a7f0126c2f837d0221fa6a3098a79498c466",
+               "a083491e4db32f515abe26e63b64f1dc55792c340f054407651377b0c79ac083",
+               "fbaeabc33a97afb1ed459962d059527f3c6805afa2004e431e9e3417f1b6e8c5",
+               "f1a8099493b789c07a6056a23c9f2c2d8abda3df96a8c7a037e3e80a241736bc",
+               "c81ed82168d2c3e71a177b71d1061aeeb1b2629d7444109a3f9b43bf84dcc53b",
+               "a4772d4a0495e85f167b2183f7dbee2822b8bf7d2696552ef5501736ae5a80ea",
+               "c15ad2661a216a18b44ec356573ca1826081f9547c784ec3e95c93f8c7ff65ae",
+               "bcb8f9fe660ef4c33712b873fdc24e5ecbd6a77e629d6419f803c2c09c63eaf2",
+               "f35975311ef5dbb27676d53139aea614119ebfbb9aacf3ad0c1c3db2bc0bc750",
+               "a468d7d26eddc66f722eded0c643860da4c290b6cd3466c477f7fd39af71d717",
+               "045b159c6df007c7bfd65e74ede8a7db2019edd75d46fe87c46d1ab08b85c112",
+               "db49a6f421d0df47ee562a99b88d6b57fc5ef4905bd0957122144030d2f24a7f",
+               "db49a6f421d0df47ee562a99b88d6b57fc5ef4905bd0957122144030d2f24a7f",
+               "c6ae64a5f73fdf704d7625a29c3293cd757f3dcc91c7f0a72caacce2d4e06c71",
+               "67593729cc35b6cf18431e204fa19730943bac57a9a4216bc2b3a35cd8c37b79",
+               "016a8cdb4c207947ce2efe00310de94d322c6928ffb664134b23037403c41c0b",
+               "c15ad2661a216a18b44ec356573ca1826081f9547c784ec3e95c93f8c7ff65ae",
+               "681309fb5768a7e6782dea30405ffcb722d6ce3eab77f8b342c99bf39cdc8e4d",
+               "7dd6f9234290591bbeffd20e795cae70cf150e75da03b857b4e7b970dae726f7",
+               "fda9250ca73685a1bb717e9a23564bc234a410301110e9d08d2a74b8d29f4eb5") and
+not process.Ext.api.metadata.target_address_path in ("c:\\program files\\asus\\aura lighting effect add-on x64\\basswasapi.dll", "c:\\program files\\asus\\aura lighting effect add-on x64\\bass.dll") and
+not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher"))
 '''
 
 min_endpoint_version = "8.10.0"

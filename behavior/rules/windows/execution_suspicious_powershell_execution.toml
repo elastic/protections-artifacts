@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -81,6 +81,11 @@ process where event.action == "start" and process.name : "powershell.exe" and
 
  not process.parent.name : "powershell.exe" and
 
+ not (process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and process.args : "https://go.microsoft.com/fwlink/p/?LinkId=*" and
+      process.args :"$env:TEMP\\MicrosoftEdgeWebview2Setup.exe") and
+
+ not process.args : "chcp 65001;[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing');(New-Object System.Drawing.Text.InstalledFontCollection).Families" and
+
  (
   process.command_line :
         (
@@ -138,7 +143,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
           "*iwr *https*).Content*",
           "*$env:computername*http*",
           "*;InVoKe-ExpRESsIoN $COntent.CONTENt;*",
-          "*WebClient*example.com*"
+          "*WebClient*example.com*",
+          "*=iwr $*;iex $*"
         ) or
 
       (process.args : "-c" and process.args : "&{'*") or

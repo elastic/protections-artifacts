@@ -13,14 +13,14 @@ reference = [
     "https://github.com/MythicAgents/apfell/blob/master/documentation-payload/apfell/commands/spawn_drop_and_execute.md",
     "https://www.elastic.co/security-labs/beyond-the-wail",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-sequence with maxspan=10s
+sequence with maxspan=15s
 [file where event.action == "modification" and 
-  file.path like ("/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*")] by process.entity_id
+  file.path like ("/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*", "/private/var/folders/*.scpt", "/var/folders/*.scpt")] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and 
-  process.name == "osascript" and process.args like ("/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*")] by process.parent.entity_id
+  process.name == "osascript" and process.args like ("/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*", "/private/var/folders/*.scpt", "/var/folders/*.scpt")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.11.0"

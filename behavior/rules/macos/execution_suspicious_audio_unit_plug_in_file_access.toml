@@ -11,12 +11,12 @@ license = "Elastic License v2"
 name = "Suspicious Audio Unit Plug-in File Access"
 os_list = ["macos"]
 reference = ["https://posts.specterops.io/audio-unit-plug-ins-896d3434a882"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
-file where event.action != "deletion" and process.name like ("curl", "nscurl", "osascript", "wget", "python*") and
+file where event.action != "deletion" and process.name like~ ("curl", "nscurl", "osascript", "wget", "python*") and
  file.extension in~ ("component", "audiocomp") and
- file.path like ("/Library/Audio/Plug-ins/Components/*", "/Users/*/Library/Audio/Plug-ins/Components/*")
+ file.path like~ ("/Library/Audio/Plug-ins/Components/*", "/Users/*/Library/Audio/Plug-ins/Components/*")
 '''
 
 min_endpoint_version = "8.10.2"

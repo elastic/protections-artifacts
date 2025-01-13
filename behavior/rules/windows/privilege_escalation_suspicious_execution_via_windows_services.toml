@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
@@ -141,7 +141,8 @@ process where event.action == "start" and
 	          "854ed6e135b1405329003f0595c3ca462faf5381ac5d6f93bccfece61d6a2d88",
 	          "be132253fb111600acedb58fa96fd18af69a8a8395880b0d8d89ff13ba30455b",
 	          "4eb8a5b3ba5b30b7c4e4e1db60af75f7cac808aa3bc0cd326bf4863535659def",
-	          "46122ee39283dbca52dde436ef04d47fd962271424726b491ad8584389461177") and
+	          "46122ee39283dbca52dde436ef04d47fd962271424726b491ad8584389461177",
+	          "3c16784f9b827aa6583d529f8585c431cd39e7e3a96e31c7b9882d5b48c00087") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -161,7 +162,7 @@ process where event.action == "start" and
    "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
    "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
    "Sikka Software Corporation", "TeamViewer Germany GmbH", "Brother Industries, Ltd.", "Pro Softnet Corporation", "Raman Karpuk", 
-   "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer") and
+   "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd") and
    process.code_signature.trusted == true) and
 
    not (process.name : "RUNDLL32.EXE" and

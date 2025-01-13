@@ -11,14 +11,14 @@ os_list = ["macos"]
 reference = [
     "https://www.reversinglabs.com/blog/fake-recruiter-coding-tests-target-devs-with-malicious-python-packages",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=3s
 [process where event.type == "start" and event.action == "exec" and process.parent.name like~ "python*" and 
-  process.name in~ ("sh", "zsh", "bash") and process.args == "-c" and process.args like "python*" and 
+  process.name in ("sh", "zsh", "bash") and process.args == "-c" and process.args like~ "python*" and 
   process.args like~ "*.py" and process.args_count == 3 and 
-  not process.command_line like "* pip*"]
+  not process.command_line like~ "* pip*"]
 [network where event.type == "start"]
 '''
 

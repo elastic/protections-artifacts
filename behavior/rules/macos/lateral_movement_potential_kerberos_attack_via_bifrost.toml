@@ -8,18 +8,18 @@ license = "Elastic License v2"
 name = "Potential Kerberos Attack via Bifrost"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/bifrost"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
-process where event.type == "start" and process.args : "-action" and
+process where event.type == "start" and process.args like~ "-action" and
  (
-  process.args : ("-kerberoast", "askhash", "asktgs", "asktgt", "s4u") or
-  (process.args : "-ticket" and process.args : "ptt") or
-  (process.args : "dump" and process.args : ("tickets", "keytab"))
+  process.args like~ ("-kerberoast", "askhash", "asktgs", "asktgt", "s4u") or
+  (process.args like~ "-ticket" and process.args like~ "ptt") or
+  (process.args like~ "dump" and process.args in~ ("tickets", "keytab"))
   )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -62,4 +62,4 @@ name = "Lateral Movement"
 reference = "https://attack.mitre.org/tactics/TA0008/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

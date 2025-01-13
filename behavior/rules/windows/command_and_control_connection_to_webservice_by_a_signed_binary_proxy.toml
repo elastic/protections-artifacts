@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.54"
+version = "1.0.56"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -25,6 +25,7 @@ sequence by process.entity_id with maxspan=5m
                                       "vbc.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe", 
                                       "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe",
                                       "certutil.exe", "wmic.exe") or
+     process.code_signature.subject_name == "OpenJS Foundation" or
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Users\\*\\AppData\\*\\jre\\bin\\javaw.exe",
@@ -59,6 +60,7 @@ sequence by process.entity_id with maxspan=5m
                           "?:\\Windows\\system32\\shell32.dll,Control_RunDLL",
                           "?:\\WINDOWS\\SYSTEM32\\EDGEHTML.dll,#141",
                           "?:\\WINDOWS\\System32\\shell32.dll,SHCreateLocalServerRunDll",
+                          "C:\\Program Files\\Windows Photo Viewer\\PhotoViewer.dll,",
                           "?:\\PROGRA~2\\MICROS~2\\Office*\\*.CPL*",
                           "?:\\Windows\\System32\\mshtml.dll,PrintHTML", 
                           "?:\\PROGRA~?\\MICROS~?\\Office??\\MLCFG32.CPL,@0", 
@@ -107,7 +109,6 @@ sequence by process.entity_id with maxspan=5m
         "discordapp.com",
         "discord.com",
         "apis.azureedge.net",
-        "*.cloudfront.net",
         "cdn.sql.gg",
         "?.top4top.io",
         "top4top.io",
@@ -178,11 +179,13 @@ sequence by process.entity_id with maxspan=5m
         "*.b-cdn.net", 
         "pastecode.dev",
         "i.imgur.com",
-        "the.earth.li"
+        "the.earth.li",
+        "*.trycloudflare.com"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and
-         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com", "raw.githubusercontent.com", "api.github.com")) and
+         dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
+                              "raw.githubusercontent.com", "api.github.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe")
   ]
 '''

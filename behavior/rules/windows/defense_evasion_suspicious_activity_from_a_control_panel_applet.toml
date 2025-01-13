@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Activity from a Control Panel Applet"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.9"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id
@@ -24,12 +24,15 @@ sequence by process.entity_id
    _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.symbol_info, concat(event0.dll.name, "!CPlApplet")))) or 
    
   (event.category : "process" and event.action == "start" and 
-   _arraysearch(process.parent.thread.Ext.call_stack, $entry, stringcontains~($entry.symbol_info, concat(event0.dll.name, "!CPlApplet"))))
+   _arraysearch(process.parent.thread.Ext.call_stack, $entry, stringcontains~($entry.symbol_info, concat(event0.dll.name, "!CPlApplet")))) or
+
+  (event.category == "api" and process.Ext.api.name != "IoCreateDevice" and
+   _arraysearch(process.thread.Ext.call_stack, $entry, endswith~($entry.protection_provenance, "*.cpl") and stringcontains~($entry.protection_provenance, event0.dll.name)))
   )]
  until [process where event.action == "end"]
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -64,4 +67,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

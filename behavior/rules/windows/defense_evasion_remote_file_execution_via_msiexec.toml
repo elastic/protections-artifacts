@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 sequence with maxspan=1m
@@ -57,7 +57,10 @@ not process.args :
            "TRANSFORMS=C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\\\Updates\\UEMSAgent.mst",
            "SERVERNAME=*.manageengine.com", 
            "C:\\Program Files (x86)\\ManageEngine\\UEMS_DistributionServer\\\\Updates\\UEMSDistributionServer.msi") and 
-not process.parent.executable : "C:\\Program Files (x86)\\Novell\\ZENworks\\bin\\ZenworksWindowsService.exe"
+not process.parent.executable :
+                     ("C:\\Program Files (x86)\\Novell\\ZENworks\\bin\\ZenworksWindowsService.exe",
+                      "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\Updates\\AgentUpgrader.exe",
+                      "C:\\Program Files (x86)\\FastTrack Software\\Admin By Request\\AdminByRequest.exe")
 ]
 [process where event.action in ("start", "already_running") and
  (

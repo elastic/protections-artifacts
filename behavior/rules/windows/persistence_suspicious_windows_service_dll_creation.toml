@@ -8,7 +8,7 @@ id = "2c624716-75a1-42d9-bcb8-1defcb9bded9"
 license = "Elastic License v2"
 name = "Suspicious Windows Service DLL Creation"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 registry where event.action == "modification" and 
@@ -58,7 +58,8 @@ registry where event.action == "modification" and
 
  not (registry.data.strings : "?:\\Program Files (x86)\\dolphinpaper\\provider\\wpprovider.dll" and
       registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\dolphinSvc\\Parameters\\ServiceDll") and
- not (process.code_signature.subject_name : ("Speckled Jay LLC", "Refraction Point, Inc") and process.code_signature.trusted == true) and
+
+ not (process.code_signature.subject_name : ("Speckled Jay LLC", "Refraction Point, Inc", "Arcadia Laboratories Inc.") and process.code_signature.trusted == true) and
 
  not (process.name : "Dismhost.exe" and registry.data.strings : ("%systemroot%\\system32\\wuaueng.dll", "%SystemRoot%\\System32\\browser.dll") and
       process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true)

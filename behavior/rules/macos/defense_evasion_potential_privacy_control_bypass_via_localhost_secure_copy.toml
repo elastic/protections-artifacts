@@ -11,16 +11,16 @@ os_list = ["macos"]
 reference = [
     "https://blog.trendmicro.com/trendlabs-security-intelligence/xcsset-mac-malware-infects-xcode-projects-performs-uxss-attack-on-safari-other-browsers-leverages-zero-day-exploits/",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.type == "start" and
  process.name == "scp" and
  process.args : "StrictHostKeyChecking=no" and
- process.command_line : ("*scp *localhost:/*", "*scp *127.0.0.?:/*") and not process.command_line : "*vagrant@*127.0.0.1*"
+ process.command_line like~ ("*scp *localhost:/*", "*scp *127.0.0.?:/*") and not process.command_line like~ "*vagrant@*127.0.0.1*"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -53,4 +53,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

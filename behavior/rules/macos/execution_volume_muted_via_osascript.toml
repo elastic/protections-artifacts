@@ -5,13 +5,13 @@ prevent security notifications from possibly being noticed.
 """
 id = "6948957d-2988-47a7-b7d8-2dec8bfe172b"
 license = "Elastic License v2"
-name = "Volume muted via Osascript"
+name = "Volume Muted via Osascript"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name : "osascript" and 
- process.args == "-e" and process.command_line : "*set volume with output muted*"
+process where event.type == "start" and event.action == "exec" and process.name == "osascript" and 
+ process.args == "-e" and process.command_line like~ "*set volume with output muted*"
 '''
 
 min_endpoint_version = "8.11.0"

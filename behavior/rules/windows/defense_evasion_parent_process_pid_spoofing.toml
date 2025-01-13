@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 sequence with maxspan=5m
@@ -97,7 +97,9 @@ sequence with maxspan=5m
 
   not (process.executable : "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and 
        process.args : "?:\\ProgramData\\PlatformInstall\\GideCode\\rtcresofz_Mecrrcpl.dll" and 
-       process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
+       process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+       
+  not (process.executable : "C:\\Windows\\System32\\sihost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */

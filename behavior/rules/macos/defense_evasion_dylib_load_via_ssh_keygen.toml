@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "Dylib Load via SSH-Keygen"
 os_list = ["macos"]
 reference = ["https://medium.com/@D00MFist/generate-keys-or-generate-dylib-loads-c99ed48f323d"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-process where event.type == "start" and process.name : "ssh-keygen" and process.args : "-D"
+process where event.type == "start" and process.name == "ssh-keygen" and process.args == "-D"
 '''
 
-min_endpoint_version = "7.17.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -35,4 +35,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.17.0"
+min_endpoint_version = "8.10.2"

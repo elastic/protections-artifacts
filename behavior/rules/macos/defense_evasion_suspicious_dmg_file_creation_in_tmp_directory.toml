@@ -13,12 +13,12 @@ reference = [
     "https://theevilbit.github.io/posts/cve-2021-30808/",
     "https://www.trendmicro.com/en_us/research/22/l/diving-into-an-old-exploit-chain-and-discovering-3-new-sip-bypas.html",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 file where event.action in ("modification", "rename") and process.name == "diskimages-helper" and
     file.extension == "dmg" and file.path like ("/private/tmp/*", "/tmp/*") and not
-    file.path like ("/private/tmp/munki-*/*.dmg", "/private/tmp/Ventura.dmg", "/private/tmp/Sonoma.dmg", "/private/tmp/com.ninxsoft.mist/*")
+    file.path like~ ("/private/tmp/munki-*/*.dmg", "/private/tmp/Ventura.dmg", "/private/tmp/Sonoma.dmg", "/private/tmp/com.ninxsoft.mist/*")
 '''
 
 min_endpoint_version = "8.11.0"

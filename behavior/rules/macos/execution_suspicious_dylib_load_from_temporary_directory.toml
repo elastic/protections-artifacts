@@ -12,21 +12,21 @@ os_list = ["macos"]
 reference = [
     "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/4a57b3dd5d28ad1bd79e927e04b20fd4d66934a0/ocean_lotus",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-library where event.action == "load" and dll.path : ("/tmp/*", "/private/tmp/*") and
+library where event.action == "load" and dll.path like ("/tmp/*", "/private/tmp/*") and
  (dll.code_signature.exists == false or dll.code_signature.trusted == false) and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
- (process.executable : ("/Users/Shared/*", 
-                        "/private/var/root/*", 
-                        "/var/tmp/*", 
-                        "/var/lib/*", 
-                        "/var/root/*",
-                        "/Library/WebServer/*",
-                        "/Library/Graphics/*",
-                        "/Library/Fonts/*") or
-  process.name : "com.apple.*")
+ (process.executable like~ ("/Users/Shared/*", 
+                            "/private/var/root/*", 
+                            "/var/tmp/*", 
+                            "/var/lib/*", 
+                            "/var/root/*",
+                            "/Library/WebServer/*",
+                            "/Library/Graphics/*",
+                            "/Library/Fonts/*") or
+  process.name like "com.apple.*")
 '''
 
 min_endpoint_version = "8.11.0"

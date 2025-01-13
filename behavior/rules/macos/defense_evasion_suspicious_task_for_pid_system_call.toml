@@ -15,22 +15,22 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "process_open" and
- (process.code_signature.trusted == false or process.code_signature.exists == false) and not 
-  process.executable : ("/private/var/folders/*", 
-                        "/Users/*/.pyenv/*",
-                        "/opt/homebrew/*",
-                        "/nix/store/*",
-                        "/Users/*/.homebrew/*",
-                        "/Users/*/miniconda3/envs/*",
-                        "/usr/local/Cellar/*",
-                        "/usr/local/Caskroom/*",
-                        "/System/*") and not
-  process.name : "htop" and not
-  (startswith~(process.parent.executable, Target.process.executable) or 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ not process.executable like~ ("/private/var/folders/*", 
+                               "/Users/*/.pyenv/*",
+                               "/opt/homebrew/*",
+                               "/nix/store/*",
+                               "/Users/*/.homebrew/*",
+                               "/Users/*/miniconda3/envs/*",
+                               "/usr/local/Cellar/*",
+                               "/usr/local/Caskroom/*",
+                               "/System/*") and 
+  not process.name == "htop" and 
+  not (startswith~(process.parent.executable, Target.process.executable) or 
    startswith~(process.executable, Target.process.executable)) and 
   not process.hash.sha256 : ("d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a",
                              "bee1a00ffb1c4b7c2c4784a1fdcb849dc7853b9deb5173ff4c5a08209c84bc26")

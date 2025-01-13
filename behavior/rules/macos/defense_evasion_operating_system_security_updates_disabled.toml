@@ -8,16 +8,16 @@ license = "Elastic License v2"
 name = "Operating System Security Updates Disabled"
 os_list = ["macos"]
 reference = ["https://blog.checkpoint.com/2017/07/13/osxdok-refuses-go-away-money/"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.type == "start" and
  process.name == "defaults" and
- process.args : "write" and process.args : "-bool" and
- process.command_line : "*com.apple.SoftwareUpdate*" and process.args : "CriticalUpdateInstall" and process.args : "NO"
+ process.args like~ "write" and process.args like~ "-bool" and
+ process.command_line like~ "*com.apple.SoftwareUpdate*" and process.args like~ "CriticalUpdateInstall" and process.args like~ "NO"
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -43,4 +43,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

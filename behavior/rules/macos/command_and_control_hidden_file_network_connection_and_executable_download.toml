@@ -8,15 +8,15 @@ id = "cf8a45e5-f513-498f-9de7-cf7a27fcffb0"
 license = "Elastic License v2"
 name = "Hidden File Network Connection and Executable Download"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
-[network where event.type == "start" and process.name like ".*"]
-[file where event.action != "deletion" and file.Ext.header_bytes like ("cffaedfe*", "cafebabe*")]
+[network where event.type == "start" and process.name like~ ".*"]
+[file where event.action == "modification" and file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*")]
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -37,4 +37,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.16.0"

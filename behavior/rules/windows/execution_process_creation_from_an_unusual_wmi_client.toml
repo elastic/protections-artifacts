@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where
@@ -18,10 +18,18 @@ api where
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name in ("TENABLE, INC.", "Autodesk, Inc.", "Archer Technologies﻿ LLC", "Opera Norway AS", 
       "Beijing Qihu Technology Co., Ltd.", "ACD Systems International Inc.", "CS.NIWC-ATLANTIC.001", "Check Point Software Technologies Ltd.")) and
-  not process.executable in~
+  not process.executable :
                 ("C:\\Program Files\\RSA Archer\\Services\\ArcherTech.JobFramework.Job.exe",
-                 "C:\\Program Files\\Microsoft Configuration Manager\\bin\\x64\\smsexec.exe", 
-                 "C:\\Windows\\System32\\wbem\\WMIC.exe") and 
+                 "?:\\Program Files\\Microsoft Configuration Manager\\bin\\x64\\smsexec.exe",
+                 "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Conan Exiles\\Launcher\\FuncomLauncher.exe",
+                 "C:\\Program Files\\Tenable\\Nessus Agent\\nessus-agent-module.exe",
+                 "C:\\Program Files\\Dell\\SupportAssist\\jre\\bin\\java.exe",
+                 "C:\\Windows\\System32\\wbem\\WMIC.exe",
+                 "F:\\SuperGrate.exe",
+                 "D:\\SuperGrate-x64\\SuperGrate.exe",
+                 "D:\\SuperGrate\\SuperGrate\\SuperGrate.exe",
+                 "C:\\Program Files\\SCAP Compliance Checker 5.10\\lib64\\scc64.exe",
+                 "\\Device\\Mup\\*\\Shares\\AIT\\AIT\\AIT.exe") and
   not (process.name == "powershell.exe" and process.parent.executable == "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe") and 
   not (process.executable : "C:\\Windows\\System32\\svchost.exe" and
        process.parent.executable : "C:\\Windows\\System32\\services.exe" and
@@ -30,7 +38,15 @@ api where
                        "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Winmgmt",
                        "C:\\Windows\\system32\\svchost.exe -k winmgmt -s Winmgmt",
                        "C:\\WINDOWS\\system32\\svchost.exe -k netsvcs -s Winmgmt")) and
-  not (process.name == "powershell.exe" and process.command_line : "powershell  -encodedcommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgAKAFQAcgB5ACAAewAKAEkAbgB2AG8AawBlAC0AVwBtAGkATQBlAHQAaABvAGQAIAAtAFAAYQB0AGgAIAB3AGkAbgAzADIAXwBwAHIAbwBjAGUAcwBzACAALQBOAGEAbQBlACAAYwByAGUAYQB0AGUAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAJwAiAEMAOgBcAFUAcwBlAHIAcwBcAEEAZABtAGkAbgBpAHMAdAByAGEAdABlAHUAcgAuAEgARABWAC0AMgAwADAANABcAEEAcABwAEQAYQB0AGEAXABMAG8AYwBhAGwALwBBAGMAdABpAHYAZQBCAGEAYwBrAHUAcAA*")
+  not (process.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe") and
+  not (process.name == "powershell.exe" and
+       process.command_line : ("powershell  -encodedcommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgAKAFQAcgB5ACAAewAKAEkAbgB2AG8AawBlAC0AVwBtAGkATQBlAHQAaABvAGQAIAAtAFAAYQB0AGgAIAB3AGkAbgAzADIAXwBwAHIAbwBjAGUAcwBzACAALQBOAGEAbQBlACAAYwByAGUAYQB0AGUAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAJwAiAEMAOgBcAFUAcwBlAHIAcwBcAEEAZABtAGkAbgBpAHMAdAByAGEAdABlAHUAcgAuAEgARABWAC0AMgAwADAANABcAEEAcABwAEQAYQB0AGEAXABMAG8AYwBhAGwALwBBAGMAdABpAHYAZQBCAGEAYwBrAHUAcAA*",
+                               "powershell.exe -NonInteractive -NoProfile -ExecutionPolicy Bypass -EncodedCommand CgAgACAAIAAgACYAYwBoAGMAcAAuAGMAbwBtACAANgA1ADAAMAAxACAAPgAgACQAbgB1AGwAbAAKACAAIAAgACAAJABlAHgAZQBjAF8AdwByAGEAcABwAGUAcgBfAHMAdAByACAAPQAgAFsAUwB5AHMAdABlAG0ALgBDAG8AbgBzAG8AbABlAF0AOgA6AEkAbgAuAFIAZQBhAGQAVABvAEUAbgBkACgAKQAKACAAIAAgACAAJABzAHAAbABpAHQAXwBwAGEAcgB0AHMAIAA9ACAAJABlAHgAZQBjAF8AdwByAGEAcABwAGUAcgBfAHMAdAByAC4AUwBwAGwAaQB0ACgAQAAoACIAYAAwAGAAMABgADAAYAAwACIAKQAsACAAMgAsACAAWwBTAHQAcgBpAG4AZwBTAHAAbABpAHQATwBwAHQAaQBvAG4AcwBdADoAOgBSAGUAbQBvAHYAZQBFAG0AcAB0AHkARQBuAHQAcgBpAGUAcwApAAoAIAAgACAAIABTAGUAdAAtAFYAYQByAGkAYQBiAGwAZQAgAC0ATgBhAG0AZQAgAGoAcwBvAG4AXwByAGEAdwAgAC0AVgBhAGwAdQBlACAAJABzAHAAbABpAHQAXwBwAGEAcgB0AHMAWwAxAF0ACgAgACAAIAAgACQAZQB4AGUAYwBfAHcAcgBhAHAAcABlAHIAIAA9ACAAWwBTAGMAcgBpAHAAdABCAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKAAkAHMAcABsAGkAdABfAHAAYQByAHQAcwBbADAAXQApAAoAIAAgACAAIAAmACQAZQB4AGUAYwBfAHcAcgBhAHAAcABlAHIACgA=",
+                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -CommandParamVariation C -UseEncodedArguments -EncodedArgumentsParamVariation EA -Execute -ErrorAction Stop}",
+                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -Execute -ErrorAction Stop}",
+                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -CommandParamVariation C -Execute -ErrorAction Stop}",
+                               "\"C:\\Windows\\system32\\windowspowershell\\v1.0\\powershell.exe\" -ExecutionPolicy Unrestricted -Command \"& '\"C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\Health Service State\\Monitoring Host Temporary Files *\\LaunchRestartHealthService.ps1*",
+                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -UseEncodedArguments -EncodedArgumentsParamVariation EncodedArguments -Execute -ErrorAction Stop}"))
 '''
 
 min_endpoint_version = "8.15.0"

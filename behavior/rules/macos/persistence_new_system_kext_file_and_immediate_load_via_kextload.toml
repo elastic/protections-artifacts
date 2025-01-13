@@ -8,18 +8,18 @@ id = "de869aa1-c63a-451e-a953-7069ec39ba60"
 license = "Elastic License v2"
 name = "New System Kext File and Immediate Load via KextLoad"
 os_list = ["macos"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.parent.pid with maxspan=20s
 [process where event.type == "start" and event.action == "exec" and 
     process.name in ("mv", "cp") and
-    process.args : "/System/Library/Extensions/*.kext"]
+    process.args like "/System/Library/Extensions/*.kext"]
 [process where event.type == "start" and event.action == "exec" and 
-    process.name : "kextload"]
+    process.name == "kextload"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -62,4 +62,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.2"

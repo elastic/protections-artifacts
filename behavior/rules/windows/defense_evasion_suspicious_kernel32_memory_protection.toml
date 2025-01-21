@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Suspicious Kernel32 Memory Protection"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name : "VirtualProtect" and process.executable != null and 
   process.Ext.api.summary : "*kernel32.dll*" and process.Ext.api.behaviors : "write_fluctuation" and 
   process.Ext.api.parameters.size == 16 and 
   process.thread.Ext.call_stack_final_user_module.name != null and not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
-  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "91bade6d0e01a3b0abe7f98f97e4eff2a04dbaa475c4a90e3ee97024f488606d" and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("91bade6d0e01a3b0abe7f98f97e4eff2a04dbaa475c4a90e3ee97024f488606d", "ca4459a331c7dbb8440fa7eb3f0a2636b4685b762d94f16e2452a627faf9197b") and
   not process.thread.Ext.call_stack_final_user_module.path :
                                          ("?:\\Program Files\\*",
                                           "?:\\Program Files (x86)\\*", 

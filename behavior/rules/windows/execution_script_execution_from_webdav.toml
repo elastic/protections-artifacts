@@ -1,0 +1,67 @@
+[rule]
+description = """
+Identifies attempt to execute Windows scripts from a remote WebDav Share. Adversaries may abuse this method to evade
+dropping malicious files to victim file system.
+"""
+id = "4bdd5646-f7b2-4e1d-962d-fd0f591f8f87"
+license = "Elastic License v2"
+name = "Script Execution from WebDav"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ process.name : ("cmd.exe", "powershell.exe", "conhost.exe", "replace.exe", "wscript.exe", "cscript.exe", "mshta.exe") and
+ process.command_line : ("*@SSL\\*", "*\\webdav\\*", "*\\DavWWWRoot\\*") and
+ not (process.name : "cmd.exe" and process.args : "\\\\?\\UNC\\*.sharepoint.com@SSL\\DavWWWRoot\\*")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "2f4275f8-b305-455d-9f1f-c67574cc6b38"
 license = "Elastic License v2"
 name = "Suspicious Named Pipe Creation"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mkfifo" and 
@@ -33,7 +33,9 @@ process.args like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") and not (
   ) or
   (process.parent.command_line == "/bin/bash -ue .command.run" and process.args : "/dev/shm/nxf.*/.command.*") or
   process.parent.command_line == "bash /usr/lib/portage/python3.12/estrip --dequeue" or
-  (process.command_line == "mkfifo" and process.args_count == 1)
+  (process.command_line == "mkfifo" and process.args_count == 1) or
+  (process.parent.command_line == "bash /pre-start.sh" and process.command_line == "mkfifo /var/tmp/logpipe") or
+  (process.name == "zsh" and process.args like~ "/tmp/zsh*")
 )
 '''
 

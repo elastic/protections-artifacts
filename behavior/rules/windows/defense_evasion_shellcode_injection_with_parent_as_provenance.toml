@@ -7,7 +7,7 @@ id = "631df705-0636-4f83-8374-24d61307735e"
 license = "Elastic License v2"
 name = "Shellcode Injection with Parent as Provenance"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
@@ -15,6 +15,8 @@ api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  process.thread.Ext.call_stack_final_user_module.protection_provenance_path != null and
+ not (process.Ext.api.parameters.size <= 4096 and process.Ext.api.name == "VirtualProtect") and
+ not process.Ext.api.metadata.target_address_path : ("c:\\windows\\syswow64\\user32.dll", "c:\\windows\\syswow64\\gdi32.dll") and
  startswith~(process.thread.Ext.call_stack_final_user_module.protection_provenance_path, process.parent.executable) and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                              ("e9b488ad3101d386a3b2248db0c0dfe43c83fd856c55d181264da762f5352f38",
@@ -23,6 +25,13 @@ api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
                               "83fecf04fc83a08c78e4f5faad39c4b4ecb806c2b777c58998bfc9ea560f17ca",
                               "6a31d5d8358cd60014233b39f33f2dda2cf6cc5c4883ba1501dc37644d2b51b4",
                               "83fecf04fc83a08c78e4f5faad39c4b4ecb806c2b777c58998bfc9ea560f17ca",
+                              "33d3d3b2872d65e0584668d6d4ef1520b9fe25fe55f9e3174696274309ceb3e0",
+                              "36c190fb1081298ca8ed7e9e2a46e9e535a265534a99283bd0ee2d144ddeeba4",
+                              "d94ad7bcd32ec7b48fe76a4293205c6eb17191b7882a631ccb4eeabee2a96bca",
+                              "f6ec8ebfe3ef1f9b74ecfadffa03de8fb23cdefead9cb7c87c59c0e036b85e2f",
+                              "420efa8de496e3cfbc91910ae59f730d253280ddb2ab3daff484afc3eb0c89b6",
+                              "0f7fd870dd2e7272b92ea5dfe88b2662d859818459a3d2c1e9d669aa1a7dddc2",
+                              "ce4d31db584ad5ff31a8e81c735e81a42f87cd37b70cfdf3d3621a794dacf3d1",
                               "02f9581f9b917ac8535bce97462ad587608fd42227eae4d8ee54ab7a4bf742fd",
                               "b3d665fa5452b58a2238f57188aa9310a01a1e3c2b884269c2bccb0bdadabd41",
                               "6d72df875440edd9216e2e3f0fb500776064a6f2e412f8d118e410760dff3685",
@@ -36,7 +45,12 @@ api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
                               "b18aa0c98922563f5996fb0497446873f7030d0511ffb77388ea882b4f98a924", 
                               "ec673caa0c703cc3084887824b800502cd45b4a365c2f8d6cbc5175f0e938e1e", 
                               "fee37bdeecc597ad9e0f13264e9ac12df3ad41f8d76a41da6e38349ed66ab35e", 
-                              "ce00bc44c975337198e7d3d353b8a1789a1221697754957752a63bbf547f1334")
+                              "ce00bc44c975337198e7d3d353b8a1789a1221697754957752a63bbf547f1334",
+                              "a87b3f02042de4d655f72af65ed5242fae5c675bebd19e962978c13e6d99ba00",
+                              "85060dfab7e73f3986a4fa6148e7c14b0df55ba812c7367d85bd580837b2f7a4",
+                              "a543689f34083f810e0184ec77d8ee9e57d44ebd6212af444853a3a89a3c82c0",
+                              "9096bba37319bcd1b809a72cd359066788199c859a67a5d872ae1b22ed0dd842",
+                              "b7b98dd681dfea2333a0136ba5788e38010730bb2e42eafa291b16931f00449d")
 '''
 
 min_endpoint_version = "8.15.0"

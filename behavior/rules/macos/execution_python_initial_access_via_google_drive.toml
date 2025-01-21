@@ -1,0 +1,67 @@
+[rule]
+description = """
+Detects the execution of Python followed by a network connection by Python to a Google Drive domain and ultimately the
+creation of a Python script or executable. Nation State actors have been observed engaged in several initial access
+campaigns using Python coding lures that retrieve and execute secondary and even tertiary Python scripts that eventually
+lead to a payload that establishes command and control.
+"""
+id = "dee4badb-aa5b-477b-9bfc-708d45fee7c7"
+license = "Elastic License v2"
+name = "Python Initial Access via Google Drive"
+os_list = ["macos"]
+reference = [
+    "https://www.elastic.co/security-labs/dprk-code-of-conduct",
+    "https://www.elastic.co/security-labs/elastic-catches-dprk-passing-out-kandykorn",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+[process where event.type == "start" and event.action == "exec" and process.name like~ "Python*"]
+[network where event.type == "start" and process.name like~ "Python*" and destination.domain in ("drive.usercontent.google.com", "drive.usercontent.google.com.", "drive.google.com", "drive.google.com.", "script.google.com", "script.google.com.")]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

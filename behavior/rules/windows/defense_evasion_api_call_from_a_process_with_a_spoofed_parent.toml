@@ -1,0 +1,74 @@
+[rule]
+description = """
+Detects Windows Memory API calls by a process with a fake parent process identity set to Windows Explorer often to blend
+in with user interactive activity.
+"""
+id = "e62f022c-88e2-403f-9f83-f76a91dd2203"
+license = "Elastic License v2"
+name = "API Call from a Process with a Spoofed Parent"
+os_list = ["windows"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id
+ [process where event.action == "start" and process.parent.name : "explorer.exe" and process.parent.Ext.real.pid > 0 and 
+  process.parent.thread.Ext.call_stack_summary : "?*" and process.executable != null and
+  not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("*advapi32.dll!CreateProcessAsUser*", "*advapi32.dll+0x*",
+                    "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\appctrl\\bin\\Privilager.exe*")) and
+  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+       process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and 
+  not process.parent.thread.Ext.call_stack_summary : 
+                                      ("*|rpcrt4.dll|*", 
+                                       "*faultrep.dll|wersvc.dll*", 
+                                       "*windows.storage.dll|shell32.dll*", 
+                                       "*systemsettingsviewmodel.desktop.dll*")]
+ [api where process.Ext.api.name : ("WriteProcessMemory", "VirtualProtect*", "VirtualAlloc*", "MapViewOfFile*") and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "Unknown")]
+ until [process where event.action:"end"]
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.004"
+name = "Parent PID Spoofing"
+reference = "https://attack.mitre.org/techniques/T1134/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

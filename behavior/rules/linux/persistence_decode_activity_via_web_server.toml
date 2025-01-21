@@ -1,0 +1,123 @@
+[rule]
+description = """
+This rule detects the execution of decoding utilities through a web server parent, or a user associated to a web server
+technology. Attackers may use base64 or other encoding techniques to obfuscate malicious payloads, or to decode
+information on the target system.
+"""
+id = "eb928496-a992-4cee-9cd7-fc3fbae7e8da"
+license = "Elastic License v2"
+name = "Decode Activity via Web Server"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+sequence with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and (
+     process.parent.name : (
+       "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "php-*", "node", "mongrel_rails",
+       "java", "gunicorn", "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik",
+       "tornado", "hypercorn", "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "python*", "flask",
+       "rails", "ruby*", "perl*", "mongrel", "java"
+     ) or
+     user.name in (
+     "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+     ) or
+     user.id in (99, 33, 498, 48)
+   ) and not (
+     process.name in ("getkeyfromldapuser.sh", "getVar.sh") or
+     process.executable in ("/opt/omnimesh/apache/lib/passphrase", "/omd/sites/wopub/bin/apply_unsign_msi_patch.sh") or
+     process.args like~ "/u01/app/oracle/*" or
+     process.parent.executable in ("/bin/ruby", "/usr/lib/venv-salt-minion/bin/python.original") or
+     process.parent.executable like ("/usr/bin/python*", "/opt/idea-IU*/jbr/bin/java", "/root/.vscode-server/*") or
+     process.parent.args == "./mmicro-control.pl" or
+     process.parent.command_line like~ "Serverd*" or
+     process.command_line == "sh -c man/base32.td/base32 --version 2>/dev/null" or
+     (process.parent.name == "perl"  and process.command_line like~ "sh -c man/base*")
+   )
+  ] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and process.name in ("base64", "base32", "xxd")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,64 @@
+[rule]
+description = """
+Identifies potential attempts to abuse the IMsiServer Component Object Model (COM) interface to start a remote instance
+of the msiexec.exe service for lateral movement.
+"""
+id = "40696acd-67c8-473e-a8ee-9ade3506d141"
+license = "Elastic License v2"
+name = "Potential Remote Execution via IMsiServer"
+os_list = ["windows"]
+reference = ["https://www.deepinstinct.com/blog/forget-psexec-dcom-upload-execute-backdoor"]
+version = "1.0.2"
+
+query = '''
+sequence by source.ip with maxspan=5s
+ [authentication where event.action == "log_on" and process.Ext.session_info.logon_type == "Network" and
+  (user.effective.id != null and user.effective.id like ("S-1-5-21*", "S-1-12-*"))]
+ [network where event.action in ("connection_accepted", "disconnect_received") and process.name == "msiexec.exe" and
+  source.port >= 49152 and destination.port >= 49152 and not cidrmatch(source.ip, "127.0.0.0/8", "::1")]
+'''
+
+min_endpoint_version = "8.15.1"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "8.15.1"

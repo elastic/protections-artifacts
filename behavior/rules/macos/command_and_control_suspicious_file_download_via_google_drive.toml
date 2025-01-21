@@ -1,0 +1,68 @@
+[rule]
+description = """
+Detects a network connection to a Google Drive domain followed immediately by the creation of a suspicious file like a
+Mach-O binary, Python Script, or Shell script via the same Process. Threat actors, especially the DPRK, have utilized
+Google Drive heavily in their campaigns in order to host and deliver second-stage payloads. A binary downloading these
+file types from Google Drive on macOS is highly un-common and unusual.
+"""
+id = "54ba4259-4bc0-4c86-ab7b-a009c6517603"
+license = "Elastic License v2"
+name = "Suspicious File Download via Google Drive"
+os_list = ["macos"]
+reference = [
+    "https://www.sentinelone.com/labs/bluenoroff-hidden-risk-threat-actor-targets-macs-with-fake-crypto-news-and-novel-persistence/",
+    "https://www.elastic.co/security-labs/elastic-catches-dprk-passing-out-kandykorn",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[network where event.type == "start" and destination.domain in ("drive.usercontent.google.com", "drive.usercontent.google.com.", "drive.google.com", "drive.google.com.", "script.google.com", "script.google.com.")]
+[file where event.action == "modification" and (file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") or 
+  file.extension in ("py", "sh", "scpt"))]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

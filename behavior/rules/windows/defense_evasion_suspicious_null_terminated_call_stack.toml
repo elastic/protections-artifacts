@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Null Terminated Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where
@@ -61,7 +61,8 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                "c15ad2661a216a18b44ec356573ca1826081f9547c784ec3e95c93f8c7ff65ae",
                "681309fb5768a7e6782dea30405ffcb722d6ce3eab77f8b342c99bf39cdc8e4d",
                "7dd6f9234290591bbeffd20e795cae70cf150e75da03b857b4e7b970dae726f7",
-               "fda9250ca73685a1bb717e9a23564bc234a410301110e9d08d2a74b8d29f4eb5") and
+               "fda9250ca73685a1bb717e9a23564bc234a410301110e9d08d2a74b8d29f4eb5",
+               "c547ad0c67524371f40db48c998db222f3b75cef21109c62aea28227df8a6f2c") and
 not process.Ext.api.metadata.target_address_path in ("c:\\program files\\asus\\aura lighting effect add-on x64\\basswasapi.dll", "c:\\program files\\asus\\aura lighting effect add-on x64\\bass.dll") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher"))

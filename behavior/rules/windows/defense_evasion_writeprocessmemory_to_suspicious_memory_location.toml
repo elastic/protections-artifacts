@@ -7,7 +7,7 @@ id = "1a1c26bb-7fe5-4683-9b94-bc1d89782873"
 license = "Elastic License v2"
 name = "WriteProcessMemory to Suspicious Memory Location"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behaviors : "cross-process" and
@@ -28,7 +28,9 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behav
  not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Program Files (x86)\\Astria Solutions Group\\Eclipse Client Service\\Astria.Client.Systray.exe") and
  not (process.code_signature.subject_name : ("GIE Sesam Vitale", "Epicor Software Corporation") and process.code_signature.trusted == true) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
-                  $entry.callsite_trailing_bytes : "85c0750732c0e9de0100008b45f88b80b43e00008945f08b45f88b80b43e00008b4df003413c8945f46a0468002000008b45f4ff70508b45f4ff70348b45f8ff")
+                  $entry.callsite_trailing_bytes : "85c0750732c0e9de0100008b45f88b80b43e00008945f08b45f88b80b43e00008b4df003413c8945f46a0468002000008b45f4ff70508b45f4ff70348b45f8ff") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("2fec0c389dd0932c59eee19ca24c720b6521603e5ead78e3e070aa561b73be32",
+     "f41ca285f5069e68a6ba9128338fec93412efadcc5225a5c3261e0e07c3723fd", "7c82d4fce5e9e41e5654362bcb6d0486ec39f0ff1f6df0e899d14b7c055009d6")
 '''
 
 min_endpoint_version = "8.10.0"

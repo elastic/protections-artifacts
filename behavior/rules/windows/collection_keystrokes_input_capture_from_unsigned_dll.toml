@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -21,7 +21,21 @@ sequence by process.entity_id with maxspan=2m
   not dll.hash.sha256 : 
                 ("fc23a64cc52f5b19e310a8d96b1fbfec981310359bda907f5931a53360485fbc", 
                  "47c2871dff8948de40424df497962ea6167c56bd4d487dd2e660aa2837485e25",
-                 "0a70f6e2ae3e77fa9406a38b244cd49cd46356af6a6880c913be9df98c4d5136")] as event0
+                 "0a70f6e2ae3e77fa9406a38b244cd49cd46356af6a6880c913be9df98c4d5136",
+                 "13b2cac3f50368ab97fa2e3b0d0d2cb612f68449d5bbd6de187fc85ee4469d03",
+                 "35fce2a0bb291f9c2a7dc7b4620892cae16c71422a1ee3083c5d8c20720c8df6",
+                 "dbf484369fccb68c1c573c978b67cc16d86bb7e8d13308fc8e9e0cfb0ef6724f",
+                 "a8d9181b8bad99f52a81390a035694ab6541f44c7dd9d5ad10ba97fb5b209074",
+                 "332c71776659988159f98e0e6621b1e37694a7a57f954e0c5ca2f95c939b8f59",
+                 "14483624af18b2661c8a11df1d9333049cf582b3a31782491895fc138966ef2a",
+                 "a4e18d5896c5889635efe31c6f1a0ce8ccafeabe9521e0f92c46a5861e8c290b",
+                 "e7a95093be08f73aea2333cb6387eb7127a2639ab358d2e0c587d776972f2523",
+                 "d988f77608000008cc7b81cbc5e5a632a3b7dfbde5e768e0f76f4cc0c802fc7e",
+                 "13b2cac3f50368ab97fa2e3b0d0d2cb612f68449d5bbd6de187fc85ee4469d03",
+                 "b461a01e0855014610cc1d7047a5f7939d13b803bc835c37f0be9704698af570",
+                 "8232e3b928e41feacd643dc45d2ffc702ac40640910e9a232fc5df8ed90d6c97") and
+  not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and
+       dll.name : "*.tmp.node")] as event0
  [api where
 
   (process.Ext.api.name : "GetAsyncKeyState" or

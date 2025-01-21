@@ -1,0 +1,96 @@
+[rule]
+description = """
+This rule detects when a web server downloads a file from a server and stores it in a suspicious location. Attackers may
+exploit RCE or file upload vulnerabilities to download malicious files to web servers to gain/maintain access and to
+establish a command and control channel.
+"""
+id = "30e19006-e1b4-4328-9553-b0284c5cec00"
+license = "Elastic License v2"
+name = "File Downloaded to Suspicious Location by Web Server"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  process.parent.name like (
+    "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "php-*", "node", "mongrel_rails",
+    "java", "gunicorn", "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik",
+    "tornado", "hypercorn", "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "python*", "flask",
+    "rails", "ruby*", "perl*", "mongrel", "java"
+  ) or
+  user.name in (
+    "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+  ) or
+  user.id in (99, 33, 498, 48)
+) and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+process.args == "-c" and process.args like ("wget *", "curl *") and
+process.command_line like ("* -o *", "* --output*") and
+process.command_line like "*http*://*" and
+process.command_line like (
+  "* /tmp/*", "* /var/tmp/*", "* /dev/shm/* ", "* /var/www/*", "* ~/*", "* /home/*", "* /run/*", "* /var/run/*"
+) and not (
+  (process.parent.executable == "/usr/bin/php" and process.command_line like "*var/www/html/cacti*") or
+  (process.parent.name == "ruby" and process.command_line like "*/tmp/passenger-native-support*") or
+  process.command_line like ("*Authorization: Bearer*", "*nginx.org/download/nginx*") or
+  process.parent.command_line like "/usr/bin/python*ansible*" or
+  process.parent.executable like "/opt/saltstack/salt/bin/python*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

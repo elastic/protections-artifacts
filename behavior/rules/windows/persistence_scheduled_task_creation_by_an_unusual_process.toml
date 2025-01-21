@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence with maxspan=5m
@@ -106,7 +106,13 @@ sequence with maxspan=5m
                    "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
-    process.pe.original_file_name != "Adobe Installer"
+    process.pe.original_file_name != "Adobe Installer" and
+    not process.parent.executable :
+                       ("C:\\Windows\\highsystem.NET\\Client\\hdnClSvc.NET.exe",
+                        "C:\\Program Files (x86)\\AOMEI\\AOMEI Backupper\\*\\unins*.exe",
+                        "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\dcconfigexec.exe",
+                        "C:\\Windows\\highsystem.NET\\Client\\hdnClSvc.NET.exe",
+                        "C:\\Program Files (x86)\\AOMEI\\AOMEI Backupper\\*\\unins*.exe")
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and
@@ -124,7 +130,8 @@ sequence with maxspan=5m
 
     not (file.name : "Microsoft Office 1? Sync Maintenance for *" and file.size >= 5200 and file.size <= 5300 and
          Effective_process.name : ("winword.exe", "excel.exe", "powerpnt.exe")) and
-    not (file.name : "OneDrive Standalone Update Task-S-1-5-21-*" and Effective_process.executable : "\\Device\\Mup\\*")
+    not (file.name : "OneDrive Standalone Update Task-S-1-5-21-*" and Effective_process.executable : "\\Device\\Mup\\*") and
+    not (file.path :  "C:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\RemoteApp and Desktop Connections Update\\*" and Effective_process.executable : "C:\\Windows\\System32\\xwizard.exe")
     ] by Effective_process.entity_id
 '''
 

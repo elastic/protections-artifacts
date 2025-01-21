@@ -16,7 +16,7 @@ reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
     "https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 sequence by process.entity_id
@@ -68,7 +68,10 @@ sequence by process.entity_id
                "399ae476e53ad179f6238c0b7c8235d830490b0dbab981ac77ee73c4b35cf095",
                "14da1fbca85ff2b8ac19ab63f4b7019614865ce8d87bce68100c97174b786ff5",
                "8d6fff5727cded57898398f1d620375e26bab07e8875a4fe840178a2fc5207b5",
-               "128ae380509edbf0b17bb8a01110df57e310ec11dba9e9c6e5708098d6603247")
+               "128ae380509edbf0b17bb8a01110df57e310ec11dba9e9c6e5708098d6603247",
+               "3153fd9425111477a2dd15921eb13b2fc98210b5e59ce93238e4cec10ebd30a9",
+               "b177344a37bac9f492fcd8718655f634dc74ddc909c66dffd2b05f7bffb9da0f",
+               "0c8809a707a34414a2169138bb8749e22fc5437d533c538cff9480a13b768ec5")
   ]
   until [process where event.action == "end"]
 '''

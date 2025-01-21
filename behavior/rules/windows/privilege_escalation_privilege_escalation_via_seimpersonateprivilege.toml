@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=3m
@@ -52,7 +52,10 @@ sequence with maxspan=3m
                          ("C:\\Program Files\\Windows Defender\\MpCmdRun.exe",
                           "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseNdr.exe")) and
     not (process.executable : "C:\\Program Files\\Portrait Displays\\HP Display Control Service\\DeviceCheck.exe" and
-         process.parent.executable : "C:\\Windows\\System32\\pacjsworker.exe")
+         process.parent.executable : "C:\\Windows\\System32\\pacjsworker.exe") and
+
+    not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\csc.exe" and
+         process.parent.executable : "C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe")
    ] by process.parent.entity_id
 '''
 

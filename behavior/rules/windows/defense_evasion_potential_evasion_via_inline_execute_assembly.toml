@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Evasion via Inline Execute Assembly"
 os_list = ["windows"]
 reference = ["https://github.com/anthemtotheego/InlineExecute-Assembly"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by process.entity_id with maxspan=5s 
@@ -27,7 +27,9 @@ sequence by process.entity_id with maxspan=5s
       process.code_signature.subject_name : "Oracle America, Inc." and process.code_signature.trusted == true) and 
   not (process.executable : "?:\\Program Files*\\Amazon Corretto\\jdk*\\bin\\java.exe" and 
        process.code_signature.subject_name : "Amazon.com Services LLC" and process.code_signature.trusted == true) and
-  not process.executable : ("?:\\Program Files\\Hexagon\\Cipher *\\Cipher.exe", "?:\\Windows\\Microsoft.NET\\Framework64\\*\\dfsvc.exe")
+  not process.executable : ("?:\\Program Files\\Hexagon\\Cipher *\\Cipher.exe",
+                            "?:\\Windows\\Microsoft.NET\\Framework64\\*\\dfsvc.exe",
+                            "?:\\Program Files (x86)\\XMPie\\Circle Agent\\Service\\XMCircleAgent.exe")
   ]
  [network where network.direction == "egress" and network.transport == "tcp"]
 '''

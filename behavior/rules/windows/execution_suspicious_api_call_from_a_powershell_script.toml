@@ -4,12 +4,14 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
 event.provider == "Microsoft-Windows-Threat-Intelligence" and
 process.name in~ ("powershell.exe", "pwsh.exe", "powershell_ise.exe") and
+
+process.Ext.api.metadata.target_address_path != "c:\\windows\\system32\\dante_dnssd.dll" and
 
 /* PowerShell Script JIT - and incidental .NET assemblies */
 process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and

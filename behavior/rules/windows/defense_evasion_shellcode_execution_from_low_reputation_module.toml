@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -61,7 +61,10 @@ sequence by process.entity_id with maxspan=1m
                "81d695146542b67483b432ce2778c62944d711a4ad740be37dd930f9a97b80ca",
                "635d1185b1507ca5e08a6771f08595801d8d98145ba78665366e492ee1875317",
                "6e2bb79dcafb019d6bbc34b7a4550cd603852493b5427252ae44301f4ea96db4",
-               "13ff0fa4901b81b663311faf1396dbc804f53fd56b6067f73776acc48a54f9f9")] by dll.hash.sha256
+               "13ff0fa4901b81b663311faf1396dbc804f53fd56b6067f73776acc48a54f9f9",
+               "b4a68330d3a235ef755fa3229e4492e2b7b824fc576dfe73309f09bce6c7adc7",
+               "a6457ca8f7a14ba363e6f8467c020e62425eeec755ee1c7a57068e8952c16672",
+               "e667c70c74112ae249dff32805c5767700d25fde443ca513222ec3203ce76872")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and

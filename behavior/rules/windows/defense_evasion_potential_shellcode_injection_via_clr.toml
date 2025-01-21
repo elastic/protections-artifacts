@@ -1,0 +1,120 @@
+[rule]
+description = """
+Identifies attempts to allocate or execute shellcode from unbacked memory and where the protection provenance of the
+unbacked region is coming from the Microsoft Common Language Runtime DLL.
+"""
+id = "1370f164-1809-4668-ad6c-dbf5bd278120"
+license = "Elastic License v2"
+name = "Potential Shellcode Injection via CLR"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where
+    process.executable != null and process.parent.executable != null and
+    process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode") and
+    process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "VirtualProtectEx", "VirtualAllocEx",
+                             "MapViewOfFile", "MapViewOfFile2", "SetThreadContext", "SuspendThread", "ReadProcessMemory", "connect") and
+    process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+    process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Unbacked*", "clr.dll", "mscorwks.dll", "coreclr.dll", "*.exe*") and
+    (
+      process.thread.Ext.call_stack_final_user_module.protection_provenance in ("clr.dll", "mscorwks.dll", "coreclr.dll")  or
+      process.thread.Ext.call_stack_final_user_module.protection_provenance_path like 
+                                         ("c:\\windows\\microsoft.net\\framework*\\clr.dll", 
+                                          "c:\\program files*\\dotnet\\shared\\microsoft.netcore.app\\*\\coreclr.dll", 
+                                          "c:\\windows\\microsoft.net\\framework*\\mscorwks.dll")
+    ) and 
+    _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                  $entry.trusted == true and $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows", ".NET")) and 
+    process.thread.Ext.call_stack_summary :
+                        ("ntdll.dll|Unbacked",
+                         "ntdll.dll|kernelbase.dll|Unbacked",
+                         "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll",
+                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                         "ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked",
+                         "wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|ws2_32.dll|Unbacked|kernel32.dll|ntdll.dll") and
+    not process.Ext.api.parameters.size < 1000 and
+    /* trailing bytes are not null */
+    _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and
+    /* EOIM FPs */
+    not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.callsite_trailing_bytes : ("85c07472ff15942c*3d33270000747989c76a02e84a4359ff*",
+                                                      "c9c3558bec51894dfc8b4dfce8b9ffffff8*",
+                                                      "c9c20400558bec51894dfc8b45f*",
+                                                      "e9fefdffffb001c9c20800558bec81e*",
+                                                      "e9e8fdffffb0018be55dc20400*",
+                                                      "85c00f95c05e5dc3cccccc5589e5535*",
+                                                      "85c0740533c040eb3b837d10047516*",
+                                                      "41c6470c01833*5f007406ff15*49895710488d65c85b5e5f415c415d415e415f5dc*",
+                                                      "41c6470c01*41c6470c01488b55*",
+                                                      "41c64*f007406ff15*",
+                                                      "*10488d65c85b5e5f415c415d415e415f5dc3*",
+                                                      "488b5560c6420c*48894570488b4d00e84300000090488b4570488b5560c642*",
+                                                      "488b558*c6420c*007406ff15*",
+                                                      "c6470c01*007406ff15*",
+                                                      "c6470c0148ba*7f0000ff11488bf0e8*",
+                                                      "41c6460c0148ba4810*7f0000833a00740c48b9d819*",
+                                                      "*48894e104883c4785b5e5f415c415d415e415f5dc*",
+                                                      "488b5560c6420c01833d*7406ff15*",
+                                                      "41c6460c0148ba*7f0000833a00740c48b9*",
+                                                      "c6470c0148ba48*833a00740c48b9*",
+                                                      "c6470c0148ba*833a00740c48b9*",
+                                                      "488b957*ffffffc6420c01833d*",
+                                                      "488b5560c6420c01*833a00740c*",
+                                                      "488b55*7f0000833a00740c48b928f2*",
+                                                      "488b55??c6420c0148ba14d536dbf97f0000833a00740c48b928f235dbf97f0000ff114*", 
+                                                      "4883c438c3cccccc44884c24204489442418488954241048894c2408488b442408c3cccc44884c24204489442418488954241048894c24084883ec48488b4424",
+                                                      "488b9570ffffffc6420c01833d*488b458048894590488b45904889459890909090909090488b*",
+                                                      "85c0746bff1528c2900f3d33270000747289c76a02e86d3378ff83c40484c0743a8d5c240489d96a0268600300006838a6320fe82f3478ff8d4424086a106838",
+                                                      "488b9570ffffffc6420c01833de9835d5a007406ff15718d5d5a48894580e8a0ddb45990488b458048894590488b45904889459890909090909090488b459848",
+                                                      "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003",
+                                                      "488b5560c6420c01833d6a70c85f007406ff15768dc75f488bf0e8165a4a5f48897570488b4d00e84300000090488b4570488b5560c6420c01488b5560488b4d")) and
+    not (process.thread.Ext.call_stack_final_user_module.protection_provenance in ("tiptsf.dll", "mscms.dll") and 
+         process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\microsoft.net\\framework*\\mscorwks.dll") and 
+    not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like 
+                                                            ("c:\\windows\\assembly\\nativeimages_*\\smdiagnostics.ni.dll", 
+                                                             "c:\\program files (x86)\\ibm\\client access\\*\\cwbsomri.dll", 
+                                                             "c:\\program files (x86)\\panasonic\\idrengine\\idrjchar.dll",
+                                                             "c:\\windows\\assembly\\nativeimages_*\\newtonsoft.json\\*\\newtonsoft.json.ni.dll") and 
+    not process.executable : ("?:\\Program Files (x86)\\CrystalScheduler\\crexport.exe", 
+                              "?:\\Program Files (x86)\\Bus\\Buscube64.exe", 
+                              "?:\\Program Files (x86)\\ETS5\\ETS5N.exe",
+                              "?:\\Program Files (x86)\\ATAS Platform\\OFT.Platform.exe", 
+                              "?:\\Program Files\\Aseproda\\VirtusTPV Net\\VirtusTPVNet.exe",
+                              "?:\\Program Files (x86)\\VisualCron\\VisualCronClient.exe",
+                              "?:\\Program Files (x86)\\Citrix\\ICA Client\\Receiver\\Receiver.exe",
+                              "?:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn\\game\\ffxiv_dx11.exe") and 
+    not (process.code_signature.trusted == true and 
+         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc."))
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

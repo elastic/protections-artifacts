@@ -1,0 +1,96 @@
+[rule]
+description = """
+Identifies the transfer of a library via SMB followed by loading it into commonly DLL proxy execution binaries such as
+rundll32, regsvr32 and shared services via svchost.exe. This may indicate an attempt to remotely execute malicious code.
+"""
+id = "fdf66d17-0e2e-4667-a145-620bc1204c69"
+license = "Elastic License v2"
+name = "ImageLoad of a File dropped via SMB"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
+]
+version = "1.0.35"
+
+query = '''
+sequence with maxspan=5m
+  [ file where event.action != "deletion" and
+   /* library dropped via SMB */
+   process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+   (file.extension : ("dll", "cpl", "ocx") or (file.Ext.header_bytes : "4d5a*" and not file.extension : "exe")) ] by file.path
+  [ library where dll.hash.sha256 != null and not dll.code_signature.trusted == true and
+    (process.name : ("rundll32.exe", "svchost.exe", "lsass.exe") or
+     process.executable :
+              ("?:\\WINDOWS\\system32\\PerceptionSimulation\\PerceptionSimulationService.exe",
+               "?:\\Program Files*\\Windows NT\\Accessories\\wordpad.exe")) and
+
+    /* unsigned with diverse file hashes */
+    not (dll.path : "?:\\Windows\\VeeamVssSupport\\VeeamVssHook.dll" and process.executable : "?:\\Windows\\System32\\svchost.exe") and
+    not dll.hash.sha256 :
+             ("ca329f3db5479be602c2d456f0dafc023c5e744b1454a4215b45761371ffd857",
+              "880fe8b7e7e0276ca9f010a30aad003accc1b3f12e0ac50e2f12b3774b8c2aac",
+              "a28d2f62629b6926211a2f8245ce2d0ab47d64f6680e6494720e04a13ab6ee1e", 
+              "ad46d50fdd0764ee0626beb9720d9b1a00266404189dd99cf18eaf1545d7b43b", 
+              "f9ff91b05b5e705464d364226ba5e40b9256f4720f3f9281247c7ce19f311f12",
+              "fab84acf7d285984bb61fa655c24973de89b2234b7ba002954ba315fb2b9c90c",
+              "b628784e41989e5ba2f96beec98c42fc32d15fc2de03187f6c50cc6705b57166",
+              "2d64b8e67e97ccd363d26a5ee3acbb9fe949d2f7f22ae6dc134645972c3f43d9",
+              "5e40b53733105e98ad2914bfb2f0dda52e3b9b3c87d82bf4ff092f1bed25cd13",
+              "6d859a89e80f290249b9b1a7aaea3929d999f1f15b99089f88d5e5120e23a6d8",
+              "2c611395ad89e8653533e6c1b8815720f7fb4c043197e52c93d983b3e3726226",
+              "ce77f9afb4942b85a0bfa1ccb41c0b599f0275e56c6ed2e9699dada6b08989d3",
+              "3fbe9db285c0248d5d50e832a1c2312e3eb3490607a09cbf9962aa64b8edc3e7",
+              "8ed521e3a1e15a85e8043aafef7b69873de69c388bbcbf12f42777134af32751") and
+    not dll.pe.imphash : "c7606b6181f4b33c77e536a70d7b354c"
+    ] by dll.path
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.010"
+name = "Regsvr32"
+reference = "https://attack.mitre.org/techniques/T1218/010/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.011"
+name = "Rundll32"
+reference = "https://attack.mitre.org/techniques/T1218/011/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1021"
+name = "Remote Services"
+reference = "https://attack.mitre.org/techniques/T1021/"
+[[threat.technique.subtechnique]]
+id = "T1021.002"
+name = "SMB/Windows Admin Shares"
+reference = "https://attack.mitre.org/techniques/T1021/002/"
+
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.16.0"

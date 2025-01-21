@@ -7,7 +7,7 @@ id = "18439a4c-cd67-43f5-ac42-5c4210edeacb"
 license = "Elastic License v2"
 name = "Linux External IP Address Discovery via Curl"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl"
@@ -32,7 +32,8 @@ not (
   process.parent.name in (".", "./alert_api_call.sh") or
   process.parent.executable like (
     "/usr/local/bin/teleport", "/usr/local/bin/current_ip", "/tmp/go-build*", "/usr/bin/neofetch",
-    "/usr/bin/show-location-info", "/opt/tpot/bin/myip.sh", "/usr/sbin/sshd", "/tmp/newroot/var/quest/kace/scripts/*"
+    "/usr/bin/show-location-info", "/opt/tpot/bin/myip.sh", "/usr/sbin/sshd", "/tmp/newroot/var/quest/kace/scripts/*",
+    "./Linux_Inventory_Sheets.sh"
   ) or
   process.parent.args == "/var/www/html/admin/modules/leucoalarm/scripts/system.php" or
   (

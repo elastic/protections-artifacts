@@ -13,7 +13,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -22,7 +22,7 @@ process where event.action == "start" and
  process.parent.Ext.real.pid > 0 and process.parent.executable != null and
 
  /* PrivEsc to SYSTEM */
- user.id : "S-1-5-18"  and
+ user.id == "S-1-5-18"  and
 
  /* Common FPs - evasion via hollowing is possible, should be covered by code injection */
  not process.executable : ("?:\\Windows\\System32\\WerFault.exe",

@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id
@@ -20,7 +20,7 @@ sequence by process.entity_id
     dll.Ext.relative_file_name_modify_time <= 900 or
     (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
     dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
-    not dll.code_signature.status : "trusted" and dll.hash.sha256 != null and
+    not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and dll.hash.sha256 != null and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
@@ -34,10 +34,11 @@ sequence by process.entity_id
        process.code_signature.subject_name :
                          ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
                           "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
-                          "VICON INDUSTRIES, INC.")) and
+                          "VICON INDUSTRIES, INC.", "Avid Technology, Inc", "Parsec Cloud, Inc.")) and
 
   not (dll.name : "chrome_elf.dll" and dll.pe.original_file_name : "chrome_elf.dll") and
-  not dll.pe.imphash : ("8ed92d81df1fc6d13329436de2be9225", "71db138be05fb8109bd4d1747f7fab68", "e569e6f445d32ba23766ad67d1e3787f") and
+  not (dll.pe.original_file_name == "iKernel.dll" and process.name : "msiexec.exe") and
+  not dll.pe.imphash : ("8ed92d81df1fc6d13329436de2be9225", "71db138be05fb8109bd4d1747f7fab68", "e569e6f445d32ba23766ad67d1e3787f", "64ea02a06ea86f0e2bddfe996ea5f718", "638d97a5467575ef54ee78575a4684fc") and
   not dll.hash.sha256 : 
                ("624bf5fbf96b6399fe0a624c8da7122cc207dba4273d6373fac7796d2dc1bed9", 
                 "dfa6e54b8c5659abcf7f1ac605379afcde27f713ca6a071e9da1367c5f5098ea", 
@@ -149,7 +150,17 @@ sequence by process.entity_id
                 "72286940fba44782f217568010ed10339274edf0ab14cc51cb6a236830c2a480",
                 "3dabae0e8b4212cb36ea3b40e3cbfd3e3fb122285a66e1e943e115b84a9e218f",
                 "3e8113e392f7436b370ef0806a32de6b6d2522d36b0a611e854f1a4030dcef6c",
-                "daf15c51b9c2bf35c6f9b9a17d18d8572d6e2ce99c282ed96bec96b35cfa6fe8")] as event0
+                "daf15c51b9c2bf35c6f9b9a17d18d8572d6e2ce99c282ed96bec96b35cfa6fe8",
+                "53f2b64f996ed8054b6054c2a18f4ea069f8a2ebe41cba443ef2e2fa41bdb390",
+                "1e9ba2a4b2dec7e24d6826ae902b78023961a26d3d69d77c33611034bc7855c2",
+                "2a9f12ac96479315067cef9d663d13c0206362da09457e6591180390640f4e18",
+                "79a4bba96faedaa9d8b5a941d86aaeefb46cf64562dbae86ea29873eac285afa",
+                "f4056e1455b5a1327b6c218d0ad28ca888700fa7103088aa7eadeb6bf354052d",
+                "ba66e1b407ce5c4b49c360f9a64101f8d183e1bd91bb56aa15c056ba9d7742de",
+                "1e9ba2a4b2dec7e24d6826ae902b78023961a26d3d69d77c33611034bc7855c2",
+                "47e7a7ac2dcf1b7d287dcebf61a70024c9468cbd0711dce969f56e26c2f9e7cf",
+                "b2d1174b61f24897014892cd654cd1cb3cd0a5c9070c65d18198e65dac7ee3ca",
+                "6aa3ddc43ac48f64ace0febd144e3e153f8b09c13400079376b2969444f02188")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

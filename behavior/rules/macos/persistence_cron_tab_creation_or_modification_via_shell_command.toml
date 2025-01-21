@@ -1,0 +1,66 @@
+[rule]
+description = """
+Detects the creation or modification of cron tabs by a suspicious or malicious process. Cron is one of the most well
+known persistence mechanisms for macOS. It is a scheduler that allows a user to create a scheduled execution. Threat
+actors have abused this tool to persist their malware on macOS systems.
+"""
+id = "e5fc1285-d312-4b45-9e6b-e6c037276c17"
+license = "Elastic License v2"
+name = "Cron Tab Creation or Modification via Shell Command"
+os_list = ["macos"]
+reference = ["https://theevilbit.github.io/beyond/beyond_0004/"]
+version = "1.0.21"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+[process where event.type == "start" and process.name in ("bash", "sh", "zsh") and process.args == "-c"]
+[file where event.action != "deletion" and 
+  file.path like "/private/var/at/tabs/*" and
+  process.executable == "/usr/bin/crontab" and not
+  file.path == "/private/var/at/tabs/root"]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.11.0"

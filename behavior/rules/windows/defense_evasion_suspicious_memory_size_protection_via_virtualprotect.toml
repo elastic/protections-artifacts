@@ -1,0 +1,71 @@
+[rule]
+description = """
+Identifies when a process attempts to change memory region using VirtualProtect API from non executable to executable
+permissions and the size is abnormal.
+"""
+id = "c771303c-a200-4df3-bb76-3e5f87a18438"
+license = "Elastic License v2"
+name = "Suspicious Memory Size Protection via VirtualProtect"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
+ process.Ext.api.parameters.protection like "*X*" and not process.Ext.api.parameters.protection_old like "*X*" and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+  /* one byte change */
+ process.Ext.api.parameters.size == 1 and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance == "Kernel" and
+ not (process.executable : "C:\\Program Files\\Common Files\\McAfee\\SystemCore\\mfehcs.exe" and
+      process.code_signature.subject_name : ("MUSARUBRA US LLC", "McAfee, Inc.") and process.code_signature.trusted == true) and
+ not process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\microsoft.net\\framework*.dll" and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                              ("76509a878c4328e71e5d9c0622588e28716466bc9e53091b94f2a1777853153b",
+                                               "9d16f960bc4f8c90ee29e83dce9dc9f0a12e1da3553dec2a3a9a8dd9c91891e3",
+                                               "929cbeec5ba36a2e42080d31dfe7297fb1a0f4239060004283639182a8e62c74",
+                                               "12eea38ed51622bb7e46c61f912dab2ba3bd34161d200e0ebfd68b3f3cdd4d09",
+                                               "fa0b17d4c411a5011e094154e7f1bbd2e9237448df8a2b27e321bd1b2a3ab3f1",
+                                               "b0968a364408aad11a33343cb9fdf66b994dbd251cc64237f8894d66efe96f19",
+                                               "3cd00f456f51829eda119e0e133acc1e45a5930d61fc335a2e9aa688a836a24d",
+                                               "b3a2bf77de27a9793cc922872ef2508ba90a7dd30bca3b354fec190bb7dd333a",
+                                               "ac27790dd138bb3a27822a28c97d9af4787e1ad9539109aff94a3e5c684c322d",
+                                               "05ef9b2ea7b54a89228e058231373233c9b60e12eca9a5065efda42b9107966c",
+                                               "6da24b79a9dde5da83d72a11a0172f57ba0003f05d860aa2f4cfef440bc0bf5a",
+                                               "69ac5b15502b45663fc9fd4cc196dd0aaee6ce9fe743d5c40797e0d6be7f39c2",
+                                               "9e8563c4a6cd0c72a083bacfef449e045d061e7f26858329bd99fe69af4ddba8",
+                                               "ce144b3a591f39ab7b4cf9929c029b51959276d105261e31163df7ae7e56974a",
+                                               "bc4f488a26fd622c64f01e579d74b27047ada3e26a73ae8529222b1b8029d04e",
+                                               "f83edc04210f95b944921a7254f9dda5ab9a84e0b511c85d85b72a8394bbba80",
+                                               "ce144b3a591f39ab7b4cf9929c029b51959276d105261e31163df7ae7e56974a",
+                                               "4b3c8fe9d95b3ae99483dd8ffc5537eb03eef3f2adbdb351794696e4b0167c4e")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

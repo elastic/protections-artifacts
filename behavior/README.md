@@ -20,37 +20,42 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.80 | 89f0cf962cd80391de3a58c8bf83bcafed5894e272dab17cf0402095f930ea63 |
-| production-rules-macos-v1 | 1.0.80 | 9737a2204afdf4d272d09d4400ff4fff0609d07bfb0b2609ef9b8d13455dd106 |
-| production-rules-windows-v1 | 1.0.80 | 6d18ae386c799ee23f28058825b651080a1021986fca087a3b4600ef62cd4453 |
+| production-rules-linux-v1 | 1.0.81 | 8cd535491d05a8769de7c94a3b1cc2a28dbef80c7e27c742f8ce5d43dedac2cc |
+| production-rules-macos-v1 | 1.0.81 | b80437ce01b72965c1493c7db4256dc3c69c68ff0f66d07457e604718d251b3d |
+| production-rules-windows-v1 | 1.0.81 | 5d347e1282d8b3553489fdb8de945b0f8071685c67822706a94a91997460b13b |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.80', '1.0.79') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.81', '1.0.80') by OS/MITRE Tactic.
 
-| Tactic          |   Windows |   Linux |   macOS |   Total by Tactic |
-|-----------------|-----------|---------|---------|-------------------|
-| Defense Evasion |         2 |       0 |       0 |                 2 |
-| Execution       |         1 |       0 |       0 |                 1 |
-| Total by OS     |         3 |       0 |       0 |                 3 |
+| Tactic              |   Windows |   Linux |   macOS |   Total by Tactic |
+|---------------------|-----------|---------|---------|-------------------|
+| Collection          |         1 |       0 |       1 |                 2 |
+| Command and Control |         0 |       0 |       2 |                 2 |
+| Defense Evasion     |         3 |       1 |       2 |                 6 |
+| Discovery           |         0 |       0 |       1 |                 1 |
+| Execution           |         2 |       0 |       2 |                 4 |
+| Lateral Movement    |         3 |       0 |       0 |                 3 |
+| Persistence         |         0 |       4 |       3 |                 7 |
+| Total by OS         |         9 |       5 |      11 |                25 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Collection           |        11 |       0 |       5 |                16 |
-| Command and Control  |        34 |      11 |      26 |                71 |
+| Collection           |        12 |       0 |       6 |                18 |
+| Command and Control  |        34 |      11 |      28 |                73 |
 | Credential Access    |        45 |       4 |      24 |                73 |
-| Defense Evasion      |       265 |      42 |      44 |               351 |
-| Discovery            |         8 |       1 |       4 |                13 |
-| Execution            |        65 |      35 |      71 |               171 |
+| Defense Evasion      |       268 |      43 |      46 |               357 |
+| Discovery            |         8 |       1 |       5 |                14 |
+| Execution            |        67 |      35 |      73 |               175 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
 | Impact               |        18 |       4 |       2 |                24 |
 | Initial Access       |        54 |       2 |       2 |                58 |
-| Lateral Movement     |         8 |       1 |       1 |                10 |
-| Persistence          |        56 |      29 |      17 |               102 |
+| Lateral Movement     |        11 |       1 |       1 |                13 |
+| Persistence          |        56 |      33 |      20 |               109 |
 | Privilege Escalation |        65 |       8 |       8 |                81 |
-| Total by OS          |       629 |     137 |     205 |               971 |
+| Total by OS          |       638 |     142 |     216 |               996 |
 
 
 ### The Zen of Security Rules

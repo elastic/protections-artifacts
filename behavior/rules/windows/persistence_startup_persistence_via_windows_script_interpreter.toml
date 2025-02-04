@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -39,7 +39,9 @@ sequence by process.entity_id with maxspan=2m
       "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\*",
       "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
       "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
-      "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*") and not
+      "H*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run\\*",
+      "HKEY_USERS\\*Classes\\*\\InprocServer32\\*",
+      "HKEY_USERS\\*Classes\\*\\LocalServer32\\*") and not
      registry.data.strings :
                    ("*%ProgramFiles%*",
                     "*:\\Program Files\\*",

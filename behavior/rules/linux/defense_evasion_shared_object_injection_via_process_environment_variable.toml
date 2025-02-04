@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -51,7 +51,7 @@ process where event.type == "start" and event.action == "exec" and process.env_v
   process.parent.command_line == "runc init" or
   process.parent.executable like (
     "/usr/local/bin/fluentd", "/nix/store/*", "/usr/lib/pressure-vessel/from-host/bin/pressure-vessel-adverb", 
-    "/opt/tm/toolchains/*"
+    "/opt/tm/toolchains/*", "/bin/sudoedit"
   ) or
   process.executable == "/usr/bin/adb" or
   process.executable like "/tmp/newroot/*"

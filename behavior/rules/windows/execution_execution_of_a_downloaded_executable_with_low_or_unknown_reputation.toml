@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies Windows executable files that have been recently downloaded and have an unknown or malicious reputation.
+Attackers may rely upon a user downloading and opening a file in order for their malicious code to execute and gain
+initial access to an endpoint. Users may be subjected to social engineering to get them to open a file that will lead to
+code execution.
+"""
+id = "90912b6c-fc36-4e13-83c2-469e6b60e915"
+license = "Elastic License v2"
+name = "Execution of a downloaded executable with low or unknown reputation"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action == "creation" and file.Ext.windows.zone_identifier >= 3 and
+  file.origin_url regex~ """https?:[\/\\]{2}[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}[\/\\]{1}.*"""] as event0
+ [process where event.action == "start" and
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+  not process.code_signature.status like "errorCode_endpoint*" and startswith~(event0.file.name, process.name)]
+'''
+
+min_endpoint_version = "8.15.0"
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.15.0"

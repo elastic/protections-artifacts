@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious OpenSSL Execution via macOS Application"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x70.html", "https://attack.mitre.org/techniques/T1140/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -21,6 +21,7 @@ sequence by process.parent.entity_id with maxspan=30s
   process.args_count <= 2] 
 [process where event.type == "start" and process.name == "openssl" and
   not process.Ext.effective_parent.executable like ("/usr/local/jamf/*",
+                                                    "/Applications/AWS VPN Client/AWS VPN Client.app/Contents/Resources/openvpn/openssl",
                                                     "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
 '''
 

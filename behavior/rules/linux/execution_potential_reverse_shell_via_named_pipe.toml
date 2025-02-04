@@ -1,0 +1,90 @@
+[rule]
+description = """
+This rule detects the creation of a reverse shell through the use of named pipes. Attackers may leverage named pipes to
+evade detection and establish persistence onto a target system.
+"""
+id = "40bec6eb-e93b-4d09-8265-66bba186e332"
+license = "Elastic License v2"
+name = "Potential Reverse Shell via Named Pipe"
+os_list = ["linux"]
+version = "1.0.9"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=1m
+  [process where event.type == "start" and event.action == "exec" and process.name in ("mkfifo", "mknod") and
+   process.parent.command_line regex~ ".*[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.*" and not (
+     process.executable like "/var/lib/docker/*" or
+     process.parent.name in ("code", "nvim") or
+     process.parent.args in (
+       "check-trigger.sh", "load-fas-final.sh", "load-kpi-history.sh", "load-fas-table.sh", "load-kpi-gsheet.sh"
+     ) or
+     process.parent.executable in (
+       "/opt/azure/containers/aks-log-collector.sh", "/usr/sbin/debootstrap", "/usr/share/boot-sav/boot-repair.sh",
+       "/usr/lib/systemd/systemd"
+     ) or
+     process.parent.command_line in (
+       "/bin/sh -c cd GSheetLoad && bash load-fas-table.sh",
+       "/bin/sh -c cd GSheetLoad && bash check-trigger.sh",
+       "sh /usr/bin/_entrypoint.sh"
+     ) or
+     process.parent.command_line like "*Datadog*" or
+     process.command_line == "mkfifo /tmp/newrelic-infra.log" or
+     process.args like (
+       "collect/ss_stats.txt", "/tmp/tmp.*", "collect/ss.txt", "collect/sysctl.txt", "collect/systemctl-status.txt",
+       "/home/jetson/Linux_for_Tegra/rootfs/dev/urandom", "/run/exabgp/exabgp.out", "/dev/vboxusb/*",
+       "/var/tmp/.oracle/npohasd*", "/var/tmp/dracut*", "/tmp/.criu*", "/vz/*", "/var/log/misp_upgrade.log.pipe"
+     ) or
+     process.command_line like "mknod /tmp/*.tmp p" or
+     (
+       process.parent.executable == "./agent-linux-x86_64.sh" and
+       process.command_line like "mkfifo /tmp/agent-linux-x86_64.sh.pipe.*"
+     ) or
+     (process.parent.executable == "/usr/bin/nvim" and process.command_line like "mkfifo /tmp/nvim.favilo/*")
+   )
+  ]
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+     destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8", "172.31.0.0/16"
+     )
+   )
+  ]
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

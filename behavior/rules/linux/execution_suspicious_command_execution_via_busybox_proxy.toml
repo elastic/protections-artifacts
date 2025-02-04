@@ -1,0 +1,84 @@
+[rule]
+description = """
+This rule detects the execution of command line arguments capable of spawning shells or establishing network connections
+through Busybox. Attackers may use this technique to execute commands while attempting to evade detection.
+"""
+id = "ad89ce4d-96df-4cc8-bfc5-979a73469b54"
+license = "Elastic License v2"
+name = "Suspicious Command Execution via Busybox Proxy"
+os_list = ["linux"]
+version = "1.0.9"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "busybox" and (
+  process.args in ("sh", "ash") and
+  process.args : (
+    "*nc*", "*netcat*", "*openssl*", "*telnet*", "*exec*", "*import*pty*spawn*", "*import*subprocess*call*", "*socket*",
+    "*system*", "*io.popen*", "*os.execute*", "*fsockopen*", "*/inet/tcp/*", "*/dev/tcp/*", "*/dev/udp/*", "*nohup*",
+    "*setsid*", "*/dev/shm/*", "*ld-linux*.so*", "*/tmp/*", "*/var/tmp/*", "*rm*-rf*"
+  )
+) and process.parent.executable != null and not (
+  process.parent.command_line == "runc init" or
+  process.args : ("/var/atlassian/application-data/bamboo-agent*", "/health/sentinel_liveness.sh") or
+  process.command_line : ("ash /scripts*/detect_shell_script*", "ash ./autogen.sh", "ash /tmp/tmp.*") or 
+  process.parent.command_line in ("php artisan convert:video", "sh -c busybox sh &") or
+  process.parent.executable == "lib/apk/exec/busybox-1.36.1-r19.trigger" or
+  (
+    process.parent.executable == "/usr/local/bin/node" and process.parent.args == "run" and process.parent.args == "build"
+  ) or
+  process.parent.name in ("consul", "containerd") or
+  process.executable like "/run/containerd/*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

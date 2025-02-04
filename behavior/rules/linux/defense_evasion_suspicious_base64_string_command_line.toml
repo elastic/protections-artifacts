@@ -1,0 +1,113 @@
+[rule]
+description = """
+This rule identifies suspicious base64 strings in a command execution. Malware authors may attempt to evade detection
+and trick users into executing malicious code by encoding and obfuscating their payloads. Several payloads relate to
+interpreter executions, reverse shells and ELF binaries.
+"""
+id = "18cdd8c1-4dc8-4ac1-8f7c-830be4c493cc"
+license = "Elastic License v2"
+name = "Suspicious Base64 String Command-line"
+os_list = ["linux"]
+reference = ["https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1140/T1140.yaml"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
+process.parent.executable != null and process.command_line like (
+
+  // python and python3
+  "*cHl0aG9uIC1jICdpbXBvcnQgc29ja2V0*", "*ZXhwb3J0IFJIT1NUPQ*", "*cHl0aG9uMyAtYyAnaW1wb3J0IHNvY2tldA*",
+  "*cHl0aG9uMyAtYyAnaW1wb3J0IG9zLHB0eSxzb2NrZXQ7*", "*cHl0aG9uIC1jICdpbXBvcnQgb3MscHR5LHNvY2tldDs*",
+  "*cHl0aG9uIC1jICdpbXBvcnQgb3MscHR5LHNvY2tldDs*",
+
+  // perl
+  "*cGVybCAtTUlPIC1l*", "*cGVybCAtZQ*",
+
+  // ruby -r, -e
+  "cnVieSAtcg*", "*cnVie*tZQ*",
+
+  // php -r & cmd shells
+  "*cGhwIC1y*", "*PD9waHAgaWY*", "*PD89YCRfR0VUWzBdYD8*",
+
+  // lua -e + versioning wildcard
+  "*bHVh*IC1l*",
+
+  // sh reverse shells
+  "*c2ggLWkgPiYgL2Rldi90Y3Av*", "*MDwmMTk2O2V4ZWMgMTk2PD4vZGV2L3RjcC8*", "*ZXhlYyA1PD4vZGV2L3RjcC8*",
+  "*c2ggLWkgNTw+IC9kZXYvdGNwLw*", "*c2ggLWkgPiYgL2Rldi91ZHAv*",
+
+  // nc
+  "*cm0gL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnxzaCAtaSAyPiYxfG5j*", "*YnVzeWJveCBuYw*",
+
+  // bash reverse shells
+  "*YmFzaCAtaSA+JiAvZGV2L3RjcC8*", "*L2Jpbi9iYXNoIC1sID4gL2Rldi90Y3Av*",
+
+  // node -e
+  "*bm9kZSAtZQ*",
+
+  // socat
+  "*c29jYXQ*",
+
+  // ELF
+  "*f0VMRgIB*"
+) and not (
+  process.parent.name in ("fzf", "nvim") or
+  process.command_line like~ "sh -c *data *"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

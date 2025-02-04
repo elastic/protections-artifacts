@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.56"
+version = "1.0.57"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -50,7 +50,8 @@ sequence by process.entity_id with maxspan=5m
      not process.executable :
                        ("C:\\Program Files\\Git\\mingw64\\bin\\curl.exe",
                         "C:\\Program Files\\Fiery\\Components\\Common files\\curl.exe",
-                        "C:\\Program Files\\Fiery\\Fiery Command WorkStation\\curl.exe") and
+                        "C:\\Program Files\\Fiery\\Fiery Command WorkStation\\curl.exe",
+                        "C:\\Program Files\\Microsoft Visual Studio\\*\\node.exe") and
      not (process.name : "rundll32.exe" and
           process.args : ("?:\\Program Files\\Microsoft Office\\root\\*",
                           "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*",
@@ -186,7 +187,8 @@ sequence by process.entity_id with maxspan=5m
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and
          dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
                               "raw.githubusercontent.com", "api.github.com")) and
-    not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe")
+    not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
+    not (process.name == "dfsvc.exe" and dns.question.name == "innateclient.azurewebsites.net")
   ]
 '''
 

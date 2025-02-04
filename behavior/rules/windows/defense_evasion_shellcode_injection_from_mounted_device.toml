@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies the call of code injection related Windows API with suspicious parameters that align with shellcode execution
+and where the origin of the suspicious call is located in a remote file share.
+"""
+id = "5754cf6f-9ba7-4520-a0a5-9498af1baaf3"
+license = "Elastic License v2"
+name = "Shellcode Injection from Mounted Device"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where
+    process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "VirtualProtectEx", "VirtualAllocEx", "MapViewOfFile", "MapViewOfFile2") and
+    process.executable != null and process.parent.executable != null and
+    process.Ext.api.behaviors in ("shellcode", "allocate_shellcode") and
+    process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "\\device\\mup\\*" and
+    process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+    process.thread.Ext.call_stack_summary :
+                    ("ntdll.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|Unbacked",
+                     "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked") and 
+    not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                     $entry.callsite_trailing_bytes : 
+                             ("418bc74903c683600c004889388970084b891c34488b4df04833cce8586ef7ff4c8d5c2440498b5b38498b7340498be3415f415e415c5f5dc3cccccccccccccc", 
+                              "498d043483600c004889384489700849891c37488b4df04833cce89ce6f8ff4c8d5c2450498b5b38498b7340498be3415f415e415c5f5dc3cccccccccccccc48", 
+                              "8bd885c0797a41832600e8c59b090085c0746dff1537eebaff488b1570d91a00488d0d69d91a008bf8ff5218488d1595bbf9ff4883c018488d4c2440448bc348"))
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

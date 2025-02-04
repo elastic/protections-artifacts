@@ -8,21 +8,21 @@ id = "ccbc4a79-3bae-4623-aaef-e28a96bf538b"
 license = "Elastic License v2"
 name = "Execution of a File Written by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=5m
   [file where event.action != "deletion" and
    (process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe", "PrintBrm.exe") or
     process.executable : "?:\\Windows\\sys*\\OpenSSH\\sftp.exe") and
-    not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] by file.path
+    not file.path : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")] as event0
   [process where event.action == "start" and
+   startswith~(process.executable, event0.file.path) and
    not process.parent.executable : ("?:\\Windows\\System32\\drvinst.exe") and
-   not (process.code_signature.subject_name: "Bentley Systems, Incorporated" and process.code_signature.trusted == true)
-   ] by process.executable
+   not (process.code_signature.subject_name: "Bentley Systems, Incorporated" and process.code_signature.trusted == true)]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -64,4 +64,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"

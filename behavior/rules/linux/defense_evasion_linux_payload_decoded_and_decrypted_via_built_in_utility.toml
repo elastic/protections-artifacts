@@ -1,0 +1,90 @@
+[rule]
+description = """
+This rule identifies when a built-in utility is used to decode and decrypt a payload on a Linux system. Malware authors
+may attempt to evade detection and trick users into executing malicious code by encoding and encrypting their payload.
+"""
+id = "cc8a82b6-eb6e-4e35-8c9e-e6ec3339e12d"
+license = "Elastic License v2"
+name = "Linux Payload Decoded and Decrypted via Built-in Utility"
+os_list = ["linux"]
+version = "1.0.10"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable like (
+  "/dev/shm/*", "/tmp/*", "/var/tmp/*", "/var/run/*", "/root/*", "/boot/*", "/var/www/html/*", "/opt/.*"
+) and (
+  (process.name in ("base64", "base32", "base16") and process.args like "*-*d*") or
+  (process.name == "openssl" and process.args == "enc" and process.args in ("-d", "-base64", "-a")) or
+  (process.name like "python*" and
+    (process.args == "base64" and process.args in ("-d", "-u", "-t")) or
+    (process.args == "-c" and process.args like "*base64*" and process.args like "*b64decode*")
+  ) or
+  (process.name like "perl*" and process.args like "*decode_base64*") or
+  (process.name like "ruby*" and process.args == "-e" and process.args like "*Base64.decode64*")
+) and not (
+  process.parent.executable like ("/tmp/newroot/*", "/tmp/jwt_vf.sh", "/root/*.sh", "/tmp/.criu.mntns*") or
+  process.parent.command_line like "*/tmp/__salt.tmp.*.sh" or
+  process.args == "/usr/bin/coreutils" or
+  (
+    process.parent.name like "python*" and (
+      (process.parent.args == "test.regrtest" and process.parent.args == "--pgo") or
+      (process.parent.command_line like~ "./python -m test --pgo*")
+    )
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

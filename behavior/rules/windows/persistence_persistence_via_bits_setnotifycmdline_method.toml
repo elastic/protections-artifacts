@@ -13,7 +13,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/api/bits1_5/nf-bits1_5-ibackgroundcopyjob2-setnotifycmdline",
     "https://www.elastic.co/security-labs/bits-and-bytes-analyzing-bitsloth",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,11 @@ process where event.action == "start" and
                     ("YANDEX LLC", "McAfee, LLC", "AVG Technologies USA, Inc.", "Reason Cybersecurity Inc.") and
            process.code_signature.trusted == true) and
   not (process.name : "wmic.exe" and process.args : "MSFT_MpComputerStatus" and process.args : "get") and
-  not (process.name : "rundll32.exe" and process.args :  "?:\\Program Files (x86)\\PCPitstop\\Super Shield\\*")
+  not (process.name : "rundll32.exe" and process.args :  "?:\\Program Files (x86)\\PCPitstop\\Super Shield\\*") and
+  not process.hash.sha256 in ("65aee904ab6008a25963a85941039baae02e9a120e338ad2635ec4be9ddf2e73",
+                              "867a86be9ab8dfa8f2d4997dd7f4df584709f9677d35efa94ddf0d2be224351a",
+                              "fbdbf5f13818503b5d311c233af6467f5f9a462418bcc4558c1561df0c033d7c",
+                              "bca7e687a39ac52d8ddb0e95f0886ba3d194ff55a11cdf09fc2b0da9ebbad572")
 '''
 
 min_endpoint_version = "7.15.0"

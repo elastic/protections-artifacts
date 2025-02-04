@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -31,7 +31,7 @@ not (
     "ansible-playbook", "nessus-agent-module", "app", "nessusd", "executor", "armor", "cockpit-bridge",
     "rapid7_endpoint_broker", "sudo", "zabbix_agent2", "cbram", "tm_sandbox", "cybereason-activeconsole", "find",
     "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2", "vzctl", "cursor",
-    "exiftool", "devbox"
+    "exiftool", "devbox", "please", "supervisord"
   ) or
   process.parent.name like "please_go*" or
   process.parent.executable like (
@@ -47,7 +47,9 @@ not (
     "/vz/*", "/usr/libexec/openssh/sshd-session", "/opt/lockdown/goss/goss", "/opt/oracle.ahf/common/venv/bin/python*",
     "/usr/bin/awk", "/usr/sbin/registercloudguest", "/var/opt/oracle/oracle.ahf/common/venv/bin/python*",
     "/opt/pwx/oci/rootfs/usr/local/bin/run_as_io_flusher.sh", "/u01/app/oracle.ahf/common/venv/bin/python*",
-    "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.10", "/etc/init.d/ohasd"
+    "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.10", "/etc/init.d/ohasd", "bin/rcsd",
+    "/usr/lib/openssh/sshd-session", "/var/arcticwolfnetworks/agent/scans/jre/jre/bin/java", "/usr/local/bin/nuctl",
+    "/usr/local/bin/dashboard"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"

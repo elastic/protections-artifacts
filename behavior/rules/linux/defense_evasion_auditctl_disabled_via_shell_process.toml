@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects when auditctl is executed with the `-e 0` option to disable auditing via a shell process. Malware is seen to
+disable auditing to avoid detection and to cover its tracks.
+"""
+id = "36a8d397-7fef-4bdf-9152-71c750168580"
+license = "Elastic License v2"
+name = "Auditctl Disabled via Shell Process"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
+process.command_line like "*auditctl *-e*0*" and not process.parent.name == "sudo"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

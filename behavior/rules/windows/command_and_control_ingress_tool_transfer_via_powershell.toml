@@ -7,7 +7,7 @@ id = "5abd98fb-ffbe-4cd6-9592-3cda7b155ff5"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via PowerShell"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -20,15 +20,15 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
 
   (
     (process.parent.name : "powershell.exe" and process.parent.command_line : "*http*" and 
-     not process.command_line : "**bmx-panels-check.s3.us-east-1.amazonaws.com*") or
+     not process.command_line : ("*bmx-panels-check.s3.us-east-1.amazonaws.com*", "*https://aka.ms/vscode-powershell*")) or
 
     descendant of [process where event.action == "start" and
                    process.name : "powershell.exe" and process.command_line : "*http*" and 
-                   not process.command_line : "**bmx-panels-check.s3.us-east-1.amazonaws.com*"]
+                   not process.command_line : ("*bmx-panels-check.s3.us-east-1.amazonaws.com*", "*https://aka.ms/vscode-powershell*")]
   )  and
 
   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
-  not (process.code_signature.subject_name : "Chocolatey Software, Inc." and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name : ("Chocolatey Software, Inc.", "Chocolatey Software, Inc") and process.code_signature.trusted == true) and
   not process.executable : ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*", 
                             "?:\\ProgramData\\chocolatey\\lib\\*", 
                             "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*.exe") and 
@@ -36,7 +36,10 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                  ("1aac95f980af717c580b1b32885f51e67f0c3631ca0e7cfb2908b75df9a3501c", 
                   "c73c4ac2a7cdc48829fe0f9d7ec91ca41c8b434490d4eb3205aad69c7aa3b921", 
                   "3655b300361f205778b3d998a158b7ffb962ede315d92c25c0735b7925b26d8e", 
-                  "2aac5c0da14cce02f809e0619c17dcc42ed995898dfb43f8312a924dd6b62a8a")
+                  "2aac5c0da14cce02f809e0619c17dcc42ed995898dfb43f8312a924dd6b62a8a",
+                  "8426d62aebc7819badc0260eb7a9c83efb65d8c0534d83be691e215db53bf244",
+                  "f9fabf2f1c975ae974ac88245b804b526f0e79a97ee7ccc814432784cffb02d4",
+                  "d7c9b99aa403c0e629086e8e4acf6438a5489fe9070dc22d6b033d759414fb76")
 '''
 
 min_endpoint_version = "8.4.0"

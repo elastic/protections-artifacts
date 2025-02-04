@@ -11,15 +11,16 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence with maxspan=5m
    [file where
     process.name : ("MSHTA.EXE", "CertUtil.exe", "CertReq.exe", "tar.exe", "curl.exe", "xcopy.exe")
     and file.Ext.header_bytes : "4d5a*" and process.executable : "?:\\Windows\\Sys*\\*.exe" and 
-    not (process.name : "xcopy.exe" and user.id : "S-1-5-18")] by file.path
+    not (process.name : "xcopy.exe" and user.id : "S-1-5-18")] as event0
    [library where not startswith~(process.executable, dll.path) and
+    startswith~(dll.path, event0.file.path) and
     process.code_signature.subject_name : "Microsoft*" and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
     not (process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe" and dll.path : "C:\\oracle12\\*.dll") and
@@ -32,7 +33,7 @@ sequence with maxspan=5m
                "?:\\Windows\\Sys*\\inetsrv\\w3wp.exe", 
                "C:\\gstr\\rdcnet\\tools\\gacutil.exe", 
                "?:\\Program Files\\IIS Express\\iisexpress.exe") and
-    not dll.hash.sha256 : "cd9c2a615d6b842bda79c0f10eb44cc9b428bf4ad25c0cefbd5f43f9599d51f1"] by dll.path
+    not dll.hash.sha256 : "cd9c2a615d6b842bda79c0f10eb44cc9b428bf4ad25c0cefbd5f43f9599d51f1"]
 '''
 
 min_endpoint_version = "8.4.0"

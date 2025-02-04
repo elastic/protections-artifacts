@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence by process.entity_id
@@ -160,7 +160,44 @@ sequence by process.entity_id
                 "1e9ba2a4b2dec7e24d6826ae902b78023961a26d3d69d77c33611034bc7855c2",
                 "47e7a7ac2dcf1b7d287dcebf61a70024c9468cbd0711dce969f56e26c2f9e7cf",
                 "b2d1174b61f24897014892cd654cd1cb3cd0a5c9070c65d18198e65dac7ee3ca",
-                "6aa3ddc43ac48f64ace0febd144e3e153f8b09c13400079376b2969444f02188")] as event0
+                "6aa3ddc43ac48f64ace0febd144e3e153f8b09c13400079376b2969444f02188",
+                "5aa02b23b3c30a8f78317b2942a36206520c513d2bbfa3e1341f4caff749b692",
+                "6d01b1805a009a921e60c9b62152f02bd8dd0e8526aa800d7b6c84867494fc33",
+                "c219e731a7b6a5a712581cb9a80e9e7194540d2de16e809b083a945218cd4f53",
+                "7c9f73755aa4e7b0480ca6a1b23b25e3103c17afa1635a3abf8c03bb3a686a78",
+                "997b9b74845cbb65a985c1e7716162428b80b5af6d8f0913431428f9e2bdf299",
+                "f65b48c50eea84e16e28c3ee9474d513a2e9ac63ec87cee7b259c95e007b60b2",
+                "cac9aab6535007f7842267becead3e88fd49897a9cd8fd8a6d0bf2c3eefc41bd",
+                "341ab39bec13139ebea1bbcf4c37cb5dcbff45f492017fdea430487f686cb909",
+                "a9b272ad78876f32eaac69bb2ec90a8d55137707bc4ad8f0ae66b6db92402b81",
+                "fe0579c06f301cd47854e739fff1b2e90f6051285049e22180683469dda18c6a",
+                "0f0bbe03a6913cfa5ba54d9349431f03b358b78fe8eefb066d5763e45783f2a2",
+                "6bacafd71013e7a773aee6e4115a1ac08da680d3cd42d5d3190944d5d179f314",
+                "8f8bab324e9b85a4b57744de5de10a9947ccec21122461818cf986df068f4688",
+                "07a6af99a3006eb34f9f0b6db85393c174af9405baa0609103873c02079a0860",
+                "61ae921682bdf718573fb0974d7b567b317dd6d6faa8edf779154e276edfda7f",
+                "16cde1e539b31a668178664646b667830ea009c055f2170495b4d06971442b2a",
+                "0baa249ee56e9c3db8f600ab9a45b431c91ad518bc580fd8604c675efc936b14",
+                "81cc722182b31c2bddb18f840defcac2b9e6fb0ca243de49de50e66b6c8eddee",
+                "dcc3c9785835a07283d157dbbb282f6800fc1159dbebf618f3c8c37bb41bc831",
+                "d77e6322729c8d498c65afca69d4643a600cf342f84e2cbf308a63c3a362c19e",
+                "75e06078dd24506ffea81cf1615f5f9d9057abe2caf0067c396f20f3bea8b817",
+                "e3f538a352765116ef4f2257fd70970b75185434b26e5b5da598b94ecf594b91",
+                "4b18c4c8e924fb71a279f6aca111abd087394bf16d00a46753c0a71e402ff783",
+                "32cca59d74b0908e477957b35bdbe3dcc7a60abe797de50235ee37714ccc53d6",
+                "afd01a1470fde33392baf255c206475c9192b46ce77c8d3a3714d5452d033e5f",
+                "06224f3334be3372c7d96825385ed3d7bb8ab160e70bf85fa759619b64f1489a",
+                "5094c191ae28dd8fb7dc10748ac9ace10fbf9a6692900ae7f9e7174fd2802067",
+                "00905ed6ff32728232fa25a45cb3b05e6e026849df6b24c2390037c5e7946acb",
+                "eea569fddc64fed3c3185c22309da7a3c051e93b754b19977014d9f952d9d470",
+                "76d436d84cfcd42831dac1d071c11fb6645583fc853ddb8408f032f2c17c5137",
+                "aca76655d475a31d891a355d383ee723e6ba1c4586569dc477ac39a050fac3f8",
+                "54007f6622ae287e02a338e8d4c8c1852fddec91267d7803c98900d58943d4cc",
+                "1d9ceca88bc7ff9a73097689c8ab45ed27a84150f9e6a2c70e765aa434149d05",
+                "f77f420635521ebea5705faa899f2463b845bdef49ec4cc1f825986c5e8b1682",
+                "42215642c3c1ec4c578b9c03cbe8cd93cdf20abe33687473da2d25d5f5efe0a9",
+                "f4056e1455b5a1327b6c218d0ad28ca888700fa7103088aa7eadeb6bf354052d") and
+  not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and dll.path : "C:\\Users\\*\\AppData\\Local\\Temp\\MSI????.tmp")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
   process.Ext.api.parameters.size > 4096 and

@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -60,17 +60,39 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "c160ce8529cd5131f1c349bc92c5b3e989b0cac7fcbdd1318eb484eb3b4ca49f",
                                    "3d86479ab47b249241e7d392ef5daf2263b341f4a77755ac285c629dfc71f06c",
                                    "bf85b58dada12a821a8ee445a6d7b97b7e984eb4db88a9bcb3e3fa698c88d345",
-                                   "a87b3f02042de4d655f72af65ed5242fae5c675bebd19e962978c13e6d99ba00") and
+                                   "a87b3f02042de4d655f72af65ed5242fae5c675bebd19e962978c13e6d99ba00",
+                                   "eb70e1f2aad9d66f0ca71b3b57ad6b8c6f7fa623155a589afe82a899f7dd88c4",
+                                   "bbff088a88a0a754dc9d312e52ef7e60dd93537d78d73f79c89aa5b5091457fc",
+                                   "c817a4c49167176bfa6335b950d629b31ff553e943b9ab835b88f6c2ee09fc82",
+                                   "7dd3acf9f47641ce621e4db5980ab8f7a3f67c9a4f008f36b56d59afefbedfa9",
+                                   "0be7c1898ca40070ba6807cdc95722a35cbee79fa08399abd714b90a5b5239d5",
+                                   "eb70e1f2aad9d66f0ca71b3b57ad6b8c6f7fa623155a589afe82a899f7dd88c4",
+                                   "9ce7991f13bf252648ea4766299cb59ab291771937b11a7a7a04df2c540d565d",
+                                   "3f74481e6991404f951ff5168c6726a521c566eb408a654d776109afdb963655",
+                                   "7dd3acf9f47641ce621e4db5980ab8f7a3f67c9a4f008f36b56d59afefbedfa9",
+                                   "6e7533220f0715156b9baa401fb13a71735aabfb1443dad6a3835ab8a38750bf",
+                                   "7b5e0b0bc2ca257071210ddb787cb18d65621bb7d1034ea946937ca565977bbd",
+                                   "3f74481e6991404f951ff5168c6726a521c566eb408a654d776109afdb963655",
+                                   "7dd3acf9f47641ce621e4db5980ab8f7a3f67c9a4f008f36b56d59afefbedfa9",
+                                   "c9e303d84e5fa603c85abee0caefa8b0ef393aab6805e2ea5098ca927fa2b6cf") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :
                        ("*85f60f95c10fb6c9894dac488bcce82f000000908b45*",
                         "*8bc641c6470c01488b558849895710488d65c85b5e5f415c41",
-                        "488b9550ffffffc6420c01833d3efbd15f007406ff150a18d15f89855cffffffe8a7f4535f908b8d5cffffff898d70ffffff83bd70ffffff000f95c10fb6c989")) and
+                        "c2280090b808001a00ba408f*d2c2240090b809001c00ba408f*",
+                        "41c6470c01833d*5e8bc641c6470c01488b558849895710488d65*",
+                        "81bbc40000002afb0149742a33c08d55f450ff8d78ffffff6a0252e8e27c100083c408588b955cffffff64891500000000e96703000085c00f842d020000e89f",
+                        "8bd8488d8d28ffffffff15f40a04009033c0488945b033c0488945b8ff15591304008bc8ff154113040085db0f95c30fb6db807dc000740e488b4d184c8d1de0",
+                        "488b9550ffffffc6420c01833d3efbd15f007406ff150a18d15f89855cffffffe8a7f4535f908b8d5cffffff898d70ffffff83bd70ffffff000f95c10fb6c989",
+                        "41c6470c01833dd1b6055c007406ff15310a055c488b8d70ffffff49894f108bd833c0488945b033c0488945b848b850652addfd7f0000ffd08bc8e87dcaa15b",
+                        "41c6470c01833dc8c42649007406ff1540d026498bf0e8a11a8d488bc641c6470c01488b558849895710488d65c85b5e5f415c415d415e415f5dc30019130a00")) and
 
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Unknown", "Kernel", "Kernel|*", "*.ni.dll", "coreclr.dll", "Undetermined", "hmpalert.dll", "em003_64.dll") and
 
- not process.executable == "C:\\Program Files\\Veeam\\Backup and Replication\\Backup\\Veeam.Backup.Service.exe" and
+ not process.executable : ("C:\\Program Files\\Veeam\\Backup and Replication\\Backup\\Veeam.Backup.Service.exe",
+                           "C:\\Program Files\\Citrix\\Broker\\Service\\BrokerService.exe",
+                           "C:\\Program Files\\Qlik\\Sense\\ServiceDispatcher\\dotnet\\dotnet.exe") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance == "inprocessclient64.dll"
 '''
 

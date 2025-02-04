@@ -7,7 +7,7 @@ id = "7d2a993e-967f-4abd-b53e-ac14fdd66ddb"
 license = "Elastic License v2"
 name = "Suspicious Codesign Execution via Osacompile"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -15,7 +15,7 @@ process where event.type == "start" and event.action == "exec" and
  process.args in ("--sign", "-s") and
  process.args in ("--force", "-f") and
  process.args in ("--deep") and
- ((process.parent.name == "osacompile") or (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name like~ "terminal"))
+ ((process.parent.name == "osacompile") or (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name like~ ("terminal", "codesign")))
 '''
 
 min_endpoint_version = "8.5.0"

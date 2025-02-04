@@ -8,7 +8,7 @@ id = "446e61bf-8370-45df-88ab-7b213ee653db"
 license = "Elastic License v2"
 name = "Image Hollow from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 api where process.Ext.api.behaviors == "hollow_image" and
@@ -48,7 +48,11 @@ api where process.Ext.api.behaviors == "hollow_image" and
   not (process.executable : "?:\\Windows\\System32\\backgroundTaskHost.exe" and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
   not process.parent.executable : ("?:\\Program Files (x86)\\Steam\\steam.exe", "?:\\Program Files\\Steam\\steam.exe") and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("2ef1f7e839e332d97e32ee0213c92d0e74536fb3af04b6df1d335e2f101f968e", "a20a14118c2f06a1cc502095a1f18b3cb34ad75f1684f7ec26e24a68d4e3114c")
+  not (process.Ext.api.metadata.target_address_name : "cxll27*.llx" and process.parent.executable : "C:\\Program Files (x86)\\Citrix\\HDX\\bin\\WfShell.exe") and
+  not (process.Ext.api.metadata.target_address_name == "libcapki.dll" and process.parent.executable : "C:\\Program Files (x86)\\CA\\DSM\\Bin\\*.exe") and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("2ef1f7e839e332d97e32ee0213c92d0e74536fb3af04b6df1d335e2f101f968e",
+   "a20a14118c2f06a1cc502095a1f18b3cb34ad75f1684f7ec26e24a68d4e3114c", "da502d1a77883ab56d110889237ce7f18527a1d78e85078f40d269966059e267",
+   "2a2f9dc5f88e4596ade6a57ec2baa8586dbade44e6df9ecb32035cfd1d8bd85d")
 '''
 
 min_endpoint_version = "8.10.0"

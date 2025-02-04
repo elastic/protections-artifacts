@@ -1,0 +1,43 @@
+[rule]
+description = """
+This rule detects when a process is started directly by calling `/proc/self/exe`. This is a technique used by malware to
+masquerade the legimate binary name as `exe` in an attempt to evade detection.
+"""
+id = "eb66a097-a2e0-4fc9-b1e8-c59d26fd9f93"
+license = "Elastic License v2"
+name = "Potential Masquerading via /proc/self/exe"
+os_list = ["linux"]
+reference = ["https://x.com/CraigHRowland/status/1858296306202292613"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.command_line == "/proc/self/exe"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

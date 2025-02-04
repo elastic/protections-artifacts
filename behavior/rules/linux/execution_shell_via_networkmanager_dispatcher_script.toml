@@ -1,0 +1,56 @@
+[rule]
+description = """
+This rule detects a shell being spawned by a NetworkManager dispatcher script. Attackers may use this method to
+establish persistence on a target system whenever a network action is triggered.
+"""
+id = "e8d8eb78-d6aa-456f-a24e-c073026f7809"
+license = "Elastic License v2"
+name = "Shell via NetworkManager Dispatcher Script"
+os_list = ["linux"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.parent.executable like~ "/etc/NetworkManager/dispatcher.d/*" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,86 @@
+[rule]
+description = """
+Identifies the creation of a new shared object (.so) file followed by a process execution that preloads the newly
+created shared object using either the LD_PRELOAD or LD_LIBRARY_PATH environment variables. Attackers may leverage this
+technique to inject malicious code into legitimate processes, thereby enabling stealthy persistence and unauthorized
+access to the compromised system.
+"""
+id = "b6585a25-db0e-4911-b860-3f117b1db60f"
+license = "Elastic License v2"
+name = "Shared Object file creation and immediate Preload"
+os_list = ["linux"]
+reference = [
+    "https://www.uptycs.com/blog/cyber_espionage_in_india_decoding_apt_36_new_linux_malware",
+    "https://attack.mitre.org/techniques/T1574/006/",
+]
+version = "1.0.22"
+
+query = '''
+sequence with maxspan=5s
+  [file where event.action == "creation" and 
+   file.path : ("/tmp/*", "/lib/*", "/usr/lib/*", "/var/tmp/*", "/dev/shm/*", "/dev/run/*") and
+   file.extension == "so"] as event0
+  [process where event.type == "start" and event.action == "exec" and startswith~(process.env_vars, event0.file.path)]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.006"
+name = "Dynamic Linker Hijacking"
+reference = "https://attack.mitre.org/techniques/T1574/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

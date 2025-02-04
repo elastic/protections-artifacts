@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
@@ -26,8 +26,10 @@ not (
     "/etc/resolv.conf", "/etc/resolv-secure.conf", // commonly used to ensure resolv.conf is not modified by the system
     "/etc/pki/entitlement"
   ) or
-  process.parent.executable in ("/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys", "./ldap2sshkeys") or
-  process.parent.args : ("/var/lib/waagent/*", "/opt/tableau/tableau_server/*") or
+  process.parent.executable in (
+    "/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys", "./ldap2sshkeys", "/var/lib/dpkg/info/cblauncher.postinst"
+  ) or
+  process.parent.args : ("/var/lib/waagent/*", "/opt/tableau/tableau_server/*", "/var/tmp/rpm-tmp.*") or
   process.parent.command_line in ("/bin/bash /usr/sbin/libpam", "sh clean") or
   process.parent.command_line like "*.ansible*" or
   process.command_line in (
@@ -35,7 +37,7 @@ not (
     "chattr +i /etc/pam.d/password-auth", "chattr -i /etc/pam.d/password-auth"
   ) or
   (
-    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args in (
+    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "sudo") and process.args in (
       "/var/spool/cron/root", "/var/spool/cron", "/etc/crontab", "/etc/ld.so.preload", "/etc/hosts", "/etc/fstab",
       "/etc/ssh/sshd_config", "/etc/sssd/sssd.conf", "/etc/vxagent/involflt"
     )

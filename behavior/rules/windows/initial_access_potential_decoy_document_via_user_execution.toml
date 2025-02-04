@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence with maxspan=5s
@@ -20,10 +20,16 @@ sequence with maxspan=5s
     (process.name : "cmd.exe" and process.working_directory : "?:\\" and not process.working_directory : "C:\\") or 
     (process.name : "cmd.exe" and process.command_line : "*\\Temp\\7ZipSfx*")
   ) and 
-  not process.executable : "?:\\Program Files (x86)\\SmartAdvocate\\SADocumentLauncher\\SADocumentLauncher.exe" and 
+  not process.executable :
+               ("?:\\Program Files (x86)\\SmartAdvocate\\SADocumentLauncher\\SADocumentLauncher.exe",
+                "C:\\Program Files\\Python*\\python.exe",
+                "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.*.exe",
+                "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE") and
   not process.parent.executable : ("\\Device\\Mup\\*", "?:\\Program Files\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acspcoc.exe") and
   not process.executable : "?:\\Program Files\\Python??\\python.exe" and
-  process.hash.sha256 != "204326fdd6483ebce82c889fce539b1782a645b225c0f2e9fc8d71139546f255"
+  not (process.name : "rundll32.exe" and process.args : "url.dll,FileProtocolHandler") and
+  not process.hash.sha256 in ("204326fdd6483ebce82c889fce539b1782a645b225c0f2e9fc8d71139546f255",
+                              "da5612f679d98e07d49360989fd6abe7de157e7024d0b9ef0a3de527026baff2")
   ] by process.entity_id
  [process where event.action == "start" and
   (

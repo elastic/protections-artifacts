@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 sequence by process.entity_id
@@ -103,7 +103,9 @@ sequence by process.entity_id
                     "e7883c7d57f5cfe7d1649ab138f62f5042f7acda8ed3c8664c9335c3ddba85c4",
                     "8982729121fa3b3e6c283437f5832916a5a3611374ac848368c6edaae5086257",
                     "63f2a4be0dfbaf2b9740aa5c2320d0290451d6d5581cc6f8e183ced9ea796d95",
-                    "30534b04d137543932bc0e66fc778d772ca5d90c0b5faec74a842cad8d50ade8") and
+                    "30534b04d137543932bc0e66fc778d772ca5d90c0b5faec74a842cad8d50ade8",
+                    "fc0ea005db332feec00e6c34e36de85469d24074c8af23cea84b72eb0fa7fb85",
+                    "cffea8d18419170baded53d75a8d1b8d20170c21ef2d4bebddfb2efcb89a641c") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -232,7 +234,8 @@ sequence by process.entity_id
                           "4c8bf04885c00f84cc00000083fb027c22488d4c2458c74424585b57485dc744245c2047504166c74424600a00ff9570010000488d542468498bceff55384c8b",
                           "488bc84885c075098d41034883c4205bc3488b4308488d9318020000ffd04885c0750bb8040000004883c4205bc3488b4b10ffd033c04883c4205bc3cccc488b",
                           "48be84*7f0000488b064889074883c6084883c708488b06488907415f415e415d415c415b415a415941585f5e5d5c5b5*",
-                          "488d15d1832000488bc8ff1590651700488905a1a7280048833d99a72800000f84ab000000488d1524010000488d0d85a72800e8483a120085c0754be87f79f1"))
+                          "488d15d1832000488bc8ff1590651700488905a1a7280048833d99a72800000f84ab000000488d1524010000488d0d85a72800e8483a120085c0754be87f79f1",
+                          "8bd8488d8d28ffffffff159fb9010083fb6f0f85d00100008b4db8ff154dbf0100488945b0488d55b848895580488b4db048894d88488d8d28ffffffff1564b9"))
   ]
   until [process where event.action:"end"]
 '''

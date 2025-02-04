@@ -1,0 +1,63 @@
+[rule]
+description = """
+This rule detects the use of the `touch` command to modify file timestamps. Attackers may use timestomping to manipulate
+file timestamps to evade detection and alter the file's appearance. For example, attackers may change the file's
+creation, modification, and access times to hide malicious activities or make the file appear legitimate.
+"""
+id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
+license = "Elastic License v2"
+name = "Timestomping Detected via Touch"
+os_list = ["linux"]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "touch" and
+process.parent.executable != null and process.args like (
+  "-t*", "-d*", "-a*", "-m*", "-r*", "--date=*", "--reference=*", "--time=*"
+) and process.args like (
+  "/etc/*", "/bin/*", "/usr/bin/*", "/sbin/*", "/usr/sbin/*", "/opt/*", "/dev/shm/*",
+  "/var/tmp/*", "/boot/*", "/root/*", "/usr/lib*", "/lib*"
+) and not (
+  process.parent.executable in (
+    "/usr/local/bin/manage_omnimesh_logs", "/pro/bin/sys/install/packageUtils.sh", "/bin/dracut",
+    "/usr/libexec/postfix/aliasesdb", "pwsh-preview", "/usr/bin/dracut", "/usr/share/initramfs-tools/hooks/amd64_microcode",
+    "/usr/local/bin/start-mailserver.sh"
+  ) or
+  process.parent.executable like ("/opt/sw/tomcat/rc_scripts/*", "/tmp/newroot/var/lib/docker/overlay2/*", "/snap/*") or
+  process.parent.name in ("xargs", "find", "sudo", "make", "pmlogger_check", "pmlogger_daily", "pmlogger_janitor", "autoupdate", "pmlogctl") or
+  process.parent.args like (
+    "/home/*/scripts/auto_download_process.py", "/home/*/scripts/perl_python_eagu1p.py",
+    "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh"
+  ) or
+  process.args in ("/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff") or
+  process.args like ("--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.006"
+name = "Timestomp"
+reference = "https://attack.mitre.org/techniques/T1070/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 sequence with maxspan=1m
@@ -30,7 +30,9 @@ sequence with maxspan=1m
 
  (process.name : "msiexec.exe" and process.args :("/i", "-i") and
   process.args : ("/qn", "-qn", "-q", "/q") and
-  process.command_line : ("*transforms*http*", "*http*INSTALLDIR=%LOCALAPPDATA%*"))  or
+  process.command_line : ("*transforms*http:*", "*transforms*https:*", "*http*INSTALLDIR=%LOCALAPPDATA%*") and
+  not process.parent.executable : ("D:\\Visma\\Install\\FDN\\PIN\\Client\\Base\\SW\\24200\\PublicInstallerNextGen.exe",
+                                   "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\Updates\\AgentUpgrader.exe"))  or
 
  (process.name : "powershell.exe" and process.command_line : "*WindowsInstaller*" and
   process.command_line : "*http*" and process.command_line : "*InstallProduct*")  or
@@ -60,7 +62,8 @@ not process.args :
 not process.parent.executable :
                      ("C:\\Program Files (x86)\\Novell\\ZENworks\\bin\\ZenworksWindowsService.exe",
                       "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\Updates\\AgentUpgrader.exe",
-                      "C:\\Program Files (x86)\\FastTrack Software\\Admin By Request\\AdminByRequest.exe")
+                      "C:\\Program Files (x86)\\FastTrack Software\\Admin By Request\\AdminByRequest.exe") and
+not process.executable : "C:\\Program Files (x86)\\AMS Services\\TransactNOW\\OALaunch.exe"
 ]
 [process where event.action in ("start", "already_running") and
  (

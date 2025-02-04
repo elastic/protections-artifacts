@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -40,7 +40,7 @@ process where event.type == "start" and event.action == "exec" and (
     "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa",
     "/home/*/.local/bin/gitsign-credential-cache"
   ) or
-  process.name in ("riptide-agent", "zellij")
+  process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox")
 )
 '''
 

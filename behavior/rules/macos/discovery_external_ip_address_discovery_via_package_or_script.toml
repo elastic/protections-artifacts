@@ -7,10 +7,10 @@ id = "0373350d-05e3-4273-93fa-013e17966ef6"
 license = "Elastic License v2"
 name = "External IP address discovery via Package or Script"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-sequence by process.entity_id with maxspan=15s
+sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and process.name like~ ("python*", "ruby*", "node", "npm", "gems*")]
 [network where event.type == "start" and
   destination.domain like~ 
@@ -22,6 +22,7 @@ sequence by process.entity_id with maxspan=15s
           "*whatismyip.akamai.com*",
           "*bot.whatismyipaddress.com*",
           "*ifcfg.me*",
+          "*inet-ip.info*",
           "*ifconfig.me*",
           "*ident.me*",
           "*ipof.in*",

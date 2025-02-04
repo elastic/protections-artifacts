@@ -7,7 +7,7 @@ id = "f4744b1a-3775-4387-8529-abc08076a612"
 license = "Elastic License v2"
 name = "External IP address discovery via Curl"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -33,6 +33,7 @@ process where event.type == "start" and event.action == "exec" and
           "*ipwhois.app*",
           "*freeipapi.com*",
           "*icanhazip.com*",
+          "*inet-ip.info*",
           "*curlmyip.com*",
           "*wgetip.com*",
           "*eth0.me*",
@@ -63,6 +64,7 @@ process where event.type == "start" and event.action == "exec" and
           "*httpbin.org*",
           "*myip.opendns.com*"
          ) and
+not process.args like~ ("https://ipinfo.io/region", "https://ipinfo.io/city") and
 not process.parent.executable == "/Applications/Xcode.app/Contents/Developer/usr/bin/make" and
 not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                 "/usr/local/jamf/bin/jamf")

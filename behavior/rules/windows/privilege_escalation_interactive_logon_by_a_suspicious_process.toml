@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Interactive Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 authentication where event.action == "log_on" and event.code == "4624" and
@@ -23,7 +23,8 @@ authentication where event.action == "log_on" and event.code == "4624" and
             "Kofax, Inc.", "Education Management Solutions LLC", "Seagull Scientific, Inc", "Ivanti, Inc.", "Opera Norway AS",
             "PDQ.com Corporation", "itelio GmbH", "Mozilla Corporation", "Vivaldi Technologies AS", "GoTo Technologies USA, LLC",
             "Devolutions Inc", "Seagull Scientific Inc.", "Senior Sistemas S/A", "Rsupport Co., Ltd.", "Redwood Software, Inc.",
-            "CA Software Österreich GmbH", "ECI Software Solutions, Inc.", "ISL Online Ltd.", "DATEV eG")) and
+            "CA Software Österreich GmbH", "ECI Software Solutions, Inc.", "ISL Online Ltd.", "DATEV eG", "Connectwise, LLC",
+            "Shift Technologies Inc.", "YANDEX LLC", "Apollo Technologies Inc.", "Mobatek")) and
  not process.executable :
             ("C:\\Windows\\System32\\winlogon.exe",
              "C:\\Windows\\System32\\wininit.exe",
@@ -34,45 +35,26 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Windows\\System32\\svchost.exe",
              "C:\\Windows\\System32\\wsmprovhost.exe",
              "C:\\Windows\\System32\\CredentialEnrollmentManager.exe",
-             "C:\\Program Files\\Okta\\Okta Verify\\OktaVerify.exe",
              "C:\\Windows\\System32\\CredentialUIBroker.exe",
-             "C:\\Program Files (x86)\\Okta\\Okta Verify\\OktaVerify.exe",
-             "C:\\Program Files\\Island\\Island\\Application\\Island.exe",
-             "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-             "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-             "C:\\Program Files\\Microsoft\\Kerberos Configuration Manager for SQL Server\\KerberosConfigMgr.exe",
              "C:\\Users\\*\\AppData\\Local\\Apps\\2.0\\*\\*.exe",
              "C:\\Users\\*\\AppData\\Local\\Temp\\SPMigrationAgentSetup*\\SPMigrationAgentSetup\\Microsoft.SharePoint.Migration.ClientInstaller.exe",
-             "C:\\Program Files\\Microsoft SQL Server\\*\\ReportingServicesService.exe",
-             "C:\\Program Files\\Microsoft SQL Server Reporting Services\\SSRS\\Portal\\RSPortal.exe",
-             "C:\\Program Files (x86)\\HCL\\AppScan Enterprise\\AgentHost.exe",
-             "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
              "C:\\Windows\\System32\\oobe\\UserOOBEBroker.exe",
+             "C:\\SQL Beacon\\SQL Beacon Agent Gen?\\SQLBeaconAgentUserInterfaceGen?.exe",
+             "C:\\Projekte\\Gmos.InfozentraleMain\\Gmos.Infozentrale.WebApi\\bin\\Debug\\net8.0\\Gmos.Infozentrale.WebApi.exe",
              "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
              "C:\\Windows\\System32\\inetsrv\\w3wp.exe",
              "C:\\Windows\\SysWOW64\\msiexec.exe",
              "C:\\Windows\\System32\\msiexec.exe",
-             "C:\\Program Files (x86)\\Icon Global\\carelink+\\CareLinkPlus.exe",
-             "C:\\Program Files (x86)\\Cobian Backup ??\\Cobian.exe",
              "C:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe",
-             "C:\\Program Files\\Microsoft SQL Server\\*\\Shared\\sqlsqm.exe",
-             "C:\\Program Files (x86)\\ResMed\\ResScan?\\ResScan.exe",
              "C:\\Windows\\System32\\CredentialUIBroker.exe",
              "C:\\Windows\\System32\\UserAccountBroker.exe",
              "C:\\Windows\\System32\\mmc.exe",
              "C:\\Program Files (x86)\\KIC H\\KIC.exe",
              "C:\\Windows\\System32\\CloudExperienceHostBroker.exe",
+             "C:\\Bruker\\TopSpin4.2.0\\prog\\mod\\xwish3.exe",
              "C:\\Windows\\System32\\Autologon64.exe",
-             "C:\\Program Files (x86)\\Microsoft Visual Studio\\20??\\Enterprise\\Common?\\IDE\\CommonExtensions\\Microsoft\\SSAS\\LocalServer\\msmdsrv.exe",
-             "C:\\Program Files (x86)\\AMG Resources\\SDDT\\*\\Support Desk Domain Tools.exe",
-             "C:\\Program Files\\Microsoft SQL Server Reporting Services\\*\\ReportingServicesService.exe",
-             "C:\\Program Files (x86)\\Merge Healthcare\\Client\\Client.exe",
-             "C:\\Program Files\\RunAsTool\\RunAsTool.exe",
-             "C:\\Program Files\\cubus\\Performance Analytics\\Server\\EVServer.exe",
-             "C:\\Program Files (x86)\\Gladinet Cloud Enterprise\\monitor\\GladinetCloudMonitor.exe",
-             "C:\\Program Files\\Seagull\\BarTender Suite\\bartend.exe",
-             "C:\\Program Files (x86)\\Seagull\\BarTender UltraLite\\BarTend.exe",
-             "C:\\Program Files\\Canary\\Identity\\CanaryIdentity.exe")
+             "C:\\Program Files\\*.exe",
+             "C:\\Program Files (x86)\\*.exe")
 '''
 
 min_endpoint_version = "8.15.1"

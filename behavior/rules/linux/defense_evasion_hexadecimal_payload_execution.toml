@@ -7,7 +7,7 @@ id = "f2d206e0-97c9-484b-8b6a-5eecd82fbfdc"
 license = "Elastic License v2"
 name = "Hexadecimal Payload Execution"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -19,7 +19,9 @@ length(process.command_line) > 50 and not (
     "/sbin/supportconfig"
   ) or
   process.parent.executable like ("/home/sites/*/site/stats/awstatsUpdateSite.php", "/tmp/newroot/*") or
-  process.parent.name in ("xargs", "su", "sshd", "find", "jem", "vzctl") or
+  process.parent.name in (
+    "xargs", "su", "sshd", "find", "jem", "vzctl", "wine64-preloader", "apkprocessor.pl", "./firmware_upgrade.sh"
+  ) or
   (
     process.executable == "/usr/bin/printf" and process.parent.args : (
       "/usr/local/bin/testssl.sh*", "/opt/sw/jboss/gsaconfig/mwscripts/pipeline_webserver_reports/*",
@@ -31,8 +33,9 @@ length(process.command_line) > 50 and not (
     "./testssl.sh"
   ) or
   process.parent.command_line == "xargs printf" or
-  process.name in ("systemctl", "ln", "gdb", "su", "vzctl") or
-  process.executable like ("/var/lib/docker/overlay2*", "/vz/root/*", "/run/containerd/*")
+  process.name in ("systemctl", "ln", "gdb", "su", "vzctl", "strace", "sed") or
+  process.executable like ("/var/lib/docker/overlay2*", "/vz/root/*", "/run/containerd/*") or
+  process.command_line like~ "python3 -m timeit *"
 )
 '''
 

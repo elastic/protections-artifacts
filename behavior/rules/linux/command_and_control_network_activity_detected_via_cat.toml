@@ -1,0 +1,59 @@
+[rule]
+description = """
+This rule monitors for the execution of the cat command, followed by a connection attempt by the same process. Cat is
+capable of transfering data via tcp/udp channels by redirecting its read output to a /dev/tcp or /dev/udp channel. This
+activity is highly suspicious, and should be investigated. Attackers may leverage this capability to transfer tools or
+files to another host in the network or exfiltrate data while attempting to evade detection in the process.
+"""
+id = "25ae94f5-0214-4bf1-b534-33d4ffc3d41c"
+license = "Elastic License v2"
+name = "Network Activity Detected via cat"
+os_list = ["linux"]
+version = "1.0.8"
+
+query = '''
+sequence by process.entity_id with maxspan=1s
+  [process where event.action == "exec" and event.type == "start" and process.name == "cat" and 
+   process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")]
+  [network where event.action in ("connection_attempted", "disconnect_received") and process.name == "cat" and 
+   not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8"
+     )
+   )]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0010"
+name = "Exfiltration"
+reference = "https://attack.mitre.org/tactics/TA0010/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

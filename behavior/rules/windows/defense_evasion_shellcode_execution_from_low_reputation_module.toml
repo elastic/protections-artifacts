@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -64,7 +64,12 @@ sequence by process.entity_id with maxspan=1m
                "13ff0fa4901b81b663311faf1396dbc804f53fd56b6067f73776acc48a54f9f9",
                "b4a68330d3a235ef755fa3229e4492e2b7b824fc576dfe73309f09bce6c7adc7",
                "a6457ca8f7a14ba363e6f8467c020e62425eeec755ee1c7a57068e8952c16672",
-               "e667c70c74112ae249dff32805c5767700d25fde443ca513222ec3203ce76872")] by dll.hash.sha256
+               "e667c70c74112ae249dff32805c5767700d25fde443ca513222ec3203ce76872",
+               "7586725f6bad44993a942453694e3b8d0ca19c5f480f3a741042b6c5132c55ef",
+               "5aa02b23b3c30a8f78317b2942a36206520c513d2bbfa3e1341f4caff749b692",
+               "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610",
+               "ed9b5c4a768f2744cc564a8d470af9b2cf259f53a7538adf59cb8f1eaee0217b") and
+ not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and dll.path : "C:\\Windows\\Installer\\MSI????.tmp")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and

@@ -1,0 +1,64 @@
+[rule]
+description = """
+This rule detects the execution of the dbus-send command with the `--type=method_call` argument, which is used to send a
+method call to a D-Bus message bus. The D-Bus message bus is a system for inter-process communication (IPC) that allows
+applications to communicate with each other. The dbus-send command is typically used to send messages to the D-Bus
+message bus, which can be used to interact with other applications and services on the system. However, the dbus-send
+command can also be used by attackers to execute arbitrary commands on the system or interact with other applications in
+a malicious way.
+"""
+id = "6929ab87-7b2f-4ef8-858a-1f8f1c239cac"
+license = "Elastic License v2"
+name = "Suspicious D-Bus Method Call"
+os_list = ["linux"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "dbus-send" and
+(process.args == "--type=method_call" or (process.args == "-t" and process.args == "method_call")) and
+process.args in ("--system", "--session", "-y", "-s") and
+process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.parent.args_count == 1 and not (
+  process.parent.executable like~ ("/home/*/.nix-profile/*", "/nix/store/*") or
+  process.args in ("--dest=org.x.sticky", "--dest=com.vixalien.sticky", "--dest=org.gnome.SessionManager", "--dest=org.gnome.ScreenSaver")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,94 @@
+[rule]
+description = """
+This rule detects potential directory traversal attempts on web servers. Attackers may exploit directory traversal
+vulnerabilities to access restricted directories and files on web servers to gain/maintain access and to establish a
+command and control channel.
+"""
+id = "7d39db57-5c5e-4542-a9eb-8f5de524b09c"
+license = "Elastic License v2"
+name = "Potential Web Server Directory Traversal"
+os_list = ["linux"]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  process.parent.name like (
+    "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "php-*", "node", "mongrel_rails",
+    "java", "gunicorn", "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik",
+    "tornado", "hypercorn", "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "python*", "flask",
+    "rails", "ruby*", "perl*", "mongrel", "java"
+  ) or
+  user.name in (
+    "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+  ) or
+  user.id in (99, 33, 498, 48)
+) and
+process.command_line like ("*/.../*", "*../../../../../*") and
+process.command_line like (
+  "*/etc/*", "*.ssh*", "*id_rsa*", "*authorized_keys*", "*/root/*", "*/dev/shm/*", "*/var/tmp/*", "*/tmp/*"
+) and not (
+  process.parent.name in ("collect2", "gcc") or
+  process.name in ("collect2", "go", "ld", "chrpath", "node", "copyfiles", "bindgen", "elasticsearch-keystore") or
+  process.command_line like (
+    "/bin/sh -c git*", "/home/*/.gradle/*Dcli.script=../../../../../../../../../distribution/*",
+    "/bin/sh -c printf*I../../../../../../nan*"
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

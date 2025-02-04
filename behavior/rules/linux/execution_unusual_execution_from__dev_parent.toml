@@ -1,0 +1,50 @@
+[rule]
+description = """
+This rule detects suspicious executions from /dev parent directories. Attackers may execute binaries from /dev parent
+directories to evade detection and execute malicious payloads.
+"""
+id = "eb575588-dce7-4934-966c-c0e9ebc456c5"
+license = "Elastic License v2"
+name = "Unusual Execution from /dev Parent"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable like "/dev/*" and 
+process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "/var/www/*", "/bin/*", "/usr/bin/*", "/usr/local/bin/*") and
+not (
+  process.parent.executable like (
+    "/dev/fd/*", "/dev/null/*", "/dev/shm/gitlab/sidekiq/*", "/dev/shm/root/.ansible/tmp/ansible_mitogen_action_*.sh"
+  ) or
+  process.parent.command_line == "runc init" or
+  process.name in ("buildkitd", "uname")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

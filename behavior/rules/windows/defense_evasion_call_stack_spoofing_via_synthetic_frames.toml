@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "Call Stack Spoofing via Synthetic Frames"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 any where 
 (
  (event.category : "api" and
-  not process.Ext.api.name : ("IoCreateDevice", "Wow64SuspendThread", "ReadProcessMemory", "SuspendThread", "connect", "RegisterWaitForSingleObject")) or
+  not process.Ext.api.name : ("IoCreateDevice", "Wow64SuspendThread", "ReadProcessMemory", "SuspendThread", "connect", "RegisterWaitForSingleObject", "OpenThread", "SetThreadpoolThreadMinimum", "TrySubmitThreadpoolCallback", "NtSuspendProcess")) or
  (event.category : "library" and dll.name : ("ws2_32.dll", "winhttp.dll", "wininet.dll"))
  ) and 
 

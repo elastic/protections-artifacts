@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -17,6 +17,7 @@ process where event.action == "start" and
    ) and
    (
    process.args_count == 1 or
+   (process.parent.name : "cmd.exe" and process.parent.command_line : ("*.cmd*", "*.bat*")) or
    process.command_line :
              ("*^*^*^*^*^*^*^*^*^*",
               "*''*''*''*",
@@ -46,6 +47,7 @@ process where event.action == "start" and
               "*BitsTransfer*",
               "*Invoke-Exp*",
               "*invoke-web*",
+              "*Invoke-RestMethod*",
               "*iex*",
               "*iwr*",
               "*Reflection.Assembly*",
@@ -79,7 +81,8 @@ process where event.action == "start" and
         process.parent.command_line : "*C:\\Program Files\\CheckPoint\\Harmony Connect\\resources\\build\\installation_scripts\\on_install\\on_install.bat*") and
    not process.args : "iwr https://*.s3.us-east-1.amazonaws.com/scripts/Start-SpeedTest.ps1 -UserAgent * -UseBasicParsing | invoke-expression" and
    not (process.parent.name : "wscript.exe" and
-        process.parent.args : "C:\\Program Files (x86)\\Telivy\\Telivy Agent\\telivy.js")
+        process.parent.args : "C:\\Program Files (x86)\\Telivy\\Telivy Agent\\telivy.js") and
+   not process.command_line : "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \"powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \\\"iwr bmx-panels-check.s3.us-east-1.amazonaws.com/scripts/Set-BMXFirewallPolicy.ps1 -UserAgent MzEyYTdjNzg1ZWI3 -UseBasicParsing | invoke-expression\\\"\""
 '''
 
 min_endpoint_version = "7.15.0"

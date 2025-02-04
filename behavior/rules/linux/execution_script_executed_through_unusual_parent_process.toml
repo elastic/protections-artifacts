@@ -1,0 +1,61 @@
+[rule]
+description = """
+This rule detects the execution of scripts by interpreters like Perl, Python, PHP, Ruby, and Lua, when the parent
+process is located in an unusual location, or the parent process is hidden. This behavior is often seen in malware that
+is trying to evade detection by executing scripts from temporary directories or hidden locations.
+"""
+id = "133102a7-f906-4725-b382-09257a0209c2"
+license = "Elastic License v2"
+name = "Script Executed Through Unusual Parent Process"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.args_count == 1 and 
+ process.name like ("perl*", "python*", "php*", "ruby*", "lua*") and (
+   process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/boot/*") or process.parent.name like ".*"
+ ) and not (
+   process.parent.executable like ("/tmp/newroot/*", "./merged/*") or
+   process.parent.name in ("gogo", "nvim", "build-script-build", "jetbrains-toolbox", "runner")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

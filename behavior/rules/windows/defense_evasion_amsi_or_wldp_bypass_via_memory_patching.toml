@@ -13,7 +13,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 api where
@@ -51,6 +51,7 @@ api where
                            "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Bitdefender SRL" and $entry.status : "trusted") and
  not process.thread.Ext.call_stack_final_user_module.path : ("c:\\windows\\system32\\apphelp.dll",
+                                                             "c:\\windows\\syswow64\\apphelp.dll",
                                                              "c:\\program files\\bitdefender\\endpoint security\\bdhkm\\*\\bdhkm64.dll",
                                                              "c:\\program files (x86)\\internet explorer\\ieshims.dll")
 '''

@@ -8,7 +8,7 @@ id = "fa71e336-0177-4732-b58b-53eb4a87a286"
 license = "Elastic License v2"
 name = "Suspicious Download and Redirect by Web Server"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -37,7 +37,8 @@ process.command_line like (
   process.parent.name in ("cron", "crond") or
   process.parent.executable : "/opt/puppetlabs/*" or
   process.command_line : (
-    "*nginx*.tar.gz*", "*rubyext-ruby*.tar.gz*", "*Content-Type: application/json*", "*Authorization: Bearer*"
+    "*nginx*.tar.gz*", "*rubyext-ruby*.tar.gz*", "*Content-Type: application/json*", "*Authorization: Bearer*",
+    "sh -c curl* | grep*"
   ) or
   process.parent.command_line like (
     "/usr/bin/php*command:getSatelliteDatas*", "/usr/bin/php*command:getHailDatas*", "*ansible*"

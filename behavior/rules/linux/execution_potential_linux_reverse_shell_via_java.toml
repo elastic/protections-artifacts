@@ -1,0 +1,89 @@
+[rule]
+description = """
+Identifies the execution of a Linux shell process from a Java JAR application post an incoming network connection. This
+behavior may indicate reverse shell activity via a Java application.
+"""
+id = "e0db3577-879e-4ac2-bd58-691e1343afca"
+license = "Elastic License v2"
+name = "Potential Linux Reverse Shell via Java"
+os_list = ["linux"]
+version = "1.0.12"
+
+query = '''
+sequence with maxspan=5s
+  [network where event.action == "connection_attempted" and process.executable : (
+    "/usr/bin/java", "/bin/java", "/local/bin/java", "/usr/lib/jvm/*", "/usr/java/*"
+   ) and not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch (
+       destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+       "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+       "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+       "FF00::/8", "172.31.0.0/16"
+       )
+    )
+  ] by process.entity_id
+  [process where event.action == "exec" and process.parent.executable : (
+    "/usr/bin/java", "/bin/java", "/usr/lib/jvm/*", "/usr/java/*", "/local/bin/java"
+   ) and process.parent.args : "-jar" and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.parent.args_count <= 4 and not (
+     process.parent.args : (
+       "/etc/remote-iot/services/remoteiot.jar",
+       "/opt/pentaho/data-integration/launcher/launcher.jar",
+       "/usr/share/java/jenkins.war",
+       "/opt//tomcat/statistics/statistics.jar",
+       "/usr/lib64/NetExtender.jar",
+       "/var/lib/jenkins/workspace/MP-QA/tc_certified_copy*/tc_certified_copy_web_ui_test/target/surefire/surefirebooter*.jar",
+       "-javaagent:/opt/opentelemetry/opentelemetry-javaagent-all.jar",
+       "./lib/pipeline-job-executor*SNAPSHOT.jar",
+       "./lib/worker-launcher-agent*SNAPSHOT.jar",
+       "/opt/Seqrite_EndPoint_Security/wildfly/jboss-modules.jar",
+       "/home/data/jenkins.war",
+       "/pro/service-modules/deployment.jar",
+       "/application/HES/READER/*.jar",
+       "*-SNAPSHOT.jar",
+       "READER/G1A/READER_G1A.jar",
+       "READER_G1.jar"
+     ) or
+    process.command_line like~ (
+      "bash -c ps -eo pid,lstart,comm*",
+      "bash -c df -i /application | tail -n 1",
+      "/bin/sh -xe /tmp/hudson*.sh"
+    )
+   )
+  ] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.7.0"

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Curl or Wget Egress Network Connection via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+shell"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=3s
@@ -23,21 +23,23 @@ sequence with maxspan=3s
      "nice", "nohup", "npm", "nroff", "nsenter", "octave", "openvpn", "pandoc", "pdb", "pdflatex", "pdftex", "perf",
      "pexec", "pip", "rake", "rc", "rlwrap", "rpmdb", "rpmquery", "rpmverify", "rsync", "rtorrent", "runscript",
      "rview", "rvim", "script", "scrot", "sed", "service", "setarch", "setlock", "sg", "socat", "softlimit", "split",
-     "sqlite3", "sqlmap", "sshpass", "start-stop-daemon", "stdbuf", "tar", "task", "taskset",
+     "sqlite3", "sqlmap", "sshpass", "start-stop-daemon", "stdbuf", "tar", "taskset",
      "tasksh", "tex", "time", "tmate", "torify", "torsocks", "tshark", "valgrind", "vi", "view",
      "vim", "vimdiff", "watch", "xdg-user-dir", "xdotool", "xelatex", "xetex", "yarn", "zip", "zypper"
    ) and not (
      process.executable == "/tmp/newroot/unshare" or
-     process.parent.args == "/etc/.agent/server_agent.sh" or
+     process.parent.args in ("/etc/.agent/server_agent.sh", "/nessus/update2.sh") or
      process.parent.executable like (
        "/usr/local/bin/fail2ban_cluster.sh", "/script/downloadArtifacts.sh", "/etc/cron.daily/rkhunter",
-       "/usr/bin/bbb-conf", "/usr/sbin/sos", "/usr/bin/make", "/var/lib/amagent/*", "/etc/cron.daily/spamassassin"
+       "/usr/bin/bbb-conf", "/usr/sbin/sos", "/usr/bin/make", "/var/lib/amagent/*", "/etc/cron.daily/spamassassin",
+       "/usr/lib/cron/run-crons"
      ) or
      process.parent.name in ("rkhunter", "vivaldi-stable.postinst") or
      process.parent.command_line == "runc init" or
      process.parent.command_line like "/home/*/bin/DownloadExchangeFiles_mcx*" or
      process.command_line in (
-       "nice -10 /opt/aws/discovery/update", "xargs -n 1 curl -o lpsc -L", "/usr/bin/ruby /usr/bin/rake run:server_hooks"
+       "nice -10 /opt/aws/discovery/update", "xargs -n 1 curl -o lpsc -L", "/usr/bin/ruby /usr/bin/rake run:server_hooks",
+       "nohup ./update2.sh"
      ) or
      process.command_line like ("*/home/linuxbrew/.linuxbrew/*", "*Homebrew*", "*webhook*") or
      process.args like "/usr/lib/jvm/*" or

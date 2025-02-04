@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -33,7 +33,9 @@ sequence by process.entity_id with maxspan=2m
                  "d988f77608000008cc7b81cbc5e5a632a3b7dfbde5e768e0f76f4cc0c802fc7e",
                  "13b2cac3f50368ab97fa2e3b0d0d2cb612f68449d5bbd6de187fc85ee4469d03",
                  "b461a01e0855014610cc1d7047a5f7939d13b803bc835c37f0be9704698af570",
-                 "8232e3b928e41feacd643dc45d2ffc702ac40640910e9a232fc5df8ed90d6c97") and
+                 "8232e3b928e41feacd643dc45d2ffc702ac40640910e9a232fc5df8ed90d6c97",
+                 "46f43ba8a2cb1198ba84341448812a37a3b545f2dd70e5f127d7bfc7807c2ced",
+                 "a9b70a8c2b495badc2cccf96408c8838d7fedd1013590b11166323629ec36b16") and
   not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and
        dll.name : "*.tmp.node")] as event0
  [api where

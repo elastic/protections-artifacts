@@ -7,7 +7,7 @@ id = "98fffa16-53e1-4db9-9126-2d0441cac417"
 license = "Elastic License v2"
 name = "Shellcode Injection via PowerShell"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.name : ("VirtualAlloc*", "VirtualProtect*", "WriteProcessMemory", "connect") and
@@ -30,12 +30,13 @@ api where process.Ext.api.name : ("VirtualAlloc*", "VirtualProtect*", "WriteProc
     not process.thread.Ext.call_stack_summary : ("Unbacked", "*Unknown*") and
     not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.protection_provenance : ("Kernel", "clr.dll", "coreclr.dll", "fships.dll*", "Kernel|*", "tmmon.dll",
-                                                     "mfehcthe.dll", "mfehcs.exe|mfehcs.exe", "conemuhk64.dll", "tmmon64.dll", "dwadv.dll")) and
+                                                     "mfehcthe.dll", "mfehcs.exe|mfehcs.exe", "conemuhk64.dll", "tmmon64.dll", "dwadv.dll", "bdhkm32.dll")) and
     not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("?:\\Program Files\\*.dll*", "?:\\Program Files (x86)\\*.dll*", "?:\\windows\\system32\\*\\tmmon*.dll*")) and
     not (user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
          process.parent.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\services.exe") and
-         _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Unbacked"))
+         _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Unbacked")) and
+    not process.parent.executable : "C:\\Program Files (x86)\\Msp Agent\\components\\generic-asset-interrogator\\0.2.10\\generic-asset-interrogator.exe"
 '''
 
 min_endpoint_version = "8.10.0"

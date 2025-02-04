@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -37,7 +37,7 @@ process.command_line like (
     "/bin/sh -c sed -nr 's/^(.*):.*:.{4}:.*:.*:.*:.*$/\\1/p' /etc/passwd", "petalinux*", "*/dev/tcp/localhost/*",
     "*127.0.0.1*", "*nc*-*z*", "cd*/tmp/*", "/bin/sh -c /bin/base64 -w*", "/bin/sh -c*puppet_puppetagent*",
     "/bin/sh -c (printf*", "*localhost*", "/bin/sh -c ssh*", "sh -c * /tmp/lua_*", "sh -c man/base*",
-    "/bin/sh -c */etc/cron.d/puppet_kick-puppet-at-vanguard*", "/bin/bash -c set -o pipefail*"
+    "/bin/sh -c */etc/cron.d/puppet_kick-puppet-at-vanguard*", "/bin/bash -c set -o pipefail*", "/bin/sh -c file*"
   ) or
   process.args like (
     "curl*", "/usr/bin/rrdtool*", "/usr/bin/openssl*",  "/usr/mibin/genxls*", "'inkscape'*", "/usr/bin/convert*",
@@ -51,12 +51,13 @@ process.command_line like (
     "/opt/tm/sshluks-setup/sshluks-setup.py"
   ) or
   process.parent.command_line like (
-    "./app", "runc init", "*cron_id=*", "/usr/bin/python*ansible*", "./pyenv/bin/python3 class/jobs.py", "Serverd listgend*"
+    "./app", "runc init", "*cron_id=*", "/usr/bin/python*ansible*", "./pyenv/bin/python3 class/jobs.py", "Serverd listgend*",
+    "ruby /usr/local/bundle/bin/bundle exec sidekiq -C config/sidekiq.yml -c 4", "perl /u01/app/sghe/dw/dwdevl/app/scripts/dgwpack AD11bxxd AD11bxxdpack Y"
   ) or
   process.parent.executable like (
     "/opt/*", "/home/*/fmf_server_agent/*python*", "/usr/local/bin/ruby", "/usr/lib/venv-salt-minion/bin/python.original",
     "/var/illumio_pce/external/bin/ruby", "/home/*/.conda/*", "/mnt/resource/ciscat-scanning/cis-cat-full/jre/bin/java",
-    "/u1/app/oracle/*/perl/bin/perl"
+    "/u1/app/oracle/*/perl/bin/perl", "/var/arcticwolfnetworks/agent/scans/jre/jre/bin/java"
   ) or
   (process.parent.name like "python*" and process.args like "sudo*cat*/*/.ssh/authorized_keys*2>/dev/null") or
   (process.parent.name == "perl" and process.parent.args like "-euse Cwd qw*") or

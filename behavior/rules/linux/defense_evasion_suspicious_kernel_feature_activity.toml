@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -52,7 +52,7 @@ process.parent.executable != null and
     "/usr/openv/pdde/vpfs/bin/vpfs_config.sh", "/data/ora04/dba/scripts/hugepages_kernelpar_settings*.sh",
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/sublime_text/sublime_text",
     "/opt/illumio_ven/bin/init_Environment", "/usr/local/VMOptimizationTools/sangfor_set_vmconfig.sh",
-    "/opt/saltstack/salt/bin/python*"
+    "/opt/saltstack/salt/bin/python*", "/u01/app/iebs/fs1/EBSapps/comn/clone/bin"
   ) or
   process.parent.args like (
     "/tmp/ansible*", "printf*", "/var/www/html/cacti/plugins/smartnet/scripts/deleteFile.php", "/opt/*/scripts/puppet/*",
@@ -70,9 +70,13 @@ process.parent.executable != null and
   ) or
   process.parent.name in (
     "sudo", "antidot-base.postinst", "vz-cpt-action", "find", "installsupergrp.sh", "criu", "vpfs_mounts",
-    "hugepages_kernelpar_settingsSLES15.sh"
+    "hugepages_kernelpar_settingsSLES15.sh", "check_server_setup.sh", "prereqlogs"
   ) or
-  process.parent.command_line like ("*puppet*agent*", "*cis_level*")
+  process.parent.command_line like ("*puppet*agent*", "*cis_level*") or
+  (
+    process.parent.command_line == "/bin/sh /dev/fd/7" and
+    process.command_line == "/usr/sbin/sysctl -w vm.drop_caches=2"
+  )
 )
 '''
 

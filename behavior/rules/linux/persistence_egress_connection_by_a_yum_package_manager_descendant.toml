@@ -15,7 +15,7 @@ reference = [
     "https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/linux/local/yum_package_manager_persistence.rb",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -41,7 +41,7 @@ sequence by process.entity_id with maxspan=5s
        "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
        "FF00::/8", "172.31.0.0/16"
        ) or
-     process.name == "yumBackend.py"
+     process.name in ("yumBackend.py", "urlgrabber-ext-down")
      )
   ]
 '''

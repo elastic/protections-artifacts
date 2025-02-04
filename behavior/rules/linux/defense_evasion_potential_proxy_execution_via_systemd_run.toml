@@ -8,7 +8,7 @@ id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
 license = "Elastic License v2"
 name = "Potential Proxy Execution via Systemd-run"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
@@ -19,7 +19,10 @@ process.parent.args_count < 3 and process.parent.name != null and not (
     "/usr/local/bin/salt-minion", "/var/vanta/launcher", "/opt/traps/bin/pmd", "/usr/sbin/gdm", "/usr/bin/salt-minion",
     "/opt/GC_Ext/GC/gc_linux_service"
   ) or
-  process.parent.executable like "/opt/tableau/tableau_server/packages/scripts.*/after-install" or
+  process.parent.executable like (
+    "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/acronis/bin/acp-update-controller", "/snap/*",
+    "/var/lib/amagent/*"
+  ) or
   process.parent.name like ("python*", "platform-python*") or
   process.parent.name in (
     "udevadm", "daemon.start", "snap", "systemd", "ptyxis-agent", "run-slack", "run-firefox", "dbus.service", "k3s-server",

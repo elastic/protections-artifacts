@@ -7,15 +7,14 @@ id = "8a450438-9413-414b-9d71-cdacd01791b4"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Downloaded from the Internet"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5m
  [file where event.action == "creation" and user.id != "S-1-5-18" and
-  file.Ext.windows.zone_identifier == 3 and file.origin_url : "http*" and
+  file.Ext.windows.zone_identifier == 3 and
   file.extension in~ ("js", "jse", "vbs", "vbe", "wsh", "hta", "chm", "msc") and
-  file.path : ("?:\\Users\\*\\Downloads\\*", "?:\\Users\\*\\Desktop\\*", "?:\\Users\\*\\Content.Outlook\\*")
-  ] as event0
+  (file.origin_url != null or file.origin_referrer_url != null) and file.path : "?:\\Users\\*"] as event0
  [process where event.action == "start" and
   process.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and
    (
@@ -31,6 +30,15 @@ sequence with maxspan=5m
    /* script utility spawn a child process */
    (event.category == "process" and event.action == "start" and
     process.parent.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and process.parent.entity_id == event1.process.entity_id) or
+
+    /* script registry modification */
+   (event.category == "registry" and event.action == "modification" and
+    process.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and
+    process.entity_id == event1.process.entity_id and registry.data.strings != null and
+    registry.path :
+             ("HKEY_USERS\\*Classes\\*",
+              "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\*",
+              "HKEY_USERS\\*\\Software\\Microsoft\\Windows NT\\CurrentVersion\\*")) or
 
     /* script utility perform an egress conn to the internet */
    (event.category == "network" and event.action in ("disconnect_received", "connection_attempted") and

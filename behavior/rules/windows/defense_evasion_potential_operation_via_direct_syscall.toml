@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
@@ -52,7 +52,8 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
                 "?:\\Program Files\\TxGameAssistant\\ui\\aow_exe.exe",
                 "?:\\Program Files\\Rockstar Games\\Launcher\\Launcher.exe",
                 "C:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
-                "C:\\Program Files\\EA\\AC\\EAAntiCheat.GameService.dll") and
+                "C:\\Program Files\\EA\\AC\\EAAntiCheat.GameService.dll",
+                "F:\\SteamLibrary\\steamapps\\common\\BeamNG.drive\\Bin64\\BeamNG.drive.x64.exe") and
   not (event.category : "process" and process.executable : "C:\\Windows\\System32\\csrss.exe" and
        process.parent.executable : "C:\\Program Files\\GraphOn\\GO-Global\\Programs\\aps.exe") and
   not (process.executable : "C:\\Windows\\System32\\WUDFCompanionHost.exe" and

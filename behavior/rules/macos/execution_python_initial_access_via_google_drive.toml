@@ -13,11 +13,12 @@ reference = [
     "https://www.elastic.co/security-labs/dprk-code-of-conduct",
     "https://www.elastic.co/security-labs/elastic-catches-dprk-passing-out-kandykorn",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
-[process where event.type == "start" and event.action == "exec" and process.name like~ "Python*"]
+[process where event.type == "start" and event.action == "exec" and process.name like~ "Python*" and
+  not process.parent.executable == "/Library/Developer/CommandLineTools/usr/bin/make"]
 [network where event.type == "start" and process.name like~ "Python*" and destination.domain in ("drive.usercontent.google.com", "drive.usercontent.google.com.", "drive.google.com", "drive.google.com.", "script.google.com", "script.google.com.")]
 '''
 

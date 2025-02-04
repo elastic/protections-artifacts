@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/operation-bleeding-bear",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -23,7 +23,8 @@ process where event.action == "start" and
                 not process.args : "\\\\127.0.0.1\\ADMIN$\\__*"] and
  not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Windows\\System32\\findstr.exe", "?:\\Windows\\System32\\chcp.com") and
  not (process.parent.name : "cmd.exe" and process.parent.command_line : "*\\127.0.0.1\\c$\\temp\\cotportal\\COT_Mid_Cluster*") and
- not (process.name : "cmd.exe" and process.command_line : "* dir *")
+ not (process.name : "cmd.exe" and process.command_line : "* dir *") and
+ not process.executable : "D:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqld.exe"
 '''
 
 min_endpoint_version = "7.15.0"

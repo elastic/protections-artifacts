@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/globally-distributed-stealers"]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -26,8 +26,14 @@ sequence by process.entity_id with maxspan=5m
                               "652f26a69f928aa7800a2df3345d770cd290a7ea46ba8e97fe7b284fecbd9b56",
                               "53cec05a7fe060e26a3d84be15c91eac2269e6c6ed9570e2315bad26dd92d230",
                               "b40b9456b3816a2b2710bb6b4860bcca74dd55eef6a9f9c1119e51c1b58dd17b",
-                              "ac3bc762543ae3875b1d55d61b7b6740faff186edc959c1490ebc6d176b0f092") and
-   not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\Community\\Common?\\IDE\\CommonExtensions\\Platform\\Debugger\\VsDebugConsole.exe"]
+                              "ac3bc762543ae3875b1d55d61b7b6740faff186edc959c1490ebc6d176b0f092",
+                              "b3dce1fda6820e5e3df33fa2e1bd9c87fe5ed6b2f44f6e6c47a32a870f0e0935",
+                              "d7b0cc901f7d427d17df5a59c0261e415da2f4f6c44c2429c1514a0b3327f6f3",
+                              "73ee5886a3d7ea73cd5ba31d943f1067f622eafe0f701ab23d2d9d3c1c0aafa5",
+                              "438e750547cca4c4aaf49a5cafcfa9bbe8b9cc51772dba2791e966a9f92cad5a",
+                              "b3dce1fda6820e5e3df33fa2e1bd9c87fe5ed6b2f44f6e6c47a32a870f0e0935",
+                              "d49609714d5b5031f2f08470485220323ee056bde2079fb5faf763a77cd53ddb") and
+   not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugConsole.exe"]
   [dns where
     dns.question.name :
     (

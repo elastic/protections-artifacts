@@ -7,7 +7,7 @@ id = "336ada1c-69f8-46e8-bdd2-790c85429696"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via CURL"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -15,7 +15,11 @@ process where event.action == "start" and
  /* renamed curl or curl running from normal users writable fodlers are very noisy */
  process.executable : ("?:\\Windows\\System32\\curl.exe", "?:\\Windows\\SysWOW64\\curl.exe") and
 
- process.args : ("-o", "--output") and
+ (
+  (process.args_count == 2 and process.command_line : "*http*" and process.parent.name : "cmd.exe" and
+   process.parent.command_line : "*  /c curl*") or
+
+  (process.args : ("-o", "--output") and
    (
     (process.parent.name : ("powershell.exe", "mshta.exe", "wscript.exe", "cscript.exe", "rundll32.exe", "regsvr32.exe") and
      process.parent.args_count >= 2) or
@@ -25,8 +29,8 @@ process where event.action == "start" and
      descendant of [process where process.name : ("winword.exe", "excel.exe", "powerpnt.exe", "wscript.exe")] or
 
      process.parent.executable : ("?:\\Users\\Public\\*", "?:\\Users\\*\\AppData\\*", "?:\\ProgramData\\*")
-   ) and
-
+   ))
+  ) and
   /* lot of legit curl execution via custom bat scripts or interactively via cmd or powershell */
   not (process.parent.name : "cmd.exe" and process.parent.args : "*.bat*") and
   not (process.parent.name : ("cmd.exe", "powershell.exe") and process.parent.args_count == 1) and

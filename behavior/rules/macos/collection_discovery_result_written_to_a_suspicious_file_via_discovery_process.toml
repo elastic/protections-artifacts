@@ -8,12 +8,14 @@ id = "10076d7d-9ee0-44b7-99c7-9ed24c7ccf1b"
 license = "Elastic License v2"
 name = "Discovery Result Written to a Suspicious File via Discovery Process"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and process.parent.name in ("bash", "sh", "zsh") and 
-  process.name in ("whoami", "ifconfig", "system_profiler", "dscl", "arch", "csrutil") and process.args_count == 1]
+  process.name in ("whoami", "ifconfig", "system_profiler", "dscl", "arch", "csrutil") and process.args_count == 1 and
+  not process.Ext.effective_parent.executable like ("/Applications/SecureworksTaegis.app/Contents/MacOS/com.secureworks.agent.updater.app/Contents/MacOS/com.secureworks.agent.updater",
+                                                    "/Applications/SecureworksTaegis.app/Contents/MacOS/com.secureworks.agent.daemon.app/Contents/MacOS/com.secureworks.agent.daemon")]
 [file where event.action == "modification" and file.path like~ ("/Users/Shared/*",
                                                                 "/Library/Logs/*",
                                                                 "/tmp/*",

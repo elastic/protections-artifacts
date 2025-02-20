@@ -7,7 +7,7 @@ id = "f0630213-c4c4-4898-9514-746395eb9962"
 license = "Elastic License v2"
 name = "Script Execution via Microsoft HTML Application"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -56,7 +56,8 @@ process where event.action == "start" and
 
   /* FPs */
   not (process.parent.executable : "C:\\Windows\\SysWOW64\\runonce.exe" and
-       process.args : "\"& 'C:\\System.sav\\util\\HpseuHostLauncher.ps1'\"\", 0 : window.close)")
+       process.args : "\"& 'C:\\System.sav\\util\\HpseuHostLauncher.ps1'\"\", 0 : window.close)") and
+  not (process.name : "mshta.exe" and process.args : "\"& '\\\\*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1'\"\", 0 : window.close)")
 '''
 
 min_endpoint_version = "7.15.0"

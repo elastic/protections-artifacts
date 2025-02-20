@@ -1,0 +1,108 @@
+[rule]
+description = """
+Identifies execution of a Windows script that was downloaded from the internet, extracted via explorer and followed by
+spawning a child process or performing an outgoing network connection to the internet.
+"""
+id = "d8e8168f-3f1f-4e03-a069-a36879bde0f9"
+license = "Elastic License v2"
+name = "Execution of a Downloaded Windows Script via Explorer"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action == "creation" and process.name : "explorer.exe" and
+  file.Ext.windows.zone_identifier == 3 and file.name : "*:Zone.Identifier" and file.path : "?:\\Users\\*" and
+  file.extension in~ ("js", "jse", "vbs", "vbe", "wsh", "hta", "chm", "msc")] as event0
+ [process where event.action == "start" and
+  process.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and process.parent.name : "explorer.exe" and
+   (
+    /* substring used to remove Zone.Identifier from file.name */
+    stringcontains~(process.command_line, substring(event0.file.name, 0, length(event0.file.name) - 16)) or
+
+    stringcontains~(process.command_line, event0.file.name) or
+
+    startswith~(event0.file.path, process.working_directory)
+   )] as event1
+  [any where
+
+   /* script utility spawn a child process */
+   (event.category == "process" and event.action == "start" and
+    process.parent.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and process.parent.entity_id == event1.process.entity_id) or
+
+    /* script utility perform an egress conn to the internet */
+   (event.category == "network" and event.action in ("disconnect_received", "connection_attempted") and
+    process.name in~ ("wscript.exe", "mshta.exe", "hh.exe", "mmc.exe") and
+    process.entity_id == event1.process.entity_id and
+    not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.168.0.0/16", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "240.0.0.0/4", "::1", "FE80::/10", "FF00::/8"))]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.001"
+name = "Compiled HTML File"
+reference = "https://attack.mitre.org/techniques/T1218/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

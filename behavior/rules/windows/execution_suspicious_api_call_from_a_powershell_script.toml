@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where
@@ -17,8 +17,8 @@ process.Ext.api.metadata.target_address_path != "c:\\windows\\system32\\dante_dn
 process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
 process.thread.Ext.call_stack_final_user_module.protection_provenance in ("clr.dll", "mscorwks.dll", "coreclr.dll") and
 
-/* filesystem enumeration activity */
-not process.Ext.api.summary like "IoCreateDevice( \\FileSystem\\*, (null) )" and
+/* IoCreateDevice activity */
+process.Ext.api.name != "IoCreateDevice" and
 
 /* exclude nop operations */
 not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.protection_old == "RWX") and
@@ -28,7 +28,11 @@ not (process.parent.executable : "C:\\Windows\\System32\\gpscript.exe" and
   process.Ext.api.summary in ("VirtualProtect( Unbacked, 0x10, RWX, RW- )", "WriteProcessMemory( Self, Unbacked, 0x10 )", "WriteProcessMemory( Self, Data, 0x10 )")) and
 
 /* cybersecurity tools */
-not (process.Ext.api.name == "VirtualAlloc" and process.parent.executable : ("C:\\Program Files (x86)\\CyberCNSAgent\\cybercnsagent.exe", "C:\\Program Files\\Velociraptor\\Velociraptor.exe")) and
+not (process.Ext.api.name == "VirtualAlloc" and
+     process.parent.executable :
+                 ("C:\\Program Files (x86)\\CyberCNSAgent\\cybercnsagent.exe",
+                  "C:\\Program Files\\Velociraptor\\Velociraptor.exe",
+                  "C:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe")) and
 
 /* module listing */
 not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and
@@ -37,7 +41,13 @@ not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32
 /* WPM triggers multiple times at process creation */
 not (process.Ext.api.name == "WriteProcessMemory" and
      process.Ext.api.metadata.target_address_name in ("PEB", "PEB32", "ProcessStartupInfo", "Data") and
-     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("?:\\windows\\*\\kernelbase.dll!CreateProcess*", "Unknown")))
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*\\kernelbase.dll!CreateProcess*", "*\\kernel32.dll!CreateProcess*", "Unknown", "*\\kernelbase.dll+0x*", "*\\kernel32.dll+0x*"))) and
+
+not (process.Ext.api.parameters.size == 16 and process.command_line : "*\\\\*\\Scripts\\GPO_Scripts\\*") and
+
+not (process.parent.executable : "\\\\?\\Volume{*}\\Windows\\System32\\CExecSvc.exe" and
+     process.command_line : "powershell -NoProfile -NoLogo -InputFormat text -OutputFormat text -NonInteractive -ExecutionPolicy Bypass -Command -") and
+not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "41c6470c01*41c6470c01488b55*")
 '''
 
 min_endpoint_version = "8.10.0"

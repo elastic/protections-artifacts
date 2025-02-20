@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=1m
@@ -70,7 +70,7 @@ sequence with maxspan=1m
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
        process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\windows.storage.dll") and
 
-  not (process.executable : "C:\\Windows\\System32\\sihost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
+  not (process.executable : "C:\\Windows\\System32\\ShellHost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.entity_id
 '''
 
@@ -79,6 +79,11 @@ min_endpoint_version = "8.10.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
 
 [[optional_actions]]
 action = "rollback"

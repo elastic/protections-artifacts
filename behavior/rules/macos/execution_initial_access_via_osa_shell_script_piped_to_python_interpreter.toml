@@ -8,7 +8,7 @@ id = "2aade342-d45b-4297-a0e0-4cf0962c9042"
 license = "Elastic License v2"
 name = "Initial Access via OSA Shell Script Piped to Python Interpreter"
 os_list = ["macos"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -17,11 +17,12 @@ sequence by process.parent.entity_id with maxspan=30s
   process.args == "-e" and process.command_line like~ "*python*"]
 [network where event.type == "start" and event.action == "connection_attempted" and
   process.name like~ "python*" and
-  not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
-       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
-       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
-       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
-       "FE80::/10", "FF00::/8")]
+   not cidrmatch(destination.ip, 
+       "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+       "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", 
+       "100.64.0.0/10", "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "::1", "FE80::/10", "FF00::/8")]
 '''
 
 min_endpoint_version = "8.16.0"
@@ -30,6 +31,11 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

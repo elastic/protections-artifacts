@@ -8,7 +8,7 @@ id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
 license = "Elastic License v2"
 name = "Timestomping Detected via Touch"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -24,12 +24,17 @@ process.parent.executable != null and process.args like (
     "/usr/local/bin/start-mailserver.sh"
   ) or
   process.parent.executable like ("/opt/sw/tomcat/rc_scripts/*", "/tmp/newroot/var/lib/docker/overlay2/*", "/snap/*") or
-  process.parent.name in ("xargs", "find", "sudo", "make", "pmlogger_check", "pmlogger_daily", "pmlogger_janitor", "autoupdate", "pmlogctl") or
+  process.parent.name in (
+    "xargs", "find", "sudo", "make", "pmlogger_check", "pmlogger_daily", "pmlogger_janitor", "autoupdate", "pmlogctl",
+    "spyglass", "desktop-launch", "pmiectl"
+  ) or
   process.parent.args like (
     "/home/*/scripts/auto_download_process.py", "/home/*/scripts/perl_python_eagu1p.py",
     "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh"
   ) or
-  process.args in ("/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff") or
+  process.args in (
+    "/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff", "/etc/aliases.db"
+  ) or
   process.args like ("--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*")
 )
 '''
@@ -39,6 +44,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

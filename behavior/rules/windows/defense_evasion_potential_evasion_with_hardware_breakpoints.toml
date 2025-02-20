@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -28,7 +28,9 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                  "Famatech Corp.", "Nuance Communications, Inc.", "Blizzard Entertainment, Inc.", "Kofax, Inc.", "KRAFTON, Inc.",
                  "Guidance Software, Inc.", "Open Text Corporation", "CUMMINS INC.", "Cockos Incorporated", "ByteSphere Technologies LLC",
                  "PROMICRA, s.r.o.", "Avid Technology, Inc.", "Avid Technology, Inc", "PROMICRA, s.r.o.", "Krzysztof Kowalczyk",
-                 "Yummy Interactive Inc", "Caliper Corporation", "Tencent Technology (Shenzhen) Company Limited")) and
+                 "Yummy Interactive Inc", "Caliper Corporation", "Tencent Technology (Shenzhen) Company Limited",
+                 "Big Fish Games, Inc.", "Big Fish Games", "GdP Software", "Tonec Inc.", "Active Database Software LLC",
+                 "URSoft, Inc.")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*",
                                         "?:\\Windows\\apppatch\\exploitblocker.dll*",
@@ -44,7 +46,19 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                            "C:\\Program Files (x86)\\iLok License Manager\\iLok License Manager.exe",
                            "C:\\Program Files (x86)\\Common Files\\PACE\\Services\\LicenseServices\\LDSvc.exe",
                            "C:\\Program Files (x86)\\NWPS\\SwitchPortMapper\\spmap.exe",
-                           "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\t6zm.exe") and
+                           "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\t6zm.exe",
+                           "C:\\Program Files (x86)\\Microsoft Office\\Office16\\MSACCESS.EXE",
+                           "C:\\Program Files (x86)\\Boardmaker with SD Pro\\BM_SDP.exe",
+                           "C:\\Program Files (x86)\\Nuance\\Power PDF 20\\NPDFLM.exe",
+                           "C:\\ProgramData\\Big Fish\\Game Manager\\Addons\\gmActivator.exe",
+                           "C:\\Program Files (x86)\\Boardmaker with SD Pro\\BM_SDP.exe",
+                           "C:\\Program Files (x86)\\Nuance\\PDF Professional 6\\PdfPro6Hook.exe",
+                           "C:\\Program Files (x86)\\FormTool 7\\Program\\FormTool.exe",
+                           "D:\\DesktopAPP\\SteamDesktop\\steamapps\\common\\VRChat\\VRChat.exe",
+                           "C:\\Program Files (x86)\\Christmas Wonderland 15 Collectors Edition\\kcfjhdd.exe",
+                           "C:\\Program Files (x86)\\Sea Life Explorer Collectors Edition\\fqlkpjx.exe",
+                           "C:\\Program Files (x86)\\Hidden Differences - World Tour\\cgrtmwc.exe",
+                           "\\evice\\HarddiskVolume4\\Program Files (x86)\\WeGame\\tenprotect\\TASLogin.exe") and
 
  not (process.executable : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" and dll.name == "ws2_32.dll" and
       process.thread.Ext.call_stack_summary == "Unbacked" and

@@ -7,7 +7,7 @@ id = "f2d206e0-97c9-484b-8b6a-5eecd82fbfdc"
 license = "Elastic License v2"
 name = "Hexadecimal Payload Execution"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -20,7 +20,8 @@ length(process.command_line) > 50 and not (
   ) or
   process.parent.executable like ("/home/sites/*/site/stats/awstatsUpdateSite.php", "/tmp/newroot/*") or
   process.parent.name in (
-    "xargs", "su", "sshd", "find", "jem", "vzctl", "wine64-preloader", "apkprocessor.pl", "./firmware_upgrade.sh"
+    "xargs", "su", "sshd", "find", "jem", "vzctl", "wine64-preloader", "apkprocessor.pl", "./firmware_upgrade.sh",
+    "please", "tm_sandbox"
   ) or
   (
     process.executable == "/usr/bin/printf" and process.parent.args : (
@@ -28,9 +29,9 @@ length(process.command_line) > 50 and not (
       "/usr/bin/testssl", "/tools/testssl/testssl.sh"
       )
   ) or
-  process.parent.args : (
+  process.parent.args like~ (
     "/usr/bin/dracut", "/home/*/tools/testssl.sh/testssl.sh", "unifi-update.sh", "/opt/tools/testssl.sh/testssl.sh",
-    "./testssl.sh"
+    "./testssl.sh", "../testssl.sh"
   ) or
   process.parent.command_line == "xargs printf" or
   process.name in ("systemctl", "ln", "gdb", "su", "vzctl", "strace", "sed") or
@@ -44,6 +45,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

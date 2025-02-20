@@ -4,7 +4,7 @@ id = "20eaa6a3-6b80-48bc-9c48-a935138169f9"
 license = "Elastic License v2"
 name = "Suspicious Python Script Interpreter"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -14,10 +14,13 @@ sequence by process.entity_id with maxspan=1m
   not process.executable :
             ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe",
              "?:\\Python*\\python*.exe",
-             "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python??\\python.exe",
-             "?:\\Users\\*\\AppData\\Local\\anaconda?\\envs\\*\\python.exe",
-             "?:\\Users\\*\\AppData\\Local\\*\\Miniconda?\\python.exe",
+             "?:\\Users\\*\\AppData\\Local\\*.exe",
+             "?:\\Users\\*\\Desktop\\*.exe",
              "?:\\*\\Anaconda?\\python*.exe",
+             "D:\\AppsSvcs\\SeaAiSsoDocsService\\SeaAiSsoDocsService.exe",
+             "D:\\AppsSvcs\\GenAIServiceCode\\GenAIServiceCode.exe",
+             "D:\\AppsSvcs\\GenAIServiceDocs\\GenAIServiceDocs.exe",
+             "D:\\AppsSvcs\\SsoAiServiceDocs\\SsoAiServiceDocs.exe",
              "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe", 
              "?:\\ProgramData\\checkmk\\agent\\modules\\python*\\.venv\\Scripts\\python.exe",
              "?:\\Users\\*\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.*\\LocalCache\\local-packages\\*\\Scripts\\dist\\LiveLinkATC*.exe") and
@@ -48,6 +51,10 @@ sequence by process.entity_id with maxspan=1m
                     "c70fa68e604f91387bbe920971057cb04148c0fed4142124ccd9226abfb93538",
                     "afbe4150814176a86abb7192b14465b88a0cbf3a58b512eaa533fb56dccc6077",
                     "7351523031359477a5ac0e6d39b04dec624fd3e990f85e698b6f2a77873963fd",
+                    "5ab87d9be556f9ba07686993399ddf36713e3ed453c0ccb36bb6b76c5946d044",
+                    "a55091876a0682795353e398f1a5f974a2ee5e38ce0fcab79519b9d1ec464db9",
+                    "bdd94e30ad1f48c3d537aabbe65353ec5b7c80a338c13afb280a4bb9a4d77c58",
+                    "be4827351259b82b0e347cce4b15ff4b25a63a06c754c2621fbcf7134fc30342",
                     "a53af751d32103fab234be6ae680fc0f6057989d8ff1486d8d5b26ccde0b3d70",
                     "1a59794c7c29f4569a0fe87bc9d9ffbf57835358c69f957950cd9718151f1af6",
                     "3d8595f90fb478cb0f3673a4e5162ac054638fe699a3879ad47514cf872077dd",
@@ -57,9 +64,27 @@ sequence by process.entity_id with maxspan=1m
                     "3c2e7b09c5bd39f7c0dd7413d497825c4383fe02ad27410c2b7abf315f4fd91d",
                     "129502c5d1e7c5ce49941fda604e654e69235cf5fe856fbf2a610303e8de6e26",
                     "b0200d91dda15b6a76be5b57a247247fc5d6b5ba833b8b9f186d89745f1a82dd",
-                    "6f463847cc8951b63ae47381e308b380a981ee93e6ccc5a279474a59f2fa0e30")
+                    "6f463847cc8951b63ae47381e308b380a981ee93e6ccc5a279474a59f2fa0e30",
+                    "51291914e0cf34090ed205738f1d98d8a73b3f394094bc7175876e1b1039ceb1",
+                    "0149486bdaebe992502756f4c6fb5be6e9fa927598355e33283f517620479fb4",
+                    "f2dda7c8cf878054bdff6943a479fe3e7d41ba74079089670e8e0a2bf680220c",
+                    "3dff263228c025f393b9ec418dc4b0d4796d51d2775500061e566f7fb40a9857",
+                    "eca5e5510e95804fd6af240d4247806e022214b14a7e2d68b825363b846b35f0",
+                    "3489700e2aaee32c4806cf9ad590352db4f35bffeca4a7ec510beaf81069d877",
+                    "60104130ddba5a1c0af212e88c044adedf672aa59d69c5ead20581f79d069346",
+                    "a03e3bcdff4f47bd18b17733c764bfbbddaa247ce6f850c5bf48a5e5e6308da7",
+                    "1bedd9c0ceb91dd745808293591a4896e3be67066dbe267fe6d664733965fe15",
+                    "a3e7ae2761115925e5b367de1684a15f880eba028686d40bcd7d377641b311ee",
+                    "b0ecc848b56af95a7d945e2a97d8466dc8c387468bbb3264c334dd996a953517",
+                    "b0dd44c64e360ca412640fbbd8744483901db12c659ee28b3e752b040e2cba62")
   ]
  [library where dll.name : ("win32api*.pyd", "win32process.pyd", "win32security.pyd", "md.cp*-win32.pyd", "win32crypt.pyd", "win32net.pyd")]
+ [network where
+   event.action : ("disconnect_received", "connection_attempted") and
+   not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+       "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10", "FF00::/8")]
 '''
 
 min_endpoint_version = "8.10.0"

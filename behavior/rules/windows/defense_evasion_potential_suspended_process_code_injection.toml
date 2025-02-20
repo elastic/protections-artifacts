@@ -7,7 +7,7 @@ id = "47167118-ba42-48e8-8555-dd50d98d21c4"
 license = "Elastic License v2"
 name = "Potential Suspended Process Code Injection"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name  == "WriteProcessMemory" and
@@ -87,10 +87,16 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
                                    "dc641636d5d782b31d29ce823e951d1a2164c86ee06bf2f65a841360fb7af356",
                                    "fb4a05ce7d50721c71f66c37e0ab7e52cd46034a2e394940b3f60c9c2afb079a",
                                    "862a7e8c68f05b91ecf3a43ac5b60c6f57ee50fa98ad1b539480d541628f5c2e",
-                                   "44c87532cbb511c369b38a105fc5a84b1d89dba9dfdd5a62c311d6176fe93201")
+                                   "44c87532cbb511c369b38a105fc5a84b1d89dba9dfdd5a62c311d6176fe93201",
+                                   "73395b6c3fa9fa73e8e3665f108b3a92c564da9c1b9ce7834832adbb5e658a87")
 '''
 
 min_endpoint_version = "8.14.0"
+[[actions]]
+action = "kill_process"
+field = "Target.process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

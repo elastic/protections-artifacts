@@ -7,7 +7,7 @@ id = "96ffa829-b9fc-4456-be96-2b59b8facaed"
 license = "Elastic License v2"
 name = "VirtualAlloc API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id
@@ -20,13 +20,15 @@ sequence by process.entity_id
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
-                    "?:\\Windows\\assembly\\*") and
-
+                    "?:\\Windows\\assembly\\*",
+                    "?:\\Program Files\\*",
+                    "?:\\Program Files (x86)\\*") and
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
                          ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
                           "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
-                          "VICON INDUSTRIES, INC.")) and
+                          "VICON INDUSTRIES, INC.", "Altium LLC")) and
 
   not (dll.name : "ISSetup.dll" and dll.pe.original_file_name : "iKernel.dll") and
   not dll.hash.sha256 :
@@ -55,12 +57,23 @@ sequence by process.entity_id
                 "5ada6b6a5802d17c6cc599907542b231f15d9b39f79dc6693b32cee308a12e5c",
                 "17ddddc4b4d3a6e902b3e84dcd4d3eb4f349efc3c207bb99cd65d71549802b63",
                 "0e1c7395639deafecf99e79d394ff29f7399ccb4cde50b1e5e19861d2ea3aa70",
-                "b4e472f5655222f431944c8cd6b3f5dd8e3932c99259639b35bf3b09e673a4f9")
+                "b4e472f5655222f431944c8cd6b3f5dd8e3932c99259639b35bf3b09e673a4f9",
+                "8480cbc7f6f3c6be4d9e03fa14f58f1efd0dca08f660296725f212594d10a700",
+                "f3b161fc18a12b0cfd8f41964b3b17577c121359ca656329a14378149f3e42de",
+                "98cd02d52cd1d255cf68eaee946eff807d9d9f1ddcd01f9317f28d22f76db871",
+                "f9037911ad2cb5570a61af5ec1549c33fb131eccc3d6da93de556ae7952adf9f",
+                "3885dbec9db4d8a3a1f6ad12ff0055e64de63d351424b954369e7828950f7fa7",
+                "2ff67993f53becab7fa167138e6f2749378afe87beb81949913c9731fc14d95e",
+                "e5bb896d9e05d81b143bc517dc2d8b5f3900a6e336edac7ff79b5ac34ba6c9e0",
+                "e3048d233fa257f242ccb05279898cf5490d1708cca91113bbb365b39364dcfa",
+                "0c9df43d26b8e672b602aa061fec13fad1a01d2b8116042f3854712471097e0e")
  ] as event0
 [api where
-  process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection : "*X*" and
-  process.Ext.api.parameters.size >= 4096 and
+  process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection == "RWX" and
+  process.Ext.api.parameters.size > 4524 and
   _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name)) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("issetup.dll", "is_*.tmp", "bdhkm32.dll", "msi*.tmp")) and
+  not process.thread.Ext.call_stack_summary: ("ntdll.dll|kernelbase.dll|*|ntdll.dll|kernelbase.dll|jvm.dll|java.dll|*", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|*|ntdll.dll|kernelbase.dll|jvm.dll|java.dll*") and
   not (process.name : ("msiexec.exe", "setup.exe") and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003"))
  ]

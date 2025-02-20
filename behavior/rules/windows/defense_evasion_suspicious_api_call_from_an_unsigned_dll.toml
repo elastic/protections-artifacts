@@ -7,7 +7,7 @@ id = "727b0f0c-1a54-42cc-9ad6-cc3066ce3712"
 license = "Elastic License v2"
 name = "Suspicious API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id
@@ -52,7 +52,13 @@ sequence by process.entity_id
     stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", event0.dll.name)) or
 
     stringcontains~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|", event0.dll.name))
-   )]
+   ) and
+  not process.Ext.api.behaviors in ("self-modifying", "cross-process") and
+  not (process.Ext.api.behaviors == "image_indirect_call" and process.Ext.api.parameters.size <= 6000) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                             "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))
+  ]
  until [process where event.action:"end"]
 '''
 

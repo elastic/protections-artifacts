@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Memory Protection Fluctuation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
@@ -35,13 +35,24 @@ sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=3
                                           "?:\\Windows\\assembly\\*", 
                                           "\\Windows\\assembly\\*",
                                           "\\device\\mup\\*\\firefox64\\xul.dll") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 : 
                                                ("a0d649241c61e72592a78effcece1557a07548fda6ac1741a53e69ee3e02946b", 
                                                 "649ede91f00d784ed1e397ece6e5f13dbe6cd9d86c06b424834c443c32727bae",
                                                 "adde1c4ba76c8e63844fac145f097002cbfc4b1af63656fb8cfbb8ebebc4375a",
                                                 "ecc94be9f5e799870165d3e4c1020dc63bb09be5b08d3dfda5d1c42274a5139f",
                                                 "8ccea1ef9db1d0632b7c1ac2c102d04510ff4c174ec4ae74c31103718aad2c93",
-                                                "5cdf6b8fa6b2e42335817bc76154f4368836c8312e0347dee2d9ff7dc9957eac")
+                                                "5cdf6b8fa6b2e42335817bc76154f4368836c8312e0347dee2d9ff7dc9957eac",
+                                                "65b5fe209d52b979ee4fd0b13400c99e042ccb29d6bae5b4e06499a285f00a38",
+                                                "10cc18de06e6da9f9f50e631517574a1cda426c763ac6d32ce9dc7aa318a12a2",
+                                                "c58928c71946618d3cb398e11de5479b72425d94fa79c1610162d86446164b46",
+                                                "701f7cfedf760bddfe5f6bd612a98c6f213566e2cde77498ee858aa3b21db1f2",
+                                                "e2fb31b99ac5b3ef4b89f6164ad9dddbe59854bc6f7b557ce6f8a2e4378343fd",
+                                                "99d3cdd904235ca722af98aa009f0551cbe92d25d1a332fe7bca85a6f38448bf",
+                                                "2bda92ee609ccfa0458615fd1362f8f247fe5e4b8d4c52b08188f21b165c8573",
+                                                "22e25bd041fcf81df167432a1f2dc5135aa3adb0b037bb52dbd92a189cba2be8",
+                                                "692686ecf173d8d584ceb6c02530fa03740b6a9b9966a11286c73635b629a7ba",
+                                                "c0f87e6cac3fe794d4af73a5e168a6a888524ac85dc0a5cdcf4e76b4813194c6")
   ]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "RW-"]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "R-X"]

@@ -1,0 +1,71 @@
+[rule]
+description = """
+Detects the execution of a Windows script with base64 encoding along with other suspicious features like execution and
+download.
+"""
+id = "0c23f47e-2f47-48fb-b00c-201368a9975c"
+license = "Elastic License v2"
+name = "Suspicious Windows Script Base64 Encoding"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != null and
+
+ (process.name in~ ("wscript.exe", "cscript.exe", "mshta.exe", "msxsl.exe") or
+  process.Ext.api.parameters.app_name in ("JScript", "VBScript")) and
+
+  (process.Ext.api.parameters.buffer : "*bin.base64*" and
+   process.Ext.api.parameters.buffer : ("*.Run(*", "*.ShellExecute(*", "*.responseBody*", "*XMLHTTP*", "*WinHttp*", "*.responseText*", "*http:*", "https:*")) and
+
+  not process.Ext.api.parameters.content_name : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
+  not process.parent.executable :
+                     ("?:\\Program Files\\HP\\HP LaserJet Pro *\\Bin\\HP LaserJet Pro *.exe",
+                      "?:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe",
+                      "?:\\Program Files\\System Center Operations Manager\\Gateway\\MonitoringHost.exe",
+                      "?:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
+                      "C:\\Program Files (x86)\\Bentley\\MicroStation V8i (SELECTseries)\\MicroStation\\ustation.exe",
+                      "C:\\Program Files\\Bentley\\OpenRoads Designer *\\OpenRoadsDesigner\\OpenRoadsDesigner.exe",
+                      "C:\\Windows\\LSDeployment\\RemoteDeployment*.exe") and
+  not (process.executable : "?:\\Windows\\Sys*\\cscript.exe" and user.id == "S-1-5-18") and
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name in ("Altium LLC", "Lansweeper NV"))
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

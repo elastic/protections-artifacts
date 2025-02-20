@@ -1,0 +1,85 @@
+[rule]
+description = """
+Detects the use of Reflection.Assembly to load PEs and DLLs in memory in PowerShell scripts. Attackers use this method
+to load executables and DLLs without writing to the disk, bypassing security solutions.
+"""
+id = "dc6caf51-828c-4264-a96f-bcf21ed18762"
+license = "Elastic License v2"
+name = "Suspicious PowerShell Script with .NET Reflection"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+ (process.name in~ ("powershell.exe") or process.Ext.api.parameters.app_name == "PowerShell") and
+  process.parent.executable != null and
+  process.Ext.api.parameters.buffer : ("*Reflection.Assembly]::Load($*", "*Reflection.Assembly*::UnsafeLoad*", "*assembly.Load(*") and
+  process.Ext.api.parameters.buffer : ("*::FromBase64String($*",  "*.downloadstring*", "*.downloaddata*", "*.WebClient*") and
+  process.Ext.api.parameters.buffer : "*.Invoke(*" and
+  not process.Ext.api.parameters.content_name :
+                                 ("?:\\Program Files (x86)\\*",
+                                  "?:\\Program Files\\*",
+                                  "?:\\WINDOWS\\system32\\config\\systemprofile\\AppData\\Local\\*.ps1",
+                                  "D:\\*", "E:\\*", "F:\\*",
+                                  "C:\\WINDOWS\\system32\\config\\systemprofile\\AppData\\Local\\*.ps1",
+                                  "C:\\Packages\\Plugins\\Microsoft.Powershell.DSC\\2.83.5\\bin\\DscExtensionTelemetry.psm1",
+                                  "C:\\windows\\AdminArsenal\\PDQDeployRunner\\service-1\\exec\\PSAppDeployToolkit\\PSAppDeployToolkit.psm1") and
+  not process.executable :
+               ("C:\\Program Files (x86)\\N-able Technologies\\AutomationManagerAgent\\AutomationManager.AgentService.exe",
+                "C:\\Program Files (x86)\\COT\\COT Help\\COTHelpx64.exe",
+                "C:\\Program Files (x86)\\Cygate System Information\\SystemInformation.exe",
+                "C:\\Program Files (x86)\\Cygate System Information\\SystemInformation.exe",
+                "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe") and
+  not process.parent.executable : ("C:\\Program Files (x86)\\baramundi\\Management Server\\BDSRun.exe",
+                                   "C:\\Windows\\CCM\\CcmExec.exe",
+                                   "C:\\Windows\\AdminArsenal\\PDQDeployRunner\\service-?\\exec\\Invoke-AppDeployToolkit.exe",
+                                   "C:\\Program Files\\Mesh Agent\\MeshAgent.exe",
+                                   "C:\\Program Files (x86)\\COT\\COT Help\\COTHelp.exe",
+                                   "C:\\Program Files (x86)\\baramundi\\Management Server\\BDSRun.exe",
+                                   "C:\\Program Files (x86)\\N-able Technologies\\AutomationManagerAgent\\AutomationManager.AgentService.exe")
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

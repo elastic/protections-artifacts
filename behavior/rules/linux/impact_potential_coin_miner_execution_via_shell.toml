@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Coin Miner Execution via Shell"
 os_list = ["linux"]
 reference = ["https://xmrig.com/docs/algorithms"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -23,7 +23,9 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
     )
   ) or process.command_line like ("*stratum+tcp://*", "*stratum2+tcp://*", "*--nicehash*") 
 ) and not (
-  process.parent.name like ("find", "python3", "httpd", "sshd", "php*", "sudo", "ruby", "nvim", "vim", "make", "schroot", "vimdiff") or
+  process.parent.name like (
+    "find", "python3", "httpd", "sshd", "php*", "sudo", "ruby", "nvim", "vim", "make", "schroot", "vimdiff", "sbuild"
+  ) or
   process.parent.executable == "/opt/cron/registry-sync/ru/syncRegistryByReport.pl" or
   process.command_line like ("*openssl*", "*--display-charset*", "sh -c aws s3 cp*") or
   process.parent.args == "/usr/bin/crun"
@@ -35,6 +37,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

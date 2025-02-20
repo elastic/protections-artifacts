@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -74,7 +74,8 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "7b5e0b0bc2ca257071210ddb787cb18d65621bb7d1034ea946937ca565977bbd",
                                    "3f74481e6991404f951ff5168c6726a521c566eb408a654d776109afdb963655",
                                    "7dd3acf9f47641ce621e4db5980ab8f7a3f67c9a4f008f36b56d59afefbedfa9",
-                                   "c9e303d84e5fa603c85abee0caefa8b0ef393aab6805e2ea5098ca927fa2b6cf") and
+                                   "c9e303d84e5fa603c85abee0caefa8b0ef393aab6805e2ea5098ca927fa2b6cf",
+                                   "6e79c9271cddc0a4bb3e8af619967d54ea6df7067798fd5da9ccca233b221da0") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :

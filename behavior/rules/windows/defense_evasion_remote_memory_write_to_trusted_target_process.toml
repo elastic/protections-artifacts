@@ -34,7 +34,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and
 not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 and
       _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
 
- not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
+ not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\\\?\\Volume{*}\\*.exe") and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
 
  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
 
@@ -155,10 +155,29 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "fdef73d692e2e181075bf43a05cd7ebe551f6b1be31f4d471ff709f83a549612",
                                    "6eed2886728608f1b3f4a54a7a7d338ef1b1669f6f53a5d38bcd352f0ec755c9",
                                    "9840c97b35afb77418d541ef2f1b5da93c0d7d9632c334ec7444ceadeb0f9fa8",
-                                   "418a7dc57d5ac225d7f012fe90a1668a797fde56c9add6c3aad841ab0c1e2bc1")
+                                   "418a7dc57d5ac225d7f012fe90a1668a797fde56c9add6c3aad841ab0c1e2bc1",
+                                   "42215642c3c1ec4c578b9c03cbe8cd93cdf20abe33687473da2d25d5f5efe0a9",
+                                   "1dfc0c4f5442dcff2082d9258254b6861c27001aada055d960844561e699655b",
+                                   "e09a338081b83a42e97b60311d9af749baaedb226b155d9e7bd658de1c5a349d",
+                                   "1fa7ef783a81ed730bd40540e0aec4c1b42ba7eef52ddb28311f2086580db766",
+                                   "1f8a5ff26f722b380754d794ad4b8d9edf69361e18ea0a2a03ed58d61e91849c",
+                                   "c5d10c310306c223b66ebf1595db00d581d4eff1a0615d4d309cd9160f85a008",
+                                   "538837e2f9bdb764d6ec799c89348bd483d51e72b3f91b6bc5e30a1bdcae24bf",
+                                   "b0fda4dd268633f34e75e03fb0c79ed9512b5fb4ecf7b85989e2b7744f7b7974",
+                                   "722cb3292042a573a1f56a535d1986fd8496261ba68e6d60a32599701df617c7",
+                                   "615ac4399eed0a26e5cd9bba4e7dcf661400fb0546dce067523fe275351d3b04",
+                                   "c750bdf07966a69d1423dda5deb3413d312e319c9dd1193f354eb48310208370",
+                                   "d0a62a67891bbd4eb263d328e5bf6da080bcd7d16c3b1d73e563a48263062c5a",
+                                   "cd0e1ca821e92ae426cbd30daf44ae3580ec4070c734b2d411376a5e6a874e97")
 '''
 
 min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "Target.process.entity_id"
+state = 0
+tree = true
+
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=3m
@@ -55,7 +55,13 @@ sequence with maxspan=3m
          process.parent.executable : "C:\\Windows\\System32\\pacjsworker.exe") and
 
     not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\csc.exe" and
-         process.parent.executable : "C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe")
+         process.parent.executable : "C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe") and
+    not process.executable :
+                     ("C:\\Program Files\\HP\\hpssacli\\bin\\hpssacli.exe",
+                      "C:\\Program Files (x86)\\ManageSoft\\Uploader\\ndupload.exe",
+                      "C:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe") and
+    process.hash.sha256 != "8ba8760bcb924e1e7943c3008a80006b29737808cc41a93cabcfeaaec9785276" and
+    not process.parent.executable : "C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe"
    ] by process.parent.entity_id
 '''
 

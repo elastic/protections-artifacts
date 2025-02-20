@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.43"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
@@ -65,6 +65,13 @@ process where event.action == "start" and
                  "?:\\Users\\*\\node.exe",
                  "?:\\nodejs\\node.exe",
                  "?:\\*\\.nodejs\\node\\node.exe",
+                 "C:\\xampp\\php\\php.exe",
+                 "C:\\officelauncher\\OfficeInstaller.exe",
+                 "D:\\PROGRAMS\\Siebel\\siebsrvr\\BIN\\siebmtshmw.exe",
+                 "C:\\Program Files (x86)\\NetDocuments\\ndOffice\\ndOffice.exe",
+                 "C:\\Program Files\\Waves Central\\Waves Central.exe",
+                 "C:\\Users\\*\\AppData\\Local\\MyASUS Update Messenger\\UpdateMessenger.exe",
+                 "C:\\Program Files\\Microsoft SQL Server\\MSSQL??.MSSQLSERVER\\MSSQL\\Binn\\sqlservr.exe",
                  "?:\\programmiweb\\NetBeans-*\\netbeans\\bin\\netbeans64.exe",
                  "?:\\Users\\*\\AppData\\Local\\Zuercher Suite\\production\\leds\\leds.exe",
                  "?:\\Program Files (x86)\\Public Safety Suite Professional\\production\\leds\\leds.exe",
@@ -84,6 +91,7 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
                  "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
                  "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+                 "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
                  "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
@@ -97,6 +105,7 @@ process where event.action == "start" and
              "?:\\Program Files (x86)\\AllesTechnologyAgent\\*",
              "https://auth.axis.com/oauth2/oauth-authorize*",
              "D:\\GitHub\\lilitech-cloud-app\\node_modules\\.bin\\*",
+             "C:\\ProgramData\\santesocial\\commun\\adm\\produits",
              "*--flat-playlist^*--no-cache-dir^*") and
   not process.command_line :
                ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
@@ -112,9 +121,10 @@ process where event.action == "start" and
   not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824") and
   not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\Program Files (x86)\\CaseWare\\Template\\FinancialsIFRS\\Packager\\After\\0\\FinancialsIFRSCreateShortcuts.js") and
   not (process.name : "cmd.exe" and process.parent.name : ("javaw.exe", "udt.exe") and
-       process.command_line : ("cmd /C %JENV_0%", "/c echo %MENU_SYSTEM%", "/c echo %NJSEXIT7%")) and
+       process.command_line : ("cmd /C %JENV_0%", "/c echo %MENU_SYSTEM%", "/c echo %NJSEXIT7%", "%OPENER% %f%")) and
   not (process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\RublonForWindows-?.?.?.tmp" and
-       process.command_line : "*https://core.rublon.net/api/app/init*")
+       process.command_line : "*https://core.rublon.net/api/app/init*") and
+  not process.command_line : ("cmd /c echo AMD64", "cmd /c echo x86")
 '''
 
 min_endpoint_version = "7.15.0"

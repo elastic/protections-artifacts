@@ -8,7 +8,7 @@ id = "d3588fad-43ae-4f2d-badd-15a27df72133"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Windows Command Shell"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=1m
@@ -18,7 +18,8 @@ sequence with maxspan=1m
     not process.command_line : ("*\\\\*\\*.cmd*", "*\\\\*\\*.bat*") and 
     not descendant of [process where event.action == "start" and process.executable : "?:\\Windows\\System32\\gpscript.exe"] and
     not (process.parent.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and
-         user.id : "S-1-5-18" and process.args : "BOOTSTATUSPOLICY")
+         user.id == "S-1-5-18" and process.args : "BOOTSTATUSPOLICY") and
+    not (user.id == "S-1-5-18" and process.parent.executable : "C:\\$VcmsTemp$\\VcmsPush.exe")
   ] by process.entity_id
   [process where event.action == "start" and
     (

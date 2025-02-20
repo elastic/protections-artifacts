@@ -10,11 +10,13 @@ os_list = ["windows"]
 reference = [
     "https://posts.specterops.io/lateral-movement-abuse-the-power-of-dcom-excel-application-3c016d0d9922",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and process.Ext.session_info.logon_type : "Network*" and
- process.parent.executable : "?:\\Program Files*\\Microsoft Office\\*.exe" and process.parent.args : "-Embedding"
+ process.parent.executable : "?:\\Program Files*\\Microsoft Office\\*.exe" and process.parent.args : "-Embedding" and 
+ not process.executable : ("C:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\OfficeC2RClient.exe", 
+                           "C:\\Program Files\\Microsoft Office\\root\\Client\\AppVDllSurrogate64.exe")
 '''
 
 min_endpoint_version = "8.6.0"

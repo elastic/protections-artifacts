@@ -8,7 +8,7 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -16,8 +16,9 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
 process.args == "-c" and process.command_line : "* exec -a *" and not (
   process.executable like ("/nix/store/*", "/tmp/newroot/*") or
   process.parent.executable in (
-    "/opt/warpdotdev/warp-terminal/warp", "/opt/sp/serverpilot/stats/bin/sp-stats", "/bin/bcompare",
-    "/usr/NX/bin/nxnode.bin", "/usr/bin/gnome-shell", "/var/lib/dpkg/info/udev.postinst", "/usr/bin/bcompare"
+    "/opt/warpdotdev/warp-terminal/warp", "/opt/sp/serverpilot/stats/bin/sp-stats", "/bin/bcompare", "/bin/su",
+    "/usr/NX/bin/nxnode.bin", "/usr/bin/gnome-shell", "/var/lib/dpkg/info/udev.postinst", "/usr/bin/bcompare", 
+    "/usr/bin/su"
   ) or
   process.command_line like (
     "*/tmp/fzf-args*", "/opt/sp/serverpilot/*", "*/opt/forticlientems/*", "*WarpTerminal*", "/bin/bash -c exec -a bash*",
@@ -35,6 +36,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

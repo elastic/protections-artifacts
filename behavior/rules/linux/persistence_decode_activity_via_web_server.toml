@@ -8,7 +8,7 @@ id = "eb928496-a992-4cee-9cd7-fc3fbae7e8da"
 license = "Elastic License v2"
 name = "Decode Activity via Web Server"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5s
@@ -32,7 +32,8 @@ sequence with maxspan=5s
      process.parent.args == "./mmicro-control.pl" or
      process.parent.command_line like~ "Serverd*" or
      process.command_line == "sh -c man/base32.td/base32 --version 2>/dev/null" or
-     (process.parent.name == "perl"  and process.command_line like~ "sh -c man/base*")
+     (process.parent.name == "perl"  and process.command_line like~ "sh -c man/base*") or
+     process.working_directory like~ "/var/lib/waagent/*"
    )
   ] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and process.name in ("base64", "base32", "xxd")] by process.parent.entity_id

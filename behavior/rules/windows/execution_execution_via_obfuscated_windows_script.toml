@@ -1,0 +1,109 @@
+[rule]
+description = """
+Identifies the execution of a Windows script with potential obfuscated content. Adversaries may employ script
+obfuscation techniques to evade static detection methods.
+"""
+id = "bf252955-4332-4179-870b-6f33745c48ce"
+license = "Elastic License v2"
+name = "Execution via Obfuscated Windows Script"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+ (
+  process.name in~ ("wscript.exe", "cscript.exe") or
+  process.Ext.api.parameters.app_name in ("JScript", "VBScript")
+  ) and
+  process.Ext.api.parameters.buffer :
+                    ("*var _0x*;var _0x*;var _0x*",
+                     "*function*_0x*_0x*_0x*",
+                     "*new ActiveXObject(_0x*",
+                     "*function*.apply(this,arguments)*",
+                     "*function _0x*",
+                     "*function*.charCodeAt(*.charCodeAt(*",
+                     "*function*.split(*.split(*.split(*",
+                     "function *.fromCharCode*",
+                     "*String.fromCharCode(*eval(*",
+                     "*String.fromCharCode(*String.fromCharCode(*",
+                     "*String.fromCharCode(*.replace(*",
+                     "*var *=this[*+*+*+*var *=this[*+*+*+*var *=this[*+*+*",
+                     "*function*.charCodeAt(*.charCodeAt(*.charCodeAt(*",
+                     "*{return eval(Ox$(*{return eval(Ox$(*{return eval(Ox$(*",
+                     "*function *String.fromCharCode(*.Run(*",
+                     "*String.fromCharCode(*+*+*+*+*+*+*+*+*",
+                     "*.charAt(*.charAt(*.charAt(*.charAt(*.charAt(*.charAt(*.charAt(*",
+                     "*this[*+*+*+*+*+*+*]*",
+                     "*TVqQAAMAAAAEAAAA*",
+                     "*\\x??\\x??\\x??\\x??\\x??\\x??\\x??\\x??\\*",
+                     "*bin.base64*",
+                     "*replace(split*",
+                     "*Chr(*Chr(*Chr(*",
+                     "*Replace(Replace(*") and
+  not process.Ext.api.parameters.content_name :
+                              ("?:\\Program Files\\*",
+                               "?:\\Program Files (x86)\\*",
+                               "D:\\program\\xml_fetch_Cavagent.vbs") and
+  not (process.name : "cscript.exe" and  process.Ext.api.parameters.content_name : "C:\\WINDOWS\\TEMP\\.eset-*\\uacinstall.vbs") and 
+  not process.executable :
+                   ("C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe",
+                    "C:\\Program Files\\Xerox\\XeroxPrintExperience\\XeroxPrintExperience\\XeroxPrintExperience.Exe") and
+  not (process.code_signature.trusted == true and process.code_signature.subject_name in ("Altium LLC", "Lansweeper NV", "SAP SE", "Tyler Technologies, Inc.")) and
+  not (process.Ext.api.parameters.buffer : "*kkotari: pyenv-lib.vbs proxy*" and
+       process.Ext.api.parameters.content_name : "C:\\Users\\*\\.pyenv\\pyenv-win\\libexec\\pyenv.vbs") and 
+  not process.parent.executable :
+                     ("C:\\Program Files (x86)\\checkmk\\service\\check_mk_agent.exe",
+                      "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe", 
+                      "C:\\Program Files (x86)\\Bentley\\MicroStation V8i (SELECTseries)\\MicroStation\\ustation.exe", 
+                      "C:\\Program Files\\Bentley\\OpenRoads Designer *\\OpenRoadsDesigner\\OpenRoadsDesigner.exe")
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

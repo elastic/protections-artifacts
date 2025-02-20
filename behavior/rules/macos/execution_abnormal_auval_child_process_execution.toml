@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Abnormal Auval Child Process Execution"
 os_list = ["macos"]
 reference = ["https://posts.specterops.io/audio-unit-plug-ins-896d3434a882"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and (process.parent.name in ("auval", "auvaltool") or
@@ -21,15 +21,20 @@ process where event.type == "start" and (process.parent.name in ("auval", "auval
                     "sh", 
                     "zsh", 
                     "python*") and 
- not process.command_line == "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X" and
- not process.Ext.effective_parent.executable == "/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X"
+ not process.command_line like ("/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X", "/Applications/Logic Pro.app/Contents/MacOS/Logic Pro") and
+ not process.Ext.effective_parent.executable like ("/Applications/Logic Pro X.app/Contents/MacOS/Logic Pro X", "/Applications/Logic Pro.app/Contents/MacOS/Logic Pro")
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.11.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]
@@ -51,4 +56,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.11.0"

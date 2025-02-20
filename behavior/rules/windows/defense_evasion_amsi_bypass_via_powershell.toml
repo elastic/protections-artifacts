@@ -1,0 +1,90 @@
+[rule]
+description = """
+Identifies the execution of PowerShell script with keywords related to different Antimalware Scan Interface (AMSI)
+bypasses. An adversary may attempt first to disable AMSI before executing further malicious powershell scripts to evade
+detection.
+"""
+id = "ee4fbf59-c858-4a5d-bc74-e027926d7e2e"
+license = "Elastic License v2"
+name = "AMSI Bypass via PowerShell"
+os_list = ["windows"]
+reference = ["https://github.com/0xsyr0/Red-Team-Playbooks/blob/master/5-Installation/5-Installation.md"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+ (process.name in~ ("powershell.exe") or process.Ext.api.parameters.app_name == "PowerShell") and
+ (
+  (process.Ext.api.parameters.buffer : ("*amsiContext*", "*amsiSession*", "*amsiInitFailed*", "*AmsiUtils*", "*AmsiInitialize*", "*AmsiScanString*") and
+   process.Ext.api.parameters.buffer : "*.SetValue*" and process.Ext.api.parameters.buffer : "*.GetField*") or
+
+  (process.Ext.api.parameters.buffer : "*[Ref].Assembly.GetType*System.Management.Automation*" and
+   process.Ext.api.parameters.buffer : "*.SetValue*" and process.Ext.api.parameters.buffer : "*.GetField*") or
+
+  (process.Ext.api.parameters.buffer : "*[Ref].Assembly.GetTypes()*" and
+   process.Ext.api.parameters.buffer : "*GetFields*" and process.Ext.api.parameters.buffer : ("*amsiIn*", "*iUtils*")) or
+
+  (process.Ext.api.parameters.buffer : "*::AllocHGlobal*" and process.Ext.api.parameters.buffer : "*.NoRMALiZe*" and
+   process.Ext.api.parameters.buffer : "*.SetValue*" and process.Ext.api.parameters.buffer : "*-replace*") or
+
+  (process.Ext.api.parameters.buffer : "*System.Management.Automation.*" and process.Ext.api.parameters.buffer : "*.SetValue*" and
+   process.Ext.api.parameters.buffer : ("*.GetField*NonPublic,Static*", "*FromBase64String*")) or
+
+process.Ext.api.parameters.buffer :
+                   ("*Invoke-AmsiBypass*",
+                    "*AllocHGlobal*9076*",
+                    "*cwBpAC4AZABsAGwA*",
+                    "*41 6d 73 69 53 63 61 6e 42 75 66 66 65 72*",
+                    "*5492868772801748688168747280728187173688878280688776828*")
+  )
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

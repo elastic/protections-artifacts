@@ -5,19 +5,18 @@ license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
   (process.name : ("powershell.exe", "pwsh.exe") or process.pe.original_file_name : ("powershell.exe", "pwsh.exe")) and
   (
-   process.parent.name : ("wscript.exe", "cscript.exe", "mshta.exe") or
-   (descendant of [process where event.action == "start" and process.parent.name : ("wscript.exe", "cscript.exe", "mshta.exe")] and
+   process.parent.name : ("wscript.exe", "mshta.exe") or
+   (descendant of [process where event.action == "start" and process.name : ("wscript.exe", "mshta.exe")] and
     not process.parent.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
    ) and
    (
    process.args_count == 1 or
-   (process.parent.name : "cmd.exe" and process.parent.command_line : ("*.cmd*", "*.bat*")) or
    process.command_line :
              ("*^*^*^*^*^*^*^*^*^*",
               "*''*''*''*",
@@ -82,13 +81,27 @@ process where event.action == "start" and
    not process.args : "iwr https://*.s3.us-east-1.amazonaws.com/scripts/Start-SpeedTest.ps1 -UserAgent * -UseBasicParsing | invoke-expression" and
    not (process.parent.name : "wscript.exe" and
         process.parent.args : "C:\\Program Files (x86)\\Telivy\\Telivy Agent\\telivy.js") and
-   not process.command_line : "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \"powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \\\"iwr bmx-panels-check.s3.us-east-1.amazonaws.com/scripts/Set-BMXFirewallPolicy.ps1 -UserAgent MzEyYTdjNzg1ZWI3 -UseBasicParsing | invoke-expression\\\"\""
+   not process.command_line : "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \"powershell.exe -executionpolicy bypass -WindowStyle Hidden -Command \\\"iwr bmx-panels-check.s3.us-east-1.amazonaws.com/scripts/Set-BMXFirewallPolicy.ps1 -UserAgent MzEyYTdjNzg1ZWI3 -UseBasicParsing | invoke-expression\\\"\"" and
+   not (process.parent.name : "cmd.exe" and process.parent.args : "\\\\*\\netlogon\\*" and process.args : "\\\\*\\netlogon\\*.ps1") and
+   not process.args : "C:\\Program Files\\Common Files\\EETI\\TouchModeXML\\RunRegisterAllUserTask.ps1" and
+   not (process.parent.name: "cmd.exe" and process.args : ("C:\\PreVeil\\filesync\\PreVeil_Client", "C:\\ProgramData\\recycle\\ISO\\recycle.ps1")) and
+   not (process.parent.command_line : "wscript //B checkschedule.wsf /baseUrl:https://utilities.pcpitstop.com") and
+   not (process.parent.name : "cmd.exe" and
+        process.parent.args : ("C:\\Users\\*\\AppData\\Local\\Temp\\DONDA-NetworkInfo-*.bat ",
+                               "C:\\ProgramData\\Hays\\WallpaperRefresh\\SilentExecute.bat ",
+                               "Files\\Tyco\\SiteServer\\TSP.ISS.WindowsServices.Host\\Command\\ComputerNameScripts\\toolbar.cmd ",
+                               "Files\\Tyco\\SiteServer\\TSP.ISS.WindowsServices.Host\\Command\\ComputerNameScripts\\start.cmd "))
 '''
 
 min_endpoint_version = "7.15.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[optional_actions]]

@@ -1,0 +1,93 @@
+[rule]
+description = """
+Detects attempts to invoke a Windows Installer from a Windows script. Some malware installers use this method to avoid
+spawning a child process and continue execution via the Windows installer service.
+"""
+id = "2e9cac0f-84a8-4578-b480-f3716b7db959"
+license = "Elastic License v2"
+name = "Windows Installer via Windows Script"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != null and user.id != "S-1-5-18" and
+
+ (process.name in~ ("wscript.exe", "cscript.exe", "mshta.exe", "msxsl.exe", "powershell.exe") or
+  process.Ext.api.parameters.app_name in ("JScript", "VBScript", "PowerShell")) and
+  
+  (
+   (process.Ext.api.parameters.buffer : "*ActiveXObject*" and
+    process.Ext.api.parameters.buffer : ("*.InstallProduct(*", "*.WindowsInstaller.Installer*")) or
+
+   (process.Ext.api.parameters.buffer : "*WindowsInstaller*" and
+    process.Ext.api.parameters.buffer : "*InstallProduct*" and process.Ext.api.parameters.buffer : "*http*")
+  ) and
+  not process.Ext.api.parameters.content_name : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
+  not process.parent.executable :
+                     ("?:\\Program Files\\HP\\HP LaserJet Pro *\\Bin\\HP LaserJet Pro *.exe",
+                      "?:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe",
+                      "?:\\Program Files\\System Center Operations Manager\\Gateway\\MonitoringHost.exe",
+                      "?:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe") and
+  not (process.executable : "C:\\Windows\\LSDeployment\\RemoteDeployment*.exe" and
+       process.code_signature.subject_name == "Lansweeper NV" and process.code_signature.trusted == true)
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

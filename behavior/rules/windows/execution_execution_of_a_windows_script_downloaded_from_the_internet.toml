@@ -1,0 +1,88 @@
+[rule]
+description = "Identifies the execution of a Windows script that was downloaded from the internet."
+id = "a87d8240-0b80-4255-8680-cee8c68b2d1e"
+license = "Elastic License v2"
+name = "Execution of a Windows Script Downloaded from the Internet"
+os_list = ["windows"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=5m
+ [file where event.action == "creation" and
+  file.Ext.windows.zone_identifier == 3 and file.origin_url : "http*" and
+  file.extension in~ ("js", "jse", "vbs", "vbe", "wsh", "hta") and
+  not file.origin_url like ("https://www.manageengine.com/products/*",
+                            "https://*.sharepoint.com/*",
+                            "https://artifacts.elastic.co/downloads/*",
+                            "https://ajax.googleapis.com/ajax*",
+                            "https://api.media.atlassian.com/*",
+                            "https://gitlab.com/blooket/blooket-cheats/*", 
+                            "https://dl.driverpack.io/test/PROD_Start_DriverPack.hta")
+  ] as event0
+ [process where event.action == "start" and
+  (process.name in~ ("wscript.exe", "cscript.exe", "mshta.exe") or
+   process.pe.original_file_name in ("cscript.exe", "wscript.exe", "MSHTA.EXE")) and
+   (
+    /* substring used to remove Zone.Identifier from file.name */
+    stringcontains~(process.command_line, substring(event0.file.name, 0, length(event0.file.name) - 16)) or
+
+    stringcontains~(process.command_line, event0.file.name) or
+
+    startswith~(event0.file.path, process.working_directory)
+   )]
+'''
+
+min_endpoint_version = "8.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.005"
+name = "Mshta"
+reference = "https://attack.mitre.org/techniques/T1218/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.15.0"

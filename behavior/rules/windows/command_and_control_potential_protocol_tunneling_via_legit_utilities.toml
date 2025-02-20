@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Protocol Tunneling via Legit Utilities"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,11 @@ process where event.action == "start" and
 
   (process.code_signature.subject_name : "ngrok, Inc." and process.args : ("http", "tcp", "tunnel", "tls", "start", "3389")) or
 
-  (process.executable : "?:\\Windows\\System32\\OpenSSH\\ssh.exe" and process.command_line : ("*127.0.0.*", "*:localhost:*"))
+  (process.executable : "?:\\Windows\\System32\\OpenSSH\\ssh.exe" and process.command_line : ("*127.0.0.*", "*:localhost:*")) or
+
+  (process.args : "client" and process.command_line : "* R*:socks*") or
+
+  ((process.name : "curl.exe" or process.pe.original_file_name == "curl.exe") and process.command_line : ("*socks5h://127.0.0.*", "*socks5h:\\127.0.0.*"))
  )
 and not (process.code_signature.subject_name : "ninjaRMM LLC" and process.code_signature.status : "trusted") and
 not (process.name:"ssh.exe" and process.args in ("22000:127.0.0.1:1466", "localhost:8897:localhost:8897", "22000:127.0.0.1:1466",

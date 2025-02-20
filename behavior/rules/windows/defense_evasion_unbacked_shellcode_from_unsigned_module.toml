@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -82,13 +82,27 @@ api where
                                   "16073f3361e91126909aab4ba7c50443d7b8ef070f523b7af2901d6385e99438",
                                   "61ebd26043bfb155950d0d4b829f34e1ad6151b51bf9581e42acf621da1c1d86",
                                   "67766e574baa86eb8317623acc2957e8e28944bb801a8c10a0fa9d29fdb4cfd3",
-                                  "a088cda2df4f3cc371c5aaa5e40d5ce771b07e3e0b9c6fe51aa3af797dc7cddb") and
+                                  "a088cda2df4f3cc371c5aaa5e40d5ce771b07e3e0b9c6fe51aa3af797dc7cddb",
+                                  "fc0ea005db332feec00e6c34e36de85469d24074c8af23cea84b72eb0fa7fb85",
+                                  "f079a18c0abc9569429d402357e2daa4fe2af4cdbe3c002a5f05a70d33e7bffb",
+                                  "3a4ea2314b41a7720de2343602ef6268fa6bb660f3ee3633adc284e69ff1d83a",
+                                  "64fe90e25526f5b819b170c9ddcc593a7e65950f8e37c7da45d265cced3f2e73",
+                                  "a932fdd6f3a209a64eed1fa14d7b183850125b4840c9c227df390f5947dbda71",
+                                  "5c2a95e195f77fe20eb57e0a117835ea378aa0da2f4b4cc7cd73fe2722d69c47",
+                                  "16264a04dae64a04df2c049193d6d1811377b30aa02de69e186a791039eac36d",
+                                  "b152de9afc373bba831dc9c1b137668462ae6d46ccd46815f2ffcc7f1bfc7056",
+                                  "a87b3f02042de4d655f72af65ed5242fae5c675bebd19e962978c13e6d99ba00",
+                                  "2ea11e8b009bed581a6502d64d4d1a67c6046806c6c79a5195fa2d337b0d96b0") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("isrt.dll", "issetup.dll", "dbexpida.dll", "cyinjct.dll") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                                                  ("c:\\windows\\installer\\msi*.tmp",
                                                                   "c:\\windows\\assembly\\nativeimages_*",
                                                                   "c:\\program files\\*",
-                                                                  "c:\\program files (x86)\\*")
+                                                                  "c:\\program files (x86)\\*") and
+ not (process.parent.executable : "D:\\nvt\\NvtServ.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance_path : "d:\\nvc\\bin\\*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
+                  $entry.callsite_trailing_bytes : ("5a8bf850528b338b432003c28b08894b208b431c03c28b08894b1c03f28b4b0c03ca8d431c505756ffd15a580343088bf8528bf08b46fc83c0042bf08956088b",
+                   "89035e5bc39068008000006a008b0050a1dc6*"))
 '''
 
 min_endpoint_version = "8.14.2"

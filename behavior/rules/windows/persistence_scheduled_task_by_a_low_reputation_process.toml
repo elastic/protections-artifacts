@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task by a Low Reputation Process"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -20,7 +20,11 @@ sequence with maxspan=5m
   not process.hash.sha256 : ("fe2e331c46bd04e56d2417ff88ebce72675750aab701105086010a570f1afe62",
                              "81fac89743d43b741a009541a9c365ed3213f49cf6314d9c50418ab0d9e82528",
                              "5e68632b85501280c7378d20a287d40896243f1538e284d83f35f8b3aea98660",
-                             "52e1e3053aadaccf78837dffaaa6f9ed41b201e0019f22a4880a5327d7650206")] by process.entity_id
+                             "52e1e3053aadaccf78837dffaaa6f9ed41b201e0019f22a4880a5327d7650206",
+                             "c67dc4d06f07584f4ac0f0b3882ae5f7479676014e6caa65eadc47f49d37ce13",
+                             "c897af6b2f9d8a544e248862d975314478a75e6a3c5546fe643fb884afde44c6",
+                             "63159f0a972d79169616f752dad5ccf79a9e468392eb9396fda34bc5cabebb3e",
+                             "941f4d0a95fd0f32c484d30e3b14e4016e2a9f8bf9ea46ebc7f0f22dcdc10e25")] by process.entity_id
  [file where event.action : "creation" and process.name : "svchost.exe" and
   file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*")] by Effective_process.entity_id
 '''

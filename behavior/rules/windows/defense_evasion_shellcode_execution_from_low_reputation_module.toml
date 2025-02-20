@@ -8,15 +8,16 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [library where
-  not dll.code_signature.status : "trusted" and 
+  not dll.code_signature.status : "trusted" and
+  not dll.code_signature.status : "errorCode_endpoint: Failure in an external software component" and
   (dll.Ext.relative_file_creation_time <= 3600 or dll.Ext.relative_file_name_modify_time <= 3600) and 
-  not dll.path : "?:\\windows\\assembly\\nativeimages_*" and 
-  not (dll.path : "?:\\Windows\\Installer\\*.tmp" and dll.pe.original_file_name : "iKernel.dll" and process.name : "msiexec.exe") and
+  not dll.path : "?:\\windows\\assembly\\nativeimages_*" and
+  not (dll.path : "?:\\Windows\\Installer\\*.tmp" and process.name : "msiexec.exe") and
   not dll.hash.sha256 :
               ("29ae6f149e581f8dbdc01eed2d5d20b82b597c4b4c7e102cab6d012b168df4d8",
                "e2705efc246b6cd16ec560122d595394bb01de90db963d409c33f5330a871a93",
@@ -68,11 +69,22 @@ sequence by process.entity_id with maxspan=1m
                "7586725f6bad44993a942453694e3b8d0ca19c5f480f3a741042b6c5132c55ef",
                "5aa02b23b3c30a8f78317b2942a36206520c513d2bbfa3e1341f4caff749b692",
                "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610",
-               "ed9b5c4a768f2744cc564a8d470af9b2cf259f53a7538adf59cb8f1eaee0217b") and
+               "ed9b5c4a768f2744cc564a8d470af9b2cf259f53a7538adf59cb8f1eaee0217b",
+               "7c9f73755aa4e7b0480ca6a1b23b25e3103c17afa1635a3abf8c03bb3a686a78",
+               "3885dbec9db4d8a3a1f6ad12ff0055e64de63d351424b954369e7828950f7fa7",
+               "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610") and
  not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and dll.path : "C:\\Windows\\Installer\\MSI????.tmp")] by dll.hash.sha256
 [api where
- process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
+ process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode") and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Unknown", "issetup.dll", "isrt.dll", "isslideshow.dll", "is_*.tmp") and
+ not (process.executable : ("C:\\Windows\\SysWOW64\\msiexec.exe", "C:\\Windows\\System32\\msiexec.exe") and
+      (process.thread.Ext.call_stack_final_user_module.name: "msi*.tmp" or process.thread.Ext.call_stack_final_user_module.protection_provenance : "msi*.tmp")) and
+ not (process.Ext.api.name == "VirtualAlloc" and process.Ext.api.parameters.size <= 5000) and
+ not (process.Ext.api.name == "VirtualProtect" and
+       _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                             "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
  not (process.name : ("msiexec.exe", "setup.exe") and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003"))
  ] by process.thread.Ext.call_stack_final_user_module.hash.sha256

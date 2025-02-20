@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -43,7 +43,9 @@ process where event.action == "start" and
                               "197dd5559e979df757312a5235f453eb71c7b80d4229bce1720f57c1c8b19ab9",
                               "993a81cbaa686eb56997e5bd49f0e348166a4ffbf86001f589f73939778b3baa",
                               "280c6e19e80864faf90dd97905aacf999f58778a5adac1a8ee06477c6f80fb65",
-                              "1037f978350bb4b52c8698b81d0a377675c98d0ca9a82070174cc0f46e8cb51e") and
+                              "1037f978350bb4b52c8698b81d0a377675c98d0ca9a82070174cc0f46e8cb51e",
+                              "83b5a19f2df77b735069a4f9f1def9c0e207f8636bdd6856ef52977bc23f874b",
+                              "d248007eb375cab3994b48ba1346b508de29d1f441a395b9e6fa14fc7913294d") and
 
    not process.executable : ("?:\\Windows\\explorer.exe",
                              "?:\\Windows\\SysWOW64\\explorer.exe",

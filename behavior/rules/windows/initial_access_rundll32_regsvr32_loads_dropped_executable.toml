@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence with maxspan=1m
@@ -39,18 +39,19 @@ sequence with maxspan=1m
   not (file.path : ("?:\\oracle\\x86\\bin\\*", "?:\\oracle\\x64\\bin\\*") and process.name : "xcopy.exe") and
   not (process.name : "cmd.exe" and 
       file.path : ("?:\\PROBAS\\*", "?:\\Windows\\SysWOW64\\*", "?:\\Windows\\System32\\*",  "C:\\Development\\Components\\*.dll"))
-  ] by file.path
+  ] as event0
   [ library where process.name : ("rundll32.exe", "regsvr32.exe") and
+    stringcontains~(dll.path, event0.file.path) and
     not dll.code_signature.trusted == true and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
     not dll.path : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
     not (dll.pe.original_file_name == "RbkVssProvider.dll" and dll.path : "?:\\Windows\\Temp\\rubrik_vmware*\\RbkVssProvider.dll") and
     not dll.pe.imphash : "7ce8b277ed3218e26a4bab54ca4af843" and
     not dll.hash.sha256 : "2a95cf7d3189920f30bc35b0ca2ee50097d8b9d959582fee913e3f0125feec3b" and
     not (process.name : "regsvr32.exe" and
-        dll.path : "C:\\Oracle\\product\\instantclient_*.dll" and dll.pe.original_file_name : "OraOLEDB*.dll")] by dll.path
+        dll.path : "C:\\Oracle\\product\\instantclient_*.dll" and dll.pe.original_file_name : "OraOLEDB*.dll")]
 '''
 
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -139,4 +140,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.16.0"
+min_endpoint_version = "8.4.0"

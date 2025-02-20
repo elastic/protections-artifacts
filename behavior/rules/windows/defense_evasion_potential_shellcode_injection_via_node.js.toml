@@ -4,7 +4,7 @@ id = "c73a1b0d-bd00-4574-8e98-79c75e918eff"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via Node.js"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name : ("VirtualProtect*", "WriteProcessMemory", "VirtualAlloc*", "MapViewOfFile*") and 
@@ -21,7 +21,8 @@ api where process.Ext.api.name : ("VirtualProtect*", "WriteProcessMemory", "Virt
   not process.executable : ("C:\\Program Files\\*.exe", "C:\\Program Files (x86)\\*.exe", "D:\\BioStar 2(x64)\\ta\\nodejs-win64\\node.exe") and
   not process.thread.Ext.call_stack_final_user_module.path : ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*") and
   process.thread.Ext.call_stack_final_user_module.hash.sha256 != "ca19f3872ed38d98218cf696e477386d27ef1924547ba7aed61eacff32411092" and
-  not (process.executable : "C:\\Windows\\Sys*\\cmd.exe" and process.parent.executable : "C:\\ProgramData\\afesta\\GoSign-Desktop\\app-2.3.3\\GoSignDesktop.exe")
+  not (process.executable : "C:\\Windows\\Sys*\\cmd.exe" and
+       process.parent.executable : ("C:\\ProgramData\\afesta\\GoSign-Desktop\\app-2.3.3\\GoSignDesktop.exe", "C:\\Program Files (x86)\\Bit4Id\\UKC\\UKC\\bin\\kchain.exe"))
 '''
 
 min_endpoint_version = "8.10.0"

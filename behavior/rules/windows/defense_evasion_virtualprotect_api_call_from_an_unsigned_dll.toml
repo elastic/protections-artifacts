@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id
@@ -25,8 +25,10 @@ sequence by process.entity_id
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\assembly\\*", 
-                    "?:\\Windows\\twain_32\\*") and
-
+                    "?:\\Windows\\twain_32\\*",
+                    "?:\\Program Files\\*",
+                    "?:\\Program Files (x86)\\*") and
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.executable : ("?:\\Windows\\splwow64.exe", "?:\\Windows\\System32\\mstsc.exe") and
        dll.path : "?:\\ProgramData\\EPSON\\*.DLL") and
 
@@ -196,12 +198,18 @@ sequence by process.entity_id
                 "1d9ceca88bc7ff9a73097689c8ab45ed27a84150f9e6a2c70e765aa434149d05",
                 "f77f420635521ebea5705faa899f2463b845bdef49ec4cc1f825986c5e8b1682",
                 "42215642c3c1ec4c578b9c03cbe8cd93cdf20abe33687473da2d25d5f5efe0a9",
-                "f4056e1455b5a1327b6c218d0ad28ca888700fa7103088aa7eadeb6bf354052d") and
+                "f4056e1455b5a1327b6c218d0ad28ca888700fa7103088aa7eadeb6bf354052d",
+                "1580e42fe72c030345066c7a68f056b9ed6a443c3f0bc725d0148eacf07aca59",
+                "d02abae72fef97ed110a3ce17b11dcb079b082a3865f4ab2a10eccce776a0f17",
+                "e3048d233fa257f242ccb05279898cf5490d1708cca91113bbb365b39364dcfa",
+                "818ef76d7f114927a05516b691da06914d87321624f6e09449f241a8a656fae3") and
   not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and dll.path : "C:\\Users\\*\\AppData\\Local\\Temp\\MSI????.tmp")] as event0
 [api where
   process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : ("*X*", "*W*") and
+  process.Ext.api.behaviors != null and not process.Ext.api.behaviors in ("self-modifying", "hollow_image") and
+  process.Ext.api.parameters.protection_old != "R--" and
   process.Ext.api.parameters.size > 4096 and
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
   (
     _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name)) or
 
@@ -219,7 +227,15 @@ sequence by process.entity_id
 
     startswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unknown|kernelbase.dll|Unbacked|", event0.dll.name))
   ) and
-  not (endswith~(process.thread.Ext.call_stack_final_user_module.name, process.name) and process.Ext.api.behaviors : "self-modifying")
+  not (process.Ext.api.metadata.target_address_name == "_isdecmp.dll" and process.Ext.api.behaviors == "hollow_image") and
+  not process.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp" and
+  not process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp" and
+  not process.thread.Ext.call_stack_summary : "*Unknown*" and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                    $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                             "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*")) and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
+                   $entry, $entry.subject_name : ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher") and $entry.status : "trusted")
  ]
  until [process where event.action:"end"]
 '''

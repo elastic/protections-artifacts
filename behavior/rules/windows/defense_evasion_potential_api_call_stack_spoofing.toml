@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential API Call Stack Spoofing"
 os_list = ["windows"]
 reference = ["https://github.com/klezVirus/SilentMoonwalk"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.behaviors == "proxy_call" and process.Ext.api.behaviors == "image_rop" and
@@ -30,7 +30,9 @@ api where process.Ext.api.behaviors == "proxy_call" and process.Ext.api.behavior
   not (process.executable : ("C:\\Windows\\System32\\wbem\\WmiPrvSE.exe", "C:\\Windows\\System32\\audiodg.exe", "C:\\Windows\\System32\\drvinst.exe") and
        process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")) and
   not (process.executable : "C:\\Windows\\System32\\svchost.exe" and user.id == "S-1-5-19" and
-       process.parent.executable : "C:\\Windows\\System32\\services.exe")
+       process.parent.executable : "C:\\Windows\\System32\\services.exe") and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "epmpthe.dll" and
+                    $entry.callsite_trailing_bytes : "48894568488b4d28488b456848894110488b4540ff50408bd0488b45288910488b8590000000488b40304889455848837d5800745b8b4d30ff5500488bd04883")
 '''
 
 min_endpoint_version = "8.14.0"

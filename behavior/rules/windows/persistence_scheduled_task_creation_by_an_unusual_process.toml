@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence with maxspan=5m
@@ -103,7 +103,9 @@ sequence with maxspan=5m
                    "dc3bcf4dee3b8c3ca0062284f53e5f717085bd3f3ac6b1ac70492425a7cf2474",
                    "81fac89743d43b741a009541a9c365ed3213f49cf6314d9c50418ab0d9e82528",
                    "7d2c761823b183cd34a8c1c0b7b6f572d26a0265bfe65afe913faf60d27de844",
-                   "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0") and
+                   "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0",
+                   "ae27abffcc06755840792abb83a67b847782afa01bb26c2631671ed3932930b6",
+                   "6af431b97e8571a2c072a746a44b5e0dcb3685268f75459e789063e03b7698cb") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
     process.pe.original_file_name != "Adobe Installer" and
@@ -112,7 +114,12 @@ sequence with maxspan=5m
                         "C:\\Program Files (x86)\\AOMEI\\AOMEI Backupper\\*\\unins*.exe",
                         "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\dcconfigexec.exe",
                         "C:\\Windows\\highsystem.NET\\Client\\hdnClSvc.NET.exe",
-                        "C:\\Program Files (x86)\\AOMEI\\AOMEI Backupper\\*\\unins*.exe")
+                        "C:\\Program Files (x86)\\AOMEI\\AOMEI Backupper\\*\\unins*.exe",
+                        "C:\\Program Files (x86)\\Common Files\\InstallShield\\*.exe",
+                        "C:\\Program Files\\RepairTech\\Syncro\\Syncro.App.Runner.exe",
+                        "C:\\Program Files (x86)\\*\\unins*.exe") and
+    not (process.name : "powershell.exe" and process.args : "RemoteSigned") and
+    not (process.name : "cscript.exe" and process.parent.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp"))
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

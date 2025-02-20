@@ -7,7 +7,7 @@ id = "0373350d-05e3-4273-93fa-013e17966ef6"
 license = "Elastic License v2"
 name = "External IP address discovery via Package or Script"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -16,6 +16,7 @@ sequence by process.entity_id with maxspan=30s
   destination.domain like~ 
          (
           "*ip-api.com*",
+          "*ipwho.is*",
           "*checkip.dyndns.org*",
           "*api.ipify.org*",
           "*api.npoint.io*",
@@ -67,6 +68,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

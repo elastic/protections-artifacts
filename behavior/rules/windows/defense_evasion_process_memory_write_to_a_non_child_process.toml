@@ -32,7 +32,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and
 not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 and
       _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
 
- not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
+ not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\Device\\HarddiskVolume*\\Windows\\*.exe") and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
 
  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
 
@@ -153,10 +153,20 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "fdef73d692e2e181075bf43a05cd7ebe551f6b1be31f4d471ff709f83a549612",
                                    "6eed2886728608f1b3f4a54a7a7d338ef1b1669f6f53a5d38bcd352f0ec755c9",
                                    "9840c97b35afb77418d541ef2f1b5da93c0d7d9632c334ec7444ceadeb0f9fa8",
-                                   "418a7dc57d5ac225d7f012fe90a1668a797fde56c9add6c3aad841ab0c1e2bc1")
+                                   "418a7dc57d5ac225d7f012fe90a1668a797fde56c9add6c3aad841ab0c1e2bc1",
+                                   "e09a338081b83a42e97b60311d9af749baaedb226b155d9e7bd658de1c5a349d",
+                                   "d0a62a67891bbd4eb263d328e5bf6da080bcd7d16c3b1d73e563a48263062c5a",
+                                   "1f8a5ff26f722b380754d794ad4b8d9edf69361e18ea0a2a03ed58d61e91849c",
+                                   "1dfc0c4f5442dcff2082d9258254b6861c27001aada055d960844561e699655b")
 '''
 
 min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "Target.process.entity_id"
+state = 0
+tree = true
+
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"

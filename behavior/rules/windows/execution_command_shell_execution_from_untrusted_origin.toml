@@ -1,0 +1,103 @@
+[rule]
+description = """
+Identifies the execution of Windows commands to open a file originating from an unknown remote source. Adversaries may
+embed malicious files in a shortcut file before delivering it to their target in order to trick them into executing the
+payload.
+"""
+id = "9287bf52-d1d8-499e-a135-a64645da6870"
+license = "Elastic License v2"
+name = "Command Shell Execution from Untrusted Origin"
+os_list = ["windows"]
+reference = [
+    "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
+]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.name : ("cmd.exe", "powershell.exe") and process.parent.name : "explorer.exe" and
+ process.Ext.token.security_attributes : "SMARTLOCKER://SMARTSCREENORIGINCLAIM" and
+ process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|kernel32.dll|windows.storage.dll|shell32.dll|windows.storage.dll|shell32.dll*" and
+ not process.parent.thread.Ext.call_stack_summary : ("*coremessagingxp.dll*", "*ExplorerFrame.dll*") and process.args_count >= 2 and
+ process.working_directory :
+                 ("C:\\Windows\\System32\\*",
+                  "?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
+                  "?:\\Users\\*\\AppData\\Local\\Temp\\7z*",
+                  "?:\\Users\\*\\Content.Outlook\\*",
+                  "?:\\Users\\*\\Downloads\\*") and
+  not (process.name : "cmd.exe" and
+       process.command_line : ("*\\AppData\\Local\\Microsoft\\OneDrive\\*", "*.bat*", "*.cmd*",
+       "*reg.exe delete HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Bomgar_Cleanup*")) and
+  not (process.name : "powershell.exe" and
+       process.args : ("*-file*", "*.ps1*", "*.xml*", "*Remove-AppxPackage*", "*Get-AppxPackage*", "*Remove-ItemProperty*"))
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

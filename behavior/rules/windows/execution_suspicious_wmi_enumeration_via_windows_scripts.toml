@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies WMI activity performed by common Windows Scripting utilities, this could be the result of the execution of a
+malicious JScript or VBscript malware.
+"""
+id = "ee5d33a2-604f-4466-bace-4aea921846ed"
+license = "Elastic License v2"
+name = "Suspicious WMI Enumeration via Windows Scripts"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.name in~ ("wscript.exe", "mshta.exe", "msxsl.exe") and
+  process.Ext.api.name == "IWbemServices::ExecQuery" and
+  process.Ext.api.summary :
+                ("IWbemServices::ExecQuery( Select * from Win32_ComputerSystemProduct )",
+                 "IWbemServices::ExecQuery( Select * from Win32_Process Where Name*") and
+  not process.command_line like
+                ("cscript.exe  //NoLogo //B ?:\\Windows\\System32\\slmgr.vbs *",
+                 "cscript  \"C:\\Program Files (x86)\\Microsoft Office\\Office??\\ospp.vbs\" /dstatus",
+                 "\"C:\\Windows\\System32\\WScript.exe\" \"C:\\Program Files (x86)\\LIEBHERR\\LIKAPLAN\\starteplocal.vbs\" ") and
+  not process.Ext.api.summary :
+                  ("IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'JAVAW.EXE' )",
+                   "IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'POS.EXE' )",
+                   "IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'dcagenttrayicon.exe' )",
+                   "IWbemServices::ExecQuery( SELECT * FROM Win32_Process WHERE Name = 'Tracker.exe'  )",
+                   "IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'RapidReprice1G.exe' )",
+                   "IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'Tracker.exe' )") and
+  user.id != "S-1-5-18" and
+  not process.parent.executable :
+                     ("C:\\Program Files\\Docker\\Docker\\frontend\\Docker Desktop.exe",
+                      "C:\\Program Files\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe",
+                      "C:\\Windows\\System32\\gpscript.exe",
+                      "C:\\Program Files (x86)\\Thomson Reuters\\Eikon\\Eikon.exe",
+                      "C:\\Program Files (x86)\\Welcome\\Welcome.exe")
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1047"
+name = "Windows Management Instrumentation"
+reference = "https://attack.mitre.org/techniques/T1047/"
+
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.005"
+name = "Visual Basic"
+reference = "https://attack.mitre.org/techniques/T1059/005/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.15.0"

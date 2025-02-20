@@ -7,7 +7,7 @@ id = "f4744b1a-3775-4387-8529-abc08076a612"
 license = "Elastic License v2"
 name = "External IP address discovery via Curl"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -20,6 +20,7 @@ process where event.type == "start" and event.action == "exec" and
  process.command_line like~
          (
           "*ip-api.com*",
+          "*ipwho.is*",
           "*checkip.dyndns.org*",
           "*api.ipify.org*",
           "*api.npoint.io*",
@@ -75,6 +76,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

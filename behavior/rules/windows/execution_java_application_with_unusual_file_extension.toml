@@ -7,7 +7,7 @@ id = "13615fd4-b220-4033-ab4f-8b16b9beae57"
 license = "Elastic License v2"
 name = "JAVA Application with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -23,7 +23,9 @@ sequence by process.entity_id with maxspan=5s
                             "C:\\Program Files\\Java\\jdk-11\\bin\\javaw.exe",
                             "C:\\Program Files\\Zulu\\zulu-8\\bin\\javaw.exe",
                             "C:\\Program Files\\AdoptOpenJDK\\jre*-hotspot\\bin\\javaw.exe") and
-  not process.parent.executable : "?:\\Program Files (x86)\\AssoSoftware\\AssoInvoice\\AssoInvoice.exe" and
+  not process.parent.executable :
+                     ("?:\\Program Files (x86)\\AssoSoftware\\AssoInvoice\\AssoInvoice.exe",
+                      "C:\\Program Files (x86)\\ImprimeTickets\\ImprimeTickets.exe") and
   not (process.code_signature.subject_name : ("BELLSOFT", "Eclipse.org Foundation, Inc.") and process.code_signature.trusted == true) and
   not process.command_line : "\"C:\\Program Files\\Java\\jre1.8.0_51\\bin\\javaw.exe\" -jar \"C:\\Users\\*\\AppData\\Roaming\\.minecraft\\TLauncher.exe\""
   ]

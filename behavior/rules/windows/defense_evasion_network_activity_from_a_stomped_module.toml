@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -55,7 +55,9 @@ sequence by process.entity_id with maxspan=2m
                               "?:\\Program Files (x86)\\Kantech\\Server_CE\\Bin\\RVPControl.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\dat\\Dexon\\Agent\\Agent.exe" and
          process.code_signature.subject_name : "Dexon Software S A" and process.code_signature.status : "errorExpired") and
-    process.thread.Ext.call_stack_final_user_module.hash.sha256 != "3df383f4b0195620badc0bb9f5e1d86ebdb4975b60da4b910a26fee9b4af474f"
+    process.thread.Ext.call_stack_final_user_module.hash.sha256 != "3df383f4b0195620badc0bb9f5e1d86ebdb4975b60da4b910a26fee9b4af474f" and
+    not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                     $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Citrix Systems, Inc."))
   ] as event0 
  [any where 
   (

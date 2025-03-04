@@ -1,0 +1,49 @@
+[rule]
+description = "Detects when Tccutils is used to reset the TCC database decisions for a specific service via a suspicious binary."
+id = "addfc3f1-4b1c-4005-9133-f64de1aabe6e"
+license = "Elastic License v2"
+name = "Tccutil Reset via Suspicious Binary"
+os_list = ["macos"]
+reference = [
+    "https://www.virustotal.com/gui/file/748581bf2586b76e9cbe550678dcbebde4ec56d1d9fa6bb8c3877878bc8a8fc2",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "tccutil" and 
+ process.args like~ "reset" and 
+ (process.parent.name == "osascript" or (process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false))
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.006"
+name = "TCC Manipulation"
+reference = "https://attack.mitre.org/techniques/T1548/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

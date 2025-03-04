@@ -9,13 +9,13 @@ id = "e12fa85d-e173-402f-b43e-5bbc6210cdd5"
 license = "Elastic License v2"
 name = "Suspicious File Attribute Clearing"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "xattr" and (
  (process.args in ("-rc", "-cr")) or (process.args == "-r" and process.args == "-c") or (process.args == "-c")) and 
  process.parent.name in ("bash", "sh", "zsh", "osascript") and 
- process.Ext.effective_parent.executable == "/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
+ process.Ext.effective_parent.executable like~ ("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", "/usr/sbin/installer", "/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer")
 '''
 
 min_endpoint_version = "8.11.0"

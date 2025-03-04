@@ -1,0 +1,83 @@
+[rule]
+description = """
+Identifies the load of a signed DLL followed by calling VirtualAlloc API to allocate writable and executable memory.
+This may indicate an attempt to perform code injection from a signed library.
+"""
+id = "8f9a6523-fa8f-46d1-b2de-72ef18e85f52"
+license = "Elastic License v2"
+name = "Memory Allocation from a High Entropy Module"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+sequence
+[file where event.type in ("creation", "change") and user.id != "S-1-5-18" and process.pid != 4 and
+ file.Ext.header_bytes : "4d5a*" and file.Ext.entropy >= 6 and
+ not file.path : ("?:\\Windows\\Installer\\*",
+                  "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
+                  "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
+                  "?:\\Windows\\assembly\\*",
+                  "?:\\Program Files\\*",
+                  "?:\\Program Files (x86)\\*")] as event0
+[api where
+  process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection == "RWX" and
+  process.Ext.api.metadata.target_address_name == "Unbacked" and
+  process.Ext.token.integrity_level_name in ("medium", "high") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+  stringcontains~(process.thread.Ext.call_stack_final_user_module.path, event0.file.path) and
+  (
+   endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|", event0.file.name)) or
+   endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|", event0.file.name))
+   ) and
+   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
+   not startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name) and
+   not (process.thread.Ext.call_stack_final_user_module.name in ("isrt.dll", "issetup.dll", "_isres.dll", "wow64.lmd") and
+        process.thread.Ext.call_stack_summary in
+                               ("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|isrt.dll",
+                                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|issetup.dll",
+                                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|_isres.dll",
+                                "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|wow64.lmd")) and
+   not (process.executable : "?:\\Windows\\SysWOW64\\msiexec.exe" and
+        process.thread.Ext.call_stack_final_user_module.name like "msi*.tmp" and
+        process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|msi*.tmp")
+   ]
+until [process where event.action == "end"]
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.002"
+name = "DLL Side-Loading"
+reference = "https://attack.mitre.org/techniques/T1574/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -62,6 +62,10 @@ process.command_line like (
   (process.parent.name like "python*" and process.args like "sudo*cat*/*/.ssh/authorized_keys*2>/dev/null") or
   (process.parent.name == "perl" and process.parent.args like "-euse Cwd qw*") or
   (process.parent.name == "perl" and process.command_line like "*testfun*") or
+  (
+    process.parent.executable like~ "/var/lib/docker/overlay2/*/merged/usr/local/bin/ruby" and
+    process.command_line == "sh -c ssh-keygen -y -f ~/.ssh/id_ed25519"
+  ) or
   process.working_directory like~ "/home/*"
 )
 '''

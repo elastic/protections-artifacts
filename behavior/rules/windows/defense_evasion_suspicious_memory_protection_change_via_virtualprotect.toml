@@ -7,7 +7,7 @@ id = "8fcf2b81-8322-423b-a1b4-6bba722f599a"
 license = "Elastic License v2"
 name = "Suspicious Memory Protection Change via VirtualProtect"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
@@ -100,7 +100,12 @@ api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
                      "a543689f34083f810e0184ec77d8ee9e57d44ebd6212af444853a3a89a3c82c0",
                      "d606d6c6bd562e78e9581b6bf7c01966a753f24fe0583c48fb121cd36a6a6288",
                      "98615f765e8337555c77db1bf920adbbdf2313e6a190fa21c9d98f78533a5386",
-                     "608da95c6dae5de21b2135701365e18d3de173d3f0fd9753812afe6a5b13fa05") and
+                     "608da95c6dae5de21b2135701365e18d3de173d3f0fd9753812afe6a5b13fa05",
+                     "10f3e16e8428f3d411f099fc4ff6e5b6f3ece29a0fc8fc606e7148e2f9bfc84b",
+                     "5387f214041b5e4bc532ed04136fabd010ae3dc9de0ca0a16356be791560e2c4",
+                     "10f3e16e8428f3d411f099fc4ff6e5b6f3ece29a0fc8fc606e7148e2f9bfc84b",
+                     "69da0c7b1b9d54ace4a84b500a1610e761e55f155969442d6d036c86e9dda8a7",
+                     "") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, 
                   $entry.trusted == true and $entry.subject_name in ("Carbon Black, Inc.", "MUSARUBRA US LLC", "Microsoft Windows Hardware Compatibility Publisher", "Kaspersky Lab JSC"))
 '''

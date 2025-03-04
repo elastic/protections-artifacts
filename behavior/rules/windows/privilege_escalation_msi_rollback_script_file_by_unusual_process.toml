@@ -1,0 +1,70 @@
+[rule]
+description = """
+Identifies the creation or modification of a Windows Installer rollback script (rbs) by an unusual process. Rollback
+script files instruct the MSI service to rollback all the modification in the case of a failed installation. This
+behavior can be abused by an adversary to replace a legit rbs file with a rogue one via a file system oplock and race
+condition, then triggering an MSI rollback operation leading potentially to a privilege escalation.
+"""
+id = "bfb50ac2-c5ea-425b-b0a3-eca74384bc7a"
+license = "Elastic License v2"
+name = "MSI Rollback Script File by Unusual Process"
+os_list = ["windows"]
+reference = [
+    "https://www.zerodayinitiative.com/blog/2022/3/16/abusing-arbitrary-file-deletes-to-escalate-privilege-and-other-great-tricks",
+    "https://github.com/thezdi/PoC/tree/master/FilesystemEoPs",
+    "https://github.com/Wh04m1001/IFaultrepElevatedDataCollectionUAC",
+    "https://foolsofsecurity.com/blog/Windows_Installer_bypass_using_rollback_script/",
+]
+version = "1.0.2"
+
+query = '''
+file where event.action != "deletion" and
+  file.extension : "rbs" and file.path : "?:\\Config.msi\\*" and
+  user.id != "S-1-5-18" and process.pid != 4 and
+  not process.executable : ("?:\\Windows\\system32\\msiexec.exe", "?:\\Windows\\syswow64\\msiexec.exe")
+'''
+
+min_endpoint_version = "8.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.007"
+name = "Msiexec"
+reference = "https://attack.mitre.org/techniques/T1218/007/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

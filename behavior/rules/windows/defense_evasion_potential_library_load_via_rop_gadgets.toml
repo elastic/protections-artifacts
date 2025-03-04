@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 library where process.pid != 4 and
@@ -15,7 +15,8 @@ library where process.pid != 4 and
  not startswith~(dll.name, process.name) and not dll.name : "ntdll.dll" and
  process.thread.Ext.call_stack_summary : ("ntdll.dll|*", "win32u.dll|*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
-                  $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
+                  $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*ntdll.dll!LdrLoadDll*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
+                                       "*wow64win.dll+0x*", "*ntdll.dll!NtMapViewOfSection*",
                                        "*\\KernelBase.dll!KernelbasePostInit*", "*\\ntdll.dll!RtlCaptureStackBackTrace*", "*ntdll.dll!NtQueryVirtualMemory*",
                                        "*ntdll.dll!ZwQueryVirtualMemory*", "*ntdll.dll!ZwMapViewOfSection*", "*ntdll.dll!ZwReadFile*",
                                       "*ntdll.dll*!*OpenThreadTokenEx*", "*ntdll.dll*!*DeviceIoControlFile*", "*ntdll.dll*!NtOpenProcess*",

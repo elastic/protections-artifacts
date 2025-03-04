@@ -7,13 +7,14 @@ id = "613da93c-226e-4150-9125-3b476103c0b9"
 license = "Elastic License v2"
 name = "Socat Reverse Shell or Listener Activity"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "socat" and
-process.args like ("*exec*", "*tty*") and process.args like ("*tcp*", "*udp*", "*openssl*", "*file*") and
+process.command_line like~ ("*exec*", "*tty*", "*fork*") and
+process.command_line like~ ("*tcp*", "*udp*", "*openssl*", "*file*") and
 not (
-  process.args like ("*127.0.0.1*", "*localhost*", "*/dev/tty*") or
+  process.command_line like~ ("*127.0.0.1*", "*localhost*", "*/dev/tty*") or
   process.parent.executable == "/usr/bin/wsrep_sst_xtrabackup-v2"
 )
 '''

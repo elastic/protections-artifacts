@@ -13,7 +13,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -47,7 +47,8 @@ process where event.action == "start" and
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
             "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
             "Samsung Electronics CO., LTD.", "TeamViewer", "POINT B LTD", "IMPERO SOLUTIONS LIMITED",
-            "AnyDesk Software GmbH", "Shanghai Best Oray Information S&T Co. Ltd.", "Zhou Huabing") and
+            "AnyDesk Software GmbH", "Shanghai Best Oray Information S&T Co. Ltd.", "Zhou Huabing",
+            "PURSLANE", "Remote Utilities LLC", "ZOHO Corporation Private Limited") and
        process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and
@@ -72,10 +73,15 @@ process where event.action == "start" and
  not process.parent.executable : "?:\\Program Files (x86)\\VisualCron\\VisualCronService.exe" and
  not (process.name : "powershell.exe" and process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
       process.command_line : "powershell.exe -NonInteractive -NoProfile -ExecutionPolicy Bypass -EncodedCommand CgA*") and
+ not (process.parent.name : "cmd.exe" and process.name : "powershell.exe" and process.args : "$execWrapper.Split(@(\"`0`0`0`0\"),") and
  not (process.executable : "?:\\WINDOWS\\SysWOW64\\svchost.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and 
       process.parent.command_line : "?:\\WINDOWS\\system32\\svchost.exe -k DcomLaunch -p -s PlugPlay") and  
  not (process.executable : "?:\\$WINDOWS.~BT\\NewOS\\Windows\\System32\\ie4ushowIE.exe" and 
-      process.parent.executable : "?:\\$WINDOWS.~BT\\Sources\\mighost.exe") and 
+      process.parent.executable : "?:\\$WINDOWS.~BT\\Sources\\mighost.exe") and
+
+ not process.parent.executable :
+                      ("C:\\Program Files\\Veeam\\Backup and Replication\\Backup\\Veeam.Backup.Manager.exe",
+                       "\\Device\\HarddiskVolume?\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe") and
 
  /* AM_Delta_Patch Windows Update */
  not (process.executable :

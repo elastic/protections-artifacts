@@ -7,7 +7,7 @@ id = "f2d206e0-97c9-484b-8b6a-5eecd82fbfdc"
 license = "Elastic License v2"
 name = "Hexadecimal Payload Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -18,7 +18,7 @@ length(process.command_line) > 50 and not (
     "/var/arcticwolfnetworks/agent/scans/jre/jre/bin/java", "/usr/local/bin/cyrisma/App/jre/bin/java", "./unifi.sh",
     "/sbin/supportconfig"
   ) or
-  process.parent.executable like ("/home/sites/*/site/stats/awstatsUpdateSite.php", "/tmp/newroot/*") or
+  process.parent.executable like ("/home/sites/*/site/stats/awstatsUpdateSite.php", "/tmp/newroot/*", "/usr/bin/xdg-email") or
   process.parent.name in (
     "xargs", "su", "sshd", "find", "jem", "vzctl", "wine64-preloader", "apkprocessor.pl", "./firmware_upgrade.sh",
     "please", "tm_sandbox"
@@ -31,7 +31,7 @@ length(process.command_line) > 50 and not (
   ) or
   process.parent.args like~ (
     "/usr/bin/dracut", "/home/*/tools/testssl.sh/testssl.sh", "unifi-update.sh", "/opt/tools/testssl.sh/testssl.sh",
-    "./testssl.sh", "../testssl.sh"
+    "./testssl.sh", "../testssl.sh", "/opt/multiscan/tools/testssl.sh/testssl.sh", "/usr/bin/xdg-email"
   ) or
   process.parent.command_line == "xargs printf" or
   process.name in ("systemctl", "ln", "gdb", "su", "vzctl", "strace", "sed") or

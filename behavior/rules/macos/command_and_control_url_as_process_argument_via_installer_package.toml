@@ -9,11 +9,11 @@ id = "b06dcea7-9ef3-428d-bd4d-80004f69200f"
 license = "Elastic License v2"
 name = "URL as Process Argument via Installer Package"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and 
- process.Ext.effective_parent.executable == "/usr/sbin/installer" and
+ process.Ext.effective_parent.executable like~ ("/usr/sbin/installer", "/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer") and
  process.args like~ "http*" and
  not process.name in ("wget", "curl", "git", "nscurl") and
  not process.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*", "/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin")

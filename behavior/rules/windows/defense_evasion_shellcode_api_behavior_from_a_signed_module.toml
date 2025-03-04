@@ -1,0 +1,252 @@
+[rule]
+description = """
+Identifies shellcode API behavior from a signed final user module. This may indicate an attempt to perform code
+injection abusing a valid code signing certificate to avoid suspicion.
+"""
+id = "947ad28a-98de-49cc-988b-fef69785585a"
+license = "Elastic License v2"
+name = "Shellcode API behavior from a signed module"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
+ process.Ext.api.behaviors in ("shellcode", "allocate_shellcode") and process.Ext.api.metadata.target_address_name == "Unbacked" and
+ process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ process.thread.Ext.call_stack_summary in
+                           ("ntdll.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked") and
+ process.thread.Ext.call_stack_final_user_module.protection_provenance != null and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.code_signature != null and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and 
+ 
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files\\*", "c:\\program files (x86)\\*") and 
+
+ not (process.Ext.api.name == "VirtualProtect" and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like
+                  ("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                   "00000000000000f6375c5b2e8900000000000000ff0000ffeeffee0000000000001000000000000020000000000000000100000000000000100000000000003f",
+                   "8985271*085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                        ("eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+                         "fc450380eaa226b351c919e87df61dd869f02b6ab47beedf8f940618a65761b0",
+                         "b982741576a050860c3f3608c7b269dbd35ab296429192b8afa53f1f190069c0",
+                         "68fba9dd89bfad35f8fd657b9af22a8aebda31bffda35058a7f5ae376136e89b",
+                         "f60dd9f2fcbd495674dfc1555effb710eb081fc7d4cae5fa58c438ab50405081") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+    $entry.subject_name : (
+      "Microsoft Corporation",
+      "Microsoft Windows",
+      "Microsoft Windows Publisher",
+      ".NET",
+      "Microsoft Windows Hardware Compatibility Publisher",
+      "Microsoft Windows Software Compatibility Publisher",
+      "Avast Software s.r.o.",
+      "AVG Technologies USA, LLC",
+      "BeyondTrust Corporation",
+      "Bitdefender SRL",
+      "Carbon Black, Inc.",
+      "Check Point Software Technologies Ltd.",
+      "Cisco Systems, Inc.",
+      "ESET, spol. s r.o.",
+      "FireEye, Inc.",
+      "Kaspersky Lab",
+      "Kaspersky Lab JSC",
+      "AO Kaspersky Lab",
+      "McAfee, Inc.",
+      "Tanium Inc.",
+      "Mozilla Corporation",
+      "Micro Systemation AB (publ)",
+      "Brave Software, Inc.",
+      "Google LLC",
+      "Opera Norway AS",
+      "Palo Alto Networks",
+      "Palo Alto Networks (Netherlands) B.V.",
+      "SentinelOne Inc.",
+      "Sophos Limited",
+      "NortonLifeLock Inc.",
+      "Symantec Corporation",
+      "Sentinel Labs, Inc.",
+      "Reason Cybersecurity Inc.",
+      "Tencent Technology(Shenzhen) Company Limited",
+      "Fortinet Technologies (Canada) ULC",
+      "Bromium UK Limited",
+      "Panda Security S.L.",
+      "Beijing Qihu Technology Co., Ltd.",
+      "Tencent Technology (Shenzhen) Company Limited",
+      "Trend Micro, Inc.",
+      "Trend",
+      "VMware, Inc.",
+      "WithSecure Oyj",
+      "Cylance, Inc.",
+      "Bromium, Inc.",
+      "Broadcom Inc",
+      "Safetica a.s.",
+      "Apple Inc.",
+      "Webroot",
+      "Tonalio GmbH",
+      "Adobe Inc.",
+      "Adobe Systems, Incorporated",
+      "Adobe Systems Incorporated",
+      "Codejock Technologies, LLC",
+      "Intel Corporation",
+      "Intel(R) Software Development Products",
+      "Johannes Schindelin",
+      "Mozilla Corporation",
+      "Vivaldi Technologies AS",
+      "Dropbox, Inc",
+      "SAP SE",
+      "VisualSVN Software Ltd.",
+      "think-cell Operations GmbH",
+      "MUSARUBRA US LLC",
+      "Malwarebytes Inc.",
+      "Flexera Software LLC",
+      "Maksim Moisiuk",
+      "Addin Technology Inc.",
+      "Seclore Technology Private Limited",
+      "Activision Publishing Inc",
+      "HP Inc.",
+      "Duncan Ogilvie",
+      "Riot Games, Inc.",
+      "Unity Technologies SF",
+      "Arcadia Laboratories Inc.",
+      "Incredibuild Software Ltd.",
+      "Wellbia.com Co., Ltd.",
+      "Macrovision Corporation",
+      "Unity Technologies ApS",
+      "ONELAUNCH TECHNOLOGIES INC.",
+      "Python Software Foundation",
+      "W/E adviseurs duurzaam bouwen",
+      "FireDaemon Technologies Limited",
+      "Skype Software Sarl",
+      "Essential Objects, Inc",
+      "Essential Objects, Inc.",
+      "DameWare Development, LLC.",
+      "PIRIFORM SOFTWARE LIMITED",
+      "Famatech Corp.",
+      "Sky International AG",
+      "Hewlett-Packard Company",
+      "Lingwen Global Software Co., Ltd.",
+      "SentryBay Limited",
+      "ACEVILLE PTE LTD",
+      "EVC electronic GmbH",
+      "Electronic Arts, Inc.",
+      "Pharos Systems International",
+      "AB Team d. o. o.",
+      "GN AUDIO A/S",
+      "JumpCloud Inc",
+      "Pearl abyss Corp",
+      "NetEase (Hangzhou) Network Co., Ltd",
+      "Push Play Labs Inc",
+      "March Networks Corporation",
+      "TEAMDEV LTD.",
+      "InfoCert S.p.A.",
+      "Spotify AB",
+      "Perspective Software",
+      "Roblox Corporation",
+      "Beijing Qihu Technology Co., Ltd.",
+      "Promon AS",
+      "ZKTECO CO.,LTD.",
+      "Citrix Systems, Inc.",
+      "Riot Games, Inc.",
+      "GMC Systems - Gesellschaft für medizinische Computersysteme mbH",
+      "Slack Technologies, LLC",
+      "Cisco WebEx LLC",
+      "Logitech Inc",
+      "Beijing Huorong Network Technology Co., Ltd.",
+      "Intel(R) MSDK Software Development Products",
+      "Quest Software, Inc.",
+      "Blizzard Entertainment, Inc.",
+      "BERGER LEVRAULT SA",
+      "Open Source Developer, Duncan Ogilvie",
+      "VMware, Inc.",
+      "Beijing Qihu Technology Co., Ltd.",
+      "TechPowerUp Ltd",
+      "Deskshare, Inc",
+      "F005DA31-7CE1-4D3E-ABEE-08A4AFF4F592",
+      "Finansiell ID-Teknik BID AB",
+      "Perspective Software",
+      "Catalyst Development Corporation",
+      "TechPowerUp Ltd",
+      "E-ImageData Corp.",
+      "CADzation LLC",
+      "Safetica Technologies s.r.o.",
+      "Speckled Jay LLC",
+      "Bizet Inc",
+      "Micro Focus Group Limited",
+      "SteelSeries ApS",
+      "Universal Laser Systems, Inc.",
+      "Smilegate Entertainment, Inc.",
+      "Cyberdigm. Corp.",
+      "Zhuhai Kingsoft Office Software Co., Ltd.",
+      "CyberArk Software Ltd.",
+      "Comodo Security Solutions, Inc.",
+      "MarkAny Inc.",
+      "Sophos Ltd",
+      "Thycotic Software, LLC",
+      "Admin By Request ApS",
+      "CRYPTO-PRO LLC",
+      "Delinea Inc.",
+      "Environmental Systems Research Institute, Inc.",
+      "Hewlett Packard",
+      "McAfee, LLC", "Code Systems Corporation",
+      "Asesoria Informatica Gallega SL",
+      "EasyAntiCheat Oy",
+      "TeamDev Management *",
+      "Fiserv, Inc.",
+      "COREL CORPORATION",
+      "Webroot Inc.", "Corel Corporation",
+      "SEIKO EPSON CORPORATION",
+      "Aviata, Inc.", "GE Healthcare Inc.",
+      "DEEZER SA", "AXON ENTERPRISE, INC.",
+      "TEKLYNX INTERNATIONAL SASU", "Fiserv",
+      "ASUSTeK COMPUTER INC.", "FLEXTECH INC.",
+      "MV INFORMATICA NORDESTE LTDA",
+      "Samsung Electronics Co., Ltd.",
+      "Genetec Inc.", "YANDEX LLC",
+      "VNG CORPORATION",
+      "COC COC COMPANY LIMITED",
+      "HOLA VPN LTD", "Keeper Security Inc.",
+      "Panterra Networks, Inc.", "Frontline Systems, Inc.",
+      "Siemens AG", "Lisam Systems SA", "Avant Force",
+      "Brother Industries, Ltd.", "KRAFTON, Inc.", "EPOS Group A/S", "IDrive, Inc.",
+      "TENAXSOFT SRL", "Disashop, S.L.", "London Jamocha Community CIC", "Hewlett Packard Enterprise Company",
+      "The TWAIN Working Group",  "COC COC COMPANY LIMITED", "London Jamocha Community CIC", "Embark Studios AB",
+      "HOLA VPN LTD", "Keeper Security Inc.", "Panterra Networks, Inc.", "Frontline Systems, Inc.", "TENAXSOFT SRL",
+      "Siemens AG", "Lisam Systems SA", "Avant Force", "KRAFTON, Inc.", "Pro Softnet Corporation",
+      "EPOS Group A/S", "Dynatrace LLC", "Internet Testing Systems, LLC", "AIRTAME ApS", "DVDFab Software Inc.",
+      "netSkope Inc", "The Qt Company Oy", "FOXIT SOFTWARE INC.", "Oracle America, Inc.", "Anatomage, Inc.",
+      "FenixSim Limited", "Brooks Internet Software, Inc.", "CAPCOM CO., LTD.", "Facepunch Studios Ltd", "Manthe Industries, LLC"
+    ))
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

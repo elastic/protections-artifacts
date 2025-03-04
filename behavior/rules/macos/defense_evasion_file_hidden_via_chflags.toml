@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "File hidden via Chflags"
 os_list = ["macos"]
 reference = ["https://www.jamf.com/blog/jamf-threat-labs-observes-targeted-attacks-amid-fbi-warnings/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chflags" and 
  process.command_line like~ "* hidden *" and process.command_line like~ ("* /Users/*", "* /tmp/*") and
  not process.parent.executable == "/usr/libexec/xpcproxy" and
- not process.Ext.effective_parent.executable like "/Applications/Adobe After Effects 2024/Adobe After Effects 2024.app/Contents/MacOS/After Effects"
+ not process.Ext.effective_parent.executable like "/Applications/Adobe After Effects */Adobe After Effects *.app/Contents/MacOS/After Effects"
 '''
 
 min_endpoint_version = "8.11.0"

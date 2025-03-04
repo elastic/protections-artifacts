@@ -7,7 +7,7 @@ id = "40bec6eb-e93b-4d09-8265-66bba186e332"
 license = "Elastic License v2"
 name = "Potential Reverse Shell via Named Pipe"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -39,7 +39,8 @@ sequence by process.parent.entity_id with maxspan=1m
        process.parent.executable == "./agent-linux-x86_64.sh" and
        process.command_line like "mkfifo /tmp/agent-linux-x86_64.sh.pipe.*"
      ) or
-     (process.parent.executable == "/usr/bin/nvim" and process.command_line like "mkfifo /tmp/nvim.favilo/*")
+     (process.parent.executable == "/usr/bin/nvim" and process.command_line like "mkfifo /tmp/nvim.favilo/*") or
+     (process.name == "node" and process.args like~ "/run/user/*/python-test-discovery-*")
    )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (
@@ -49,7 +50,8 @@ sequence by process.parent.entity_id with maxspan=1m
      "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
      "FF00::/8", "172.31.0.0/16"
-     )
+     ) or
+     process.executable == "/usr/share/windsurf/resources/app/extensions/windsurf/bin/language_server_linux_x64"
    )
   ]
 '''

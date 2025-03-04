@@ -1,0 +1,52 @@
+[rule]
+description = """
+Detects when Curl makes an outbound network connection to a raw IP address in order to download a script (shell, apple,
+or python) or unsigned/untrusted binary. Many different types of malware use this in order to download additional
+payloads to a victim system.
+"""
+id = "19606783-671d-46cb-8a19-b96f96bf596a"
+license = "Elastic License v2"
+name = "Suspicious Curl File Download from Raw IP"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[network where event.type == "start" and process.name in ("curl", "nscurl") and destination.domain == null and
+   not cidrmatch(destination.ip, 
+       "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+       "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", 
+       "100.64.0.0/10", "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "::1", "FE80::/10", "FF00::/8")]
+[file where event.action == "modification" and file.extension in ("sh", "py", "scpt") and
+  not Effective_process.executable like "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

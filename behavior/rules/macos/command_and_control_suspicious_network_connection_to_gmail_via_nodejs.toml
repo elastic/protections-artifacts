@@ -1,0 +1,69 @@
+[rule]
+description = """
+Detects when the Node binary makes an outbound network connection to Gmails SMTP servers. Malicious NPM packages have
+been seen using Gmail SMTP servers to exfiltrate sensitive data.
+"""
+id = "d8135e78-d8fa-4ce0-93fe-73c2af058dbd"
+license = "Elastic License v2"
+name = "Suspicious Network Connection to Gmail via Nodejs"
+os_list = ["macos"]
+reference = [
+    "https://socket.dev/blog/gmail-for-exfiltration-malicious-npm-packages-target-solana-private-keys-and-drain-victim-s",
+]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.type == "start" and event.action == "exec" and process.name == "node"]
+[network where event.type == "start" and destination.domain in ("smtp.gmail.com", "smtp.gmail.com.")]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.003"
+name = "Mail Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/003/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

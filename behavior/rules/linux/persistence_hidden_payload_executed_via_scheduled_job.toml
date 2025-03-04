@@ -1,0 +1,135 @@
+[rule]
+description = """
+This rule detects hidden executables being executed through cron and systemd. Cron and Systemd can be used to schedule
+jobs (commands or scripts) to run periodically at fixed times, dates, or intervals. Threat actors may abuse these
+built-in services to execute malicious commands or scripts at specific times or intervals to establish persistence or
+escalate privileges.
+"""
+id = "e8b2afe5-37a9-468c-a6fb-f178d46cb698"
+license = "Elastic License v2"
+name = "Hidden Payload Executed via Scheduled Job"
+os_list = ["linux"]
+reference = [
+    "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
+    "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
+]
+version = "1.0.14"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.parent.name in ("cron", "crond") and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.args == "-c" and process.args like "*/.*" and not process.args like ("*/.*/*", "*/.*;*")) or
+  (process.parent.name == "systemd" and process.args like "*/.*" and process.args_count == 1)
+) and not (
+  process.command_line in (
+    "/bin/sh -c /bin/bash /root/rotate.sh rotate /root/.vault-token",
+    "/bin/sh -c crontab -l > $HOME/.crontab",
+    "/bin/sh -c autorestic -c /root/.autorestic.yml --ci cron",
+    "/bin/sh -c /root/.dbbackup.sh",
+    "/bin/sh -c bash /root/.stafftimerDatabase.sh",
+    "/bin/sh -c bash /root/.db-backup.sh",
+    "/bin/bash -c chown root /tmp/.flexlm*",
+    "/bin/sh -c crontab -l > $HOME/.crontab.bak",
+    "/bin/sh -c /bin/...",
+    "/bin/sh -c crontab -l > ~keystone/.crontab.$MAILTAG.keystone"
+  ) or
+  process.command_line like (
+    "*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*", "/bin/sh -c /backup/store_Weight_LABEL/.create_site.sh*",
+    "/bin/sh -c /backup/mktphotos/.main*.sh"
+  ) or
+  process.args like (
+    "/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*", "cd ~/.unison*", "/usr/sbin/logrotate*",
+    "/home/raulsiim/.local/share/JetBrains/Toolbox/apps/intellij-idea-community-edition/bin/idea"
+  ) or
+  process.executable like (
+    "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*", "/opt/gotify/gotify-linux-amd64",
+    "/home/*/.local/share/JetBrains/Toolbox/apps/goland/bin/goland", "/home/*/.linuxbrew/opt/etcd/bin/etcd",
+    "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa",
+    "/home/*/.local/bin/gitsign-credential-cache"
+  ) or
+  process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox") or
+  process.working_directory == "/var/lib/rabbitmq"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

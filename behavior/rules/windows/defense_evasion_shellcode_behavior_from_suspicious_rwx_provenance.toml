@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies suspicious API calls from a signed module and originating from suspicious RWX memory. This may indicate an
+attempt to perform code injection.
+"""
+id = "a8bacf2b-23a9-4a6d-a117-5df433403c70"
+license = "Elastic License v2"
+name = "Shellcode behavior from suspicious RWX provenance"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where
+ process.Ext.api.behaviors == "allocate_shellcode" and process.Ext.api.behaviors == "unbacked_rwx" and
+ process.Ext.api.metadata.target_address_name == "Unbacked" and
+ process.thread.Ext.call_stack_final_user_module.protection_provenance != null and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.code_signature != null and
+ process.thread.Ext.call_stack_summary in
+                           ("ntdll.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
+ endswith~(process.thread.Ext.call_stack_final_user_module.protection_provenance_path, process.thread.Ext.call_stack_final_user_module.protection_provenance) and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and not $entry.protection_provenance : "Unbacked*" and $entry.callsite_trailing_bytes : "?*") and
+ not endswith~(process.thread.Ext.call_stack_final_user_module.protection_provenance, process.name) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
+                                                    ("?:\\windows\\microsoft.net\\framework*\\clr.dll",
+                                                     "?:\\windows\\microsoft.net\\framework*\\mscorwks.dll",
+                                                     "?:\\program files (x86)\\*",
+                                                     "?:\\program files\\*",
+                                                     "?:\\windows\\winsxs\\x*\\msvcr*.dll",
+                                                     "c:\\windows\\syswow64\\msv?_?.dll") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Microsoft Windows", "Microsoft Corporation",
+                                          "Asesoria Informatica Gallega SL", "Riot Games, Inc.", ".NET", "Beijing Huorong Network Technology Co., Ltd.", "DameWare Development, LLC.", "Code Systems Corporation",
+                                          "ACEVILLE PTE LTD", "Roblox Corporation")) and
+ not (process.Ext.api.name == "VirtualProtect" and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like
+                ("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                 "00000000000000f6375c5b2e8900000000000000ff0000ffeeffee0000000000001000000000000020000000000000000100000000000000100000000000003f",
+                 "8985271*085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                        ("eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+                         "fc450380eaa226b351c919e87df61dd869f02b6ab47beedf8f940618a65761b0",
+                         "b982741576a050860c3f3608c7b269dbd35ab296429192b8afa53f1f190069c0",
+                         "68fba9dd89bfad35f8fd657b9af22a8aebda31bffda35058a7f5ae376136e89b",
+                         "f60dd9f2fcbd495674dfc1555effb710eb081fc7d4cae5fa58c438ab50405081")
+'''
+
+min_endpoint_version = "8.14.2"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

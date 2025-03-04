@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "DLL Control Panel Items Registry Modification"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 registry where
@@ -21,7 +21,8 @@ registry where
                "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe",
                "?:\\Windows\\System32\\drvinst.exe",
                "?:\\Windows\\System32\\msiexec.exe") and user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20")) and
-  not (process.code_signature.subject_name : "Wacom Co., Ltd." and process.code_signature.trusted == true)
+  not (process.code_signature.subject_name : "Wacom Co., Ltd." and process.code_signature.trusted == true) and
+  not registry.data.strings : ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*")
 '''
 
 min_endpoint_version = "8.0.0"

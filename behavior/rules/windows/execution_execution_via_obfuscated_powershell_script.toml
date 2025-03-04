@@ -7,7 +7,7 @@ id = "ce95fc52-051e-4409-9c99-f2daf3e6e609"
 license = "Elastic License v2"
 name = "Execution via Obfuscated PowerShell Script"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -23,6 +23,8 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
         process.Ext.api.parameters.size == 43758) and
   not (process.Ext.api.parameters.buffer : "*VisualStudioRemoteDeployer.exe*TVqQAAMAAAAEAAAA*" and
        process.executable : "C:\\Windows\\System32\\wsmprovhost.exe") and
+  not (process.Ext.api.parameters.size == 38324 and
+       process.command_line : "*AkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApAC*") and
   not process.Ext.api.parameters.content_name : ("?:\\Program Files\\Microsoft\\Exchange Server\\*.ps1", "E:\\ExchangeServer\\bin\\CommonConnectFunctions.ps1") and
   not process.executable : ("C:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe") and
   not process.parent.executable : ("C:\\Program Files (x86)\\ManageSoft\\Tracker\\ndtrack.exe",

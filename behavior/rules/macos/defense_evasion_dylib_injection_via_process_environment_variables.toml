@@ -13,7 +13,7 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -42,7 +42,7 @@ process where event.type == "start" and event.action == "exec" and
                                    "/Users/*/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64",
                                    "/Library/Printers/Canon/CUPS_Printer/Bins/Bins.bundle/Contents/Library/capdftopdl",
                                    "/Applications/Android Studio.app/Contents/MacOS/studio") and
-  not process.Ext.effective_parent.executable == "/Applications/RStudio.app/Contents/MacOS/RStudio"
+  not process.Ext.effective_parent.executable like ("/Applications/RStudio.app/Contents/MacOS/RStudio", "/Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/XPCServices/SimulatorTrampoline.xpc/Contents/MacOS/SimulatorTrampoline")
 '''
 
 min_endpoint_version = "8.7.0"

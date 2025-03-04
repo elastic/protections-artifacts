@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -44,7 +44,8 @@ process where event.action == "start" and process.name : "powershell.exe" and
  not (process.args:"-NonInteractive" and process.args :"-InputFormat") and
  not (process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
       not process.parent.name : ("explorer.exe", "python.exe", "cmd.exe")) and
- not process.args : "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('cGFzc3dvcmQ='))" and 
+ not process.args : "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('cGFzc3dvcmQ='))" and
+ not (process.command_line : "*echo ~/.ansible/tmp/ansible-tmp*" and process.parent.executable : "C:\\Windows\\System32\\OpenSSH\\sshd.exe") and
  not process.command_line :
             ("*ConvertTo-Json*Write-Host*",
              "*BrowserExtension.dll*WebCompanion.BrowserExtension*",
@@ -67,7 +68,10 @@ process where event.action == "start" and process.name : "powershell.exe" and
              "*WinSCP.com*",
              "*SNC_isWmi*",
              "*--app-id=memtime-*", 
-             "*BkAGEAdABhAGIAYQBzAGUALgB3AGkAbgBkAG8AdwBzAC4AbgBlAHQA*", 
+             "*BkAGEAdABhAGIAYQBzAGUALgB3AGkAbgBkAG8AdwBzAC4AbgBlAHQA*",
+             "*FsAdgBlAHIAcwBpAG8AbgBdACQAbQBpAG4AaQBtAHUAbQBWAGUAcgBzAGkAbwBuACAAPQAgACcAMgAuADIALgAwACcA*",
+             "*https://tshf.sas.com/techsup/download/hotfix/*",
+             "*scripts\\buildsystems\\msbuild*",
              "*.vscode\\extensions\\ms-dynamics-smb*",
              "*$ErrorActionPreference*$adsiMember*",
              "*$ErrorActionPreference*$rgx_log4j*",

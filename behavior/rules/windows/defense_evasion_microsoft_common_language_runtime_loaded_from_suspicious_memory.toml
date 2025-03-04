@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -30,9 +30,11 @@ library where dll.name : "clr.dll" and
                ("?:\\Program Files\\Microsoft Visual Studio\\*.exe",
                 "?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",
                 "?:\\Program Files (x86)\\PMP\\jre\\bin\\java.exe",
+                "?:\\Program Files\\ManageEngine\\PMP\\jre\\bin\\java.exe",
                 "?:\\Program Files\\ManageEngine\\PAM360\\jre\\bin\\java.exe",
                 "?:\\Program Files (x86)\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe",
-                "?:\\Program Files\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe") and
+                "?:\\Program Files\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe",
+                "?:\\Program Files\\Sql Server Extension\\SqlServerExtension.Service.exe") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes : ("c5f8774883ec10c5fb1104244883ec104889042449ba00000000000000004*",
                                                       "*488b8d48ffffff48894b104c8b658049894424084c896588c745c0*"))

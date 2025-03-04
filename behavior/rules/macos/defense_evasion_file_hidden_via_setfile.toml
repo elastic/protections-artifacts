@@ -1,0 +1,52 @@
+[rule]
+description = """
+Detects when SetFile is used to modify the file attributes of a file in order to make that file invisible. Malware on
+macOS has been observed using this technique in order to hide their payload from users.
+"""
+id = "2ed9c6bf-025e-4edf-a9ec-1493d0bb4f81"
+license = "Elastic License v2"
+name = "File Hidden via SetFile"
+os_list = ["macos"]
+reference = [
+    "https://www.virustotal.com/gui/file/d64e2688344c685c4156819156bdb15630d1168314b21c919eee5540b1beb54a",
+]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "SetFile" and 
+ process.args == "-a" and 
+ process.args == "V"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.001"
+name = "Hidden Files and Directories"
+reference = "https://attack.mitre.org/techniques/T1564/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -17,7 +17,7 @@ reference = [
     "https://gist.github.com/stong/c8847ef27910ae344a7b5408d9840ee1",
     "https://github.com/RickdeJager/cupshax/blob/main/cupshax.py",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("foomatic-rip", "cupsd") and
@@ -40,7 +40,8 @@ process.command_line like (
    "*/etc/ld.so*", "*/dev/shm/*", "*/var/tmp*", "*echo*"
 ) and not (
   process.args like "gs*" or
-  process.parent.executable == "/etc/init.d/cupsd"
+  process.parent.executable == "/etc/init.d/cupsd" or
+  process.parent.command_line == "/sbin/openrc-run /etc/init.d/cupsd --lockfd 29 stop"
 )
 '''
 

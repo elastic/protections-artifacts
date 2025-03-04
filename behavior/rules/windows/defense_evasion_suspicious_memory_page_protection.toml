@@ -7,7 +7,7 @@ id = "f72e1e5b-acc3-42aa-9f75-88badc64401e"
 license = "Elastic License v2"
 name = "Suspicious Memory Page Protection"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where
@@ -23,10 +23,11 @@ api where
  process.thread.Ext.call_stack_final_user_module.name != "Undetermined" and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name : ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and
- not process.thread.Ext.call_stack_final_user_module.path :
+ not (process.Ext.api.parameters.protection == "---" and
+      process.thread.Ext.call_stack_final_user_module.path :
                                 ("c:\\program files\\*", "c:\\program files (x86)\\*",
                                  "c:\\windows\\assembly\\nativeimages_*.dll",
-                                 "c:\\windows\\system32\\spool\\drivers\\x64\\3\\*.dll") and 
+                                 "c:\\windows\\system32\\spool\\drivers\\x64\\3\\*.dll")) and
  not (process.Ext.api.parameters.size == 12288 and process.thread.Ext.call_stack_final_user_module.name == "jvm.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info: ("c:\\program files\\sentinelone\\sentinel agent*\\inprocessclient32.dll*",
@@ -62,8 +63,7 @@ api where
                                           "0f2e933d5af1f775aba02e4d0ca52fca9bbfa6b2b2b06f2bd2b8a09282a32a52",
                                           "621cd08540f41ec7313533c9e516115244bac3f8d42aa9f08295cae1551e5fe1", 
                                           "a6972aac814d4344b84f1461092ead49e315ae6cbabadd9a60dddb4f397ff723", 
-                                          "b57b7886ba87c5e65e37dbac6cf2711ddfa47581e545eee9cd6757e4ffa81101", 
-                                          "0f2e933d5af1f775aba02e4d0ca52fca9bbfa6b2b2b06f2bd2b8a09282a32a52", 
+                                          "b57b7886ba87c5e65e37dbac6cf2711ddfa47581e545eee9cd6757e4ffa81101",
                                           "c30b2b5f344a2f84ba0cb1d63f51888794d0b0c2bd74afe2aca4cbc73be47c61", 
                                           "5254b706b4d8d73f3a5343890bea83b7172a8d4fb3e65df0530934f9c68eab7a", 
                                           "2c26e3994367eaad1156ca137e99e229fffac3ec7203373ca3c11bb5e9aee052", 

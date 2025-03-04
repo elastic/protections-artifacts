@@ -14,7 +14,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=3s
@@ -46,7 +46,9 @@ sequence with maxspan=3s
          "/usr/sbin/freeradius", "/usr/bin/htop", "/usr/lib/postgresql/14/bin/psql", "/usr/bin/mongodump",
          "/usr/bin/zypper", "/usr/bin/dnf", "/usr/bin/speedtest", "/usr/bin/dig", "/usr/bin/aws", "/usr/bin/w"
       ) or
-       process.executable like ("/snap/*", "/usr/local/aws-cli/*", "/home/*/big/dataenvrc/azure-cli-env/bin/python*") or
+       process.executable like (
+         "/snap/*", "/usr/local/aws-cli/*", "/home/*/big/dataenvrc/azure-cli-env/bin/python*", "/sysmgt/sw/universe/*/bin/uxupd"
+       ) or
        process.name in (
          "lsnrctl", "poetry", "pgbackrest", "mysql", "tcpdump", "blackfire", "aws", "gem", "firefox", "check_http", "yum"
        )

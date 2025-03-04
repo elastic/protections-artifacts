@@ -7,7 +7,7 @@ id = "30203e6b-0f9e-410a-a34d-6fe037866cca"
 license = "Elastic License v2"
 name = "Potential Windows Script Evasion via Sleep"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != null and
@@ -24,13 +24,14 @@ api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != nul
                       "?:\\Program Files\\*",
                       "C:\\PROGRA~2\\ADVANC~1\\scripts\\ext_*.vbs",
                       "c:\\Windows\\TempInst\\7z*\\DP\\launchquiet_args.vbs",
-                      "C:\\Windows\\System32\\*\\sconfig.vbs", 
+                      "C:\\Windows\\System32\\*\\sconfig.vbs",
                       "W:\\Interfaces_*.vbs") and
   not process.parent.executable :
                      ("?:\\Program Files\\HP\\HP LaserJet Pro *\\Bin\\HP LaserJet Pro *.exe",
                       "?:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe",
                       "?:\\Program Files\\System Center Operations Manager\\Gateway\\MonitoringHost.exe",
                       "?:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
+                      "C:\\Program Files (x86)\\Imprivata\\OneSign Agent\\x64\\ISXAgent.exe",
                       "C:\\ProgramData\\Winget-AutoUpdate\\ServiceUI.exe",
                       "C:\\Windows\\System32\\gpscript.exe") and
   not (process.executable : "C:\\Windows\\LSDeployment\\RemoteDeployment*.exe" and

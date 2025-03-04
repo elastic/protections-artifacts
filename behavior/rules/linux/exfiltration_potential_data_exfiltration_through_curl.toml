@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Data Exfiltration Through Curl"
 os_list = ["linux"]
 reference = ["https://everything.curl.dev/usingcurl/uploads"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl" and
@@ -31,7 +31,8 @@ process.command_line like "*http*" and not (
     "*@/exec-result.json", 
     "*https://storage.googleapis.com/detonate-prod/*",
     "*https://storage.googleapis.com/detonate-ci/*",
-    "*https://*elastic-cloud.com*"
+    "*https://*elastic-cloud.com*",
+    "*api.telegram.org*" // We already cover this in a seperate rule
   ) or
   process.parent.name == "ula_check.sh" or
   process.parent.args in (

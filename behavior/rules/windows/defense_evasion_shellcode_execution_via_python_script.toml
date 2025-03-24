@@ -4,7 +4,7 @@ id = "1d0a1b39-a29e-4370-a712-546ed047f5f5"
 license = "Elastic License v2"
 name = "Shellcode Execution via Python Script"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.code_signature.subject_name == "Python Software Foundation" and
@@ -14,7 +14,10 @@ api where process.code_signature.subject_name == "Python Software Foundation" an
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "conemuhk64.dll*") and 
  not (process.parent.executable : "C:\\Program Files\\pgAdmin ?\\runtime\\pgAdmin?.exe" and process.executable : "C:\\Program Files\\pgAdmin ?\\python\\python.exe") and
  not process.Ext.api.metadata.target_address_path : "c:\\windows\\system32\\tmumh\\20019\\tmmon\\2.9.0.1181\\tmmon64.dll" and
- not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.thread.Ext.call_stack_final_user_module.protection_provenance == "Unbacked")
+ not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.thread.Ext.call_stack_final_user_module.protection_provenance == "Unbacked") and
+ not (process.code_signature.subject_name == "Python Software Foundation" and process.code_signature.trusted == true and 
+      process.Ext.api.name in ("NtQueueApcThread", "SetThreadContext") and process.Ext.api.behaviors == "execute_shellcode" and 
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys*\\kernelbase.dll!CreateProcess*", "c:\\program files\\eset\\eset security\\ebehmoni.dll*")))
 '''
 
 min_endpoint_version = "8.10.0"

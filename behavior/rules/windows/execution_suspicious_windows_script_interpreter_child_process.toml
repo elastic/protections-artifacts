@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.type == "start" and
@@ -17,6 +17,8 @@ process where event.type == "start" and
   not process.Ext.token.integrity_level_name == "system" and
    (
     process.name : ("rundll32.exe", "regsvr32.exe", "odbcconf.exe") or
+
+   (process.name : ("cmd.exe", "powershell.exe", "curl.exe") and process.parent.name : "mshta.exe") or
 
     /* suspicious or unusual paths */
     process.executable : ("?:\\Windows\\Microsoft.NET\\*",

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Data Exfiltration Through Curl"
 os_list = ["linux"]
 reference = ["https://everything.curl.dev/usingcurl/uploads"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl" and
@@ -38,7 +38,8 @@ process.command_line like "*http*" and not (
   process.parent.args in (
     "/usr/lib/bats/bats-exec-test", "/opt/error_monitor/error_monitor.sh", "/var/cartenz/send_notify.sh"
   ) or
-  process.parent.command_line == "runc init"
+  process.parent.command_line == "runc init" or
+  process.working_directory like~ ("/var/lib/docker/overlay2/*merged", "/data/alma/*")
 )
 '''
 

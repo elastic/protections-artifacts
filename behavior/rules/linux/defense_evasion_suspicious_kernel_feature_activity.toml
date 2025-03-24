@@ -13,7 +13,7 @@ reference = [
     "https://www.trendmicro.com/pl_pl/research/20/i/the-evolution-of-malicious-shell-scripts.html",
     "https://www.uptycs.com/blog/threat-research-report-team/evasive-techniques-used-by-malicious-linux-shell-scripts",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args : (
@@ -53,7 +53,8 @@ process.parent.executable != null and
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/sublime_text/sublime_text",
     "/opt/illumio_ven/bin/init_Environment", "/usr/local/VMOptimizationTools/sangfor_set_vmconfig.sh",
     "/opt/saltstack/salt/bin/python*", "/u01/app/iebs/fs1/EBSapps/comn/clone/bin", "/opt/omni/*",
-    "/usr/local/qualys/cloud-agent/bin/qualys-healthcheck-tool", "/usr/sbin/snmpd", "/apps/sapinst/script/save_settings.pl"
+    "/usr/local/qualys/cloud-agent/bin/qualys-healthcheck-tool", "/usr/sbin/snmpd", "/apps/sapinst/script/save_settings.pl",
+    "/usr/sbin/zabbix_agentd", "/usr/local/bin/teleport"
   ) or
   process.command_line in ("cat /etc/sysctl.conf") or
   process.parent.args like (
@@ -62,14 +63,19 @@ process.parent.executable != null and
     "/opt/jc/policies/cis/additional_process_hardening_policy.bash"
   ) or
   process.args like "*nessus_su_*" or
+  process.working_directory like~ (
+    "/opt/dynatrace/oneagent", "/opt/DRClient*", "/opt/cloud/cce/package/node-package/config-finish"
+  ) or
   process.parent.command_line in (
     "/usr/bin/sudo -n /bin/cat /etc/sysctl.conf", "/bin/sh /root/clearmem.sh", "/bin/sh /usr/bin/peri/disk_perf",
-    "bash -x /usr/bin/peri/disk_perf", "runc init", "/bin/bash ./domain_join.sh", "*/tmp/.ansible/ansible-tmp-*"
+    "bash -x /usr/bin/peri/disk_perf", "runc init", "/bin/bash ./domain_join.sh", "*/tmp/.ansible/ansible-tmp-*",
+    "/usr/local/bin/teleport exec"
   ) or
   (
     process.parent.executable == "/bin/sh" and process.executable == "/usr/sbin/sysctl" and
     process.command_line == "sysctl -w vm.drop_caches=3"
   ) or
+  process.command_line like~ ("/bin/sh -c ssh root@*", "*swapoff -a; swapon -a*") or
   process.parent.name in (
     "sudo", "antidot-base.postinst", "vz-cpt-action", "find", "installsupergrp.sh", "criu", "vpfs_mounts",
     "hugepages_kernelpar_settingsSLES15.sh", "check_server_setup.sh", "prereqlogs"

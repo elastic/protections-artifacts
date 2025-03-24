@@ -7,7 +7,7 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=3s
@@ -15,6 +15,7 @@ sequence with maxspan=3s
    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
    process.parent.args : "/var/tmp/rpm-tmp.*" and not (
      process.executable == "/sbin/runuser" or
+     process.working_directory like~ ("/builds/packages/naudit-repos", "/disco_flowlytics/docker/overlay2/*") or
      process.args : ("/usr/local/cpanel/3rdparty/wp-toolkit/*", "/usr/bin/rpmkeys") or
      (process.executable == "/bin/sudo" and process.args in (
        "https://global.endpoint.security.micro",
@@ -35,7 +36,11 @@ sequence with maxspan=3s
        "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
        "FF00::/8", "172.31.0.0/16"
        ) or
-      process.executable == "/opt/cisco/amp/bin/ampinsthelper"
+      process.executable in (
+      "/opt/cisco/amp/bin/ampinsthelper", "/usr/libexec/platform-python",
+      "/etc/nginx/ea-nginx/config-scripts/global/config-scripts-global-cloudflare",
+      "/opt/kerio/GFIAgent/GFIAgentInstaller"
+      )
     )
   ] by process.parent.entity_id
 '''

@@ -7,7 +7,7 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -65,20 +65,25 @@ api where
                                                       "488b957*ffffffc6420c01833d*",
                                                       "488b5560c6420c01*833a00740c*",
                                                       "488b55*7f0000833a00740c48b928f2*",
+                                                      "883c438c3cccccc8954241048894c24084883ec28488b4c24*",
+                                                      "85c00f848f000000ff15f2a3cc0a3d332700000f859f000000488bb698000000488d7e78488d15d8264f0a4c8d059a284f0a488d5c24304889d941b9d2000000",
+                                                      "85c07407b801000000eb4e837c2440047520e8960000004c8b4c244841b808000000488b542438488b4c2430ffd0eb29eb25837c244040751ee86f0000004c8b",
                                                       "488b55??c6420c0148ba14d536dbf97f0000833a00740c48b928f235dbf97f0000ff114*", 
                                                       "4883c438c3cccccc44884c24204489442418488954241048894c2408488b442408c3cccc44884c24204489442418488954241048894c24084883ec48488b4424",
                                                       "488b9570ffffffc6420c01833d*488b458048894590488b45904889459890909090909090488b*",
                                                       "85c0746bff1528c2900f3d33270000747289c76a02e86d3378ff83c40484c0743a8d5c240489d96a0268600300006838a6320fe82f3478ff8d4424086a106838",
                                                       "488b9570ffffffc6420c01833de9835d5a007406ff15718d5d5a48894580e8a0ddb45990488b458048894590488b45904889459890909090909090488b459848",
                                                       "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003",
-                                                      "488b5560c6420c01833d6a70c85f007406ff15768dc75f488bf0e8165a4a5f48897570488b4d00e84300000090488b4570488b5560c6420c01488b5560488b4d")) and
+                                                      "488b5560c6420c01833d6a70c85f007406ff15768dc75f488bf0e8165a4a5f48897570488b4d00e84300000090488b4570488b5560c6420c01488b5560488b4d",
+                                                      "85c074*33270000747*89c76a02e8*ff83c40484c074*")) and
     not (process.thread.Ext.call_stack_final_user_module.protection_provenance in ("tiptsf.dll", "mscms.dll") and 
          process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\microsoft.net\\framework*\\mscorwks.dll") and 
     not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like 
                                                             ("c:\\windows\\assembly\\nativeimages_*\\smdiagnostics.ni.dll", 
                                                              "c:\\program files (x86)\\ibm\\client access\\*\\cwbsomri.dll", 
                                                              "c:\\program files (x86)\\panasonic\\idrengine\\idrjchar.dll",
-                                                             "c:\\windows\\assembly\\nativeimages_*\\newtonsoft.json\\*\\newtonsoft.json.ni.dll") and 
+                                                             "c:\\windows\\assembly\\nativeimages_*\\newtonsoft.json\\*\\newtonsoft.json.ni.dll") and
+    not process.Ext.api.metadata.target_address_path : "c:\\program files\\sap businessobjects\\office addin\\plugins\\analysisoffice\\bixllfunctions.dll" and
     not process.executable : ("?:\\Program Files (x86)\\CrystalScheduler\\crexport.exe", 
                               "?:\\Program Files (x86)\\Bus\\Buscube64.exe", 
                               "?:\\Program Files (x86)\\ETS5\\ETS5N.exe",
@@ -88,7 +93,7 @@ api where
                               "?:\\Program Files (x86)\\Citrix\\ICA Client\\Receiver\\Receiver.exe",
                               "?:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn\\game\\ffxiv_dx11.exe") and 
     not (process.code_signature.trusted == true and 
-         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc."))
+         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc"))
 '''
 
 min_endpoint_version = "8.14.2"

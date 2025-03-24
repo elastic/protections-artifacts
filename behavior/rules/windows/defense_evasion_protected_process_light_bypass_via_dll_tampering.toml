@@ -16,7 +16,7 @@ reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
     "https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack",
 ]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 sequence by process.entity_id
@@ -45,7 +45,8 @@ sequence by process.entity_id
             "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*.exe") and
        dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Windows Publisher") and
        dll.code_signature.trusted == true) and
-  not dll.hash.sha256 :
+  not (process.executable : "C:\\Windows\\System32\\svchost.exe" and dll.path : "C:\\ProgramData\\SecureWorks\\TaegisAgent\\{*}\\TaegisInj.x64.dll") and
+   not dll.hash.sha256 :
               ("6f8761d35b531dde2e8fd60bdcfd16cee46d48b84a2e0c28fecd1b66675faf48",
                "545a3aec876c49c56693f48f5fde740487330ca097775d9a434157aabf25db10",
                "ab813df167f8b6afe13f67231328f28fa3b0efeed8460f8b5e8a4228a8cded4e", 

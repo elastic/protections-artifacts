@@ -7,7 +7,7 @@ id = "947ad28a-98de-49cc-988b-fef69785585a"
 license = "Elastic License v2"
 name = "Shellcode API behavior from a signed module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
@@ -16,26 +16,28 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
  process.thread.Ext.call_stack_summary in
                            ("ntdll.dll|Unbacked",
                             "ntdll.dll|kernelbase.dll|Unbacked",
-                            "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked") and
+                            "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|*") and
  process.thread.Ext.call_stack_final_user_module.protection_provenance != null and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  process.thread.Ext.call_stack_final_user_module.code_signature != null and
  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and 
  
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files\\*", "c:\\program files (x86)\\*") and 
-
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("wrusr.dll") and
  not (process.Ext.api.name == "VirtualProtect" and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like
-                  ("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-                   "00000000000000f6375c5b2e8900000000000000ff0000ffeeffee0000000000001000000000000020000000000000000100000000000000100000000000003f",
+                  ("00000000000000f6375c5b2e8900000000000000ff0000ffeeffee0000000000001000000000000020000000000000000100000000000000100000000000003f",
                    "8985271*085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003")) and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                         ("eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
                          "fc450380eaa226b351c919e87df61dd869f02b6ab47beedf8f940618a65761b0",
                          "b982741576a050860c3f3608c7b269dbd35ab296429192b8afa53f1f190069c0",
                          "68fba9dd89bfad35f8fd657b9af22a8aebda31bffda35058a7f5ae376136e89b",
-                         "f60dd9f2fcbd495674dfc1555effb710eb081fc7d4cae5fa58c438ab50405081") and
+                         "f60dd9f2fcbd495674dfc1555effb710eb081fc7d4cae5fa58c438ab50405081",
+                         "19ebeeb8eb10548abceb31b2a86c05aaf1e9a0c88e15595534d7722c128b1642",
+                         "cc4c335cf61bffdb26957645e8b1cb385e9b8a460b40d66a5af6bacc8570e5c8") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
     $entry.subject_name : (
       "Microsoft Corporation",
@@ -219,7 +221,9 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
       "Siemens AG", "Lisam Systems SA", "Avant Force", "KRAFTON, Inc.", "Pro Softnet Corporation",
       "EPOS Group A/S", "Dynatrace LLC", "Internet Testing Systems, LLC", "AIRTAME ApS", "DVDFab Software Inc.",
       "netSkope Inc", "The Qt Company Oy", "FOXIT SOFTWARE INC.", "Oracle America, Inc.", "Anatomage, Inc.",
-      "FenixSim Limited", "Brooks Internet Software, Inc.", "CAPCOM CO., LTD.", "Facepunch Studios Ltd", "Manthe Industries, LLC"
+      "FenixSim Limited", "Brooks Internet Software, Inc.", "CAPCOM CO., LTD.", "Facepunch Studios Ltd", "Manthe Industries, LLC",
+      "AVS-N LLC", "A-Volute SAS", "ООО Научно-Производственное Предприятие АВС-Н", "Lexmark Enterprise Software", "AVS-N, OOO",
+      "KOBIL GmbH", "Threatstar B.V."
     ))
 '''
 

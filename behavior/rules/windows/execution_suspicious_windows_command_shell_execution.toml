@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "start" and
@@ -92,7 +92,8 @@ process where event.action == "start" and
                  "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
                  "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
-                 "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe") and
+                 "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe",
+                 "C:\\Program Files\\Microsoft Visual Studio\\*\\DtsDebugHost.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and
@@ -106,7 +107,9 @@ process where event.action == "start" and
              "https://auth.axis.com/oauth2/oauth-authorize*",
              "D:\\GitHub\\lilitech-cloud-app\\node_modules\\.bin\\*",
              "C:\\ProgramData\\santesocial\\commun\\adm\\produits",
-             "*--flat-playlist^*--no-cache-dir^*") and
+             "*--flat-playlist^*--no-cache-dir^*",
+             "/DIR=C:\\Program Files (x86)\\Zeiss\\Zeiss PDF Printer",
+             "*plugins\\org.eclipse.birt.doc_*") and
   not process.command_line :
                ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
                 "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"") and

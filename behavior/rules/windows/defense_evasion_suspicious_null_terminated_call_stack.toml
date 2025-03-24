@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Null Terminated Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
@@ -16,6 +16,7 @@ api where
    process.thread.Ext.call_stack_summary in ("ntdll.dll|Unbacked", "ntdll.dll|kernelbase.dll|Unbacked") and
    process.thread.Ext.call_stack_final_user_module.name : "Unbacked" and
    process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+   not process.thread.Ext.call_stack_final_user_module.protection_provenance  == "clr.dll" and
    (
     process.thread.Ext.call_stack_final_user_module.protection_provenance : "Unbacked" or
 
@@ -65,10 +66,12 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                "c547ad0c67524371f40db48c998db222f3b75cef21109c62aea28227df8a6f2c") and
 not process.Ext.api.metadata.target_address_path in ("c:\\program files\\asus\\aura lighting effect add-on x64\\basswasapi.dll", "c:\\program files\\asus\\aura lighting effect add-on x64\\bass.dll") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher"))
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and
+not (process.executable : "C:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe" and process.parent.executable : "C:\\Program Files (x86)\\Steam\\steam.exe") and
+not process.executable : ("D:\\SteamLibrary\\steamapps\\common\\*.exe", "E:\\Steam\\steamapps\\common\\*.exe")
 '''
 
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -94,4 +97,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"

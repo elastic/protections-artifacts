@@ -4,14 +4,14 @@ id = "eb81ba92-57e8-4ab1-bce3-4d1303700f2d"
 license = "Elastic License v2"
 name = "Curl to Suspicious Top Level Domain"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
 [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and
   not process.Ext.effective_parent.executable like "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"]
 [network where event.type == "start" and
-  destination.domain like~ ("*.team", "*.team.", "*.lol", "*.lol.", "*.kr", "*.kr.", "*.ke", "*.ke.", "*.nu", "*.nu.", "*.space", "*.space.", "*.capital", "*.capital.", "*.in", "*.in.", "*.cfd", "*.cfd.", "*.online", "*.online.", 
+  destination.domain like~ ("*.vip", "*.vip.", "*.team", "*.team.", "*.lol", "*.lol.", "*.kr", "*.kr.", "*.ke", "*.ke.", "*.nu", "*.nu.", "*.space", "*.space.", "*.capital", "*.capital.", "*.in", "*.in.", "*.cfd", "*.cfd.", "*.online", "*.online.", 
                             "*.ru", "*.ru.", "*.info", "*.info.", "*.top", "*.top.", "*.buzz", "*.buzz.", "*.xyz", "*.xyz.", "*.rest", "*.rest.", "*.ml", "*.ml.", "*.cf", "*.cf.", "*.gq", "*.gq.", "*.ga", "*.ga.", "*.onion", "*.onion.",
                             "*.network", "*.network.", "*.monster", "*.monster.", "*.marketing", "*.marketing.", "*.cyou", "*.cyou.", "*.quest", "*.quest.", "*.cc", "*.cc.", "*.bar", "*.bar.", "*.click", "*.click.", "*.cam", "*.cam.",
                             "*.surf", "*.surf.", "*.tk", "*.tk.", "*.shop", "*.shop.", "*.club", "*.club.", "*.icu", "*.icu.", "*.pw", "*.pw.", "*.ws", "*.ws.", "*.rest", "*.rest.", "*.hair", "*.hair.",

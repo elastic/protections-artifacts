@@ -12,7 +12,7 @@ reference = [
     "https://www.qualys.com/2021/05/04/21nails/21nails.txt",
     "https://blog.qualys.com/vulnerabilities-threat-research/2021/05/04/21nails-multiple-vulnerabilities-in-exim-mail-server",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "exim4" and
@@ -23,14 +23,19 @@ not (
   ) or
   process.executable like (
     "/var/lib/docker/*", "/usr/bin/gpg-connect-agent", "/usr/bin/dpkg", "/bin/sed", "/bin/basename", "/usr/bin/date",
-    "/usr/bin/runc", "/usr/bin/tr", "/sbin/modprobe", "/usr/bin/test", "/usr/bin/gdbus"
+    "/usr/bin/runc", "/usr/bin/tr", "/sbin/modprobe", "/usr/bin/test", "/usr/bin/gdbus", "/sbin/ldconfig",
+    "/usr/sbin/exim", "/usr/bin/ocrad", "/sbin/iptables", "/usr/bin/which", "/usr/bin/perl", "/usr/sbin/ip6tables"
   ) or
+  process.executable like "/opt/antidot-svc/nrpe/plugins/*" or
   process.parent.name in (
     "update-exim4.conf", "apt-key", "apt-get", "git", "lynis", "make", "gcc", "sarg", "cmake", "aarch64-tq-linux-gcc"
   ) or
   (process.executable == "/usr/bin/ls" and process.command_line like "*/proc/*/exe") or
-  process.command_line == "rm -f /run/exim4/exim.pid" or
-  process.parent.args like "/usr/bin/test*"
+  process.command_line in (
+    "rm -f /run/exim4/exim.pid", "sh -c uname -p 2> /dev/null", "sh -c /opt/antidot-svc/nrpe/plugins/check_md_raid.sh"
+  ) or
+  process.parent.args like "/usr/bin/test*" or
+  process.args like~ "/opt/antidot-svc/nrpe/plugins/*"
 )
 '''
 

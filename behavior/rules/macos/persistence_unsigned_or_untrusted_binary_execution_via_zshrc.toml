@@ -1,0 +1,60 @@
+[rule]
+description = """
+Detects the execution of an unsigned or untrusted binary via the Zsh shell startup file .zshrc. Threat actors can modify
+the .zshrc file with the path to their payload in order to persist on a victims system. When the host reboots the
+payload will be executed and this is the activity you will see. A recent DPRK payload, ThiefBucket, implements this
+persistence mechanism.
+"""
+id = "89a79178-978a-4043-956e-bf5b41c4ec46"
+license = "Elastic License v2"
+name = "Unsigned or Untrusted Binary Execution via Zshrc"
+os_list = ["macos"]
+reference = [
+    "https://www.jamf.com/blog/jamf-threat-labs-observes-targeted-attacks-amid-fbi-warnings/",
+    "https://theevilbit.github.io/beyond/beyond_0001/",
+]
+version = "1.0.6"
+
+query = '''
+sequence with maxspan=15s
+[process where event.type == "start" and event.action == "exec" and process.name == "zsh" and process.args like~ "-zsh" and 
+  process.parent.name == "login"] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.parent.name == "zsh" and 
+  process.executable like "/Users/*" and (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+  process.args_count == 1] by process.parent.entity_id
+[network where event.type == "start" and
+   not cidrmatch(destination.ip, 
+       "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+       "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", 
+       "100.64.0.0/10", "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "::1", "FE80::/10", "FF00::/8")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.004"
+name = "Unix Shell Configuration Modification"
+reference = "https://attack.mitre.org/techniques/T1546/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.16.0"

@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.57"
+version = "1.0.59"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -181,7 +181,9 @@ sequence by process.entity_id with maxspan=5m
         "pastecode.dev",
         "i.imgur.com",
         "the.earth.li",
-        "*.trycloudflare.com"
+        "*.trycloudflare.com",
+        "shorturl.at",
+        "bitly.cx"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe") and

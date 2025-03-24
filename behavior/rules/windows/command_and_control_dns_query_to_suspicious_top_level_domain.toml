@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -89,7 +89,7 @@ sequence by process.entity_id with maxspan=1m
                        "*.surf", "*.tk", "*.shop", "*.club", "*.icu", "*.pw", "*.ws",
                       "*.online", "*.fun", "*.life", "*.boats", "*.store",
                        "*.hair", "*.skin", "*.motorcycles", "*.christmas", "*.lol", "*.makeup",
-                       "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty", "*.biz") and
+                       "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty", "*.biz", "*.live") and
   not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz")]
 '''
 

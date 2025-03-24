@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -136,7 +136,10 @@ process where event.action == "start" and process.name : "powershell.exe" and
           "*.content|i''Ex*",
           "*//:sptth*",
           "*//:ptth*",
+          "*h''t''t''p*",
           "*'tp'':''/'*",
+          "*$env:T\"E\"MP*",
+          "*;cmd /c $?",
           "*s''t''a''r*",
           "*$*=Get-Content*AppData*.SubString(*$*",
           "*=cat *AppData*.substring(*);*$*",

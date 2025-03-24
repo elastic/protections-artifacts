@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -21,6 +21,7 @@ process.command_line like~ ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh
     "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*"
   ) or
   process.parent.command_line == "runc init" or
+  process.working_directory == "/opt/rapid7/ir_agent/components/endpoint_broker/common" or
   process.parent.executable like "/opt/cdf/data/containerd/*" or
   (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*") or
   (

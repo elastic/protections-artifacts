@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Backdoor Execution Through PAM_EXEC"
 os_list = ["linux"]
 reference = ["https://www.group-ib.com/blog/pluggable-authentication-module/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -27,11 +27,17 @@ sequence by process.entity_id with maxspan=3s
         "/tmp/*ezyness-testbed-vpn-dispatch-script.tmp.sh", "/tmp/tempRACTrans*", "/tmp/*-infra-openvpn-pcc4-dispatch-script.tmp.sh",
         "/home/*/arreios_server/ve/bin/python", "/tmp/*dispatch-script.tmp.sh", "/tmp/terraform_*.sh",
         "/var/tmp/foreman-ssh-cmd*", "/tmp/cpp/run_script_correo_factu_biller.sh", "/tmp/cpp/run_script_correo_mapeo_inval.sh",
-        "/home/*/.venvs/basal/bin/python", "./*/scripts/post_deploy.sh"
+        "/home/*/.venvs/basal/bin/python", "./*/scripts/post_deploy.sh", "./merged/var/lib/containers/*"
      ) or
      process.name like~ ("ssh_list_used_CPB_email_addresses.pl", "generate*Triggers.pl") or
-     process.command_line in ("python --version", "perl /usr/local/bin/ew", "ruby --version", "/usr/bin/perl -v") or
-     process.command_line like~ ("/home/*/.venvs/basal/bin/python -V", "perl /home/*/seti/alertas/usofs.pl") or
+     process.command_line in (
+       "python --version", "perl /usr/local/bin/ew", "ruby --version", "/usr/bin/perl -v", "ls /etc/sysctl.d",
+       "/usr/bin/perl -", "python /opt/Netwerk/live-scripts/capacity_bandwidth/capacity_management_bandwidth.py"
+     ) or
+     process.command_line like~ (
+       "/home/*/.venvs/basal/bin/python -V", "perl /home/*/seti/alertas/usofs.pl", "python3 /home/*/scripts/rackwise_servers.py",
+       "python3 /tmp/sw_inventory_tmp.py_*", "/home/*/.envs/pricing/bin/python -V"
+     ) or
      process.args like~ ("/home/*/checkouts/workers.unet.nl/stop_workers", "/home/*/checkouts/*workers", "./update-symlinks.sh") or
      (process.name == "php" and process.args in (
        "/srv/www/htdocs/news/newsArchive.php", "/srv/www/htdocs/news.php", "/srv/www/htdocs/feeds/news.atom.php", "/srv/www/htdocs/feeds/news.atom.php"

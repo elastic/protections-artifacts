@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -47,13 +47,16 @@ not (
     "/vz/*", "/usr/libexec/openssh/sshd-session", "/opt/lockdown/goss/goss", "/opt/oracle.ahf/common/venv/bin/python*",
     "/usr/bin/awk", "/usr/sbin/registercloudguest", "/var/opt/oracle/oracle.ahf/common/venv/bin/python*",
     "/opt/pwx/oci/rootfs/usr/local/bin/run_as_io_flusher.sh", "/u01/app/oracle.ahf/common/venv/bin/python*",
-    "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.10", "/etc/init.d/ohasd", "bin/rcsd",
+    "/opt/oracle/dcs/oracle.ahf/common/venv/bin/python3.10", "/etc/init.d/ohasd", "bin/rcsd", "/bin/xargs",
     "/usr/lib/openssh/sshd-session", "/var/arcticwolfnetworks/agent/scans/jre/jre/bin/java", "/usr/local/bin/nuctl",
     "/usr/local/bin/dashboard", "/opt/puppetlabs/puppet/bin/puppet", "/opt/bmc/bladelogic/RSCD/bin/rscd_full",
-    "bin/rscd", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/facter", "/var/lib/docker/overlay2/*/bin/facter"
+    "bin/rscd", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/facter", "/var/lib/docker/overlay2/*/bin/facter",
+    "/opt/LifeKeeper/subsys/database/resources/oracle/actions/quickCheck", "/usr/bin/ekran_recorder",
+    "/usr/lib/npreal2/driver/mxloadsvr"
   ) or
   process.parent.command_line in (
-    "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team"
+    "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
+    "/usr/bin/perl /bkupdata1/icbm.pl"
   ) or
   process.command_line like (
     "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*", "*/dev/tcp/localhost/*",
@@ -62,7 +65,8 @@ not (
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;",
     "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
     "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf",
-    "sh -c *clsecho*"
+    "sh -c *clsecho*",
+    "/usr/bin/crun*"
   ) or
   process.parent.command_line like (
     "*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init", "bash -c su -c *"
@@ -76,6 +80,7 @@ not (
   (process.parent.executable like "/var/lib/docker/overlay2*" and process.command_line like "*dummy*") or
   (process.parent.executable == "/usr/sbin/httpd" and process.command_line like "*nagios*") or
   (process.parent.command_line == "php /var/www/html/artisan app:init" and process.command_line like "*coolify*") or
+  (process.parent.executable like~ "/opt/*/bin/installer" and process.command_line like~ "*dynatrace*") or
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl"

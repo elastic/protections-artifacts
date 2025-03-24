@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies attempts to delete Elastic protected resources via PendingFileRename operation. Malware may abuse this
+feature to delete Elastic endpoint after reboot.
+"""
+id = "faf5018c-2cf0-4334-b89f-db197d95ee16"
+license = "Elastic License v2"
+name = "Potential Elastic Tampering via PendingFileRename"
+os_list = ["windows"]
+reference = [
+    "https://qtechbabble.wordpress.com/2020/06/26/use-pendingfilerenameoperations-registry-key-to-automatically-delete-a-file-on-reboot/",
+    "https://github.com/rad9800/FileRenameJunctionsEDRDisable",
+]
+version = "1.0.1"
+
+query = '''
+registry where event.action == "modification" and
+ registry.value == "PendingFileRenameOperations" and registry.data.strings : ("*Program Files\\Elastic\\*elastic-endpoint.exe*", "*Program Files//Elastic//*elastic-endpoint.exe*")
+'''
+
+min_endpoint_version = "8.1.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.1.0"

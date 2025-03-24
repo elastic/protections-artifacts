@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -35,7 +35,7 @@ process where event.type == "start" and event.action == "exec" and (
   ) or
   process.command_line like (
     "*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*", "/bin/sh -c /backup/store_Weight_LABEL/.create_site.sh*",
-    "/bin/sh -c /backup/mktphotos/.main*.sh"
+    "/bin/sh -c /backup/mktphotos/.main*.sh", "/bin/bash -c unset*/var/.cagefs'"
   ) or
   process.args like (
     "/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*", "cd ~/.unison*", "/usr/sbin/logrotate*",
@@ -47,7 +47,7 @@ process where event.type == "start" and event.action == "exec" and (
     "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa",
     "/home/*/.local/bin/gitsign-credential-cache"
   ) or
-  process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox") or
+  process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox", "goland") or
   process.working_directory == "/var/lib/rabbitmq"
 )
 '''

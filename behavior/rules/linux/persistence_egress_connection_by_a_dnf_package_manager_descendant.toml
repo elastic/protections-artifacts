@@ -14,7 +14,7 @@ reference = [
     "https://pwnshift.github.io/2020/10/01/persistence.html",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -27,7 +27,8 @@ sequence by process.entity_id with maxspan=5s
      "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/srv/*",
      "/tmp/*", "/var/tmp/*", "/var/log/*"
      )
-   ) and descendant of [process where event.action == "exec" and process.name == "dnf"]
+   ) and descendant of [process where event.action == "exec" and process.name == "dnf"] and
+   not process.working_directory == "/tmp/newroot"
   ]
   [network where event.action == "connection_attempted" and event.type == "start" and not (
      destination.ip == null or

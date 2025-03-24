@@ -7,7 +7,7 @@ id = "f72e1e5b-acc3-42aa-9f75-88badc64401e"
 license = "Elastic License v2"
 name = "Suspicious Memory Page Protection"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where
@@ -32,6 +32,8 @@ api where
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info: ("c:\\program files\\sentinelone\\sentinel agent*\\inprocessclient32.dll*",
                                        "c:\\program files (x86)\\common files\\intuit shared\\*\\bin\\client\\jvm.dll*")) and
+ not (process.executable : ("C:\\Program Files (x86)\\*.exe", "C:\\Program Files\\*.exe") and
+      process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\assembly\\nativeimages*dll") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                          ("b0968a364408aad11a33343cb9fdf66b994dbd251cc64237f8894d66efe96f19",
                                           "20fd2dc66d81acd93b7e8637a05068fd200b09c9c1b62c7929d6abf1e8c17947",
@@ -67,7 +69,19 @@ api where
                                           "c30b2b5f344a2f84ba0cb1d63f51888794d0b0c2bd74afe2aca4cbc73be47c61", 
                                           "5254b706b4d8d73f3a5343890bea83b7172a8d4fb3e65df0530934f9c68eab7a", 
                                           "2c26e3994367eaad1156ca137e99e229fffac3ec7203373ca3c11bb5e9aee052", 
-                                          "c8f242570144ac4ba77967a1dc59d6681ca2d8a6a85c4db2a30e1e4629db843a")
+                                          "c8f242570144ac4ba77967a1dc59d6681ca2d8a6a85c4db2a30e1e4629db843a",
+                                          "7090edd64e7f0cbfa7bdcc6f48cdae692e94a04c7b8121a1bd96f15f24374830",
+                                          "f572e4057d7504a04dabc6fcf154e12c79af313e32f63105ae9874d97d5d3593",
+                                          "709e4e2af91135b8ed78c551de0bff2f161e498341ec2ae7b89a7d9898c4e93b",
+                                          "71587b6b0b06301ac1a4037955a2ba6729a3d40103f1bc625d4ab62aef13ebb5",
+                                          "ea71387e40682bcc23f676df2b856dca15853aeb854b94168c85bc0479ef1aed",
+                                          "c953034220bda1e5751c4ebd61c4951224db6919394b0bf7901d66cd5ec99c27",
+                                          "3c3c62d2118b3029c27c60c8995f50b90b5329a24bb6dd9ccc9b8f83e9f3446c",
+                                          "2f3361f43762299182a183372fa446bffa756d98d219935aee780018368067ba",
+                                          "17ca0c6b2c3539f8e8af8ab166419d0602397270f43f370d93d9b99bf9751790",
+                                          "8bd2eda8551d7198ebc8a70573e31c06e5fe56054e869d357d88f33c5b90d0f3",
+                                          "e958d03db79e9f1d2770c70a5bc24904aa3e2d27a8d5637684cf8166b38908f2",
+                                          "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe")
 '''
 
 min_endpoint_version = "8.10.0"

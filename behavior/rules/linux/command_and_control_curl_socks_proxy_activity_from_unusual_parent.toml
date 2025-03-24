@@ -8,7 +8,7 @@ id = "0fd5b434-606b-42fc-bed0-87071293533e"
 license = "Elastic License v2"
 name = "Curl SOCKS Proxy Activity from Unusual Parent"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl" and (
@@ -27,7 +27,7 @@ process where event.type == "start" and event.action == "exec" and process.name 
     "/bin/bash --rcfile /home/*/.local/share/JetBrains/Toolbox/apps/goland/plugins/terminal/shell-integrations/bash/bash-integration.bash -i",
     "/bin/bash -c /runner/entrypoint.sh"
   ) or
-  process.parent.executable == "/root/bin/create_CVE_html.ksh" or
+  process.parent.executable in ("/root/bin/create_CVE_html.ksh", "/root/falcon-linux-uninstall.sh") or
   process.parent.name == "cf-agent"
 )
 '''

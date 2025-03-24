@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -52,7 +52,8 @@ sequence by process.entity_id with maxspan=2m
     not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
                               "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe",
                               "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe",
-                              "?:\\Program Files (x86)\\Kantech\\Server_CE\\Bin\\RVPControl.exe") and
+                              "?:\\Program Files (x86)\\Kantech\\Server_CE\\Bin\\RVPControl.exe",
+                              "C:\\Program Files (x86)\\TerminalWorks\\TSScan\\TSScanConsole.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\dat\\Dexon\\Agent\\Agent.exe" and
          process.code_signature.subject_name : "Dexon Software S A" and process.code_signature.status : "errorExpired") and
     process.thread.Ext.call_stack_final_user_module.hash.sha256 != "3df383f4b0195620badc0bb9f5e1d86ebdb4975b60da4b910a26fee9b4af474f" and

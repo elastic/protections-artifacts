@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "VirtualProtect via Indirect Random Syscall"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 api where 
@@ -41,7 +41,8 @@ api where
  not process.thread.Ext.call_stack_final_user_module.path :
                  ("?:\\program files\\mozilla firefox\\firefox.exe",
                   "?:\\program files (x86)\\mozilla firefox\\firefox.exe",
-                  "c:\\program files\\microsoft office\\office??\\msohtmed.exe") and
+                  "c:\\program files\\microsoft office\\office??\\msohtmed.exe",
+                  "c:\\program files\\endgame\\esensor.exe") and
  not process.thread.Ext.call_stack_summary :
                    ("Unbacked|kernelbase.dll|pghook.dll|ntdll.dll|kernelbase.dll|ntdll.dll",
                     "Unbacked|Unknown|csxumd64_*.dll|ntdll.dll",

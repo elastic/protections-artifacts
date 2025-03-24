@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=3m
@@ -63,7 +63,9 @@ sequence with maxspan=3m
     process.hash.sha256 != "8ba8760bcb924e1e7943c3008a80006b29737808cc41a93cabcfeaaec9785276" and
     not process.parent.executable : "C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe" and
     not (process.code_signature.subject_name in ("Sophos Ltd", "Entrust Datacard Corporation", "Com4Cure GmbH", "Martin Prikryl") and
-         process.code_signature.trusted == true)
+         process.code_signature.trusted == true) and
+    not (process.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and
+         process.parent.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe")
    ] by process.parent.entity_id
 '''
 

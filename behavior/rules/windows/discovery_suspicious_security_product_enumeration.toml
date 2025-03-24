@@ -4,13 +4,13 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
   process.Ext.api.name like "IWbemServices::CreateInstanceEnum*" and
   process.Ext.api.parameters.operation in ("AntiVirusProduct", "Win32_DeviceGuard") and
-  process.Ext.api.metadata.client_is_local == true and process.parent.executable != null and
+  process.Ext.api.metadata.client_is_local == true and process.parent.executable != null and user.id != "S-1-5-18" and
 
   /* ignore process cache enrichment failures */
   process.Ext.api.metadata.client_process_id == null and
@@ -68,6 +68,12 @@ api where
     process.parent.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
     user.id == "S-1-5-18" and process.command_line like "*HexProductState*") or
 
+   (process.command_line : "powershell \"Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct\"" and
+    process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\DrSprinto\\DrSprinto.exe") or
+
+   (process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile" and
+    process.parent.executable : "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe") or
+
    (process.name == "powershell.exe" and
     process.Ext.api.parameters.operation == "Win32_DeviceGuard" and process.parent.executable : "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe") or
 
@@ -76,12 +82,14 @@ api where
     process.command_line in ("powershell",
                              "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                              "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" ",
-                             "\"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command import-module ActiveDirectory")) or
+                             "\"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command import-module ActiveDirectory",
+                             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe  \"Get-CimInstance -classname 'Win32_DeviceGuard' -namespace 'root\\Microsoft\\Windows\\DeviceGuard' | select-Object -property 'SecurityServicesRunning' | Out-File 'C:\\Program Files\\SCAP Compliance Checker 5.10.1\\Local\\LOCALHOST_*.tmp'\"")) or
 
    (process.code_signature.subject_name in ("CPUID", "Lakeside Software, LLC", "CYBELSOFT", "Connectwise, LLC",
     "Corsair Memory, Inc.", "Ivanti, Inc.", "POINTWARE INFORMATICA LTDA", "ASUSTeK COMPUTER INC.", "Snow Software AB",
     "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd", "WithSecure Oyj", "Trend Micro, Inc.", "Belarc, Inc.",
-    "KASEYA HOLDINGS INC.", "Elliptic Laboratories ASA") and
+    "KASEYA HOLDINGS INC.", "Elliptic Laboratories ASA", "IObit Information Technology", "CPUID S.A.R.L.U.", "CPUID",
+    "Panda Security S.L", "Shenzhen Drive The Life Technology Co.,Ltd.") and
     process.code_signature.trusted == true) or
 
     process.executable :
@@ -108,7 +116,9 @@ api where
               "C:\\Windows\\System32\\UsoClient.exe",
               "C:\\Windows\\CCM\\CcmExec.exe",
               "C:\\Windows\\Microsoft.NET\\Framework64\\v4.*\\mscorsvw.exe",
-              "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.*\\MpCmdRun.exe") or
+              "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.*\\MpCmdRun.exe",
+              "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
+              "C:\\Program Files\\Microsoft OneDrive\\*\\FileCoAuth.exe") or
 
     (process.parent.executable : "?:\\Windows\\System32\\WmiPrvSe.exe" and process.name == "powershell.exe" and
      process.command_line : "\"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -NoLogo -Noninteractive -NoProfile  -ExecutionPolicy Bypass \"& 'C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1'\"") or

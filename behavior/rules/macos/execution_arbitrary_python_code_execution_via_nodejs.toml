@@ -1,0 +1,47 @@
+[rule]
+description = "Detects the execution of arbitrary Python code via Nodejs."
+id = "f8ec483c-dc3b-4d60-b863-65f61b4d382e"
+license = "Elastic License v2"
+name = "Arbitrary Python Code Execution via Nodejs"
+os_list = ["macos"]
+reference = ["https://jp.security.ntt/tech_blog/contagious-interview-ottercookie"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name like~ "python*" and process.args == "-c" and 
+ (process.parent.name == "node" or process.Ext.effective_parent.name == "node") and
+ process.command_line : ("*os.system*", "*subprocess.run*", "*subprocess.Popen*", "* exec*", "* eval*")
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.2"

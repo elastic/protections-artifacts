@@ -7,7 +7,7 @@ id = "743a3b7f-ce25-464a-9f5d-506d5211ba4d"
 license = "Elastic License v2"
 name = "System Module Unhooking via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -22,7 +22,7 @@ api where process.Ext.api.name == "VirtualProtect" and
                               "ae8ee931e5d3408ba77129489be97d51ba3f0c02a1a00687812388e14076f7fe",
                               "3f8e458bf4332125c76e3817e0a56c1242459f3f9bcdd988b781ca627ba03380") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "ESET, spol. s r.o.", "Tencent Technology (Shenzhen) Company Limited", "NetSupport Ltd", "The TWAIN Working Group")) and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "ESET, spol. s r.o.", "Tencent Technology (Shenzhen) Company Limited", "NetSupport Ltd", "The TWAIN Working Group", "EVC electronic GmbH")) and
  not (process.thread.Ext.call_stack_summary like ("ntdll.dll|apphelp.dll|ntdll.dll*", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|apphelp.dll|ntdll.dll*") and
       process.Ext.api.metadata.target_address_name == "kernel32.dll" and
       process.thread.Ext.call_stack_final_user_module.path in ("c:\\windows\\system32\\apphelp.dll", "c:\\windows\\syswow64\\apphelp.dll"))

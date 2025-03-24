@@ -7,7 +7,7 @@ id = "8c69476a-d8ea-46da-8052-6a4f9254125c"
 license = "Elastic License v2"
 name = "Suspicious Windows Script File Name"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -77,7 +77,8 @@ process where event.action == "start" and
       "*Billing*.wsf",
       "*Billing*.vbs",
       "*Billing*.js",
-      "*SafeDocu#*") and
+      "*SafeDocu#*",
+      "*\\Doc??????.js") and
  not (process.args : "C:\\Users\\Invoices-*" and process.args : "remove")
 '''
 

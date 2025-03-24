@@ -1,0 +1,52 @@
+[rule]
+description = """
+Detects when a bundle identifier binary, denoted by the com. syntax, is executed via a shell interpreter where the
+effective parent process is the path of the bundle identifier itself.
+"""
+id = "b2c0f8bb-890b-4938-9427-fc66650451b3"
+license = "Elastic License v2"
+name = "Unusual Bundle Execution via Shell"
+os_list = ["macos"]
+reference = [
+    "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/4a57b3dd5d28ad1bd79e927e04b20fd4d66934a0/ocean_lotus",
+]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name like "com.*" and 
+ process.executable like ("/Users/*", "/Volumes/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/var/root/*") and process.parent.name in ("bash", "zsh", "sh") and 
+ startswith~(process.executable, process.Ext.effective_parent.executable)
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

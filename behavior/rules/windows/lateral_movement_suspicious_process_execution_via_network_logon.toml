@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 process where event.action == "start" and
@@ -38,6 +38,7 @@ process where event.action == "start" and
   not process.executable :
              ("?:\\Windows\\System32\\wsmprovhost.exe",
               "?:\\Windows\\syswow64\\wsmprovhost.exe",
+              "?:\\Windows\\System32\\driverquery.exe",
               "?:\\Windows\\System32\\conhost.exe",
               "?:\\Windows\\System32\\winrshost.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\csc.exe",

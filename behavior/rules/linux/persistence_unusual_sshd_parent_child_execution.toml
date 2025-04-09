@@ -20,7 +20,7 @@ sequence with maxspan=3s
     "/tmp/*", "/var/tmp/*", "/var/log/*"
     ) and process.args_count == 1 and not (
       process.executable : (
-        "/tmp/VeeamApp*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/tmp/.mount_nvim.*",
+        "/tmp/VeeamApp*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/run/k3s/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/tmp/.mount_nvim.*",
         "./merged/var/lib/containers/*"
       ) or
       process.parent.command_line == "bash -c /bin/bash; uname -a &> /dev/null" or

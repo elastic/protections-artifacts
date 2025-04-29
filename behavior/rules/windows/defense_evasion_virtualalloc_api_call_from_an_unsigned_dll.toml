@@ -7,16 +7,16 @@ id = "96ffa829-b9fc-4456-be96-2b59b8facaed"
 license = "Elastic License v2"
 name = "VirtualAlloc API Call from an Unsigned DLL"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id
 [library where process.name != null and
    (dll.Ext.relative_file_creation_time <= 900 or
     dll.Ext.relative_file_name_modify_time <= 900 or
-    (dll.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
+    (dll.Ext.device.product_id like ("Virtual DVD-ROM", "Virtual Disk","USB *") and not dll.path : "C:\\*") or
     dll.path : ("\\Device\\Mup\\*", "?:\\Users\\Public\\*", "?:\\Windows\\Tasks\\*", "?:\\ProgramData\\*")) and
-    not dll.code_signature.status : ("trusted", "errorCode_endpoint*") and dll.hash.sha256 != null and
+    not dll.code_signature.status like ("trusted", "errorCode_endpoint*") and dll.hash.sha256 != null and
     not dll.path : ("?:\\Windows\\Installer\\*",
                     "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",
                     "?:\\Windows\\SysWOW64\\DriverStore\\FileRepository\\*",
@@ -25,7 +25,7 @@ sequence by process.entity_id
                     "?:\\Program Files (x86)\\*") and
   not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.code_signature.trusted == true and
-       process.code_signature.subject_name :
+       process.code_signature.subject_name in
                          ("PFU LIMITED", "Sky UK Limited", "Genetec inc", "Sky International AG",
                           "EFI Software (Electronics for Imaging, Inc.)", "Amazon.com Services LLC",
                           "VICON INDUSTRIES, INC.", "Altium LLC")) and
@@ -69,7 +69,8 @@ sequence by process.entity_id
                 "0c9df43d26b8e672b602aa061fec13fad1a01d2b8116042f3854712471097e0e")
  ] as event0
 [api where
-  process.Ext.api.name : ("VirtualAlloc*", "MapViewOfFile*") and process.Ext.api.parameters.protection == "RWX" and
+  process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx","MapViewOfFile", "MapViewOfFile2") and
+  process.Ext.api.parameters.protection like "RWX*" and
   process.Ext.api.parameters.size > 4524 and
   _arraysearch(process.thread.Ext.call_stack, $entry, stringcontains~($entry.protection_provenance, event0.dll.name)) and
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("issetup.dll", "is_*.tmp", "bdhkm32.dll", "msi*.tmp")) and

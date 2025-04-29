@@ -7,7 +7,7 @@ id = "13dadee2-f4b8-4877-8b9c-37ce59f82432"
 license = "Elastic License v2"
 name = "Process Creation from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -29,7 +29,8 @@ sequence with maxspan=1m
                  "?:\\Program Files\\*.exe", 
                  "?:\\Program Files (x86)\\*.exe", 
                  "?:\\Users\\*\\AppData\\Local\\Temp\\_ir_sf*_temp_*\\irsetup.exe", 
-                 "?:\\Users\\*\\AppData\\Local\\Temp\\~nsuA.tmp\\*.exe") and
+                 "?:\\Users\\*\\AppData\\Local\\Temp\\~nsuA.tmp\\*.exe",
+                 "?:\\Users\\*\\AppData\\Local\\Temp\\INS*.tmp") and
   not process.hash.sha256 : 
                ("9ad4c8d68a26f6feb2287e9d9895358a5a560ecc34cb3649edade01b054e1dd5", 
                 "aaa782279126c5e78dda4ab68e1d9f2da2d4b87b183b9ed24546637d25e5d3c6", 

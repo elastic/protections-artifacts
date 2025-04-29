@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -31,7 +31,9 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/bash -c chown root /tmp/.flexlm*",
     "/bin/sh -c crontab -l > $HOME/.crontab.bak",
     "/bin/sh -c /bin/...",
-    "/bin/sh -c crontab -l > ~keystone/.crontab.$MAILTAG.keystone"
+    "/bin/sh -c crontab -l > ~keystone/.crontab.$MAILTAG.keystone",
+    "/bin/sh -c /usr/local/bin/autorestic -c /root/.autorestic.yml --ci cron",
+    "/bin/sh -c /root/bin/getssl -a -q -w /root/.getssl-acme.sectigo.com"
   ) or
   process.command_line like (
     "*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*", "/bin/sh -c /backup/store_Weight_LABEL/.create_site.sh*",
@@ -45,7 +47,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/opt/eset/eei/bin/*", "/tmp/newroot/tmp/.mount_*", "/tmp/.mount_*", "/opt/gotify/gotify-linux-amd64",
     "/home/*/.local/share/JetBrains/Toolbox/apps/goland/bin/goland", "/home/*/.linuxbrew/opt/etcd/bin/etcd",
     "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa",
-    "/home/*/.local/bin/gitsign-credential-cache"
+    "/home/*/.local/bin/gitsign-credential-cache",
+    "/home/*/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea"
   ) or
   process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox", "goland") or
   process.working_directory == "/var/lib/rabbitmq"

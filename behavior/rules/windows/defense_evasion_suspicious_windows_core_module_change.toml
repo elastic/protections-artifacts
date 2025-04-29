@@ -1,0 +1,83 @@
+[rule]
+description = "Identifies attempts to change memory protection of a Windows Core Module often targeted for functions unhooking."
+id = "e6b77636-53e6-416f-81bb-863b74a896e8"
+license = "Elastic License v2"
+name = "Suspicious Windows Core Module Change"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and
+ process.Ext.api.metadata.target_address_name in ("ntdll.dll", "kernel32.dll", "kernelbase.dll") and
+ process.Ext.api.parameters.size >= 10000 and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Kernel|*") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrLoadDll*", "*ntdll.dll!LdrUnloadDll*")) and 
+ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*.ni.dll") and
+ not process.thread.Ext.call_stack_final_hook_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*") and
+ not (process.thread.Ext.call_stack_final_user_module.path in ("c:\\windows\\system32\\apphelp.dll", "c:\\windows\\syswow64\\apphelp.dll") and
+      process.Ext.api.metadata.target_address_name in ("kernel32.dll", "kernelbase.dll")) and
+ not (process.Ext.api.parameters.protection == "R--" and process.Ext.api.metadata.target_address_name == "kernel32.dll") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("b27b7d2ac43c6c734aa9e370afc987704f4bd8ba11bc5199a8c3bc5b07b2600c",
+                                                                    "85f238fb7ace3cbdf7c29c72b01307c440f13491b07a509cbc5b9f257a637164",
+                                                                    "7f6f5855d4968235163d75c62ab82e8fdc7cf3c83de34e3c5a0666e2d08a0001",
+                                                                    "36b45f919f856e3eb8115cb883c38b62c653e8d46af147551a7d6efc1708de23",
+                                                                    "46c861b688fe129552920c62985e662b6789bb7a646ab65ae8fee4a8a82d7bc5",
+                                                                    "148a2e5cffd3c30f9647d8bdf8a6d0a891f4dfdca459fef9629db6ccd985fe02",
+                                                                    "bc3d667b3e2a6ff84031c839e5cb9e93ab558f339646d34f0419f51788929eda",
+                                                                    "f12898b6f0536b90561b9309b03afd3c4f83ff51fc50d0bcaa39110a3fbce359",
+                                                                    "eff09cb37f0e0ea6de0f5b1ee499ceb612b36a9229caf9a0f464a53c66735646",
+                                                                    "f0eb8747d3499416873892700d6d7d1fe24ccc4d461cb68fa93d1f8030d747a0",
+                                                                    "447e50302f0aa72add1866e4115d363497b82aa38bd47be8310d688194fb1b2d") and
+ not (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows", "Microsoft Corporation", ".NET")) and not process.Ext.api.behaviors == "image_rop") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "ESET, spol. s r.o.",
+                                          "Activision Publishing Inc",
+                                          "Sony Interactive Entertainment LLC",
+                                          "Electronic Arts, Inc.",
+                                          "KRAFTON, Inc.",
+                                          "WIBU-SYSTEMS AG",
+                                          "The TWAIN Working Group",
+                                          "Twain Working Group",
+                                          "LEAD Technologies, Inc",
+                                          "Roblox Corporation",
+                                          "Vectric Ltd.",
+                                          "Cylance, Inc.",
+                                          "Hyland Software Inc.",
+                                          "COGNOSPHERE PTE. LTD.",
+                                          "Code Systems Corporation",
+                                          "Tencent Technology (Shenzhen) Company Limited",
+                                          "Windows Phone",
+                                          "Adobe Inc.",
+                                          "Viber Media S.a r.l.",
+                                          "SentinelOne Inc.",
+                                          "Spotify AB",
+                                          "TEAMDEV LTD.",
+                                          "miHoYo Co.,Ltd."))
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

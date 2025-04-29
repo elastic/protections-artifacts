@@ -7,7 +7,7 @@ id = "30c72c75-43f9-4edb-bd6b-a32787082763"
 license = "Elastic License v2"
 name = "Potential Shellcode Fluctuation v1"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.behaviors : ("execute_fluctuation", "write_fluctuation") and
@@ -28,7 +28,7 @@ process.Ext.api.parameters.size > 66000 and
 
 /* trusted signer exclusions */
 not (
-  process.thread.Ext.call_stack_final_user_module.name : ("chakra.dll", "mpengine.dll", "pidgenx.dll", "ieshims.dll", "jscript9.dll") and
+  process.thread.Ext.call_stack_final_user_module.name : ("chakra.dll", "mpengine.dll", "pidgenx.dll", "ieshims.dll", "jscript9.dll", "$$deletemekernelbase.dll*") and
   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Microsoft Windows")
 ) and
 
@@ -92,6 +92,10 @@ not (process.code_signature.subject_name == "OMICRON electronics GmbH" and
   process.thread.Ext.call_stack_final_user_module.name == "toolkitpro.dll") and
 
 process.thread.Ext.call_stack_final_user_module.name != "jvm.dll" and
+
+not process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*") and
+
+not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*ntdll.dll!LdrLoadDll*", "*ntdll.dll!LdrShutdownProcess*", "*clr.dll!DllCanUnloadNowInternal*")) and
 
 not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("6593198214805d47df5726b153284326d71b9b4aa0dbb2242151bc740ca0a0d4",
                                                                     "ad3eeeec77ddc069ddc0bc0531dc8c3da4b48eb15e9ed097e7568a8b16442ff3",

@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Suspicious JavaScript Execution via Node.js"
 os_list = ["windows"]
 reference = ["https://nodejs.org"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
  (process.name : "node.exe" or process.pe.original_file_name : "node.exe") and
-  process.args : ("-e", "eval(*", "*require*child_process*", "?:\\Users\\Public\\*") and
+  process.args : ("-e", "eval(*", "*require*child_process*", "?:\\Users\\Public\\*", "*trycloudflare.com*", "*async function mainloop*") and
 
   /* noisy FP patterns */
   not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and

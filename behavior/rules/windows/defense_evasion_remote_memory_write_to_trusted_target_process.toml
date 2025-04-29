@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -16,30 +16,30 @@ api where process.Ext.api.name == "WriteProcessMemory" and
 
  process.Ext.api.behaviors == "cross-process" and
 
- Target.process.executable != process.executable and not process.Ext.api.summary : "*Unknown*" and
+ Target.process.executable != process.executable and not process.Ext.api.summary like "*Unknown*" and
 
  Target.process.executable : ("?:\\Windows\\*", "?:\\Program Files*") and
 
  /* WPM triggers multiple times at process creation */
- not (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*\\kernelbase.dll!CreateProcess*")
-      and process.Ext.api.summary: ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*")) and
+ not (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "*\\kernelbase.dll!CreateProcess*")
+      and process.Ext.api.summary like ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*")) and
 
- not (process.Ext.api.summary: ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*") and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|Unknown|wow64.dll|ntdll.dll|Unknown") and
+ not (process.Ext.api.summary like ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*") and
+      process.thread.Ext.call_stack_summary like "ntdll.dll|*Unknown*") and
 
  /* excluding trusted code signature */
  process.thread.Ext.call_stack_final_user_module.code_signature != null and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
 
 not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 and
-      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
+      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name == "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
 
- not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\\\?\\Volume{*}\\*.exe") and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
+ not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\\\?\\Volume{*}\\*.exe") and process.thread.Ext.call_stack_final_user_module.path like "?:\\*\\docker\\*\\windows\\*.dll") and
 
- not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "Kernel") and
 
  /* excluding multiple unsigned third party modules from programfiles */
-  not process.thread.Ext.call_stack_final_user_module.path :
+  not process.thread.Ext.call_stack_final_user_module.path like
                              ("?:\\windows\\assembly\\nativeimages_*",
                               "?:\\windows\\winsxs\\*.dll",
                               "?:\\program files\\*",
@@ -52,10 +52,11 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\system32\\lsasrv.dll",
                               "c:\\windows\\syswow64\\cwbunpls.dll",
                               "c:\\windows\\system32\\shsvcs.dll") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("mfehcthe.dll", "system.core.ni.dll") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
-  not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined", "kernel") and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("mfehcthe.dll", "system.core.ni.dll") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
+  not (process.thread.Ext.call_stack_final_user_module.name == "mscordbi.dll" and
+       process.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe") and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                   ("27fe00d32f773a95e6d50986e5e7499917f66ce881e46054c77652ef4bdf3512",
                                    "a59e039e1520b74254a454bf48c2bceeafe7bd7ac6e5886baa482a52f86a29bf",
                                    "f01bb9aba3f9daf4d8f5551a3b753d8011e16072a1103cf5303d617a9f866424",
@@ -168,7 +169,14 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "615ac4399eed0a26e5cd9bba4e7dcf661400fb0546dce067523fe275351d3b04",
                                    "c750bdf07966a69d1423dda5deb3413d312e319c9dd1193f354eb48310208370",
                                    "d0a62a67891bbd4eb263d328e5bf6da080bcd7d16c3b1d73e563a48263062c5a",
-                                   "cd0e1ca821e92ae426cbd30daf44ae3580ec4070c734b2d411376a5e6a874e97")
+                                   "cd0e1ca821e92ae426cbd30daf44ae3580ec4070c734b2d411376a5e6a874e97",
+                                   "ccae2a12091763da594e0ceb83e3aa438bccf2449b2dc91c916232ba2117ae22",
+                                   "16bbdb339173d25b4332b377da96e80809aabfe6739cf35d5e70484f08cfdc42",
+                                   "d355b62cc7dc5b8f3ee5e95a8ddddc818f6f84c5a16799d78b1cb3d786e2bb80",
+                                   "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe",
+                                   "fe04a6ca7c35330dd0adf681aaf85ce9f6342a027c74776ea09e30517e02acd1",
+                                   "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
+                                   "4ab37b0f9c5fe3505e1ecfe0764aaa04838cf81f9e0a402425e057f7a251e621")
 '''
 
 min_endpoint_version = "8.14.2"

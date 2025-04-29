@@ -1,0 +1,58 @@
+[rule]
+description = """
+Detects when the ScreenCapture binary executes and creates an image in a suspicious location like tmp or the shared
+directory. Malware has used the ScreenCapture binary to collect images of victim systems and exfiltrate them via C2.
+"""
+id = "0701ab8c-9abc-41e1-8af7-2d937778e73f"
+license = "Elastic License v2"
+name = "Suspicious Image Creation via ScreenCapture"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name == "screencapture" and
+  not process.parent.executable like "/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer" and
+  not process.Ext.effective_parent.executable like "/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer"]
+[file where event.action == "modification" and file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*")]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1113"
+name = "Screen Capture"
+reference = "https://attack.mitre.org/techniques/T1113/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.11.0"

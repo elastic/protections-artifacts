@@ -11,7 +11,7 @@ reference = [
     "https://blog.xpnsec.com/protecting-your-malware/",
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -38,7 +38,11 @@ process where event.type == "start" and process.executable != null and
                 "\\Device\\HarddiskVolume*\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.exe")) and
  not (process.code_signature.subject_name : ("Microsoft Windows Defender Advanced Threat Protection", "Wavesor Software (Eightpoint Technologies Ltd. SEZC)") and 
       process.code_signature.status : "trusted" and process.Ext.token.integrity_level_name : "system") and 
- not (process.parent.executable : "?:\\Windows\\System32\\hv*.exe" and process.executable : "?:\\Windows\\System32\\hv*.exe") and 
+ not (process.parent.executable : "?:\\Windows\\System32\\hv*.exe" and process.executable : "?:\\Windows\\System32\\hv*.exe") and
+ not (process.executable : "C:\\Program Files\\Microsoft Office\\root\\vfs\\ProgramFilesCommonX64\\Microsoft Shared\\OFFICE??\\AI\\ai.exe" and
+      process.parent.executable : "C:\\Program Files\\Microsoft Office\\root\\Office??\\WINWORD.EXE") and
+ not (process.executable : "C:\\Program Files (x86)\\Microsoft Office\\root\\vfs\\ProgramFilesCommonX64\\Microsoft Shared\\OFFICE??\\AI\\ai.exe" and
+      process.parent.executable : "C:\\Program Files (x86)\\Microsoft Office\\root\\Office??\\WINWORD.EXE") and
  not (process.parent.executable : "?:\\Windows\\System32\\browser_broker.exe" and process.executable : "?:\\Windows\\System32\\browser_broker.exe") and
  not (process.executable : "?:\\Windows\\System32\\vmwp.exe" and process.parent.executable : "?:\\Windows\\System32\\vmcompute.exe") and 
  not (process.parent.executable : "?:\\Windows\\System32\\lsass.exe" and process.executable : "?:\\Windows\\system32\\lsass.exe" and 

@@ -7,20 +7,21 @@ id = "38da66fc-171f-49f6-9144-bac4abb2f47b"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via a WebShell"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.name : "w3wp.exe" and
 (
- (process.Ext.api.name : ("MapViewOfFile", "MapViewOfFile2", "VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory") and
-  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "app_web_*.dll" and $entry.symbol_info : "Unbacked")) or
+ (process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2", "VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory") and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like "app_web_*.dll" and $entry.symbol_info == "Unbacked")) or
 
  (process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
   process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.Ext.api.metadata.target_address_name == "Unbacked" and
   process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
   process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2", "VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "connect") and
   (process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\microsoft.net\\framework*\\clr.dll" or
-   process.thread.Ext.call_stack_final_user_module.protection_provenance == "clr.dll") and process.Ext.api.parameters.size != 5 and
+   process.thread.Ext.call_stack_final_user_module.protection_provenance == "clr.dll") and
+   process.Ext.api.parameters.size != 5 and process.Ext.api.parameters.size != 10 and process.Ext.api.parameters.size != 40 and
    process.Ext.api.behaviors != "hook_api" and
    process.thread.Ext.call_stack_summary in
                 ("ntdll.dll|kernelbase.dll|Unbacked",

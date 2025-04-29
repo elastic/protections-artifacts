@@ -4,18 +4,19 @@ id = "358b23e4-ed82-454f-9351-69f5844e7da9"
 license = "Elastic License v2"
 name = "Potential Unbacked Memory Content Masking"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.size, process.Ext.api.parameters.address with maxspan=60s
- [api where process.Ext.api.name : "VirtualProtect" and 
+ [api where process.Ext.api.name == "VirtualProtect" and
   process.Ext.api.summary : "*Unbacked*" and process.Ext.api.parameters.size >= 100000 and 
-  process.Ext.api.behaviors : "execute_fluctuation" and process.Ext.api.behaviors : "allocate_shellcode" and 
-  not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
-  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "eed60fb1abc328b156313abdc5e44389d25e59ffb3c1eb9353baf611c2c7147d"]
- [api where process.Ext.api.name : "VirtualProtect" and 
+  process.Ext.api.behaviors == "execute_fluctuation" and process.Ext.api.behaviors == "allocate_shellcode" and
+  process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "eed60fb1abc328b156313abdc5e44389d25e59ffb3c1eb9353baf611c2c7147d" and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Activision Publishing Inc")]
+ [api where process.Ext.api.name == "VirtualProtect" and
   process.Ext.api.summary : "*Unbacked*" and process.Ext.api.parameters.size >= 100000 and 
-  process.Ext.api.behaviors : "execute_fluctuation" and process.Ext.api.behaviors : "allocate_shellcode"]
+  process.Ext.api.behaviors == "execute_fluctuation" and process.Ext.api.behaviors == "allocate_shellcode"]
 '''
 
 min_endpoint_version = "8.10.0"

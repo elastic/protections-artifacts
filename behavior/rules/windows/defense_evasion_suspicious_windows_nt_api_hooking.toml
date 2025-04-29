@@ -7,31 +7,27 @@ id = "63f3d1c5-7e19-48db-965d-cc2a52e96650"
 license = "Elastic License v2"
 name = "Suspicious Windows NT API Hooking"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-api where process.Ext.api.name : "WriteProcessMemory" and process.Ext.api.behaviors : "hook_api" and
+api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behaviors == "hook_api" and
  process.Ext.api.summary : "* Self,*" and
- process.Ext.api.summary : ("*ntdll.dll!ZwCreateSection*", "*ntdll.dll!NtCreateSection*", "*ntdll.dll!ZwOpenSection*",
-                            "*ntdll.dll!NtOpenSection*", "*ntdll.dll!ZwClose*", "*ntdll.dll!NtClose*", "*ntdll.dll!ZwMapViewOfSection*",
-                            "*ntdll.dll!NtMapViewOfSection*", "*ntdll.dll!ZwUnmapViewOfSection*", "*ntdll.dll!NtUnmapViewOfSection*") and
+ process.Ext.api.summary like
+                           ("*ntdll.dll!??CreateSection*", "*ntdll.dll!??OpenSection*", "*ntdll.dll!??Close*", "*ntdll.dll!??MapViewOfSection*", "*ntdll.dll!??UnmapViewOfSection*") and
  process.Ext.api.parameters.size == 21  and
- not process.Ext.api.behaviors : ("cross_process", "parent_child") and
- not process.thread.Ext.call_stack_final_user_module.name : "Kernel" and
- not (process.code_signature.status : "trusted" and startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name)) and
- not process.thread.Ext.call_stack_final_user_module.path :
-                              ("?:\\Program Files\\*.dll",
-                               "?:\\Program Files (x86)\\*.dll",
-                               "\\Program Files\\*.dll",
-                               "\\Program Files (x86)\\*.dll",
-                               "?:\\windows\\system32\\hmpalert.dll",
-                               "?:\\windows\\syswow64\\hmpalert.dll",
+ not process.Ext.api.behaviors in ("cross_process", "parent_child") and process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
+ not (process.code_signature.status == "trusted" and startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name)) and
+ not process.thread.Ext.call_stack_final_user_module.path like
+                              ("?:\\program files\\*.dll",
+                               "?:\\program files (x86)\\*.dll",
+                               "\\program files\\*.dll",
+                               "\\program files (x86)\\*.dll",
+                               "?:\\windows\\sys?????\\hmpalert.dll",
                                "?:\\windows\\system32\\*\\tmmon*.dll*",
-                               "?:\\Windows\\SysWOW64\\esensordbi.dll*",
-                               "?:\\Windows\\System32\\esensordbi.dll*",
-                               "?:\\Windows\\System32\\umppc*.dll*",
-                               "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
-                               "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*")
+                               "?:\\windows\\sys?????\\esensordbi.dll*",
+                               "?:\\windows\\system32\\umppc*.dll*",
+                               "?:\\windows\\fireeye\\appmonitordll*.dll*",
+                               "?:\\windows\\apppatch\\apppatch*\\exploitblocker.dll*")
 '''
 
 min_endpoint_version = "8.10.0"

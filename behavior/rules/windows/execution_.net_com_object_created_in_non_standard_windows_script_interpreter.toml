@@ -8,17 +8,17 @@ license = "Elastic License v2"
 name = ".NET COM object created in non-standard Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://github.com/tyranid/DotNetToJScript"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
   not process.name : ("cscript.exe", "wscript.exe") and
   process.code_signature.trusted == true and
-  process.code_signature.subject_name : "Microsoft*" and
+  process.code_signature.subject_name like "Microsoft*" and
   process.Ext.api.name == "VirtualAlloc" and
   process.Ext.api.parameters.allocation_type == "RESERVE" and
   process.Ext.api.parameters.protection == "RWX" and
-  process.thread.Ext.call_stack_summary : (
+  process.thread.Ext.call_stack_summary like (
     /* .NET is allocating executable memory on behalf of a WSH script engine
      * Note - this covers both .NET 2 and .NET 4 framework variants */
     "*|mscoree.dll|combase.dll|jscript.dll|*",
@@ -28,14 +28,16 @@ api where
     "*|mscoree.dll|combase.dll|chakra.dll|*"
 ) and
 
+process.parent.executable != null and
+
 not (process.executable : "?:\\Windows\\SysWOW64\\msiexec.exe" and 
      process.parent.executable : "?:\\Windows\\System32\\msiexec.exe" and 
      process.command_line : "?:\\Windows\\syswow64\\MsiExec.exe -Embedding *" and
-     process.thread.Ext.call_stack_summary : "*|mscoree.dll|combase.dll|vbscript.dll|*|rpcrt4.dll|*") and
+     process.thread.Ext.call_stack_summary like "*|mscoree.dll|combase.dll|vbscript.dll|*|rpcrt4.dll|*") and
 
 not (process.executable : "?:\\Program Files (x86)\\Internet Explorer\\iexplore.exe" and 
      process.parent.executable : "?:\\Program Files\\Internet Explorer\\iexplore.exe" and
-     process.thread.Ext.call_stack_summary : "*|combase.dll|jscript9.dll|Unbacked|*") and
+     process.thread.Ext.call_stack_summary like "*|combase.dll|jscript9.dll|*") and
 
 /* ASP VBScript */
 not (process.executable : "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and
@@ -43,14 +45,20 @@ not (process.executable : "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and
 
 /* JumpCloud */
 not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and
-     process.thread.Ext.call_stack_summary : "*|vbscript.dll|*" and
-     not process.thread.Ext.call_stack_summary : "*Unbacked*") and
+     process.thread.Ext.call_stack_summary like "*|vbscript.dll|*" and
+     not process.thread.Ext.call_stack_summary like "*Unbacked*") and
 
 not (process.command_line : "\"mshta.exe\" \"C:\\Program Files (x86)\\Amazon\\Amazon Assistant\\aa.hta\"" and
     process.parent.executable : "C:\\Program Files (x86)\\Amazon\\Amazon Assistant\\amazonAssistantService.exe") and
 
 not (process.executable : "?:\\Program Files\\Microsoft SQL Server\\*\\DTS\\Binn\\DTExec.exe" and
-     process.parent.executable : "?:\\Program Files\\Microsoft SQL Server\\MSSQL??.MSSQL\\MSSQL\\Binn\\SQLAGENT.EXE")
+     process.parent.executable : "?:\\Program Files\\Microsoft SQL Server\\*\\MSSQL\\Binn\\SQLAGENT.EXE") and
+
+not (process.executable : "C:\\Program Files\\Microsoft Office\\root\\Office??\\OUTLOOK.EXE" and
+     process.thread.Ext.call_stack_summary like "*combase.dll|vbscript.dll|mso30win32client.dll*") and
+not (process.executable : "C:\\Windows\\System32\\CredentialUIBroker.exe" and
+     process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
+     process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|jscript.dll|kernel32.dll|ntdll.dll")
 '''
 
 min_endpoint_version = "8.8.0"

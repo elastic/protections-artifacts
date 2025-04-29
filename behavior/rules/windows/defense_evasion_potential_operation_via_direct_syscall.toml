@@ -12,35 +12,35 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
  (
   /* call_stack_summary looks like process.name|etc */
-  (event.category : ("file", "registry", "library") and
+  (event.category in ("file", "registry", "library") and
     startswith~(process.thread.Ext.call_stack_summary, process.name)) or
    
    /* call_stack_summary looks like process.parent.name|etc. */
-  (event.category : "process" and event.action == "start" and
+  (event.category == "process" and event.action == "start" and
    startswith~(process.parent.thread.Ext.call_stack_summary, process.parent.name) and process.parent.executable : "?:\\*") or
 
   /* call_stack_summary looks like ntdll.dll|process.parent.name|etc */
-  (event.category : "process" and event.action == "start" and
+  (event.category == "process" and event.action == "start" and
    endswith~(substring(process.parent.thread.Ext.call_stack_summary, 0, 10 + length(process.parent.name)), process.parent.name) and
    not process.parent.executable : "?:\\Windows\\System32\\services.exe" and process.parent.executable : "?:\\*")
   ) and 
   not ((process.executable : "?:\\Windows\\system32\\smss.exe" or process.parent.executable : "?:\\Windows\\system32\\smss.exe") and 
-       (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*" or process.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*")) and 
-  not (event.category : "library" and 
-       process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*", "errorTimeStamp") and 
+       (process.parent.thread.Ext.call_stack_summary : "ntdll.dll|smss.exe|*" or process.thread.Ext.call_stack_summary like "ntdll.dll|smss.exe|*")) and 
+  not (event.category == "library" and 
+       process.code_signature.status like ("trusted", "errorExpired", "errorCode_endpoint*", "errorTimeStamp") and 
        process.code_signature.subject_name : ("Oracle Corporation", "NVIDIA Corporation")) and 
-  not (process.code_signature.subject_name : "Rocscience Inc." and process.code_signature.status : "trusted") and 
-  not (event.category : "process" and 
+  not (process.code_signature.subject_name : "Rocscience Inc." and process.code_signature.status == "trusted") and 
+  not (event.category == "process" and 
        process.executable : "?:\\Windows\\System32\\vmsp.exe" and 
-       process.code_signature.subject_name : "Microsoft*" and process.code_signature.status : "trusted" and 
+       process.code_signature.subject_name like "Microsoft*" and process.code_signature.status == "trusted" and 
        process.parent.thread.Ext.call_stack_summary : "ntdll.dll|vmwp.exe|ntdll.dll*") and
-  not (event.category : "library" and dll.code_signature.status : "trusted" and not dll.code_signature.subject_name : "Microsoft*") and
+  not (event.category == "library" and dll.code_signature.status == "trusted" and not dll.code_signature.subject_name like "Microsoft*") and
   not (process.executable : "?:\\Windows\\System32\\WUDFCompanionHost.exe" and process.parent.executable : "?:\\Windows\\System32\\services.exe") and
   not process.executable : 
                ("?:\\Program Files\\Oracle\\VirtualBox\\VirtualBoxVM.exe",
@@ -54,7 +54,7 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
                 "C:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
                 "C:\\Program Files\\EA\\AC\\EAAntiCheat.GameService.dll",
                 "F:\\SteamLibrary\\steamapps\\common\\BeamNG.drive\\Bin64\\BeamNG.drive.x64.exe") and
-  not (event.category : "process" and process.executable : "C:\\Windows\\System32\\csrss.exe" and
+  not (event.category == "process" and process.executable : "C:\\Windows\\System32\\csrss.exe" and
        process.parent.executable : "C:\\Program Files\\GraphOn\\GO-Global\\Programs\\aps.exe") and
   not (process.executable : "C:\\Windows\\System32\\WUDFCompanionHost.exe" and
        process.parent.executable : "C:\\Windows\\System32\\services.exe") and
@@ -63,12 +63,12 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
                     "?:\\Program Files\\Anatomage\\Invivo\\InVivoDental.exe",
                     "?:\\Program Files\\Anatomage\\Invivo\\Invivo.exe",
                     "?:\\Program Files\\Anatomage\\InvivoDental\\InVivoDental.exe") and
-  not process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll*" and
+  not process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll*" and
   not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|*" and
   not (process.name : "WerFault.exe" and
        process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|faultrep.dll|wersvc.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
   not process.hash.sha256 : "920d49c27f0b42dab747bdf48edfc6b668f3ae4d192a2a4c9b5a6cec14bec77f" and
-  not (event.category : "process" and _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernel32.dll!CreateProcessW*"))
+  not (event.category == "process" and _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernel32.dll!CreateProcessW*"))
 '''
 
 min_endpoint_version = "8.7.0"

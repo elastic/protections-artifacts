@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via File Name Masquerading"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -47,6 +47,8 @@ process where event.action == "start" and
  not process.executable :
              ("?:\\Program Files (x86)\\PlotSoft\\PDFill_PDF_Tools\\PlotSoft_PDF.exe",
               "?:\\Program Files\\Ab Initio\\Ab Initio GDE 4.1.4.0\\Program Files\\ab_zip.exe",
+              "C:\\Program Files\\GIMP 3\\lib\\gimp\\3.0\\plug-ins\\file-png\\file-png.exe",
+              "C:\\Users\\*\\AppData\\Local\\Programs\\GIMP 3\\lib\\gimp\\3.0\\plug-ins\\file-png\\file-png.exe",
               "\\Device\\Mup\\*\\file-png.exe")
 '''
 

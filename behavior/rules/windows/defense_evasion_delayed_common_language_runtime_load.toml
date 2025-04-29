@@ -7,12 +7,12 @@ id = "44fa18bd-c484-48f0-84ea-b8fd7d0586aa"
 license = "Elastic License v2"
 name = "Delayed Common Language Runtime Load"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=5s 
- [network where 
-   event.action : ("disconnect_received", "connection_attempted") and 
+ [network where process.pid != 4 and
+   event.action in ("disconnect_received", "connection_attempted") and 
    not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
        "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",

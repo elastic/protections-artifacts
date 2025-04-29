@@ -8,10 +8,10 @@ id = "30f3021b-032e-4aa0-bc6f-341d0c82fdf5"
 license = "Elastic License v2"
 name = "Linux Base64 Descendant Egress Network Connection"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-network where event.type == "start" and event.action == "connection_attempted" and
+network where event.type == "start" and event.action == "connection_attempted" and process.executable != null and
 descendant of [process where event.type == "start" and event.action == "exec" and process.name == "base64" and
 process.args : "*-*d*"] and not (
   destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
@@ -21,7 +21,10 @@ process.args : "*-*d*"] and not (
     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
     "FF00::/8"
   ) or
-  process.executable like ("/usr/bin/gitlab-runner-helper", "/var/lib/docker/overlay2/*/node")
+  process.executable like (
+    "/usr/bin/gitlab-runner-helper", "/var/lib/docker/overlay2/*/node", "/runner/*", "./bin/Runner.Listener", "/usr/bin/osqueryd",
+    "/opt/*/helm/*/helm", "/usr/lib/git-core/git-remote-https"
+  )
 )
 '''
 
@@ -29,7 +32,7 @@ min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
-field = "process.parent.entity_id"
+field = "process.entity_id"
 state = 0
 
 [[threat]]

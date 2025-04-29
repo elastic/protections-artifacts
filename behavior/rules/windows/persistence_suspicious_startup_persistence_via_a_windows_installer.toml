@@ -7,7 +7,7 @@ id = "9f7aece1-355c-4e72-a7ea-767d5cccb12d"
 license = "Elastic License v2"
 name = "Suspicious Startup Persistence via a Windows Installer"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 any where process.name : "msiexec.exe" and
@@ -26,7 +26,7 @@ any where process.name : "msiexec.exe" and
                    "C:\\Users\\Public\\RES\\RESPrinter\\FileWatcher.exe")) or
 
     (event.category == "file" and event.action == "creation" and
-     file.extension : ("bat", "cmd", "js", "vbs", "wsh", "hta", "exe", "pif", "scr", "cpl", "jse", "vbe", "ps1") and
+     file.extension in~ ("bat", "cmd", "js", "vbs", "wsh", "hta", "exe", "pif", "scr", "cpl", "jse", "vbe", "ps1") and
      file.path : ("?:\\programdata\\microsoft\\windows\\start menu\\programs\\startup\\*",
                   "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*"))
   )

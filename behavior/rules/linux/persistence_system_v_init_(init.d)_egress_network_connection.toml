@@ -13,7 +13,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=3s
@@ -30,7 +30,10 @@ sequence with maxspan=3s
        "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
        "FF00::/8", "172.31.0.0/16"
        ) or
-     process.executable in ("/usr/sbin/apache2", "/usr/sbin/openvpn")
+     process.executable in (
+       "/usr/sbin/apache2", "/usr/sbin/openvpn", "/usr/local/nagios/bin/nagios", "/usr/sbin/asterisk",
+       "/sysmgt/sw/universe/gmos_qea/MIGROQ/bin/uniactions"
+     )
    )
   ] by process.parent.entity_id
 '''

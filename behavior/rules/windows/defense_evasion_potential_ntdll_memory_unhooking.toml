@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,19 +31,21 @@ sequence by process.entity_id with maxspan=1m
            ("FACE IT LIMITED", "Kaspersky Lab JSC", "Check Point Software Technologies Ltd.", "COGNOSPHERE PTE. LTD.", 
             "Bright Star Engineering Inc.", "Carlson Software", "Electronic Arts, Inc.", "ESL Gaming GmbH", "FunPlus International AG",
             "KURO TECHNOLOGY (HONG KONG) CO., LIMITED", "Exbo North LLC", "PROXIMA BETA PTE. LIMITED", "DVDFab Software Inc.",
-            "Carlson Software", "Asseco South Eastern Europe SA", "Palo Alto Networks (Netherlands) B.V.",
+            "Carlson Software", "Asseco South Eastern Europe SA", "Palo Alto Networks (Netherlands) B.V.", "Alfa Bravo Inc.",
             "UBISOFT ENTERTAINMENT INC.", "Vidus Technology Limited", "FingerTas Solutions Co.,Ltd", "KRAFTON, Inc.",
-            "CyCraft Technology Corporation, TAIWAN BRANCH (CAYMAN)", "Bytedance Pte. Ltd.", "Ubisoft Entertainment Sweden AB") and
-       process.code_signature.trusted == true and
-       process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+            "CyCraft Technology Corporation, TAIWAN BRANCH (CAYMAN)", "Bytedance Pte. Ltd.", "Ubisoft Entertainment Sweden AB",
+            "unlocktool.net", "Qinhuangdao Yizhishu Software Development Co., Ltd.", "Sony Interactive Entertainment LLC",
+            "NetEase (Hangzhou) Network Co., Ltd", "ETH Zürich", "Wilcom International Pty Limited", "Electronic Arts, Inc.",
+            "miHoYo Co.,Ltd.", "Azul Systems, Inc.", "Shanghai Feilai Information Technology Co., Ltd.") and
+       process.code_signature.trusted == true) and
 
   not process.executable : "?:\\Program Files (x86)\\FunPlus\\Stormshot\\nGame\\3.16.100\\Stormshot.exe" and
 
-  not (process.executable : "?:\\Windows\\System32\\taskhostw.exe" and user.id : "S-1-5-18" and
+  not (process.executable : "?:\\Windows\\System32\\taskhostw.exe" and user.id == "S-1-5-18" and
        _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.symbol_info : ("?:\\Windows\\System32\\sysmain.dll!AgTwLoad*",
                                           "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\sysfer.dll*"))) and
-  not (user.id : "S-1-5-18" and process.executable : "?:\\Program Files (x86)\\Acunetix\\*\\wvsc.exe") and
+  not (user.id == "S-1-5-18" and process.executable : "?:\\Program Files (x86)\\Acunetix\\*\\wvsc.exe") and
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info: ("?:\\program files*\\avg\\antivirus\\aswhook.dll*",
                                         "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*",
@@ -51,11 +53,18 @@ sequence by process.entity_id with maxspan=1m
                                         "?:\\Program Files\\ESET\\ESET Endpoint Antivirus\\ebehmoni.dll*",
                                         "?:\\Program Files\\Avokado\\Viruskerajs\\ebehmoni.dll*",
                                         "?:\\Windows\\System32\\sxwmon64.dll*",
-                                        "?:\\Program Files\\Palo Alto Networks\\Traps\\cysvc.dll*"))
+                                        "?:\\Program Files\\Palo Alto Networks\\Traps\\cysvc.dll*")) and
+  not process.executable :
+                   ("C:\\Program Files\\Microsoft\\jdk-*-hotspot\\bin\\javaw.exe",
+                    "C:\\Program Files (x86)\\FunPlus\\Stormshot\\nGame\\4.15.0\\Stormshot.exe",
+                    "C:\\Program Files (x86)\\Supertone Shift\\Supertone Shift.exe",
+                    "C:\\Program Files\\Synthesizer V Studio Pro\\synthv-studio.exe",
+                    "C:\\Program Files (x86)\\Octoplus\\Octoplus_Samsung\\OctoplusSamsungNew.exe") and
+  not process.thread.Ext.call_stack_summary in ("ntdll.dll|ace-drv64.dll")
   ]
  [any where
 
-   /* potentially ntdll was modified in memory to unkook or patch function */
+   /* potentially ntdll was modified in memory to unhook or patch a function */
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes > 8000 and $entry.symbol_info: "?:\\windows\\sys*\\ntdll.dll*") and
 
   not _arraysearch(process.thread.Ext.call_stack, $entry,

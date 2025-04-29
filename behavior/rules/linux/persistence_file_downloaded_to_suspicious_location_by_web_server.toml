@@ -8,7 +8,7 @@ id = "30e19006-e1b4-4328-9553-b0284c5cec00"
 license = "Elastic License v2"
 name = "File Downloaded to Suspicious Location by Web Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -32,9 +32,15 @@ process.command_line like (
 ) and not (
   (process.parent.executable == "/usr/bin/php" and process.command_line like "*var/www/html/cacti*") or
   (process.parent.name == "ruby" and process.command_line like "*/tmp/passenger-native-support*") or
-  process.command_line like ("*Authorization: Bearer*", "*nginx.org/download/nginx*") or
+  process.command_line like (
+    "*Authorization: Bearer*", "*nginx.org/download/nginx*", "*jfrog.ad-alliance.biz*", "*ftp.cptec.inpe.br*"
+  ) or
   process.parent.command_line like "/usr/bin/python*ansible*" or
-  process.parent.executable like "/opt/saltstack/salt/bin/python*"
+  process.parent.executable like "/opt/saltstack/salt/bin/python*" or
+  (
+    process.parent.executable == "/opt/local/python-3.12.3/bin/python3" and
+    process.parent.args == "tools/configure_dependencies.py"
+  )
 )
 '''
 

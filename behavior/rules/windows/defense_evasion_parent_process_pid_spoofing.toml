@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 sequence with maxspan=5m
@@ -36,7 +36,7 @@ sequence with maxspan=5m
    /* FP - Third Party Programs except MS Office */
   not (process.executable : ("*\\Program Files (x86)\\*.exe", "*\\Program Files\\*.exe") and
        process.code_signature.trusted == true and
-       not process.name : ("winword.exe",
+       not process.name in~ ("winword.exe",
                            "excel.exe",
                            "outlook.exe",
                            "powerpnt.exe",
@@ -45,8 +45,8 @@ sequence with maxspan=5m
                            "mspub.exe",
                            "msaccess.exe")) and 
 
-  not (process.pe.original_file_name : ("devenv.exe", "PowerToys.exe") and process.code_signature.trusted == true and 
-       process.code_signature.subject_name : "Microsoft*") and 
+  not (process.pe.original_file_name in~ ("devenv.exe", "PowerToys.exe") and process.code_signature.trusted == true and 
+       process.code_signature.subject_name like "Microsoft*") and 
 
    /* FP Issue #488 - WerFaultSecure ProtectedCrash  */
   not (
@@ -68,7 +68,7 @@ sequence with maxspan=5m
   not (process.executable : ("*\\WINDOWS\\system32\\OpenWith.exe", "*\\WINDOWS\\syswow64\\OpenWith.exe") and process.args: "-Embedding" and
        process.parent.executable : "*\\Windows\\System32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
-  not (process.pe.original_file_name : ("notification_helper.exe", "cpptools.exe") and process.code_signature.subject_name == "Microsoft Corporation" and
+  not (process.pe.original_file_name in~ ("notification_helper.exe", "cpptools.exe") and process.code_signature.subject_name == "Microsoft Corporation" and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name in ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
@@ -105,7 +105,7 @@ sequence with maxspan=5m
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
   not process.executable :  "*\\Windows\\system32\\AuthHost.exe" and
   not (process.parent.executable : "*\\Windows\\System32\\sihost.exe" and
-        process.pe.original_file_name : ("chrome.exe", "msedge.exe") and process.args_count >= 2 and
+        process.pe.original_file_name in~ ("chrome.exe", "msedge.exe") and process.args_count >= 2 and
         process.code_signature.subject_name : ("Google LLC", "Microsoft Corporation")) and
   not (process.executable : "*\\Windows\\System32\\fsutil.exe" and process.args : "file" and
        process.parent.executable : "*\\Users\\*\\.vscode\\extensions\\ms-vscode.cpptools-*\\bin\\cpptools.exe") and
@@ -115,7 +115,7 @@ sequence with maxspan=5m
 
   /* AM_Delta_Patch Windows Update */
   not (process.executable : ("?:\\Windows\\System32\\MpSigStub.exe", "?:\\Windows\\SysWOW64\\MpSigStub.exe") and
-       process.parent.name : ("wuauclt.exe", "wuaucltcore.exe")) and
+       process.parent.name in~ ("wuauclt.exe", "wuaucltcore.exe")) and
 
   not process.executable : ("?:\\Windows\\SysWOW64\\WerFault.exe", "?:\\Windows\\system32\\WerFault.exe") and
 

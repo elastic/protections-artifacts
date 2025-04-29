@@ -8,7 +8,7 @@ id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
 license = "Elastic License v2"
 name = "Potential Proxy Execution via Systemd-run"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
@@ -17,7 +17,7 @@ process.parent.args_count < 3 and process.parent.name != null and not (
     "/usr/lib/systemd", "/lib/systemd/systemd", "/opt/saltstack/salt/run/run", "/etc/update-motd.d/70-available-updates",
     "/tmp/newroot/usr/libexec/ptyxis-agent", "/usr/local/sbin/clamscan.sh", "/opt/sentinelone/bin/sentinelone-agent",
     "/usr/local/bin/salt-minion", "/var/vanta/launcher", "/opt/traps/bin/pmd", "/usr/sbin/gdm", "/usr/bin/salt-minion",
-    "/opt/GC_Ext/GC/gc_linux_service"
+    "/opt/GC_Ext/GC/gc_linux_service", "/usr/lib/plesk-task-manager", "/opt/forticlient/epctrl", "/usr/lib/snapd/snap-exec"
   ) or
   process.parent.executable like (
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/acronis/bin/acp-update-controller", "/snap/*",
@@ -27,7 +27,7 @@ process.parent.args_count < 3 and process.parent.name != null and not (
   process.parent.name in (
     "udevadm", "daemon.start", "snap", "systemd", "ptyxis-agent", "run-slack", "run-firefox", "dbus.service", "k3s-server",
     "systemd-udevd", "kubelet", "hyperkube", "kthreadd", "gnome-shell", "xdg-desktop-portal", "firefox", "picus_updater",
-    "rpm-ostree"
+    "rpm-ostree", "prompt-agent"
   ) or
   process.command_line in (
     "/usr/bin/systemd-run /usr/bin/systemctl start man-db-cache-update", "systemd-run env", "systemd-run --user dalla open spain"

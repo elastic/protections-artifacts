@@ -7,10 +7,10 @@ id = "4f7b1362-1299-4ce7-8e02-03b74dad4eb1"
 license = "Elastic License v2"
 name = "Attempt to Hide Files via Registry Modification"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-registry where event.action == "modification" and
+registry where event.action == "modification" and process.executable != null and
  registry.key like "S-*\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced" and
  (
   (registry.value == "HideFileExt" and registry.data.strings == "1") or
@@ -34,10 +34,11 @@ registry where event.action == "modification" and
                  "C:\\Windows\\System32\\regsvr32.exe",
                  "C:\\$WINDOWS.~BT\\Sources\\SetupPlatform.exe", 
                  "C:\\Program Files\\*.exe", 
-                 "C:\\Program Files (x86)\\*.exe")
+                 "C:\\Program Files (x86)\\*.exe") and
+not (process.code_signature.subject_name == "Cyberdigm. Corp." and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -72,4 +73,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"

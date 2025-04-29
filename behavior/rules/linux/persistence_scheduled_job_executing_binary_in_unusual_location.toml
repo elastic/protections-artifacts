@@ -12,7 +12,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -30,7 +30,9 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c /etc/init.d/ntp ntptimeset &>/dev/null",
     "sh -c /usr/lib/rsyslog/rsyslog-rotate logrotate_script /var/log/syslog",
     "/bin/sh -c /etc/init.d/snortd log-rotate > /dev/null 2>&1",
-    "/bin/sh -c /var/tmp/dionk/tftpboot_cleanup"
+    "/bin/sh -c /var/tmp/dionk/tftpboot_cleanup",
+    "/bin/sh -c /etc/init.d/rpmconfigcheck > /dev/null 2>&1",
+    "/bin/sh -c /etc/init.d/httpd graceful"
   ) or
   process.command_line like~ ("*/etc/init.d/*start*", "*/etc/init.d/*reload*", "*/etc/init.d/*stop*", "*/etc/cron.daily/*") or
   process.args like~ "/run/jaws-ansible-processors/pcaps/pcap_processor.sh*"

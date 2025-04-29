@@ -7,12 +7,13 @@ id = "15c94c07-07ec-4e68-a623-e690be3d9d6b"
 license = "Elastic License v2"
 name = "Potential Reverse Shell via Java"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1s
-[network where event.action in ("connection_accepted", "connection_attempted") and 
- process.name : ("java.exe", "javaw.exe")] by process.entity_id
+[network where process.pid != 4 and
+ event.action in ("connection_accepted", "connection_attempted") and
+ process.name in~ ("java.exe", "javaw.exe")] by process.entity_id
 [process where event.action == "start" and process.parent.name : "java.exe" and
  process.parent.args : "-jar" and
  process.parent.executable :
@@ -20,7 +21,7 @@ sequence with maxspan=1s
                  "?:\\Program Files (x86)\\Java\\jre*\\bin\\java.exe",
                  "?:\\Program Files\\AdoptOpenJDK\\jdk-*\\bin\\java.exe",
                  "?:\\Program Files (x86)\\AdoptOpenJDK\\jdk-*\\bin\\java.exe") and
- process.name : ("cmd.exe", "powershell.exe", "conhost.exe")] by process.parent.entity_id
+ process.name in~ ("cmd.exe", "powershell.exe", "conhost.exe")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.7.0"

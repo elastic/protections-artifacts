@@ -7,14 +7,17 @@ id = "19523b07-b1ce-4b4e-882c-18e9492e9591"
 license = "Elastic License v2"
 name = "Potential LogonUser API Hooking"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.4"
 
 query = '''
-api where process.Ext.api.name :  "WriteProcessMemory*" and
- process.Ext.api.summary : "*advapi32.dll!LogonUser*" and process.executable != null
+api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect") and
+ process.Ext.api.metadata.target_address_name like "advapi32.dll!LogonUser*" and process.executable != null and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.path in ("c:\\windows\\syswow64\\werfault.exe", "c:\\windows\\system32\\werfault.exe") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true)
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -44,4 +47,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

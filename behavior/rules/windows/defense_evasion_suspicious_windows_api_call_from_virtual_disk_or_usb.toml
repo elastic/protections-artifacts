@@ -8,21 +8,21 @@ license = "Elastic License v2"
 name = "Suspicious Windows API Call from Virtual Disk or USB"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
 [process where event.action == "start" and
-   process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk", "USB *") and 
+   process.Ext.device.product_id like ("Virtual DVD-ROM", "Virtual Disk", "USB *") and
    not process.executable : "C:\\*" and not process.Ext.device.nt_name: "\\Device\\HarddiskVolume*" and 
    not process.Ext.device.vendor_id == "Citrix" and 
-   not (process.code_signature.subject_name : ("Veeam Software Group GmbH", "VMware, Inc.") and process.code_signature.trusted == true) and 
+   not (process.code_signature.subject_name in ("Veeam Software Group GmbH", "VMware, Inc.") and process.code_signature.trusted == true) and
    not (process.executable : "?:\\FirefoxPortable\\App\\Firefox\\firefox.exe" and 
-        process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true)]
-[api where event.category : "intrusion_detection" and
-  not process.Ext.api.name : ("SetWindowsHookEx", "NtQueueApcThread") and
-  process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx", "rwx") and
-  not process.Ext.api.summary :
+        process.code_signature.subject_name == "Mozilla Corporation" and process.code_signature.trusted == true)]
+[api where event.category == "intrusion_detection" and
+  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
+  not process.Ext.api.name in ("SetWindowsHookEx", "NtQueueApcThread") and
+  not process.Ext.api.summary like
                       ("VirtualProtect( user32.dll,*)",
                        "VirtualProtect( clr.dll,*",
                        "VirtualProtect( mscorwks.dll,*",
@@ -32,20 +32,8 @@ sequence by process.entity_id with maxspan=2m
                        "VirtualProtect( umppc*",
                        "VirtualProtect( brc???.tmp,*") and
   not _arraysearch(process.thread.Ext.call_stack, $entry,
-                   $entry.protection_provenance : ("Kernel", "Kernel|*", "hmpalert.dll", "bdhkm32.dll", "tmmon.dll", "ftapihook32.dll")) and
-  not (process.Ext.api.behaviors : ("hollow_image", "image_indirect_call") and 
-       process.thread.Ext.call_stack_summary : 
-                        ("ntdll.dll|tmmon64.dll|ntdll.dll|Unbacked", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll", 
-                         "*dsetup.dll|issetup.dll*",
-                         "ntdll.dll|tmmon64.dll|Unknown",
-                         "ntdll.dll|klhkum.{*",
-                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|aswhook.dll|kernelbase.dll|*",
-                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|tmmon.dll|*",
-                         "ntdll.dll|protector64.dll|kernel32.dll|protector64.dll|ntdll.dll",
-                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|apphelp.dll|ntdll.dll",
-                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|aswhook.dll|apphelp.dll|ntdll.dll",
-                         "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unknown")) and
-  not process.thread.Ext.call_stack_summary :
+                   $entry.protection_provenance like ("Kernel", "Kernel|*", "hmpalert.dll", "bdhkm32.dll", "tmmon.dll", "ftapihook32.dll")) and
+  not process.thread.Ext.call_stack_summary like
         ("ntdll.dll|Unknown|umppc*.dll|ntdll.dll",
          "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|ftapihook32.dll|ntdll.dll|kernelbase.dll|ntdll.dll")]
 '''

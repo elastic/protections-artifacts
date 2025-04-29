@@ -11,16 +11,17 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 api where process.Ext.api.name == "VirtualAllocEx" and process.executable != null and 
   process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.size >= 10000 and 
-  process.thread.Ext.call_stack_summary : "?*" and not user.id : ("S-1-5-19", "S-1-5-20") and 
+  process.thread.Ext.call_stack_summary like "?*" and not user.id in ("S-1-5-19", "S-1-5-20") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
   not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\*") and
-       process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
-  not (process.executable : "?:\\Windows\\System32\\RPC\\OSD\\osdservice.exe" and user.id : "S-1-5-18" and
-       process.code_signature.subject_name : "Microsoft Windows Hardware Compatibility Publisher") and
+       process.code_signature.trusted == true and not process.code_signature.subject_name like "Microsoft*") and
+  not (process.executable : "?:\\Windows\\System32\\RPC\\OSD\\osdservice.exe" and user.id == "S-1-5-18" and
+       process.code_signature.subject_name == "Microsoft Windows Hardware Compatibility Publisher") and
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info : ("?:\\Program Files\\*.dll*", 
                                          "?:\\Program Files (x86)\\*.dll*", 
@@ -38,10 +39,10 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
                                          "?:\\windows\\system32\\webruntimemanager.dll!CreateMessagePortEventDispatcher*",
                                          "?:\\windows\\systemapps\\microsoft.aad.brokerplugin_*\\aad.core.dll!DllGetActivationFactory*",
                                          "?:\\windows\\system32\\driverstore\\filerepository\\iigd_dch.inf_amd64_*\\igd12um64icl.dll*")) and
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "Kernel*") and 
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like "Kernel*") and
   /* Cynet MemScanner, xSecuritas, Mcafee */
    not _arraysearch(process.thread.Ext.call_stack, $entry,
-                    $entry.callsite_trailing_bytes :
+                    $entry.callsite_trailing_bytes in
                          ("48898424e80300004883bc24e803000000750eff94247e030000898424f0030000eb30488d8c2430010000ff94248e03000048898424e80300004883bc24e803",
                           "8bd885db751eff55c88945f8eb168d8592fdffff50ff55d08bd885db7506ff55c88945f856ff55bc85db0f847601000080bd82fcffff0074508b45fc05a00000",
                           "488b55a8c6420c01833d8bbeb25f007406ff1593c7b25f8945b4488bcce82c000000908b45b4488b55a8c6420c01488b55a8488b8d70ffffff48894a10488d65", 
@@ -49,12 +50,12 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
    not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Temp\\SNXAC\\STAProxy.exe" and
         process.command_line : "*\\Users\\*\\AppData\\Local\\Temp\\snxac\\*\\sta.dll*") and 
    not (process.code_signature.trusted == true and 
-        process.code_signature.subject_name : 
+        process.code_signature.subject_name in
               ("GEOVISION INC.", "COMPUTACION EN ACCION SA DE CV", "Crownalytics, LLC", "Johannes Schindelin", 
                "INCA Internet Co.,Ltd.", "Mark Straver", "Micro Systemation AB (publ)", "HardestCodesEst OU",
                "MUSARUBRA US LLC", "Fleischhacker GmbH & Co. KG Laboreinrichtungen Medizintechnik")) and
    not (process.executable : "?:\\Users\\*\\AppData\\Local\\Mozilla Firefox\\firefox.exe" and 
-        process.code_signature.subject_name : "Mozilla Corporation" and process.code_signature.trusted == true) and 
+        process.code_signature.subject_name == "Mozilla Corporation" and process.code_signature.trusted == true) and
    not (process.executable : "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe" and process.code_signature.trusted == true) and 
    not (process.executable : "?:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and 
         process.parent.executable : ("?:\\Windows\\System32\\SecurityHealthSystray.exe", "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\FileCoAuth.exe") and 
@@ -73,7 +74,10 @@ api where process.Ext.api.name == "VirtualAllocEx" and process.executable != nul
                                                                        "8d80ea047a89300017544fc28a402c6f45b7369413c51c7b352af69db503d9bb",
                                                                        "b88d6fdb2641981675e1066f0767a8f263c5c4dcc5fccddbb948cdbe4165aef4",
                                                                        "90db33e5c6f2d0e3f60de07821413a24d31ceec26c83b447ff3a3607ebc67079",
-                                                                       "73395b6c3fa9fa73e8e3665f108b3a92c564da9c1b9ce7834832adbb5e658a87") and
+                                                                       "73395b6c3fa9fa73e8e3665f108b3a92c564da9c1b9ce7834832adbb5e658a87",
+                                                                       "4a81edc822ee7e6fb1ca1813f4c917f11b4366d33fd55c294d6509b4d4c0d80e",
+                                                                       "d355b62cc7dc5b8f3ee5e95a8ddddc818f6f84c5a16799d78b1cb3d786e2bb80",
+                                                                       "07d6c3a19a8e3e243e9545a41dd30a9ee1e9ad79cdd6d446c229d689e5ab574a") and
    not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
                     $entry.trusted == true and not $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows"))
 '''

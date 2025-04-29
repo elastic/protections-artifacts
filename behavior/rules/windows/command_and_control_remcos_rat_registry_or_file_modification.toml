@@ -12,10 +12,10 @@ reference = [
     "https://attack.mitre.org/software/S0332/",
     "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
-any where event.category : ("registry", "file") and
+any where event.category in ("registry", "file") and
   (
     registry.path : (
       "HKEY_USERS\\S-1-5-21-*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\Remcos",

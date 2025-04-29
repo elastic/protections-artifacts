@@ -10,13 +10,14 @@ id = "fb2c3240-4cbe-413e-be78-5427807b618b"
 license = "Elastic License v2"
 name = "Process Masquerading as Kernel Process"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args_count == 1 and
 process.command_line like "[*]" and not (
   process.executable like "/opt/splunk*" or
-  process.parent.executable like "/opt/splunk*"
+  process.parent.executable like "/opt/splunk*" or
+  process.executable in ("/usr/local/ahnlab/v3net/bin/v3containerd", "/usr/local/ahnlab/v3net/bin/v3brokerd")
 )
 '''
 

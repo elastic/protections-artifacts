@@ -12,12 +12,12 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
-any where event.category : ("registry", "file") and event.action != "deletion" and 
+any where event.category in ("registry", "file") and event.action != "deletion" and 
  file.name != null and registry.data.strings != null and 
- process.thread.Ext.call_stack_summary : ("*|vbe?.dll*", "*kernelbase.dll|Unbacked*") and
+ process.thread.Ext.call_stack_summary like ("*|vbe?.dll*", "*kernelbase.dll|Unbacked*") and
    (
     (registry.data.strings != null and
      registry.path :
@@ -65,9 +65,9 @@ any where event.category : ("registry", "file") and event.action != "deletion" a
         registry.path : "H*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\*") and
 
    not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
-        process.code_signature.trusted == true and process.thread.Ext.call_stack_summary : "*|mscorlib.ni.dll|*") and
+        process.code_signature.trusted == true and process.thread.Ext.call_stack_summary like "*|mscorlib.ni.dll|*") and
 
-   not process.thread.Ext.call_stack_summary : "*Unbacked|clr.dll|*" and
+   not process.thread.Ext.call_stack_summary like "*Unbacked|clr.dll|*" and
 
    not (process.code_signature.trusted == true and
         process.code_signature.subject_name : ("Autodesk, Inc.", "SimpleHelp Ltd", "Kaspersky Lab*", "JetBrains s.r.o.",
@@ -76,7 +76,7 @@ any where event.category : ("registry", "file") and event.action != "deletion" a
 
    /* Third party signed software from program files */
    not (process.code_signature.trusted == true and
-        not process.code_signature.subject_name : "Microsoft*" and
+        not process.code_signature.subject_name like "Microsoft*" and
         process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")) and
 
    not process.executable :

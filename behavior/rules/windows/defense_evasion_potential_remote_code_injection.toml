@@ -7,22 +7,22 @@ id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
 license = "Elastic License v2"
 name = "Potential Remote Code Injection"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid with maxspan=60s
- [api where process.Ext.api.behaviors : "cross-process" and not process.Ext.api.behaviors : "parent-child" and 
+ [api where process.Ext.api.behaviors == "cross-process" and not process.Ext.api.behaviors == "parent-child" and
   process.executable != null and process.thread.Ext.call_stack_final_user_module.name != null and 
-  process.Ext.api.name : ("VirtualAllocEx", "MapViewOfFile*", "VirtualProtect*") and process.Ext.api.parameters.protection : "*X*" and
+  process.Ext.api.name in ("VirtualAllocEx", "MapViewOfFile", "MapViewOfFile2", "VirtualProtect", "VirtualProtectEx") and process.Ext.api.parameters.protection like "*X*" and
   (process.code_signature.trusted == false or process.code_signature.exists == false or process.name : "rundll32.exe" or 
    process.executable : ("?:\\Windows\\Microsoft.NET\\*", "?:\\Users\\Public")) and 
    not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
    not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\program files*\\cisco\\amp\\exprev\\protector*.dll*") and 
    not (process.code_signature.trusted == true and startswith~(process.thread.Ext.call_stack_final_user_module.path, process.executable)) and 
-   not (process.code_signature.trusted == true and process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined")) and
-   not process.thread.Ext.call_stack_final_user_module.path :
-                                         ("?:\\Program Files\\*",
-                                          "?:\\Program Files (x86)\\*", 
+   not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "Kernel") and
+   not process.thread.Ext.call_stack_final_user_module.path like
+                                         ("?:\\program files\\*",
+                                          "?:\\program files (x86)\\*",
                                           "\\program files\\*", 
                                           "\\program files (x86)\\*",
                                           "?:\\windows\\microsoft.net\\framework*.dll", 
@@ -33,10 +33,10 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
                                           "\\windows\\winsxs\\*", 
                                           "?:\\windows\\syswow64\\*", 
                                           "\\windows\\syswow64\\*", 
-                                          "?:\\Windows\\assembly\\*", 
-                                          "\\Windows\\assembly\\*", 
+                                          "?:\\windows\\assembly\\*",
+                                          "\\windows\\assembly\\*",
                                           "?:\\windows\\veeamvsssupport\\veeamvsssupport.dll") and 
-   not process.thread.Ext.call_stack_final_user_module.hash.sha256 : 
+   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                           ("70a8c4ae129e3d79854c6658b199faf27590800cb2d7fa5681d6bfdbe0111993", 
                                            "13d8d9823d8f9e41247f32831e5a044fb4b09187571e498b807c07caa8c3004f", 
                                            "51409099241d9af2b9005a0de21081ae9dbb64c0c98eb4a6460e1d1946461ce0", 
@@ -77,10 +77,18 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
                                            "ceafaeb950cae0fb4a6b8f6dd68aec8311ebad923f658335b6abc0f7114a62ac",
                                            "b50f97afb49255d1ca37968e3fdc51515b9b9ef447d0460744ece428dc0f850c",
                                            "e948b1c8189fbd76a85a0a4e50d7db33991ff2a0c3993d44ab54530bf8a0287e",
-                                           "e0552b8681250e081dce00fc1745926106f5c638030d0a2bbe529b152960ae15")
+                                           "e0552b8681250e081dce00fc1745926106f5c638030d0a2bbe529b152960ae15",
+                                           "5442ecad629b42c4ebc8df3c8fab67783bacbc0d4c5121845b91ef538099073d",
+                                           "19c2b71f25587376e352aeb7a9f62ea52096b41461817fadc067a9e8b46379f2",
+                                           "c729c4b5a6ad8d247acd4b0d32d5a5999647461ee5f565c618b26d339caebbca") and
+   not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "Barco N.V.",
+                                          "Eclipse.org Foundation, Inc."))
   ]
  [api where process.Ext.api.behaviors : "cross-process" and 
-  not process.Ext.api.behaviors : "parent-child" and process.Ext.api.name : "WriteProcessMemory"]
+  not process.Ext.api.behaviors == "parent-child" and process.Ext.api.name == "WriteProcessMemory"]
 '''
 
 min_endpoint_version = "8.10.0"

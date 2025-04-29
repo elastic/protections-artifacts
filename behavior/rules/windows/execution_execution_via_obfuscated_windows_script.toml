@@ -7,14 +7,11 @@ id = "bf252955-4332-4179-870b-6f33745c48ce"
 license = "Elastic License v2"
 name = "Execution via Obfuscated Windows Script"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
- (
-  process.name in~ ("wscript.exe", "cscript.exe") or
-  process.Ext.api.parameters.app_name in ("JScript", "VBScript")
-  ) and
+  process.name in~ ("wscript.exe", "mshta.exe") and
   process.Ext.api.parameters.buffer :
                     ("*var _0x*;var _0x*;var _0x*",
                      "*function*_0x*_0x*_0x*",
@@ -55,7 +52,8 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
                      ("C:\\Program Files (x86)\\checkmk\\service\\check_mk_agent.exe",
                       "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe", 
                       "C:\\Program Files (x86)\\Bentley\\MicroStation V8i (SELECTseries)\\MicroStation\\ustation.exe", 
-                      "C:\\Program Files\\Bentley\\OpenRoads Designer *\\OpenRoadsDesigner\\OpenRoadsDesigner.exe")
+                      "C:\\Program Files\\Bentley\\*.exe",
+                      "C:\\Program Files (x86)\\PCMatic\\PCPitstopScheduleService.exe")
 '''
 
 min_endpoint_version = "8.16.0"

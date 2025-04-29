@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ired.team/offensive-security/code-injection-process-injection/modulestomping-dll-hollowing-shellcode-injection",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id
@@ -24,7 +24,7 @@ sequence by process.entity_id
              "?:\\Windows\\System32\\rpcnet.exe")]
 [library where
 
- dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
+ dll.name in~ ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
 
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.allocation_private_bytes >= 100000 and
              $entry.symbol_info: ("?:\\windows\\System32\\*.dll", "?:\\windows\\SysWOW64\\*.dll")) and length(process.thread.Ext.call_stack_summary) <= 60 and
@@ -60,7 +60,7 @@ sequence by process.entity_id
                                                                  "?:\\Program Files\\*.dll*",
                                                                  "?:\\Windows\\Sys*\\hmpalert.dll*",
                                                                  "?:\\Windows\\System32\\umppc*.dll*"))]
-until [process where event.action:"end"]
+until [process where event.action == "end"]
 '''
 
 min_endpoint_version = "8.8.0"

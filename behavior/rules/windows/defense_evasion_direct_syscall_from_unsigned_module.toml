@@ -1,0 +1,87 @@
+[rule]
+description = """
+Identifies the call of commonly abused Windows APIs to perform code injection and where the call stack not starting with
+Windows NT syscall DLLs such as ntdll and win32u. This may indicate the use of direct system calls to evade endpoint
+security solutions hooking Windows APIs.
+"""
+id = "fe44381a-435c-4e19-ad89-40ac3750f514"
+license = "Elastic License v2"
+name = "Direct Syscall from Unsigned Module"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+    "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
+]
+version = "1.0.18"
+
+query = '''
+api where process.Ext.api.behaviors == "direct_syscall" and
+    process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "MapViewOfFile", "MapViewOfFile2") and
+    not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.status like ("trusted", "errorCode_endpoint*")) and
+    startswith(process.thread.Ext.call_stack_summary, process.thread.Ext.call_stack_final_user_module.name) and
+    not process.thread.Ext.call_stack_final_user_module.path like "?:\\windows\\assembly\\nativeimages_*" and
+    process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+    not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                 ("f0d37ab8636685fdf3c81f2f1df5fb0a2cdba6e6daf10200c250a31a822f0f10",
+                                  "8f7b60cb0dc32277e6e99ebfee047d5a587050a1fcd5c2f98be7204898d7b25d",
+                                  "dc1abae9fce7e192232a5be12c6096338529b327ad749e310e7375106e013579",
+                                  "f0d37ab8636685fdf3c81f2f1df5fb0a2cdba6e6daf10200c250a31a822f0f10",
+                                  "8f7b60cb0dc32277e6e99ebfee047d5a587050a1fcd5c2f98be7204898d7b25d",
+                                  "f1f2ab4ee6f0350d6db84a9983f5c734ef32958c848a472931f03ff733b5a5e7",
+                                  "99d836285aa612c98765ac6a538aa3ed74bf435b157311c65577949d794eac8b",
+                                  "f7fc4fbdd1706f443868047def63c1e9a746a0be2fac0577ce197e84c8b0a3ce",
+                                  "2e6febc71362a72e7bed50c8ffbbaef70f3b8ea542a309b9bf32b337b534e0b4",
+                                  "ca1b969a9ba62164ddb7fc5d315b0b82d8506238b15bbd7dd88857ef6acd367a",
+                                  "2a44a8af200c4ee36de4b0f91471ffca82ce25e0fe90401d64a9d4c01b9f9525",
+                                  "a14fd3fd3bd83ac7789295978bc2bfeed80657cc0298b8314dbb02ee19ca73fd",
+                                  "6dbf510f4f0ced77341146b24a9b0c320b516ade2248defa09931ea413f8b20e",
+                                  "abfa585a5358e658bd92d159e9f846b2950c7e300c47392283443a1bcb70fd52",
+                                  "a62ceea27ff8a0dcc0432fd171f8549d38f69e7233415cfe446305aa9e553970",
+                                  "d2a55e2d77369b71f90f8840c6b7d0a2739981283e6d77a3350a80de21125b3f",
+                                  "dc55eebfbddaee583a29f17610ef15397b97d37d7d4027d2060d6e88c4eb1182",
+                                  "bee2f0a5e13b857d749232273e7c45d597fb858bf0f0a72c793e1c37237675aa",
+                                  "6cfc98d1ffcdb983e64beac75ccde7d873e3c41fffde2f4d87dd0757eb5a620d",
+                                  "155954174a6fa52ec64ca44e4d77f387e7c9f363541c81a4a7812d9c783af3ca",
+                                  "8e619459168a1edc8de86d29cb557388d89cdebefae1d001ba394079a7622511",
+                                  "5f51051b50e1d9bb9c47089d5774ff3e491be45eeaf40cba7fd86c5d4fa8635d",
+                                  "d5693df142632f807bd5707cb5ee58e9edaaa3a40e84cd5c070ec63412820af9",
+                                  "f06bc48095cd11e51714d08b8889c32a058282fdb90487ada823a6550089df96",
+                                  "aad7e7ac9d74ac18892801950c9728e9c4eacd3b676cbb5d6f63382da2ce0559",
+                                  "79364f3e140abd46d8d1bedd21db9646ab55cf35783ef7926a235fa7e1fe6797",
+                                  "c56440ab3d623249aabaec871a5da8eccb61dc6a0b3166c972d8c86e7d646ef4",
+                                  "ea71387e40682bcc23f676df2b856dca15853aeb854b94168c85bc0479ef1aed",
+                                  "ae8a5d43dfc2e8bac34a415449fa67b300cdf9e2995b0e8ec38cd8d0694da7ae",
+                                  "3034311292fade8a24ab8e7312cfb7132153c14b9383439b527e8296fe06a492",
+                                  "51855557b6215ae93482598f5de7e4875a8612d1a2645893905f0c35d321fd73",
+                                  "19b7261bb6162e32eaaf7727d2f77b4647d95ff7554300726e2649ffa99b6eec",
+                                  "79b62fd3ed24ca4778dc0261c7570e71f3d0c83913c38f58ab1660dc7a670aee") and
+    not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.metadata.target_address_name == "terminal64.exe" and
+         process.thread.Ext.call_stack_final_user_module.name == "terminal64.exe")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

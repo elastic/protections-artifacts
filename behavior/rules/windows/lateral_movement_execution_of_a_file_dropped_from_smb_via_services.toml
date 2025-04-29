@@ -7,7 +7,7 @@ id = "713501c8-d1fa-49be-bf91-0ae916a088f6"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from SMB via Services"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence with maxspan=3m
@@ -81,7 +81,8 @@ sequence with maxspan=3m
 					   "KnowBe4 Inc.",
 					   "GoTo Technologies USA, LLC",
 					   "Icona S.R.L.",
-					   "LogMeIn, Inc.") and process.code_signature.trusted == true) and
+					   "LogMeIn, Inc.",
+					   "Dell Inc.") and process.code_signature.trusted == true) and
 
 	  not (process.code_signature.subject_name in ("Medical Information Technology, Inc.", "CyberArk Software Ltd.", "VMware, Inc.") and
 	       process.code_signature.status in ("errorTimeStamp", "errorChaining")) and

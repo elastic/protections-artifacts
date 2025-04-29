@@ -8,7 +8,7 @@ id = "b3bcbab6-e216-4d70-bdee-2b69affbb386"
 license = "Elastic License v2"
 name = "Potential Persistence via Direct Crontab Modification"
 os_list = ["linux", "macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "crontab" and process.args == "-" and
@@ -26,7 +26,8 @@ process.parent.executable like (
   process.parent.command_line in (
     "/bin/bash +x ./ninja-deb-uninstall.sh", "./update-cronjobs.sh", "/bin/bash ./leip.sh", "/bin/bash ./2leip.sh"
   ) or
-  process.parent.name == "bundle"
+  process.parent.name == "bundle" or
+  process.working_directory == "/opt/microsoft/mdatp/conf"
 )
 '''
 
@@ -34,7 +35,7 @@ min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
-field = "process.parent.entity_id"
+field = "process.entity_id"
 state = 0
 
 [[threat]]

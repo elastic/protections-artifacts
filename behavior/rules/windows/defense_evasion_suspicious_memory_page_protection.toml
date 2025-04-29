@@ -7,7 +7,7 @@ id = "f72e1e5b-acc3-42aa-9f75-88badc64401e"
 license = "Elastic License v2"
 name = "Suspicious Memory Page Protection"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -23,11 +23,10 @@ api where
  process.thread.Ext.call_stack_final_user_module.name != "Undetermined" and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name : ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and
- not (process.Ext.api.parameters.protection == "---" and
-      process.thread.Ext.call_stack_final_user_module.path :
+ not process.thread.Ext.call_stack_final_user_module.path :
                                 ("c:\\program files\\*", "c:\\program files (x86)\\*",
                                  "c:\\windows\\assembly\\nativeimages_*.dll",
-                                 "c:\\windows\\system32\\spool\\drivers\\x64\\3\\*.dll")) and
+                                 "c:\\windows\\system32\\spool\\drivers\\x64\\3\\*.dll") and
  not (process.Ext.api.parameters.size == 12288 and process.thread.Ext.call_stack_final_user_module.name == "jvm.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info: ("c:\\program files\\sentinelone\\sentinel agent*\\inprocessclient32.dll*",
@@ -81,7 +80,11 @@ api where
                                           "17ca0c6b2c3539f8e8af8ab166419d0602397270f43f370d93d9b99bf9751790",
                                           "8bd2eda8551d7198ebc8a70573e31c06e5fe56054e869d357d88f33c5b90d0f3",
                                           "e958d03db79e9f1d2770c70a5bc24904aa3e2d27a8d5637684cf8166b38908f2",
-                                          "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe")
+                                          "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe",
+                                          "a68bd14e096ad75ed540a9ce0d60e2033fdfa44de415d2dc3febb50ef8d21311",
+                                          "dc5f61ebae311c3f99a335f36acd4d96bd4b60e56b9825555561898509f72925",
+                                          "8094af5ee310714caebccaeee7769ffb08048503ba478b879edfef5f1a24fefe",
+                                          "e3886ed0bc0261ac34b088a0905779b86106ae54aa10cd2271c24ad3eed3ea8e")
 '''
 
 min_endpoint_version = "8.10.0"

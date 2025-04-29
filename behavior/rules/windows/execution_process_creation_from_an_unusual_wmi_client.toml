@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -18,21 +18,21 @@ api where
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name in ("TENABLE, INC.", "Autodesk, Inc.", "Archer Technologies﻿ LLC", "Opera Norway AS", 
       "Beijing Qihu Technology Co., Ltd.", "ACD Systems International Inc.", "CS.NIWC-ATLANTIC.001", "Check Point Software Technologies Ltd.",
-      "VMware, Inc.", "Dell Technologies Inc.", "Atlassian Pty Ltd")) and
+      "VMware, Inc.", "Dell Technologies Inc.", "Atlassian Pty Ltd", "Recast Software, Inc.", "Specops Software Inc.")) and
   not process.executable :
-                ("C:\\Program Files\\RSA Archer\\Services\\ArcherTech.JobFramework.Job.exe",
-                 "?:\\Program Files\\Microsoft Configuration Manager\\bin\\x64\\smsexec.exe",
-                 "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Conan Exiles\\Launcher\\FuncomLauncher.exe",
-                 "C:\\Program Files\\Tenable\\Nessus Agent\\nessus-agent-module.exe",
-                 "C:\\Program Files\\Dell\\SupportAssist\\jre\\bin\\java.exe",
+                ("C:\\Program Files\\*.exe",
+                 "C:\\Program Files (x86)\\*.exe",
                  "C:\\Windows\\System32\\wbem\\WMIC.exe",
                  "C:\\Windows\\System32\\svchost.exe",
                  "F:\\SuperGrate.exe",
                  "D:\\SuperGrate-x64\\SuperGrate.exe",
                  "D:\\SuperGrate\\SuperGrate\\SuperGrate.exe",
-                 "C:\\Program Files\\SCAP Compliance Checker 5.10\\lib64\\scc64.exe",
                  "\\Device\\Mup\\*\\Shares\\AIT\\AIT\\AIT.exe",
-                 "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe") and
+                 "C:\\Windows\\System32\\cscript.exe",
+                 "C:\\Windows\\SysWOW64\\cscript.exe",
+                 "C:\\Program Files\\Qognify\\UpdateAgent\\bin\\VMS_UpdateAgent.exe",
+                 "C:\\Program Files\\SCAP Compliance Checker 5.10.1\\lib64\\scc64.exe") and
+  not process.parent.executable : ("C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe") and
   not (process.name == "powershell.exe" and process.parent.executable == "C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe") and 
   not (process.executable : "C:\\Windows\\System32\\svchost.exe" and
        process.parent.executable : "C:\\Windows\\System32\\services.exe" and
@@ -48,6 +48,8 @@ api where
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -CommandParamVariation C -UseEncodedArguments -EncodedArgumentsParamVariation EA -Execute -ErrorAction Stop}",
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -Execute -ErrorAction Stop}",
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -CommandParamVariation C -Execute -ErrorAction Stop}",
+                               "*JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgAK*",
+                               "*AkAHMAcABsAGkAdABfAHAAYQByAHQAcwAgAD0AIAAkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApACw*",
                                "\"C:\\Windows\\system32\\windowspowershell\\v1.0\\powershell.exe\" -ExecutionPolicy Unrestricted -Command \"& '\"C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\Health Service State\\Monitoring Host Temporary Files *\\LaunchRestartHealthService.ps1*",
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -UseEncodedArguments -EncodedArgumentsParamVariation EncodedArguments -Execute -ErrorAction Stop}"))
 '''

@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -52,11 +52,12 @@ not (
     "/usr/local/bin/dashboard", "/opt/puppetlabs/puppet/bin/puppet", "/opt/bmc/bladelogic/RSCD/bin/rscd_full",
     "bin/rscd", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/facter", "/var/lib/docker/overlay2/*/bin/facter",
     "/opt/LifeKeeper/subsys/database/resources/oracle/actions/quickCheck", "/usr/bin/ekran_recorder",
-    "/usr/lib/npreal2/driver/mxloadsvr"
+    "/usr/lib/npreal2/driver/mxloadsvr", "/usr/local/nagios/libexec/mkls", "/opt/tm/tools/sandbox/*/usr/bin/noproc_sandbox",
+    "/usr/sbin/nrpe", "/usr/bin/less", "/snap/lxd/current/sbin/lxd"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
-    "/usr/bin/perl /bkupdata1/icbm.pl"
+    "/usr/bin/perl /bkupdata1/icbm.pl", "/snap/microk8s/current/bin/runc init"
   ) or
   process.command_line like (
     "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*", "*/dev/tcp/localhost/*",
@@ -65,11 +66,12 @@ not (
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;",
     "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
     "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf",
-    "sh -c *clsecho*",
+    "sh -c *clsecho*", "/bin/bash -c /usr/local/nagios/libexec/mkls*",
     "/usr/bin/crun*"
   ) or
   process.parent.command_line like (
-    "*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init", "bash -c su -c *"
+    "*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init", "bash -c su -c *",
+    "/usr/bin/python3(mitogen:ansible*"
   ) or
   (process.parent.name == "php" and process.command_line like "*psql*") or
   (process.parent.name == "sudo" and process.parent.args like "*command_start_*") or
@@ -84,7 +86,8 @@ not (
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl"
-  )
+  ) or
+  process.working_directory == "/var/local/InterMapper_Settings/Tools"
 )
 '''
 

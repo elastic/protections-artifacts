@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=5s
@@ -36,7 +36,7 @@ sequence with maxspan=5s
       ) or
      process.executable like ("/usr/lib/venv-salt-minion/bin/python.original", "./merged/var/lib/containers/*") or
      process.command_line in (
-       "python3 /usr/sbin/omv-mkaptidx",
+       "python3 /usr/sbin/omv-mkaptidx", "python3 /usr/local/bin/abr-upgrade --upgrade",
        "sh -c apt-get indextargets -o Dir::State::lists=/var/lib/apt/lists/ --format='$(FILENAME)' 'Created-By: Packages'"
      )
     )

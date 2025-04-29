@@ -8,13 +8,13 @@ id = "15c48f2d-e461-40a9-accd-090a0863ea10"
 license = "Elastic License v2"
 name = "Startup Persistence from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
-any where event.category : ("registry", "file") and process.executable != null and
- not event.action : ("deletion", "query") and process.thread.Ext.call_stack_summary : "?*" and
- not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
- not process.thread.Ext.call_stack_summary : ("*Unbacked*", "*clr.dll*", "*Unknown*", "*|kernelbase.dll|irsetup.exe*", 
+any where event.category in ("registry", "file") and process.executable != null and
+ not event.action in ("deletion", "query") and process.thread.Ext.call_stack_summary like "?*" and
+ not process.code_signature.status like ("trusted", "errorExpired", "errorCode_endpoint*") and
+ not process.thread.Ext.call_stack_summary like ("*Unbacked*", "*clr.dll*", "*Unknown*", "*|kernelbase.dll|irsetup.exe*", 
                                               "*issetup.dll|isrt.dll*", "*adobepim.dll|set-up.dat*") and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX") and
    (

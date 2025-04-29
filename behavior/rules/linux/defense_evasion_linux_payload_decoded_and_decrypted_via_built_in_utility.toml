@@ -7,7 +7,7 @@ id = "cc8a82b6-eb6e-4e35-8c9e-e6ec3339e12d"
 license = "Elastic License v2"
 name = "Linux Payload Decoded and Decrypted via Built-in Utility"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like (
@@ -22,7 +22,9 @@ process where event.type == "start" and event.action == "exec" and process.paren
   (process.name like "perl*" and process.args like "*decode_base64*") or
   (process.name like "ruby*" and process.args == "-e" and process.args like "*Base64.decode64*")
 ) and not (
-  process.parent.executable like ("/tmp/newroot/*", "/tmp/jwt_vf.sh", "/root/*.sh", "/tmp/.criu.mntns*") or
+  process.parent.executable like (
+    "/tmp/newroot/*", "/tmp/jwt_vf.sh", "/root/*.sh", "/tmp/.criu.mntns*", "/var/tmp/buildah*/mnt/rootfs/var/lib/dpkg/info/nmap-common.postinst"
+  ) or
   process.parent.command_line like "*/tmp/__salt.tmp.*.sh" or
   process.args == "/usr/bin/coreutils" or
   (

@@ -1,0 +1,44 @@
+[rule]
+description = """
+This rule detects potential malicious activity on macOS endpoints by identifying modifications to Finder-related cache
+files by suspicious processes. It targets adversarial techniques, such as those used by the XCSSET malware, where an
+attacker maintains persistence by modifying system configurations—like the Dock plist (com.apple.dock.plist)—to execute
+malicious code each time the Dock or Launchpad is launched. The rule triggers when a file modification event occurs,
+involving processes such as osascript, bash, sh, zsh, curl, or nscurl, or when the modifying process lacks a valid code
+signature or is untrusted.
+"""
+id = "0398851e-0440-4e3d-b0ff-afe1dca8e805"
+license = "Elastic License v2"
+name = "Suspicious Finder Cache File Modification"
+os_list = ["macos"]
+reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
+version = "1.0.2"
+
+query = '''
+file where event.action == "modification" and file.path like "/Users/*/Library/Caches/com.apple.finder/*" and 
+ (process.name in ("osascript", "bash", "sh", "zsh", "curl", "nscurl") or 
+ (process.code_signature.exists == false or process.code_signature.trusted == false))
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

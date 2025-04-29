@@ -7,7 +7,7 @@ id = "58370744-f52b-4f28-aa06-469efd1e1825"
 license = "Elastic License v2"
 name = "Sensitive File Access followed by Compression"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -15,8 +15,6 @@ sequence by process.entity_id with maxspan=30s
 [file where event.action == "modification" and file.extension in ("zip", "gzip", "gz") and
   file.path like~
               ("/Users/Shared/*",
-               "/Library/Logs/*",
-               "/Users/*/Library/Logs/*",
                "/Library/WebServer/*",
                "/Users/*/Library/WebServer/*",
                "/Library/Graphics/*",

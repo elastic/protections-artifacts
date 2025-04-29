@@ -14,14 +14,15 @@ reference = [
     "https://ch4ik0.github.io/en/posts/leveraging-Linux-udev-for-persistence/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
    descendant of [process where event.action == "exec" and process.name == "udevadm"] and not (
      process.parent.executable == "/etc/telegraf/get-service-status.sh" or
-     process.args == "/sbin/vz-motd"
+     process.args == "/sbin/vz-motd" or
+     process.command_line like "*petalinux.xilinx.com*"
    )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (
@@ -35,7 +36,7 @@ sequence by process.entity_id with maxspan=3s
      "FF00::/8", "172.31.0.0/16"
      ) or
      process.name == "go" or
-     process.executable like "/var/lib/docker/overlay2/*gitlab-runner-helper" or
+     process.executable like ("/var/lib/docker/overlay2/*gitlab-runner-helper", "/opt/tm/tools/go/usr/bin/go*") or
      process.executable in (
        "/usr/local/bin/rclone", "/usr/lib/git/git-remote-https", "/usr/lib/apt/methods/https", "/usr/lib/apt/methods/http"
      )

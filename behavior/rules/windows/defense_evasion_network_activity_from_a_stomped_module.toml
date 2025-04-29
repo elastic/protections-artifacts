@@ -9,35 +9,36 @@ license = "Elastic License v2"
 name = "Network Activity from a Stomped Module"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
  [api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.summary : "*.dll*" and 
   process.Ext.api.parameters.size >= 10000 and 
-  not process.Ext.api.metadata.target_address_name : ("ntdll.dll", "kernelbase.dll") and 
-  process.Ext.api.metadata.target_address_path : 
-                                ("?:\\Windows\\System32\\*.dll", 
-                                 "?:\\Windows\\SysWOW64\\*.dll", 
-                                 "\\Windows\\System32\\*.dll", 
-                                 "\\Windows\\SysWOW64\\*.dll",
+  not process.Ext.api.metadata.target_address_name in ("ntdll.dll", "kernelbase.dll") and
+  process.Ext.api.metadata.target_address_path like
+                                ("?:\\windows\\system32\\*.dll",
+                                 "?:\\windows\\syswow64\\*.dll",
                                  "?:\\windows\\winsxs\\*.dll",
-                                 "\\windows\\winsxs\\*.dll",
-                                 "?:\\program files*\\Microsoft\\*.dll", 
-                                 "?:\\program files*\\Windows*.dll", 
-                                 "?:\\program files*\\common files\\Microsoft*.dll") and 
-  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "kernel|*", "Unknown", "Undetermined") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "Kernel|*") and
+                                 "?:\\program files*\\microsoft\\*.dll",
+                                 "?:\\program files*\\windows*.dll",
+                                 "?:\\program files*\\common files\\microsoft*.dll") and
+  not process.thread.Ext.call_stack_final_user_module.name like ("Kernel", "Kernel|*", "Unknown", "Undetermined") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
   not (process.thread.Ext.call_stack_summary : "*ntdll.dll|kernelbase.dll|combase.dll|msvbvm60.dll*" and
        process.Ext.api.metadata.target_address_path : "?:\\windows\\syswow64\\mfc71u.dll") and
-  not process.Ext.api.metadata.target_address_path :
+  not process.Ext.api.metadata.target_address_path like
                                ("?:\\program files*\\microsoft\\scanprocess.dll",
+                                "c:\\windows\\syswow64\\cyinjct.dll",
+                                "c:\\windows\\syswow64\\cnc_bll.dll",
+                                "c:\\windows\\syswow64\\dbodbc11.dll",
+                                "c:\\windows\\syswow64\\eztwain4.dll",
                                 "?:\\program files (x86)\\common files\\microsoft shared\\vba\\vba?\\vbe?.dll") and
-  not process.thread.Ext.call_stack_final_user_module.path : 
-                                     ("?:\\Program Files\\*", 
-                                      "?:\\Program Files (x86)\\*", 
-                                      "\\Program Files\\*", 
-                                      "\\Program Files (x86)\\*",
+  not process.thread.Ext.call_stack_final_user_module.path like
+                                     ("?:\\program files\\*",
+                                      "?:\\program files (x86)\\*",
+                                      "\\program files\\*",
+                                      "\\program files (x86)\\*",
                                       "?:\\windows\\syswow64\\combase.dll", 
                                       "?:\\windows\\syswow64\\apphelp.dll",
                                       "?:\\windows\\system32\\apphelp.dll",
@@ -48,17 +49,19 @@ sequence by process.entity_id with maxspan=2m
                                       "c:\\windows\\syswow64\\hmpalert.dll") and
     not (process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and  
          process.code_signature.trusted == true and 
-         process.code_signature.subject_name : ("Citrix Systems, Inc.", "Business Objects Americas", "COMMUNITY BRANDS PARENTCO", "Johnson Controls")) and
+         process.code_signature.subject_name in ("Citrix Systems, Inc.", "Business Objects Americas", "COMMUNITY BRANDS PARENTCO", "Johnson Controls")) and
     not process.executable : ("?:\\Program Files (x86)\\Microsoft\\DocuAction.exe", 
                               "?:\\Windows\\twain_32\\Plustek\\Plustek SmartOffice PS* Series\\TWAIN_Proxy.exe",
                               "?:\\Program Files (x86)\\Business Objects\\Crystal Reports 11.5\\crw32.exe",
                               "?:\\Program Files (x86)\\Kantech\\Server_CE\\Bin\\RVPControl.exe",
-                              "C:\\Program Files (x86)\\TerminalWorks\\TSScan\\TSScanConsole.exe") and
+                              "C:\\Program Files (x86)\\TerminalWorks\\TSScan\\TSScanConsole.exe",
+                              "C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe") and
     not (process.executable : "?:\\Windows\\SysWOW64\\dat\\Dexon\\Agent\\Agent.exe" and
-         process.code_signature.subject_name : "Dexon Software S A" and process.code_signature.status : "errorExpired") and
+         process.code_signature.subject_name == "Dexon Software S A" and process.code_signature.status == "errorExpired") and
     process.thread.Ext.call_stack_final_user_module.hash.sha256 != "3df383f4b0195620badc0bb9f5e1d86ebdb4975b60da4b910a26fee9b4af474f" and
     not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                     $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Citrix Systems, Inc."))
+                     $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Citrix Systems, Inc.", "Palo Alto Networks (Netherlands) B.V.",  "Palo Alto Networks")) and
+    not (process.Ext.api.behaviors == "image_indirect_call" and process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll*")
   ] as event0 
  [any where 
   (
@@ -66,12 +69,12 @@ sequence by process.entity_id with maxspan=2m
    (event.category : "registry" and registry.path : "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\*")
    ) and 
    endswith~(process.thread.Ext.call_stack_summary, event0.process.Ext.api.metadata.target_address_name) and 
-   process.thread.Ext.call_stack_summary : "ntdll.dll|*" and 
+   process.thread.Ext.call_stack_summary like "ntdll.dll|*" and
   _arraysearch(process.thread.Ext.call_stack, $entry,
                $entry.allocation_private_bytes >= 100000 and 
-               stringcontains~($entry.symbol_info, event0.process.Ext.api.metadata.target_address_name) and $entry.callsite_trailing_bytes : "?*") and
+               stringcontains~($entry.symbol_info, event0.process.Ext.api.metadata.target_address_name) and $entry.callsite_trailing_bytes like "?*") and
   not _arraysearch(process.thread.Ext.call_stack, $entry,
-                   $entry.callsite_trailing_bytes : "33c0405f5ec356578b7c24108b3785f6742e56e853e9ffff85c074138b10578bc8ff920801000085c00f85605afeff3b74240c740b56ff15d015ed1b8bf0ebce")]
+                   $entry.callsite_trailing_bytes == "33c0405f5ec356578b7c24108b3785f6742e56e853e9ffff85c074138b10578bc8ff920801000085c00f85605afeff3b74240c740b56ff15d015ed1b8bf0ebce")]
 '''
 
 min_endpoint_version = "8.10.0"

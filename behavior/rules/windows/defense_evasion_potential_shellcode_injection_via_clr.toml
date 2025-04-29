@@ -7,12 +7,12 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
     process.executable != null and process.parent.executable != null and
-    process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode") and
+    process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
     process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "VirtualProtectEx", "VirtualAllocEx",
                              "MapViewOfFile", "MapViewOfFile2", "SetThreadContext", "SuspendThread", "ReadProcessMemory", "connect") and
     process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
@@ -75,6 +75,10 @@ api where
                                                       "488b9570ffffffc6420c01833de9835d5a007406ff15718d5d5a48894580e8a0ddb45990488b458048894590488b45904889459890909090909090488b459848",
                                                       "8985271f001056e8f60300008d8dbd1d001085c00f859400000056e84003000056e85502000056e85301000090909090909090908b4e3485c90f848900000003",
                                                       "488b5560c6420c01833d6a70c85f007406ff15768dc75f488bf0e8165a4a5f48897570488b4d00e84300000090488b4570488b5560c6420c01488b5560488b4d",
+                                                      "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                                                      "488b454833c9394804742a48894c24284533c94c8bc3894c242033d2ff97900000004885c0741083caff488bc8ff9788000000eb02ffd3488b4d504c8d4d4041",
+                                                      "488b4d50458bc433d2e82019000041807d00007429488d46ff4883f8fd771fff97b8000000488b5550488bc8ff9750020000488b4df8ff97f8000000eb0f488b",
+                                                      "0fb747064503f44883c628443bf00f826bffffff448badb80000004533c033d24883c9ffff55084439bfd400000074248b87d0000000488b741818eb0f4533c0",
                                                       "85c074*33270000747*89c76a02e8*ff83c40484c074*")) and
     not (process.thread.Ext.call_stack_final_user_module.protection_provenance in ("tiptsf.dll", "mscms.dll") and 
          process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\microsoft.net\\framework*\\mscorwks.dll") and 
@@ -83,7 +87,10 @@ api where
                                                              "c:\\program files (x86)\\ibm\\client access\\*\\cwbsomri.dll", 
                                                              "c:\\program files (x86)\\panasonic\\idrengine\\idrjchar.dll",
                                                              "c:\\windows\\assembly\\nativeimages_*\\newtonsoft.json\\*\\newtonsoft.json.ni.dll") and
-    not process.Ext.api.metadata.target_address_path : "c:\\program files\\sap businessobjects\\office addin\\plugins\\analysisoffice\\bixllfunctions.dll" and
+    not process.Ext.api.metadata.target_address_path :
+                             ("?:\\program files\\sap businessobjects\\office addin\\plugins\\analysisoffice\\bixllfunctions.dll",
+                              "?:\\program files (x86)\\viewplus\\tss?\\lib64\\htbrl.dll",
+                              "?:\\program files (x86)\\vyaire\\sentrysuite\\vasservicedataclient.dll") and
     not process.executable : ("?:\\Program Files (x86)\\CrystalScheduler\\crexport.exe", 
                               "?:\\Program Files (x86)\\Bus\\Buscube64.exe", 
                               "?:\\Program Files (x86)\\ETS5\\ETS5N.exe",

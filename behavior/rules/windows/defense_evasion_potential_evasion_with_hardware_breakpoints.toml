@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
  (
-  event.category : "api" or 
-  (event.category : "library" and 
+  event.category == "api" or 
+  (event.category == "library" and 
    dll.name : ("wininet.dll", "ws2_32.dll", "dnsapi.dll", "winhttp.dll", "clr.dll", "netapi32.dll",
                 "mscorwks.dll", "System.*.dll", "mscorlib*.dll", "Microsoft.PowerShell.Security*.dll", 
                 "Microsoft.PowerShell.ConsoleHost*.dll", "wmiutils.dll", "fastprox.dll", "wbemprox.dll", 
@@ -65,7 +65,9 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
  not (process.executable : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" and dll.name == "ws2_32.dll" and
       process.thread.Ext.call_stack_summary == "Unbacked" and
       _arraysearch(process.thread.Ext.call_stack, $entry,
-       $entry.callsite_trailing_bytes == "c3cd2ec30f1f84000000000000000000000000000000000000000000000000000000000000000000000000004c8bd1b82a000000f604250803fe7f0175030f05"))
+       $entry.callsite_trailing_bytes == "c3cd2ec30f1f84000000000000000000000000000000000000000000000000000000000000000000000000004c8bd1b82a000000f604250803fe7f0175030f05")) and
+ not (endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|", process.name)) and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.allocation_private_bytes >= 100000 and stringcontains~($entry.symbol_info, process.name)))
 '''
 
 min_endpoint_version = "8.11.0"

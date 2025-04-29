@@ -13,18 +13,19 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 api where
 
- ((process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "*W*") or
-  process.Ext.api.name :  "WriteProcessMemory*") and
+ ((process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and process.Ext.api.parameters.protection like "?W*") or
+  process.Ext.api.name == "WriteProcessMemory*") and
 
  process.Ext.api.summary : ("* amsi.dll*", "* mpoav.dll*", "* wldp.dll*") and 
  process.executable != null and process.parent.executable != null and process.thread.Ext.call_stack_summary : "?*" and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
  (
-  process.thread.Ext.call_stack_summary :
+  process.thread.Ext.call_stack_summary like
                     ("ntdll.dll|kernelbase.dll|Unbacked",
                      "ntdll.dll|kernelbase.dll|Unknown",
                      "ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked",
@@ -38,7 +39,7 @@ api where
 
   endswith~(process.thread.Ext.call_stack_summary, concat(concat("ntdll.dll|kernelbase.dll|Unbacked|", process.name), "|kernel32.dll|ntdll.dll"))
  ) and
- not (process.code_signature.subject_name : 
+ not (process.code_signature.subject_name in
               ("TPZ SOLUCOES DIGITAIS LTDA", "NedGraphics Software B.V.", "Gerber Technology LLC", "Rocscience Inc.", 
                "Wilcom International Pty Limited", "Code Systems Corporation", "Wilcom Pty Ltd", "Galooli Ltd",
                "MECH-MIND ROBOTICS TECHNOLOGIES LTD.", "COJALI SL") and
@@ -49,11 +50,12 @@ api where
                            "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe", 
                            "?:\\Program Files\\PC SOFT\\WINDEV*\\Programmes\\windev64local.exe",
                            "?:\\Program Files\\Sophos\\Endpoint Defense\\SSPService.exe") and
- not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Bitdefender SRL" and $entry.status : "trusted") and
- not process.thread.Ext.call_stack_final_user_module.path : ("c:\\windows\\system32\\apphelp.dll",
-                                                             "c:\\windows\\syswow64\\apphelp.dll",
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name in ("Bitdefender SRL", "Parallels International GmbH") and $entry.status == "trusted") and
+ not process.thread.Ext.call_stack_final_user_module.path like
+                                                            ("c:\\windows\\sys?????\\apphelp.dll",
                                                              "c:\\program files\\bitdefender\\endpoint security\\bdhkm\\*\\bdhkm64.dll",
-                                                             "c:\\program files (x86)\\internet explorer\\ieshims.dll")
+                                                             "c:\\program files (x86)\\internet explorer\\ieshims.dll") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))
 '''
 
 min_endpoint_version = "8.10.0"

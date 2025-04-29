@@ -12,7 +12,7 @@ reference = [
     "https://redcanary.com/blog/chromeloader/",
     "https://blogs.vmware.com/security/2022/09/the-evolution-of-the-chromeloader-malware.html",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=5m
@@ -20,7 +20,7 @@ sequence with maxspan=5m
   (
    (process.Ext.relative_file_creation_time <= 600 or process.Ext.relative_file_name_modify_time <= 600) or
    process.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\ProgramData\\*", "?:\\Windows\\Microsoft.Net\\*") or
-   process.name : ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "regsvr32.exe", "rundll32.exe", "cmd.exe")
+   process.name in~ ("wscript.exe", "cscript.exe", "mshta.exe", "powershell.exe", "regsvr32.exe", "rundll32.exe", "cmd.exe")
   ) and
   not (process.code_signature.subject_name :
                ("Cypress.io, Inc.", "PortSwigger Ltd", "Scalehat Technologies Ltd", "Azul Systems, Inc.", "JetBrains s.r.o.",

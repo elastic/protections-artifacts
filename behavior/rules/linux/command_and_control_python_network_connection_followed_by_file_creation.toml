@@ -8,7 +8,7 @@ id = "1a2596ff-a5e7-4562-af17-97dbaf9284d5"
 license = "Elastic License v2"
 name = "Python Network Connection Followed by File Creation"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -32,11 +32,12 @@ sequence by process.entity_id with maxspan=5s
        "/srv/*", "/export/*", "/dev/shm/kcsig-key-*", "/usr/lib/systemd/system/*", "/lib/systemd/system/*", 
        "/vertex/storage/*", "/usr/lib/check_mk_agent/*", "/usr/bin/*", "/usr/lib64/*", "/repo/python/*",
        "/dev/ptmx", "/data/smoke*KEYS", "/workspaces/*", "/dev/shm/pym-*", "/dev/shm/kcsig-data*",
-       "*/.local/lib/python*/site-packages/*", "/jenkins/.local/bin/pip", "/build/*"
+       "*/.local/lib/python*/site-packages/*", "/jenkins/.local/bin/pip", "/build/*", "/vidal/*"
      ) or
      file.path regex~ """/dev/shm/[a-zA-Z0-9]{6}""" or
      file.path regex~ """/dev/shm/nccl\-[a-zA-Z0-9]{6}""" or
-     file.path regex~ """/dev/shm/pym\-[0-9]{5}\-[a-z0-9]{8}"""
+     file.path regex~ """/dev/shm/pym\-[0-9]{5}\-[a-z0-9]{8}""" or
+     (process.executable == "/usr/bin/python3" and file.path like ("/spam_check_attachments/*", "/prompts/*"))
     )
   ]
 '''

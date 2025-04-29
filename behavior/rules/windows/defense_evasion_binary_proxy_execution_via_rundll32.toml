@@ -16,7 +16,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Libraries/Url/",
     "https://lolbas-project.github.io/lolbas/Libraries/Desk/",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence with maxspan=1m
@@ -47,10 +47,11 @@ sequence with maxspan=1m
    ] by process.entity_id
   [process where event.action == "start" and
    not process.executable :
-                ("?:\\Program Files\\*.exe",
-                 "?:\\Program Files (x86)\\*.exe",
+                ("?:\\Program Files\\*",
+                 "?:\\Program Files (x86)\\*",
                  "C:\\Windows\\System32\\shutdown.exe",
                  "C:\\Windows\\System32\\WerFault.exe") and
+   not (process.executable : "?:\\Windows\\*.scr" and process.parent.args : "desk.cpl,InstallScreenSaver") and
    not (process.name : "wscript.exe" and process.args : "Cathexis Archive Viewer.vbs") and
    not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
    not process.Ext.token.integrity_level_name == "system" and
@@ -59,7 +60,9 @@ sequence with maxspan=1m
    not process.hash.sha256 :
                   ("f6bef3f879e082d115c2ad199a986da1660514699f5e752c7b628d9438d7cb49",
                    "c2831f5b010f099cd1733a0183adfa16cb834a9169fc55c6f7e6dc3267488c3f",
-                   "70ebedc5aba37140682a0535eac9f1cfb77cc9916955e36f19ba1da893068a83") and
+                   "70ebedc5aba37140682a0535eac9f1cfb77cc9916955e36f19ba1da893068a83",
+                   "e6caed88fa115a412c744d0ec91f34cd3b5f329d7acdc1cb14e35364d492d095",
+                   "af31ac74a9072e4bbc24ff17ee70681539e660d4fa885fcb45e752b5ec21d2ef") and
    not (process.executable : "?:\\Windows\\System32\\msiexec.exe" and process.parent.args : "?:\\WINDOWS\\system32\\pcwutl.dll,LaunchApplication") and 
    not (process.executable : "?:\\Windows\\System32\\verclsid.exe" and process.args : "{71DCE5D6-4B57-496B-AC21-CD5B54EB93FD}" and process.parent.command_line : "*ShellExec_RunDLL*") and 
    not (process.executable : ("?:\\Windows\\System32\\notepad.exe", "?:\\Windows\\System32\\mspaint.exe") and process.parent.command_line : "*ShellExec_RunDLL*")

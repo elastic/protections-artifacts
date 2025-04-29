@@ -7,7 +7,7 @@ id = "fa2e2435-d285-485e-9890-dff92cb78ab7"
 license = "Elastic License v2"
 name = "Process Memory Write to a Non Child Process"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -34,7 +34,7 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
 
  not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\Device\\HarddiskVolume*\\Windows\\*.exe") and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
 
- not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "Kernel") and
 
  /* excluding multiple unsigned third party modules from programfiles */
   not process.thread.Ext.call_stack_final_user_module.path :
@@ -52,7 +52,6 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\system32\\shsvcs.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("mfehcthe.dll", "system.core.ni.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
-  not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined", "kernel") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                                   ("27fe00d32f773a95e6d50986e5e7499917f66ce881e46054c77652ef4bdf3512",
                                    "a59e039e1520b74254a454bf48c2bceeafe7bd7ac6e5886baa482a52f86a29bf",
@@ -157,7 +156,15 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "e09a338081b83a42e97b60311d9af749baaedb226b155d9e7bd658de1c5a349d",
                                    "d0a62a67891bbd4eb263d328e5bf6da080bcd7d16c3b1d73e563a48263062c5a",
                                    "1f8a5ff26f722b380754d794ad4b8d9edf69361e18ea0a2a03ed58d61e91849c",
-                                   "1dfc0c4f5442dcff2082d9258254b6861c27001aada055d960844561e699655b")
+                                   "1dfc0c4f5442dcff2082d9258254b6861c27001aada055d960844561e699655b",
+                                   "96dca741745683eb5c2ad857e2520ccf62ab2d08eae359f6928495073925faee",
+                                   "8e1ab3bfaf8f190abb0b8a229cc7c06c6ba00f2455e60515df4bc8a78a778bc5",
+                                   "56d4677887fbcb70e9ac1b97db622c6872b610dcf4b6f0ce10a413b7ec325e19",
+                                   "1a8dcfe9d366e0075595164ed6a3a7cf65081e0595fba70bc2254647bc89c281",
+                                   "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
+                                   "9e0619c604757c70bb9b0df1e43c111e32b24669522ddc75028409cfacf40197",
+                                   "ccae2a12091763da594e0ceb83e3aa438bccf2449b2dc91c916232ba2117ae22",
+                                   "6649961021d30e565e60c27db58305c6750b580231a0d7331522ad277a769dd3")
 '''
 
 min_endpoint_version = "8.14.2"

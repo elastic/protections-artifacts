@@ -14,7 +14,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=3s
@@ -28,7 +28,7 @@ sequence with maxspan=3s
   ] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-   process.args_count == 1
+   process.args_count == 1 and not process.working_directory == "/var/lib/pgsql"
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious API Call via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://github.com/med0x2e/GadgetToJScript", "https://github.com/mdsecactivebreach/SharpShooter"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -22,7 +22,13 @@ api where
   not process.parent.executable :
                ("?:\\IPeople\\Script\\IPScriptDirector.exe",
                 "?:\\Program Files\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe",
-                "?:\\Program Files\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe") and
+                "?:\\Program Files\\Microsoft System Center\\Operations Manager\\Server\\MonitoringHost.exe",
+                "C:\\Program Files (x86)\\DarkWebAdvisorsAgent\\PCPitstopScheduleService.exe",
+                "C:\\Program Files (x86)\\TelesystemAgent\\PCPitstopScheduleService.exe") and
+  not (process.executable : "C:\\Windows\\SysWOW64\\cscript.exe" and process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and
+       process.command_line like "cscript  //B scan.wsf *" and user.id == "S-1-5-18") and
+  not (process.executable : "C:\\Windows\\System32\\mmc.exe" and
+       process.thread.Ext.call_stack_summary like "ntdll.dll|*|mswb7.dll|clr.dll|jscript.dll|mmcndmgr.dll|mmc.exe*") and
   not process.command_line :
              ("\"C:\\Windows\\System32\\cscript.exe\" //B //Nologo C:\\Windows\\Options\\SWD\\MapHomeDrive_1_0_0.vbs",
               "C:\\WINDOWS\\System32\\WScript.exe \"M:\\DOH\\Data Exchange\\OCFS\\Severe Maternal Morbidity\\EGScript1.vbs\" ",

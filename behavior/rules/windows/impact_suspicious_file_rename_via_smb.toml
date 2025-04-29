@@ -7,21 +7,21 @@ id = "58b7beb4-0b8a-4196-a17d-7317620ef495"
 license = "Elastic License v2"
 name = "Suspicious File Rename via SMB"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=3s
  [network where event.action == "connection_accepted" and destination.port == 445 and source.port >= 49152 and
   process.pid == 4 and network.type == "ipv4" and not endswith(source.address, destination.address) and
   source.ip != "127.0.0.1" and source.ip != "::1" ]
- [file where event.action == "rename" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+ [file where event.action == "rename" and process.pid == 4 and user.id like ("S-1-5-21*", "S-1-12-*") and
   file.extension != null and file.Ext.entropy >= 6 and file.path : "C:\\Users\\*" and
   file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx", "*.lnk", "*.txt") and
-  not file.extension : ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
- [file where event.action == "rename" and process.pid == 4 and user.id : ("S-1-5-21*", "S-1-12-*") and
+  not file.extension in~ ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
+ [file where event.action == "rename" and process.pid == 4 and user.id like ("S-1-5-21*", "S-1-12-*") and
   file.extension != null and file.Ext.entropy >= 6 and file.path : "C:\\Users\\*" and
   file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx", "*.lnk", "*.txt") and
-  not file.extension : ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
+  not file.extension in~ ("jpg", "bmp", "png", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "lnk", "txt")]
 '''
 
 actions = []

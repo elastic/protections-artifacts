@@ -10,16 +10,19 @@ os_list = ["windows"]
 reference = [
     "https://www.cloudsek.com/blog/unmasking-the-danger-lumma-stealer-malware-exploits-fake-captcha-pages",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and
  process.name : ("cmd.exe", "powershell.exe", "curl.exe", "msiexec.exe", "mshta.exe", "wscript.exe", "cscript.exe") and
  process.parent.name : "explorer.exe" and process.args_count >= 2 and
  (
-  process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|kernel32.dll|windows.storage.dll|shell32.dll|user32.dll|shell32.dll|explorer.exe|shcore.dll|*" or  
-  (process.parent.thread.Ext.call_stack_summary : "*shell32.dll|explorer.exe|*" and 
-   _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*shell32.dll!GetFileNameFromBrowse*"))
+  process.parent.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll|kernel32.dll|windows.storage.dll|shell32.dll|user32.dll|shell32.dll|explorer.exe|shcore.dll|*" or
+  (process.parent.thread.Ext.call_stack_summary like "*|user32.dll|shell32.dll|explorer.exe|shcore.dll|*" and
+   _arraysearch(process.parent.thread.Ext.call_stack, $entry, 
+                $entry.symbol_info like ("C:\\Windows\\System32\\user32.dll!DialogBoxParamW*", 
+                                         "C:\\Windows\\System32\\user32.dll!DialogBoxIndirectParamW*", 
+                                         "C:\\Windows\\System32\\shell32.dll!GetFileNameFromBrowse*")))
  ) and
  not (process.name : "cmd.exe" and process.args : ("*.bat*", "*.cmd", "dir"))
 '''

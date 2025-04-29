@@ -7,7 +7,7 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=3s
@@ -39,7 +39,7 @@ sequence with maxspan=3s
       process.executable in (
       "/opt/cisco/amp/bin/ampinsthelper", "/usr/libexec/platform-python",
       "/etc/nginx/ea-nginx/config-scripts/global/config-scripts-global-cloudflare",
-      "/opt/kerio/GFIAgent/GFIAgentInstaller"
+      "/opt/kerio/GFIAgent/GFIAgentInstaller", "/usr/share/centrifydc/libexec/adinfo"
       )
     )
   ] by process.parent.entity_id

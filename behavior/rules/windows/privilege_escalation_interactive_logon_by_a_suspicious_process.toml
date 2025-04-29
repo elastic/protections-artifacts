@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Interactive Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 authentication where event.action == "log_on" and event.code == "4624" and
@@ -54,7 +54,8 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Bruker\\TopSpin4.2.0\\prog\\mod\\xwish3.exe",
              "C:\\Windows\\System32\\Autologon64.exe",
              "C:\\Program Files\\*.exe",
-             "C:\\Program Files (x86)\\*.exe")
+             "C:\\Program Files (x86)\\*.exe",
+             "C:\\PROGRA~?\\*.exe")
 '''
 
 min_endpoint_version = "8.15.1"

@@ -11,14 +11,14 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id
  [process where event.action == "start" and
   not (process.pe.original_file_name :
          ("SetupHost.exe", "wbengine.exe", "BitLockerWizardElev.exe", "BitLockerDeviceEncryption.exe",
-          "omadmclient.exe", "TSManager.exe", "SETUPPLATFORM.EXE", "RECOVERYDRIVE.EXE") and process.code_signature.subject_name : "Microsoft *" and
+          "omadmclient.exe", "TSManager.exe", "SETUPPLATFORM.EXE", "RECOVERYDRIVE.EXE") and process.code_signature.subject_name like "Microsoft *" and
           process.code_signature.trusted == true) and
 
   not process.hash.sha256 : 
@@ -69,7 +69,7 @@ sequence by process.entity_id
        event0.process.args : "?:\\WINDOWS\\IMECache\\HealthScripts\\*.ps1") and
 
   not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\*.log")]
- until [process where event.action : "end"]
+ until [process where event.action == "end"]
 '''
 
 min_endpoint_version = "8.4.0"

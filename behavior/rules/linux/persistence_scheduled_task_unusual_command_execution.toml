@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("systemd", "cron", "crond") and
@@ -25,7 +25,8 @@ process.command_line like~ (
 not (
   process.command_line like~ (
     "*test*", "*grep*", "*logger*", "/bin/sh -c curl --user*.log", "/bin/sh -c /dev/shm/pty3 > /dev/null 2>&1 &",
-    "/bin/sh -c*backup.sh*logToFile.sh", "*api.github.com/meta*", "*/opt/commvault/*", "/bin/sh -c /home/*/sub/backup-archivelogs.sh*"
+    "/bin/sh -c*backup.sh*logToFile.sh", "*api.github.com/meta*", "*/opt/commvault/*", "/bin/sh -c /home/*/sub/backup-archivelogs.sh*",
+    "*/usr/bin/curl -s https://check.torproject.org/torbulkexitlist*"
   ) or
   process.command_line in (
   "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",

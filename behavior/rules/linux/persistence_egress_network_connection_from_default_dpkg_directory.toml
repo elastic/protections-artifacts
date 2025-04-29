@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Default DPKG Directory"
 os_list = ["linux"]
 reference = ["https://www.makeuseof.com/how-deb-packages-are-backdoored-how-to-detect-it/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=3s
@@ -36,7 +36,9 @@ sequence with maxspan=3s
      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
      "FF00::/8", "172.31.0.0/16"
      ) or
-     process.executable in ("/usr/bin/apt-get", "/bin/apt-get")
+     process.executable in (
+       "/usr/bin/apt-get", "/bin/apt-get", "/opt/cisco/amp/etc/ampinsthelper", "/opt/teleport/system/bin/tsh"
+     )
    )] by process.parent.entity_id
 '''
 

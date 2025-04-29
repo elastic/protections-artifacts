@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Kill Command Executed from Binary in Unusual Location"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
@@ -19,7 +19,7 @@ process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") an
   ) or
   process.executable like "./merged/*" or
   process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun") or
-  process.command_line in ("pkill -f /nop", "killall -e -9 lmgrd") or
+  process.command_line in ("pkill -f /nop", "killall -e -9 lmgrd", "killall steam-runtime-launcher-service") or
   (process.parent.executable == "/tmp/o.chaban/devpod/agent" and process.command_line == "pkill -HUP dockerd") or
   (process.parent.name == "upgrade-execute.sh" and process.command_line == "pkill -SIGHUP -f acconsole")
 )

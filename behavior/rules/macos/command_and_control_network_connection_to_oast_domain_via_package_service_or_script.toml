@@ -1,0 +1,46 @@
+[rule]
+description = """
+Detects when a package service such as npm or gems or a script (.py, .npm, .rb, etc.) makes an outbound network
+connection to a .oast domain. Threat actors have been recently seen using .oast domains in order to exfiltrate sensitive
+data from infected systems.
+"""
+id = "0a0bfde0-e392-487e-8f4a-07049ce94832"
+license = "Elastic License v2"
+name = "Network Connection to Oast Domain via Package Service or Script"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/weaponizing-oast-how-malicious-packages-exploit-npm-pypi-and-rubygems"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.type == "start" and event.action == "exec" and process.name like~ ("python*", "node", "ruby*")]
+ [network where event.type == "start" and destination.domain like~ "*.oast*"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

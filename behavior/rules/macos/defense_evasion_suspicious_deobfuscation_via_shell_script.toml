@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects when a large shell script is executed followed by the execution of the base64 or xxd binary. Threat actors will
+often use shell scripts to obfuscate their commands in order to avoid detection. The use of base64 or xxd to decode the
+shell script is indicative of a threat actor attempting to deobfuscate their commands.
+"""
+id = "dbc7be20-89c3-4b84-bb0e-b893d06425de"
+license = "Elastic License v2"
+name = "Suspicious Deobfuscation via Shell Script"
+os_list = ["macos"]
+reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
+version = "1.0.2"
+
+query = '''
+sequence by process.Ext.effective_parent.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name in ("sh", "bash", "zsh") and process.args == "-c" and process.command_line == null and process.args_count > 2]
+[process where event.type == "start" and event.action == "exec" and process.name in ("base64", "xxd")]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -9,27 +9,30 @@ license = "Elastic License v2"
 name = "Potential Evasion via Invalid Code Signature"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 any where
- process.executable != null and process.code_signature.status : "errorBadDigest" and   
+ process.executable != null and process.code_signature.status == "errorBadDigest" and   
  (
-  (event.category : "api" and event.category : "intrusion_detection" and 
-   process.Ext.api.behaviors : ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx") and 
-   not process.Ext.api.name : ("SetWindowsHookEx", "IoCreateDevice")) or
+  (event.category == "api" and event.category == "intrusion_detection" and 
+   process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx") and 
+   not process.Ext.api.name in ("SetWindowsHookEx", "IoCreateDevice") and
+   process.thread.Ext.call_stack_final_user_module.name != null and
+   not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+   not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*")) or
 
-  (event.category : "library" and dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
-   process.thread.Ext.call_stack_summary :
+  (event.category == "library" and dll.name in~ ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
+   process.thread.Ext.call_stack_summary like
             ("*kernelbase.dll|Unbacked*", "*ntdll.dll|Unbacked*", "*wininet.dll|Unbacked*",
              "*dnsapi.dll|Unbacked*", "*ws2_32.dll|Unbacked*", "*iphlpapi.dll|Unbacked*",
              "*winhttp.dll|Unbacked*", "Unbacked|*"))
  ) and
  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
- not (process.executable : "D:\\d3\\view\\viewapp.exe" and process.code_signature.subject_name : "d.velop AG") and 
- not (process.executable : "C:\\AutoVue_Client\\jre\\bin\\javaw.exe" and process.code_signature.subject_name : "Oracle America, Inc.") and 
+ not (process.executable : "D:\\d3\\view\\viewapp.exe" and process.code_signature.subject_name == "d.velop AG") and
+ not (process.executable : "C:\\AutoVue_Client\\jre\\bin\\javaw.exe" and process.code_signature.subject_name == "Oracle America, Inc.") and
  not (process.executable : "?:\\Users\\*\\AppData\\Local\\Turbo.net\\Sandbox\\GEARView\\*\\GEARViewBasic.exe" and 
-      process.code_signature.subject_name : "Code Systems Corporation") and
+      process.code_signature.subject_name == "Code Systems Corporation") and
  not process.executable : 
              ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", 
               "?:\\Program Files (x86)\\Teams Installer\\Teams.exe", 

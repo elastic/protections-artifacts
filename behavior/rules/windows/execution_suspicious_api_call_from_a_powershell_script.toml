@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -17,8 +17,8 @@ process.Ext.api.metadata.target_address_path != "c:\\windows\\system32\\dante_dn
 process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
 process.thread.Ext.call_stack_final_user_module.protection_provenance in ("clr.dll", "mscorwks.dll", "coreclr.dll") and
 
-/* IoCreateDevice activity */
-process.Ext.api.name != "IoCreateDevice" and
+/* exclusion by API  */
+not process.Ext.api.name in ("IoCreateDevice", "ResumeThread", "SetThreadToken", "NtQueueApcThread") and
 
 /* exclude nop operations */
 not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.protection_old == "RWX") and

@@ -8,7 +8,7 @@ id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
 license = "Elastic License v2"
 name = "Timestomping Detected via Touch"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -21,7 +21,7 @@ process.parent.executable != null and process.args like (
   process.parent.executable in (
     "/usr/local/bin/manage_omnimesh_logs", "/pro/bin/sys/install/packageUtils.sh", "/bin/dracut",
     "/usr/libexec/postfix/aliasesdb", "pwsh-preview", "/usr/bin/dracut", "/usr/share/initramfs-tools/hooks/amd64_microcode",
-    "/usr/local/bin/start-mailserver.sh"
+    "/usr/local/bin/start-mailserver.sh", "/usr/bin/ssm-agent-worker", "/bin/ssm-agent-worker"
   ) or
   process.parent.executable like ("/opt/sw/tomcat/rc_scripts/*", "/tmp/newroot/var/lib/docker/overlay2/*", "/snap/*") or
   process.parent.name in (
@@ -29,14 +29,16 @@ process.parent.executable != null and process.args like (
     "spyglass", "desktop-launch", "pmiectl"
   ) or
   process.parent.args like (
-    "/home/*/scripts/auto_download_process.py", "/home/*/scripts/perl_python_eagu1p.py",
-    "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh"
+    "/home/*/scripts/auto_download_process.py", "/home/*/scripts/perl_python_eagu1p.py", "/var/lib/dpkg/info/*",
+    "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh",
+    "/var/tmp/rpm-tmp.*"
   ) or
   process.args in (
     "/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff", "/etc/aliases.db"
   ) or
   process.args like ("--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*", "/var/tmp/portage*") or
-  process.command_line == "/bin/touch -a /tmp/au_status"
+  process.command_line == "/bin/touch -a /tmp/au_status" or
+  process.working_directory in ("/opt/libexec", "/opt/local/src/connectxx/build/src/mdp")
 )
 '''
 

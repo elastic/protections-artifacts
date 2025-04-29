@@ -8,17 +8,18 @@ license = "Elastic License v2"
 name = "Suspicious Memory Protection Fluctuation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
- [api where process.Ext.api.name : "VirtualAlloc*" and process.Ext.api.parameters.protection : "R-X" and 
+ [api where process.Ext.api.name == "VirtualAlloc*" and process.Ext.api.parameters.protection == "R-X" and
   process.executable != null and process.thread.Ext.call_stack_summary : "?*" and process.thread.Ext.call_stack_final_user_module.name != null and 
-  not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "unknown", "Undetermined") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("unknown", "Kernel", "Undetermined") and
-  not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "WATERFOX LIMITED", "TRACKER SOFTWARE PRODUCTS (CANADA) LIMITED") and 
-       process.code_signature.trusted == true) and 
-  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\xul.dll!worker*", "*\\xul.dll!XRE_GetBootstrap*")) and 
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("Unknown", "Kernel", "Undetermined") and
+  not (process.code_signature.subject_name in ("Mozilla Corporation", "Google LLC", "WATERFOX LIMITED", "TRACKER SOFTWARE PRODUCTS (CANADA) LIMITED", "Tracker Software Products (Canada) Ltd.") and
+       process.code_signature.trusted == true) and
+  not process.thread.Ext.call_stack_final_user_module.name == "xul.dll" and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\xul.dll!worker*", "*\\xul.dll!XRE_GetBootstrap*", "*\\mozjs*.dll!?SetJitExceptionHandler*", "*xul.dll!?JS_NondeterministicGetWeakSetKeys*")) and
   not process.thread.Ext.call_stack_final_user_module.path :
                                          ("?:\\Program Files\\*",
                                           "?:\\Program Files (x86)\\*", 
@@ -36,7 +37,7 @@ sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=3
                                           "\\Windows\\assembly\\*",
                                           "\\device\\mup\\*\\firefox64\\xul.dll") and
   process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 : 
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                                ("a0d649241c61e72592a78effcece1557a07548fda6ac1741a53e69ee3e02946b", 
                                                 "649ede91f00d784ed1e397ece6e5f13dbe6cd9d86c06b424834c443c32727bae",
                                                 "adde1c4ba76c8e63844fac145f097002cbfc4b1af63656fb8cfbb8ebebc4375a",
@@ -52,7 +53,17 @@ sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=3
                                                 "2bda92ee609ccfa0458615fd1362f8f247fe5e4b8d4c52b08188f21b165c8573",
                                                 "22e25bd041fcf81df167432a1f2dc5135aa3adb0b037bb52dbd92a189cba2be8",
                                                 "692686ecf173d8d584ceb6c02530fa03740b6a9b9966a11286c73635b629a7ba",
-                                                "c0f87e6cac3fe794d4af73a5e168a6a888524ac85dc0a5cdcf4e76b4813194c6")
+                                                "c0f87e6cac3fe794d4af73a5e168a6a888524ac85dc0a5cdcf4e76b4813194c6",
+                                                "a02e79ac860a2d9692ae28a02612fcdc6aa6aba6d6cc1be4872675ab4707ff17",
+                                                "46f44971b785b0d6a855872160ae1089ea8aa8f6528f25c545787a5d182cc15e",
+                                                "ea7930ed7ddc763c25df5897dfd8ed4ea34c07a5ddbf398bbeccf10361cf4229",
+                                                "5124b3a0bd20b3b5e84dea626a11db69c28a96953dea0862e719e12222bff417",
+                                                "e30aabb518361fbeaf8068ffc786845ee84abbf1f71ae7d2733a11286531595a",
+                                                "29a4795452cb3d618edcbdc02790d8026b75197d220b2904091802c08c515aee",
+                                                "10cc18de06e6da9f9f50e631517574a1cda426c763ac6d32ce9dc7aa318a12a2",
+                                                "5cdf6b8fa6b2e42335817bc76154f4368836c8312e0347dee2d9ff7dc9957eac",
+                                                "c58928c71946618d3cb398e11de5479b72425d94fa79c1610162d86446164b46",
+                                                "2bda92ee609ccfa0458615fd1362f8f247fe5e4b8d4c52b08188f21b165c8573")
   ]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "RW-"]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "R-X"]

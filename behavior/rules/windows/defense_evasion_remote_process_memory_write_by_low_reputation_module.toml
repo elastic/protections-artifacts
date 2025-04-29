@@ -7,36 +7,32 @@ id = "54916896-1f73-441d-acec-1141094b15e3"
 license = "Elastic License v2"
 name = "Remote Process Memory Write by Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
 
  process.executable != null and Target.process.executable != null and process.Ext.api.behaviors == "cross-process" and
 
- Target.process.executable != process.executable and not process.Ext.api.summary : "*Unknown*" and
+ Target.process.executable != process.executable and not process.Ext.api.summary like "*Unknown*" and
 
  /* WPM triggers multiple times at process creation */
- not (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*\\kernelbase.dll!CreateProcess*")
-      and process.Ext.api.summary: ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*")) and
-
- not (process.Ext.api.summary: ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*") and
-      process.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|Unknown|wow64.dll|ntdll.dll|Unknown") and
+ not (_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*\\kernelbase.dll!CreateProcess*", "*\\kernelbase.dll+0x*"))
+      and process.Ext.api.summary like ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*")) and
+ not (process.Ext.api.summary like ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*") and process.thread.Ext.call_stack_summary like "*Unknown*") and
 
  /* excluding trusted code signature */
  process.thread.Ext.call_stack_final_user_module.code_signature != null and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
 
  not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 and
-      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name : "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
-
- not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
+      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name == "Barco N.V." and $entry.status in ("errorTimeStamp", "errorUntrustedRoot"))) and
 
  not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.parent.executable : "\\\\?\\Volume{*}\\*.exe" and
-      process.thread.Ext.call_stack_final_user_module.path : "*\\docker\\*\\windows\\*.dll") and
+      process.thread.Ext.call_stack_final_user_module.path like "*\\docker\\*\\windows\\*.dll") and
 
  /* excluding multiple unsigned third party modules from programfiles */
-  not process.thread.Ext.call_stack_final_user_module.path :
+  not process.thread.Ext.call_stack_final_user_module.path like
                              ("?:\\windows\\assembly\\nativeimages_*",
                               "?:\\windows\\winsxs\\*.dll",
                               "?:\\program files\\*",
@@ -47,10 +43,10 @@ api where process.Ext.api.name == "WriteProcessMemory" and
                               "c:\\windows\\syswow64\\ctiuser.dll",
                               "c:\\windows\\system32\\hpzipm12.dll",
                               "c:\\windows\\system32\\lsasrv.dll") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("mfehcthe.dll", "system.core.ni.dll") and
-  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
-  not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined", "kernel") and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("mfehcthe.dll", "system.core.ni.dll") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "Kernel") and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                   ("27fe00d32f773a95e6d50986e5e7499917f66ce881e46054c77652ef4bdf3512",
                                    "a59e039e1520b74254a454bf48c2bceeafe7bd7ac6e5886baa482a52f86a29bf",
                                    "f01bb9aba3f9daf4d8f5551a3b753d8011e16072a1103cf5303d617a9f866424",
@@ -159,7 +155,8 @@ api where process.Ext.api.name == "WriteProcessMemory" and
                                    "c55eccc22495ca47d45738ec622c1063ec183fe240fbde7d40fd23d5018a695c",
                                    "154e97b6c7ff91c3e6687a5e6c2a5e7f5f0206df0d232fd3e80519f8f0cd8a5b",
                                    "c00a1e6ecb6d6febd07397cc3887087eec880ea3f34dda6dff4322eebdbfed29",
-                                   "55cf1d3e49027092e6a364cc11b0a33bf3ca829868842067b9468a4b3f7a9c54")
+                                   "55cf1d3e49027092e6a364cc11b0a33bf3ca829868842067b9468a4b3f7a9c54",
+                                   "89b8da24841c9959a19bb7932c02476b5150c4b17303f79b1252bee12559d419")
 '''
 
 min_endpoint_version = "8.14.2"

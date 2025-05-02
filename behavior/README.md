@@ -20,22 +20,15 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.86 | 3030c6c9fe4a388351664f1f7f31967049316363007bc5af8201941af21bc0af |
-| production-rules-macos-v1 | 1.0.86 | c4e420367f429720b97eaf1453ba4cd91a7cb2da452c87a90f4312fae749ab6e |
-| production-rules-windows-v1 | 1.0.86 | 74ca78bfa079261a603ac11d704c282e4f86631f90df505f949f4b83cb4a1d44 |
+| production-rules-linux-v1 | 1.0.87 | c06dc9ec97c8a432f4ec8895a92908241b43b21e9b468275be9c7ab6da2ce359 |
+| production-rules-macos-v1 | 1.0.87 | 58a4f0b0b8b27658615841857e553a94522049f62bc3261c59bf5e944c3a4421 |
+| production-rules-windows-v1 | 1.0.87 | a59b7b946b235631c3d7069b7ffc038917c6aea014e31ddc0977821b976d5f61 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.86', '1.0.85') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.87', '1.0.86') by OS/MITRE Tactic.
 
-| Tactic              |   Windows |   Linux |   macOS |   Total by Tactic |
-|---------------------|-----------|---------|---------|-------------------|
-| Collection          |         0 |       0 |       1 |                 1 |
-| Command and Control |         0 |       0 |       4 |                 4 |
-| Credential Access   |         1 |       0 |       0 |                 1 |
-| Defense Evasion     |         2 |       0 |       5 |                 7 |
-| Execution           |         0 |       0 |       2 |                 2 |
-| Total by OS         |         3 |       0 |      12 |                15 |
+No new rule updates have been made between versions 1.0.87 and 1.0.86
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 

@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "start" and
@@ -135,6 +135,7 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\cleanmgr.exe",
               "?:\\Windows\\System32\\CiTool.exe",
               "?:\\Windows\\System32\\gpresult.exe",
+              "?:\\Windows\\SysWOW64\\net.exe",
               "?:\\Windows\\System32\\inetsrv\\iisrstas.exe",
               "?:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe",
               "?:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe",
@@ -146,7 +147,9 @@ process where event.action == "start" and
               "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe",
               "?:\\Windows\\System32\\Dism\\DismHost.exe",
               "C:\\Windows\\System32\\taskkill.exe",
-              "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\MSBuild\\Current\\Bin\\MSBuild.exe") and
+              "C:\\Windows\\System32\\compact.exe",
+              "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\MSBuild\\Current\\Bin\\MSBuild.exe",
+              "C:\\Program Files (x86)\\Citrix\\Licensing\\LS\\udadmin.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -177,6 +180,7 @@ process where event.action == "start" and
                     "*-client_name hyperv-*",
                     "*ccpa-temp*oval_registry*",
                     "*certstorename=MY*",
+                    "*SNC_isWmi*",
                     "*/latest/api/token*-TimeoutSec*",
                     "*http://169.254.169.254/opc/v1/instance*",
                     "*http://169.254.169.254/metadata/instance*",
@@ -266,8 +270,8 @@ process where event.action == "start" and
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
-                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.",
-                 "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.",
+                ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.", "SEMPERIS INC.",
+                 "Chocolatey Software, Inc.", "ForeScout Technologies, Inc", "LogMeIn, Inc.", "Acronis International GmbH",
                  "Elasticsearch, Inc.", "Oracle America, Inc.", "HP Inc", "Flexera Software LLC", "Wacom Co., Ltd.",
                  "Arcserve (USA) LLC", "Hewlett Packard", "Qualys, Inc", "Synology Inc.", "NoMachine S.a.r.l.", 
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 

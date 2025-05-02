@@ -11,18 +11,25 @@ reference = [
     "https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/",
     "https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES/blob/4ceed2f4706daf601c212a8f91c113dd85349a2c/Command%20and%20Control/DE_RDP_Tunneling_4624.evtx",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=2m
  [api where process.Ext.api.name == "connect" and process.Ext.api.summary like "connect( ipv4, tcp, 127.0.*, 3389 )" and
   not (process.code_signature.trusted == true and process.code_signature.subject_name in ("UiPath, Inc.", "Automation Anywhere, Inc.", "Google LLC", "Tanium Inc.",
-      "Mozilla Corporation", "Nmap Software LLC", "N-ABLE TECHNOLOGIES LTD", "Connectwise, LLC", "Datto, LLC", "Zabbix SIA")) and
+      "Mozilla Corporation", "Nmap Software LLC", "N-ABLE TECHNOLOGIES LTD", "Connectwise, LLC", "Datto, LLC", "Zabbix SIA", "d.velop AG",
+      "ESET, spol. s r.o.", "NoMachine S.a.r.l.", "Check Point Software Technologies Ltd.", "Amazon.com Services LLC", "Ericom Software Ltd",
+      "ZABBIX, Sabiedriba ar ierobezotu atbildibu", "Intuit Inc")) and
+  process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
   not process.executable :
                  ("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
                   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
                   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-                  "C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe")]
+                  "C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe") and
+  not (process.name : "powershell.exe" and
+       process.parent.executable : ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
+                                    "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe"))
+  ]
  [authentication where event.action == "log_on" and
   process.Ext.session_info.logon_type in ("RemoteInteractive", "Network") and cidrmatch(source.ip, "127.0.0.0/8", "::1")]
 '''

@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -24,7 +24,7 @@ process where event.type == "start" and event.action == "exec" and (
 ) and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
 process.command_line like (
-  "* /tmp/.* ", "* /var/tmp/.* ", "* /dev/shm/* ", "*xxd *", "*base64 -*d*", "*|*base64 *",
+  "* /tmp/.* ", "* /var/tmp/.* ", "* /dev/shm/* ", "*xxd *", "*base64 -*d*", "*|*base64 *", "*chmod*", "*chown*",
   "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*",
   "*TCPSocket.open*", "*io.popen*", "*os.execute*", "*fsockopen*", "*/etc/cron.*/*", "* ncat *", "* nc *", "* netcat *",
   "* nc.traditional *", "*cat * /etc/passwd*", "*/etc/shadow*", "*/home/*/.ssh/*", "*~/.ssh/*", "*/root/.ssh/*"

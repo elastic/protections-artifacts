@@ -7,7 +7,7 @@ id = "01c2b2e3-a0a9-4ad1-92e2-1aa80d70de50"
 license = "Elastic License v2"
 name = "Suspicious Remote Registry Modification"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-12-*") and
@@ -25,6 +25,7 @@ registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-1
           "HKLM\\SYSTEM\\ControlSet*\\Control\\Lsa\\*") or
   (registry.value : "Start" and registry.data.strings : "4")
   ) and
+  not registry.data.strings : "C:\\Windows\\System32\\svchost.exe -k localService" and
   not registry.path : ("HKLM\\SOFTWARE\\Microsoft\\SMS\\*",
                        "HKLM\\SYSTEM\\*ControlSet*\\Services\\EventLog\\*",
                        "HKLM\\SOFTWARE\\EMCO\\Remote Agents\\Remote Installer\\*",
@@ -32,6 +33,9 @@ registry where event.action == "modification" and user.id : ("S-1-5-21*", "S-1-1
                        "HKLM\\SOFTWARE\\WOW6432Node\\Varonis\\*", 
                        "HKLM\\SOFTWARE\\Varonis\\*",
                        "HKLM\\SOFTWARE\\JavaSoft\\*",
+                       "HKLM\\SOFTWARE\\WOW6432Node\\ODBC\\ODBC.INI\\*",
+                       "HKLM\\SYSTEM\\ControlSet001\\Control\\Session Manager\\PendingFileRenameOperations",
+                       "HKLM\\SYSTEM\\ControlSet001\\Services\\mrxsmb10\\Start",
                        "HKLM\\SOFTWARE\\WOW6432Node\\JavaSoft\\*",
                        "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\UserLockInternetURL",
                        "HKLM\\SYSTEM\\ControlSet001\\Services\\MTAppManager\\ImagePath",

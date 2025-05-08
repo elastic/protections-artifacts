@@ -1,0 +1,48 @@
+[rule]
+description = "Identifies the execution of PowerShell scripts with keywords from known open source Empire penetration testing tool."
+id = "a014e5b8-e793-46a4-a006-57c2f908ece1"
+license = "Elastic License v2"
+name = "PowerShell Empire Script Execution"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+ (process.name in~ ("powershell.exe") or process.Ext.api.parameters.app_name == "PowerShell") and
+  process.Ext.api.parameters.buffer :
+               ("*%256*%256*-bxor*%256*",
+                "*$data ($IV+$K)*|IEX*",
+                "*:CurrentListenerName*:ControlServers*",
+                "*/admin/get.php,/news.php,/login/process.php*",
+                "*/login/process.php*",
+                "If($GPF)*")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

@@ -1,0 +1,50 @@
+[rule]
+description = """
+Identifies the execution of PowerShell with suspicious argument values. This behavior is often observed during malware
+installation leveraging PowerShell.
+"""
+id = "97c40962-ab00-4741-b8f9-8c03b5f0eaa7"
+license = "Elastic License v2"
+name = "Potential PowerShell Empire Execution"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and process.name : "powershell.exe" and
+ process.command_line : ("* -noP -sta -w 1 -enc  SQBmACgAJABQAFMAV*",
+                         "* hidden -e SQBmACgAJABQAFMAV*",
+                         "* -noP -sta -w 1 -enc  IAAgA*",
+                         "*LwBkAG8AdwBuAGwAbwBhAGQALwBwAG8AdwBlAHIAcwBoAGUAbABsAC8AJw*",
+                         "*AvAGQAbwB3AG4AbABvAGEAZAAvAGMAcwBoAGEAcgBwAC8AIgApADsA*",
+                         "*AAKAAkAEkAVgArACQASwApACkAfABJAEUAWAA=*",
+                         "*IAAgACYAKAAiAHsAMgB9AHsAMAB9AHsAMQB9ACIA*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

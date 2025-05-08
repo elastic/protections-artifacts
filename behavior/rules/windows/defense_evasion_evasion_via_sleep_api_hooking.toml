@@ -1,0 +1,44 @@
+[rule]
+description = """
+Identifies attempts to hook the Sleep function. This may indicate an attempt to evade detection by tampering the normal
+behavior of this function to obfuscate the malware content in memory while sleeping.
+"""
+id = "a4e1883e-e203-4b65-9cb0-b582081b0bf8"
+license = "Elastic License v2"
+name = "Evasion via Sleep API Hooking"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect", "VirtualProtectEx") and
+ process.Ext.api.metadata.target_address_name == "kernel32.dll!Sleep" and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("FireEye, Inc.", "Sophos Ltd", "Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Trend Micro, Inc.", "Symantec Corporation", "Bitdefender SRL", "Carbon Black, Inc.")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and 
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("d0fe1eecad868460c162fd40cacf2ac954008b2de1234b2d1cd3b1e361f5e6c0", "e376f3c42c5806ccc2f9051db611d14057444dd6012b0a80f5e50aeea7a4d97a")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

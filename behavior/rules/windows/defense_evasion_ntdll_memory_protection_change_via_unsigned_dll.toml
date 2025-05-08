@@ -1,0 +1,86 @@
+[rule]
+description = """
+Identifies attempts to change memory protection of NTDLL from an unsigned final user module, this module is often
+targeted by malware for functions unhooking.
+"""
+id = "29688edf-a003-42e4-8d79-c958cffce9fc"
+license = "Elastic License v2"
+name = "NTDLL Memory Protection Change via Unsigned DLL"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and process.Ext.token.integrity_level_name != "low" and
+ process.Ext.api.metadata.target_address_name == "ntdll.dll" and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and process.Ext.api.parameters.size > 4096 and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrLoadDll*", "*ntdll.dll!LdrUnloadDll*")) and
+ not process.thread.Ext.call_stack_final_user_module.path like
+                                          ("?:\\program files\\*",
+                                           "?:\\program files (x86)\\*",
+                                           "?:\\windows\\assembly\\nativeimages_*",
+                                           "?:\\windows\\syswow64\\cyinjct.dll",
+                                           "?:\\windows\\system32\\tmumh\\*\\tmmon64.dll",
+                                           "?:\\windows\\winsxs\\*\\mfc??.dll") and
+ not process.thread.Ext.call_stack_final_hook_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*") and
+ not (process.Ext.api.parameters.size == 4096 and
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*chrome_elf.dll!GetInstallDetailsPayload*", "*chrome_elf.dll!DumpHungProcessWithPtype_ExportThunk*", "*mozglue.dll!??MAwakeTimeStamp*", "*firefox.exe!TargetNtUnmapViewOfSection*", "*firefox.exe!IsSandboxedProcess*"))) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("c:\\program files\\*", "c:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                  $entry.trusted == true and $entry.subject_name in ("Carbon Black, Inc.", "MUSARUBRA US LLC", "Microsoft Windows Hardware Compatibility Publisher", "Kaspersky Lab JSC", "AO Kaspersky Lab", "Palo Alto Networks (Netherlands) B.V.", "G DATA CyberDefense AG")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("b27b7d2ac43c6c734aa9e370afc987704f4bd8ba11bc5199a8c3bc5b07b2600c",
+                                                                    "85f238fb7ace3cbdf7c29c72b01307c440f13491b07a509cbc5b9f257a637164",
+                                                                    "55f3206cf9bb092aef6a61508683144afe21ddf930686433bb233e2e233be38c",
+                                                                    "b152de9afc373bba831dc9c1b137668462ae6d46ccd46815f2ffcc7f1bfc7056",
+                                                                    "991042b4a0eb46fdfddb6f9118d046dc1ff500743ff01a8584ad5e73c092b188",
+                                                                    "7f6f5855d4968235163d75c62ab82e8fdc7cf3c83de34e3c5a0666e2d08a0001",
+                                                                    "b27b7d2ac43c6c734aa9e370afc987704f4bd8ba11bc5199a8c3bc5b07b2600c",
+                                                                    "ddcbecf2cd2cd4904cf21e3db40c6a918df0ed3b258473fc5d6e2688dee72696",
+                                                                    "18d1bae077da62bb5cf5bfa6a6c5c38ac9ade57f098ea2b357fab477e85f1c25",
+                                                                    "a0c662a21ba02f2b997907ad113097856916fc3683331e24d065e864213ff379",
+                                                                    "16f1b19c60f80ae33c5b4fef4acd38454f11bbc965dcdd622db0d1c5bb65b931",
+                                                                    "023983f43bb97fd6c909df5012c142140650eff6921a9b0db33c0f558402988d",
+                                                                    "01f46f2401df22465bf2b3f3d59343d14dcf6aada6747e386f1adb965af7b3c3",
+                                                                    "680dc9c393faad3851147bcbb3c5a1fd29b8ed61ddf1bf416f4415132d85f784",
+                                                                    "d59c12264054c84d5e988d4c340fe9d83d2f646f240b5fd52b9bf8564b0dd164",
+                                                                    "9becd39f90077a5ab064681c0a1be139d15be9ce434bacd48cd1dc894d3911cb",
+                                                                    "bb7b4184ea19f248c34f6fb670d37e3062f1648aacc98e009cec1a58c78e8871",
+                                                                    "8df8b4e86a9e96baa92bcd9cf1fca189565a90d815630df899d72ac6eefcf852",
+                                                                    "1902241e12adbdf40ed4dafc410ccbcf8e07fce117d540dabbc2f75ff371f5be",
+                                                                    "7117da40b5cd080575863842e2281576f9b6d1d41cb250690a13aef9cc6436c5",
+                                                                    "e06439cebb8280c46d0aa538ec89b4af4659e7f2915c5787b239871c9dfd65a5",
+                                                                    "f5f02a15419cbad6b0ea2eb9e986d25f13d23abf8e6b8b32ccf18e427f6c48aa",
+                                                                    "2496a1ad22ed1917037e5d6747e5401c50612cb0e3c9cf32a3a1233ebb53207c",
+                                                                    "4b0b5c6e06f7df6dd89dcb027200f6f86b7b4d7dc274a095a82bb609d8cdbe38",
+                                                                    "05b70f473543119cd831f9fc1cd2fbcdc7a3e1938c8a5cb208a2dda017433a7d",
+                                                                    "967189adfbc889fde89aafc867f7a1f02731f8592cf6fd5a4ace1929213e2e13",
+                                                                    "f216ea8efb5b3bb9ad3d938fb9ac07e3b8f78c2c92faab03d2c468d0b6798a5a",
+                                                                    "dea0369456f49fcb4fc5afa42fffb69ae1e19ea238d18e32d9c498d69ab12c69",
+                                                                    "4d40d7064907cf932abae04ef8864ca7288af6993e1ff9e958bd9ac756f62808",
+                                                                    "bfe6fd180245ec727fbc538b11ed59d714b3d794d4fadb2dc76d8a019422066a",
+                                                                    "90c2f3d2bceafb50fb4468bda7a68025f12a23673f151839cae56e2b1ce0a74d",
+                                                                    "3c3c4dcec5b68807e874455021a133b5f5945af86cb9149efed146065201039a")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

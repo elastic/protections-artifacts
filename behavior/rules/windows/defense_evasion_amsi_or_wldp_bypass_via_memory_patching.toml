@@ -13,7 +13,7 @@ reference = [
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 api where
@@ -53,6 +53,7 @@ api where
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.subject_name in ("Bitdefender SRL", "Parallels International GmbH") and $entry.status == "trusted") and
  not process.thread.Ext.call_stack_final_user_module.path like
                                                             ("c:\\windows\\sys?????\\apphelp.dll",
+                                                             "c:\\windows\\syswow64\\esensordbi.dll",
                                                              "c:\\program files\\bitdefender\\endpoint security\\bdhkm\\*\\bdhkm64.dll",
                                                              "c:\\program files (x86)\\internet explorer\\ieshims.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))

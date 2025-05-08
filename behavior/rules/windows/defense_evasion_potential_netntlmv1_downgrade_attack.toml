@@ -1,0 +1,40 @@
+[rule]
+description = """
+Identifies registry modification to force the system to fall back to NTLMv1 for authentication. This modification is
+possible with local administrator privileges and is commonly referred to as a NetNTLMv1 downgrade attack.
+"""
+id = "6179bd21-a2ca-40c0-bfef-77aab4e99432"
+license = "Elastic License v2"
+name = "Potential NetNTLMv1 Downgrade Attack"
+os_list = ["windows"]
+reference = [
+    "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level",
+]
+version = "1.0.2"
+
+query = '''
+registry where event.action == "modification" and registry.value == "LmCompatibilityLevel" and registry.data.strings in ("2", "1", "0")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -2259,26 +2259,6 @@ rule Windows_Generic_MalCert_afe226f4 {
         all of them
 }
 
-rule Windows_Generic_MalCert_d9a0af1c {
-    meta:
-        author = "Elastic Security"
-        id = "d9a0af1c-0aed-460d-9c33-4fbcabbb1205"
-        fingerprint = "302c219a7ae1a6f962bea4cb1e920e07d063fd5533852015a0e9c5cfdcf49442"
-        creation_date = "2025-02-05"
-        last_modified = "2025-02-10"
-        threat_name = "Windows.Generic.MalCert"
-        reference_sample = "1ed9d2d773a2f9ac13fbf53d806dee30d43ab5b736513fafb5eb5abf23940462"
-        severity = 50
-        arch_context = "x86"
-        scan_context = "file"
-        license = "Elastic License v2"
-        os = "windows"
-    strings:
-        $a1 = { 01 02 02 10 66 77 7C E3 BF 34 92 24 23 90 B8 6D BF 64 8E E6 }
-    condition:
-        all of them
-}
-
 rule Windows_Generic_MalCert_4b7c2e6d {
     meta:
         author = "Elastic Security"

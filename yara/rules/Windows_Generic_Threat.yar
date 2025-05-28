@@ -770,6 +770,27 @@ rule Windows_Generic_Threat_0350ed31 {
         all of them
 }
 
+rule Windows_Generic_Threat_13236f14 {
+    meta:
+        author = "Elastic Security"
+        id = "13236f14-3557-4ad9-aa19-78e79b2efd4e"
+        fingerprint = "8b05f1cd70c604619f0f45467da05efa7a01a9dd49cd4e3e7fc22de814489932"
+        creation_date = "2024-01-08"
+        last_modified = "2025-05-27"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "a46bbcce396495c513190b272d3bc43d6579a201f5e8d103628c62888a82fa8b"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 83 EC 20 48 89 CB 48 89 D6 48 89 D8 48 63 40 3C 48 8D 04 03 8B 80 88 00 00 00 4C 8D 34 18 4D 33 ED 48 33 FF 41 8B 46 20 48 8D 04 18 41 8B CD 03 C9 03 C9 8B C9 8B 04 08 48 8D 04 18 48 89 C1 }
+        $b1 = "Trojan.Fabookie.Gen."
+    condition:
+        $a1 and not $b1
+}
+
 rule Windows_Generic_Threat_a1cef0cd {
     meta:
         author = "Elastic Security"
@@ -3678,6 +3699,46 @@ rule Windows_Generic_Threat_2f726f2d {
         os = "windows"
     strings:
         $a1 = { 55 8B EC 83 EC 0C 89 4D F8 8B 45 F8 83 78 08 00 75 04 32 C0 EB 26 ?? ?? ?? ?? ?? ?? 89 4D F4 6A 00 8B 55 F8 8B 42 08 50 FF 55 F4 85 C0 74 06 C6 45 FF 01 EB 04 C6 45 FF 00 8A 45 FF 8B E5 5D C3 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_23ead7ed {
+    meta:
+        author = "Elastic Security"
+        id = "23ead7ed-72d7-43d8-a840-7babf77b3a40"
+        fingerprint = "14c76873b8b58c5bffd18790ae9c43170313766b55b725dc5ccd4abcf1e28d3a"
+        creation_date = "2025-01-07"
+        last_modified = "2025-05-27"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "0bcd82ed4ea3e12cbaabc50df612d48078604e4d0985e9a240afc24630afa4d7"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 64 8B 0D 14 00 00 00 8B 89 00 00 00 00 3B 61 08 0F 86 6D 01 00 00 83 EC 18 8B 44 24 1C 89 04 24 0F B6 4C 24 20 0F B6 C9 89 4C 24 04 8B 4C 24 24 89 4C 24 08 8B 4C 24 28 89 4C 24 0C 8B 4C 24 2C }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_Threat_3055c14a {
+    meta:
+        author = "Elastic Security"
+        id = "3055c14a-3c32-4f42-8ea0-4a6add8174bc"
+        fingerprint = "de7955235c4dac09ef5ae7228ef5cc8205c17e441132e77dee3697629d9824f0"
+        creation_date = "2025-01-09"
+        last_modified = "2025-05-27"
+        threat_name = "Windows.Generic.Threat"
+        reference_sample = "69e0e00babc6365144a98c2866353ef973b7dfe69ae37068f807d4b12c017161"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 48 81 EC E0 00 00 00 48 8B F1 ?? ?? ?? ?? ?? ?? 48 63 F8 85 C0 75 11 48 8B B4 24 F8 00 00 00 48 81 C4 E0 00 00 00 5F C3 8D 47 01 48 89 9C 24 F0 00 00 00 48 63 C8 B8 02 00 00 00 48 F7 E1 }
     condition:
         all of them
 }

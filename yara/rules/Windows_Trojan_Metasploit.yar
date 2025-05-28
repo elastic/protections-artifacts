@@ -371,3 +371,41 @@ rule Windows_Trojan_Metasploit_47f5d54a {
         any of them
 }
 
+rule Windows_Trojan_Metasploit_0cc81460 {
+    meta:
+        author = "Elastic Security"
+        id = "0cc81460-f4bf-4f7d-952d-49396ac0d3e0"
+        fingerprint = "96651309f4b9b1643cf49086411562510182a9b777b167ff64792734df2eb294"
+        creation_date = "2025-05-02"
+        last_modified = "2025-05-27"
+        threat_name = "Windows.Trojan.Metasploit"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = /\x64\x8B\x52\x30.{1,30}\x7C\x02\x2C\x20\xC1\xCF\x0D.{40,80}\x75\xF4\x03\x7D\xF8\x3B\x7D\x24\x75\xE0/
+    condition:
+        all of them
+}
+
+rule Windows_Trojan_Metasploit_1ca1e384 {
+    meta:
+        author = "Elastic Security"
+        id = "1ca1e384-267b-49d8-ab4c-fb311892a07c"
+        fingerprint = "a04268061fc4680058a374ede37f91aa8b85a06da67a4c4d81dae256c72e25db"
+        creation_date = "2025-05-02"
+        last_modified = "2025-05-27"
+        threat_name = "Windows.Trojan.Metasploit"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 48 01 D0 66 81 78 18 0B 02 0F 85 72 00 00 00 8B 80 88 00 00 00 48 85 C0 74 67 48 01 D0 }
+    condition:
+        all of them
+}
+

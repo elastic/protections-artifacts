@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.action == "start" and
@@ -28,7 +28,7 @@ process where event.action == "start" and
    not (process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
         not process.code_signature.subject_name : "Microsoft*") and
 
-   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus") and
+   not (process.name : "rundll32.exe" and process.args : ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus", "url.dll,FileProtocolHandler")) and
 
    not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb",
                               "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0",

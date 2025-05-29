@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.50"
+version = "1.0.51"
 
 query = '''
 sequence by process.entity_id
@@ -58,7 +58,8 @@ sequence by process.entity_id
                      "Intel(R) Software Development Products", "Commvault Systems, Inc.", "AAC Infotray AG",
                      "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED", "ClaimMaster Software LLC", "Cellebrite DI LTD",
                      "Riot Games, Inc.", "Autodesk, Inc.", "ACCA software S.p.A.", "Tempus Technologies, Inc.",
-                     "NextgenId, Inc.", "Cloud Software Group, Inc.") and
+                     "NextgenId, Inc.", "Cloud Software Group, Inc.", "Tempus Technologies, Inc.", "NextgenId, Inc.",
+                     "Cloud Software Group, Inc.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name in~ ("msedge.exe", "msedgewebview2.exe") and
@@ -106,7 +107,11 @@ sequence by process.entity_id
                     "63f2a4be0dfbaf2b9740aa5c2320d0290451d6d5581cc6f8e183ced9ea796d95",
                     "30534b04d137543932bc0e66fc778d772ca5d90c0b5faec74a842cad8d50ade8",
                     "fc0ea005db332feec00e6c34e36de85469d24074c8af23cea84b72eb0fa7fb85",
-                    "cffea8d18419170baded53d75a8d1b8d20170c21ef2d4bebddfb2efcb89a641c") and
+                    "cffea8d18419170baded53d75a8d1b8d20170c21ef2d4bebddfb2efcb89a641c",
+                    "ca52dce8cc2aecc23138a524683ad608b4a5eaed9a7a10336e4cf6c7b9d6e5e0",
+                    "b4aa6923bd807af4433c968aa1ded17a3bf8e36f1053fe24dc31dd5a8eb9f4ce",
+                    "4acdfb075f5a801b976819cd22bc3a930ad5f8ee92de2d5ad36b0a4f1e5a8b24",
+                    "1c237e9015c81487aa67d56f8aa4788fbb6bfb3039e455485376712cfc978e62") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -131,7 +136,10 @@ sequence by process.entity_id
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\NetworkManagementInstall.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\staging\\_new_setup.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\MAV-Installer.exe",
-                                    "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe"))
+                                    "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe")) and
+  not process.executable :
+                  ("C:\\Program Files (x86)\\MultiExtractor\\MultiExtractor.exe",
+                   "C:\\Program Files (x86)\\Naverisk\\Agent\\Packages\\SoftwareScanPackage\\SoftwareScanner\\Naverisk.Agent.SoftwareScanner.exe")
   ]
  [library where
   dll.name in~ ("ws2_32.dll", "wininet.dll", "winhttp.dll") and
@@ -177,6 +185,7 @@ sequence by process.entity_id
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
                           "41c64?0c01833d*",
                           "c6430c0148ba*f87f0000833a00740c*",
+                          "488b8d70ffffffc6410c01833d*",
                           "c6470c01833d*",
                           "a3b8eb*",
                           "a314a2e40585c*",
@@ -245,7 +254,9 @@ sequence by process.entity_id
                           "5356578965e880*6a015b0f85f502000088*",
                           "8945a88b7b0c037ddc8bf7ac84c07*",
                           "89854d294400c78551294400000000008b95d83044008b0685c075038b461003c20385512944008b188b7e1003fa03bd5129440085db0f84a2000000f7c30000",
-                          "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc"))
+                          "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc",
+                          "ebfecc000073c4f87f0000c0f776c4f87f0000703c76c4f87f0000000000000000000000000000000000004578697454687265616400006b00650072006e0065",
+                          "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424"))
   ]
   until [process where event.action == "end"]
 '''

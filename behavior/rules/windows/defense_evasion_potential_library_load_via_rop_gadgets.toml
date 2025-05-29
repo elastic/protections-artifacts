@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 library where process.pid != 4 and
@@ -33,7 +33,8 @@ library where process.pid != 4 and
                                       "C:\\Windows\\System32\\ntdll.dll!TpCallbackMayRunLong*", "C:\\Windows\\System32\\KernelBase.dll!GlobalUnlock+*",
                                       "C:\\Windows\\System32\\ntdll.dll!NtGetTickCount*", "C:\\Windows\\System32\\ntdll.dll!NtSetDebugFilterState*",
                                       "C:\\Windows\\System32\\ntdll.dll!NtWaitForDebugEvent*", "C:\\Windows\\System32\\ntdll.dll!RtlEncodeRemotePointer*",
-                                      "C:\\Windows\\System32\\ntdll.dll!SbExecuteProcedure*")) and
+                                      "C:\\Windows\\System32\\ntdll.dll!SbExecuteProcedure*", "C:\\Windows\\System32\\ntdll.dll!MD4Init*",
+                                      "C:\\Windows\\System32\\ntdll.dll!ZwWaitForDebugEvent+*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
  not dll.path : ("?:\\Windows\\assembly\\GAC_32\\System.Data\\*\\System.Data.dll", "C:\\Windows\\System32\\umppc*.dll")

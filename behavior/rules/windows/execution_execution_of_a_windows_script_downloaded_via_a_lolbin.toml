@@ -7,7 +7,7 @@ id = "f60d4c82-2de5-4c70-95f5-cde9f3ad41a7"
 license = "Elastic License v2"
 name = "Execution of a Windows Script Downloaded via a LOLBIN"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -15,7 +15,7 @@ sequence by process.parent.entity_id with maxspan=1m
   (process.pe.original_file_name : ("certutil.exe", "bitsadmin.exe", "CertReq.exe", "curl.exe") or
    process.executable : "?:\\Windows\\Sys*\\OpenSSH\\sftp.exe") and
   process.command_line : ("*download*", "*transfer*", "*-decode*", "*http*", "* -o*", "* --output*")]
- [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "cscript.exe", "mshta.exe") and
+ [process where event.type == "start" and process.pe.original_file_name : ("wscript.exe", "mshta.exe") and
   not (process.working_directory : "E:\\*" and process.name : "cscript.exe" and process.args : ("loadpromo.vbs", "LoadMasterStocks.vbs")) and
   not (process.parent.name : "cmd.exe" and
        process.parent.args :

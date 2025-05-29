@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 process where event.action == "start" and
@@ -149,7 +149,8 @@ process where event.action == "start" and
               "C:\\Windows\\System32\\taskkill.exe",
               "C:\\Windows\\System32\\compact.exe",
               "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\MSBuild\\Current\\Bin\\MSBuild.exe",
-              "C:\\Program Files (x86)\\Citrix\\Licensing\\LS\\udadmin.exe") and
+              "C:\\Program Files (x86)\\Citrix\\Licensing\\LS\\udadmin.exe",
+              "C:\\Windows\\System32\\csvde.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */

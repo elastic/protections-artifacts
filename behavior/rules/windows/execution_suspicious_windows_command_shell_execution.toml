@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 process where event.action == "start" and
@@ -30,8 +30,6 @@ process where event.action == "start" and
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 
-  (process.args : "echo" and process.parent.name : ("wscript.exe", "mshta.exe")) or
-
   process.args : ("1>?:\\*.vbs", "1>?:\\*.js") or 
   
   (process.args : "explorer.exe" and process.args : "type" and process.args  :  ">" and process.args : "start") or
@@ -50,6 +48,7 @@ process where event.action == "start" and
 
   /* false positives */
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
+  not (process.parent.name : "cmd.exe" and process.command_line : "*!iodp.wapps!PitaLogger*") and
   not process.parent.executable :
                 ("?:\\Perl64\\bin\\perl.exe",
                  "?:\\Program Files\\nodejs\\node.exe",
@@ -127,7 +126,7 @@ process where event.action == "start" and
        process.command_line : ("cmd /C %JENV_0%", "/c echo %MENU_SYSTEM%", "/c echo %NJSEXIT7%", "%OPENER% %f%")) and
   not (process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\RublonForWindows-?.?.?.tmp" and
        process.command_line : "*https://core.rublon.net/api/app/init*") and
-  not process.command_line : ("cmd /c echo AMD64", "cmd /c echo x86")
+  not process.command_line : ("cmd /c echo AMD64", "cmd /c echo x86", "C:\\Windows\\system32\\cmd.exe /c mshta \"javascript:code(close(new ActiveXObject('Scripting.FileSystemObject').GetStandardStream(1).Write*")
 '''
 
 min_endpoint_version = "7.15.0"

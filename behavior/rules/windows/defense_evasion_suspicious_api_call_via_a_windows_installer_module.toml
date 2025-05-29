@@ -7,7 +7,7 @@ id = "43e9d254-28e9-463d-9bc3-5e51721d4b8a"
 license = "Elastic License v2"
 name = "Suspicious API call via a Windows Installer Module"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.name : "msiexec.exe" and
@@ -23,7 +23,13 @@ api where process.name : "msiexec.exe" and
                                              "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*",
                                              "?:\\windows\\sys?????\\kernelbase.dll!CreateProcess*")) and
    not _arraysearch(process.thread.Ext.call_stack, $entry,
-                    $entry.callsite_trailing_bytes in ("5a8bf850528b338b432003c28b08894b208b431c03c28b08894b1c03f28b4b0c03ca8d431c505756ffd15a580343088bf8528bf08b46fc83c0042bf08956088b"))
+                    $entry.callsite_trailing_bytes in ("5a8bf850528b338b432003c28b08894b208b431c03c28b08894b1c03f28b4b0c03ca8d431c505756ffd15a580343088bf8528bf08b46fc83c0042bf08956088b")) and
+   not (process.Ext.api.metadata.target_address_path == "c:\\windows\\syswow64\\sxs.dll" and process.Ext.api.parameters.size <= 4096) and
+   not process.Ext.api.metadata.target_address_path like "c:\\windows\\installer\\msi*.tmp" and
+   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                          ("85da69c82e3d1faff1e60e6853e30230fc5e3b64faf4245e20089fe75912d910",
+                                           "09e957a1d31b9cf8666add20613bf60b6a2d294586f8887961cc6a0e24680fb8",
+                                           "3c60786fddc7fb00b2dab7bd2b6c33340e07c73ea8e3d6c47754bb9d15d83166")
 '''
 
 min_endpoint_version = "8.10.0"

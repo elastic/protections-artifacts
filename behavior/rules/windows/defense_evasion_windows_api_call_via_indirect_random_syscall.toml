@@ -7,7 +7,7 @@ id = "9bc5d4cd-5748-4425-a4f3-7a704a11029d"
 license = "Elastic License v2"
 name = "Windows API Call via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -78,7 +78,8 @@ api where
                                                                   "*ntdll.dll!ZwDelayExecution*",
                                                                   "*ntdll.dll!ZwAcceptConnectPort*",
                                                                   "*kernelbase.dll!VirtualAllocExNuma*",
-                                                                  "*ntdll.dll!ZwQueryDefaultUILanguage*")) and
+                                                                  "*ntdll.dll!ZwQueryDefaultUILanguage*",
+                                                                  "*\\ntdll.dll!NtWaitForKeyedEvent*")) and
 
  not (process.thread.Ext.call_stack_summary : "ntdll.dll|Unknown|ntdll.dll*" and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll!*TestAlert*")) and
@@ -91,7 +92,8 @@ api where
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                               ("47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22",
                                                "d1e49681e09cedf8a5751538273bc69d2c78d50469e8bc95203fc2643fa17a5f",
-                                               "00e8784a6e1e1dce13d49e2e978adaccfed74f9846d43feb1ad94c1aff52dfc3")
+                                               "00e8784a6e1e1dce13d49e2e978adaccfed74f9846d43feb1ad94c1aff52dfc3",
+                                               "574d3ef726c6ba1f7af31823c3820af7d86892b7e760de6817dbc3be0a09fbc4")
 '''
 
 min_endpoint_version = "8.10.0"

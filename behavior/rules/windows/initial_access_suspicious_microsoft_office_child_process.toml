@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Microsoft Office Child Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -91,7 +91,8 @@ process where event.action == "start" and
 	not (process.name : "rundll32.exe" and
 	     process.args : ("?:\\WINDOWS\\system32\\hotplug.dll,HotPlugSafeRemovalDriveNotification",
 	                     "printui.dll,PrintUIEntry",
-	                     "InetCpl.cpl,ClearMyTracksByProcess")) and
+	                     "InetCpl.cpl,ClearMyTracksByProcess",
+	                     "url.dll,FileProtocolHandler")) and
 	not (process.name : "hh.exe" and process.args : ("?:\\Program Files (x86)\\*", "?:\\Program Files (x86)\\*")) and
 	not (process.name : "rundll32.exe" and process.command_line : "\"C:\\WINDOWS\\SysWOW64\\rundll32.exe\" --eoim") and
 	not (process.name : "rundll32.exe" and process.args : "?:\\PROGRA~2\\MICROS~*\\Office*\\GrooveUtil.DLL,GetResourceModulePath") and

@@ -8,7 +8,7 @@ id = "547636af-cad2-4be0-a74e-613c7bb86664"
 license = "Elastic License v2"
 name = "Suspicious Execution from MSSQL Service"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -39,7 +39,8 @@ process where event.action == "start" and
 not process.executable :
               ("\\Device\\HarddiskVolume?\\MSSQL12.ITSM\\MSSQL\\Binn\\DatabaseMail.exe",
                "\\Device\\HarddiskVolume?\\MSSQL13.GP\\MSSQL\\Binn\\DatabaseMail.exe",
-               "\\Device\\HarddiskVolume?\\MSSQL13.MSSQLSERVER\\MSSQL\\Binn\\DatabaseMail.exe")
+               "\\Device\\HarddiskVolume?\\MSSQL13.MSSQLSERVER\\MSSQL\\Binn\\DatabaseMail.exe",
+               "S:\\MSSQL\\MSSQL13.MSSQLSERVER\\MSSQL\\Binn\\slssqlmaint.exe")
 '''
 
 min_endpoint_version = "7.15.0"

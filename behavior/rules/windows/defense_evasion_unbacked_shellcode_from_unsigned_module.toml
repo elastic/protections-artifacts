@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -101,7 +101,7 @@ api where
                                   "965162abde211f72c80062b1799eb4385d3e9322c4b38b8da9dc718a769570b7",
                                   "d355b62cc7dc5b8f3ee5e95a8ddddc818f6f84c5a16799d78b1cb3d786e2bb80") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("isrt.dll", "issetup.dll", "dbexpida.dll", "cyinjct.dll", "_isres.dll", "bass.dll") and
- not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance like "msi*.tmp") and
+ not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance like ("msi*.tmp", "_isres.dll", "itcombo6.ocx")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                                                  ("c:\\windows\\installer\\msi*.tmp",
                                                                   "c:\\windows\\assembly\\nativeimages_*",

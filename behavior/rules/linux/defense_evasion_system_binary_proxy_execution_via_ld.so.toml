@@ -8,14 +8,15 @@ license = "Elastic License v2"
 name = "System Binary Proxy Execution via ld.so"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/ld.so/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like (
   "/lib/ld-linux*.so*", "/lib64/ld-linux*.so*", "/usr/lib/ld-linux*.so*", "/usr/lib64/ld-linux*.so*"
 ) and not (
-  process.executable == "/usr/bin/uptime" or
-  process.parent.command_line like ("*/home/*/JetBrains/*", "*/snap/intellij-idea-ultimate*")
+  process.executable in ("/usr/bin/uptime", "/usr/bin/xkbcomp") or
+  process.parent.command_line like ("*/home/*/JetBrains/*", "*/snap/intellij-idea-ultimate*") or
+  process.command_line like "sh -c*/usr/bin/xkbcomp*"
 )
 '''
 

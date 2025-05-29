@@ -9,11 +9,11 @@ license = "Elastic License v2"
 name = "Network Connection to Oast Domain via Package Service or Script"
 os_list = ["macos"]
 reference = ["https://socket.dev/blog/weaponizing-oast-how-malicious-packages-exploit-npm-pypi-and-rubygems"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
- [process where event.type == "start" and event.action == "exec" and process.name like~ ("python*", "node", "ruby*")]
+ [process where event.type == "start" and event.action == "exec" and process.name like~ ("python*", "node", "ruby*", "perl")]
  [network where event.type == "start" and destination.domain like~ "*.oast*"]
 '''
 

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Evasion via File Name Masquerading"
 os_list = ["windows"]
 reference = ["https://www.pcmag.com/encyclopedia/term/double-extension"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -41,7 +41,11 @@ process where event.action == "start" and
               "fbd43f9a3567a19427894e61052d1b46f70b7474357ef50de9dc8749fc950509",
               "96234bb98b3266e49ef74ac7accd4644b709355057d5a34b2966e9fa56aadcf3",
               "0ec0ebc7c71ee139ee29fca1e2447b5cc5ec79cb797deb8b560cb05fee3ca3a6",
-              "f4e3e2798fe830eac6990d83f568f6cfbba3a194a7787fe224aa1ba90976eaa7") and
+              "f4e3e2798fe830eac6990d83f568f6cfbba3a194a7787fe224aa1ba90976eaa7",
+              "3abbe0ab12a1baa4c0492c5dba9901f3176f23d35998e8f9a1f753880617523c",
+              "13fda552b026d0ecba34fbb488a57dbd29187ebef012874eda115ba5c876dade",
+              "3e562ff6f8616c623c82b25a6ab2fff7b2832ec2c53ce5c242d047a525f563ff",
+              "d0d177839db17d9f30aebe61594dde7e9e8ab82473f3947892cc88ad58939669") and
  not (process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and process.code_signature.trusted == true) and
  not (process.code_signature.subject_name : ("AVANQUEST SOFTWARE S.A.S", "Jernej Simončič") and process.code_signature.trusted == true) and 
  not process.executable :
@@ -49,7 +53,9 @@ process where event.action == "start" and
               "?:\\Program Files\\Ab Initio\\Ab Initio GDE 4.1.4.0\\Program Files\\ab_zip.exe",
               "C:\\Program Files\\GIMP 3\\lib\\gimp\\3.0\\plug-ins\\file-png\\file-png.exe",
               "C:\\Users\\*\\AppData\\Local\\Programs\\GIMP 3\\lib\\gimp\\3.0\\plug-ins\\file-png\\file-png.exe",
-              "\\Device\\Mup\\*\\file-png.exe")
+              "\\Device\\Mup\\*\\file-png.exe") and
+ not process.parent.executable : ("C:\\Program Files (x86)\\Visionet Systems Inc\\Visionet.DocVu.KofaxExtractionService\\Visionet.DocVu.KofaxExtractionService.exe",
+                                  "C:\\Program Files (x86)\\Visionet System Inc\\DocVuOcrService-NPF\\Visionet.DocVu.OCRService.exe")
 '''
 
 min_endpoint_version = "7.15.0"

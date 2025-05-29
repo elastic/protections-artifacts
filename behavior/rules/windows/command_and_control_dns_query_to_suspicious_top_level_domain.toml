@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -44,6 +44,7 @@ sequence by process.entity_id with maxspan=1m
                         "?:\\PROGRA~?\\MICROS~?\\*",
                         "?:\\WINDOWS\\Sys*\\shell32.dll,#44",
                         "?:\\PROGRA~?\\MICROS~2\\Office*\\MLCFG32.CPL,@0")) and
+   not process.parent.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe" and
    not process.hash.sha256 :
                    ("19a9ed41a69c74f130f53572aa1b07b1fa35d93a408dcf9d3f16f0fd72dd1e69",
                     "005f63a30438bf91d23790bfd6ab43d298e73c48024d7f48aec322b798035130",
@@ -80,7 +81,8 @@ sequence by process.entity_id with maxspan=1m
                              "?:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe",
                              "?:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe",
                              "C:\\Program Files\\ArcGIS\\Pro\\bin\\Python\\envs\\arcgispro-py?\\python.exe",
-                             "C:\\Program Files (x86)\\Wondershare\\MobileTrans\\MobileTrans.exe") and
+                             "C:\\Program Files (x86)\\Wondershare\\MobileTrans\\MobileTrans.exe",
+                             "C:\\Program Files (x86)\\Wondershare\\drfone\\DrFoneToolKit.exe") and
    not (process.name : "powershell.exe" and process.parent.executable : "?:\\Program Files\\Sophos\\Endpoint Defense\\SEDService.exe") and
    not (process.name : "powershell.exe" and process.args : "C:\\ProgramData\\NinjaRMMAgent\\uscripting\\customscript_gen_*.ps1")]
  [dns where

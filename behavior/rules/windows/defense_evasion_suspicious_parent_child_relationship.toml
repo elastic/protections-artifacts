@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -46,7 +46,7 @@ process where event.action == "start" and
      process.parent.name : ("python*", "powershell.exe", "rundll32.exe", "regsvr32.exe"))) or
 
    /* suspicious child processes */
-   (process.parent.name : "lsass.exe" and not process.name : ("lsass.exe", "WerFaultSecure.exe", "WerFault.exe", "efsui.exe") and
+   (process.parent.name : "lsass.exe" and not process.name : ("lsass.exe", "WerFaultSecure.exe", "WerFault.exe", "efsui.exe", "LsaIso.exe") and
     not (process.code_signature.subject_name in ("NoMachine S.a.r.l.", "AuthLite, LLC") and process.code_signature.trusted == true) and
     not process.hash.sha256 : ("bfcb8f057dae3df9c656ec983d165c1571dbb5e19b6310cc0e5f1bff4c063c1e",
                                "dd1731be5fccca0d15f2c8e4780debc2962e4c434a7a138fff631a6aa0165962",

@@ -4,18 +4,22 @@ id = "e6b77636-53e6-416f-81bb-863b74a896e8"
 license = "Elastic License v2"
 name = "Suspicious Windows Core Module Change"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
  process.Ext.api.metadata.target_address_name in ("ntdll.dll", "kernel32.dll", "kernelbase.dll") and
- process.Ext.token.integrity_level_name != "low" and
+ process.Ext.token.integrity_level_name != "low" and process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  process.Ext.api.parameters.size >= 10000 and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Kernel|*") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*ntdll.dll!LdrLoadDll*", "*ntdll.dll!LdrUnloadDll*")) and 
- not process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*.ni.dll") and
+ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*",
+                                                                "c:\\windows\\assembly\\nativeimages_*.ni.dll",
+                                                                "c:\\windows\\system32\\ntdll.dll",
+                                                                "c:\\windows\\syswow64\\ntdll.dll",
+                                                                "c:\\windows\\syswow64\\msvbvm??.dll") and
  not process.thread.Ext.call_stack_final_hook_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*") and
  not (process.thread.Ext.call_stack_final_user_module.path in ("c:\\windows\\system32\\apphelp.dll", "c:\\windows\\syswow64\\apphelp.dll") and
       process.Ext.api.metadata.target_address_name in ("kernel32.dll", "kernelbase.dll")) and
@@ -34,7 +38,13 @@ api where process.Ext.api.name == "VirtualProtect" and
                                                                     "92cf0c5c9248ec17b408a37021ea89144a9aeb71317e3c61b767eced3265d5af",
                                                                     "685774f56983b22fbd1f84880fe60f149ccf0322abe8dd09b7a0d81f4a5dd1f1",
                                                                     "da8c6bcefb5397d1763987dff1d99ff374c9643b27c1f8285d66fb99494b253b",
-                                                                    "bd5c092be2d1d5856041a743c90e64ba232badc3b1c3d063539cb328a91bd9ae") and
+                                                                    "bd5c092be2d1d5856041a743c90e64ba232badc3b1c3d063539cb328a91bd9ae",
+                                                                    "48cefaab52832b85dda4dd16b56d8dd97d433601bb4a72aec9affc2723588a4c",
+                                                                    "bd5c092be2d1d5856041a743c90e64ba232badc3b1c3d063539cb328a91bd9ae",
+                                                                    "1bb34f11b79fad256ca2e72ea7bcc618815632d585538e1e601c7fc5512ba72d",
+                                                                    "4c92f5bcefdec3e38aa8c30f14379c723e573587abe7e8c4fc77f1fae2a0d270",
+                                                                    "fe498b13e464d26beacdcba32bc3b26d356b52f9b251546831e3d86923a35d6b",
+                                                                    "8a882e25b9a7d49feee49c70ddc816720f82dccf0691076c098959fb3b2f4711") and
  not (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows", "Microsoft Corporation", ".NET")) and not process.Ext.api.behaviors == "image_rop") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",

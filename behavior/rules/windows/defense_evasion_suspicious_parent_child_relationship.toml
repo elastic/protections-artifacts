@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -74,7 +74,7 @@ process where event.action == "start" and
    not (process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeUpdate\\*\\MicrosoftEdgeUpdateCore.exe" and
         process.executable : "?:\\WINDOWS\\system32\\SearchProtocolHost.exe" and process.command_line : "*UsGthrFltPipeMssGthrPipe*") and
    not (process.executable : "?:\\Windows\\System32\\SearchProtocolHost.exe" and
-        process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe") and
+        process.parent.executable : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")) and
    not (process.name : "cmd.exe" and process.parent.executable : "?:\\Windows\\System32\\lsass.exe" and
         process.args : "C:\\AdPasswordSync\\passwd.bat") and
    not (process.executable :

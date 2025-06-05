@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Known TCP Port Traffic Tunneling"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.executable != null and
@@ -60,7 +60,8 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                                                                      "f35fdf794b7da936051845957ae9c966de5bf4ea760685ee06d6734ca10ebeee",
                                                                      "a8d7f313032a07b0fb72c372b091612b446114cb3bd8f37f910418fb471bc78d",
                                                                      "8990d0b061eb1c8ca8e6ec31542cdc7a1fa475e34ec0d7f556a4107d650c3df0",
-                                                                     "b1dce022aefe397c0db26e396712a5b074f9b0ef92555c1cf37454ec731d41ec") and
+                                                                     "b1dce022aefe397c0db26e396712a5b074f9b0ef92555c1cf37454ec731d41ec",
+                                                                     "c78b0d66fba7e4bd500f34223acd433d282f5dc7321e2887141be23049c31141") and
  not (process.name : "powershell.exe" and
       process.parent.executable : ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
                                    "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe"))

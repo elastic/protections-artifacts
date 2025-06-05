@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 api where process.Ext.api.behaviors == "direct_syscall" and
@@ -21,6 +21,7 @@ api where process.Ext.api.behaviors == "direct_syscall" and
     startswith(process.thread.Ext.call_stack_summary, process.thread.Ext.call_stack_final_user_module.name) and
     not process.thread.Ext.call_stack_final_user_module.path like "?:\\windows\\assembly\\nativeimages_*" and
     process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+    process.thread.Ext.call_stack_final_user_module.protection_provenance != "Kernel" and
     not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  ("f0d37ab8636685fdf3c81f2f1df5fb0a2cdba6e6daf10200c250a31a822f0f10",
                                   "8f7b60cb0dc32277e6e99ebfee047d5a587050a1fcd5c2f98be7204898d7b25d",
@@ -54,7 +55,41 @@ api where process.Ext.api.behaviors == "direct_syscall" and
                                   "3034311292fade8a24ab8e7312cfb7132153c14b9383439b527e8296fe06a492",
                                   "51855557b6215ae93482598f5de7e4875a8612d1a2645893905f0c35d321fd73",
                                   "19b7261bb6162e32eaaf7727d2f77b4647d95ff7554300726e2649ffa99b6eec",
-                                  "79b62fd3ed24ca4778dc0261c7570e71f3d0c83913c38f58ab1660dc7a670aee") and
+                                  "79b62fd3ed24ca4778dc0261c7570e71f3d0c83913c38f58ab1660dc7a670aee",
+                                  "ce0f4cd9d9af178aead83df4f46146f1c66cc2c3e600c8aafa0a392fc5ad9637",
+                                  "c572cbc2269ef4adca064f23edd04bbd360fb0e8de40abe90c2be35265fffd3f",
+                                  "9a2678818bdc614eab85cddb993daa4c783cd36d8c3eda95c2506a7e6e24698b",
+                                  "d0fe1eecad868460c162fd40cacf2ac954008b2de1234b2d1cd3b1e361f5e6c0",
+                                  "5c55fe4218757fea3012295b8284e967852f4df0c622b173dbdb51012edeeee0",
+                                  "4ae78c687615e7dc4c268d3eee519a19aa581e701b7e46e4bc7ee79501e83ad5",
+                                  "ecce95f1b2383a852c1b2226970453494c5bf315c2e0b2adda7e3142e028791e",
+                                  "545a3aec876c49c56693f48f5fde740487330ca097775d9a434157aabf25db10",
+                                  "a543689f34083f810e0184ec77d8ee9e57d44ebd6212af444853a3a89a3c82c0",
+                                  "5a8ae397c178fe9397a41b71b2046ded55feb409fadc30f4053194802f5c2dcd",
+                                  "60feb037f14dcc3d1f9adfc35647633cab48a652221b8e2e3c5d68b4313d7d0a",
+                                  "03c77f2408290a5b734a86d6a1bfc97739e2f54f165ae333c4eddb380e0adef7",
+                                  "d01b8dc8fbf8139a8b0c59a038c7ca755a87630ed242c306fb2b53985e545685",
+                                  "ea5f2055397fc76db031de944b10a27a6a7975713f2902df3a3970b65e271b4f",
+                                  "d01b8dc8fbf8139a8b0c59a038c7ca755a87630ed242c306fb2b53985e545685",
+                                  "ec5e3f367dc8663405dd3f3549e8b8d65d772b148e1e6d7d17ea4fdf5a95195c",
+                                  "7024db838ba2d2abb1ff1f96a91b0359cbc7f56d4acfc6c8d851d70fa8b49a1c",
+                                  "1bb34f11b79fad256ca2e72ea7bcc618815632d585538e1e601c7fc5512ba72d",
+                                  "b72a06025452c94223100a34efacddf3d81cf57f3941fa1f2a6dce66b9b54d5b",
+                                  "9c1b56c021a7fdf1d1aa008834499046227ace6f6c7d976ef89d27a84858fdb0",
+                                  "0743c51969f7d6eb123a60a8ae9e2451bbd0859b89a57c93cbf9c6e904d6defc",
+                                  "bc0715826ce01c4782065a28eaef6547dc60cd60b6069ef76e5a26635e510256",
+                                  "6e0f6c689e9b80c69445b574e705f79044c5fd148b9912c79f1381e96fe6edcb",
+                                  "c717ae53f81fbb66d2554e3c65c295cb2c98e9c817df9c0cdd378d92b5471d5c",
+                                  "50e219e52377465a403da3e1275c10579b3042bfbd03ae383648a81b53b4586e",
+                                  "58ac11fdd8de211df2a12d1dc8dafcab56ffdbcec0d0f41b4125de191b4f2180",
+                                  "1ba0f1f7aef9c790ad3e431b0850a51da6348e3a65c8620997f737b43215547b",
+                                  "94e333beccbc0d7199d0a9bf13922ef8f388e1d7f7e055ad8ec8ca6160b50067",
+                                  "3613fc46eab116864d28b7a3af1b7301fc0309bf3ba99c661a8c36ad5c848d02",
+                                  "98a27a37c5dbe1e115a0f43d2f0cc8afd332e3e5fb5e4c37e09e83e35dc8efb3",
+                                  "56b848c3c125a2a666b13e22ba75df2b3609632d5989bc57a8d5566924829373",
+                                  "dfc43850daabf4fec146d04a4c62b3a8679639d2cfa399d005e9fdd5387c2fac",
+                                  "2a373bf09a7f1d8abf1dafc50df8dadc073b9a9ec1283efcfc42fd5d66f2c57d",
+                                  "72c9da48314a77642d5505d019f454fd32f0933ed8a056fb9c9a18818eb4a6f5") and
     not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.metadata.target_address_name == "terminal64.exe" and
          process.thread.Ext.call_stack_final_user_module.name == "terminal64.exe")
 '''

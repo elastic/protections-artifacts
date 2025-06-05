@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.action == "start" and
@@ -26,7 +26,11 @@ not (process.code_signature.trusted == true and
      "Aptean, Inc.", "MICRO-STAR INTERNATIONAL CO., LTD.")) and
 
 not (process.executable : "C:\\Windows\\System32\\sc.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
-     process.command_line : "sc start LenovoPcManagerService")
+     process.command_line : "sc start LenovoPcManagerService") and
+not process.executable :
+                ("C:\\Program Files (x86)\\Ponds33\\Refined Method\\Main.exe",
+                 "C:\\Program Files (x86)\\Ponds33\\Underdrain\\UDMain.exe",
+                 "C:\\Program Files (x86)\\Ponds33\\NPCalc\\NPCalcMain.exe")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -7,7 +7,7 @@ id = "fb6939a2-1b54-428c-92a2-3a831585af2a"
 license = "Elastic License v2"
 name = "Connection to Dynamic DNS Provider by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -18,8 +18,9 @@ sequence by process.entity_id with maxspan=5m
                      "installutil.exe","RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "msiexec.exe",
                      "scp.exe", "ssh.exe") or
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
-                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
-                           "?:\\Windows\\Microsoft.NET\\*.exe")
+                           "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe") or
+
+     (process.executable : "?:\\Windows\\Microsoft.NET\\*.exe" and not (process.name:"dfsvc.exe" and process.parent.name : "rundll32.exe"))
      )
   ]
   [dns where

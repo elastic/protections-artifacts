@@ -7,7 +7,7 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -98,7 +98,8 @@ api where
                               "?:\\Program Files\\Aseproda\\VirtusTPV Net\\VirtusTPVNet.exe",
                               "?:\\Program Files (x86)\\VisualCron\\VisualCronClient.exe",
                               "?:\\Program Files (x86)\\Citrix\\ICA Client\\Receiver\\Receiver.exe",
-                              "?:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn\\game\\ffxiv_dx11.exe") and 
+                              "?:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn\\game\\ffxiv_dx11.exe",
+                              "C:\\Program Files (x86)\\Mitel\\MiContact Center\\Applications\\Ignite\\Ignite.exe") and
     not (process.code_signature.trusted == true and 
          process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc"))
 '''

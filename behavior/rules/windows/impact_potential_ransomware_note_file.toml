@@ -8,7 +8,7 @@ id = "5dba1130-72df-46f1-b581-18d9c866cb23"
 license = "Elastic License v2"
 name = "Potential Ransomware Note File"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=60s
@@ -20,7 +20,9 @@ sequence with maxspan=60s
     (process.pe.original_file_name == "WBADMIN.EXE" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*") or
     (process.pe.original_file_name == "iCACLS.EXE" and process.command_line : ("*/deny*S-1-1-0*", "*?:\\*\" /grant*Everyone:F*"))
   ) and
-  not process.parent.executable : "?:\\Program Files (x86)\\Faronics\\Deep Freeze\\*\\DFServ.exe"]
+  not process.parent.executable :
+                 ("?:\\Program Files (x86)\\Faronics\\Deep Freeze\\*\\DFServ.exe",
+                  "C:\\Program Files\\RecoveryConsole\\BackupFP.exe")]
  [file where event.action == "creation" and file.extension : ("hta", "txt", "readme") and
   ( 
    /* ransom note header file content */

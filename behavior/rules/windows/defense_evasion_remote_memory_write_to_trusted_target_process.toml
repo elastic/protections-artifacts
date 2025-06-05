@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -51,7 +51,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\system32\\hpzipm12.dll",
                               "c:\\windows\\system32\\lsasrv.dll",
                               "c:\\windows\\syswow64\\cwbunpls.dll",
-                              "c:\\windows\\system32\\shsvcs.dll") and
+                              "c:\\windows\\system32\\shsvcs.dll",
+                              "c:\\windows\\system32\\sxssrv.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("mfehcthe.dll", "system.core.ni.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
   not (process.thread.Ext.call_stack_final_user_module.name == "mscordbi.dll" and
@@ -177,7 +178,11 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "fe04a6ca7c35330dd0adf681aaf85ce9f6342a027c74776ea09e30517e02acd1",
                                    "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
                                    "4ab37b0f9c5fe3505e1ecfe0764aaa04838cf81f9e0a402425e057f7a251e621",
-                                   "ab7ba2df709c5ff7ee16a1038deaf1d795977b035a1ba08cc6d32ea9ff87bd80")
+                                   "ab7ba2df709c5ff7ee16a1038deaf1d795977b035a1ba08cc6d32ea9ff87bd80",
+                                   "a6967e7a3c2251812dd6b3fa0265fb7b61aadc568f562a98c50c345908c6e827",
+                                   "68a9b8395bc4593deff311046193ef71444767359622538c848363ddb1afb4c0",
+                                   "c982aa3d9e2bce5a6faec7a767f58ba6a622f07e7af6ca8abee4eb6b12492574",
+                                   "06990109b285c72e65d9f3f803738ee874a4dc9d505f384eee93b7bb6a8cf9b8")
 '''
 
 min_endpoint_version = "8.14.2"

@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence with maxspan=3m
@@ -19,6 +19,7 @@ sequence with maxspan=3m
                  "?:\\Windows\\system32\\wbem\\wmiprvse.exe", 
                  "?:\\WINDOWS\\system32\\svchost.exe",
                  "?:\\Windows\\System32\\sppsvc.exe",
+                 "C:\\Windows\\System32\\taskhost.exe",
                  "?:\\Windows\\system32\\printfilterpipelinesvc.exe", 
                  "?:\\Windows\\syswow64\\printfilterpipelinesvc.exe",
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\printfilterpipelinesvc.exe", 
@@ -54,20 +55,28 @@ sequence with maxspan=3m
     not (process.executable : "C:\\Program Files\\Portrait Displays\\HP Display Control Service\\DeviceCheck.exe" and
          process.parent.executable : "C:\\Windows\\System32\\pacjsworker.exe") and
 
-    not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\csc.exe" and
+    not (process.executable : ("C:\\Windows\\Microsoft.NET\\Framework\\*\\csc.exe", "C:\\Windows\\SysWOW64\\cmd.exe") and
          process.parent.executable : "C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe") and
     not process.executable :
                      ("C:\\Program Files\\HP\\hpssacli\\bin\\hpssacli.exe",
                       "C:\\Program Files (x86)\\ManageSoft\\Uploader\\ndupload.exe",
                       "C:\\Program Files (x86)\\Google\\GoogleUpdater\\*\\updater.exe",
                       "C:\\Program Files\\Npcap\\NPFInstall.exe",
-                      "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\metroapps.exe") and
+                      "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\metroapps.exe",
+                      "C:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe",
+                      "C:\\Program Files (x86)\\SolarWinds\\Agent\\Plugins\\ADMProbe\\nping.exe") and
     process.hash.sha256 != "8ba8760bcb924e1e7943c3008a80006b29737808cc41a93cabcfeaaec9785276" and
     not process.parent.executable : "C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe" and
     not (process.code_signature.subject_name in ("Sophos Ltd", "Entrust Datacard Corporation", "Com4Cure GmbH", "Martin Prikryl", "Stellar Cyber Inc", "Nmap Software LLC") and
          process.code_signature.trusted == true) and
     not (process.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and
-         process.parent.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe")
+         process.parent.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe") and
+    not (process.parent.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseNdr.exe" and
+         process.executable : ("C:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe", "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")) and
+    not (process.parent.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\ngentask.exe" and
+         process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\ngen.exe") and
+    not (process.parent.executable : "C:\\Windows\\System32\\winlogon.exe" and process.executable : "C:\\Windows\\System32\\LogonUI.exe") and
+    not (process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe")
    ] by process.parent.entity_id
 '''
 

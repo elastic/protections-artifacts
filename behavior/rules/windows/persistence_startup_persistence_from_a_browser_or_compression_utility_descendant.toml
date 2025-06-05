@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Startup Persistence from a Browser or Compression Utility Descendant"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -50,8 +50,11 @@ sequence by process.entity_id with maxspan=5m
               "d06598f2f203cec7a7a3857f727bc2ba457c1c0cef2787b90ce553407fbf8536",
               "8a8d94b58aa3443b57c917ca0650ae6befe0bc293a2333ddf9bb45fb2485203c",
               "b8416acb067cae9a6a04cf31c5c98c2ef72a4d2efda715b44fb76f62fcddf788",
-              "13a5adab078ceaefea89d2058e81d6cac41f3732d1f246bd4de6c4a0bd656d0f") and
-  not process.executable : "?:\\Program Files (x86)\\LAN Messenger\\lmc.exe"
+              "13a5adab078ceaefea89d2058e81d6cac41f3732d1f246bd4de6c4a0bd656d0f",
+              "bae22f27c12bce1faeb64b6eb733302aff5867baa8eed832397a7ce284a86ff4",
+              "b82eafbcc1a68dd90388d978f97ef49e899ac1d66b9e1fdcaa13404f6d7599c1",
+              "8a8f4f9d4273aacc25dc552ba10fd7fc17ec28c1a1f184356ae8ae53f651a6b7") and
+  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")
  ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (

@@ -7,7 +7,7 @@ id = "a4e1883e-e203-4b65-9cb0-b582081b0bf8"
 license = "Elastic License v2"
 name = "Evasion via Sleep API Hooking"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect", "VirtualProtectEx") and
@@ -16,7 +16,11 @@ api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect", "Virt
                   $entry.subject_name in ("FireEye, Inc.", "Sophos Ltd", "Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Trend Micro, Inc.", "Symantec Corporation", "Bitdefender SRL", "Carbon Black, Inc.")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and 
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("d0fe1eecad868460c162fd40cacf2ac954008b2de1234b2d1cd3b1e361f5e6c0", "e376f3c42c5806ccc2f9051db611d14057444dd6012b0a80f5e50aeea7a4d97a")
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                  ("d0fe1eecad868460c162fd40cacf2ac954008b2de1234b2d1cd3b1e361f5e6c0",
+                   "e376f3c42c5806ccc2f9051db611d14057444dd6012b0a80f5e50aeea7a4d97a",
+                   "c7d4e4d82e5d9b326c05e968c7236daf4ddefe35060049e079bf51910f81996e",
+                   "519ee50c16137e1b1643a2b726cd34fff876719692cd37e06f08546ee44285e8")
 '''
 
 min_endpoint_version = "8.10.0"

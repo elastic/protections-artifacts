@@ -12,7 +12,7 @@ reference = [
     "https://pentestlab.blog/2019/10/21/persistence-security-support-provider/",
     "https://github.com/gtworek/PSBits/tree/master/PasswordStealing/NPPSpy",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 registry where event.action == "modification" and
@@ -37,6 +37,7 @@ registry where event.action == "modification" and
               "?:\\Windows\\SysWOW64\\regsvr32.exe",
               "?:\\Windows\\system32\\regsvr32.exe",
               "?:\\Windows\\WinSxS\\*\\TiWorker.exe",
+              "C:\\Windows\\System32\\svchost.exe",
               "?:\\Windows\\Sys*\\config\\systemprofile\\*",
               "?:\\Program Files\\*.exe",
               "?:\\Program Files (x86)\\*.exe") and

@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.cloudsek.com/blog/unmasking-the-danger-lumma-stealer-malware-exploits-fake-captcha-pages",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -24,7 +24,8 @@ process where event.action == "start" and
                                          "C:\\Windows\\System32\\user32.dll!DialogBoxIndirectParamW*", 
                                          "C:\\Windows\\System32\\shell32.dll!GetFileNameFromBrowse*")))
  ) and
- not (process.name : "cmd.exe" and process.args : ("*.bat*", "*.cmd", "dir"))
+ not (process.name : "cmd.exe" and process.args : ("*.bat*", "*.cmd", "dir", "ipconfig")) and
+ not (process.name : "powershell.exe" and process.args : "Start-Process powershell -Verb RunAs")
 '''
 
 min_endpoint_version = "8.10.0"

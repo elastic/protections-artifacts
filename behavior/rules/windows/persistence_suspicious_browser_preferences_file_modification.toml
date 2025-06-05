@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Browser Preferences File Modification"
 os_list = ["windows"]
 reference = ["https://syntax-err0r.github.io/Silently_Install_Chrome_Extension.html"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 file where event.action == "overwrite" and file.name : ("Preferences", "Secure Preferences") and
@@ -35,7 +35,7 @@ file where event.action == "overwrite" and file.name : ("Preferences", "Secure P
 	      process.code_signature.subject_name :
 	                ("Google LLC", "PASSWORD BOSS LLC", "Piriform Ltd", "Piriform Software Ltd", "UiPath, Inc.",
 	                 "Gen Digital Inc.", "SOFT SOLUTIONS HUB LLC", "PIRIFORM SOFTWARE LIMITED", "SOFT SOLUTIONS HUB LLC",
-	                 "Guangxi Yunao Network Technology Co. Ltd."))
+	                 "Guangxi Yunao Network Technology Co. Ltd.", "Andrew Ziem"))
 '''
 
 min_endpoint_version = "8.1.0"

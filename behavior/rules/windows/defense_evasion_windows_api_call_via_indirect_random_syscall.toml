@@ -7,7 +7,7 @@ id = "9bc5d4cd-5748-4425-a4f3-7a704a11029d"
 license = "Elastic License v2"
 name = "Windows API Call via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
@@ -79,7 +79,11 @@ api where
                                                                   "*ntdll.dll!ZwAcceptConnectPort*",
                                                                   "*kernelbase.dll!VirtualAllocExNuma*",
                                                                   "*ntdll.dll!ZwQueryDefaultUILanguage*",
-                                                                  "*\\ntdll.dll!NtWaitForKeyedEvent*")) and
+                                                                  "*\\ntdll.dll!NtWaitForKeyedEvent*",
+                                                                  "*\\kernelbase.dll!OpenProcess*",
+                                                                  "*\\kernelbase.dll!GetFileSize*",
+                                                                  "*\\ntdll.dll!NtWaitForKeyedEvent*",
+                                                                  "*\\kernelbase.dll!EqualDomainSid*")) and
 
  not (process.thread.Ext.call_stack_summary : "ntdll.dll|Unknown|ntdll.dll*" and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll!*TestAlert*")) and
@@ -93,7 +97,11 @@ api where
                                               ("47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22",
                                                "d1e49681e09cedf8a5751538273bc69d2c78d50469e8bc95203fc2643fa17a5f",
                                                "00e8784a6e1e1dce13d49e2e978adaccfed74f9846d43feb1ad94c1aff52dfc3",
-                                               "574d3ef726c6ba1f7af31823c3820af7d86892b7e760de6817dbc3be0a09fbc4")
+                                               "574d3ef726c6ba1f7af31823c3820af7d86892b7e760de6817dbc3be0a09fbc4",
+                                               "7280f4d256bde0d274492ec489a31d3e7c43e8747cc0dd726dce8fe26b39acaf",
+                                               "1634d01728fe36029198587a173406ac9120a71101ff3d88dce8adcfbb1ec739",
+                                               "574d3ef726c6ba1f7af31823c3820af7d86892b7e760de6817dbc3be0a09fbc4",
+                                               "3be418a691f37d8648e0821bdb1c5fda99bf6f9dca9da4e6c4b5fa675788692f")
 '''
 
 min_endpoint_version = "8.10.0"

@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -74,7 +74,8 @@ sequence by process.entity_id with maxspan=1m
                     "ca2a11a3fbebc36ff3a3ec7428263f07a3aeb09db2215f882a66a7c1c61d9e6f",
                     "6b1880dce6f28d4a79f4fa3be148ee55793e679485c3db156d26abd6d277b44a",
                     "d3a1446ff14a77a4beb61f4db93afec24a6daa8fad566ddbddbc74943169b5b1",
-                    "f79605915297ceac917d58e629bbfb7c50cac8d7c563bf207c5c84abd2956008") and
+                    "f79605915297ceac917d58e629bbfb7c50cac8d7c563bf207c5c84abd2956008",
+                    "f0822cd0265b889d65c3bd6af51b5ebd9f13b7e067b97b62d923d3693f9b22ca") and
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe",
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
                              "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe",
@@ -82,7 +83,8 @@ sequence by process.entity_id with maxspan=1m
                              "?:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe",
                              "C:\\Program Files\\ArcGIS\\Pro\\bin\\Python\\envs\\arcgispro-py?\\python.exe",
                              "C:\\Program Files (x86)\\Wondershare\\MobileTrans\\MobileTrans.exe",
-                             "C:\\Program Files (x86)\\Wondershare\\drfone\\DrFoneToolKit.exe") and
+                             "C:\\Program Files (x86)\\Wondershare\\drfone\\DrFoneToolKit.exe",
+                             "C:\\Program Files\\RFMS\\Measure\\msr6.exe") and
    not (process.name : "powershell.exe" and process.parent.executable : "?:\\Program Files\\Sophos\\Endpoint Defense\\SEDService.exe") and
    not (process.name : "powershell.exe" and process.args : "C:\\ProgramData\\NinjaRMMAgent\\uscripting\\customscript_gen_*.ps1")]
  [dns where

@@ -8,7 +8,7 @@ id = "a279fa6c-61eb-49ea-926e-704db27855e8"
 license = "Elastic License v2"
 name = "Potential Obfuscated Script Execution"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=1m
@@ -20,7 +20,7 @@ sequence with maxspan=1m
   not (process.name : "ifa-PM.exe" and file.name : "ifa-PMS.hta") and
   not (process.name : ("Setup.exe", "vrpsetup.exe") and
       file.Ext.header_bytes : ("53657420776d6953657276696365203d", "2720436865636b206c6963206265666f")) and
-  not (process.code_signature.subject_name : ("BizLink International Corp.", "Adobe Inc.", "Fabrice PARISOT", "Notepad++")
+  not (process.code_signature.subject_name : ("BizLink International Corp.", "Adobe Inc.", "Fabrice PARISOT", "Notepad++", "Argus Media Ltd")
        and process.code_signature.trusted == true) and
   not process.executable : ("?:\\Program Files (x86)\\Kovai Ltd\\BizTalk360\\Service\\BHMCollect.exe",
                             "?:\\Program Files (x86)\\BizTalkHealthMonitor\\BHMCollect.exe",
@@ -29,11 +29,14 @@ sequence with maxspan=1m
                             "?:\\Program Files\\Automation Anywhere\\Bot Agent\\jre\\bin\\javaw.exe",
                             "?:\\Program Files\\ForeScout SecureConnector\\SecureConnector.exe",
                             "?:\\Program Files (x86)\\Acronis\\BackupAndRecovery\\mms.exe",
+                            "C:\\Program Files (x86)\\Delcam\\FeatureCAM\\Program\\ezfm.exe",
                             "?:\\Program Files\\EIZO\\ColorNavigator 7\\ColorNavigator 7.exe",
                             "?:\\Program Files (x86)\\Windev\\AD_Voyager\\AD_voyager.exe",
                             "?:\\Program Files\\BackupClient\\BackupAndRecovery\\mms.exe",
                             "?:\\Program Files\\Velneo\\vClient.exe",
                             "D:\\WINDEV\\AD_Voyager\\AD_voyager.exe",
+                            "C:\\Program Files\\Java\\jre8\\bin\\java.exe",
+                            "C:\\Program Files (x86)\\SofttechLLC\\FlightVector\\FlightVector.exe",
                             "?:\\Program Files\\Automation Anywhere\\Bot Agent\\jre\\bin\\BotLauncher.exe",
                             "C:\\Program Files\\Eclipse Adoptium\\jdk-*-hotspot\\bin\\java.exe")] as event0
  [process where event.action == "start" and process.args_count >= 2 and 

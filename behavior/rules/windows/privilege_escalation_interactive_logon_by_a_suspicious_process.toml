@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Interactive Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 authentication where event.action == "log_on" and event.code == "4624" and
@@ -24,7 +24,7 @@ authentication where event.action == "log_on" and event.code == "4624" and
             "PDQ.com Corporation", "itelio GmbH", "Mozilla Corporation", "Vivaldi Technologies AS", "GoTo Technologies USA, LLC",
             "Devolutions Inc", "Seagull Scientific Inc.", "Senior Sistemas S/A", "Rsupport Co., Ltd.", "Redwood Software, Inc.",
             "CA Software Österreich GmbH", "ECI Software Solutions, Inc.", "ISL Online Ltd.", "DATEV eG", "Connectwise, LLC",
-            "Shift Technologies Inc.", "YANDEX LLC", "Apollo Technologies Inc.", "Mobatek")) and
+            "Shift Technologies Inc.", "YANDEX LLC", "Apollo Technologies Inc.", "Mobatek", "HYCU, Inc.", "Natus Medical Incorporated")) and
  not process.executable :
             ("C:\\Windows\\System32\\winlogon.exe",
              "C:\\Windows\\System32\\wininit.exe",
@@ -43,6 +43,8 @@ authentication where event.action == "log_on" and event.code == "4624" and
              "C:\\Projekte\\Gmos.InfozentraleMain\\Gmos.Infozentrale.WebApi\\bin\\Debug\\net8.0\\Gmos.Infozentrale.WebApi.exe",
              "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
              "C:\\Windows\\System32\\inetsrv\\w3wp.exe",
+             "C:\\SQL Beacon\\SQL Beacon Agent Gen2\\SQLBeaconAgentGen3.exe",
+             "C:\\Users\\*\\Apps\\TeamAlerts\\psVersionUpdater.exe",
              "C:\\Windows\\SysWOW64\\msiexec.exe",
              "C:\\Windows\\System32\\msiexec.exe",
              "C:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe",

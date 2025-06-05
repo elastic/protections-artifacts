@@ -12,19 +12,37 @@ reference = [
     "https://www.elastic.co/security-labs/operation-bleeding-bear",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
- descendant of [process where event.action == "start" and process.name : "cmd.exe" and
+(
+ (process.name : "cmd.exe" and process.args : "/c" and process.args:"/Q" and process.parent.name : "WmiPrvSE.exe" and
+  process.args : "2>&1" and process.args: "1>" and
+  process.args : ("C:\\windows\\temp\\*.txt",
+                  "\\Windows\\Temp\\*",
+                  "-encodehex",
+                  "\\\\127.0.0.1\\C$\\Windows\\Temp\\*",
+                  "\\\\127.0.0.1\\ADMIN$\\__*.*") and
+  not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*")) or
+
+ descendant of [process where event.action == "start" and process.name : "cmd.exe" and process.args : "/c" and process.args:"/Q" and
                 process.parent.name : "WmiPrvSE.exe" and
-                process.command_line : "*\\\\127.0.0.1\\*" and process.args : ("2>&1", "1>") and
-                not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*") and
-                not process.args : "\\\\127.0.0.1\\ADMIN$\\__*"] and
+                process.args : "2>&1" and process.args: "1>" and
+                process.args : ("C:\\windows\\temp\\*.txt",
+                                "\\Windows\\Temp\\*",
+                                "-encodehex",
+                                "\\\\127.0.0.1\\C$\\Windows\\Temp\\*",
+                                "\\\\127.0.0.1\\ADMIN$\\__*.*") and
+                not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*")]
+ ) and
  not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Windows\\System32\\findstr.exe", "?:\\Windows\\System32\\chcp.com") and
  not (process.parent.name : "cmd.exe" and process.parent.command_line : "*\\127.0.0.1\\c$\\temp\\cotportal\\COT_Mid_Cluster*") and
- not (process.name : "cmd.exe" and process.command_line : "* dir *") and
- not process.executable : "D:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqld.exe"
+ not process.executable : "?:\\Program Files\\MySQL\\MySQL Server *\\bin\\mysqld.exe" and
+ not (process.name : ("mysqld.exe", "mysql.exe") and process.parent.args : "\\\\127.0.0.1\\c$\\temp\\*\\psscript_output_*.txt") and
+ not (process.name : ("powershell.exe", "cmd.exe") and
+      process.command_line : ("powershell  -EncodedCommand JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQBuAGMAZQA9ACIAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQ*",
+                              "C:\\Windows\\system32\\cmd.exe /C powershell -EncodedCommand JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQBuAGMAZQA9ACIAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQ*"))
 '''
 
 min_endpoint_version = "7.15.0"

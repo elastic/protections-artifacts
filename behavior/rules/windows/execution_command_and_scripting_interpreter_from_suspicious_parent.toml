@@ -4,7 +4,7 @@ id = "61b8b978-847b-4b1f-9771-b646cde53a9a"
 license = "Elastic License v2"
 name = "Command and Scripting Interpreter from Suspicious Parent"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=1m
@@ -22,7 +22,9 @@ sequence with maxspan=1m
 	         "?:\\Users\\*\\Downloads\\*",
 	         "?:\\Users\\*\\Desktop\\*",
 	         "?:\\Users\\Public\\*") and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*"))
-   )] by process.entity_id
+   ) and
+  not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugConsole.exe"
+  ] by process.entity_id
  [process where event.action == "start" and process.name : ("cmd.exe", "powershell.exe") and
   length(process.command_line) >= 200 and not process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
   not (process.args : "-InputFormat" and process.args : "-command") and 

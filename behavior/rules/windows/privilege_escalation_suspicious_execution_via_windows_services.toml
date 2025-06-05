@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -142,7 +142,8 @@ process where event.action == "start" and
 	          "be132253fb111600acedb58fa96fd18af69a8a8395880b0d8d89ff13ba30455b",
 	          "4eb8a5b3ba5b30b7c4e4e1db60af75f7cac808aa3bc0cd326bf4863535659def",
 	          "46122ee39283dbca52dde436ef04d47fd962271424726b491ad8584389461177",
-	          "3c16784f9b827aa6583d529f8585c431cd39e7e3a96e31c7b9882d5b48c00087") and
+	          "3c16784f9b827aa6583d529f8585c431cd39e7e3a96e31c7b9882d5b48c00087",
+	          "d71fce8dc14cfb082041c2ddd6184baa6e1bc535582e36174bc0a80be9f7a879") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -162,7 +163,8 @@ process where event.action == "start" and
    "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
    "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
    "Sikka Software Corporation", "TeamViewer Germany GmbH", "Brother Industries, Ltd.", "Pro Softnet Corporation", "Raman Karpuk", 
-   "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd") and
+   "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd", "NinjaOne LLC",
+   "ForensiT Software Limited") and
    process.code_signature.trusted == true) and
 
    not (process.name : "RUNDLL32.EXE" and
@@ -184,7 +186,7 @@ process where event.action == "start" and
                         "ndfapi.dll,NdfRunDllDuplicateIPDefendingSystem")) and
 
    not (process.name : ("wscript.exe", "cscript.exe") and
-        process.args : ("?:\\Program Files\\Intel\\SUR\\QUEENCREEK\\x64\\task.vbs", "?:\\Windows\\system32\\calluxxprovider.vbs")) and
+        process.args : ("?:\\Program Files\\Intel\\*.vbs", "?:\\Windows\\system32\\calluxxprovider.vbs")) and
    not (process.executable : "?:\\Windows\\*.exe" and process.code_signature.status : ("errorExpired", "errorCode_endpoint*", "errorChaining")) and
    not (process.name : ("wscript.exe", "cscript.exe") and process.working_directory : "\\\\*") and 
    not (process.executable : "?:\\Windows\\Temp\\*" and process.code_signature.trusted == true) and

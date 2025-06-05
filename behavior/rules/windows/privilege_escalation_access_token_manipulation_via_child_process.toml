@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence
@@ -35,7 +35,8 @@ sequence
 
   not (process.name : ("wscript.exe", "cscript.exe", "powershell.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and 
 
-  not (process.name : "rundll32.exe" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617" and process.parent.name : "dllhost.exe")
+  not (process.name : "rundll32.exe" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617" and process.parent.name : "dllhost.exe") and
+  not process.parent.executable : "C:\\Windows\\System32\\msiexec.exe"
 
    ] by process.entity_id as event0
  [process where event.action == "start" and user.id != null and
@@ -61,6 +62,11 @@ sequence
              "?:\\Windows\\System32\\printui.exe",
              "?:\\Windows\\System32\\SndVol.exe",
              "?:\\Windows\\System32\\MultiDigiMon.exe",
+             "C:\\Windows\\SysWOW64\\vsjitdebugger.exe",
+             "C:\\Windows\\System32\\shutdown.exe",
+             "C:\\Windows\\System32\\WerFault.exe",
+             "C:\\Windows\\System32\\OptionalFeatures.exe",
+             "C:\\Windows\\System32\\conhost.exe",
              "?:\\WINDOWS\\splwow64.exe",
              "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe",
              "?:\\Program Files\\*",
@@ -78,12 +84,16 @@ sequence
              "c83ef42b6c4c85e24666c8e55b93fb64cf08164e34b85fde0270c03dd463c11f",
              "af483a6e34a9b12ed2adcdb388b50311e5c322947718a41bbc325c2d1f3a7393", 
              "bf73d2a3812ebef4f57cf81a2d24e23287cddefd57183c89535603e878eb7b11", 
-             "24e76fe67435e9c7c1aa9ec22d736de3873fbd2e880d8ae716dffec0e146fc53") and
+             "24e76fe67435e9c7c1aa9ec22d736de3873fbd2e880d8ae716dffec0e146fc53",
+             "2a12e554e19d7b59294def0c3047f77c44e8ed899d6bca264935ce03abc82abe",
+             "e8f1081e08c28f80997b06f0f383957b6ece29347d042387e8ae2dcf93107adc") and
 
   not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*") and 
   not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*" and
   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
-  not event0.process.hash.sha256 == process.hash.sha256
+  not event0.process.hash.sha256 == process.hash.sha256 and
+  not (process.name : "cmd.exe" and process.parent.executable : "C:\\Windows\\System32\\gpscript.exe") and
+  not (process.executable : "C:\\Windows\\System32\\userinit.exe" and process.parent.executable : "C:\\Windows\\System32\\winlogon.exe")
   ] by process.parent.entity_id
 
   until [process where event.action:"end"] by process.parent.entity_id

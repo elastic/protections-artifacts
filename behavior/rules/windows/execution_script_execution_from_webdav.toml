@@ -7,12 +7,12 @@ id = "4bdd5646-f7b2-4e1d-962d-fd0f591f8f87"
 license = "Elastic License v2"
 name = "Script Execution from WebDav"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
- process.name : ("cmd.exe", "powershell.exe", "conhost.exe", "replace.exe", "wscript.exe", "cscript.exe", "mshta.exe") and
- process.command_line : ("*@SSL\\*", "*\\webdav\\*", "*\\DavWWWRoot\\*") and
+ process.name : ("cmd.exe", "powershell.exe", "conhost.exe", "replace.exe", "wscript.exe", "cscript.exe", "mshta.exe", "regsvr32.exe") and
+ (process.command_line : ("*@SSL\\*", "*\\webdav\\*", "*\\DavWWWRoot\\*") or process.args : ("\\\\*.*@8080\\*", "\\\\*.*@80\\*", "\\\\*.*@8443\\*", "\\\\*.*@443\\*")) and
  not (process.name : "cmd.exe" and process.args : "\\\\?\\UNC\\*.sharepoint.com@SSL\\DavWWWRoot\\*")
 '''
 

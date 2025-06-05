@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -31,7 +31,8 @@ sequence by process.entity_id with maxspan=2m
                   "C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe",
                   "C:\\Program Files\\Microsoft Office\\root\\Office??\\ONENOTE.EXE",
                   "C:\\Program Files\\WindowsApps\\MSTeams_*\\ms-teams.exe",
-                  "C:\\Program Files\\Nextcloud\\nextcloud.exe") and
+                  "C:\\Program Files\\Nextcloud\\nextcloud.exe",
+                  "C:\\Program Files\\WindowsApps\\MSTeams_*\\ms-teams.exe") and
   not (process.code_signature.subject_name in ("CrashPlan Group LLC", "Red Hat, Inc", "d7xTech, Inc", "Code42 Software Inc",
        "Galactic Advisors, Inc.", "Hamilton Bonaduz AG", "epostbox epb GmbH", "FastTrack Software ApS", "AnyDesk Software GmbH") and
        process.code_signature.trusted == true) and

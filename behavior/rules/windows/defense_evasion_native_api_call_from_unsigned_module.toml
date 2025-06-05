@@ -1,0 +1,119 @@
+[rule]
+description = """
+Identifies suspicious calls to Windows Native APIs from a unsigned module. This may indicate an attempt to bypass
+Kernelbase APIs hooking.
+"""
+id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
+license = "Elastic License v2"
+name = "Native API Call from Unsigned Module"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where
+process.Ext.api.behaviors == "native_api" and process.Ext.api.behaviors != "hidden_code" and
+process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory","VirtualProtectEx", "VirtualAllocEx") and
+process.Ext.api.metadata.target_address_name == "Unbacked" and
+process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "MapViewOfFile", "MapViewOfFile2", "VirtualAllocEx", "VirtualAlloc", "SetThreadContext") and
+process.thread.Ext.call_stack_final_user_module.name != "Unbacked" and process.thread.Ext.call_stack_final_user_module.name != null and
+_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+not process.thread.Ext.call_stack_final_user_module.protection_provenance like "Kernel*" and
+not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\assembly\\nativeimages_*.ni.dll",
+                                                               "c:\\windows\\microsoft.net\\framework*.dll",
+                                                               "c:\\program files (x86)\\*",
+                                                               "c:\\program files\\*",
+                                                               "c:\\windows\\winsxs\\*.dll",
+                                                               "c:\\windows\\system32\\ntdll.dll",
+                                                               "c:\\windows\\syswow64\\ntdll.dll",
+                                                               "c:\\windows\\syswow64\\apphelp.dll",
+                                                               "c:\\windows\\syswow64\\cyinjct.dll",
+                                                               "c:\\windows\\system32\\cyvrtrap.dll",
+                                                               "c:\\windows\\system32\\edrpm64.dll") and
+not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files (x86)\\*", "c:\\program files\\*") and
+not (process.executable : "C:\\Windows\\System32\\lsass.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\lsasrv.dll") and
+not (process.executable : "C:\\Windows\\System32\\csrss.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\sxssrv.dll") and
+not (process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\syswow64\\wrusr.dll" and process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|wrusr.dll|kernelbase.dll|*") and
+not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                ("20623b2da7f3a2c1773f044921d2a99ce6b719f232796d88f164c41dc40b941a",
+                                 "8a0e3caa3ee18379d63b9bd709ac6a87fb0dd8c31c833cb48bc4c9bc10017486",
+                                 "0f3ed1563ab2ec7dbbf8e9db14e6ff649fcb3bfd607dd81ce4fc91a211559a4b",
+                                 "b2d86212afab00e7b9bf19b7931277130b653c9258ac419a7a24d749471ea5ac",
+                                 "8526104317a63fbdb2d126e737f822a03a2cf05046d712a136545a428320443d",
+                                 "ecf5054d7f1ad0da4b1c9295b23389645780bb20855b6c727762163170d38d48",
+                                 "6a2bf3ad9caeec71ff5fbd187f5db3337e4c99fa51e36ee039183b0aa610b22c",
+                                 "65b2be41a8c2456dc69fd216000c2400d8fc48f37a40d21f94318a77d7459441",
+                                 "f7c78dba07128af325d8da99138ebf78be163ecfb5da5b01fa6b65b96efecef1",
+                                 "6778b8d1eabffe78447ec4aa6d793e776a9db351c202c955dda196e90df19fa2",
+                                 "31fb9c74183eaa737317fd0260c218e38ae5b243988108c7e5e60e416fe54a84",
+                                 "f239c27b50cef792fea5b34378fbac83bcc06b8442d508bd9add7ddf8ca5c632",
+                                 "685774f56983b22fbd1f84880fe60f149ccf0322abe8dd09b7a0d81f4a5dd1f1",
+                                 "c8f242570144ac4ba77967a1dc59d6681ca2d8a6a85c4db2a30e1e4629db843a",
+                                 "16e40b77295687c45e7c9eefce8336aa69c08ac6648ba3a919bc5497b6ed7f83",
+                                 "ab77212a71c2e2e8b870452d2c32bc72a6708d6e963dd3ebe2ac1a946cffc242",
+                                 "7a94bc02118f56e337709f1e71f730ebe1245e8c641027326e30db213169abe7",
+                                 "f7c78dba07128af325d8da99138ebf78be163ecfb5da5b01fa6b65b96efecef1",
+                                 "63120cd3e9b950400bd9366c1cc543d55e7823a51fc81d4b2d021536662c85a7",
+                                 "9c58c33c68c8494d8eac12c6a4ff122b1e719ebba988c7c12c597bd0f01ff1a1",
+                                 "cf05e4d1b1c8d93caf36dff4b4abaec8144a0281f8cbb611d0fb6e2a7fb38385",
+                                 "d32b9f057abc3dda988d443cf9866d70a3e986a57f2c6f82379e45b8b900128b",
+                                 "5e09159104bf3a9036e90e35b4bb4de0123907b3d6b5c30d155f50231f98e60a", 
+                                 "7d5cb5629aad0d20f2127d39f3f72112936731880678b1e86a9d2eec475301db") and
+not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+($entry.trusted == true or $entry.status == "errorExpired") and
+$entry.subject_name in (
+"AMD PMP-PE CB Code Signer v20140501",
+"Carbon Black, Inc.",
+"PC SOFT INFORMATIQUE SAS",
+"Kaspersky Lab JSC",
+"Kaspersky Lab",
+"AO Kaspersky Lab",
+"ESET, spol. s r.o.",
+"MUSARUBRA US LLC",
+"Microsoft Windows Hardware Compatibility Publisher"
+)) and
+not _arraysearch(process.thread.Ext.call_stack, $entry,
+                 $entry.symbol_info like
+                                     ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                      "c:\\windows\\sys?????\\ntdll.dll!RtlAllocateHeap*",
+                                      "c:\\windows\\sys?????\\ntdll.dll!RtlFreeHeap*",
+                                      "c:\\windows\\sys?????\\ntdll.dll!RtlReAllocateHeap*",
+                                      "c:\\windows\\sys?????\\ntdll.dll!RtlUnlockHeap*",
+                                      "c:\\windows\\sys?????\\ntdll.dll!LdrInitializeThunk*",
+                                      "c:\\windows\\sys?????\\ntdll.dll+0x*")) and
+not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path like "?:\\*\\docker\\*\\windows\\*")
+'''
+
+min_endpoint_version = "8.16.3"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.3"

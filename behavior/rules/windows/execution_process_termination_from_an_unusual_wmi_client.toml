@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Termination from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -24,17 +24,12 @@ api where
        process.parent.executable : ("C:\\Windows\\System32\\msiexec.exe", "C:\\Windows\\SysWOW64\\msiexec.exe")) and
   not (process.executable : "C:\\Windows\\System32\\wscript.exe" and process.parent.executable : "C:\\Windows\\System32\\gpscript.exe") and
   not process.executable : ("\\Device\\Mup\\*.exe", 
-                            "C:\\Program Files (x86)\\Litmus Learning\\ATS Engine\\ATS.Engine.exe", 
-                            "C:\\Program Files\\Microsoft Office\\root\\Office??\\MSACCESS.EXE",
-                            "C:\\Program Files (x86)\\ModeloXPro\\ModeloXPro.exe",
-                            "C:\\Program Files (x86)\\DictaNet\\DNRec.exe",
-                            "C:\\Program Files (x86)\\Pearson VUE\\bin\\DeliveryManager\\DeliveryManager.exe",
+                            "C:\\Program Files (x86)\\*.exe",
+                            "C:\\Program Files\\*.EXE",
                             "C:\\Windows\\system32\\cscript.exe",
                             "C:\\Windows\\SysWOW64\\cscript.exe",
-                            "C:\\Program Files\\Microsoft\\Exchange Server\\V??\\Bin\\MSExchangeHMWorker.exe",
-                            "C:\\Program Files\\Microsoft System Center\\Orchestrator\\Runbook Server\\PolicyModule.exe",
-                            "C:\\Program Files (x86)\\highsystem.NET\\Updater\\ConsUp.exe",
                             "C:\\Windows\\System32\\wbem\\WMIC.exe",
+                            "C:\\Windows\\SysWOW64\\wbem\\WMIC.exe",
                             "C:\\Windows\\System32\\svchost.exe") and
   not (process.name : "rundll32.exe" and process.command_line : "rundll32.exe \"C:\\WINDOWS\\Installer\\MSI*.tmp\",zzzzInvokeManagedCustomActionOutOfProc*") and
   not (process.executable : "C:\\Program Files\\Microsoft Office\\root\\Office??\\EXCEL.EXE" and

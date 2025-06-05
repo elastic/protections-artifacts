@@ -7,7 +7,7 @@ id = "95d13ce1-ffb2-4be8-a56e-cc9a891e81e2"
 license = "Elastic License v2"
 name = "Startup Persistence via Unusual Process"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 file where event.action != "deletion" and
@@ -34,7 +34,8 @@ file where event.action != "deletion" and
             "rundll32.exe",
             "svchost.exe",
             "sc.exe",
-            "backgroundTaskHost.exe") and
+            "backgroundTaskHost.exe",
+            "AppVClient.exe") and
   not file.extension : ("TMP", "INF", "INI", "DDF", "CAB", "RPT", "RDP", "ppk")
 '''
 

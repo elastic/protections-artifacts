@@ -12,7 +12,7 @@ reference = [
     "https://redcanary.com/blog/chromeloader/",
     "https://blogs.vmware.com/security/2022/09/the-evolution-of-the-chromeloader-malware.html",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence with maxspan=5m
@@ -42,9 +42,12 @@ sequence with maxspan=5m
                "839ef38f0ed23a9dcca4f0a807e205f95e26370f35ec9ea9915721c06eda04f2",
                "88e697f93ea94d74a1979af662339e826d784337e0abdb74f27e9293d94e9fed",
                "f7c7a89503959800005bfe6767f189e49c9c76aeea38d6f304f7be2d8663d204",
-               "55c5203db4d44d96f4124c60e69ae0823f4372efa4b5416675d9564a83d6ad2c") and
+               "55c5203db4d44d96f4124c60e69ae0823f4372efa4b5416675d9564a83d6ad2c",
+               "afb45186ad4f4217c2fc1dfc2239ff5ab016ef0ba5fc329bc6aa8fd10c7ecc88") and
 
-  not (process.name : "cmd.exe" and process.parent.executable : "?:\\Users\\*\\AppData\\Local\\Programs\\GoLogin\\GoLogin.exe") and
+  not (process.name : "cmd.exe" and
+       process.parent.executable : ("?:\\Users\\*\\AppData\\Local\\Programs\\GoLogin\\GoLogin.exe",
+                                    "C:\\Users\\*\\AppData\\Local\\PDFProSuite\\pdfprosuite.exe")) and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\cmd.exe" and process.parent.name : "node.exe" and
        process.parent.args : ("--check-update", "update.js"))

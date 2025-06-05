@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 sequence by process.entity_id
@@ -59,7 +59,7 @@ sequence by process.entity_id
                      "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED", "ClaimMaster Software LLC", "Cellebrite DI LTD",
                      "Riot Games, Inc.", "Autodesk, Inc.", "ACCA software S.p.A.", "Tempus Technologies, Inc.",
                      "NextgenId, Inc.", "Cloud Software Group, Inc.", "Tempus Technologies, Inc.", "NextgenId, Inc.",
-                     "Cloud Software Group, Inc.") and
+                     "Cloud Software Group, Inc.", "Bloomberg LP") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name in~ ("msedge.exe", "msedgewebview2.exe") and
@@ -253,6 +253,7 @@ sequence by process.entity_id
                           "8bf86*ffd689458068*",
                           "5356578965e880*6a015b0f85f502000088*",
                           "8945a88b7b0c037ddc8bf7ac84c07*",
+                          "8bf08b45d8c6400801833d8011*8945ec33c9894de08b4dece*",
                           "89854d294400c78551294400000000008b95d83044008b0685c075038b461003c20385512944008b188b7e1003fa03bd5129440085db0f84a2000000f7c30000",
                           "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc",
                           "ebfecc000073c4f87f0000c0f776c4f87f0000703c76c4f87f0000000000000000000000000000000000004578697454687265616400006b00650072006e0065",

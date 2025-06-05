@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence with maxspan=5m
@@ -77,7 +77,7 @@ sequence with maxspan=5m
                                       "?:\\windows\\system32\\msiexec.exe",
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
-    not (process.name : "powershell.exe" and process.args : ("-nomeAgente", "& 'C:\\oracle_unified_agent\\scripts\\unified-agent-permissions.ps1' ; exit $($LASTEXITCODE)")) and
+    not (process.name : "powershell.exe" and process.args : ("-nomeAgente", "\\\\*\\*.ps1", "& 'C:\\oracle_unified_agent\\scripts\\unified-agent-permissions.ps1' ; exit $($LASTEXITCODE)")) and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
     not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*tsworkspace,WorkspaceSilentSetup*")) and
     not process.executable :
@@ -105,7 +105,8 @@ sequence with maxspan=5m
                    "7d2c761823b183cd34a8c1c0b7b6f572d26a0265bfe65afe913faf60d27de844",
                    "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0",
                    "ae27abffcc06755840792abb83a67b847782afa01bb26c2631671ed3932930b6",
-                   "6af431b97e8571a2c072a746a44b5e0dcb3685268f75459e789063e03b7698cb") and
+                   "6af431b97e8571a2c072a746a44b5e0dcb3685268f75459e789063e03b7698cb",
+                   "b31ed4807259472689f984e348f10e15125fae9df1298e6befddd5411a2a7dda") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
     process.pe.original_file_name != "Adobe Installer" and

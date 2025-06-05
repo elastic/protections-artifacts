@@ -7,7 +7,7 @@ id = "667a1895-5920-4fb2-820f-16c356f79341"
 license = "Elastic License v2"
 name = "Suspicious Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=1m
@@ -72,7 +72,9 @@ sequence with maxspan=1m
 
   not process.executable : "C:\\Program Files (x86)\\IBM\\Client Access\\Emulator\\pcssnd.exe" and
 
-  not (process.executable : "C:\\Windows\\System32\\ShellHost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
+  not (process.executable : "C:\\Windows\\System32\\ShellHost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe") and
+  not (process.name : "FileCoAuth.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\windows.storage.dll" and
+       process.Ext.api.summary == "WriteProcessMemory( Self, Data, 0x1 )")
   ] by process.entity_id
 '''
 

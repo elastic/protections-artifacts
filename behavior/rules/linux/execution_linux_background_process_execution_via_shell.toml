@@ -7,7 +7,7 @@ id = "21692d53-d4a5-462c-9ee6-2d8788411996"
 license = "Elastic License v2"
 name = "Linux Background Process Execution via Shell"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and
@@ -16,7 +16,7 @@ process.args : ("/* &", "/*&") and process.args_count == 3 and
 process.parent.executable : ("/dev/shm/*", "/var/tmp/*", "/tmp/*", "/var/www/*") and not (
   process.executable : "/tmp/newroot/*" or
   process.command_line == "/bin/bash -c /opt/forticlient/fortitray &" or
-  process.parent.executable : ("/var/www/splynx/*", "/tmp/.mount_cursor*usr/bin/cursor")
+  process.parent.executable : ("/var/www/splynx/*", "/tmp/.mount_cursor*")
 )
 '''
 

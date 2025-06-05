@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 process where event.action == "start" and
@@ -90,6 +90,8 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
                  "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
                  "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+                 "?:\\Program Files\\Microsoft SQL Server\\MSSQL*\\MSSQL\\Binn\\sqlservr.exe",
+                 "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\IDE\\devenv.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
                  "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\DtsDebugHost.exe") and
@@ -108,9 +110,11 @@ process where event.action == "start" and
              "C:\\ProgramData\\santesocial\\commun\\adm\\produits",
              "*--flat-playlist^*--no-cache-dir^*",
              "/DIR=C:\\Program Files (x86)\\Zeiss\\Zeiss PDF Printer",
-             "*plugins\\org.eclipse.birt.doc_*") and
+             "*plugins\\org.eclipse.birt.doc_*",
+             "database.*password") and
   not process.command_line :
                ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+                "/c echo %TERM%",
                 "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"") and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and

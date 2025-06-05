@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 process where event.action == "start" and
@@ -71,6 +71,7 @@ process where event.action == "start" and
               "?:\\Windows\\System32\\wbem\\WMIC.exe",
               "?:\\Windows\\System32\\NETSTAT.EXE",
               "?:\\Windows\\System32\\ipconfig.exe",
+              "C:\\Windows\\System32\\lpr.exe",
               "?:\\Windows\\System32\\shutdown.exe",
               "?:\\Windows\\System32\\net.exe",
               "?:\\Windows\\System32\\dsregcmd.exe",
@@ -167,12 +168,14 @@ process where event.action == "start" and
                     "*metadata/latest/InstanceInfo*",
                     "*machine?comp=goalstate*",
                     "*Cloudamize_HOST_SHARE*", 
-                    "*SrvNOW\\psscript_output_*", 
+                    "*\\psscript_output_*",
+                    "*java.sun.com/dtd/properties.dtd*",
                     "*set site /site.name*",
                     "*netsh http show sslcert*",
                     "*/opc/v2/instance/*",
                     "*/latest/api/token*",
-                    "*/latest/dynamic/instance-identity/document*", 
+                    "*/latest/dynamic/instance-identity/document*",
+                    "*<entry key=*",
                     "*/opc/v2/instance/*", 
                     "*'X-aws-ec2-metadata-token-ttl-seconds*", 
                     "*/vmbackup/api/v?/hyperv/inventory/installer*", 

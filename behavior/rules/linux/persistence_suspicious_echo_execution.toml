@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -85,9 +85,9 @@ not (
   (process.parent.executable like~ "/opt/*/bin/installer" and process.command_line like~ "*dynatrace*") or
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
-    "/tmp/kubectl*.yaml", "./mmicro-control.pl"
+    "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver"
   ) or
-  process.working_directory == "/var/local/InterMapper_Settings/Tools"
+  process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*")
 )
 '''
 

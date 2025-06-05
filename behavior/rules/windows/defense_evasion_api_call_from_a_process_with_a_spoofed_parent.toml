@@ -7,7 +7,7 @@ id = "e62f022c-88e2-403f-9f83-f76a91dd2203"
 license = "Elastic License v2"
 name = "API Call from a Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id
@@ -26,7 +26,8 @@ sequence by process.entity_id
  [api where process.Ext.api.name : ("WriteProcessMemory", "VirtualProtect*", "VirtualAlloc*", "MapViewOfFile*") and
   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
-  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "Unknown")]
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "Unknown") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "d1e1d111eff2d7d3e60e5ed47d1919a43fe5a44e45f75d4a33f7a6cbc39a4aac"]
  until [process where event.action:"end"]
 '''
 

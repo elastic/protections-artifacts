@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 sequence with maxspan=5m
@@ -91,6 +91,8 @@ sequence with maxspan=5m
 
   not process.executable : "?:\\Windows\\SoftwareDistribution\\*.exe" and
 
+  not (process.name : "FileCoAuth.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+
   not (process.name : "cpptools.exe" and process.parent.executable : "?:\\Program Files\\Microsoft VS Code\\Code.exe") and
 
   not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev") and 
@@ -136,12 +138,12 @@ sequence with maxspan=5m
                  "97effc20423d404cf3877cdb4af9be840a720962246408b2d7396362a9e5d613",
                  "a4af59c1f044ff1290e47e74484163243591f56b7053c8b8d3e4ae320cecbac3",
                  "941bc9193d9143d71e2c93803b0cbff511ec549f0c4f0093744cab6bedd4140a",
-                 "3f9075c30f63d67693f2f876212f702ddfe51834c73289718baf6e8fb2036039") and
+                 "3f9075c30f63d67693f2f876212f702ddfe51834c73289718baf6e8fb2036039",
+                 "8157d5ee0336f8c9f968da4d9e0c39f70067406ef73a5b25e5d2ed90dd54985e") and
 
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
 
-  not (process.executable : "?:\\Program Files\\Malwarebytes\\Anti-Malware\\Malwarebytes.exe" and
-       process.code_signature.subject_name == "Malwarebytes Inc." and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG") and process.code_signature.trusted == true) and
 
   not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe")
   ] by process.parent.Ext.real.entity_id

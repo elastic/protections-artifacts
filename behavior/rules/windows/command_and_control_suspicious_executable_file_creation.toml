@@ -7,13 +7,13 @@ id = "37c54ca7-e96d-4fd5-92d3-08cab38516b7"
 license = "Elastic License v2"
 name = "Suspicious Executable File Creation"
 os_list = ["windows"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 file where event.action != "deletion" and not user.id : "S-1-5-18" and
 
  (file.extension : ("exe", "pif", "scr", "iso", "rar", "zip", "7z", "img", "vhd", "js", "vbs", "wsh", "hta",
-                    "cpl", "jse", "vbe", "bat", "cmd", "dll") or
+                    "cpl", "jse", "vbe", "cmd", "dll") or
 
   file.Ext.header_bytes : ("4d5a*", "TVqQ*", "406563686F*", "3c736372697074206c616e6775616765", "76617220*")) and
 

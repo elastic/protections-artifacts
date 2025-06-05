@@ -7,7 +7,7 @@ id = "49ab63a4-ed52-49ac-855b-c298b38b0cb9"
 license = "Elastic License v2"
 name = "Egress Network Connection from Deleted Executable"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 network where event.type == "start" and event.action == "connection_attempted" and process.executable like~ "* (deleted)" and 
@@ -22,7 +22,7 @@ not (
   process.executable like~ (
     "/usr/bin/*", "/bin/*", "/opt/*", "/home/*", "/usr/share/*", "/usr/lib/*", "/usr/libexec/*", "/run/k3s/*",
     "/var/lib/waagent/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*", "/usr/local/lib/*",
-    "/usr/lib64/*"
+    "/usr/lib64/*", "/var/tmp/go-build*"
   ) or
   process.name in ("dockerd", "teleport", "zed-editor", "datacollector", "exe")
 )

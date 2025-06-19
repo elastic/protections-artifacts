@@ -7,7 +7,7 @@ id = "21066b21-0555-45df-b090-d4051d2d88bd"
 license = "Elastic License v2"
 name = "Windows Script Executed From a Suspicious Path"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence with maxspan=5m
@@ -15,10 +15,6 @@ sequence with maxspan=5m
   process.name in~ ("wscript.exe", "mshta.exe") and
   process.args : ("?:\\Users\\*\\Downloads\\*", "?:\\Users\\*\\Desktop\\*", "?:\\Users\\*\\Documents\\*")] as event0
  [any where
-
-   /* script utility spawn a child process */
-   (event.category == "process" and event.action == "start" and process.parent.name : "explorer.exe" and
-    process.parent.name in~ ("wscript.exe", "mshta.exe") and process.parent.entity_id == event0.process.entity_id) or
 
     /* script utility perform an egress connection to the internet */
    (event.category == "network" and event.action in ("disconnect_received", "connection_attempted") and
@@ -28,7 +24,12 @@ sequence with maxspan=5m
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
        "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4", "192.168.0.0/16",
        "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
-       "FE80::/10", "FF00::/8"))]
+       "FE80::/10", "FF00::/8")) or
+
+   /* script utility spawn a child process */
+   (event.category == "process" and event.action == "start" and process.parent.name : "explorer.exe" and
+    process.parent.name in~ ("wscript.exe", "mshta.exe") and process.parent.entity_id == event0.process.entity_id)
+  ]
 '''
 
 min_endpoint_version = "8.4.0"

@@ -7,7 +7,7 @@ id = "9bc5d4cd-5748-4425-a4f3-7a704a11029d"
 license = "Elastic License v2"
 name = "Windows API Call via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -90,7 +90,7 @@ api where
 
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Kernel|*", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
- not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\system32\\umppc*.dll", "c:\\windows\\syswow64\\ntdll.dll") and
+ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\system32\\umppc*.dll", "c:\\windows\\syswow64\\ntdll.dll", "c:\\windows\\syswow64\\windows.storage.dll") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
                   $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC", "Microsoft Windows Hardware Compatibility Publisher", "Activision Publishing Inc") and $entry.status == "trusted") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in

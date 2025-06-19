@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -35,7 +35,12 @@ sequence by process.entity_id with maxspan=2m
                  "b461a01e0855014610cc1d7047a5f7939d13b803bc835c37f0be9704698af570",
                  "8232e3b928e41feacd643dc45d2ffc702ac40640910e9a232fc5df8ed90d6c97",
                  "46f43ba8a2cb1198ba84341448812a37a3b545f2dd70e5f127d7bfc7807c2ced",
-                 "a9b70a8c2b495badc2cccf96408c8838d7fedd1013590b11166323629ec36b16") and
+                 "a9b70a8c2b495badc2cccf96408c8838d7fedd1013590b11166323629ec36b16",
+                 "c47c572f7b74d7073b6ab008a730d26ec885c67d1dcdb187839ed52cb8856287",
+                 "5a730d11d2d5a38b33360e6e524f53eaf93225f196016a4f1d313e7eab16b655",
+                 "b8c331c9f915960201da9af9c9dc8309e95e7d533741e71f4a5d13ca007d3e18") and
+  not process.executable : "C:\\Program Files\\Autodesk\\Revit 2024\\Revit.exe" and
+  not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and
        dll.name : "*.tmp.node")] as event0
  [api where

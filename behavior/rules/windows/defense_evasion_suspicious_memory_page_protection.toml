@@ -7,7 +7,7 @@ id = "f72e1e5b-acc3-42aa-9f75-88badc64401e"
 license = "Elastic License v2"
 name = "Suspicious Memory Page Protection"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -33,6 +33,7 @@ api where
                                        "c:\\program files (x86)\\common files\\intuit shared\\*\\bin\\client\\jvm.dll*")) and
  not (process.executable : ("C:\\Program Files (x86)\\*.exe", "C:\\Program Files\\*.exe") and
       process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\assembly\\nativeimages*dll") and
+ not (process.thread.Ext.call_stack_final_user_module.protection_provenance == "chrome_elf.dll" and process.thread.Ext.call_stack_final_user_module.name == "ntdll.dll") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                          ("b0968a364408aad11a33343cb9fdf66b994dbd251cc64237f8894d66efe96f19",
                                           "20fd2dc66d81acd93b7e8637a05068fd200b09c9c1b62c7929d6abf1e8c17947",

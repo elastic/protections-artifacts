@@ -11,18 +11,20 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
  process.parent.thread.Ext.call_stack_summary : "Unbacked|?*" and
  not (process.parent.thread.Ext.call_stack_summary : "Unbacked|embeddedbrowserwebview.dll|Unbacked" and
       _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Program Files*\\Microsoft\\EdgeWebView\\*\\EmbeddedBrowserWebView.dll*")) and 
- not (process.code_signature.subject_name : ("BYFRON TECHNOLOGIES LLC", "Valve Corp.", "Sony Interactive Entertainment LLC") and process.code_signature.trusted == true) and
- not process.parent.executable :  "?:\\Program Files\\WindowsApps\\ROBLOXCORPORATION.ROBLOX_*\\Windows10Universal.exe"
+ not (process.code_signature.subject_name in~ ("BYFRON TECHNOLOGIES LLC", "Valve Corp.", "Sony Interactive Entertainment LLC", "Roblox Corporation") and process.code_signature.trusted == true) and
+ not process.parent.executable :  "?:\\Program Files\\WindowsApps\\ROBLOXCORPORATION.ROBLOX_*\\Windows10Universal.exe" and
+ not (process.parent.code_signature.subject_name == "Roblox Corporation" and process.parent.code_signature.trusted == true) and
+ not (process.code_signature.subject_name == "Roblox Corporation" and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -43,4 +45,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"

@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1027/001/",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence with maxspan=1m
@@ -20,7 +20,10 @@ sequence with maxspan=1m
    /* over 100MB in size */
    file.size >= 100000000 and file.Ext.header_bytes : "4d5a*" and not file.extension : "exe" and
    not user.id : "S-1-5-18" and
-  not (process.code_signature.subject_name : "Trend Micro, Inc." and process.code_signature.status : "trusted")
+  not (process.code_signature.subject_name in ("Trend Micro, Inc.",  "Azul Systems, Inc.", "Wargaming Group Limited",
+      "Avigilon Corporation", "Duck Duck Go, Inc.", "Wargaming Group Limited", "Griff Gate Pte. Ltd.") and
+       process.code_signature.status == "trusted") and
+  not process.executable : ("C:\\ProgramData\\slicer.org\\Slicer *\\bin\\python-real.exe", "C:\\Program Files\\burpsuite_enterprise\\jres\\*\\bin\\java.exe")
   ] by file.path
  [library where
     (
@@ -36,10 +39,11 @@ sequence with maxspan=1m
      )
     and not dll.code_signature.trusted == true and
     not dll.code_signature.status : "errorExpired" and
-    not user.id : "S-1-5-18"] by dll.path
+    not user.id : "S-1-5-18" and
+    not (process.name : "regsvr32.exe" and dll.path : "C:\\Oracle\\*.dll")] by dll.path
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.4.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -65,4 +69,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.4.0"

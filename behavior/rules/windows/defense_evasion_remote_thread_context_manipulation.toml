@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 api where 
@@ -48,7 +48,8 @@ api where
                          "8b451b88d2cc91b079251e2347abb84d2b09712512fa9e57d9de35e93c751863",
                          "615ac4399eed0a26e5cd9bba4e7dcf661400fb0546dce067523fe275351d3b04",
                          "22a8ae4f904366c8f42d8da22df28c755cefd28ab34268c77275229964e34c66",
-                         "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9") and
+                         "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9",
+                         "2dfa7a9d8be474447f8ea53dc864a5bb8cdcc526664636154adfa8b71386f883") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
@@ -62,7 +63,11 @@ api where
                            "?:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe",
                            "?:\\Program Files (x86)\\WinHex 19.6 Portable\\WinHex64.exe",
                            "?:\\Program Files\\JetBrains\\*\\plugins\\go\\lib\\dlv\\windows\\dlv.exe") and
- not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe" and
+ not process.parent.executable :
+                     ("?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe",
+                      "C:\\Program Files (x86)\\GitExtensions\\ConEmu\\ConEmuC64.exe",
+                      "C:\\Program Files\\Git\\mingw64\\libexec\\git-core\\git-remote-https.exe",
+                      "C:\\Program Files\\Git\\usr\\bin\\bash.exe") and
  not (process.name : ("cmd.exe", "powershell.exe", "csc.exe") and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "conemuhk64.dll*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,

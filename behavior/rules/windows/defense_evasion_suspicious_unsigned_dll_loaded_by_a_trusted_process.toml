@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -21,7 +21,7 @@ sequence by process.entity_id with maxspan=5s
     process.code_signature.trusted == true and
     not dll.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
     dll.hash.sha256 != null and 
-    not dll.hash.sha256 : "e99fec7f1f2fe16029b4dbe30a96325efd7265c9cc8672f60945ce943684442d" and 
+    not dll.hash.sha256 in ("e99fec7f1f2fe16029b4dbe30a96325efd7265c9cc8672f60945ce943684442d", "a654a64f0fbd2c34fc2b22cb41e2bf4ac32bd15ae6620e6a4198beb5270790f6") and
     (process.thread.Ext.call_stack_summary : "ntdll.dll*" and not process.thread.Ext.call_stack_summary : "*Unbacked*") and
     not dll.path : ("?:\\Windows\\Installer\\*",
                    "?:\\Windows\\System32\\DriverStore\\FileRepository\\*",

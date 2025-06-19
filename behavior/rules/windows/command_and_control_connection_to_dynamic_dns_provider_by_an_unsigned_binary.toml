@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,7 +31,9 @@ sequence by process.entity_id with maxspan=1m
                "65ae476e29863e8009897686b24618c972461459e09db7a453e1bdf2bd8747a7",
                "18df70114ee93d482b38a420254859326b2d176b87559574202172f6559c3a24",
                "2fcfb8ee597c419c09bd44ac14d7240247f627eb3eca7c7bac2c72142a3a9a53",
-               "1618d40484e1ae2c25bbe0dc62e0b09f9213696cd148c622ee22fc3d6e15b6b1")]
+               "1618d40484e1ae2c25bbe0dc62e0b09f9213696cd148c622ee22fc3d6e15b6b1") and
+   not (process.code_signature.subject_name == "MarWinCliente" and process.parent.name == "dfsvc.exe" and
+        process.code_signature.status == "errorUntrustedRoot")]
   [dns where
     dns.question.name :
          (

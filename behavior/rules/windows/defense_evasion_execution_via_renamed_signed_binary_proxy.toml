@@ -11,7 +11,7 @@ reference = [
     "https://lolbas-project.github.io",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -71,7 +71,9 @@ process where event.action == "start" and
   not (process.hash.sha256 == "505d886fff0542f600f8534d9691de02200b719f1b80487a84fa799e1b178696" and
        process.executable == "C:\\spmwin\\regasm32.exe") and
   not (process.parent.executable : "C:\\Program Files (x86)\\360\\Total Security\\safemon\\QHActiveDefense.exe" and
-       process.pe.original_file_name == "RUNDLL32.EXE" and process.args : "360ExtremeBrowserURL")
+       process.pe.original_file_name == "RUNDLL32.EXE" and process.args : "360ExtremeBrowserURL") and
+  not (process.name : "regasm.x64.exe" and process.parent.executable : "C:\\Program Files (x86)\\Common Files\\Inlite\\InliteControlCenter.exe") and
+  not (process.pe.original_file_name == "cscript.exe" and process.parent.executable : "C:\\Program Files (x86)\\Net Protector *\\NPDBKWTT.EXE")
 '''
 
 min_endpoint_version = "7.15.0"

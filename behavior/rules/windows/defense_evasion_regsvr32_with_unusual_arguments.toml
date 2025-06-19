@@ -7,7 +7,7 @@ id = "5db08297-bf72-49f4-b426-f405c2b01326"
 license = "Elastic License v2"
 name = "Regsvr32 with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and process.name : "regsvr32.exe" and
@@ -66,7 +66,9 @@ process where event.action == "start" and process.name : "regsvr32.exe" and
                      "?:\\Windows\\Installer\\MSI*",
                      "?:\\Windows\\system32\\Codejock.DockingPane.*.ocx",
                      "?:\\windows\\system32\\Msjet35.dll",
-                     "?:\\windows\\system32\\Msrd2x35.dll")
+                     "?:\\windows\\system32\\Msrd2x35.dll") and
+ not (process.name : "regsvr32.exe" and process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and
+      process.args : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\QClickV?\\Driver\\QClickV?_x64.ocx")
 '''
 
 min_endpoint_version = "7.15.0"

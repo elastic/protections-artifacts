@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence
@@ -36,8 +36,8 @@ sequence
   not (process.name : ("wscript.exe", "cscript.exe", "powershell.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and 
 
   not (process.name : "rundll32.exe" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617" and process.parent.name : "dllhost.exe") and
-  not process.parent.executable : "C:\\Windows\\System32\\msiexec.exe"
-
+  not process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and
+  not (process.parent.name : "explorer.exe" and process.executable : "\\Device\\Mup\\*.exe")
    ] by process.entity_id as event0
  [process where event.action == "start" and user.id != null and
   not process.Ext.token.integrity_level_name : "system" and
@@ -93,7 +93,9 @@ sequence
   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
   not event0.process.hash.sha256 == process.hash.sha256 and
   not (process.name : "cmd.exe" and process.parent.executable : "C:\\Windows\\System32\\gpscript.exe") and
-  not (process.executable : "C:\\Windows\\System32\\userinit.exe" and process.parent.executable : "C:\\Windows\\System32\\winlogon.exe")
+  not (process.executable : "C:\\Windows\\System32\\userinit.exe" and process.parent.executable : "C:\\Windows\\System32\\winlogon.exe") and
+  not (process.executable : "C:\\Windows\\System32\\tabcal.exe" and process.parent.executable : "C:\\Windows\\System32\\rundll32.exe" and
+       process.parent.args : "C:\\WINDOWS\\System32\\tabletpc.cpl")
   ] by process.parent.entity_id
 
   until [process where event.action:"end"] by process.parent.entity_id

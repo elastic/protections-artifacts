@@ -7,7 +7,7 @@ id = "f5bbe671-5351-4566-b708-6e09d1de7dd2"
 license = "Elastic License v2"
 name = "Remote Memory Write to a non Child Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.executable != null and
@@ -21,7 +21,8 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
               "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe") and
  not stringcontains~(process.Ext.api.summary, process.name) and
  not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "Undetermined") and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel")) and 
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel")) and
+ not (process.name : "rundll32.exe" and process.parent.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio\\*\\MSBuild\\Current\\Bin\\Tracker.exe") and
  not process.thread.Ext.call_stack_final_user_module.path :
                                ("?:\\Program Files\\*",
                                 "?:\\Program Files (x86)\\*",
@@ -47,7 +48,9 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
                                     "8b27c7fef77ed2646b9ad74d360da1fe610e89e19e08adb7a5133e391d3fd49a",
                                     "2fec0c389dd0932c59eee19ca24c720b6521603e5ead78e3e070aa561b73be32",
                                     "ec363d03afa97033dc91cbf7c9a491fc693189f7a0a19bffc631bcb7dc715b47",
-                                    "9c09a7502fa9775a76415a20948d6ef1b55b9240e71adde7a4487ecbfd038fcd")
+                                    "9c09a7502fa9775a76415a20948d6ef1b55b9240e71adde7a4487ecbfd038fcd",
+                                    "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
+                                    "f7a6cca7a18f60cb8681eec2dd2038ce9fc8d341f1eba7ef57f69c868618850b")
 '''
 
 min_endpoint_version = "8.10.0"

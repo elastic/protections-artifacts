@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -18,7 +18,8 @@ sequence by process.entity_id with maxspan=1m
     not process.executable : "C:\\*") or
 
    ((process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
-     not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")) or
+     not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+     not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")) or
 
    process.executable :
 	        ("?:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*",
@@ -94,7 +95,8 @@ sequence by process.entity_id with maxspan=1m
                       "*.online", "*.fun", "*.life", "*.boats", "*.store",
                        "*.hair", "*.skin", "*.motorcycles", "*.christmas", "*.lol", "*.makeup",
                        "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty", "*.biz", "*.live") and
-  not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz")]
+  not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz") and
+  not dns.question.name in ("wfdownloader.xyz", "licenseauth.online", "nexaquest.store", "api.ratna.pw", "bo3.ezz.lol")]
 '''
 
 min_endpoint_version = "8.4.0"

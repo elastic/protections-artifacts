@@ -4,7 +4,7 @@ id = "0a26ccb6-41b9-418d-9314-854aadcb1fba"
 license = "Elastic License v2"
 name = "Execution from Suspicious Stack Trailing Bytes"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 any where event.category in ("library", "api") and
@@ -38,6 +38,7 @@ any where event.category in ("library", "api") and
                                                               "*b0014881c4d80000005f5ec348894c24084883ec38488b442440488b40084863403c488b4c24404803*",
                                                               "*83f803752b488d442430488944242041b9400000004c8b442450488b542448488b8c24300100*",
                                                               "eb248b4424604c8d4c244889442428488d5424404533c0895c2420*",
+                                                              "*418b45284c8d442458ba010000004c29e04801c8ffd0eb254189c141c1f91f4183e1704183c110*",
                                                               "e947ffffff418b45284c8d442458ba010000004c29e04801c8ffd0eb254189c141c1f91f4183e1704183c110eb834189c141c1f91f4183e1024183c102e963ff",
                                                               "4889442448eb21e842d1ffff83f8017517488b542430488b8c2400010000e8e7faffff488944244848837c2448007511b918000000e8f8d0ffff32c0e96c0500",
                                                               /* CCS-1 */
@@ -94,6 +95,7 @@ any where event.category in ("library", "api") and
                                                               "8b3b4c8bf88b73104903fe4903f6eb7a4885ff742d48833f007d274963473c0fb717428b8c3888000000428b443910428b4c391c482bd04903cf8b04914903c7",
                                                               "85c00f8898000000488b4c245831d2ff158a1f000085c00f888300*",
                                                               "85c07507b801000000eb304d85f675144c8bcf448bc3498bd7498bccff15*",
+                                                              "eb33488b8424e00000004889442420448b8c24d80000004c8b8424d0000000488b9424c8000000488b8c24c0000000ff*",
                                                               /* MYHANIB */
                                                               "85c0793ae98f0000004889c1ba5a4ce93be8*48894424684885c07478488b8c2420030000ba8828e950e8*000048894424784885c075a2eb5a488b",
                                                               "ba777791a7488983f00200004889c1e8*488b8bf0020000*48898338020000e8",
@@ -107,7 +109,10 @@ any where event.category in ("library", "api") and
                                                               /* Qbot */
                                                               "85c0740d508bd78bcbe875ffffff598bf08d45fc50e86f080000595f8bc65e5bc9c353bb0001000053e82efcffff8bd08915041002105985d2750583c8ff5bc3",
                                                               /* sRDI */
-                                                              "0fb745064783c6286a205a3bf872816a006a006affff9424c800000083bdc40000000074268b85c00000008b74180c8b0685c0741633ed456a005553ffd08d76"
+                                                              "0fb745064783c6286a205a3bf872816a006a006affff9424c800000083bdc40000000074268b85c00000008b74180c8b0685c0741633ed456a005553ffd08d76",
+                                                              /* GPulse */
+                                                              "8bcb8bd585ed74182bf30f1f8400000000008a040e8d49018841ff83ea0175f28d44242450ff7424285553ffd7*",
+                                                              "8b45e4508b4dac51*83c40c8b45ac998b4dc48981c00c00008991c40c0000c745cc000000008d55cc528b45fc8b4804518b55e8528b45e450ff55a8"
                                                               ))
 '''
 

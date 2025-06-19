@@ -7,7 +7,7 @@ id = "f1d05929-4271-4d39-9cae-05eab6d4efca"
 license = "Elastic License v2"
 name = "Potential Remote Code Injection"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address, Target.process.pid with maxspan=60s
@@ -85,7 +85,8 @@ sequence by process.entity_id, process.Ext.api.parameters.address, Target.proces
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
                                           "Microsoft Windows Software Compatibility Publisher",
                                           "Barco N.V.",
-                                          "Eclipse.org Foundation, Inc."))
+                                          "Eclipse.org Foundation, Inc.",
+                                          "Shanghai Best Oray Information S&T Co. Ltd."))
   ]
  [api where process.Ext.api.behaviors : "cross-process" and 
   not process.Ext.api.behaviors == "parent-child" and process.Ext.api.name == "WriteProcessMemory"]

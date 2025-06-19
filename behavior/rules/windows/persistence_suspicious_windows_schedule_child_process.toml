@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -87,7 +87,8 @@ process where event.action == "start" and
                        "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication")) and
   not (process.name : "cmd.exe" and 
        process.args : ("C:\\Users\\Public\\SageBackup-Phoenix.bat", 
-                       "C:\\Users\\Public\\InvisibleTimerbatch.bat", 
+                       "C:\\Users\\Public\\InvisibleTimerbatch.bat",
+                       "Client\\props\\schedule-nojava.cmd",
                        "rmdir")) and
   not (process.name : "mshta.exe" and process.args : "\"& '\\\\*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1'\"\", 0 : window.close)")
 '''

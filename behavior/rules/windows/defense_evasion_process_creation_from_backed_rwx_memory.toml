@@ -7,14 +7,15 @@ id = "13dadee2-f4b8-4877-8b9c-37ce59f82432"
 license = "Elastic License v2"
 name = "Process Creation from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=1m
  [process where event.action == "start" and
   (
    process.name : ("rundll32.exe", "regsvr32.exe") or
-   (process.Ext.relative_file_creation_time <= 300 and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")) or
+   (process.Ext.relative_file_creation_time <= 300 and not process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*") and
+    process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*")) or
    (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk","USB *") and not process.executable : "C:\\*") or
    process.executable : ("?:\\Users\\Public\\*",
                          "?:\\Users\\*\\Downloads\\*",
@@ -35,7 +36,13 @@ sequence with maxspan=1m
                ("9ad4c8d68a26f6feb2287e9d9895358a5a560ecc34cb3649edade01b054e1dd5", 
                 "aaa782279126c5e78dda4ab68e1d9f2da2d4b87b183b9ed24546637d25e5d3c6", 
                 "80be4152f9bdb4631ec7f12da1dc8dae1037b340753a1552c3e4cd8dfdd05d2d", 
-                "2cd1b00947abe2df2cba3997d7bdd5a9043ebe598987f0e9cade0aceb73f9edd") and
+                "2cd1b00947abe2df2cba3997d7bdd5a9043ebe598987f0e9cade0aceb73f9edd",
+                "c15f1490506641b2e93239830d4707074d4690e947138df86a61c82a29cf4230",
+                "e95b57c5a9decfa6ad11b187172c61a3c480ff26c6520ae8251f97e868e3e9a6",
+                "805190b03fe6179269e536f3be50a2432466af2716cd931e50ffcfffb910fd9d",
+                "2eae330562f3eaa5d889b58cac5e7e14757cea683b03c9850cf6ca99abe557f8",
+                "67b2c31ad5c94d5d3a2e9380a66393551dfb6498889952e968437bca306a1eba",
+                "f840099459d5780f2a8f637f96b1656f84473a2bb6ddf6600aad8c9b31a797c7") and
   not process.parent.thread.Ext.call_stack_summary : "*|python*.dll|*" and
   not (process.code_signature.status : ("trusted", "errorExpired") and process.executable : "?:\\Users\\*\\Downloads\\*") and
   not process.pe.original_file_name : "python.exe"] by process.entity_id

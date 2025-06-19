@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -57,6 +57,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
   not (process.thread.Ext.call_stack_final_user_module.name == "mscordbi.dll" and
        process.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe") and
+  not (process.parent.executable : "C:\\Program Files (x86)\\InstallShield Installation Information\\*\\setup.exe" and
+       Target.process.executable : "C:\\Windows\\SysWOW64\\explorer.exe") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                   ("27fe00d32f773a95e6d50986e5e7499917f66ce881e46054c77652ef4bdf3512",
                                    "a59e039e1520b74254a454bf48c2bceeafe7bd7ac6e5886baa482a52f86a29bf",
@@ -182,7 +184,16 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "a6967e7a3c2251812dd6b3fa0265fb7b61aadc568f562a98c50c345908c6e827",
                                    "68a9b8395bc4593deff311046193ef71444767359622538c848363ddb1afb4c0",
                                    "c982aa3d9e2bce5a6faec7a767f58ba6a622f07e7af6ca8abee4eb6b12492574",
-                                   "06990109b285c72e65d9f3f803738ee874a4dc9d505f384eee93b7bb6a8cf9b8")
+                                   "06990109b285c72e65d9f3f803738ee874a4dc9d505f384eee93b7bb6a8cf9b8",
+                                   "98c2ddea9b192883eae55567908722a981a1bed1f55ef0b4bacc984530c85292",
+                                   "7dc65ca4c511808d59ebf73eb8810cc3e6e62ed7229ac53bd1cce0e6d8f9b60f",
+                                   "bb1e5c4b390f31630fa87da5ee2ce326811f3566c58c16b2a68c9cff9c269fb7",
+                                   "9344363df85bc76135431e64f3be606355a8c33d6ea9918573b53500537a1f2b",
+                                   "809ff63ca16058e93474ada89f45f832aeac705b032004745fd06fe15b4942c3",
+                                   "771af46d1e8f21d303cdd81c91206986c40e1671b092e039cea3a7f3d250492a",
+                                   "a3800ebd1797b54aded5134cc9b93df3051b1aaa74a619c4a5223d5a1979dce1",
+                                   "c729c4b5a6ad8d247acd4b0d32d5a5999647461ee5f565c618b26d339caebbca",
+                                   "17aad91089b18cd97d7ddadbe9873cfde18bf3cb998623a8dfd3aa85006ce736")
 '''
 
 min_endpoint_version = "8.14.2"

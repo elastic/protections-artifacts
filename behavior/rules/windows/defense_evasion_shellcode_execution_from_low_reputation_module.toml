@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -73,7 +73,8 @@ sequence by process.entity_id with maxspan=1m
                "7c9f73755aa4e7b0480ca6a1b23b25e3103c17afa1635a3abf8c03bb3a686a78",
                "3885dbec9db4d8a3a1f6ad12ff0055e64de63d351424b954369e7828950f7fa7",
                "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610",
-               "05b5616932031283eea3751dfcad273db805a71b4e35afdbc03bd3c30bc6b6b0") and
+               "05b5616932031283eea3751dfcad273db805a71b4e35afdbc03bd3c30bc6b6b0",
+               "f5924d522b7d8b4a551c2d4045069c9a711b62b97e2b799e7b42a9931e58fba3") and
  not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and dll.path : "C:\\Windows\\Installer\\MSI????.tmp")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
@@ -84,6 +85,10 @@ sequence by process.entity_id with maxspan=1m
  not (process.Ext.api.name == "VirtualAlloc" and process.Ext.api.parameters.size <= 5000) and
  not (process.Ext.api.name == "NtQueueApcThread" and process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and
       process.thread.Ext.call_stack_final_user_module.name like "_is*.tmp") and
+ not (process.thread.Ext.call_stack_final_user_module.protection_provenance == "bass.dll" and
+      process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\users\\*\\appdata\\local\\temp\\is-*.tmp\\*.tmp") and
+ not (process.parent.executable : ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*") and
+      process.thread.Ext.call_stack_final_user_module.protection_provenance_path: ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*")) and
  not (process.Ext.api.name == "VirtualProtect" and
        _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
@@ -93,7 +98,7 @@ sequence by process.entity_id with maxspan=1m
  ] by process.thread.Ext.call_stack_final_user_module.hash.sha256
 '''
 
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"
 reputation = true
 [[actions]]
 action = "kill_process"
@@ -129,4 +134,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"

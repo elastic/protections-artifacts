@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 process where event.action == "start" and
@@ -143,6 +143,7 @@ process where event.action == "start" and
               "?:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe",
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\*_x64PdsmqConnector.exe",
               "?:\\Program Files (x86)\\Emerson\\OpenEnterprise\\Bin\\OEOPCDAServer.exe",
+              "C:\\WINDOWS\\System32\\DriverStore\\FileRepository\\*.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\ngen.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\InstallUtil.exe",
               "?:\\Windows\\Microsoft.NET\\Framework*\\mscorsvw.exe",
@@ -269,7 +270,8 @@ process where event.action == "start" and
                   "29f9c146fc0813ee93da780174595db769cbe63c127330379b51edf94d3c752c",
                   "eb20ea30c8c33b74eb18dff92eb78e6dcdd2db884348a64b423213bfecbeea17",
                   "e5569f89b2455d010e06e414c63d51ab49bc8fecff34e78f6e447198269240e7",
-                  "248d1df5814a98a30e6550b61932ac2309cdf3e8f1e781b8e55b618da753e8a3") and
+                  "248d1df5814a98a30e6550b61932ac2309cdf3e8f1e781b8e55b618da753e8a3",
+                  "ec0d61c13d60f6acc5f6d69ed2f8cfcff9886d8455787c939d8e8427078f1039") and
 
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
   not (process.code_signature.trusted == true and
@@ -281,7 +283,8 @@ process where event.action == "start" and
                  "Dell Technologies Inc.", "Guardicore Ltd.", "KASEYA US LLC", "Google LLC", "Johannes Schindelin", 
                  "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.",
                  "Block 64 Corporation", "Kaseya Holdings Inc", "Schmidt's LOGIN GmbH", "QS solutions BV", "CrowdStrike, Inc.",
-                 "Yokogawa Electric Corporation", "IDERI GmbH", "Ledger SAS", "Netwrix Corporation", "Dell Inc.", "Quest Software Inc.")) and
+                 "Yokogawa Electric Corporation", "IDERI GmbH", "Ledger SAS", "Netwrix Corporation", "Dell Inc.", "Quest Software Inc.",
+                 "Chocolatey Software, Inc")) and
   not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
        process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and

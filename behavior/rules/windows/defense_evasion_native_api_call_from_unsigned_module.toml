@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -57,7 +57,9 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  "cf05e4d1b1c8d93caf36dff4b4abaec8144a0281f8cbb611d0fb6e2a7fb38385",
                                  "d32b9f057abc3dda988d443cf9866d70a3e986a57f2c6f82379e45b8b900128b",
                                  "5e09159104bf3a9036e90e35b4bb4de0123907b3d6b5c30d155f50231f98e60a", 
-                                 "7d5cb5629aad0d20f2127d39f3f72112936731880678b1e86a9d2eec475301db") and
+                                 "7d5cb5629aad0d20f2127d39f3f72112936731880678b1e86a9d2eec475301db",
+                                 "f9d96115b770e86878dda0abe837a4922a67f1621c1c09a713d9e5259b7daba7",
+                                 "e4aefb3e93a05959581f99378cfb034c5c4bf072063fa82572fe271a835d7c3d") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
 ($entry.trusted == true or $entry.status == "errorExpired") and
 $entry.subject_name in (

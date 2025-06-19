@@ -7,7 +7,7 @@ id = "7731dc20-5216-49dc-95fe-a29321a345d5"
 license = "Elastic License v2"
 name = "Suspicious Execution from INET Cache"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,8 @@ process where event.action == "start" and
              ("Google LLC", "Google Inc","Mozilla Corporation", "Zhuhai Kingsoft Office Software Co., Ltd.",
               "VideoLAN") and
        process.code_signature.trusted == true) and
-  not (process.name : "rundll32.exe" and process.args : ("cryptext.dll,CryptExtAddCER", "cryptext.dll,CryptExtOpenCER")) and
+  not (process.name : "rundll32.exe" and
+       process.args : ("cryptext.dll,CryptExtAddCER", "cryptext.dll,CryptExtOpenCER", "ieframe.dll,OpenUR", "C:\\Windows\\System32\\ieframe.dll,OpenURL")) and
   not process.executable :
                  ("?:\\Program Files\\*.exe",
                   "?:\\Program Files (x86)\\*.exe",

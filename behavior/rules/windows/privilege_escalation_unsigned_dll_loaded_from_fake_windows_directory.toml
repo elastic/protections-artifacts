@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Unsigned DLL Loaded from Fake Windows Directory"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/itw-windows-lpe-0days-insights-and-detection-strategies"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 library where
@@ -36,7 +36,8 @@ library where
 
   /* user writable and can be abused for root drive remap */
   dll.path : "?:\\Windows\\System32\\tasks\\*"
-  )
+  ) and
+  dll.hash.sha256 != "c6ae7678e3631358bb29e267b98ed27432009976ceed62a268b52991ca874086"
 '''
 
 min_endpoint_version = "8.4.0"

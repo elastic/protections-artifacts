@@ -7,7 +7,7 @@ id = "abbb1618-6eae-459e-949d-bf628aa0abd4"
 license = "Elastic License v2"
 name = "Shellcode from Unusual Microsoft Signed Module"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where
@@ -33,11 +33,13 @@ api where
     not (process.executable : "C:\\Program Files\\Dell\\DTP\\InstrumentationSubAgent\\Dell.TechHub.Instrumentation.SubAgent.exe" and 
          process.parent.executable : "C:\\Program Files\\Dell\\TechHub\\Dell.TechHub.exe" and 
          process.code_signature.subject_name == "Dell Technologies Inc." and process.code_signature.trusted == true) and 
-    not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("cyvrtrap.dll", "bass.dll") and 
+    not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("cyvrtrap.dll", "bass.dll") and
     not (process.executable : "C:\\Windows\\System32\\inetsrv\\w3wp.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and 
          _arraysearch(process.thread.Ext.call_stack, $entry, 
                       $entry.callsite_trailing_bytes : ("41c644240c01*488b558849895424104883c4785b5e5f415c415d415e415f5dc3*", 
-                                                        "41c6470c01833*488bc6488b5590498957104883c4685b5e5f415c415*")))
+                                                        "41c6470c01833*488bc6488b5590498957104883c4685b5e5f415c415*"))) and
+    not (process.parent.executable : "C:\\Program Files\\ATERA Networks\\AteraAgent\\Agent\\AteraAgent.exe" and
+         process.executable : "C:\\Program Files\\ATERA Networks\\AteraAgent\\Agent\\packages\\AgentPackageMonitoring\\AgentPackageMonitoring.exe")
 '''
 
 min_endpoint_version = "8.14.2"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious NTDLL Memory Write"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.executable != null and not process.code_signature.status : "trusted" and 
@@ -18,7 +18,9 @@ api where process.executable != null and not process.code_signature.status : "tr
   process.thread.Ext.call_stack_final_user_module.name : "ntdll.dll" or 
   process.thread.Ext.call_stack_final_user_module.protection_provenance : "ntdll.dll"
   )  and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 : "e52b72e118bf40d237a39a968b5589e1c70f4b0d4f4b8eae0893aee64c1f9215"
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                 ("e52b72e118bf40d237a39a968b5589e1c70f4b0d4f4b8eae0893aee64c1f9215",
+                                  "ab93faa2f3a7e67a0489a5cc49327eb83bd5b48ed43ccc6112854fea7d20a620")
 '''
 
 min_endpoint_version = "8.10.0"

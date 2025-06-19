@@ -10,10 +10,12 @@ os_list = ["windows"]
 reference = [
     "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-registry where event.action == "modification" and registry.value == "LmCompatibilityLevel" and registry.data.strings in ("2", "1", "0")
+registry where event.action == "modification" and registry.value == "LmCompatibilityLevel" and registry.data.strings in ("2", "1", "0") and
+/* noisy FP - need to be compensated by a detection rule */
+not (user.id == "S-1-5-18" and process.name == "powershell.exe" and registry.data.strings in ("1", "0"))
 '''
 
 min_endpoint_version = "7.15.0"

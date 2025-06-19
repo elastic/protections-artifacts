@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/globally-distributed-stealers"]
-version = "1.0.49"
+version = "1.0.50"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -32,12 +32,15 @@ sequence by process.entity_id with maxspan=5m
                               "73ee5886a3d7ea73cd5ba31d943f1067f622eafe0f701ab23d2d9d3c1c0aafa5",
                               "438e750547cca4c4aaf49a5cafcfa9bbe8b9cc51772dba2791e966a9f92cad5a",
                               "b3dce1fda6820e5e3df33fa2e1bd9c87fe5ed6b2f44f6e6c47a32a870f0e0935",
-                              "d49609714d5b5031f2f08470485220323ee056bde2079fb5faf763a77cd53ddb") and
-   not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugConsole.exe"]
+                              "d49609714d5b5031f2f08470485220323ee056bde2079fb5faf763a77cd53ddb",
+                              "6f92b27bb0387b2b49ac2ed9eb7b3632e72507de64c691eb084202e9429786e3",
+                              "3c7f2519b3eb76408e8acc4016da9d710f0d528b2b6b5291102d8d79ffeeb8c1") and
+   not process.parent.executable :
+                   ("C:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugConsole.exe",
+                    "C:\\Program Files\\Microsoft Visual Studio\\*\\devenv.exe")]
   [dns where
     dns.question.name :
     (
-        "raw.githubusercontent.*",
         "pastebin.*",
         "paste.ee",
         "ghostbin.com",
@@ -160,7 +163,8 @@ sequence by process.entity_id with maxspan=5m
           "cdn??.space",
           "msdl.microsoft.com", 
           "steamcommunity.com"
-    )
+    ) and
+  not (process.executable : ("C:\\Program Files\\*.exe", "C:\\Program Files (x86)\\*.exe") and dns.question.name == "pastebin.com")
   ]
 '''
 

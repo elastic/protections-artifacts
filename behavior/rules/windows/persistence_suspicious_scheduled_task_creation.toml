@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Scheduled Task Creation"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -44,7 +44,9 @@ process where event.action == "start" and
                        "C:\\ModentoBridge\\ModentoPowershellProxy\\schedulePSP.bat", 
                        "C:\\ModentoBridge\\ModentoPowershellProxy\\startProxy.bat", 
                        "C:\\ModentoBridge_1\\ModentoPowershellProxy\\startProxy.bat", 
-                       "C:\\PROGRA~2\\*\\EXAQUA~1\\DEVELO~1\\EQPERF~1\\Config\\EQPERF~1.BAT")
+                       "C:\\PROGRA~2\\*\\EXAQUA~1\\DEVELO~1\\EQPERF~1\\Config\\EQPERF~1.BAT") and
+  not (process.parent.name : "powershell.exe" and process.args : "Rubrik Post Restore Task") and
+  not (process.args : "& \"\\\\*" and process.args : "powershell")
 '''
 
 min_endpoint_version = "7.15.0"

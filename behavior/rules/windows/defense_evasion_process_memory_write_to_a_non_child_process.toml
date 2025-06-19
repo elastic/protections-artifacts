@@ -7,7 +7,7 @@ id = "fa2e2435-d285-485e-9890-dff92cb78ab7"
 license = "Elastic License v2"
 name = "Process Memory Write to a Non Child Process"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -49,7 +49,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\system32\\hpzipm12.dll",
                               "c:\\windows\\system32\\lsasrv.dll",
                               "c:\\windows\\syswow64\\cwbunpls.dll",
-                              "c:\\windows\\system32\\shsvcs.dll") and
+                              "c:\\windows\\system32\\shsvcs.dll",
+                              "c:\\windows\\system32\\sxssrv.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("mfehcthe.dll", "system.core.ni.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
@@ -164,7 +165,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
                                    "9e0619c604757c70bb9b0df1e43c111e32b24669522ddc75028409cfacf40197",
                                    "ccae2a12091763da594e0ceb83e3aa438bccf2449b2dc91c916232ba2117ae22",
-                                   "6649961021d30e565e60c27db58305c6750b580231a0d7331522ad277a769dd3")
+                                   "6649961021d30e565e60c27db58305c6750b580231a0d7331522ad277a769dd3",
+                                   "1dc9d6fc9015eee05d40c876b622bef542292f2d81382dbf0845ff82ed18d25d")
 '''
 
 min_endpoint_version = "8.14.2"

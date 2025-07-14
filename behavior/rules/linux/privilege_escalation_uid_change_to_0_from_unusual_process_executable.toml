@@ -1,0 +1,62 @@
+[rule]
+description = """
+This rule detects a UID change event by an unusual process executable. Attackers may escalate privileges via an exploit
+located in a temporary directory, such as /tmp, /dev/shm, or /var/tmp, triggering a UID change event to 0 (root).
+"""
+id = "68cf34b4-0751-457a-b8fd-55208cdb42fe"
+license = "Elastic License v2"
+name = "UID Change to 0 from Unusual Process Executable"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+[process where event.type == "start" and event.action == "exec" and user.id != 0]
+[process where event.type == "change" and event.action == "uid_change" and user.id == 0 and
+process.executable like ("/tmp/*", "/dev/shm/*", "/var/tmp/*") and not (
+  process.executable like (
+    "/tmp/ubuntu-release-upgrader-*", "/tmp/go-build*", "/tmp/newroot/*", "/tmp/CVU_*", "/tmp/usr/bin/bwrap",
+    "/tmp/varonis*", "/tmp/usr/sbin/sshd", "/tmp/baum/easybuild/*", "/tmp/.mount_cursor*", "/var/tmp/foreman-ssh-cmd*",
+    "/tmp/tmp.*/nix-installer"
+    ) or
+  process.working_directory like ("/var/lib/rundeck", "/usr/sap/tmp", "/oracle/*/jobscheduler_agent", "/var/tmp/one/im/kvm-probes.d")
+)]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -86,7 +86,8 @@ process where event.action == "start" and
    not (process.name : "powershell.exe" and
         process.command_line : ("*Web Client\\Modules\\NAVWebClientManagement\\NAVWebClientManagement.psm1*", "*https://go.microsoft.com/fwlink/p/?LinkId=*")) and
    not (process.name : ("powershell.exe", "cmd.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
-   not (process.code_signature.subject_name == "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true)
+   not (process.code_signature.subject_name == "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true) and
+   not (process.name : "powershell.exe" and process.args : "Get-ChildItem -Path . -Exclude '.oci' | Remove-Item -Recurse -Force")
 '''
 
 min_endpoint_version = "7.15.0"

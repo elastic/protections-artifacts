@@ -8,13 +8,13 @@ license = "Elastic License v2"
 name = "Library Loaded From a Potentially Altered Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 library where process.executable != null and
  dll.name : ("vaultcli.dll", "wmiutils.dll", "taskschd.dll", "dnsapi.dll", "dsquery.dll",
-              "mstask.dll", "mstscax.dll", "sqlite3.dll", "clr.dll", "coreclr.dll", "ws2_32.dll",
-              "wininet.dll", "dnsapi.dll", "winhttp.dll", "psapi.dll", "bitsproxy.dll", "softokn3.dll",
+              "mstask.dll", "mstscax.dll", "sqlite3.dll", "ws2_32.dll", "wininet.dll", "amsi.dll",
+              "dnsapi.dll", "winhttp.dll", "psapi.dll", "bitsproxy.dll", "softokn3.dll",
               "System.Management.Automation.dll", "Wldap32.dll", "wtsapi32.dll") and
  process.thread.Ext.call_stack_summary like "ntdll.dll|*" and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "C:\\Windows\\Sys?????\\ntdll.dll!LdrLoadDll*") and
@@ -29,7 +29,7 @@ library where process.executable != null and
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|mscoreei.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|combase.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|clr.dll|*",
-                                                 "ntdll.dll|kernelbase.dll|clr.dll|*",
+                                                 "ntdll.dll|*kernelbase.dll|clr.dll|*",
                                                  "ntdll.dll|advapi32.dll|system.management.automation.ni.dll|clr.dll|*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info : ("*KernelBase.dll!LoadLibrary*", "*KernelBase.dll+0x*","*ntdll.dll!TpCallbackIndependent*",

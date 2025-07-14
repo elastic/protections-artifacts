@@ -7,7 +7,7 @@ id = "abbb1618-6eae-459e-949d-bf628aa0abd4"
 license = "Elastic License v2"
 name = "Shellcode from Unusual Microsoft Signed Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -34,6 +34,8 @@ api where
          process.parent.executable : "C:\\Program Files\\Dell\\TechHub\\Dell.TechHub.exe" and 
          process.code_signature.subject_name == "Dell Technologies Inc." and process.code_signature.trusted == true) and 
     not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("cyvrtrap.dll", "bass.dll") and
+    not (process.executable : "C:\\Windows\\System32\\PrintIsolationHost.exe" and
+         process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\system32\\msvcr100.dll") and
     not (process.executable : "C:\\Windows\\System32\\inetsrv\\w3wp.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and 
          _arraysearch(process.thread.Ext.call_stack, $entry, 
                       $entry.callsite_trailing_bytes : ("41c644240c01*488b558849895424104883c4785b5e5f415c415d415e415f5dc3*", 

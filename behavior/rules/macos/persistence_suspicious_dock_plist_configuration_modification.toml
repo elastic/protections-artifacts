@@ -1,0 +1,56 @@
+[rule]
+description = """
+Detects when the Dock plist config is modified by a suspicious process. An adversary can maintain persistence on a macOS
+endpoint by modifying the Dock plist configuration to execute code each time the Dock is launched.
+"""
+id = "6de66c98-9aaa-44a7-af4d-b2c0670fcc49"
+license = "Elastic License v2"
+name = "Suspicious Dock Plist Configuration Modification"
+os_list = ["macos"]
+reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
+version = "1.0.2"
+
+query = '''
+file where event.action == "modification" and file.name == "com.apple.dock.plist" and
+ (process.name like~ ("osascript", "python*", "ruby", "gems*", "node", "npm") or (process.code_signature.exists == false or process.code_signature.trusted == false))
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1647"
+name = "Plist File Modification"
+reference = "https://attack.mitre.org/techniques/T1647/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.2"

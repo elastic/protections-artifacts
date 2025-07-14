@@ -7,13 +7,15 @@ id = "0701ab8c-9abc-41e1-8af7-2d937778e73f"
 license = "Elastic License v2"
 name = "Suspicious Image Creation via ScreenCapture"
 os_list = ["macos"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
 [process where event.type == "start" and event.action == "exec" and process.name == "screencapture" and
-  not process.parent.executable like "/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer" and
-  not process.Ext.effective_parent.executable like "/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer"]
+  not process.parent.executable like ("/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer",
+                                      "/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow") and
+  not process.Ext.effective_parent.executable like ("/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer",
+                                                    "/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow")]
 [file where event.action == "modification" and file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*")]
 '''
 

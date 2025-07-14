@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies the execution of Windows commands or downloaded files via the browser's dialog box. Adversaries may use
+phishing to instruct the victim to copy and paste malicious commands for execution via crafted phsihing web pages.
+"""
+id = "7bcc28b7-d1ce-4586-bc46-63ca31156d7a"
+license = "Elastic License v2"
+name = "Potential Execution via Clickfix Phishing"
+os_list = ["windows"]
+reference = ["https://mrd0x.com/filefix-clickfix-alternative/"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.parent.args == "--message-loop-type-ui" and process.parent.args == "--service-sandbox-type=none" and
+ (
+  process.name : ("pwsh.exe", "powershell.exe", "curl.exe", "msiexec.exe", "mshta.exe", "wscript.exe", "cscript.exe", "rundll32.exe", "certutil.exe", "certreq.exe") or
+  process.executable : "?:\\Users\\*\\Downloads\\*"
+  ) and
+  process.parent.thread.Ext.call_stack_summary like "ntdll.dll|*|windows.storage.dll|shell32.dll|shcore.dll|kernel32.dll|ntdll.dll" and
+  not (process.name : "rundll32.exe" and process.args : "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

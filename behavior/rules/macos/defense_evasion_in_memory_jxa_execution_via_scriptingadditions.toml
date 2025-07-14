@@ -11,14 +11,12 @@ license = "Elastic License v2"
 name = "In-Memory JXA Execution via ScriptingAdditions"
 os_list = ["macos"]
 reference = ["https://github.com/MythicAgents/apfell", "https://posts.specterops.io/persistent-jxa-66e1c3cd1cf5"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
 [library where event.action == "load" and dll.path == "/System/Library/Components/JavaScript.component/Contents/MacOS/JavaScript" and
-  not (Effective_process.executable like "/Library/BESAgent/BESAgent.app/Contents/MacOS/BESAgent" and process.executable like ("/usr/bin/osascript", "/usr/bin/sudo")) and
-  not (Effective_process.executable like~ ("/Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher", "/Volumes/balenaEtcher/balenaEtcher.app/Contents/MacOS/balenaEtcher", "/private/var/folders/*/balenaEtcher.app/Contents/MacOS/balenaEtcher") and process.executable like "/usr/bin/osascript") and
-  not (Effective_process.executable like "/Applications/Alfred 5.app/Contents/MacOS/Alfred" and process.executable like "/usr/bin/osascript")]
+  not process.executable like "/usr/bin/osascript"]
 [library where event.action == "load" and dll.path == "/System/Library/ScriptingAdditions/StandardAdditions.osax/Contents/MacOS/StandardAdditions"]
 '''
 

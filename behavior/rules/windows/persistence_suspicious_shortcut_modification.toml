@@ -8,12 +8,12 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
 [process where event.action == "start" and
- not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+ not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and process.hash.sha256 != null and
  (
   process.name : ("rundll32.exe", "regsvr32.exe", "powershell.exe", "wscript.exe", "cscript.exe", "curl.exe", "certutil.exe", "cmd.exe") or
   ((process.Ext.relative_file_creation_time <= 300 or process.Ext.relative_file_name_modify_time <= 300) and
@@ -45,7 +45,11 @@ sequence by process.entity_id with maxspan=1m
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and 
   not (process.name : ("wscript.exe", "cscript.exe", "cmd.exe") and process.command_line : "*\\\\*\\SysVol\\*") and 
   not (process.name : "cmd.exe" and process.args : "Menu\\Programs\\Startup\\Icons.bat ") and 
-  not (process.name : "powershell.exe" and process.args : ("C:\\Windows\\Managetaskbar\\taskband.ps1", "C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*_AddOfficeIconsToDesktop.ps1"))
+  not (process.name : "powershell.exe" and process.args : ("C:\\Windows\\Managetaskbar\\taskband.ps1", "C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*_AddOfficeIconsToDesktop.ps1")) and
+  /* unsigned Notepad++ installer */
+  process.pe.imphash != "9dda1a1d1f8a1d13ae0297b47046b26e" and
+  not (process.name : "rundll32.exe" and process.args :"shell32.dll,SHCreateLocalServerRunDll" and process.parent.name : "svchost.exe") and
+  not process.hash.sha256 in ("7a8998de0f56fb3303d071d6d87bd9c1b4472bc84bba5090993936a8bc819771", "bd68b94f58ad350ccb89f6b9e2b2f473731239fb0aa1902c21cb83e117d66b2e")
  ]
 [file where event.action == "overwrite" and file.extension : "lnk" and process.pid != 4 and 
  process.executable : "?:\\*" and
@@ -61,7 +65,7 @@ sequence by process.entity_id with maxspan=1m
                "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk")]
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.6.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -91,4 +95,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.6.0"

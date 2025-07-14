@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -59,6 +59,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
        process.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe") and
   not (process.parent.executable : "C:\\Program Files (x86)\\InstallShield Installation Information\\*\\setup.exe" and
        Target.process.executable : "C:\\Windows\\SysWOW64\\explorer.exe") and
+  not (process.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\link.exe" and
+       process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\MSBuild\\*\\Tracker.exe") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                   ("27fe00d32f773a95e6d50986e5e7499917f66ce881e46054c77652ef4bdf3512",
                                    "a59e039e1520b74254a454bf48c2bceeafe7bd7ac6e5886baa482a52f86a29bf",

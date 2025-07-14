@@ -8,13 +8,13 @@ id = "cd6e64ec-2890-4bd8-9d07-bef06465b06f"
 license = "Elastic License v2"
 name = "Linux Powershell Encoded Command"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.name == "pwsh" and
 process.args : ("-EncodedCommand", "-enc", "-E") and process.args : ("-nop", "-noprofile") and 
 length(process.command_line) >= 100 and not (
-  process.parent.name in ("node", "code", "code-insiders") or
+  process.parent.name in ("node", "code", "code-insiders", "cursor") or
   process.parent.args : "*Invoke-Pester*" or
   process.parent.executable like "/data/user/docker/*" or
   process.parent.executable in ("/usr/lib/electron30/electron", "/usr/lib/electron32/electron") or
@@ -22,7 +22,11 @@ length(process.command_line) >= 100 and not (
     process.args == "IAAoAEcAZQB0AC0ASABvAHMAdAApAC4AVgBlAHIAcwBpAG8AbgAuAFQAbwBTAHQAcgBpAG4AZwAoACkAIAA=" and 
     process.parent.args == "Invoke-LightRail.ps1"
   ) or
-  process.args like~ "JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwAKAFsAdgBlAHIAcwBp*"
+  process.args like~ "JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwAKAFsAdgBlAHIAcwBp*" or
+  process.args in (
+    "VwByAGkAdABlAC0ATwB1AHQAcAB1AHQAIAAnAEgARQBMAEwATwAgAFcATwBSAEwARAAnAA==", "dwByAGkAdABlAC0AaABvAHMAdAAgACIAdABlAHMAdAAiAA=",
+    "dwByAGkAdABlAC0AaABvAHMAdAAgACIAdABlAHMAdAAiAA=="
+  )
 )
 '''
 

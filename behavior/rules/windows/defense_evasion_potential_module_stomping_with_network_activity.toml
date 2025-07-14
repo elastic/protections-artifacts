@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies modification to the WinInet registry key by a process where the creating thread's stack contains frames
+pointing to an unusual module.
+"""
+id = "c059ead9-d15e-4d13-86ee-ac5d8b9d6c34"
+license = "Elastic License v2"
+name = "Potential Module Stomping with Network Activity"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+registry where event.action == "modification" and process.executable != null and registry.value == "CachePrefix" and
+ registry.path : "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\*" and
+ /* unusual stacks start module */
+ process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|wininet.dll\|ntdll.dll\|kernelbase.dll\|wininet.dll\|[a-z]+\.dll""" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "?*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 api where process.Ext.api.behaviors == "direct_syscall" and
@@ -93,12 +93,26 @@ api where process.Ext.api.behaviors == "direct_syscall" and
                                   "e540127862940234446ef7a919f7295a52e751e14f184e779a8b4b2dffb78978",
                                   "f9674626d17346629508557918209728fc2a571aeed62201887281aa992758e8",
                                   "f80c57719e52bbbd9d10aaabf9e30db7b76fabd5d0cb73f2a78b96d5613befc4",
-                                  "4706af5ee53476bc4701b81aff0f5f655aea433f1de39365bef271b24a29cd85") and
+                                  "4706af5ee53476bc4701b81aff0f5f655aea433f1de39365bef271b24a29cd85",
+                                  "6fd1551bc0b7b588dabe1865a7a333a4987c552f4aa05b30cb92fbb33c03603e",
+                                  "a32c3fbbf74699a10e7642bf4901191f29c88c5aec93ae7ba28c79ab28462a69",
+                                  "30a7ee75311049b34c6240646cc01235fd9860b98c73c267ae7ffc4350aa0825",
+                                  "7e562fc41c9e36fbe0b06339e57cb842354a61b6c21bd975eb56ad550615a5f6",
+                                  "7a96d50d91310903f591478e7d1513be5689f1ecf59fe752fbaa6cb4ba8820ce",
+                                  "ae885757debdc97de2498d84cfb0b7f05e6af00ec14030b1fe678276518f56b0",
+                                  "1b5d9cec668335295c8e575bcedf4afcedbc445d8ccf8374c9380188965e78e3",
+                                  "f6391baaf220428eab56c30d45d53fc76e651c1b2e66f2908a312526a1e45331",
+                                  "79b73fa504fdc7c41be70f74c6ded66e12f271d3bb8afb5c1c94a6eb4514f0cf",
+                                  "1c2cf78885c0487e28fdcd201dca52a6dbded5eeb108e4638ddc867fac473e37",
+                                  "b1ce6d1ccf9f48f3ff3f45d94e088fc2fc964e55ee8f97c08c1c1adfb9c9328e") and
     not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.metadata.target_address_name == "terminal64.exe" and
-         process.thread.Ext.call_stack_final_user_module.name == "terminal64.exe")
+         process.thread.Ext.call_stack_final_user_module.name == "terminal64.exe") and
+    not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+         (process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\assembly\\nativeimages_*.ni.dll" or
+          process.thread.Ext.call_stack_final_user_module.protection_provenance == "system.transactions.ni.dll"))
 '''
 
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -123,4 +137,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"

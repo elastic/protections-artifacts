@@ -8,16 +8,16 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 api where 
   process.Ext.api.name : ("SetThreadContext", "Wow64SetThreadContext") and 
   process.executable != null and 
-  ((process.Ext.api.behaviors : "cross-process" and process.Ext.api.behaviors : "execute_shellcode") or process.Ext.api.behaviors : "hardware_breakpoint_set") and 
+  ((process.Ext.api.behaviors == "cross-process" and process.Ext.api.behaviors == "execute_shellcode") or process.Ext.api.behaviors == "hardware_breakpoint_set") and
   not process.Ext.api.summary : "*OSError*" and process.thread.Ext.call_stack_final_user_module.name != null and
-  (process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" or
-   process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|Unbacked") and
+  (process.thread.Ext.call_stack_final_user_module.hash.sha256 like "?*" or
+   process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|Unbacked") and
   not (process.code_signature.subject_name :
                ("Duncan Ogilvie", "International Business Machines Corporation", "COGNOSPHERE PTE. LTD.",
                 "CAPCOM CO., LTD.", "Larian Studios Games Ltd.", "Valve Corp.", "Rockstar Games, Inc.",
@@ -29,15 +29,15 @@ api where
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
                 "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
       process.code_signature.trusted == true) and 
- not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "dbgeng.dll", "Undetermined") and
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "kernel|*") and 
+ not process.thread.Ext.call_stack_final_user_module.name like ("Kernel", "Unknown", "dbgeng.dll", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "kernel|*") and
  not (process.code_signature.trusted == true and stringcontains~(process.executable, process.thread.Ext.call_stack_final_user_module.path)) and 
  not process.thread.Ext.call_stack_final_user_module.path : 
                                                ("?:\\Program Files\\*", 
                                                 "?:\\Program Files (x86)\\*", 
                                                 "\\Program Files\\*", 
                                                 "\\Program Files (x86)\\*") and 
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                         ("31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b",
                          "766ac0f768c5b2acb19ecb8cf179c59d56b74d71437f5d1331408d9c827cfde8",
                          "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95",

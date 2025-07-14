@@ -11,13 +11,13 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
-  "/root/.ssh/*", "/home/*/.ssh/*", "/etc/ld.so.preload", "/dev/shm/*", "/tmp/*", "/var/spool/cron*", "/etc/cron*",
+  "/root/.ssh/*", "/home/*/.ssh/*", "/etc/ld.so.preload", "/dev/shm*", "/tmp*", "/var/spool/cron*", "/etc/cron*",
   "/etc/init.d/*", "/etc/rc.local", "/etc/passwd", "/etc/shadow", "/etc/group", "/etc/sudoers", "/etc/sudoers.d/*",
-  "/etc/ssh/*", "/var/tmp/*", "/usr/bin/*", "/bin/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*",
+  "/etc/ssh/*", "/var/tmp*", "/usr/bin/*", "/bin/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*",
   "/usr/lib/*", "/usr/local/lib/*", "/lib/*", "/lib64/*", "/usr/lib64/*", "/usr/local/lib64/*"
 ) and
 not (
@@ -27,8 +27,10 @@ not (
     "/etc/pki/entitlement"
   ) or
   process.parent.executable in (
-    "/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys", "./ldap2sshkeys", "/var/lib/dpkg/info/cblauncher.postinst"
+    "/opt/rudder/bin/cf-agent", "/usr/local/bin/ldap2sshkeys", "./ldap2sshkeys", "/var/lib/dpkg/info/cblauncher.postinst",
+    "/run/lxd_agent/lxd-agent"
   ) or
+  process.parent.executable like "/etc/platform/*/crons/pause" or
   process.parent.args : ("/var/lib/waagent/*", "/opt/tableau/tableau_server/*", "/var/tmp/rpm-tmp.*") or
   process.parent.command_line in ("/bin/bash /usr/sbin/libpam", "sh clean") or
   process.parent.command_line like "*.ansible*" or

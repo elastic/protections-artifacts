@@ -8,11 +8,11 @@ id = "653f1157-1e9a-4986-b39c-5d6f6354e54c"
 license = "Elastic License v2"
 name = "Suspicious Binary AWS S3 Connection"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
-[process where event.type == "start" and event.action == "exec" and (process.name like~ ("osascript", "node", "python*") or (process.code_signature.exists == false or process.code_signature.trusted == false)) and
+[process where event.type == "start" and event.action == "exec" and process.name like~ ("osascript", "node", "python*") and
   process.args_count == 1 and
   not process.parent.executable like "/Library/Developer/CoreSimulator/*" and
   not process.Ext.effective_parent.executable like "/Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/XPCServices/SimulatorTrampoline.xpc/Contents/MacOS/SimulatorTrampoline"]

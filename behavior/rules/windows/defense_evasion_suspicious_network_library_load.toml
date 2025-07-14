@@ -1,0 +1,47 @@
+[rule]
+description = """
+Detects attempts to load a networking library from a potentially altered call stack in order to conceal the true source
+of the call.
+"""
+id = "9b87e433-5f77-40cc-9b91-25c9c2020515"
+license = "Elastic License v2"
+name = "Suspicious Network Library Load"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
+version = "1.0.1"
+
+query = '''
+library where
+ dll.name : ("winhttp.dll", "ws2_32.dll") and
+  /* ROP gadget in early loaded modules kernel32 or kernelbase.dll */
+  process.thread.Ext.call_stack_summary like ("*|wininet.dll|kernelbase.dll*", "*|wininet.dll|kernel32.dll*") and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "C:\\Windows\\System32\\wininet.dll!InternetOpen*")
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

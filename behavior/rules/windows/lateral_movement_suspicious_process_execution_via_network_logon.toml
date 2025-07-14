@@ -7,7 +7,7 @@ id = "706cc79a-f227-43ae-a3aa-8b6461f8eddc"
 license = "Elastic License v2"
 name = "Suspicious Process Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.49"
+version = "1.0.50"
 
 query = '''
 process where event.action == "start" and
@@ -152,7 +152,12 @@ process where event.action == "start" and
               "C:\\Windows\\System32\\compact.exe",
               "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\MSBuild\\Current\\Bin\\MSBuild.exe",
               "C:\\Program Files (x86)\\Citrix\\Licensing\\LS\\udadmin.exe",
-              "C:\\Windows\\System32\\csvde.exe") and
+              "C:\\Windows\\System32\\csvde.exe",
+              "C:\\Windows\\System32\\RDSPnf.exe",
+              "C:\\Windows\\system32\\xcopy.exe",
+              "C:\\Windows\\System32\\wecutil.exe",
+              "C:\\Windows\\System32\\msg.exe",
+              "C:\\Windows\\System32\\sdiagnhost.exe") and
 
   not (process.name : ("cmd.exe", "powershell.exe") and
        /* limit powershell and cmd to download pattern, rest is pretty random and very noisy */
@@ -271,9 +276,15 @@ process where event.action == "start" and
                   "eb20ea30c8c33b74eb18dff92eb78e6dcdd2db884348a64b423213bfecbeea17",
                   "e5569f89b2455d010e06e414c63d51ab49bc8fecff34e78f6e447198269240e7",
                   "248d1df5814a98a30e6550b61932ac2309cdf3e8f1e781b8e55b618da753e8a3",
-                  "ec0d61c13d60f6acc5f6d69ed2f8cfcff9886d8455787c939d8e8427078f1039") and
+                  "ec0d61c13d60f6acc5f6d69ed2f8cfcff9886d8455787c939d8e8427078f1039",
+                  "7220dbdcb33a0e345b1e9cb14abd9993364b6436be869dc1daf6d57d58f1998c",
+                  "d9c8fdfdce510fd9922da3a1084b6ac4476c1407d1d8bbb67fc0a61988552771",
+                  "9098749bb1aedb258a7ca3c7f20f58bb828fa9c4327b41d11ba19a15e0ce146f",
+                  "fc18fbb2b4e54c25ea3fdcdd9682735a636dd61127da451a2c19fd7e8d154285") and
 
   not (process.name : "rundll32.exe" and process.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.parent.name : "svchost.exe") and
+  not (process.name : "rundll32.exe" and process.parent.name : "msiexec.exe" and
+       process.args : "Semperis.AdfrAgentCustomActions!Semperis.AdfrAgentCustomActions.AdfrAgentCustomAction.*") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name :
                 ("RapidFire Tools Inc.", "Amazon Web Services, Inc.", "Quest Software Inc.", "SEMPERIS INC.",
@@ -284,15 +295,15 @@ process where event.action == "start" and
                  "Arcserve (USA) LLC", "Hewlett Packard", "LabTech Software", "Dell Inc", "HYCU, Inc.", "Trend Micro, Inc.",
                  "Block 64 Corporation", "Kaseya Holdings Inc", "Schmidt's LOGIN GmbH", "QS solutions BV", "CrowdStrike, Inc.",
                  "Yokogawa Electric Corporation", "IDERI GmbH", "Ledger SAS", "Netwrix Corporation", "Dell Inc.", "Quest Software Inc.",
-                 "Chocolatey Software, Inc")) and
-  not (process.executable : "?:\\Windows\\System32\\WScript.exe" and process.args : "?:\\Windows\\system32\\slmgr.vbs" and
-       process.parent.executable : "?:\\Windows\\system32\\wsmprovhost.exe") and
+                 "Chocolatey Software, Inc", ".NET", "Adobe Inc.", "Duo Security LLC")) and
+  not (process.executable : "?:\\Windows\\System32\\WScript.exe" and
+       process.args : ("?:\\Windows\\system32\\slmgr.vbs", "C:\\WINDOWS\\TEMP\\Spiceworks\\spiceworks_upload.vbs")) and
+  not (process.pe.original_file_name in ("VC_redist.x64.exe", "ccmsetup.exe", "vs_professional.exe") and process.code_signature.subject_name == "Microsoft Corporation" and process.code_signature.trusted == true) and
   not (process.pe.original_file_name : "DismHost.exe" and process.args : "{*}" and
        process.code_signature.subject_name : "Microsoft *" and process.code_signature.trusted == true) and
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
   not (process.name : "wscript.exe" and process.command_line : "wscript*:\\Users\\*\\AppData\\Local\\Temp\\Spiceworks\\spiceworks_upload.vbs*") and
-  not (process.executable : "?:\\Windows\\System32\\certutil.exe" and process.args : "-store" and process.args : "-enterprise") and 
-  not (process.name : "certutil.exe" and process.args : ("-view", "-hashfile")) and
+  not (process.name : "certutil.exe" and process.args : ("-view", "-hashfile", "-repairstore", "-store")) and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\spiceworks_upload.vbs") and
   not (process.executable : "C:\\Windows\\System32\\inetSrv\\appCmd.exe" and process.args == "list" and process.args == "appPool") and
   not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework64\\*\\installutil.exe" and

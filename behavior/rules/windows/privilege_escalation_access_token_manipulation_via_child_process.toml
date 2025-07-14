@@ -8,7 +8,7 @@ id = "8bdd523d-7a18-4706-bbe0-1a2525c6979f"
 license = "Elastic License v2"
 name = "Access Token Manipulation via Child Process"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence
@@ -37,8 +37,13 @@ sequence
 
   not (process.name : "rundll32.exe" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617" and process.parent.name : "dllhost.exe") and
   not process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and
-  not (process.parent.name : "explorer.exe" and process.executable : "\\Device\\Mup\\*.exe")
-   ] by process.entity_id as event0
+  not (process.parent.name : "explorer.exe" and process.executable : "\\Device\\Mup\\*.exe") and
+  not (process.name : "rundll32.exe" and process.args : ("WSClient.dll,RefreshBannedAppsList", "xrWCbgnd.dll,LaunchBgTask", "uxtheme.dll,#64", "C:\\Windows\\System32\\shell32.dll,SHCreateLocalServerRunDll", "C:\\Windows\\system32\\WerConCpl.dll,", "C:\\WINDOWS\\system32\\WerConCpl.dll,")) and
+  not process.parent.executable :
+                      ("C:\\Program Files\\Symantec\\Symantec Endpoint Protection\\*\\Bin64\\ccSvcHst.exe",
+                       "C:\\Program Files\\ACCUPLACER Score Client\\ACCUPLACER Score Client.exe") and
+  process.hash.sha256 != "9e23e07e042943e1862b86d8c9dc05483a118938f5b19f359cb8f9aa6a14a452"
+  ] by process.entity_id as event0
  [process where event.action == "start" and user.id != null and
   not process.Ext.token.integrity_level_name : "system" and
 
@@ -67,13 +72,18 @@ sequence
              "C:\\Windows\\System32\\WerFault.exe",
              "C:\\Windows\\System32\\OptionalFeatures.exe",
              "C:\\Windows\\System32\\conhost.exe",
+             "C:\\Windows\\SysWOW64\\net1.exe",
+             "C:\\Windows\\SysWOW64\\net.exe",
              "?:\\WINDOWS\\splwow64.exe",
              "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe",
              "?:\\Program Files\\*",
              "?:\\Program Files (x86)\\*") and
-
+  not process.parent.executable : ("C:\\Windows\\System32\\gpscript.exe",
+                                   "C:\\Windows\\ImmersiveControlPanel\\SystemSettings.exe",
+                                   "C:\\Windows\\System32\\ServerManagerLauncher.exe",
+                                   "C:\\Program Files\\Accops\\AccopsSessionServerExtensions\\lspPortMapper.exe",
+                                   "C:\\Windows\\SysWOW64\\Watchdata\\PROXKey CSP India V3.0\\SPSocketServer.exe") and
   not (process.pe.original_file_name : ("Bootstrapper.exe") and process.code_signature.trusted == true) and
-
   not process.hash.sha256 :
             ("b2b8a7156ec0079a1801db1647d6dbc4206345689772495eac311e0e6afcad57",
              "2c476f212dc61977ae3deb9319fa21242524f3b6dd30803715659a9618316089",
@@ -86,16 +96,20 @@ sequence
              "bf73d2a3812ebef4f57cf81a2d24e23287cddefd57183c89535603e878eb7b11", 
              "24e76fe67435e9c7c1aa9ec22d736de3873fbd2e880d8ae716dffec0e146fc53",
              "2a12e554e19d7b59294def0c3047f77c44e8ed899d6bca264935ce03abc82abe",
-             "e8f1081e08c28f80997b06f0f383957b6ece29347d042387e8ae2dcf93107adc") and
-
+             "e8f1081e08c28f80997b06f0f383957b6ece29347d042387e8ae2dcf93107adc",
+             "ed7c9415508e0cb0893c77d67400ee52a0c2f54a9992d55e309b14d906fc8545") and
   not (process.name : ("*setup*.exe", "resource_*.exe") and process.parent.name : "*.tmp" and process.executable : "?:\\Users\\*") and 
   not process.command_line : "*/SPAWNWND=*/NOTIFYWND=*" and
   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*") and
   not event0.process.hash.sha256 == process.hash.sha256 and
-  not (process.name : "cmd.exe" and process.parent.executable : "C:\\Windows\\System32\\gpscript.exe") and
   not (process.executable : "C:\\Windows\\System32\\userinit.exe" and process.parent.executable : "C:\\Windows\\System32\\winlogon.exe") and
   not (process.executable : "C:\\Windows\\System32\\tabcal.exe" and process.parent.executable : "C:\\Windows\\System32\\rundll32.exe" and
-       process.parent.args : "C:\\WINDOWS\\System32\\tabletpc.cpl")
+       process.parent.args : "C:\\WINDOWS\\System32\\tabletpc.cpl") and
+  not (process.executable : "C:\\Windows\\System32\\rdpshell.exe" and process.parent.executable : "C:\\Windows\\System32\\rdpinit.exe") and
+  not (process.executable : "C:\\Windows\\System32\\rdpinit.exe" and process.parent.executable : "C:\\Windows\\System32\\userinit.exe") and
+  not (process.executable : ("C:\\Windows\\SysWOW64\\taskkill.exe", "C:\\Windows\\SysWOW64\\cmd.exe") and
+       process.working_directory : ("C:\\Program Files (x86)\\Comhard-Plus\\UserDeskTop\\files\\",
+                                    "C:\\Program Files (x86)\\TSplus\\UserDeskTop\\files\\"))
   ] by process.parent.entity_id
 
   until [process where event.action:"end"] by process.parent.entity_id

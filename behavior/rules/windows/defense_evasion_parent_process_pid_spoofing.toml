@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.49"
+version = "1.0.50"
 
 query = '''
 sequence with maxspan=5m
@@ -103,7 +103,7 @@ sequence with maxspan=5m
        process.args : "?:\\ProgramData\\PlatformInstall\\GideCode\\rtcresofz_Mecrrcpl.dll" and 
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
        
-  not (process.executable : "C:\\Windows\\System32\\sihost.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
+  not (process.executable : ("C:\\Windows\\System32\\sihost.exe", "C:\\Windows\\System32\\ShellHost.exe") and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
@@ -144,7 +144,8 @@ sequence with maxspan=5m
                  "8157d5ee0336f8c9f968da4d9e0c39f70067406ef73a5b25e5d2ed90dd54985e",
                  "989e5cb0690ec99115f20fea1bc2cfdcf08d910fc468a99bd8416ccdae5b159c",
                  "adeb733bf80927e6b365fc6a03547d401d51539b1b4623e55199992d242c69ba",
-                 "34e985694d5fddbe4a27ab986975e2980b0c0a2005c0779435e7ce16004f4fe8") and
+                 "34e985694d5fddbe4a27ab986975e2980b0c0a2005c0779435e7ce16004f4fe8",
+                 "e37d10eead5f14a3ea9d2be0e95012a2928964928e447ac7c4fac9a547f0a863") and
 
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
 

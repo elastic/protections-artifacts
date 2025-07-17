@@ -7,7 +7,7 @@ id = "6dd16a01-b779-4a39-b436-deed75f2c355"
 license = "Elastic License v2"
 name = "Potential AutoConfigURL Settings Hijack"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 registry where
@@ -18,7 +18,7 @@ registry where
   process.code_signature.exists == false or
   process.name : ("powershell.exe", "wscript.exe", "cscript.exe")
   ) and
-  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")
+  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "C:\\LexisNexis\\Shared\\RwEasyMAPI64.exe")
 '''
 
 min_endpoint_version = "8.4.0"

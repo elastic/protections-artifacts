@@ -8,7 +8,7 @@ id = "d3588fad-43ae-4f2d-badd-15a27df72132"
 license = "Elastic License v2"
 name = "Inhibit System Recovery via Untrusted Parent Process"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence with maxspan=1m
@@ -23,7 +23,8 @@ sequence with maxspan=1m
       (process.pe.original_file_name : "vssadmin.exe" and process.command_line : "*shadows*" and process.command_line : ("*delete*", "*resize*")) or
       (process.pe.original_file_name : "bcdedit.exe" and process.command_line : ("*bootstatuspolicy*", "*recoveryenabled*")) or
       (process.pe.original_file_name : "wbadmin.exe" and process.command_line : ("*catalog*", "*systemstatebackup*") and process.command_line : "*delete*")
-    )
+    ) and
+    not (process.name : "bcdedit.exe" and process.args in ("ignoreallfailures", "displayallfailures"))
   ] by process.parent.entity_id
 '''
 

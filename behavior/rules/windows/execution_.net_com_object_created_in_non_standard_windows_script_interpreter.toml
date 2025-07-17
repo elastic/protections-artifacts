@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = ".NET COM object created in non-standard Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://github.com/tyranid/DotNetToJScript"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -41,7 +41,8 @@ not (process.executable : "?:\\Program Files (x86)\\Internet Explorer\\iexplore.
 
 /* ASP VBScript */
 not (process.executable : "?:\\Windows\\System32\\inetsrv\\w3wp.exe" and
-     process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|vbscript.dll|oleaut32.dll|vbscript.dll|asp.dll|comsvcs.dll|combase.dll|comsvcs.dll|msvcrt.dll|kernel32.dll|ntdll.dll") and
+     process.thread.Ext.call_stack_summary in ("ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|vbscript.dll|oleaut32.dll|vbscript.dll|asp.dll|comsvcs.dll|combase.dll|comsvcs.dll|msvcrt.dll|kernel32.dll|ntdll.dll",
+                                               "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|vbscript.dll|asp.dll|comsvcs.dll|combase.dll|comsvcs.dll|msvcrt.dll|kernel32.dll|ntdll.dll")) and
 
 /* JumpCloud */
 not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and

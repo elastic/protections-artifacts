@@ -7,7 +7,7 @@ id = "9f7aece1-355c-4e72-a7ea-767d5cccb12d"
 license = "Elastic License v2"
 name = "Suspicious Startup Persistence via a Windows Installer"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 any where process.name : "msiexec.exe" and
@@ -23,6 +23,8 @@ any where process.name : "msiexec.exe" and
                   ("rundll32.exe \"C:\\Program Files\\VMware\\VMware View\\Agent\\bin\\MessageFrameWork.dll\",EnvSyncW",
                    "rundll32.exe DR*SVC.dll, EntryPointUserMessage",
                    "rundll32.exe P*Svc.dll, EntryPointUserMessage",
+                   "rundll32.exe DRV*.dll,EntryPointUserMessage",
+                   "rundll32.exe P*.dll,EntryPointUserMessage",
                    "C:\\Users\\Public\\RES\\RESPrinter\\FileWatcher.exe")) or
 
     (event.category == "file" and event.action == "creation" and

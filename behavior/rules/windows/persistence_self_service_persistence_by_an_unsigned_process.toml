@@ -7,7 +7,7 @@ id = "e5ad5d97-da99-4371-9611-b6dfa8e55e30"
 license = "Elastic License v2"
 name = "Self Service Persistence by an Unsigned Process"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=5m 
@@ -25,7 +25,7 @@ sequence with maxspan=5m
    process.parent.executable : "?:\\Windows\\System32\\services.exe" or
    process.executable regex~ """c:\\windows\\[a-z0-9\-\_\.]+\.exe"""
    ) and
-  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
+  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe", "C:\\windows\\BTExecService-BDA\\BTExecService.exe") and
   not process.hash.sha256 :
                    ("e68743f3a0c299024e1540add1bcd9d3658ebbdbf172d74e1bf8fcd8c8c0406b",
                     "2b5923d303fa2ec5ba263d745654873e2efbde2d341d0a94e72c5d51fab72957",
@@ -64,7 +64,9 @@ sequence with maxspan=5m
                     "2fcfbf3d19594a991a633fb8132dfe36be6e38e2dbfc815761f7e532dc0908fd",
                     "b82f73ace709e65767e187911cde8d04fdb0e68c28261362bbff086691a80627",
                     "580c4bdeac06688f82c9f9f6b38cbeefa6f7c6d7b57425241ba884511147aa75",
-                    "5b7f9706f59fccd0d6cd56b711f44793f62b1bbc4ea95db937c982219365553b")
+                    "5b7f9706f59fccd0d6cd56b711f44793f62b1bbc4ea95db937c982219365553b",
+                    "8dc1c71fcb569b0ec1771fe19d9e6befbacf97bf550dac219852b001f2f97356",
+                    "f64d2f78f82723d9c464781fcd79524600a54a91641588b8e301c5805d869d5a")
   ] as event0
   
 [registry where 

@@ -7,13 +7,14 @@ id = "d04edc65-b0a1-4445-a148-3fb7ec4f731e"
 license = "Elastic License v2"
 name = "Potential Beacon Masking from a Stomped Module"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
   process.Ext.api.behaviors == "allocate_shellcode" and process.Ext.api.behaviors == "execute_fluctuation" and
   process.Ext.api.metadata.target_address_name : "*.dll" and process.Ext.api.parameters.size >= 150000 and 
-  stringcontains~(process.thread.Ext.call_stack_final_user_module.protection_provenance, process.Ext.api.metadata.target_address_name)
+  stringcontains~(process.thread.Ext.call_stack_final_user_module.protection_provenance, process.Ext.api.metadata.target_address_name) and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "528056732408c8dd2ef0cd585e719acdf1407326bfac4d9566d50dbb11ac2d1d"
 '''
 
 min_endpoint_version = "8.10.0"

@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence with maxspan=1m
@@ -49,8 +49,7 @@ sequence with maxspan=1m
                             "3adc5ac350d41a1c29e900089b09d237374fe4e9c8887dbe75d2ba0af982c798",
                             "76985a241b88f74d6962af99c3f9493a1db234e4633271785ab5759cf8de9a5f",
                             "e40828a0802b3bf759978a7b68b9534c55bf57036de1f872ccbce38ad2afa20b") and
-    not (process.name : "regsvr32.exe" and
-        dll.path : "C:\\Oracle\\product\\instantclient_*.dll" and dll.pe.original_file_name : "OraOLEDB*.dll")]
+    not (process.name : "regsvr32.exe" and dll.path : "C:\\Oracle\\*.dll")]
 '''
 
 min_endpoint_version = "8.4.0"

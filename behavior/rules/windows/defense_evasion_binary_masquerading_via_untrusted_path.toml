@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/invisible-miners-unveiling-ghostengine",
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 process where event.action == "start" and
@@ -22,8 +22,6 @@ process where event.action == "start" and
     "atbroker.exe",
     "arp.exe",
     "bcdedit.exe",
-    "bitsadmin.exe",
-    "certutil.exe",
     "cmstp.exe",
     "conhost.exe",
     "control.exe",
@@ -123,22 +121,15 @@ process where event.action == "start" and
     "\\\\?\\Volume{*}\\Windows\\WinSxS\\*.exe"
     ) and
 
-  not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\Netskope\\STAgent\\stAgentUI.exe" and process.code_signature.subject_name: "netSkope Inc") and
   not (process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\*.exe" and process.code_signature.subject_name : "Lenovo") and
 
-  /* Issue #582 */
-  not (process.name : "certutil.exe" and process.parent.name : "cmd.exe" and process.args : "-A" and
-       process.parent.args : "?:\\Users\\*\\Firefox-Add_certs*\\firefox_add-certs-windows\\add-certs.cmd") and
-  not (process.name : "certutil.exe" and process.parent.executable : "?:\\Program Files (x86)\\DYMO\\DYMO Connect\\DYMO.WebApi.Win.Host.exe") and
   /* Sfax Download Service */
   not (process.name : "InstallUtil.exe" and process.parent.name : "Engine.exe" and
        process.parent.args : "/OriginExe=*\\SfaxInstaller\\Sfax Windows Service.exe") and
   not (process.pe.original_file_name == "RegAsm.exe" and
        process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoBatteryGaugePackage\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.executable : ("?:\\ERPU\\Browser\\AutoUpgrade.exe", "?:\\ERPU\\Browser\\NeoWeb.exe")) and
-  not (process.name : "certutil.exe" and process.parent.name : "TOTALCMD*.EXE" and process.args_count <= 2) and
   not (process.executable : "?:\\Campus\\System\\DLL\\CADability\\RegAsm.exe" and process.parent.executable : "?:\\Campus\\System\\DLL\\CADability\\RegCADability.exe") and
-  not (process.name : "certutil.exe" and process.args : "-d" and process.args : ("-n", "-L")) and
   not (process.name : "services.exe" and process.args : "-i*" and process.parent.name : "monitor.exe") and
   not (process.name : "RegAsm.exe" and process.args : ("directdeposit.vb.tlb", "?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")) and
   not process.executable : "D:\\Reform V*\\Reform_PDC_Server_v*\\Plugins\\Monitoring\\CScript.exe" and
@@ -154,7 +145,6 @@ process where event.action == "start" and
                               "installutil  /u Sage.CNA.WindowsService.exe ",
                               "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe") and
   not (process.name : "regsvr32.exe" and process.code_signature.subject_name == "Tarma Software Research Ltd" and process.code_signature.trusted == true) and
-  not (process.name : "CertUtil.exe" and process.code_signature.subject_name : ("Certisur S.A.", "Carbon Black, Inc.") and process.code_signature.trusted == true) and
   not (process.parent.executable : "?:\\Gb\\GBsoftware.exe" and process.executable : "?:\\Gb\\Lib\\regsvr32.exe") and
   not (process.executable : "?:\\OfficeMate\\REGSVR32.EXE" and process.parent.args : "?:\\OfficeMate\\~Reg*DLLs.bat" and process.parent.name : "cmd.exe") and
   not (process.name : "powershell.exe" and process.executable : "?:\\Windows\\WinSxS\\amd64_microsoft-windows-powershell-exe_*\\powershell.exe") and
@@ -163,7 +153,6 @@ process where event.action == "start" and
   not process.executable : "?:\\Windows\\WinSxS\\amd64_microsoft-windows-powershell-exe_*\\powershell.exe" and
   not (process.executable : ("?:\\Gb\\Lib\\regsvr32.exe", "?:\\E20-II\\ENVIRO\\regasm.exe") and
        process.parent.executable : ("?:\\Gb\\GBsoftware.exe", "?:\\E20-II\\PCN33\\CODE\\SilentPCBEngTools128.exe")) and
-  not (process.name : "certutil.exe" and process.args : "-addstore") and
   not (process.parent.executable : "?:\\apps\\sage300\\Programs\\runtime\\a4wcontainerXP.exe" and process.name : "regsvr32.exe") and
   not process.executable : "\\Device\\Mup\\*" and
   not process.executable : ("?:\\*Visual*Studio\\*\\MSBuild.exe",
@@ -177,7 +166,6 @@ process where event.action == "start" and
                             "C:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.name : "rundll32.exe" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
-  not (process.name : "certutil.exe" and process.args : "-delstore" and process.parent.executable : "C:\\Windows\\SysWOW64\\msiexec.exe") and
   not (process.executable : "C:\\ProgramData\\baramundi\\bma\\Downloads\\Temp\\netsh.exe" and
        process.args : "exec" and process.args : "\\\\*.txt") and
   not (process.code_signature.subject_name : ("JetBrains s.r.o.", "LG Electronics Inc.", "Timothy Hugh Perry", "Code Systems Corporation") and process.code_signature.trusted == true) and 

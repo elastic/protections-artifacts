@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Browser Information Discovery"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1217/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 file where event.action == "open" and 
@@ -46,6 +46,8 @@ process.executable != null and not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20
                    "?:\\Users\\*\\User Data\\Default\\msedge_downloads.exe",
                    "?:\\Users\\*\\AppData\\Local\\Chromium\\Application\\chrome.exe",
                    "?:\\Users\\*\\AppData\\Local\\Thorium\\Application\\thorium.exe") and
+ not (process.executable : "C:\\Windows\\explorer.exe" and
+      process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|hostshellextension.dll|Unbacked") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("*\\chrome.dll!GetHandleVerifier*",
                                            "*\\chrome.dll!ChromeMain*",

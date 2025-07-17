@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Defense Evasion via Hidepid Mount"
 os_list = ["linux"]
 reference = ["https://linux-audit.com/linux-system-hardening-adding-hidepid-to-proc/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mount" and
-process.args == "-o" and process.args : "*hidepid=2*" and
+process.args in ("-o", "--options") and process.args : "*hidepid=2*" and
 not process.parent.args == "/opt/cloudlinux/venv/bin/python3"
 '''
 

@@ -7,7 +7,7 @@ id = "631df705-0636-4f83-8374-24d61307735e"
 license = "Elastic License v2"
 name = "Shellcode Injection with Parent as Provenance"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
@@ -18,6 +18,7 @@ api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
  not (process.Ext.api.parameters.size <= 4096 and process.Ext.api.name == "VirtualProtect") and
  not process.Ext.api.metadata.target_address_path : ("c:\\windows\\syswow64\\user32.dll", "c:\\windows\\syswow64\\gdi32.dll") and
  startswith~(process.thread.Ext.call_stack_final_user_module.protection_provenance_path, process.parent.executable) and
+ not (process.executable : "C:\\Program Files (x86)\\*.exe" and process.parent.executable : "C:\\Program Files\\*.exe") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                              ("e9b488ad3101d386a3b2248db0c0dfe43c83fd856c55d181264da762f5352f38",
                               "4ad4ff7561647775372cafe7c52ba85d610dbc901a45f1a576764dfa11a9fa7a",
@@ -55,7 +56,18 @@ api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode") and
                               "a2b2c7eb257e2be7100f735db3a772279c88ee913ffb6111b14d81685fd5f035",
                               "a99cd58ec2becb2aaf2625659e42816c45e62297db468767d74f279046d98759",
                               "f1b584d0871d1600528abdf4e6693360237c66e066dac2087e0e565d9d6a3d73",
-                              "eb30a0075cdc0c3ddea9b22b92e4d0f275932f9fdcb10b9d4d4bd8b3c03da0be")
+                              "eb30a0075cdc0c3ddea9b22b92e4d0f275932f9fdcb10b9d4d4bd8b3c03da0be",
+                              "d5fff843645ab47000738a36b7073f1d0e7c2cd4cc8612ce7325ef4da8cd7412",
+                              "b6cbd6fd5caebf165ef854813a81ff800f98858a1d60cc0b6a401b21d28b622a",
+                              "ea9afbb6e39625961698c86066dfe1ffc8ced0102360c5baa25493408af8c253",
+                              "073453a10735f07728f0226aff69799d23aaac9a8ec9a15baee297cbd5c66cf8",
+                              "36141b686ae3edc68e33bca2b4774539501df365b03c5703d4a74219e869aedb",
+                              "f359110a232e73618eb0af7780d93f7b95dd269e3d12eefa9150784d95f32f91",
+                              "e0af24d54621935df1b9956ed68f46cb92ef8c711101ba1683dfe7f41e7cdcae",
+                              "b894515db9f9e3ad157e11c1f1e558c589c60567033880409874293cca8f8f81",
+                              "8d3f6fe71b24882d9f51e4c298335dfd19c9acfb2473e5e0dcae5b5b4b447c4c",
+                              "79dafa6bf1054b901448a76f7f441d4c458f5eb2b6e9ab87e39632fb313c0d84",
+                              "c10ef947b23cc2ef4f339212123a4ac2c08df8ecb2c19658384a448427adf104")
 '''
 
 min_endpoint_version = "8.15.0"

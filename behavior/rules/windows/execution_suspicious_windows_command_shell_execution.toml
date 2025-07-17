@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 process where event.action == "start" and
@@ -111,10 +111,12 @@ process where event.action == "start" and
              "*--flat-playlist^*--no-cache-dir^*",
              "/DIR=C:\\Program Files (x86)\\Zeiss\\Zeiss PDF Printer",
              "*plugins\\org.eclipse.birt.doc_*",
-             "database.*password") and
+             "database.*password", 
+             "usebackq delims=: tokens=2") and
   not process.command_line :
                ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
                 "/c echo %TERM%",
+                "*RunAsync.vbs*",
                 "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"") and
   not (process.name : "cmd.exe" and process.args : "%TEMP%\\Spiceworks\\*" and process.args : "http*/dataloader/persist_netstat_data") and
   not process.parent.command_line : "cmd  /q /k  prompt MAM:Remote$G" and
@@ -123,7 +125,9 @@ process where event.action == "start" and
   not (process.parent.name : "WmiPrvSe.exe" and 
        process.args : "& {$j = sajb {$ErrorActionPreference = 'SilentlyContinue';$ErrorActionPreference = 'SilentlyContinue';$jars = $(Get-ChildItem -Path 'C:\\*' -Recurse -Include '*.jar','*.war','*.ear'*") and 
   not (process.parent.name : "wscript.exe" and
-       process.parent.args : ("C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs", "C:\\Windows\\System32\\gatherNetworkInfo.vbs")) and
+       process.parent.args : ("C:\\IBM\\ITM\\TMAITM6_x64\\K06_uninstall.vbs",
+                              "C:\\Windows\\System32\\gatherNetworkInfo.vbs",
+                              "C:\\Program Files\\Arcserve\\Unified Data Protection\\Engine\\BIN\\AStartupRun.vbs")) and
   not (process.args == "echo" and process.args == "GEQ" and process.args == "1073741824") and
   not (process.parent.name : "wscript.exe" and process.parent.args : "C:\\Program Files (x86)\\CaseWare\\Template\\FinancialsIFRS\\Packager\\After\\0\\FinancialsIFRSCreateShortcuts.js") and
   not (process.name : "cmd.exe" and process.parent.name : ("javaw.exe", "udt.exe") and

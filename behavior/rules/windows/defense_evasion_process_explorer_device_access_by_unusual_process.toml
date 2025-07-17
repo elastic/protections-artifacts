@@ -7,7 +7,7 @@ id = "9c4bd6d6-9e2f-4ce2-8266-923e1799726c"
 license = "Elastic License v2"
 name = "Process Explorer Device Access by Unusual Process"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where
@@ -21,7 +21,8 @@ api where
        process.thread.Ext.call_stack_final_user_module.name : "Unknown" and process.code_signature.trusted == true) and
   not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe") and
        process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true) and
-  not process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\apphelp.dll"
+  not process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\apphelp.dll" and
+  not (process.Ext.api.parameters.device == "\\Device\\PROCEXP152" and process.thread.Ext.call_stack_final_user_module.name == "handle64.exe")
 '''
 
 min_endpoint_version = "8.14.0"

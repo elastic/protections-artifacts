@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 any where process.executable != null and not event.action in ("query", "open") and
@@ -47,7 +47,7 @@ any where process.executable != null and not event.action in ("query", "open") a
                  "\\Device\\VhdHardDisk*\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
                  "\\\\?\\Volume{*}\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
                  "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe") and
-         process.code_signature.subject_name : ("Microsoft Windows Publisher", "Microsoft Corporation") and process.code_signature.trusted == true) and
+         process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation") and process.code_signature.trusted == true) and
 		 
    not (process.executable : 
                ("?:\\Windows\\System32\\WerFault.exe", 

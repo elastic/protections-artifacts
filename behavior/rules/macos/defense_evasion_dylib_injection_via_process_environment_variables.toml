@@ -13,10 +13,11 @@ reference = [
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
+  process.args_count <= 4 and
   process.env_vars like~ ("DYLD_INSERT_LIBRARIES=?*", "LD_PRELOAD=?*") and
   not process.env_vars like~
                          ("DYLD_INSERT_LIBRARIES=",

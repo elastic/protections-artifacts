@@ -13,12 +13,15 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/init.d/*" and
-   not process.executable == "/usr/sbin/slapd"
+   not (
+     process.executable == "/usr/sbin/slapd" or
+     process.parent.args == "stop"
+   )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or

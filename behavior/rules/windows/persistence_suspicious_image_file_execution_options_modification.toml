@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://oddvar.moe/2018/04/10/persistence-using-globalflags-in-image-file-execution-options-hidden-from-autoruns-exe/",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 registry where registry.data.strings != null and process.executable != null and 
@@ -36,23 +36,11 @@ registry where registry.data.strings != null and process.executable != null and
            "\"C:\\Program Files (x86)\\SolarWinds\\Orion\\Licensing\\Migration.exe\" /hooked") and
  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and registry.data.strings : "svchost.exe") and
  not process.executable :
-             ("?:\\Program Files\\KMSpico\\AutoPico.exe",
-              "?:\\Program Files\\KMSpico\\Service_KMS.exe",
-              "?:\\Program Files (x86)\\SolarWinds\\Orion\\Licensing\\Migration.exe",
-              "?:\\Program Files (x86)\\SafeExamBrowser\\SebWindowsServiceWCF\\SebWindowsServiceWCF.exe",
-              "?:\\Program Files (x86)\\LogMeIn\\x64\\LogMeIn.exe",
-              "?:\\Program Files (x86)\\netinst\\mgmtagnt.exe",
-              "?:\\Program Files (x86)\\netinst\\csmancln.min\\mgmtagnt.exe",
+             ("?:\\Program Files\\*.exe",
+              "?:\\Program Files (x86)\\*.exe",
               "?:\\Windows\\SysWOW64\\MonitorConsole.exe",
               "?:\\Windows\\SoftwareDistribution\\Download\\Install\\PatchMyPC-ScriptRunner.exe",
-              "?:\\Program Files (x86)\\Airwatch\\AgentUI\\TaskScheduler.exe",
-              "?:\\Program Files (x86)\\d7xTech\\Amphetamine\\Amphetamine.exe",
-              "?:\\Program Files\\Netspark\\NsUpdate\\NsUpdate.exe",
-              "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe", 
-              "?:\\Program Files (x86)\\Extegrity\\Exam4\\Exam4.exe",
-              "?:\\Program Files (x86)\\NAP Locked down browser\\JanisonReplayService.exe",
-              "?:\\Program Files (x86)\\Common Files\\VAudio\\Audckq32.exe",
-              "?:\\Program Files (x86)\\ExpressVPN\\ExpressVPNUpdater.exe") and
+              "?:\\ProgramData\\Heimdal Security\\Heimdal Thor Agent\\bin\\Heimdal.Wizard.exe") and
  not (process.code_signature.subject_name : ("Patch My PC, LLC", "EXPRSVPN LLC", "Nasiboot_USB", "FastTrack Software Aps") and process.code_signature.trusted == true)
 '''
 

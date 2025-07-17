@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 api where
@@ -51,7 +51,8 @@ api where
                     "?:\\Program Files (x86)\\SuperPuTTY\\SuperPutty.exe",
                     "?:\\Program Files\\SuperPuTTY*\\SuperPutty.exe",
                     "C:\\Program Files\\Four Winds Interactive\\Content Player\\Signage.exe",
-                    "C:\\Program Files\\WindowsApps\\Microsoft.PowerAutomateDesktop_*\\dotnet\\PAD.Console.Host.exe") and
+                    "C:\\Program Files\\WindowsApps\\Microsoft.PowerAutomateDesktop_*\\dotnet\\PAD.Console.Host.exe",
+                    "C:\\Program Files\\Dell\\Dell Display and Peripheral Manager\\Plugins\\DDPM.Subagent.User\\DDPM.Subagent.User.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name in ("Grammarly, Inc.", "HP Inc.", "Proofpoint, Inc.", "ETH Zürich", "Learnpulse",
         "Qisda Corporation", "ONELAUNCH TECHNOLOGIES INC.", "Laserfiche", "ARTICULATE GLOBAL, LLC", "ARTICULATE GLOBAL, LLC",

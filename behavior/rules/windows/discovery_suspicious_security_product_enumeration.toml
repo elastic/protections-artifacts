@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where
@@ -74,8 +74,7 @@ api where
    (process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile" and
     process.parent.executable : "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe") or
 
-   (process.name == "powershell.exe" and
-    process.Ext.api.parameters.operation == "Win32_DeviceGuard" and process.parent.executable : "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe") or
+   (process.name in ("powershell.exe", "pwsh.exe") and process.Ext.api.parameters.operation == "Win32_DeviceGuard") or
 
    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
     process.parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\System32\\cmd.exe", "?:\\Program Files\\Mesh Agent\\MeshAgent.exe") and
@@ -89,7 +88,7 @@ api where
     "Corsair Memory, Inc.", "Ivanti, Inc.", "POINTWARE INFORMATICA LTDA", "ASUSTeK COMPUTER INC.", "Snow Software AB",
     "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd", "WithSecure Oyj", "Trend Micro, Inc.", "Belarc, Inc.",
     "KASEYA HOLDINGS INC.", "Elliptic Laboratories ASA", "IObit Information Technology", "CPUID S.A.R.L.U.", "CPUID",
-    "Panda Security S.L", "Shenzhen Drive The Life Technology Co.,Ltd.") and
+    "Panda Security S.L", "Shenzhen Drive The Life Technology Co.,Ltd.", "PDQ.com Corporation") and
     process.code_signature.trusted == true) or
 
     process.executable :
@@ -127,7 +126,9 @@ api where
      process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe", "C:\\Windows\\System32\\EVENTSENTRY\\eventsentry_svc_x64.exe")) or
 
     (process.name : "powershell.exe" and
-     process.command_line : ("powershell  Get-CimInstance –ClassName Win32_DeviceGuard –Namespace root\\Microsoft\\Windows\\DeviceGuard")) or 
+     process.command_line : ("powershell  Get-CimInstance –ClassName Win32_DeviceGuard –Namespace root\\Microsoft\\Windows\\DeviceGuard")) or
+
+    (process.name : "cscript.exe" and process.parent.executable : "C:\\Program Files (x86)\\Bostonpost Technology\\Property Manager *\\propertymanager.exe") or
 
      (process.name : "powershell.exe" and 
       process.parent.executable : ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",

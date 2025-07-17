@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -33,7 +33,8 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
  /* excluding signed final usermod */
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
 
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                   ("02ecce804add1da0a9e7be506f7369d3d5753c51c80abe32b24be05c321c5ff7",
                                    "f823fc285b259fd0a5391a5c807279e90fe5317e6cfd7b00a49f07c278832cbc", 
                                    "236b9ab2b531da7312da1429cba1bd9f45cae4ed46cba1792924013b9919f8cf", 
@@ -75,7 +76,15 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "3f74481e6991404f951ff5168c6726a521c566eb408a654d776109afdb963655",
                                    "7dd3acf9f47641ce621e4db5980ab8f7a3f67c9a4f008f36b56d59afefbedfa9",
                                    "c9e303d84e5fa603c85abee0caefa8b0ef393aab6805e2ea5098ca927fa2b6cf",
-                                   "6e79c9271cddc0a4bb3e8af619967d54ea6df7067798fd5da9ccca233b221da0") and
+                                   "6e79c9271cddc0a4bb3e8af619967d54ea6df7067798fd5da9ccca233b221da0",
+                                   "fddac9c6330518eb74b92abeee411e91ef3189fb3ed04508a9f3ebd5991fdb30",
+                                   "335790ae673d41cc7d4b3c6c1a9c16c7bb3260fc24d4caced80dbe4cfd9a4f6e",
+                                   "6f7d83b779e164ddf58c2bff7a719caba1887c6c92dc72fd2eb4e1394fbf51c4",
+                                   "26e5c00c35c5c3edc86dfc0a720aed109a13b1b7c67ac654a0ce8ff82a1f2c16",
+                                   "fdff5c5612e0bcbc8aba52720e5d37e5c3821267179e2fa7341084148ad4b1ea",
+                                   "834b0fce44e8db2367967f8d5262a0dafe45e7c5bd69c98f1a9eeec2136dcbc1",
+                                   "7eb92b8b9ce2d44a500c56ea04e805cb78614c572dc723c79c59ca93315ba709",
+                                   "3eb37ba3fc39f5749bbb3f17382d0966adf2e061f4f0d1757ebd75fed1302dd6") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :
@@ -93,7 +102,13 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
 
  not process.executable : ("C:\\Program Files\\Veeam\\Backup and Replication\\Backup\\Veeam.Backup.Service.exe",
                            "C:\\Program Files\\Citrix\\Broker\\Service\\BrokerService.exe",
-                           "C:\\Program Files\\Qlik\\Sense\\ServiceDispatcher\\dotnet\\dotnet.exe") and
+                           "C:\\Program Files\\Qlik\\Sense\\ServiceDispatcher\\dotnet\\dotnet.exe",
+                           "C:\\Program Files\\Solari di Udine\\Inout Integration Service\\INOUT.Integration.Service.exe",
+                           "C:\\Program Files\\Intel\\SUR\\QUEENCREEK\\SurSvc.exe",
+                           "C:\\Program Files (x86)\\AdRem\\NetCrunch\\Console\\*\\NCConsole.exe",
+                           "C:\\Program Files\\Solari di Udine\\Inout Integration Service\\INOUT.Integration.Service.exe",
+                           "C:\\Program Files\\Epic Games\\MarvelRivalsjKtnW\\MarvelGame\\Marvel\\Binaries\\Win64\\Marvel-Win64-Shipping.exe",
+                           "C:\\Program Files\\winacme\\wacs.exe") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance == "inprocessclient64.dll"
 '''
 

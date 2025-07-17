@@ -1,0 +1,52 @@
+[rule]
+description = """
+Detects attempts to trick users into installing a malicious version of Homebrew that spoofs the official Homebrew
+installation url. This has been observed several times in the wild as a method of gaining initial access by adversaries
+and red teams alike.
+"""
+id = "88cb5440-a3fd-465a-8fbf-3769df14a577"
+license = "Elastic License v2"
+name = "Malicious Homebrew Initial Access"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "curl" and 
+ process.args like~ "http*/Homebrew/install/HEAD/install.sh" and
+ not process.args like "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

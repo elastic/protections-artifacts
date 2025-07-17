@@ -7,11 +7,11 @@ id = "58370744-f52b-4f28-aa06-469efd1e1825"
 license = "Elastic License v2"
 name = "Sensitive File Access followed by Compression"
 os_list = ["macos"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
-[file where event.action == "open" and not file.name in~ ("System.keychain", "login.keychain-db")]
+[file where event.action == "open" and not file.name in~ ("System.keychain", "login.keychain-db", "preferences.plist", "com.apple.TimeMachine.plist")]
 [file where event.action == "modification" and file.extension in ("zip", "gzip", "gz") and
   file.path like~
               ("/Users/Shared/*",

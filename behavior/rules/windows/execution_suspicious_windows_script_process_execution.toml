@@ -7,12 +7,12 @@ id = "ffbab5db-73ae-42fd-a33f-36bf649f41cc"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Process Execution"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
 [process where event.action == "start" and
- process.pe.original_file_name : ("cscript.exe", "wscript.exe") and
+ (process.name == "wscript.exe" or process.pe.original_file_name == "wscript.exe") and
  not process.Ext.token.integrity_level_name == "system" and
  process.working_directory != null and 
   (

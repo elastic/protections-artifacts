@@ -13,7 +13,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
@@ -48,7 +48,7 @@ process where event.action == "start" and
             "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
             "Samsung Electronics CO., LTD.", "TeamViewer", "POINT B LTD", "IMPERO SOLUTIONS LIMITED",
             "AnyDesk Software GmbH", "Shanghai Best Oray Information S&T Co. Ltd.", "Zhou Huabing",
-            "PURSLANE", "Remote Utilities LLC", "ZOHO Corporation Private Limited", "PTC Inc.") and
+            "PURSLANE", "Remote Utilities LLC", "ZOHO Corporation Private Limited", "PTC Inc.", "ITE Tech. Inc.") and
        process.code_signature.trusted == true) and
 
  not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and

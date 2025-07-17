@@ -8,10 +8,10 @@ reference = [
     "https://anti-debug.checkpoint.com/techniques/process-memory.html#patch_ntdll_dbguiremotebreakin",
     "https://anti-debug.checkpoint.com/techniques/process-memory.html#patch_ntdll_dbgbreakpoint",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-api where process.Ext.api.name : "WriteProcessMemory" and
+api where process.Ext.api.name : "WriteProcessMemory" and process.executable != null and
  process.Ext.api.summary : ("*DbgUiRemoteBreakin*", "*DbgBreakPoint*") and
  process.thread.Ext.call_stack_final_user_module.name != null and
  not (process.code_signature.status : "trusted" and
@@ -37,7 +37,8 @@ api where process.Ext.api.name : "WriteProcessMemory" and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
                          ("2a9b218ef8897b17ea485d41be9d8145ece535e8f14f44de84ea97048399f5a4",
                           "b98f6fffd39455ebb8a480be09fc020f26a2d9ce14901a39886a3c367e4dc3fe",
-                          "fd55b535a38bec99a9e4eec910b5ac032ca29dbf94ca16c344c3006d77404b41")
+                          "fd55b535a38bec99a9e4eec910b5ac032ca29dbf94ca16c344c3006d77404b41",
+                          "44fabd4b4aa67eedde7bebe717fd2951cc6e04c355040b4c0dca340ed5f7ff0e")
 '''
 
 min_endpoint_version = "8.10.0"

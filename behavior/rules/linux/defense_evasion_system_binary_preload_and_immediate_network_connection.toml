@@ -8,7 +8,7 @@ id = "3002b96e-adaa-4660-b906-e021c0a1c086"
 license = "Elastic License v2"
 name = "System Binary Preload and immediate Network Connection"
 os_list = ["linux"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -27,7 +27,10 @@ sequence by process.entity_id with maxspan=5s
         "LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2",
         "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2",
         "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so",
-        "LD_PRELOAD=/usr/lib/libjemalloc.so.2"
+        "LD_PRELOAD=/usr/lib/libjemalloc.so.2",
+        "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2 ", // space is intended
+        "LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so",
+        "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1 /usr/lib/x86_64-linux-gnu/libjemalloc.so.1"
       ) or
       (process.executable == "/usr/bin/opera" and process.env_vars like~ "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/opera/*")
     )

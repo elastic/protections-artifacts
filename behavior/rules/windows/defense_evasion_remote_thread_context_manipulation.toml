@@ -8,16 +8,16 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.23"
+version = "1.0.25"
 
 query = '''
 api where 
   process.Ext.api.name : ("SetThreadContext", "Wow64SetThreadContext") and 
   process.executable != null and 
-  ((process.Ext.api.behaviors : "cross-process" and process.Ext.api.behaviors : "execute_shellcode") or process.Ext.api.behaviors : "hardware_breakpoint_set") and 
+  ((process.Ext.api.behaviors == "cross-process" and process.Ext.api.behaviors == "execute_shellcode") or process.Ext.api.behaviors == "hardware_breakpoint_set") and
   not process.Ext.api.summary : "*OSError*" and process.thread.Ext.call_stack_final_user_module.name != null and
-  (process.thread.Ext.call_stack_final_user_module.hash.sha256 : "?*" or
-   process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|Unbacked") and
+  (process.thread.Ext.call_stack_final_user_module.hash.sha256 like "?*" or
+   process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|Unbacked") and
   not (process.code_signature.subject_name :
                ("Duncan Ogilvie", "International Business Machines Corporation", "COGNOSPHERE PTE. LTD.",
                 "CAPCOM CO., LTD.", "Larian Studios Games Ltd.", "Valve Corp.", "Rockstar Games, Inc.",
@@ -29,15 +29,15 @@ api where
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
                 "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
       process.code_signature.trusted == true) and 
- not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "dbgeng.dll", "Undetermined") and
- not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("Kernel", "kernel|*") and 
+ not process.thread.Ext.call_stack_final_user_module.name like ("Kernel", "Unknown", "dbgeng.dll", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "kernel|*") and
  not (process.code_signature.trusted == true and stringcontains~(process.executable, process.thread.Ext.call_stack_final_user_module.path)) and 
  not process.thread.Ext.call_stack_final_user_module.path : 
                                                ("?:\\Program Files\\*", 
                                                 "?:\\Program Files (x86)\\*", 
                                                 "\\Program Files\\*", 
                                                 "\\Program Files (x86)\\*") and 
- not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                         ("31f65b7afe91e23ae88d8229fd54c5eb494ffd4594bdc3d6a91d2d69892b284b",
                          "766ac0f768c5b2acb19ecb8cf179c59d56b74d71437f5d1331408d9c827cfde8",
                          "67ca92cc7beea130c6f7e8f3982f3256f1724f22c6de869a884df47dcc0b7b95",
@@ -48,7 +48,8 @@ api where
                          "8b451b88d2cc91b079251e2347abb84d2b09712512fa9e57d9de35e93c751863",
                          "615ac4399eed0a26e5cd9bba4e7dcf661400fb0546dce067523fe275351d3b04",
                          "22a8ae4f904366c8f42d8da22df28c755cefd28ab34268c77275229964e34c66",
-                         "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9") and
+                         "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9",
+                         "2dfa7a9d8be474447f8ea53dc864a5bb8cdcc526664636154adfa8b71386f883") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
@@ -62,7 +63,11 @@ api where
                            "?:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe",
                            "?:\\Program Files (x86)\\WinHex 19.6 Portable\\WinHex64.exe",
                            "?:\\Program Files\\JetBrains\\*\\plugins\\go\\lib\\dlv\\windows\\dlv.exe") and
- not process.parent.executable : "?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe" and
+ not process.parent.executable :
+                     ("?:\\Program Files\\cmder\\vendor\\conemu-maximus?\\ConEmu\\ConEmuC64.exe",
+                      "C:\\Program Files (x86)\\GitExtensions\\ConEmu\\ConEmuC64.exe",
+                      "C:\\Program Files\\Git\\mingw64\\libexec\\git-core\\git-remote-https.exe",
+                      "C:\\Program Files\\Git\\usr\\bin\\bash.exe") and
  not (process.name : ("cmd.exe", "powershell.exe", "csc.exe") and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : "conemuhk64.dll*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,

@@ -7,7 +7,7 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 any where process.executable != null and
@@ -53,7 +53,7 @@ not process.executable :
              "?:\\Program Files\\Netmarble\\Netmarble Game\\*") and
  not (process.code_signature.subject_name in~ 
                ("Google LLC", "Mozilla Corporation", "Rockstar Games, Inc.", "Commvault Systems, Inc.", "Galooli Ltd", "TOTVS S.A", "ROBLOX CORPORATION",
-                "SIGNODE PACKAGING GROUP NZ", "GraphOn Corporation", "Blizzard Entertainment, Inc.", "343 Industries (Microsoft Corporation)") and 
+                "Roblox Corporation", "SIGNODE PACKAGING GROUP NZ", "GraphOn Corporation", "Blizzard Entertainment, Inc.", "343 Industries (Microsoft Corporation)") and
       process.code_signature.trusted == true) and
  not (process.executable : "?:\\Windows\\System32\\LogonUI.exe" and process.parent.executable : "?:\\Windows\\System32\\winlogon.exe") and 
  /* chromium and last one for Acrobat */

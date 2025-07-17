@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.action == "start" and process.executable != null and 
@@ -49,7 +49,8 @@ process where event.action == "start" and process.executable != null and
                            "C:\\Windows\\System32\\CustomShellHost.exe",
                            "C:\\Program Files\\AcerQAAgent\\AQAUserPS.exe",
                            "?:\\Program Files\\Microsoft\\Azure Functions Core Tools\\func.exe",
-                           "?:\\Program Files (x86)\\vdogServer\\VDogMasterService.exe") and
+                           "?:\\Program Files (x86)\\vdogServer\\VDogMasterService.exe",
+                           "C:\\Program Files (x86)\\Outbyte\\Driver Updater\\DriverUpdater.exe") and
  not process.executable : "?:\\Program Files (x86)\\Alternative\\QuickBooks-connector\\QuickbooksDesktopSync.exe" and
  not process.hash.sha256 :
                   ("7b36e127e1fa53e0c6462312777c5d004ea83bde67e6df32fb8920b6c001d664",
@@ -82,7 +83,10 @@ process where event.action == "start" and process.executable != null and
  not (process.executable : "C:\\Program Files (x86)\\Common Files\\Adobe\\ARM\\?.?\\AdobeARM.exe" and
       process.parent.executable : "C:\\Program Files (x86)\\Common Files\\Adobe\\ARM\\?.?\\AdobeARM.exe" and process.Ext.effective_parent.executable : "C:\\Windows\\System32\\explorer.exe") and
  not (process.name : "powershell.exe" and process.command_line : "*JABlAHgAZQBjAF8AdwByAGEAcABwAGUAcgBfAHMAdAByAC4AUwBwAGwAaQB0ACgAQAAoACIAYAAwAGAAMABgADAAYAAwACIAKQ*" and
-      process.Ext.effective_parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\AM_Delta_Patch_*.exe")
+      process.Ext.effective_parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\AM_Delta_Patch_*.exe") and
+ not (process.executable : "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe" and
+      process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\UniGetUI\\UniGetUI.exe" and
+      process.Ext.effective_parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\UniGetUI\\UniGetUI.exe")
 '''
 
 min_endpoint_version = "8.8.0"

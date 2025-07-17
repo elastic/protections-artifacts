@@ -7,7 +7,7 @@ id = "f0630213-c4c4-4898-9514-746395eb9962"
 license = "Elastic License v2"
 name = "Script Execution via Microsoft HTML Application"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -62,7 +62,9 @@ process where event.action == "start" and
        process.args : "\"& 'C:\\System.sav\\util\\HpseuHostLauncher.ps1'\"\", 0 : window.close)") and
   not (process.name : "mshta.exe" and process.args : "\"& '\\\\*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1'\"\", 0 : window.close)") and
   not process.args :  "javascript:code(close(new ActiveXObject('Scripting.FileSystemObject').GetStandardStream(1).Write(encodeURIComponent(T*))));" and
-  not (process.parent.name : "cmd.exe" and process.name : "mshta.exe" and process.args : "D:\\start.hta")
+  not (process.parent.name : "cmd.exe" and process.name : "mshta.exe" and process.args : "D:\\start.hta") and
+  not (process.name : "mshta.exe" and process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and
+       process.parent.args : "C:\\HP Universal Print Driver\\*\\Installer\\Install.bat")
 '''
 
 min_endpoint_version = "7.15.0"

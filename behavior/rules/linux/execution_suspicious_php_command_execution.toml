@@ -1,0 +1,59 @@
+[rule]
+description = """
+This rule monitors for suspicious PHP command executions by detecting the start of a PHP process with a command line
+argument that contains keywords commonly used by attackers to execute malicious code. These command line arguments
+include operations to execute code, create subprocesses, and encode or decode data.
+"""
+id = "d00bd50b-577e-47a7-9234-b4bfaa599791"
+license = "Elastic License v2"
+name = "Suspicious PHP Command Execution"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
+process.executable like ("/bin/php*", "/usr/bin/php*", "/usr/local/bin/php*") and
+process.args == "-r" and process.command_line like~ (
+  "*exec(*", "*system(*", "*shell_exec(*", "*passthru(*", "*proc_open(*", "*pcntl_exec(*", "*popen(*", 
+  "*eval(*", "*assert(*", "*create_function(*", "*preg_replace(*e*", "*include(*", "*require(*",
+  "*base64_decode(*", "*gzinflate(*", "*gzuncompress(*", "*str_rot13(*", "*urldecode(*", "*chr(*", 
+  "*ord(*", "*strrev(*", "*strtr(*", "*pack(*", "*unpack(*", "*curl_exec(*", "*curl_multi_exec(*",
+  "*file_get_contents(*", "*fopen(*", "*fsockopen(*", "*pfsockopen(*", "*stream_socket_client(*",
+  "*socket_create(*", "*socket_connect(*", "*socket_write(*", "*socket_read(*", "*mail(*",
+  "*move_uploaded_file(*"
+) and not (
+  // Exclude web server processes as these are covered by other rules
+  process.working_directory like ("/var/www/*", "/builds/*", "/home/*/jenkins/*", "/home/*/public_html*") or
+  process.parent.args like "/var/www/html/*" or
+  process.args like "/usr/local/cpanel/*" or
+  process.command_line like "*https://composer.github.io/installer.sig*"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

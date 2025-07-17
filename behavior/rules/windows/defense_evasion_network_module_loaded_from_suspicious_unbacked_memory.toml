@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.52"
+version = "1.0.53"
 
 query = '''
 sequence by process.entity_id
@@ -59,7 +59,7 @@ sequence by process.entity_id
                      "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED", "ClaimMaster Software LLC", "Cellebrite DI LTD",
                      "Riot Games, Inc.", "Autodesk, Inc.", "ACCA software S.p.A.", "Tempus Technologies, Inc.",
                      "NextgenId, Inc.", "Cloud Software Group, Inc.", "Tempus Technologies, Inc.", "NextgenId, Inc.",
-                     "Cloud Software Group, Inc.", "Bloomberg LP") and
+                     "Cloud Software Group, Inc.", "Bloomberg LP", "GEO NETWORK SRL", "Geo Network - S.R.L.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name in~ ("msedge.exe", "msedgewebview2.exe") and
@@ -130,13 +130,13 @@ sequence by process.entity_id
         _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : "?:\\Windows\\assembly\\NativeImages_*\\EO.Base\\*\\EO.Base.ni.dll*")) and
 
-  not (user.id == "S-1-5-18" and
-       process.parent.executable : ("?:\\Program Files (x86)\\Advanced Monitoring Agent\\featureres\\PMESetup.exe",
+  not process.parent.executable : ("?:\\Program Files (x86)\\Advanced Monitoring Agent\\featureres\\PMESetup.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\featureres\\PMESetup.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\NetworkManagementInstall.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\staging\\_new_setup.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\MAV-Installer.exe",
-                                    "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe")) and
+                                    "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe",
+                                    "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe") and
   not process.executable :
                   ("C:\\Program Files (x86)\\MultiExtractor\\MultiExtractor.exe",
                    "C:\\Program Files (x86)\\Naverisk\\Agent\\Packages\\SoftwareScanPackage\\SoftwareScanner\\Naverisk.Agent.SoftwareScanner.exe")
@@ -192,6 +192,11 @@ sequence by process.entity_id
                           "488b9570ffffffc6420*",
                           "49bb60c0*",
                           "488b5590c6420c01833d*",
+                          "8bf08b45d8c6400801833d801*45e88945dc8b45dc8b55",
+                          "c6470401833de8eee*84883c4785b5e5f415c415d415e415f5dc31910090010e20c300b",
+                          "49bb80b681f6fc7f000048*7f0000ba0c0000004c8d4c2450448d423441ffd3*",
+                          "488b4d88c6410c01*488945a0488b45a0488945a8909090*",
+                          "ebfecc0000ac2bf87f0000c0f7a*",
                           "*ba0c0000004c8d4c2450448d423441ffd3*",
                           "*ca85c0b8000000000fb6d60f95c0898424f40200000ac22b742458d0d80fb6c0*",
                           "*898424300300008d14922b9c24d0010000f7d28bc3034424600fbbc20facc2183b44240892",
@@ -254,6 +259,9 @@ sequence by process.entity_id
                           "5356578965e880*6a015b0f85f502000088*",
                           "8945a88b7b0c037ddc8bf7ac84c07*",
                           "8bf08b45d8c6400801833d8011*8945ec33c9894de08b4dece*",
+                          "c0d60285c086d6a39000*c1ea1bf6d28bc30fb6d22b8424e00100004a8ad3",
+                          "411bd5a3900*fbec375218ae0fec6039c24a0010000f7dac784",
+                          "c6470401833de*48894f084883c4785b5e5f415c415d415e415f5dc31910090010e20c300b",
                           "89854d294400c78551294400000000008b95d83044008b0685c075038b461003c20385512944008b188b7e1003fa03bd5129440085db0f84a2000000f7c30000",
                           "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc",
                           "ebfecc000073c4f87f0000c0f776c4f87f0000703c76c4f87f0000000000000000000000000000000000004578697454687265616400006b00650072006e0065",

@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -31,7 +31,7 @@ not (
     "ansible-playbook", "nessus-agent-module", "app", "nessusd", "executor", "armor", "cockpit-bridge",
     "rapid7_endpoint_broker", "sudo", "zabbix_agent2", "cbram", "tm_sandbox", "cybereason-activeconsole", "find",
     "check_idle.sh", "custom-script-extension", "su", "apache2", "ecmd", "ir_agent", "hive-server2", "vzctl", "cursor",
-    "exiftool", "devbox", "please", "supervisord"
+    "exiftool", "devbox", "please", "supervisord", "NorenUpdHelperC"
   ) or
   process.parent.name like "please_go*" or
   process.parent.executable like (
@@ -53,7 +53,8 @@ not (
     "bin/rscd", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/facter", "/var/lib/docker/overlay2/*/bin/facter",
     "/opt/LifeKeeper/subsys/database/resources/oracle/actions/quickCheck", "/usr/bin/ekran_recorder",
     "/usr/lib/npreal2/driver/mxloadsvr", "/usr/local/nagios/libexec/mkls", "/opt/tm/tools/sandbox/*/usr/bin/noproc_sandbox",
-    "/usr/sbin/nrpe", "/usr/bin/less", "/snap/lxd/current/sbin/lxd"
+    "/usr/sbin/nrpe", "/usr/bin/less", "/snap/lxd/current/sbin/lxd", "/usr/lib/ssh/sshd-session", "/opt/Tanium/TaniumClient/TaniumCX",
+    "/opt/aprol/bin/StartManager", "/opt/aprol/scripts/AprolStartStartManager"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -85,9 +86,12 @@ not (
   (process.parent.executable like~ "/opt/*/bin/installer" and process.command_line like~ "*dynatrace*") or
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
-    "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver"
+    "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver", "buildah-chroot-exec", "/usr/libexec/crio/crun",
+    "/usr/bin/crun"
   ) or
-  process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*")
+  process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*") or
+  (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or
+  (process.parent.name == "node" and process.command_line like "*/tmp/claude-shell-snapshot*")
 )
 '''
 

@@ -1,0 +1,61 @@
+[rule]
+description = """
+Identifies default indicator of compromise related to the Loki Electron backdoor. Loki is a stage-1 command and control
+(C2) framework written in Node.js, built to script-jack vulnerable Electron apps.
+"""
+id = "56958f85-4a0e-40fb-8e1c-dd6a42db1338"
+license = "Elastic License v2"
+name = "Execution via Loki Command and Control"
+os_list = ["windows"]
+reference = ["https://lolbas-project.github.io/lolbas/OtherMSBinaries/Teams/", "https://github.com/boku7/Loki/"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+(
+ (process.parent.name : ("cursor.exe", "code.exe", "GithubDesktop.exe", "Postman.exe", "Obsidian.exe", "Joplin.exe", "Discord.exe", "Windsurf.exe", "Figma.exe", "RingCentral.exe", "azuredatastudio.exe", "atom.exe", "Bruno.exe", "KeeWeb.exe", "Wordpress.com.exe", "Arduino IDE.exe", "QRLWallet.exe", "DevHub.exe", "Asana.exe", "insomnia-*.exe", "Ferdium.exe", "Franz.exe", "TIDAL.exe", "1Password.exe", "Signal.exe", "slack.exe", "Notion.exe") and
+  process.args : ("--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\super-app",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\cool-tool",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\ai-wizard",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\dev-helper")) or 
+                 
+  descendant of [process where event.action == "start" and process.parent.name : ("cursor.exe", "code.exe", "GithubDesktop.exe", "Postman.exe", "Obsidian.exe", "Joplin.exe", "Discord.exe", "Windsurf.exe", "Figma.exe", "RingCentral.exe", "azuredatastudio.exe", "atom.exe", "Bruno.exe", "KeeWeb.exe", "Wordpress.com.exe", "Arduino IDE.exe", "QRLWallet.exe", "DevHub.exe", "Asana.exe", "insomnia-*.exe", "Ferdium.exe", "Franz.exe", "TIDAL.exe", "1Password.exe", "Signal.exe", "slack.exe", "Notion.exe") and
+  process.args : ("--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\super-app",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\cool-tool",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\ai-wizard",
+                 "--user-data-dir=C:\\Users\\*\\AppData\\Roaming\\dev-helper")]
+ )
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

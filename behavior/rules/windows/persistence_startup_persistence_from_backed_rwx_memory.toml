@@ -8,7 +8,7 @@ id = "15c48f2d-e461-40a9-accd-090a0863ea10"
 license = "Elastic License v2"
 name = "Startup Persistence from Backed RWX Memory"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 any where event.category in ("registry", "file") and process.executable != null and
@@ -35,7 +35,7 @@ any where event.category in ("registry", "file") and process.executable != null 
 	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\*\\isrt.dll!_RegSetKeyValue+*",
 	                                      "?:\\Users\\*\\AppData\\Local\\Temp\\{*}\\ISSetup.dll!InstallEngineTypelib*",
 	                                      "?:\\Program Files (x86)\\Gizmo\\gdrive.dll!Remount_Startup_Images*")) and
-   not registry.data.strings : "?:\\windows\\Twain_32\\fjscan32\\FjtwMkup.exe /Station" and
+   not registry.data.strings : ("?:\\windows\\Twain_32\\fjscan32\\FjtwMkup.exe /Station", "\"C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Webex\\Webex.lnk\" /minimized /autostartedWithWindows=true") and
    not (process.executable :  "?:\\Windows\\SysWOW64\\DWRCS.EXE" and registry.data.strings : "?:\\WINDOWS\\SysWOW64\\DWRCST.exe") and
    not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")
 '''

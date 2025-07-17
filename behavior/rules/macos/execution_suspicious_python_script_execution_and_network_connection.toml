@@ -8,13 +8,14 @@ id = "cad8906b-156b-48c0-bda9-785ef3561442"
 license = "Elastic License v2"
 name = "Suspicious Python Script Execution and Network Connection"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and process.name like~ "python*" and process.args like~ "python*" and 
   process.args like ("/Users/Shared/*", "/tmp/*", "/private/var/tmp/*", "/var/tmp/*") and process.args_count <= 3]
 [network where event.type == "start" and event.type == "start" and
+   not destination.domain == "dl.google.com" and
    not cidrmatch(destination.ip, 
        "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
        "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 

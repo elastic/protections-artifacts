@@ -11,7 +11,7 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -49,7 +49,8 @@ sequence by process.entity_id with maxspan=5m
                   "4997ec399b1292a8698366c605ebfaf72cb5089682a75c408978cb87c8d3a5a3",
                   "6680172392ee701a714d14bb010a00a054e102c664152bfc244dd74d0e32694d") and
  not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18") and
- not (process.executable : "?:\\Windows\\ccmcache\\*.exe" and process.parent.executable : "?:\\Windows\\CCM\\*.exe")]
+ not (process.executable : "?:\\Windows\\ccmcache\\*.exe" and process.parent.executable : "?:\\Windows\\CCM\\*.exe") and
+ not (process.executable : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp" and process.args : "/SL5=$*")]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (
     (registry.data.strings != null and
@@ -74,7 +75,9 @@ sequence by process.entity_id with maxspan=5m
 		 "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
 		 "*\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnceEx\\*",
 		 "*\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\*",
-		 "*\\exefile\\shell\\open\\command\\*")) or
+		 "*\\exefile\\shell\\open\\command\\*") and
+     not registry.data.strings : ("\"C:\\Program Files*", "C:\\Program Files*")
+     ) or
     (file.name != null and file.path : "?:\\*\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*")
    )]
 '''

@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
@@ -104,14 +104,16 @@ api where
  not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance like ("msi*.tmp", "_isres.dll", "itcombo6.ocx")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                                                  ("c:\\windows\\installer\\msi*.tmp",
-                                                                  "c:\\windows\\assembly\\nativeimages_*",
+                                                                  "c:\\windows\\assembly\\*",
                                                                   "c:\\windows\\systemtemp\\msi*.tmp",
                                                                   "c:\\program files\\*",
-                                                                  "c:\\program files (x86)\\*") and
+                                                                  "c:\\program files (x86)\\*",
+                                                                  "c:\\windows\\microsoft.net\\*.dll") and
  not (process.parent.executable : "D:\\nvt\\NvtServ.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance_path : "d:\\nvc\\bin\\*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes like ("5a8bf850528b338b432003c28b08894b208b431c03c28b08894b1c03f28b4b0c03ca8d431c505756ffd15a580343088bf8528bf08b46fc83c0042bf08956088b",
-                   "89035e5bc39068008000006a008b0050a1dc6*", "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")) and
+                   "89035e5bc39068008000006a008b0050a1dc6*", "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                   "8985271f*56e85301000090909090909090908b4e3485c90f848900000003")) and
  not (process.Ext.api.name == "VirtualProtect" and _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "*kernelbase.dll!LoadLibraryA*")) and
  not (process.Ext.api.name == "VirtualAlloc" and process.Ext.api.parameters.size < 30 and
       process.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked") and

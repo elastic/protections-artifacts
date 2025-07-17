@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -49,7 +49,9 @@ process where event.action == "start" and
 and not (process.name : "cmd.exe" and process.parent.args : "Icims" and process.command_line : "*vault.azure.net*" and process.parent.name : "w3wp.exe") and
 not (process.name : "curl.exe" and process.args : "https://installerapi.lansweeper.com/v1/cloudsyncversions") and
 not (process.name : "powershell.exe" and process.command_line : "\"powershell.exe\" netsh http show servicestate | ?{$_.Tostring().Contains(*") and
-process.hash.sha256 != "fe1d2ad2781879dc05039d87bd12259f3bcf411c66c925d31827d6a757d33ec4"
+process.hash.sha256 != "fe1d2ad2781879dc05039d87bd12259f3bcf411c66c925d31827d6a757d33ec4" and
+not (process.name == "curl.exe" and process.args == "https://discovery-gateway.lansweeper.com/versions/v1/cloudSyncVersions" and
+     process.parent.name == "w3wp.exe" and process.parent.args : "Lansweeper AppPool")
 '''
 
 min_endpoint_version = "7.15.0"

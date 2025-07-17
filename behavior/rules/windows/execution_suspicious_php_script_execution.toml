@@ -7,7 +7,7 @@ id = "fb54419b-1284-4e85-abfd-aac59db82c8b"
 license = "Elastic License v2"
 name = "Suspicious PHP Script Execution"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5m
@@ -21,7 +21,7 @@ sequence with maxspan=5m
     (dll.Ext.relative_file_creation_time <= 300 or dll.Ext.relative_file_name_modify_time <= 300) and
     process.executable : "C:\\*")
    ) and
-  not process.executable : ("C:\\Program Files (x86)\\PHP\\php.exe", "C:\\Program Files\\*.exe")
+  process.executable : ("C:\\Users\\*.exe", "C:\\ProgramData\\*.exe", "C:\\Windows\\*")
  ] as event0
 [any where
    /* spawn a child process */

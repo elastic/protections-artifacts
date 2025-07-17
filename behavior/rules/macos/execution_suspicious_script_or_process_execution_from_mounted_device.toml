@@ -7,15 +7,15 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence with maxspan=3m
  [file where event.action == "mount" and
   not (process.executable like "/usr/libexec/lsd" and file.path like~ "/private/var/folders/*/AppTranslocation/*")] as event0
  [process where event.action == "exec" and 
-  (startswith (process.args, event0.file.path) or 
-   startswith (process.parent.args, event0.file.path)) and
+  (stringcontains~(process.command_line, event0.file.path) or 
+   stringcontains~(process.parent.command_line, event0.file.path)) and
   (process.code_signature.trusted == false or
    (process.name in ("curl", "nscurl", "mktemp", "tail", "funzip", "python*", "perl", "osascript")) or
    (process.name == "chmod" and process.args in ("+x", "a+x", "0777", "777")) or

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Evasion via dotNET Framework Installation Utility"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Installutil/"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,8 @@ process where event.action == "start" and
                "?:\\Program Files*\\Rescue and Smart Assistant\\*.exe",
                "?:\\Windows\\System32\\msiexec.exe") and
  not (process.executable : "?:\\Windows\\System32\\sc.exe" and process.args : "delete") and
- not (process.args : "/LogFile=C:\\ProgramData\\Veeam\\Setup\\Temp\\Veeam.Backup.PowerShell.InstallLog" and process.parent.name : "msiexec.exe")
+ not (process.args : "/LogFile=C:\\ProgramData\\Veeam\\Setup\\Temp\\Veeam.Backup.PowerShell.InstallLog" and process.parent.name : "msiexec.exe") and
+ not (process.name : "InstallUtil.exe" and process.args : ("C:\\Estensa\\Bin64Client\\SL.Server.Cache.WindowsService.exe", "\\SolarWinds TFTP Server.exe"))
 '''
 
 min_endpoint_version = "7.15.0"

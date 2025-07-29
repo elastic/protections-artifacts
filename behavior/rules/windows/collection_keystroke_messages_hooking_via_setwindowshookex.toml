@@ -12,13 +12,13 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and
+ process.Ext.api.parameters.hook_module == "null" and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and not process.code_signature.status : "trusted" and
  process.thread.Ext.call_stack_summary : "?*" and process.executable != null and
- not process.Ext.api.parameters.hook_module : ("?:\\Program Files\\*.dll", "?:\\Program Files (x86)\\*.dll") and
  not process.thread.Ext.call_stack_summary :
                                ("*user32.dll|explorer.exe|user32.dll*",
                                 "*user32.dll|tabskb.dll|kernel32.dll*",
@@ -35,7 +35,12 @@ api where process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.paramet
                          "bec3b34c8e9c04a1da28c623fb06cee45739113a38a1eae52d2a3b208c4baa6f",
                          "0d083e72eb0e8cbcec2c347840bff815513eecf29648065163b08c600f6c95ff",
                          "38011e713b4be8577576062754cad03e9899859488932ae4c9c83e5fbb5cb7d2",
-                         "b67e006287fba2278f897d242ff58548b7d6b15ac490a91c26318c6f396da195") and
+                         "b67e006287fba2278f897d242ff58548b7d6b15ac490a91c26318c6f396da195",
+                         "feaf9479260db6f41d1e6443d0d80826eeee4905ef97a1cab78c16bc304248a5",
+                         "465d3985e1dd8bc69137e2a8c5a4a6ba16b0ff99c647245ca66942750ccc75ef",
+                         "bec3b34c8e9c04a1da28c623fb06cee45739113a38a1eae52d2a3b208c4baa6f",
+                         "549888a9e268dd5ca6544cabc8266148ff0d8728c3aa0f1c68f9f8bcb116e53d",
+                         "1683394a15b58815a01bbe030dfc1e441a9b0f7f38d18bd5c13d41d573d58f53") and
  not process.thread.Ext.call_stack_final_user_module.path :
                         ("?:\\Program Files\\*",
                          "?:\\Program Files (x86)\\*",

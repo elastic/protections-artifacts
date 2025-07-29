@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Execution via Clickfix Phishing"
 os_list = ["windows"]
 reference = ["https://mrd0x.com/filefix-clickfix-alternative/"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and
@@ -18,7 +18,7 @@ process where event.action == "start" and
   process.executable : "?:\\Users\\*\\Downloads\\*"
   ) and
   process.parent.thread.Ext.call_stack_summary like "ntdll.dll|*|windows.storage.dll|shell32.dll|shcore.dll|kernel32.dll|ntdll.dll" and
-  not (process.name : "rundll32.exe" and process.args : "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile")
+  not (process.name : "rundll32.exe" and process.args : ("ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile", "shwebsvc.dll,AddNetPlaceRunDll"))
 '''
 
 min_endpoint_version = "8.10.0"

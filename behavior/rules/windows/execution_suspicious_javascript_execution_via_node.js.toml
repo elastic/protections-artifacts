@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious JavaScript Execution via Node.js"
 os_list = ["windows"]
 reference = ["https://nodejs.org"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -29,6 +29,7 @@ process where event.action == "start" and
   not (process.args : "--input" and process.args : "--output") and
   not (process.args : "-e" and process.args : "json") and
   not process.args :"C:\\Users\\*\\.pkg-cache\\v3.4\\fetched-v18.5.0-win-x64" and
+  not process.working_directory : ("C:\\bulkUploads\\") and
   not process.executable :
                ("D:\\*\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
                 "E:\\*\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",

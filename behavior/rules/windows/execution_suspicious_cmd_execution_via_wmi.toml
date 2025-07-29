@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/operation-bleeding-bear",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
@@ -22,8 +22,7 @@ process where event.action == "start" and
   process.args : ("C:\\windows\\temp\\*.txt",
                   "\\Windows\\Temp\\*",
                   "-encodehex",
-                  "\\\\127.0.0.1\\C$\\Windows\\Temp\\*",
-                  "\\\\127.0.0.1\\ADMIN$\\__*.*") and
+                  "\\\\127.0.0.1\\C$\\Windows\\Temp\\*") and
   not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*")) or
 
  descendant of [process where event.action == "start" and process.name : "cmd.exe" and process.args : "/c" and process.args:"/Q" and
@@ -32,18 +31,14 @@ process where event.action == "start" and
                 process.args : ("C:\\windows\\temp\\*.txt",
                                 "\\Windows\\Temp\\*",
                                 "-encodehex",
-                                "\\\\127.0.0.1\\C$\\Windows\\Temp\\*",
-                                "\\\\127.0.0.1\\ADMIN$\\__*.*") and
+                                "\\\\127.0.0.1\\C$\\Windows\\Temp\\*") and
                 not process.command_line : ("*servicenow\\psscript_output*", "*Impact360\\Software*")]
  ) and
  not process.executable : ("?:\\Windows\\system32\\conhost.exe", "?:\\Windows\\System32\\findstr.exe", "?:\\Windows\\System32\\chcp.com") and
  not (process.parent.name : "cmd.exe" and process.parent.command_line : "*\\127.0.0.1\\c$\\temp\\cotportal\\COT_Mid_Cluster*") and
  not process.executable : "?:\\Program Files\\MySQL\\MySQL Server *\\bin\\mysqld.exe" and
  not (process.name : ("mysqld.exe", "mysql.exe") and process.parent.args : "\\\\127.0.0.1\\c$\\temp\\*\\psscript_output_*.txt") and
- not (process.args : "\\\\127.0.0.1\\ADMIN$\\__*.*") and
  not process.command_line : ("sc  query RemoteRegistry ", "sc  start RemoteRegistry ") and
- not (process.working_directory : "C:\\" and process.args : "\\\\127.0.0.1\\ADMIN$\\__*.*") and
- not process.args : "\\\\127.0.0.1\\ADMIN$\\__174*" and
  not (process.code_signature.subject_name == "MariaDB Corporation Ab" and process.code_signature.trusted == true) and
  not (process.name : ("powershell.exe", "cmd.exe") and
       process.command_line : ("powershell  -EncodedCommand JABQAHIAbwBnAHIAZQBzAHMAUAByAGUAZgBlAHIAZQBuAGMAZQA9ACIAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQ*",

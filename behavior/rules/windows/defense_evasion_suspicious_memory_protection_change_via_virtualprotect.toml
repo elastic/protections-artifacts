@@ -7,7 +7,7 @@ id = "8fcf2b81-8322-423b-a1b4-6bba722f599a"
 license = "Elastic License v2"
 name = "Suspicious Memory Protection Change via VirtualProtect"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
@@ -24,7 +24,8 @@ api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info:
                    ("c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*",
                     "c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
-                    "c:\\windows\\sys?????\\ntdll.dll!RtlpCreateProcessRegistryInfo*")) and
+                    "c:\\windows\\sys?????\\ntdll.dll!RtlpCreateProcessRegistryInfo*",
+                    "c:\\windows\\syswow64\\ntdll.dll!RtlInitializeExceptionChain*")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                                          ("?:\\program files\\*", "?:\\program files (x86)\\*",
                                                           "?:\\windows\\microsoft.net\\framework\\v*\\temporary asp.net files\\*.dll",

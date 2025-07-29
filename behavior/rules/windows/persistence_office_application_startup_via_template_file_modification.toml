@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Office Application Startup via Template File Modification"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1137/001/"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 file where event.action in ("creation", "overwrite") and process.pid != 4 and
@@ -28,7 +28,8 @@ file where event.action in ("creation", "overwrite") and process.pid != 4 and
                             "?:\\Program Files\\Veeam\\Endpoint Backup\\*.exe",
                             "?:\\Program Files (x86)\\Laplink PCmover\\PCmoverHost.exe",
                             "?:\\Windows\\System32\\dllhost.exe",
-                            "C:\\Windows\\System32\\cmd.exe") and
+                            "C:\\Windows\\System32\\cmd.exe",
+                            "D:\\SuperGrate*.exe") and
   not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")
 '''
 

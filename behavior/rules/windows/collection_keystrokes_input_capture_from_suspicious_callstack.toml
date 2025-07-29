@@ -11,16 +11,17 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 api where
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  (
-  process.Ext.api.name : "GetAsyncKeyState" or
-  (process.Ext.api.name : "RegisterRawInputDevices" and
-   process.Ext.api.parameters.usage : "*KEYBOARD*" and process.Ext.api.parameters.flags : "*INPUTSINK*") or
-  (process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL")
+  process.Ext.api.name == "GetAsyncKeyState" or
+  (process.Ext.api.name == "RegisterRawInputDevices" and
+   process.Ext.api.parameters.usage == "KEYBOARD" and process.Ext.api.parameters.flags like "*INPUTSINK*") or
+  (process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and
+   process.Ext.api.parameters.hook_module == "null")
   ) and
 
   process.thread.Ext.call_stack_final_user_module.name != null and process.executable != null and 
@@ -42,7 +43,8 @@ api where
                                "\\Program Files (x86)\\*",
                                "\\Windows\\*") and 
   not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
-  not process.Ext.api.parameters.hook_module : "?:\\windows\\systemapps\\shellexperiencehost_*\\devicesflowui.dll" and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                   $entry.subject_name in (".NET", "Microsoft Corporation", "Microsoft Windows", "Sophos Limited")) and
   not process.executable : 
                    ("?:\\Program Files (x86)\\Image Express\\ixDrill\\ixDrill.exe", 
                     "?:\\Windows\\System32\\DellTPad\\ApMsgFwd.exe", 
@@ -52,12 +54,14 @@ api where
                     "?:\\Program Files\\SuperPuTTY*\\SuperPutty.exe",
                     "C:\\Program Files\\Four Winds Interactive\\Content Player\\Signage.exe",
                     "C:\\Program Files\\WindowsApps\\Microsoft.PowerAutomateDesktop_*\\dotnet\\PAD.Console.Host.exe",
+                    "C:\\Program Files (x86)\\Hyland\\OCR for AnyDoc\\OCRforAnyDoc.exe",
                     "C:\\Program Files\\Dell\\Dell Display and Peripheral Manager\\Plugins\\DDPM.Subagent.User\\DDPM.Subagent.User.exe") and
   not (process.code_signature.trusted == true and
        process.code_signature.subject_name in ("Grammarly, Inc.", "HP Inc.", "Proofpoint, Inc.", "ETH Zürich", "Learnpulse",
         "Qisda Corporation", "ONELAUNCH TECHNOLOGIES INC.", "Laserfiche", "ARTICULATE GLOBAL, LLC", "ARTICULATE GLOBAL, LLC",
         "Connectwise, LLC", "Carl Zeiss Microscopy GmbH", "Articulate Global, Inc.", "JItbit LP", "Dell Inc.",
-        "Roblox Corporation", "Colony Labs, Inc."))
+        "Roblox Corporation", "Colony Labs, Inc.", "Devolutions Inc")) and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "120446e2c7729a7ae15e08bcc5cdb95c35151aa0f7e803e53dc7e92a1579783d"
 '''
 
 min_endpoint_version = "8.12.0"

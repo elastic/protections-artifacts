@@ -7,7 +7,7 @@ id = "ee5d33a2-604f-4466-bace-4aea921846ed"
 license = "Elastic License v2"
 name = "Suspicious WMI Enumeration via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.name in~ ("wscript.exe", "mshta.exe", "msxsl.exe") and
@@ -22,6 +22,8 @@ api where process.name in~ ("wscript.exe", "mshta.exe", "msxsl.exe") and
                  "\"C:\\WINDOWS\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchCommonAgent.vbs\"",
                  "\"C:\\WINDOWS\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchSaasAgent.vbs\"",
                  "C:\\WINDOWS\\System32\\WScript.exe \"C:\\Program Files\\Consol\\DhaService\\StartToolbox.vbs\" ",
+                 "\"C:\\Windows\\System32\\WScript.exe\" \"C:\\Program Files (x86)\\Wireless Monitor System V*\\start.vbs\" ",
+                 "\"wscript.exe\" \"C:\\Program Files\\Windows Azure VM Agent *\\\\InstallOrUpdateGA.vbs\"",
                  "\"C:\\Windows\\SysWOW64\\mshta.exe\" \"C:\\programdata\\choice\\ThinkBiosConfig.hta\" {1E460BD7-F1C3-4B2E-88BF-4E770A288AF5}{1E460BD7-F1C3-4B2E-88BF-4E770A288AF5} ") and
   not process.Ext.api.summary :
                   ("IWbemServices::ExecQuery( Select * from Win32_Process Where Name = 'JAVAW.EXE' )",

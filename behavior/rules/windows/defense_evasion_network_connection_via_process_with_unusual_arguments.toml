@@ -8,7 +8,7 @@ id = "95601d8b-b969-4189-9744-090140ae29e6"
 license = "Elastic License v2"
 name = "Network Connection via Process with Unusual Arguments"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id
@@ -48,7 +48,9 @@ sequence by process.entity_id
       "GPUpdate.exe",
       "SearchProtocolHost.exe",
       /* Issue #639 - added msiexec */
-      "msiexec.exe")]
+      "msiexec.exe") and
+   not (user.id == "S-1-5-18" and process.name : "gpupdate.exe" and process.parent.executable : "C:\\Windows\\system32\\cscript.exe")
+   ]
   [network where event.action == "connection_attempted"]
   until [process where event.action:"end"]
 '''

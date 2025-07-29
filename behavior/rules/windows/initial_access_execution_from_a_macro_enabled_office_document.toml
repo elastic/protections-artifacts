@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -29,6 +29,8 @@ process where event.action == "start" and
         not process.code_signature.subject_name : "Microsoft*") and
 
    not (process.name : "rundll32.exe" and process.args : ("?:\\WINDOWS\\system32\\spool\\DRIVERS\\*MonitorPrintJobStatus", "url.dll,FileProtocolHandler")) and
+
+   not (process.command_line : "powershell.exe -WindowStyle hidden kill -processname winword" and process.working_directory : "\\\\*$\\*\\Documents\\") and
 
    not process.hash.sha256 : ("3d4926dbf5c4fc8edd3382850cdd54fc5b4e866b34251f7cff5ba0b50179dedb",
                               "bf879ebb625dbc1d2561e5aa6d9bb3bf16ad1d834743456568ec40dddace6fb0",
@@ -66,6 +68,7 @@ process where event.action == "start" and
                              "?:\\Windows\\System32\\wermgr.exe",
                              "?:\\Windows\\System32\\taskkill.exe",
                              "?:\\Windows\\System32\\Robocopy.exe",
+                             "C:\\Windows\\SysWOW64\\verclsid.exe",
                              "\\Device\\Mup\\*",
                              "?:\\Program Files\\Common Files\\microsoft shared\\DW\\DW20.EXE",
                              "?:\\Program Files (x86)\\Common Files\\Microsoft Shared\\DW\\DW20.EXE",

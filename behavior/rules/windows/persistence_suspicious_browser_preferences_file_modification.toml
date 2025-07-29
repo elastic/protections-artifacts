@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Browser Preferences File Modification"
 os_list = ["windows"]
 reference = ["https://syntax-err0r.github.io/Silently_Install_Chrome_Extension.html"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 file where event.action == "overwrite" and file.name : ("Preferences", "Secure Preferences") and
@@ -25,7 +25,10 @@ file where event.action == "overwrite" and file.name : ("Preferences", "Secure P
 	                "C:\\Windows\\explorer.exe",
 	                "C:\\Windows\\System32\\xcopy.exe",
 	                "C:\\Windows\\System32\\Robocopy.exe",
-	                "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe") and
+	                "C:\\Windows\\System32\\wscript.exe",
+	                "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+	                "C:\\Users\\*\\AppData\\Local\\Microsoft\\DefaultSetup\\DefaultSetup.exe",
+	                "C:\\Users\\*\\.cache\\selenium\\chromedriver\\win64\\138.0.7204.157\\chromedriver.exe") and
 	 not (process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true and
 	      process.executable : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
 	                            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge SxS\\Application\\msedge.exe",
@@ -35,7 +38,7 @@ file where event.action == "overwrite" and file.name : ("Preferences", "Secure P
 	      process.code_signature.subject_name :
 	                ("Google LLC", "PASSWORD BOSS LLC", "Piriform Ltd", "Piriform Software Ltd", "UiPath, Inc.",
 	                 "Gen Digital Inc.", "SOFT SOLUTIONS HUB LLC", "PIRIFORM SOFTWARE LIMITED", "SOFT SOLUTIONS HUB LLC",
-	                 "Guangxi Yunao Network Technology Co. Ltd.", "Andrew Ziem"))
+	                 "Guangxi Yunao Network Technology Co. Ltd.", "Andrew Ziem", "ECHO INFINI SDN. BHD."))
 '''
 
 min_endpoint_version = "8.1.0"

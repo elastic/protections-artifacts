@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence with maxspan=5s
@@ -25,11 +25,22 @@ sequence with maxspan=5s
                 "C:\\Program Files\\Python*\\python.exe",
                 "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.*.exe",
                 "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE") and
-  not process.parent.executable : ("\\Device\\Mup\\*", "?:\\Program Files\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acspcoc.exe") and
+  not process.parent.executable : ("\\Device\\Mup\\*",
+                                   "?:\\Program Files\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acspcoc.exe",
+                                   "C:\\Windows\\Microsoft.NET\\Framework64\\v*\\dfsvc.exe") and
   not process.executable : "?:\\Program Files\\Python??\\python.exe" and
   not (process.name : "rundll32.exe" and process.args : "url.dll,FileProtocolHandler") and
   not process.hash.sha256 in ("204326fdd6483ebce82c889fce539b1782a645b225c0f2e9fc8d71139546f255",
-                              "da5612f679d98e07d49360989fd6abe7de157e7024d0b9ef0a3de527026baff2")
+                              "da5612f679d98e07d49360989fd6abe7de157e7024d0b9ef0a3de527026baff2",
+                              "e4a98dac4a1df240f71b75dc73ef4a71a27bd83af460cef4136022f66b1f3a4e",
+                              "fe5d6e2fe76c098da524c59108a85afa653a3deee23e487f1ef38985407e0ef5",
+                              "fbd1cb3e91e17c9318b5e9d64b9458bdbc98c7761af9f175a77b1d9163dac7be",
+                              "a58f1415e0fc8560defca9e485b3c90b4d2f69a754adf40b7e565a9b1ba89d8b",
+                              "28ed5f6f1b46d0581941a56e6bf4f5de479eafa92e362ee340b4d9f92ea519b9",
+                              "e4a98dac4a1df240f71b75dc73ef4a71a27bd83af460cef4136022f66b1f3a4e",
+                              "fe5d6e2fe76c098da524c59108a85afa653a3deee23e487f1ef38985407e0ef5") and
+  not (process.parent.name : "cmd.exe" and process.parent.args : ("PDF Viewer", "1>NUL", "C:\\Users\\*\\AppData\\Local\\Temp\\*.pdf")) and
+  not process.args : "C:\\Users\\*\\AppData\\Local\\Temp\\JetB2\\userReports\\*.PDF"
   ] by process.entity_id
  [process where event.action == "start" and
   (

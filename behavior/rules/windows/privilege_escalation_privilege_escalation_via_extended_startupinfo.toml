@@ -13,7 +13,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -89,7 +89,10 @@ process where event.action == "start" and
                   "?:\\Windows\\SysWOW64\\MpSigStub.exe",
                   "\\Device\\HarddiskVolume*\\Windows\\System32\\MpSigStub.exe",
                   "\\Device\\HarddiskVolume*\\Windows\\SysWOW64\\MpSigStub.exe") and
-      process.parent.name : ("wuauclt.exe", "wuaucltcore.exe"))
+      process.parent.name : ("wuauclt.exe", "wuaucltcore.exe")) and
+
+ not (process.executable : "C:\\ProgramData\\Microsoft\\Windows Defender\\Scans\\MpPayloadData\\mpengine.exe" and
+      process.parent.executable : "C:\\ProgramData\\Microsoft\\Windows Defender\\Scans\\MpPayloadData\\mpengine.exe" and user.id == "S-1-5-18")
 '''
 
 min_endpoint_version = "7.15.0"

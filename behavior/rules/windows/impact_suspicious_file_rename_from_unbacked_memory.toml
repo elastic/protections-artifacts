@@ -7,7 +7,7 @@ id = "adc08f95-6a12-441a-be30-0443d6ccae52"
 license = "Elastic License v2"
 name = "Suspicious File Rename from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -15,7 +15,7 @@ sequence by process.entity_id with maxspan=30s
   process.code_signature.status : "trusted" and
   not process.code_signature.subject_name :
                           ("LEAP SOFTWARE DEVELOPMENTS PTY. LIMITED", "KASEYA US LLC",
-                           "Chocolatey Software, Inc.", "Quadient Industrie France") and
+                           "Chocolatey Software, Inc.", "Quadient Industrie France", "ACTIFILE LTD") and
   file.extension != null and file.Ext.entropy >= 7 and
   file.Ext.original.name : ("*.jpg", "*.bmp", "*.png", "*.pdf", "*.doc", "*.docx", "*.xls", "*.xlsx", "*.ppt", "*.pptx") and
   not file.extension : ("tmp", "~tmp", "diff", "gz", "download", "bak", "bck", "lnk", "part", "save", "url", "jpg",

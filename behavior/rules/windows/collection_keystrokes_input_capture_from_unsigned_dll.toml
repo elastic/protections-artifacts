@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -38,16 +38,18 @@ sequence by process.entity_id with maxspan=2m
                  "a9b70a8c2b495badc2cccf96408c8838d7fedd1013590b11166323629ec36b16",
                  "c47c572f7b74d7073b6ab008a730d26ec885c67d1dcdb187839ed52cb8856287",
                  "5a730d11d2d5a38b33360e6e524f53eaf93225f196016a4f1d313e7eab16b655",
-                 "b8c331c9f915960201da9af9c9dc8309e95e7d533741e71f4a5d13ca007d3e18") and
-  not process.executable : "C:\\Program Files\\Autodesk\\Revit 2024\\Revit.exe" and
+                 "b8c331c9f915960201da9af9c9dc8309e95e7d533741e71f4a5d13ca007d3e18",
+                 "b2c93337e49bdba121f679bcfa91eb3d3ddfe1776417dd80da4c6500205130d3",
+                 "a037787360c924e15415b44ac64d06dfdf8265dd136d87d2354e44dd3b151894") and
+  not process.executable : "C:\\Program Files\\Autodesk\\Revit 202?\\Revit.exe" and
   not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and
        dll.name : "*.tmp.node")] as event0
  [api where
 
-  (process.Ext.api.name : "GetAsyncKeyState" or
-   (process.Ext.api.name : "RegisterRawInputDevices" and
-    process.Ext.api.parameters.usage : "*KEYBOARD*" and process.Ext.api.parameters.flags : "*INPUTSINK*") or
+  (process.Ext.api.name == "GetAsyncKeyState" or
+   (process.Ext.api.name == "RegisterRawInputDevices" and
+    process.Ext.api.parameters.usage == "KEYBOARD" and process.Ext.api.parameters.flags like "*INPUTSINK*") or
    (process.Ext.api.name == "SetWindowsHookEx" and process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL")) and
 
    startswith~(process.thread.Ext.call_stack_final_user_module.name, event0.dll.name)]

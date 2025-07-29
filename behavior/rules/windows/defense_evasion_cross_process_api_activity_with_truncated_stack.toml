@@ -7,7 +7,7 @@ id = "002d9a6d-c09e-4d3f-a1c1-05b92dbdbb67"
 license = "Elastic License v2"
 name = "Cross Process API Activity with Truncated Stack"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.behaviors == "cross-process" and process.Ext.api.behaviors == "truncated_stack" and
@@ -20,11 +20,13 @@ api where process.Ext.api.behaviors == "cross-process" and process.Ext.api.behav
                            "C:\\Program Files (x86)\\360\\Total Security\\safemon\\QHActiveDefense.exe",
                            "C:\\Program Files\\Palo Alto Networks\\DEM\\bin\\mtr.exe",
                            "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe",
+                           "C:\\Program Files (x86)\\Globus Connect Personal\\bin\\ext\\relaytool.exe",
                            "C:\\Program Files (x86)\\Adobe\\Acrobat *\\Acrobat\\AcroRd32.exe",
                            "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
                            "C:\\Program Files\\Git\\usr\\bin\\sh.exe",
                            "C:\\Program Files\\ESET\\ESET Security\\ekrn.exe",
-                           "C:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe") and
+                           "C:\\Program Files (x86)\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+                           "C:\\Program Files (x86)\\Globus Connect Personal\\bin\\ext\\relaytool.exe") and
  not (process.name : "bash.exe" and Target.process.name : "bash.exe" and process.Ext.api.metadata.target_address_name like ("Data", "cyg*.dll")) and 
  not (process.name : "perl.exe" and Target.process.name : "perl.exe" and process.Ext.api.metadata.target_address_name like ("Data", "cyg*.dll", "posix.dll*", "msxml3.dll")) and 
  not (process.name : "ssh.exe" and Target.process.name : "ssh.exe" and process.Ext.api.metadata.target_address_name like ("Data", "msys-*.dll", "cyg*.dll")) and 

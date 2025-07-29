@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious NTDLL Memory Write"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.executable != null and not process.code_signature.status : "trusted" and 
@@ -20,10 +20,16 @@ api where process.executable != null and not process.code_signature.status : "tr
   )  and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  ("e52b72e118bf40d237a39a968b5589e1c70f4b0d4f4b8eae0893aee64c1f9215",
-                                  "ab93faa2f3a7e67a0489a5cc49327eb83bd5b48ed43ccc6112854fea7d20a620")
+                                  "ab93faa2f3a7e67a0489a5cc49327eb83bd5b48ed43ccc6112854fea7d20a620",
+                                  "680dc9c393faad3851147bcbb3c5a1fd29b8ed61ddf1bf416f4415132d85f784",
+                                  "0b9b29eca46cc2519d50bba5745cfc350f361fb8c707300b1b5c87226236a586",
+                                  "c74e71221e5f7948f9f6166c9a57f3dff24c4dd70314d9642453b1fcd17bee28",
+                                  "ce76b4f522db2b1c1214aecdfaa149589e81e9b6f439fa2ea6046a62fc43e135",
+                                  "f6c78f7106c2382cb813b0306b735b0ed45c0fc31bad07a8b35003e3a0797efe") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "\\device\\mup\\*\\sfmcoresd41.dll"
 '''
 
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.15.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -48,4 +54,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.15.0"

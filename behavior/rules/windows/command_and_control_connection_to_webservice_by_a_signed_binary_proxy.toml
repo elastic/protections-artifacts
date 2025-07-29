@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.61"
+version = "1.0.62"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -68,7 +68,9 @@ sequence by process.entity_id with maxspan=5m
                           "AppXDeploymentExtensions.OneCore.dll,ShellRefresh",
                           "C:\\Windows\\System32\\LogiLDA.dll,LogiFetch")) and
       not process.parent.executable : "C:\\Program Files\\Microsoft SQL Server\\150\\DTS\\Binn\\ISServerExec.exe" and
-      not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe", "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe") and
+      not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe",
+                                       "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe",
+                                       "C:\\Program Files (x86)\\HP\\StatusAlerts\\bin\\HPStatusAlerts.exe") and
       not (process.name : "powershell.exe" and process.parent.name : "wsmprovhost.exe" and
            process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile")
   ]

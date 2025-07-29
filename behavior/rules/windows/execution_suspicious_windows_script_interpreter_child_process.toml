@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.type == "start" and
@@ -51,6 +51,9 @@ process where event.type == "start" and
           process.parent.args : "?:\\Windows\\Options\\SWD\\MapHomeDrive_*.vbs" and process.name : "mshta.exe") and
      not (process.name : "rundll32.exe" and process.parent.args : "?:\\Program Files (x86)\\PCMatic\\PC Matic\\registerActiveX.wsf") and
      not process.command_line : "mshta.exe" and
+     not (process.name : "wscript.exe" and process.args : "\\\\*\\netlogon\\*.vbe") and
+     not (process.name : "rundll32.exe" and process.args: "C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll,#1") and
+     not (process.name: ("cmd.exe", "regsvr32.exe") and process.parent.executable : "C:\\Windows\\SysWOW64\\mshta.exe") and
      not (process.executable : "?:\\Windows\\System32\\odbcconf.exe" and process.args : "configdsn") and
      not process.hash.sha256 in ("13eacb4b57ac207f7f5c118915359a6e66a7f52f7154f8bb577f54b48b0d5e68", "6e0cb7d79cfc0b51468904701ff5227270180b9c8ff79d181000049ce991fc5a") and
      not (process.parent.name : "mshta.exe" and

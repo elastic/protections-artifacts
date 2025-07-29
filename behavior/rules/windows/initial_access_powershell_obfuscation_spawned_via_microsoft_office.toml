@@ -11,7 +11,7 @@ reference = [
     "https://github.com/danielbohannon/Invoke-Obfuscation",
     "https://www.elastic.co/security-labs/effective-parenting-detecting-lrpc-based-parent-pid-spoofing",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -71,7 +71,8 @@ process where event.action == "start" and
 
   not process.args : ("Get-AuthenticodeSignature*", "Write-Host") and not process.command_line : "*Get-AppxPackage*Microsoft.Office*" and
   not (process.name : "powershell.exe" and process.command_line : "*Get-CIMInstance -Class Win32_Service*" and 
-       process.parent.executable : "C:\\WINDOWS\\System32\\cmd.exe" and process.parent.args : "C:\\WINDOWS\\TEMP\\nessus_*.TMP")
+       process.parent.executable : "C:\\WINDOWS\\System32\\cmd.exe" and process.parent.args : "C:\\WINDOWS\\TEMP\\nessus_*.TMP") and
+  not process.command_line : "powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -"
 '''
 
 min_endpoint_version = "7.15.0"

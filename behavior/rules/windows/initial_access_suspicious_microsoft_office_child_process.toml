@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Microsoft Office Child Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -100,7 +100,9 @@ process where event.action == "start" and
 	not (process.name : "rundll32.exe" and
 	     process.args : ("?:\\Windows\\System32\\LogiLDA.dll,LogiFetch", "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbShortcut")) and
 	not (process.name : "rundll32.exe" and process.args : "-localserver" and process.args : "22d8c27b-47a1-48d1-ad08-7da7abd79617") and
-	not process.executable : "?:\\Program Files (x86)\\Andar\\Jre*\\bin\\javaw.exe"
+	not process.executable : "?:\\Program Files (x86)\\Andar\\Jre*\\bin\\javaw.exe" and
+	not (process.name : "mshta.exe" and process.args : "vbscript:close(CreateObject(WScript.Shell).Popup(Works only at day level,1,Warning))") and
+	not (process.name : "rundll32.exe" and process.command_line : "\"C:\\Windows\\system32\\rundll32.exe\" --eoim")
 '''
 
 min_endpoint_version = "7.15.0"

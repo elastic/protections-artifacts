@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.cloudsek.com/blog/unmasking-the-danger-lumma-stealer-malware-exploits-fake-captcha-pages",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.action == "start" and
@@ -24,9 +24,14 @@ process where event.action == "start" and
                                          "C:\\Windows\\System32\\user32.dll!DialogBoxIndirectParamW*", 
                                          "C:\\Windows\\System32\\shell32.dll!GetFileNameFromBrowse*")))
  ) and
- not (process.name : "cmd.exe" and process.args : ("*.bat*", "*.cmd", "dir", "ipconfig")) and
- not (process.name : "powershell.exe" and process.args : "Start-Process powershell -Verb RunAs") and
- not (process.name : "msiexec.exe" and process.args : "?:\\*.msi")
+ not (process.name : "cmd.exe" and process.args : ("*.bat*", "*.cmd", "dir", "ipconfig", "C:\\WINDOWS\\system32\\sconfig.cmd ", "Code\\bin\\code.cmd ")) and
+ not (process.name : "powershell.exe" and process.args : ("Start-Process powershell -Verb RunAs", "C:\\*.ps1", "-SPLAGroup", "\\\\*\\netlogon\\*.ps1")) and
+ not (process.name : "msiexec.exe" and process.args : "?:\\*.msi") and
+ not process.command_line : ("\"C:\\WINDOWS\\system32\\cmd.exe\" /k net use",
+                             "\"C:\\WINDOWS\\system32\\cmd.exe\" -a",
+                             "\"C:\\Windows\\system32\\msiexec.exe\" /regserver",
+                             "\"C:\\windows\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -ep bypass") and
+ not (process.name : ("wscript.exe", "cscript.exe") and process.args : ("\\\\*\\MapNetworkDrives.vbs", "?:\\*.js", "?:\\*.vbs"))
 '''
 
 min_endpoint_version = "8.10.0"

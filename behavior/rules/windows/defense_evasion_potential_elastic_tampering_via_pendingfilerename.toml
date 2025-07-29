@@ -10,12 +10,21 @@ os_list = ["windows"]
 reference = [
     "https://qtechbabble.wordpress.com/2020/06/26/use-pendingfilerenameoperations-registry-key-to-automatically-delete-a-file-on-reboot/",
     "https://github.com/rad9800/FileRenameJunctionsEDRDisable",
+    "https://github.com/duhirsch/MoveEdr",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 registry where event.action == "modification" and
- registry.value == "PendingFileRenameOperations" and registry.data.strings : ("*Program Files\\Elastic\\*elastic-endpoint.exe*", "*Program Files//Elastic//*elastic-endpoint.exe*")
+  registry.value == "PendingFileRenameOperations" and
+  registry.data.strings : (
+    "*Program Files\\Elastic\\*",
+    "*Program Files//Elastic//*",
+    "*Program Files\\Elastic",
+    "*Program Files//Elastic",
+    "*elastic-endpoint-driver.sys*",
+    "*ElasticElam.sys*"
+ )
 '''
 
 min_endpoint_version = "8.1.0"

@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.action == "start" and
@@ -21,7 +21,11 @@ process where event.action == "start" and
  not (process.code_signature.subject_name in~ ("BYFRON TECHNOLOGIES LLC", "Valve Corp.", "Sony Interactive Entertainment LLC", "Roblox Corporation") and process.code_signature.trusted == true) and
  not process.parent.executable :  "?:\\Program Files\\WindowsApps\\ROBLOXCORPORATION.ROBLOX_*\\Windows10Universal.exe" and
  not (process.parent.code_signature.subject_name == "Roblox Corporation" and process.parent.code_signature.trusted == true) and
- not (process.code_signature.subject_name == "Roblox Corporation" and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name == "Roblox Corporation" and process.code_signature.trusted == true) and
+ not (process.parent.thread.Ext.call_stack_summary like "Unbacked|cymemdef64.dll|*" and
+       _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info like "C:\\Program Files\\Cylance\\Desktop\\CyMemDef64.dll*")) and
+ not (process.executable : "C:\\ProgramData\\Sony Interactive Entertainment Inc\\PSPC_SDK\\*\\crashpad_handler.exe" and
+      process.parent.thread.Ext.call_stack_summary == "Unbacked|kernelbase.dll|kernel32.dll|gameoverlayrenderer64.dll|Unbacked")
 '''
 
 min_endpoint_version = "8.10.0"

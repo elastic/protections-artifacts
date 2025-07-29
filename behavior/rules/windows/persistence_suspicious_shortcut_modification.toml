@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -28,7 +28,8 @@ sequence by process.entity_id with maxspan=1m
             "?:\\Windows\\SystemApps\\*.exe",
             "?:\\Windows\\System32\\DeviceEnroller.exe",
             "?:\\Windows\\CCM\\UpdateTrustedSites.exe",
-            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe") and 
+            "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\msedge.exe",
+            "C:\\Program Files (x86)\\Lizard\\GPProcessing\\RunScript.exe") and
   not (process.code_signature.subject_name :
           ("Google*",
            "Notepad*",
@@ -47,7 +48,7 @@ sequence by process.entity_id with maxspan=1m
   not (process.name : "cmd.exe" and process.args : "Menu\\Programs\\Startup\\Icons.bat ") and 
   not (process.name : "powershell.exe" and process.args : ("C:\\Windows\\Managetaskbar\\taskband.ps1", "C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*_AddOfficeIconsToDesktop.ps1")) and
   /* unsigned Notepad++ installer */
-  process.pe.imphash != "9dda1a1d1f8a1d13ae0297b47046b26e" and
+  not process.pe.imphash in ("9dda1a1d1f8a1d13ae0297b47046b26e", "7fa974366048f9c551ef45714595665e") and
   not (process.name : "rundll32.exe" and process.args :"shell32.dll,SHCreateLocalServerRunDll" and process.parent.name : "svchost.exe") and
   not process.hash.sha256 in ("7a8998de0f56fb3303d071d6d87bd9c1b4472bc84bba5090993936a8bc819771", "bd68b94f58ad350ccb89f6b9e2b2f473731239fb0aa1902c21cb83e117d66b2e")
  ]

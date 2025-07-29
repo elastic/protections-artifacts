@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -88,7 +88,7 @@ api where
     "Corsair Memory, Inc.", "Ivanti, Inc.", "POINTWARE INFORMATICA LTDA", "ASUSTeK COMPUTER INC.", "Snow Software AB",
     "IObit CO., LTD", "ESET, spol. s r.o.", "Sophos Ltd", "WithSecure Oyj", "Trend Micro, Inc.", "Belarc, Inc.",
     "KASEYA HOLDINGS INC.", "Elliptic Laboratories ASA", "IObit Information Technology", "CPUID S.A.R.L.U.", "CPUID",
-    "Panda Security S.L", "Shenzhen Drive The Life Technology Co.,Ltd.", "PDQ.com Corporation") and
+    "Panda Security S.L", "Shenzhen Drive The Life Technology Co.,Ltd.", "PDQ.com Corporation", "KERISH PRODUCTS LLP") and
     process.code_signature.trusted == true) or
 
     process.executable :
@@ -114,6 +114,7 @@ api where
               "C:\\Program Files (x86)\\OSTotoSoft\\DriverTalent\\HardWareReport.exe",
               "C:\\Windows\\System32\\UsoClient.exe",
               "C:\\Windows\\CCM\\CcmExec.exe",
+              "\\Device\\Mup\\*.exe",
               "C:\\Windows\\Microsoft.NET\\Framework64\\v4.*\\mscorsvw.exe",
               "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.*\\MpCmdRun.exe",
               "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",

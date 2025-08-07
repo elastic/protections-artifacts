@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 api where
@@ -18,8 +18,13 @@ process.Ext.api.metadata.target_address_path != "c:\\windows\\system32\\dante_dn
 process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
 process.thread.Ext.call_stack_final_user_module.protection_provenance in ("clr.dll", "mscorwks.dll", "coreclr.dll") and
 
-/* exclude nop operations */
-not (process.Ext.api.name == "VirtualProtect" and process.Ext.api.parameters.protection == "RWX" and process.Ext.api.parameters.protection_old == "RWX") and
+not (
+  process.Ext.api.name == "VirtualProtect" and
+    /* exclude nop operations */
+    /* TBR */
+    (process.Ext.api.parameters.protection in ("RWX", "RwX|CFG") and process.Ext.api.parameters.protection_old == "RWX") or
+    (process.Ext.api.parameters.protection == "R-X|CFG" and process.Ext.api.parameters.protection_old in ("R-X", "RWX"))
+) and
 
 /* Citrix GPO Scripts */
 not (process.parent.executable : "C:\\Windows\\System32\\gpscript.exe" and
@@ -30,7 +35,10 @@ not (process.Ext.api.name == "VirtualAlloc" and
      process.parent.executable :
                  ("C:\\Program Files (x86)\\CyberCNSAgent\\cybercnsagent.exe",
                   "C:\\Program Files\\Velociraptor\\Velociraptor.exe",
-                  "C:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe")) and
+                  "C:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe",
+                  /* TBR */
+                  "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
+                  "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseCM.exe")) and
 
 /* module listing */
 not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and
@@ -48,7 +56,9 @@ not (process.parent.executable : "\\\\?\\Volume{*}\\Windows\\System32\\CExecSvc.
 not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "41c6470c01*41c6470c01488b55*") and
 not process.thread.Ext.call_stack_summary in
                            ("ntdll.dll|inprocessclient64.dll|kernelbase.dll|inprocessclient64.dll|Unbacked",
-                            "ntdll.dll|bdhkm64.dll|atcuf64.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked") and
+                            "ntdll.dll|bdhkm64.dll|atcuf64.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked",
+                            /* TBR */
+                            "ntdll.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked") and
 not process.parent.executable : ("C:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\x64\\BGHelper.exe",
                                  "C:\\Program Files\\PDQ\\PDQConnectAgent\\pdq-connect-agent.exe") and
 not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like "41c644240c01*85f60f95c00fb6c00fb6c041c644240c01488b55884989542410488d65c85b5e5f415c41*")

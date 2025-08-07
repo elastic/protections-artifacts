@@ -1,0 +1,104 @@
+[rule]
+description = """
+This rule detects the copying or moving of system binaries using common shell commands. Attackers may copy or move
+system binaries to different locations or rename them to evade detection or maintain persistence.
+"""
+id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
+license = "Elastic License v2"
+name = "System Binary Copied or Moved"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
+process.args in (
+    "/bin/sh", "/usr/bin/sh", "/usr/local/bin/sh",
+    "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash",
+    "/bin/dash", "/usr/bin/dash", "/usr/local/bin/dash",
+    "/bin/zsh", "/usr/bin/zsh", "/usr/local/bin/zsh",
+    "/bin/ksh", "/usr/bin/ksh", "/usr/local/bin/ksh",
+    "/bin/nc", "/usr/bin/nc", "/usr/local/bin/nc",
+    "/bin/netcat", "/usr/bin/netcat", "/usr/local/bin/netcat",
+    "/bin/ncat", "/usr/bin/ncat", "/usr/local/bin/ncat",
+    "/bin/nc.traditional", "/usr/bin/nc.traditional", "/usr/local/bin/nc.traditional",
+    "/bin/socat", "/usr/bin/socat", "/usr/local/bin/socat",
+    "/bin/nmap", "/usr/bin/nmap", "/usr/local/bin/nmap",
+    "/bin/telnet", "/usr/bin/telnet", "/usr/local/bin/telnet",
+    "/bin/curl", "/usr/bin/curl", "/usr/local/bin/curl",
+    "/bin/wget", "/usr/bin/wget", "/usr/local/bin/wget",
+    "/bin/python", "/usr/bin/python", "/usr/local/bin/python",
+    "/bin/python3", "/usr/bin/python3", "/usr/local/bin/python3",
+    "/bin/perl", "/usr/bin/perl", "/usr/local/bin/perl",
+    "/bin/ruby", "/usr/bin/ruby", "/usr/local/bin/ruby",
+    "/bin/php", "/usr/bin/php", "/usr/local/bin/php",
+    "/bin/awk", "/usr/bin/awk", "/usr/local/bin/awk",
+    "/bin/busybox", "/usr/bin/busybox", "/usr/local/bin/busybox",
+    "/bin/find", "/usr/bin/find", "/usr/local/bin/find",
+    "/bin/xargs", "/usr/bin/xargs", "/usr/local/bin/xargs",
+    "/bin/env", "/usr/bin/env", "/usr/local/bin/env",
+    "/bin/cut", "/usr/bin/cut", "/usr/local/bin/cut",
+    "/bin/tee", "/usr/bin/tee", "/usr/local/bin/tee",
+    "/bin/ssh", "/usr/bin/ssh", "/usr/local/bin/ssh",
+    "/bin/sshd", "/usr/bin/sshd", "/usr/local/bin/sshd",
+    "/bin/scp", "/usr/bin/scp", "/usr/local/bin/scp",
+    "/bin/ftp", "/usr/bin/ftp", "/usr/local/bin/ftp",
+    "/bin/tftp", "/usr/bin/tftp", "/usr/local/bin/tftp",
+    "/bin/kubectl", "/usr/bin/kubectl", "/usr/local/bin/kubectl",
+    "/bin/crictl", "/usr/bin/crictl", "/usr/local/bin/crictl",
+    "/bin/dockerd", "/usr/bin/dockerd", "/usr/local/bin/dockerd",
+    "/bin/docker", "/usr/bin/docker", "/usr/local/bin/docker",
+    "/bin/containerd", "/usr/bin/containerd", "/usr/local/bin/containerd"
+  ) and process.args_count >= 3 and not (
+  process.parent.executable like (
+    "/usr/lib/dracut/dracut-install", "/usr/bin/make", "/bin/make", "/usr/share/initramfs-tools/hooks/*", "/var/lib/dpkg/info/*",
+    "/usr/local/bin/sigostclsh8.6", "/usr/lib/usrmerge/convert-usrmerge", "/usr/sbin/rear"
+  ) or
+  process.working_directory like (
+    "/etc/localtime/var/lib/rancher", "/run/k3s/containerd/*", "/var/lib/docker/*", "/var/lib/rancher"
+  ) or
+  process.args like ("/var/tmp/dracut.*/initramfs/*", "/var/tmp/mkinitramfs_*") or
+  process.parent.args like "/var/tmp/rpm-tmp*" or
+  process.command_line in (
+    "mv kubectl /usr/bin/kubectl", "mv ./kubectl /usr/bin/kubectl",
+    "mv kubectl /usr/local/bin/kubectl", "mv ./kubectl /usr/local/bin/kubectl"
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.003"
+name = "Rename System Utilities"
+reference = "https://attack.mitre.org/techniques/T1036/003/"
+
+
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

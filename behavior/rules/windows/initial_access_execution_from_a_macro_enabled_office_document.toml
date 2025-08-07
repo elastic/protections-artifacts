@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 process where event.action == "start" and
@@ -80,7 +80,10 @@ process where event.action == "start" and
                              "?:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                              "?:\\Program Files\\Internet Explorer\\iexplore.exe",
                              "?:\\Program Files\\7-Zip\\7z.exe",
-                             "?:\\Program Files (x86)\\Microsoft Office\\Office??\\MsoSync.exe")
+                             "?:\\Program Files (x86)\\Microsoft Office\\Office??\\MsoSync.exe",
+                             /* TBR */
+                             "?:\\Windows\\SysWOW64\\taskkill.exe",
+                             "?:\\Windows\\System32\\WerFault.exe")
 '''
 
 min_endpoint_version = "8.7.0"

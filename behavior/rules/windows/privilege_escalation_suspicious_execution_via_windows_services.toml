@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -164,7 +164,7 @@ process where event.action == "start" and
    "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
    "Sikka Software Corporation", "TeamViewer Germany GmbH", "Brother Industries, Ltd.", "Pro Softnet Corporation", "Raman Karpuk", 
    "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd", "NinjaOne LLC",
-   "ForensiT Software Limited") and
+   "ForensiT Software Limited", "Opera Norway AS") and
    process.code_signature.trusted == true) and
 
    not (process.name : "RUNDLL32.EXE" and

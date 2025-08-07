@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -54,7 +54,8 @@ not (
     "/opt/LifeKeeper/subsys/database/resources/oracle/actions/quickCheck", "/usr/bin/ekran_recorder",
     "/usr/lib/npreal2/driver/mxloadsvr", "/usr/local/nagios/libexec/mkls", "/opt/tm/tools/sandbox/*/usr/bin/noproc_sandbox",
     "/usr/sbin/nrpe", "/usr/bin/less", "/snap/lxd/current/sbin/lxd", "/usr/lib/ssh/sshd-session", "/opt/Tanium/TaniumClient/TaniumCX",
-    "/opt/aprol/bin/StartManager", "/opt/aprol/scripts/AprolStartStartManager"
+    "/opt/aprol/bin/StartManager", "/opt/aprol/scripts/AprolStartStartManager", "/usr/bin/mkosi", "/opt/saltstack/salt/bin/python*",
+    "../gossbin/goss"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -91,7 +92,7 @@ not (
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or
-  (process.parent.name == "node" and process.command_line like "*/tmp/claude-shell-snapshot*")
+  (process.parent.name == "node" and process.command_line like~ "*/tmp/claude*")
 )
 '''
 

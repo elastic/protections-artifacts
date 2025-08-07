@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Bitsadmin Activity"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/hunting-for-persistence-using-elastic-security-part-2"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -87,7 +87,10 @@ process where event.action == "start" and
     not process.args : "https://opalrtwebsitedata.blob.core.windows.net/software/mingw/*" and 
     not process.executable : "?:\\Program Files (x86)\\Bosch\\DownloadManager\\bin\\Bitsadmin*.exe" and
     not (process.parent.name : "cmd.exe" and
-         process.parent.command_line : "C:\\WINDOWS\\system32\\cmd.exe /c \"\"C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*.bat\"\"")
+         process.parent.command_line : (
+            "C:\\WINDOWS\\system32\\cmd.exe /c \"\"C:\\Program Files\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSystemTools\\*.bat\"\"",
+            "C:\\Windows\\SYSTEM32\\cmd.exe /c \"\"C:\\Program files\\vuls-saas\\vuls-saas.bat\"\""
+        ))
 '''
 
 min_endpoint_version = "7.15.0"

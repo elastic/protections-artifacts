@@ -20,17 +20,22 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.93 | 938e5d8a1dfec55441ec4f3a12581feef7d6b03add03555242c7b731d6264535 |
-| production-rules-macos-v1 | 1.0.93 | b37a0bdc24cef77cd152fe2ebf6e229aacdf4e9534ee781017bac9deed81ce10 |
-| production-rules-windows-v1 | 1.0.93 | 70afa22e96cf6d4a2c616cad8fbb500ced450ae51932da2c75119ee97c0bb003 |
+| production-rules-linux-v1 | 1.0.94 | 1cc0f98eb95d5f4650b513fa7f42eaab89b4aa837c454dc90c27afb20bf5ae18 |
+| production-rules-macos-v1 | 1.0.94 | 738a367541a5751c03c695cbe9c6fe896e9d33e9d96783936c8850fd02a1b3c5 |
+| production-rules-windows-v1 | 1.0.94 | 92432fd41ca4f309bc4e2fa13637a0c8c877459baed40eeaad1ec95cabde8d26 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.93', '1.0.92') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.94', '1.0.93') by OS/MITRE Tactic.
 
-No rule updates have been made between versions 1.0.93 and 1.0.92
+| Tactic              |   Windows |   Linux |   macOS |   Total by Tactic |
+|---------------------|-----------|---------|---------|-------------------|
+| Command and Control |         0 |       1 |       0 |                 1 |
+| Defense Evasion     |         0 |       2 |       0 |                 2 |
+| Total by OS         |         0 |       3 |       0 |                 3 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
+
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
 | Collection           |         9 |       0 |       8 |                17 |
@@ -38,14 +43,14 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Credential Access    |        46 |       4 |      30 |                80 |
 | Defense Evasion      |       274 |      49 |      53 |               376 |
 | Discovery            |         7 |       1 |       4 |                12 |
-| Execution            |        88 |      46 |      79 |               213 |
+| Execution            |        88 |      46 |      78 |               212 |
 | Exfiltration         |         0 |       0 |       1 |                 1 |
 | Impact               |        18 |       6 |       2 |                26 |
 | Initial Access       |        55 |       1 |       2 |                58 |
 | Lateral Movement     |        10 |       1 |       1 |                12 |
 | Persistence          |        56 |      34 |      23 |               113 |
 | Privilege Escalation |        66 |       9 |       8 |                83 |
-| Total by OS          |       662 |     164 |     248 |              1074 |
+| Total by OS          |       662 |     164 |     247 |              1073 |
 
 ### The Zen of Security Rules
 

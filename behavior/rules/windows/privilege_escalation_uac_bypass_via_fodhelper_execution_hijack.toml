@@ -8,10 +8,10 @@ license = "Elastic License v2"
 name = "UAC Bypass via FodHelper Execution Hijack"
 os_list = ["windows"]
 reference = ["https://github.com/hfiref0x/UACME"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
-sequence with maxspan=60s
+sequence with maxspan=3m
  [registry where registry.hive == "HKEY_USERS" and registry.data.strings != null and
    registry.key : "*\\ms-settings*"]
  [process where event.action == "start" and process.parent.name : "fodhelper.exe" and

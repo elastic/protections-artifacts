@@ -8,12 +8,12 @@ id = "72f9191c-f099-4349-8c73-794b4ee8c4ea"
 license = "Elastic License v2"
 name = "Suspicious Powershell Child Process"
 os_list = ["macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and 
  (process.parent.name == "pwsh" or process.Ext.effective_parent.name == "pwsh") and 
- process.name like~ ("curl", "nscurl", "osascript", "python*")
+ process.name like~ ("curl", "nscurl", "osascript")
 '''
 
 min_endpoint_version = "8.5.0"

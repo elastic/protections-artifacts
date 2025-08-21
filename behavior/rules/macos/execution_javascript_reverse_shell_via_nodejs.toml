@@ -1,0 +1,76 @@
+[rule]
+description = """
+Detects Node.js spawning child processes to execute JavaScript files, followed by network connections to raw IP
+addresses within one minute. This indicates malicious NPM packages establishing reverse shells in supply chain attacks.
+"""
+id = "753afa27-34c9-41d9-b61e-373c0182bd4e"
+license = "Elastic License v2"
+name = "Javascript Reverse Shell via Nodejs"
+os_list = ["macos"]
+reference = ["https://www.reversinglabs.com/blog/malicious-npm-patch-delivers-reverse-shell"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.type == "start" and event.action == "exec" and process.name == "node" and 
+  process.args == "node" and process.args : "*.js" and process.args_count == 2 and
+  process.parent.name == "node"]
+[network where event.type == "start" and destination.domain == null and
+   not destination.port == 53 and
+   not cidrmatch(destination.ip, 
+       "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+       "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", 
+       "100.64.0.0/10", "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "::1", "FE80::/10", "FF00::/8")]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.001"
+name = "Compromise Software Dependencies and Development Tools"
+reference = "https://attack.mitre.org/techniques/T1195/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

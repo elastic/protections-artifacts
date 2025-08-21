@@ -13,7 +13,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -45,7 +45,7 @@ process where event.action == "start" and
 
  not (process.code_signature.subject_name in
            ("philandro Software GmbH", "Freedom Scientific Inc.", "TeamViewer Germany GmbH", "Projector.is, Inc.",
-            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "TeamViewer*", "Netwrix Corporation",
+            "TeamViewer GmbH", "Cisco WebEx LLC", "Dell Inc", "Netwrix Corporation",
             "Samsung Electronics CO., LTD.", "TeamViewer", "POINT B LTD", "IMPERO SOLUTIONS LIMITED",
             "AnyDesk Software GmbH", "Shanghai Best Oray Information S&T Co. Ltd.", "Zhou Huabing",
             "PURSLANE", "Remote Utilities LLC", "ZOHO Corporation Private Limited", "PTC Inc.", "ITE Tech. Inc.") and

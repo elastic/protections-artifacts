@@ -8,7 +8,7 @@ id = "a279fa6c-61eb-49ea-926e-704db27855e8"
 license = "Elastic License v2"
 name = "Potential Obfuscated Script Execution"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=1m
@@ -16,8 +16,9 @@ sequence with maxspan=1m
   not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-90") and 
   process.pid != 4 and 
   file.path : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*") and 
-  file.Ext.entropy >= 5 and not file.Ext.header_bytes : "4d5a*" and
+  file.Ext.entropy >= 6 and not file.Ext.header_bytes : "4d5a*" and
   not (process.name : "ifa-PM.exe" and file.name : "ifa-PMS.hta") and
+  not (process.name : "Code.exe" and file.name : "aws-lsp-codewhisperer.js") and
   not (process.name : ("Setup.exe", "vrpsetup.exe") and
       file.Ext.header_bytes : ("53657420776d6953657276696365203d", "2720436865636b206c6963206265666f")) and
   not (process.code_signature.subject_name : ("BizLink International Corp.", "Adobe Inc.", "Fabrice PARISOT", "Notepad++", "Argus Media Ltd", "Imprivata, Inc.")

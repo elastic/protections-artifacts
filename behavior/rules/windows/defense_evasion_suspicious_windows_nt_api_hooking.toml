@@ -7,7 +7,7 @@ id = "63f3d1c5-7e19-48db-965d-cc2a52e96650"
 license = "Elastic License v2"
 name = "Suspicious Windows NT API Hooking"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behaviors == "hook_api" and
@@ -15,7 +15,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.behav
  process.Ext.api.summary like
                            ("*ntdll.dll!??CreateSection*", "*ntdll.dll!??OpenSection*", "*ntdll.dll!??Close*", "*ntdll.dll!??MapViewOfSection*", "*ntdll.dll!??UnmapViewOfSection*") and
  process.Ext.api.parameters.size == 21  and
- not process.Ext.api.behaviors in ("cross_process", "parent_child") and process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
+ not process.Ext.api.behaviors in ("cross-process", "parent-child") and process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
  not (process.code_signature.status == "trusted" and startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name)) and
  not process.thread.Ext.call_stack_final_user_module.path like
                               ("?:\\program files\\*.dll",

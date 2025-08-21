@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies attempts to perform a network connection from a suspicious backed memory block. This may be the result of
+code injection via module stomping.
+"""
+id = "8092c7fc-2cd4-4630-84b0-b9c9ea140856"
+license = "Elastic License v2"
+name = "Network Connect API from Modified Memory"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "connect" and
+ (
+   (process.thread.Ext.call_stack_summary regex """ntdll.dll\|mswsock.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 22, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000))) or
+
+   (process.thread.Ext.call_stack_summary regex """ntdll.dll\|mswsock.dll\|ws2_32.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 33, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000))) or
+
+   (process.thread.Ext.call_stack_summary regex """wow64cpu.dll\|wow64.dll\|ntdll.dll\|mswsock.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 45, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000))) or
+
+   (process.thread.Ext.call_stack_summary regex """wow64cpu.dll\|wow64.dll\|ntdll.dll\|mswsock.dll\|ws2_32.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 56, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000)))
+  ) and
+
+  not process.thread.Ext.call_stack_summary in
+                            ("wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|ws2_32.dll|vfp?r.dll",
+                             "wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|ws2_32.dll|ftacommonex.dll",
+                             "wow64cpu.dll|wow64.dll|ntdll.dll|mswsock.dll|asproxy.dll",
+                             "ntdll.dll|mswsock.dll|ws2_32.dll|xdlicense.dll") and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
+                   $entry, $entry.status == "trusted" and
+                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                           "Asesoria Informatica Gallega SL", "Astrill Systems Corp.",
+                                           "Rockwell Automation Inc", "Star Finanz-Software Entwicklung und Vertriebs GmbH",
+                                           "Siemens Industry Software Inc."))
+'''
+
+min_endpoint_version = "8.14.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.14.0"

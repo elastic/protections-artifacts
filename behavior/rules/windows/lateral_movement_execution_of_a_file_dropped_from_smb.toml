@@ -7,7 +7,7 @@ id = "be55434a-ae96-437e-aaaf-9fb60cd7dff4"
 license = "Elastic License v2"
 name = "Execution of a File Dropped from SMB"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=5m
@@ -101,7 +101,7 @@ sequence with maxspan=5m
 
     not (process.code_signature.subject_name : "Microsoft *" and
 	       process.code_signature.trusted == true and
-	       process.pe.original_file_name in ("MOMAgentInstaller.exe", "dotnet-hosting-*-win.exe", "dpmac.exe", "PushClient.exe",
+	       process.pe.original_file_name : ("MOMAgentInstaller.exe", "dotnet-hosting-*-win.exe", "dpmac.exe", "PushClient.exe",
 	                                         "migrate.exe", "Ms.Dsp.Do.Inc.Installer.exe", "OpenHandleCollector.exe", "VC_redist*.exe")) and
 
     /* fart-it.sourceforge.net, IseExecSvc, OCS Inventory Agent,Tenable MW Scanner and HPCmdSvc */

@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "API Call via Timer Callback Event"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/previous-versions/dd757634(v=vs.85)"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where
@@ -14,7 +14,9 @@ api where
   process.thread.Ext.call_stack_final_user_module.name == "winmm.dll" and
   _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "*winmm.dll!timeSetEvent*") and
   not _arraysearch(process.thread.Ext.call_stack, $entry,
-                   $entry.symbol_info: ("*winmm.dll!mciExecute*", "*winmm.dll!mciExecute*", "*winmm.dll!timeGetTime*", "*winmm.dll+0x*"))
+                   $entry.symbol_info: ("*winmm.dll!mciExecute*", "*winmm.dll!timeGetTime*", "*winmm.dll!PlaySoundW*", "*winmm.dll+0x*", "*ntdll.dll!RtlInitializeExceptionChain*")) and
+  not (process.executable : "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\WakeOnLan.exe" and
+       process.parent.executable : "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\dcwol.exe")
 '''
 
 min_endpoint_version = "8.10.0"

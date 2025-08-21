@@ -1,0 +1,53 @@
+[rule]
+description = "Identifies network activity from a module modified in memory. This may indicate a successful module stomping attack."
+id = "a6582b92-2d7b-4ab7-937c-c0174728115e"
+license = "Elastic License v2"
+name = "Network Activity from Modified Module"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+library where
+  (
+   (dll.name : "dnsapi.dll" and process.thread.Ext.call_stack_summary regex """ntdll.dll\|iphlpapi.dll\|[a-z0-9]+\.dll""" and
+    process.thread.Ext.call_stack_summary != "ntdll.dll|iphlpapi.dll|jnitype3.dll" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 23, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000))) or
+
+   (dll.name : ("ws2_32.dll", "wininet.dll") and process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 25, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000))) or
+
+   (dll.name : "winhttp.dll" and process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|wininet.dll\|[a-z0-9]+\.dll""" and
+    _arraysearch(process.thread.Ext.call_stack, $entry,
+                 stringcontains~($entry.symbol_info, substring(process.thread.Ext.call_stack_summary, 37, length(process.thread.Ext.call_stack_summary))) and ($entry.callsite_trailing_bytes : "?*" and $entry.allocation_private_bytes >= 100000)))
+   ) and
+not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.callsite_trailing_bytes in ("9c6895de80184c890c244d89c94883ec0841558f042449bd81020000000000004c896c2408415d554889ed41535048b85f557f7b00000000415549bd45fa0985",
+                                                     "9c5268d12b4248683616e700488914248f04245a48c704247e0400004881ec080000004c891c24514c89d94881ec080000004c890c244989c94d89cb41595948",
+                                                     "e9186fffff0f85f8b1fefff7d3498bdce95856000048ffc0f8e9edcdfeff0f8548dbfeff66d3d6660fbcf1f949d1ed66c1f6076681e6a53d480fa5e6488bf3f5",
+                                                     "4c8d25e0eeffff4489e121d94c89e54831dd4c8d3d38eeffff4489fa21da4d89fe4931de83f86f488d4c4d00498d1456480f44d1ffe2a6094f1ffaf803be2794"))
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

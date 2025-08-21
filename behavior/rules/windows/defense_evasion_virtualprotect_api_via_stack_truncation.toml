@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies VirtualProtect API calls from call stacks that are unexpectedly short. This may be an attempt to conceal the
+true source of the call.
+"""
+id = "ef47dbfc-5e0b-4e97-83f6-d40026634999"
+license = "Elastic License v2"
+name = "VirtualProtect API via Stack Truncation"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and
+ process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
+_arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "c:\\windows\\sys?????\\ntdll.dll!??ProtectVirtualMemory*") and
+(
+ (process.thread.Ext.call_stack_summary == "ntdll.dll|Unknown" and process.Ext.api.behaviors == "native_api" and
+  process.Ext.api.behaviors in ("hollow_unbacked", "image_indirect_call")) or
+
+ (process.Ext.api.behaviors == "truncated_stack" and process.thread.Ext.call_stack_summary == "ntdll.dll" and
+  process.Ext.api.parameters.size > 4096 and
+  not _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info: ("c:\\windows\\sys?????\\ntdll.dll!RtlUserThreadStart*",
+                                        "c:\\windows\\sys?????\\ntdll.dll!LdrInitializeThunk*",
+                                        "c:\\windows\\sys?????\\ntdll.dll!RtlCaptureStackContext*",
+                                        /* covered by 9906a386-771f-4003-b426-fbe75bdd6e73 */
+                                        "c:\\windows\\system32\\ntdll.dll!NtTestAlert*")) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")))
+)
+'''
+
+min_endpoint_version = "8.14.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.0"

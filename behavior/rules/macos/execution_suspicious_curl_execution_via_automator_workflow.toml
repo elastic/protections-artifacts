@@ -1,0 +1,56 @@
+[rule]
+description = """
+Detects Automator spawning shell interpreters to execute curl with file output arguments within 10 seconds. This
+indicates abuse of trusted Automator workflows for malicious file downloads.
+"""
+id = "45d8fbd2-f441-4d0b-a575-613591d45738"
+license = "Elastic License v2"
+name = "Suspicious Curl Execution via Automator Workflow"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name in ("bash", "zsh", "sh") and process.args == "-c" and process.parent.name == "Automator"] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and process.args in ("-o", "--output", "-O", "--remote-name")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

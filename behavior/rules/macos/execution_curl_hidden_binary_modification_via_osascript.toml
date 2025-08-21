@@ -1,0 +1,56 @@
+[rule]
+description = """
+Detects osascript spawning curl followed by creation of hidden binary files with Mach-O headers within 30 seconds. This
+indicates malicious AppleScript workflows downloading and staging executable payloads.
+"""
+id = "3c3aaa63-d213-486f-b157-e4b1a45d9913"
+license = "Elastic License v2"
+name = "Curl Hidden Binary Modification via Osascript"
+os_list = ["macos"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[process where event.type == "start" and event.action == "exec" and process.name == "curl" and process.parent.name == "osascript"]
+[file where event.action == "modification" and file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and file.name like~ ".*"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

@@ -1,0 +1,73 @@
+[rule]
+description = "Identifies VirtualProtect API calls from unusual Kernelbase functions. This may be the result of a call stack spoofing."
+id = "51e79dda-9a89-4825-93ec-ce560d7d5459"
+license = "Elastic License v2"
+name = "VirtualProtect API Call from Unusual Stack"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where
+ process.Ext.api.name == "VirtualProtect" and
+ process.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll*" and
+
+ /* covered by d869a5ff-5bda-4417-90c9-c353a949d26e */
+ process.Ext.api.behaviors != "image_rop" and
+
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\system32\\ndll.dll!NtProtectVirtualMemory*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info : ("*\\kernelbase.dll!VirtualProtect*",
+                                        "*\\kernelbase.dll!LoadLibrary*",
+                                        "*\\kernelbase.dll+0x*",
+                                        "*\\kernelbase.dll!GetThreadTimes*",
+                                        "*\\kernelbase.dll!GetProcessHandleCount*",
+                                        "c:\\windows\\*\\ntdll.dll!LdrGetProcedureAddressEx*",
+                                        "*\\ntdll.dll!LdrAddRefDll*",
+                                        "*\\ntdll.dll!LdrShutdownProcess*",
+                                        "*\\ntdll.dll!RtlAllocateHeap*",
+                                        "*\\ntdll.dll!LdrGetProcedureAddressForCaller*",
+                                        "*\\ntdll.dll!RtlAddressInSectionTable*",
+                                        "*\\clr.dll!LogHelp_NoGuiOnAssert*",
+                                        "c:\\windows\\*\\ntdll.dll!LdrGetDllHandle*",
+                                        "c:\\windows\\system32\\ntdll.dll!LdrResolveDelayLoadedAPI*",
+                                        "*\\kernelbase.dll!WriteProcessMemory*",
+                                        "*\\kernelbase.dll!TlsGetValue*",
+                                        "c:\\windows\\*\\ntdll.dll!LdrInitializeThunk*",
+                                        "c:\\windows\\system32\\kernelbase.dll!Wow64Transition*",
+                                        "c:\\windows\\system32\\ntdll.dll!LdrUnloadDll*",
+                                        "c:\\windows\\system32\\ntdll.dll!LdrLoadDll*",
+                                        "c:\\windows\\syswow64\\kernelbase.dll*",
+                                        "c:\\windows\\system32\\kernelbase.dll!FindNextFileW*")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                  ("8e423ca1a0e610976f8bb88c0392092d001852295dc8147c365c1c96b2f315a5",
+                                   "f323339ad07384935dcfd8357f6b7443d1ed356e55dd2394ac1975e12ae4b28d") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like "488b442440ff9014140000eb09eb05e9*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")) and
+ process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                  $entry.trusted == true and $entry.subject_name in ("Carbon Black, Inc.", "MUSARUBRA US LLC", "Microsoft Windows Hardware Compatibility Publisher", "Kaspersky Lab JSC",
+                                                                     "Microsoft Windows Software Compatibility Publisher", "WithSecure Oyj", "NortonLifeLock Inc.", "Sennheiser electronic SE & Co. KG"))
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

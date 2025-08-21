@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 api where 
@@ -51,7 +51,10 @@ api where
                          "6957d81c1fb22b7a2c88dd63f1c99a777805d13e0d0af6411a46c1f40e8b22e9",
                          "2dfa7a9d8be474447f8ea53dc864a5bb8cdcc526664636154adfa8b71386f883",
                          "e3fdcd2b4c5215e74b0cabe91ce7fe2800cbf8e2a28157342960bca61bbd6b5d",
-                         "f1b668a9cca5c832ae8374c1815cfc8fcb452d05268797f0c022d74000ecd486") and
+                         "f1b668a9cca5c832ae8374c1815cfc8fcb452d05268797f0c022d74000ecd486",
+                         /* TBR */
+                         "c0a45f327f40cf8cdc79dc9cccf858ae862a6df0a26c83141cb3c24fc604b483",
+                         "8fb6e0cd1c0d01157ee1a87da9e894f7451988a5349cff5d99f2d3d9c6ffc397") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",

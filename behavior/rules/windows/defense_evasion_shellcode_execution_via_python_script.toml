@@ -4,14 +4,14 @@ id = "1d0a1b39-a29e-4370-a712-546ed047f5f5"
 license = "Elastic License v2"
 name = "Shellcode Execution via Python Script"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.code_signature.subject_name == "Python Software Foundation" and
  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*", "Unknown", "Unknown|*", "clr.dll") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Kernel") and
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance == "conemuhk64.dll*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like "conemuhk64.dll*") and
  not (process.parent.executable : "C:\\Program Files\\pgAdmin ?\\runtime\\pgAdmin?.exe" and process.executable : "C:\\Program Files\\pgAdmin ?\\python\\python.exe") and
  not process.Ext.api.metadata.target_address_path : "c:\\windows\\system32\\tmumh\\20019\\tmmon\\2.9.0.1181\\tmmon64.dll" and
  not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.thread.Ext.call_stack_final_user_module.protection_provenance == "Unbacked") and

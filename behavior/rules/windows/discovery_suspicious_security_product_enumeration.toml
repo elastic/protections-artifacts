@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where
@@ -78,7 +78,7 @@ api where
 
    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
     process.parent.executable : ("?:\\Windows\\explorer.exe", "?:\\Windows\\System32\\cmd.exe", "?:\\Program Files\\Mesh Agent\\MeshAgent.exe") and
-    process.command_line in ("powershell",
+    process.command_line : ("powershell",
                              "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                              "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" ",
                              "\"C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command import-module ActiveDirectory",

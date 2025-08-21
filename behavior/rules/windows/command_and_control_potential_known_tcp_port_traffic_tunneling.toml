@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Known TCP Port Traffic Tunneling"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.executable != null and
@@ -21,7 +21,7 @@ api where process.Ext.api.name == "connect" and process.executable != null and
       "Check Point Software Technologies Ltd.", "Dell Technologies Inc.", "Tanium Inc.", "Paessler AG", "Carbon Black, Inc.", "KASEYA HOLDINGS INC.", "OutSystems, Inc.", "d.velop AG",
       "QNAP Systems, Inc.")) and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
- not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
  not process.executable : ("C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe",
                            "C:\\Windows\\System32\\OpenSSH\\ssh-keyscan.exe",
                            "C:\\Program Files\\FujiFilm\\MC\\opt\\appli\\curl.exe",
@@ -46,7 +46,9 @@ api where process.Ext.api.name == "connect" and process.executable != null and
  not (process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
       process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe" and
       process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe\" -Version ?.? -s -NoLogo -NoProfile") and 
- not process.thread.Ext.call_stack_final_user_module.path like ("c:\\programdata\\microsoft\\windows defender advanced threat protection\\platform\\*\\sense?ds.dll", "c:\\program files\\*", "c:\\program files (x86)\\*") and
+ not process.thread.Ext.call_stack_final_user_module.path like
+                      ("c:\\programdata\\microsoft\\windows defender advanced threat protection\\platform\\*\\sense?ds.dll",
+                       "c:\\program files\\*", "c:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*.ni.dll") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("c6628a00fd21cf370030095e592be94d89a3d804cccf7b9ad653e2f3ab3c6206", 
                                                                      "292e6e6c7d9db5889c170cc71245ced1e8843599673a973841b7d47aa151efb6", 
                                                                      "3607f581d9fccb08493a5d5c9932605aa1045f0ca27d67c00386320ab18d023c", 
@@ -61,7 +63,13 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                                                                      "a8d7f313032a07b0fb72c372b091612b446114cb3bd8f37f910418fb471bc78d",
                                                                      "8990d0b061eb1c8ca8e6ec31542cdc7a1fa475e34ec0d7f556a4107d650c3df0",
                                                                      "b1dce022aefe397c0db26e396712a5b074f9b0ef92555c1cf37454ec731d41ec",
-                                                                     "c78b0d66fba7e4bd500f34223acd433d282f5dc7321e2887141be23049c31141") and
+                                                                     "c78b0d66fba7e4bd500f34223acd433d282f5dc7321e2887141be23049c31141",
+                                                                     "bf26c6091485a1cc0dba5100a3c58a0876590afed9ee3fe1d5162ccd37a7d48e",
+                                                                     "4cab5c27814e88eafeb17a546ae80c644837ae232e733505e067d0bc7df1e067",
+                                                                     "b20871aef3b1b9f70d7f9c49650701365f528dc1f2f54165abbc9488c2fe4809",
+                                                                     "f1421c81547b0e78ace01232c7bc2d490065cf75683dbf98581edbca13acc2c5",
+                                                                     "760425cda6c9a80ce6c76b599945d4b2fb9a76fa14228fb55f6a59bac1b74b0f",
+                                                                     "c6c142075c6477f1752642f693420f989fe7aaebb7afae5e027da0e1713e5a0c") and
  not (process.name : "powershell.exe" and
       process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe",
                                    "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",

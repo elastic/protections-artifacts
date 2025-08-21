@@ -5,12 +5,12 @@ license = "Elastic License v2"
 name = "DLL Injection via MavInject Utility"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Mavinject/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=5s 
  [process where event.action == "start" and
-  (process.pe.original_file_name : "mavinject*.exe" or process.name == "mavinject*.exe") and 
+  (process.pe.original_file_name : "mavinject*.exe" or process.name : "mavinject*.exe") and 
    process.args : "/INJECTRUNNING" and not process.parent.executable : "?:\\Windows\\Sys*\\AppVClient.exe"] as event0
  [library where process.pid != 4 and not dll.code_signature.status : "trusted" and 
   stringcontains~(event0.process.command_line, dll.name)]

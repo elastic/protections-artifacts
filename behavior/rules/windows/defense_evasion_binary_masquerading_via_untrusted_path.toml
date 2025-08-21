@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/invisible-miners-unveiling-ghostengine",
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.49"
+version = "1.0.50"
 
 query = '''
 process where event.action == "start" and
@@ -32,7 +32,6 @@ process where event.action == "start" and
     "dllhost.exe",
     "eventvwr.exe",
     "ieexec.exe",
-    "installutil.exe",
     "ipconfig.exe",
     "lsass.exe",
     "Microsoft.Workflow.Compiler.exe",
@@ -91,6 +90,8 @@ process where event.action == "start" and
     "?:\\Program Files (x86)\\*.exe",
     "?:\\Program Files\\*.exe",
     "?:\\Windows\\WinSxS\\*.exe",
+    "C:\\$WINDOWS.~BT\\NewOS\\Windows\\WinSxS\\wow64_microsoft-windows-*\\mmc.exe",
+    "C:\\Windows\\SoftwareDistribution\\Download\\*.exe",
 
     /* Issue # 295 */
     "?:\\Users\\*\\AppData\\Local\\Programs\\Git\\usr\\bin\\hostname.exe",
@@ -122,10 +123,6 @@ process where event.action == "start" and
     ) and
 
   not (process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\*.exe" and process.code_signature.subject_name : "Lenovo") and
-
-  /* Sfax Download Service */
-  not (process.name : "InstallUtil.exe" and process.parent.name : "Engine.exe" and
-       process.parent.args : "/OriginExe=*\\SfaxInstaller\\Sfax Windows Service.exe") and
   not (process.pe.original_file_name == "RegAsm.exe" and
        process.executable : "?:\\ProgramData\\Lenovo\\ImController\\Plugins\\LenovoBatteryGaugePackage\\*\\RegAsm.exe") and
   not (process.name : "regsvr32.exe" and process.parent.executable : ("?:\\ERPU\\Browser\\AutoUpgrade.exe", "?:\\ERPU\\Browser\\NeoWeb.exe")) and
@@ -141,9 +138,6 @@ process where event.action == "start" and
                        "?:\\WINDOWS\\system32\\*.dll")) and
   not process.executable : ("?:\\Microsoft Visual Studio\\*\\Msbuild.exe", "?:\\adv\\app\\RegAsm.exe", "?:\\Windows\\WinSxS\\wow64_microsoft-windows*management-console_*\\mmc.exe") and
   not (process.executable : "?:\\Engeman\\RegAsm.exe" and process.parent.executable : "?:\\Engeman\\Engeman.exe") and
-  not process.command_line : ("installutil  /unattended Sage.CNA.WindowsService.exe ",
-                              "installutil  /u Sage.CNA.WindowsService.exe ",
-                              "InstallUtil  /i ComPlus.HelpDesk.AppServer.exe") and
   not (process.name : "regsvr32.exe" and process.code_signature.subject_name == "Tarma Software Research Ltd" and process.code_signature.trusted == true) and
   not (process.parent.executable : "?:\\Gb\\GBsoftware.exe" and process.executable : "?:\\Gb\\Lib\\regsvr32.exe") and
   not (process.executable : "?:\\OfficeMate\\REGSVR32.EXE" and process.parent.args : "?:\\OfficeMate\\~Reg*DLLs.bat" and process.parent.name : "cmd.exe") and
@@ -168,7 +162,7 @@ process where event.action == "start" and
        process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
   not (process.executable : "C:\\ProgramData\\baramundi\\bma\\Downloads\\Temp\\netsh.exe" and
        process.args : "exec" and process.args : "\\\\*.txt") and
-  not (process.code_signature.subject_name : ("JetBrains s.r.o.", "LG Electronics Inc.", "Timothy Hugh Perry", "Code Systems Corporation") and process.code_signature.trusted == true) and 
+  not (process.code_signature.subject_name : ("JetBrains s.r.o.", "LG Electronics Inc.", "Timothy Hugh Perry", "Code Systems Corporation", "Douyin Vision Co., Ltd.", "Hangzhou Hikvision Digital Tech.Co.,Ltd") and process.code_signature.trusted == true) and
   not process.hash.sha256 :
                   ("7c621ec91b71d14494beddaae8edb67ed26baa257d750546772aa90653ad6016",
                    "195bebdefeb704158633b7f3d943e1d792fcb9b81f36530fad5b04a1622a0c58",
@@ -181,7 +175,8 @@ process where event.action == "start" and
                    "2425e9a2b5f19483e234eb220bd4db97cecc5dbef5fd1a19940f823c7997fc26",
                    "facb69c35c1d63aeca9d9e55525660b728445acd0df1b6a23e52acf329baf94c",
                    "879f58323b0ee3313a0e43d507373a6ac9bc5b3cfbd6eac6411c252af261b60e",
-                   "c7b895a4a21b597a5a7dc3c1a2d4c5e9823649688da9b57dd0c1bcea28c739ba")
+                   "c7b895a4a21b597a5a7dc3c1a2d4c5e9823649688da9b57dd0c1bcea28c739ba",
+                   "186546f3a23be3069550c185363034e686e87a3eccc9f5c7f3a5a92f15a0b1cb")
 '''
 
 min_endpoint_version = "7.15.0"

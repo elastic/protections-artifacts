@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -78,8 +78,12 @@ process where event.action == "start" and process.name : "powershell.exe" and
              "*$env:APPDATA\"+'\\Browser Assistant\\*",
              "*APPDATA\"+'/Browser Extension/BE.txt*",
              "*$env:APPDATA\"+'/BBWC/*",
-             "*ReadAllBytes($w+'Newtonsoft.Json.dll*") and
-
+             "*ReadAllBytes($w+'Newtonsoft.Json.dll*",
+             "*https://go.microsoft.com/fwlink*",
+             "*krsfile:////LOBCS*",
+             "*ProgramData\\VinitySoft Data\\MariaDb\\*") and
+ not process.parent.args : "([Datetime]::ParseExact($_.InstalledOn," and
+ not process.command_line : ("PowerShell*hkguTzSCb75g7sJ9ChMcmAOPpeBL9ZJy/tejnoCjT+E=*", "*.LastWriteTime.ToFileTime*", "*New-Object*Net.Mail.SmtpClien*") and
  not (process.parent.name : "cmd.exe" and
       (process.parent.command_line : "*\\WindowsPowershell\\*\\powershell*" or process.parent.args : ("-Command", "-OutputFormat", "-InputFormat"))) and
 

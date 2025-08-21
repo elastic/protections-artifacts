@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 api where
@@ -23,7 +23,7 @@ not (
     /* exclude nop operations */
     /* TBR */
     (process.Ext.api.parameters.protection in ("RWX", "RwX|CFG") and process.Ext.api.parameters.protection_old == "RWX") or
-    (process.Ext.api.parameters.protection == "R-X|CFG" and process.Ext.api.parameters.protection_old in ("R-X", "RWX"))
+    (process.Ext.api.parameters.protection in ("R-X|CFG", "R-X") and process.Ext.api.parameters.protection_old in ("R-X", "RWX"))
 ) and
 
 /* Citrix GPO Scripts */
@@ -31,14 +31,16 @@ not (process.parent.executable : "C:\\Windows\\System32\\gpscript.exe" and
      process.Ext.api.summary in ("VirtualProtect( Unbacked, 0x10, RWX, RW- )", "WriteProcessMemory( Self, Unbacked, 0x10 )", "WriteProcessMemory( Self, Data, 0x10 )")) and
 
 /* cybersecurity tools */
-not (process.Ext.api.name == "VirtualAlloc" and
-     process.parent.executable :
+not process.parent.executable :
                  ("C:\\Program Files (x86)\\CyberCNSAgent\\cybercnsagent.exe",
                   "C:\\Program Files\\Velociraptor\\Velociraptor.exe",
                   "C:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe",
-                  /* TBR */
+                  "C:\\Program Files\\Huntress\\HuntressAgent.exe",
+                  "C:\\Program Files (x86)\\N-able Technologies\\AutomationManagerAgent\\AutomationManager.AgentService.exe",
                   "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
-                  "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseCM.exe")) and
+                  "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseCM.exe",
+                  "C:\\Program Files (x86)\\ACMPClient\\ACMPClientService.exe",
+                  "C:\\Program Files\\SGN Connect\\*\\sgncore.exe") and
 
 /* module listing */
 not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and
@@ -57,11 +59,21 @@ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing
 not process.thread.Ext.call_stack_summary in
                            ("ntdll.dll|inprocessclient64.dll|kernelbase.dll|inprocessclient64.dll|Unbacked",
                             "ntdll.dll|bdhkm64.dll|atcuf64.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked",
-                            /* TBR */
                             "ntdll.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked") and
 not process.parent.executable : ("C:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\x64\\BGHelper.exe",
                                  "C:\\Program Files\\PDQ\\PDQConnectAgent\\pdq-connect-agent.exe") and
-not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes like "41c644240c01*85f60f95c00fb6c00fb6c041c644240c01488b55884989542410488d65c85b5e5f415c41*")
+not _arraysearch(process.thread.Ext.call_stack, $entry,
+                 $entry.callsite_trailing_bytes like ("41c644240c01*85f60f95c00fb6c00fb6c041c644240c01488b55884989542410488d65c85b5e5f415c41*",
+                                                      "c6430c01*488d65c85b5e5f415c415d415e415f5dc3*",
+                                                      "418845084d8bc5488bcf8bd3e8*b8010000004883c4285b5d5e5f415c415d415e415fc3*", 
+                                                      "*41c6470c01488b459049894710488d65c85b5e5f415c415d415e415f5dc30000001910090010*")) and
+not (process.Ext.api.name == "VirtualProtect" and
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\ntdll.dll!LdrGetDllHandle*"))) and
+not (process.Ext.api.name == "VirtualAlloc" and
+     _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\ntdll.dll!RtlAllocateHeap*")) and
+not (process.Ext.api.parameters.size <= 4096 and process.thread.Ext.call_stack_summary like ("ntdll.dll|umppc*.dll|scriptcontrol*.dll|Unbacked", "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|dbghelp.dll|Unbacked*")) and
+not (process.parent.executable : "C:\\Windows\\System32\\gpscript.exe" and process.thread.Ext.call_stack_summary == "ntdll.dll|Unknown|yourphone.ypp.dll") and 
+not process.thread.Ext.call_stack_summary like ("ntdll.dll|Unknown*", "ntdll.dll|kernelbase.dll|Unknown")
 '''
 
 min_endpoint_version = "8.10.0"

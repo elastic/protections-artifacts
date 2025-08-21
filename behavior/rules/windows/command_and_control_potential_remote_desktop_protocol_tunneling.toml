@@ -11,17 +11,22 @@ reference = [
     "https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/",
     "https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES/blob/4ceed2f4706daf601c212a8f91c113dd85349a2c/Command%20and%20Control/DE_RDP_Tunneling_4624.evtx",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=2m
  [api where process.Ext.api.name == "connect" and process.Ext.api.summary like "connect( ipv4, tcp, 127.0.*, 3389 )" and
   not (process.code_signature.trusted == true and process.code_signature.subject_name in ("UiPath, Inc.", "Automation Anywhere, Inc.", "Google LLC", "Tanium Inc.",
-      "Mozilla Corporation", "Nmap Software LLC", "N-ABLE TECHNOLOGIES LTD", "Connectwise, LLC", "ConnectWise, LLC", "Datto, LLC", "Zabbix SIA", "d.velop AG",
+      "Mozilla Corporation", "Nmap Software LLC", "N-ABLE TECHNOLOGIES LTD", "Connectwise, LLC", "Datto, LLC", "Zabbix SIA", "d.velop AG",
       "ESET, spol. s r.o.", "NoMachine S.a.r.l.", "Check Point Software Technologies Ltd.", "Amazon.com Services LLC", "Ericom Software Ltd",
       "ZABBIX, Sabiedriba ar ierobezotu atbildibu", "Intuit Inc", "TYCHON, LLC", "Siber Systems", "Axeda Corporation", "Kaseya Holdings Inc.",
       "OpsRamp, Inc.", "Paessler GmbH", "Ecosia GmbH")) and
   process.thread.Ext.call_stack_final_user_module.name != "Kernel" and process.executable != null and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+  not process.thread.Ext.call_stack_final_user_module.path like
+                                              ("c:\\windows\\assembly\\nativeimages_*.ni.dll",
+                                               "c:\\program files\\*", "c:\\program files (x86)\\*") and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Undetermined", "Unknown") and
   not process.executable :
                  ("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
                   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",

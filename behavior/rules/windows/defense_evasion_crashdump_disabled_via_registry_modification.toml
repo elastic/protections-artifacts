@@ -8,17 +8,20 @@ license = "Elastic License v2"
 name = "CrashDump Disabled via Registry Modification"
 os_list = ["windows"]
 reference = [
-    "https://elastic.github.io/security-research/intelligence/2022/03/01.hermeticwiper-targets-ukraine/article/",
+    "https://www.elastic.co/security-labs/elastic-protects-against-data-wiper-malware-targeting-ukraine-hermeticwiper",
     "https://docs.microsoft.com/en-us/troubleshoot/windows-server/performance/memory-dump-file-options",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 registry where registry.value : "CrashDumpEnabled" and registry.data.strings : "0" and
  process.executable != null and
  not (user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
       process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\msiexec.exe")) and
- not process.executable : "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe"
+ not process.executable : (
+       "?:\\Windows\\System32\\SystemPropertiesAdvanced.exe",
+       /* TBR */
+       "?:\\Program Files (x86)\\Citrix\\Workspace Environment Management Agent\\Citrix.Wem.Agent.Service.exe")
 '''
 
 min_endpoint_version = "7.15.0"

@@ -7,7 +7,7 @@ id = "ee5d33a2-604f-4466-bace-4aea921846ed"
 license = "Elastic License v2"
 name = "Suspicious WMI Enumeration via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.name in~ ("wscript.exe", "mshta.exe", "msxsl.exe") and
@@ -15,12 +15,12 @@ api where process.name in~ ("wscript.exe", "mshta.exe", "msxsl.exe") and
   process.Ext.api.summary :
                 ("IWbemServices::ExecQuery( Select * from Win32_ComputerSystemProduct )",
                  "IWbemServices::ExecQuery( Select * from Win32_Process Where Name*") and
-  not process.command_line like
+  not process.command_line :
                 ("cscript.exe  //NoLogo //B ?:\\Windows\\System32\\slmgr.vbs *",
                  "cscript  \"C:\\Program Files (x86)\\Microsoft Office\\Office??\\ospp.vbs\" /dstatus",
                  "\"C:\\Windows\\System32\\WScript.exe\" \"C:\\Program Files (x86)\\LIEBHERR\\LIKAPLAN\\starteplocal.vbs\" ",
-                 "\"C:\\WINDOWS\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchCommonAgent.vbs\"",
-                 "\"C:\\WINDOWS\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchSaasAgent.vbs\"",
+                 "\"C:\\Windows\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchCommonAgent.vbs\"",
+                 "\"C:\\Windows\\system32\\wscript.EXE\" \"C:\\Program Files\\Barracuda SSM\\launchSaasAgent.vbs\"",
                  "C:\\WINDOWS\\System32\\WScript.exe \"C:\\Program Files\\Consol\\DhaService\\StartToolbox.vbs\" ",
                  "\"C:\\Windows\\System32\\WScript.exe\" \"C:\\Program Files (x86)\\Wireless Monitor System V*\\start.vbs\" ",
                  "\"wscript.exe\" \"C:\\Program Files\\Windows Azure VM Agent *\\\\InstallOrUpdateGA.vbs\"",

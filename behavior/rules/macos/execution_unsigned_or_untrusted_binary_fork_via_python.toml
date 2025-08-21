@@ -1,0 +1,56 @@
+[rule]
+description = """
+Detects execution of unsigned or untrusted binaries forked by Python processes when the executable path and arguments
+point to files within user directories. This pattern may indicate malicious Python scripts executing unsigned binaries
+from compromised user spaces, as observed in APT campaigns like Lazarus Group attacks.
+"""
+id = "02e50f28-d5a1-4289-ab49-48ae0e2ca196"
+license = "Elastic License v2"
+name = "Unsigned or Untrusted Binary Fork via Python"
+os_list = ["macos"]
+reference = [
+    "https://unit42.paloaltonetworks.com/slow-pisces-new-custom-malware/",
+    "https://slowmist.medium.com/cryptocurrency-apt-intelligence-unveiling-lazarus-groups-intrusion-techniques-a1a6efda7d34",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "fork" and process.executable like "/Users/*" and 
+ (process.code_signature.trusted == false or process.code_signature.exists == false) and 
+ process.args_count == 2 and process.args like "/Users/*" and process.args like "/Users/*" and 
+ process.parent.name like~ "python*"  and
+ not startswith~(process.executable, process.parent.executable)
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

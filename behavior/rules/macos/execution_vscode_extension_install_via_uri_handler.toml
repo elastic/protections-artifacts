@@ -1,0 +1,63 @@
+[rule]
+description = """
+Detects when VScode attempts to retrieve a file via its URI handler in order to download, install and execute a VScode
+extension. An alternate method for installing extensions, not mentioned in the VSCode docs, is via the VSCode URI
+handler. The vscode:// URI protocol handler is registered automatically when VSCode is installed. When opening a URL
+such as vscode://hellothere.test from a browser, a prompt will first be shown to open the URL in VSCode. After opening,
+the URL argument vscode://hellothere.test will be sent to the registered command line "Code.exe" "--open-url" "--"
+"vscode://hellothere.test".
+"""
+id = "0832e2f1-cb90-4fb1-a484-5c98e3d06ec5"
+license = "Elastic License v2"
+name = "VScode Extension Install via URI Handler"
+os_list = ["macos"]
+reference = ["https://www.mdsec.co.uk/2023/08/leveraging-vscode-extensions-for-initial-access/"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and process.name == "code" and 
+ process.args like~ "--open-url" and process.args like~ "vscode://*"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

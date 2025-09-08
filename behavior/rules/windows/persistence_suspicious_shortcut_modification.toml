@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -63,7 +63,8 @@ sequence by process.entity_id with maxspan=1m
   file.Ext.header_bytes : "4c000000*" and
   file.name : ("Google Chrome.lnk", "Outlook.lnk", "Microsoft Outlook.lnk","Microsoft Edge.lnk",
                "Mozilla Thunderbird.lnk", "Firefox.lnk", "Word.lnk", "Excel.lnk", "Notepad++.lnk",
-               "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk")]
+               "File Explorer.lnk", "PowerPoint.lnk", "Zoom.lnk", "slack.lnk", "Discord.lnk") and
+  not (file.name == "Notepad++.lnk" and process.code_signature.subject_name == "Notepad++")]
 '''
 
 min_endpoint_version = "8.6.0"

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Curl or Wget Egress Network Connection via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+shell"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=3s
@@ -32,7 +32,7 @@ sequence with maxspan=3s
      process.parent.executable like (
        "/usr/local/bin/fail2ban_cluster.sh", "/script/downloadArtifacts.sh", "/etc/cron.daily/rkhunter",
        "/usr/bin/bbb-conf", "/usr/sbin/sos", "/usr/bin/make", "/var/lib/amagent/*", "/etc/cron.daily/spamassassin",
-       "/usr/lib/cron/run-crons", "/usr/sbin/spamassassin-maint"
+       "/usr/lib/cron/run-crons", "/usr/sbin/spamassassin-maint", "/usr/sbin/oracle-libs-update"
      ) or
      process.parent.name in ("rkhunter", "vivaldi-stable.postinst") or
      process.parent.command_line == "runc init" or
@@ -42,7 +42,7 @@ sequence with maxspan=3s
        "nohup ./update2.sh"
      ) or
      process.command_line like ("*/home/linuxbrew/.linuxbrew/*", "*Homebrew*", "*webhook*") or
-     process.args like "/usr/lib/jvm/*" or
+     process.args like ("/usr/lib/jvm/*", "/root/.forge/provision-*.sh") or
      (process.name == "nohup" and process.command_line like "nohup /usr/*/*.sh") or
      (process.name == "julia" and process.parent.name == "julia")
    )

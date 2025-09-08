@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects multiple base64/xxd deobfuscation processes spawned by scripting interpreters within 5 seconds. This pattern
+indicates multi-layered payload decoding commonly used by malware and scripted attacks.
+"""
+id = "0a9e507e-e2a7-4e35-8a7e-93a54dc167e3"
+license = "Elastic License v2"
+name = "Multi-Layered Deobfuscation via Unusual Parent"
+os_list = ["macos"]
+reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=5s
+[process where event.type == "start" and event.action == "exec" and process.name in ("osascript", "bash", "sh", "zsh") and
+  process.args_count <= 3 and
+  process.args in ("-c", "-e") and
+  process.args like "echo*"] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name in ("base64", "xxd")] by process.parent.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name in ("base64", "xxd")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

@@ -1,0 +1,59 @@
+[rule]
+description = """
+Detects untrusted binaries spawning shell interpreters to execute discovery commands like whoami, osascript, and
+dscacheutil within 15 seconds. This pattern indicates malicious reconnaissance activities.
+"""
+id = "a1d2c79e-bb1f-4191-8e48-9f240cfcfb40"
+license = "Elastic License v2"
+name = "Shell Command Discovery Execution via Untrusted Binary"
+os_list = ["macos"]
+version = "1.0.8"
+
+query = '''
+sequence with maxspan=15s
+[process where event.type == "start" and process.parent.code_signature.trusted == false and process.name in ("bash", "sh", "zsh") and 
+ process.args == "-c" and not process.parent.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*")] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.parent.name in ("bash", "sh", "zsh") and 
+ process.name in ("osascript", "whoami", "dscacheutil", "dsconfigad", "dsexport", "sqlite3") and
+ not process.Ext.effective_parent.executable like "/Applications/*"] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.10.2"

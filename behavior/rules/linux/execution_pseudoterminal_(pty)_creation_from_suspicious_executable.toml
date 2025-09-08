@@ -1,0 +1,56 @@
+[rule]
+description = """
+This rule detects the creation of the /dev/ptmx pseudoterminal device by executables located in common temporary or
+shared memory directories such as /tmp/, /var/tmp/, or /dev/shm/. While pseudoterminal creation is legitimate for
+interactive terminal sessions, malware and post-exploitation tools frequently allocate PTYs to spawn interactive shells
+(e.g., reverse shells) or evade detection. The use of temporary directories for staging or executing payloads is a
+common tactic in Linux-based attacks, making this behavior highly suspicious.
+"""
+id = "bc695d3c-1ae0-485f-8c65-d6adb4a2759b"
+license = "Elastic License v2"
+name = "Pseudoterminal (PTY) Creation from Suspicious Executable"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and
+    process.executable like ("/dev/shm/*", "/tmp/*", "/var/tmp/*") and not (
+      process.executable like "/tmp/ubuntu-release-upgrader-*/jammy" or
+      process.working_directory like ("/scratch/*", "/tmp/ubuntu-release-upgrader-*", "/tmp/newroot/*")
+    )]
+  [file where event.type == "creation" and file.path == "/dev/ptmx"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

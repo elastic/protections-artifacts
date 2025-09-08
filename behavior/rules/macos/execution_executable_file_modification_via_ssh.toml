@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects executable file creation or modification via SSH sessions in temporary directories. This indicates potential
+malware deployment or tool staging by threat actors.
+"""
+id = "47205a9a-836c-4bed-b068-575eed26478d"
+license = "Elastic License v2"
+name = "Executable File Modification via SSH"
+os_list = ["macos"]
+version = "1.0.4"
+
+query = '''
+file where event.action == "modification" and file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
+ file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*") and 
+ (process.name in ("ssh", "sshd", "sshd-session") or Effective_process.name in ("ssh", "sshd", "sshd-session")) and
+ not process.code_signature.subject_name like "Software Signing"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

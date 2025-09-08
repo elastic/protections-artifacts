@@ -7,7 +7,7 @@ id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
 license = "Elastic License v2"
 name = "System Binary Copied or Moved"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
@@ -51,7 +51,7 @@ process.args in (
   ) and process.args_count >= 3 and not (
   process.parent.executable like (
     "/usr/lib/dracut/dracut-install", "/usr/bin/make", "/bin/make", "/usr/share/initramfs-tools/hooks/*", "/var/lib/dpkg/info/*",
-    "/usr/local/bin/sigostclsh8.6", "/usr/lib/usrmerge/convert-usrmerge", "/usr/sbin/rear"
+    "/usr/local/bin/sigostclsh8.6", "/usr/lib/usrmerge/convert-usrmerge", "/usr/sbin/rear", "/usr/bin/byobu-status", "/sbin/rear"
   ) or
   process.working_directory like (
     "/etc/localtime/var/lib/rancher", "/run/k3s/containerd/*", "/var/lib/docker/*", "/var/lib/rancher"
@@ -61,7 +61,9 @@ process.args in (
   process.command_line in (
     "mv kubectl /usr/bin/kubectl", "mv ./kubectl /usr/bin/kubectl",
     "mv kubectl /usr/local/bin/kubectl", "mv ./kubectl /usr/local/bin/kubectl"
-  )
+  ) or
+  (process.parent.command_line like "/nix/store/*" and process.command_line == "mv /bin/.sh.tmp /bin/sh") or
+  (process.parent.name == "shtool" and process.command_line == "mv /usr/local/bin/#INST@*# /usr/local/bin/php")
 )
 '''
 

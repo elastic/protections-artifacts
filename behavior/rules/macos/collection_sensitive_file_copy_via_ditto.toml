@@ -1,0 +1,45 @@
+[rule]
+description = """
+Detects ditto binary copying sensitive files like keychains, browser data, and shell history. This technique is used by
+malware for credential harvesting and data collection.
+"""
+id = "b1cf09db-d619-49f8-96cf-ff82abaac79f"
+license = "Elastic License v2"
+name = "Sensitive File Copy via Ditto"
+os_list = ["macos"]
+reference = [
+    "https://www.sentinelone.com/labs/macos-nimdoor-dprk-threat-actors-target-web3-and-crypto-platforms-with-nim-based-malware/",
+]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "ditto" and 
+ process.args_count == 3 and process.args like~ ("/Users/*/Library/Application Support/Google/Chrome/Default/*",
+                                                 "/Library/Keychains/System.keychain", 
+                                                 "/Users/*/Library/Keychains/login.keychain-db", 
+                                                 "/Users/*/.zsh_history", 
+                                                 "/Users/*/.bash_history")
+'''
+
+min_endpoint_version = "8.11.1"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1005"
+name = "Data from Local System"
+reference = "https://attack.mitre.org/techniques/T1005/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.11.1"

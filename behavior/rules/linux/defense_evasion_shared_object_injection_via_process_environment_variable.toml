@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -42,7 +42,7 @@ process where event.type == "start" and event.action == "exec" and process.env_v
                           "LD_PRELOAD=/dev/shm/*",
                           "LD_PRELOAD=/run/*")
     ) or
-    (process.env_vars : "LD_PRELOAD=/proc/*/fd/*")
+    (process.env_vars : "LD_PRELOAD=/proc/*")
   ) and not (
   process.env_vars like (
     "LD_PRELOAD=", "LD_LIBRARY_PATH=", "LD_PRELOAD=/tmp/pressure-vessel-libs-*/${LIB}/gameoverlayrenderer.so",

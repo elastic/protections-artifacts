@@ -1,0 +1,108 @@
+[rule]
+description = """
+Identifies instances where a process is executed with user/group ID 0 (root), and a real user/group ID that is not 0.
+This is indicative of a process that has been granted SUID/SGID permissions, allowing it to run with elevated
+privileges. Attackers may leverage a misconfiguration for exploitation in order to escalate their privileges to root, or
+establish a backdoor for persistence.
+"""
+id = "8863c926-4811-4a5f-bdc3-58186bf7c5bb"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via SUID Binary"
+os_list = ["linux"]
+reference = ["https://gtfobins.github.io/#+suid"]
+version = "1.0.6"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.user.id == 0 and process.real_user.id != 0) or
+  (process.group.id == 0 and process.real_group.id != 0)
+) and process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
+  process.name in (
+    "aa-exec", "ab", "agetty", "alpine", "ar", "arj", "arp", "as", "ascii-xfr", "ash", "aspell",
+    "atobm", "base32", "base64", "basenc", "basez", "bc", "bridge", "busctl",
+    "busybox", "bzip2", "cabal", "capsh", "choom", "chroot", "clamscan", "cmp",
+    "column", "comm", "cpio", "cpulimit", "csh", "csplit", "csvtool", "cupsfilter",
+    "dd", "debugfs", "dialog", "diff", "dig", "distcc", "dmsetup", "docker",
+    "dosbox", "ed", "efax", "elvish", "emacs", "eqn", "espeak", "expand", "expect",
+    "fish", "fmt", "fold", "gawk", "gcore", "gdb", "genie", "genisoimage", "gimp",
+    "gtester", "hd", "hexdump", "highlight", "hping3", "iconv", "install",
+    "ionice", "ispell", "jjs", "join", "jrunscript", "julia", "ksshell", "kubectl",
+    "ld.so", "less", "links", "logsave", "look", "lua", "make", "mawk", "minicom",
+    "mosquitto", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge", "msguniq", "multitime",
+    "nasm", "nawk", "ncftp", "nft", "nl", "nm", "nmap", "nohup", "ntpdate",
+    "od", "openssl", "openvpn", "pandoc", "paste", "perf", "perl", "pexec", "pg", "php", "pidstat",
+    "pr", "ptx", "python", "rc", "readelf", "restic", "rev", "rlwrap", "rsync", "rtorrent",
+    "rview", "sash", "scanmem", "setarch", "setlock", "shuf",
+    "soelim", "softlimit", "sort", "sqlite3", "ss", "ssh-agent", "ssh-keygen", "ssh-keyscan",
+    "sshpass", "start-stop-daemon", "stdbuf", "strace", "strings", "sysctl", "tac",
+    "taskset", "tbl", "tclsh", "tee", "terraform", "tftp", "tic", "time", "troff",
+    "ul", "unexpand", "uniq", "unshare", "unsquashfs", "unzip", "update-alternatives", "uudecode",
+    "uuencode", "vagrant", "varnishncsa", "view", "vigr", "vipw", "w3m", "watch",
+    "wget", "whiptail", "xargs", "xdotool", "xmodmap", "xmore", "xxd", "xz", "yash", "zsh",
+    "zsoelim"
+  ) or
+  process.name == "ip" and (
+    (
+      process.args == "-force" and process.args in ("-batch", "-b")) or (process.args == "exec")
+    ) or
+  (process.name in ("bash", "sh", "dash", "ksh") and process.args == "-p") or
+  (process.name == "php" and process.args == "-r") or
+  (process.name in ("rvim", "vim", "vimdiff") and process.args == "-c") or
+  (process.name == "perl" and process.args == "-e")
+) and not (
+  process.parent.name in ("spine", "sudo", "gcc") or
+  process.parent.executable like~ (
+    "/usr/sbin/sshd", "/usr/lib/systemd/systemd", "/etc/aide/aide.conf.d/*", "/usr/lib/apt/apt.systemd.daily",
+    "/usr/libexec/gdm-wayland-session", "/usr/bin/setup-policy-routes", "/usr/libexec/gnome-terminal-server",
+    "/opt/microsoft/omsagent/plugin/omsbaseline", "/usr/bin/rkhunter", "/snap/microk8s/*"
+  ) or
+  process.args == "/usr/local/zeek/bin/zeekctl cron" or
+  process.parent.args == "/usr/bin/supervisord" or
+  process.working_directory == "/usr/local/spine/bin"
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.001"
+name = "Setuid and Setgid"
+reference = "https://attack.mitre.org/techniques/T1548/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

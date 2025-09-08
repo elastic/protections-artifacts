@@ -1,0 +1,48 @@
+[rule]
+description = """
+This rule detects the execution of the mount command with both the filesystem type set to cgroup and additional mount
+options specified. A high argument count (7 or more) combined with these flags may indicate attempts to abuse cgroup
+mounting for container breakout, privilege escalation, or namespace manipulation. While mounting cgroups is legitimate
+in containerized environments, this pattern—especially outside of expected contexts—can signal exploitation techniques
+such as cgroup notify-on-release abuse or unprivileged namespace tricks.
+"""
+id = "fc90a1c9-554e-4934-af6a-df5f6e201e43"
+license = "Elastic License v2"
+name = "Potential Cgroup Privilege Escalation/Container Escape via Mount"
+os_list = ["linux"]
+reference = ["https://0xdf.gitlab.io/2021/05/17/digging-into-cgroups.html"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "mount" and
+process.args in ("-t", "--types") and process.args in ("-o", "--options") and process.args == "cgroup" and
+process.args_count >= 7 and not process.parent.executable == "/opt/resource/in"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1611"
+name = "Escape to Host"
+reference = "https://attack.mitre.org/techniques/T1611/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

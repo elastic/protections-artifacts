@@ -1,0 +1,64 @@
+[rule]
+description = """
+This rule monitors for suspicious Perl command executions by detecting the start of a Perl process with a command line
+argument that contains keywords commonly used by attackers to execute malicious code. These command line arguments
+include operations to execute code, create subprocesses, and encode or decode data.
+"""
+id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
+license = "Elastic License v2"
+name = "Suspicious Perl Command Execution"
+os_list = ["linux"]
+version = "1.0.7"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.executable like ("/bin/perl*", "/usr/bin/perl*", "/usr/local/bin/perl*") and
+process.args == "-e" and process.command_line like~ (
+  "*system(*", "*exec(*", "*IO.popen(*", "*Open3.popen3(*", "*spawn(*", "*eval(*",
+  "*load(*IO::*", "*load(*Marshal*", "*load(*Fiddle*", "*load(*Zlib*", "*load(*Base64*",
+  "*zlib.inflate(*", "*zlib.deflate(*", "*zlib.decompress(*", "*zlib.uncompress(*", "*zlib.compress(*",
+  "*Marshal.load(*", "*Fiddle.dlopen(*", "*Fiddle::Function.new(*", "*base64*", "*zlib*", 
+  "*net/http*", "*socket.new*", "*open-uri*", "*pack(*"
+) and not (
+  process.working_directory like~ ("/builds/*", "/root/.perl-cpm/*/MIME-tools-*", "/root/.cpan*", "/scratch/*") or
+  process.command_line like (
+    "perl -e eval { use MIME::Base64; print 1; }", "/home/*/bin/sendEmail*",
+    """perl -e $|=1; print "### 100 transfer fish server\n"; while(<STDIN>) { last if /^__END__/; $code.=$_; } exit(eval($code))"""
+  ) or
+  process.parent.name in ("make", "filter_stderr") or
+  process.parent.executable like~ (
+    "/var/lib/docker/overlay2/*", "/usr/local/lp/apps/sonarpush-helpers/spectre-meltdown-checker.sh",
+    "/usr/sbin/debootstrap", "/usr/bin/xterm", "/usr/bin/xargs"
+  ) or
+  process.parent.command_line like~ "*testfun()*" or
+  process.parent.args == "/usr/bin/parallel"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

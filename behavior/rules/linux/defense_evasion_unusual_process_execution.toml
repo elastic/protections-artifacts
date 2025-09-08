@@ -9,7 +9,7 @@ id = "87bd993d-d2fa-4047-bc7b-d6a4527d6ab8"
 license = "Elastic License v2"
 name = "Unusual Process Execution"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.executable like (
@@ -26,7 +26,8 @@ process where event.type == "start" and event.action == "exec" and process.execu
     "/usr/sbin/slurmstepd", "/usr/sbin/faxq", "/usr/sbin/faxgetty", "/proc/sys/*", "/sys/devices/system/cpu/online*",
     "/proc/*/stat/*", "/sys/kernel/mm/*", "/proc/swaps/*", "/usr/bin/runc", "/bin/runc", "/usr/local/bin/runc"
   ) or
-  process.parent.command_line in ("/usr/bin/runc init", "runc init")
+  process.parent.command_line in ("/usr/bin/runc init", "runc init") or
+  process.working_directory like ("/sys/kernel/*", "/proc/sys/*")
 )
 '''
 

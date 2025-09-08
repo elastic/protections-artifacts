@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -40,7 +40,8 @@ sequence by process.entity_id with maxspan=2m
                  "5a730d11d2d5a38b33360e6e524f53eaf93225f196016a4f1d313e7eab16b655",
                  "b8c331c9f915960201da9af9c9dc8309e95e7d533741e71f4a5d13ca007d3e18",
                  "b2c93337e49bdba121f679bcfa91eb3d3ddfe1776417dd80da4c6500205130d3",
-                 "a037787360c924e15415b44ac64d06dfdf8265dd136d87d2354e44dd3b151894") and
+                 "a037787360c924e15415b44ac64d06dfdf8265dd136d87d2354e44dd3b151894",
+                 "d72f31bf226cd2de3fef3948e22c16c118fa1cc013c5358f4ea597fd0d93642d") and
   not process.executable : "C:\\Program Files\\Autodesk\\Revit 202?\\Revit.exe" and
   not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
   not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and

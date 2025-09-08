@@ -1,0 +1,60 @@
+[rule]
+description = """
+This rule detects the execution of curl or wget commands that download files from hosting services. Attackers may use
+these services to temporary host malicious files or payloads for later execution.
+"""
+id = "5c18132a-e279-404e-a8d8-922546d469a7"
+license = "Elastic License v2"
+name = "File Download from or Upload to Hosting Service"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget") and
+process.command_line like~ (
+  "*pastebin.*", "*ghostbin.*", "*hastebin.*", "*termbin.*", "*dpaste.*", "*controlc.*", "*0bin.net*", "*p.ip.fi*", "*sprunge.us*", "*paste.ee*",
+  "*paste.ofcode.org*", "*textbin.net*", "*transfer.sh*", "*anonfiles.*", "*easyupload.io*", "*gofile.io*", "*send.cm*", "*ufile.io*",
+  "*pixeldrain.com*", "*bayfiles.*", "*megaupload.*", "*mediafire.*", "*zippyshare.com*", "*dropapk.to*", "*shorturl.at*", "*tinyurl.com*",
+  "*bit.ly/*", "*cutt.ly/*", "*is.gd/*", "*rebrand.ly/*", "*adf.ly/*", "*rb.gy/*", "*bashupload.com/*"
+) and not process.parent.executable in ("/opt/aws/awsagent/bin/update", "/batch/pac.liste.categorie.sh")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

@@ -1,0 +1,71 @@
+[rule]
+description = """
+Detects Python loading a library from a user's home directory followed by immediate deletion. This technique is used by
+malware to execute code while removing forensic evidence.
+"""
+id = "76a1f901-4495-4cbd-a35a-7ff8d116602b"
+license = "Elastic License v2"
+name = "Python Library Load and Delete"
+os_list = ["macos"]
+reference = [
+    "https://unit42.paloaltonetworks.com/slow-pisces-new-custom-malware/",
+    "https://slowmist.medium.com/cryptocurrency-apt-intelligence-unveiling-lazarus-groups-intrusion-techniques-a1a6efda7d34",
+]
+version = "1.0.6"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+[library where event.action == "load" and dll.path like~ "/Users/*" and process.name like~ "python*" and
+  not dll.name : "*.so"] as event0
+[file where event.action == "deletion" and startswith~(file.path, event0.dll.path)]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.004"
+name = "File Deletion"
+reference = "https://attack.mitre.org/techniques/T1070/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

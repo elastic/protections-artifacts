@@ -1,0 +1,73 @@
+[rule]
+description = """
+Identifies the sequence of a file creation event followed by a process start event for netcat. This may indicate that a
+file listener has been established using netcat, which is often used for lateral movement or data exfiltration.
+"""
+id = "b3ab4040-1289-4a8a-959a-bb71c9b09afe"
+license = "Elastic License v2"
+name = "Potential Netcat File Listener Established"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [file where event.type == "creation" and not file.path == "/dev/console"]
+  [process where event.type == "start" and event.action == "exec" and
+   process.name in ("nc","ncat","netcat","netcat.openbsd","netcat.traditional") and
+   not process.command_line like ("*127.0.0.1*", "*localhost*")]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1570"
+name = "Lateral Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1570/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

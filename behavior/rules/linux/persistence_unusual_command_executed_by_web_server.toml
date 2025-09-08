@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -48,12 +48,12 @@ process.command_line like (
   process.parent.args like (
     "../scripts/python/build_all_recipes_firmware.py", "../scripts/python/build_all_no_recipes_firmware.py", "./ssh.py",
     "/opt/ros/noetic/bin/robot_debugger", "./mmicro-control.pl", "/etc/webmin/miniserv.conf", "mintUpdate",
-    "/opt/tm/sshluks-setup/sshluks-setup.py"
+    "/opt/tm/sshluks-setup/sshluks-setup.py", "/usr/bin/salt-minion"
   ) or
   process.parent.command_line like (
     "./app", "runc init", "*cron_id=*", "/usr/bin/python*ansible*", "./pyenv/bin/python3 class/jobs.py", "Serverd listgend*",
     "ruby /usr/local/bundle/bin/bundle exec sidekiq -C config/sidekiq.yml -c 4", "perl /u01/app/sghe/dw/dwdevl/app/scripts/dgwpack AD11bxxd AD11bxxdpack Y",
-    "/usr/bin/perl /bkupdata1/icbm.pl", "perl /usr/local/bin/ghi_safe_server.pl"
+    "/usr/bin/perl /bkupdata1/icbm.pl", "perl /usr/local/bin/ghi_safe_server.pl", "node /usr/local/bin/claude"
   ) or
   process.parent.executable like (
     "/opt/*", "/home/*/fmf_server_agent/*python*", "/usr/local/bin/ruby", "/usr/lib/venv-salt-minion/bin/python.original",

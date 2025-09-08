@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence with maxspan=5m
@@ -75,7 +75,9 @@ sequence with maxspan=5m
                                       "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe",
                                       "C:\\Banyan\\Canopy\\Leaf\\leaf_desktop_app.exe",
                                       "?:\\windows\\system32\\msiexec.exe",
-                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")) and
+                                      "?:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe",
+                                      "C:\\Windows\\CCM\\OSDRunPowerShellScript.exe",
+                                      "C:\\Windows\\System32\\runonce.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
     not (process.name : "powershell.exe" and process.args : ("-nomeAgente", "\\\\*\\*.ps1", "& 'C:\\oracle_unified_agent\\scripts\\unified-agent-permissions.ps1' ; exit $($LASTEXITCODE)")) and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
@@ -85,7 +87,8 @@ sequence with maxspan=5m
                  "?:\\Program Files\\*.exe",
                  "?:\\Windows\\SysWOW64\\OneDriveSetup.exe",
                  "?:\\Windows\\System32\\MRT.exe",
-                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe") and
+                 "?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\Update\\OneDriveSetup.exe",
+                 "C:\\Windows\\SystemTemp\\SupportAssistAgent\\*\\SupportAssistDeployment.exe") and
     /* DOCs opened from network file share trigger an office default scheduled task */
     not (process.name : ("winword.exe", "excel.exe", "powerpnt.exe") and not process.working_directory : "C:\\*") and
     not process.hash.sha256 :
@@ -139,7 +142,8 @@ sequence with maxspan=5m
     not (file.name : "Microsoft Office 1? Sync Maintenance for *" and file.size >= 5200 and file.size <= 5300 and
          Effective_process.name : ("winword.exe", "excel.exe", "powerpnt.exe")) and
     not (file.name : "OneDrive Standalone Update Task-S-1-5-21-*" and Effective_process.executable : "\\Device\\Mup\\*") and
-    not (file.path :  "C:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\RemoteApp and Desktop Connections Update\\*" and Effective_process.executable : "C:\\Windows\\System32\\xwizard.exe")
+    not (file.path :  "C:\\Windows\\System32\\Tasks\\Microsoft\\Windows\\RemoteApp and Desktop Connections Update\\*" and Effective_process.executable : "C:\\Windows\\System32\\xwizard.exe") and
+    not (file.name like ("TSS-Framework_wsusutil", "PSAppDeployToolkit_MicrosoftCorporation_*") and Effective_process.name : "powershell.exe")
     ] by Effective_process.entity_id
 '''
 

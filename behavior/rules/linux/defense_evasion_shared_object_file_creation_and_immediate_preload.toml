@@ -7,18 +7,18 @@ access to the compromised system.
 """
 id = "b6585a25-db0e-4911-b860-3f117b1db60f"
 license = "Elastic License v2"
-name = "Shared Object file creation and immediate Preload"
+name = "Shared Object File Creation and Immediate Preload"
 os_list = ["linux"]
 reference = [
     "https://www.uptycs.com/blog/cyber_espionage_in_india_decoding_apt_36_new_linux_malware",
     "https://attack.mitre.org/techniques/T1574/006/",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 sequence with maxspan=5s
   [file where event.action == "creation" and 
-   file.path : ("/tmp/*", "/lib/*", "/usr/lib/*", "/var/tmp/*", "/dev/shm/*", "/dev/run/*") and
+   file.path : ("/tmp/*", "/lib/*", "/usr/lib/*", "/var/tmp/*", "/dev/shm/*", "/dev/run/*", "/proc/*") and
    file.extension == "so"] as event0
   [process where event.type == "start" and event.action == "exec" and startswith~(process.env_vars, event0.file.path)]
 '''

@@ -14,7 +14,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=3s
@@ -35,7 +35,8 @@ sequence with maxspan=3s
      "/var/tmp/*", "/var/log/*"
    ) and process.args_count == 1 and
    not process.executable : (
-     "/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*", "/var/tmp/cpuid/cpuid", "/tmp/.mount_*/jetbrains-toolbox"
+     "/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*", "/var/tmp/cpuid/cpuid", "/tmp/.mount_*/jetbrains-toolbox",
+     "/var/tmp/buildah*/mnt/rootfs/bin/readlink"
    )
   ] by process.parent.entity_id
 '''

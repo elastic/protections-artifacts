@@ -1,0 +1,47 @@
+[rule]
+description = """
+This rule detects the execution of processes with command-line arguments that contain hexadecimal representations of an
+IP addresses/domain. This behavior may indicate an attempt to obfuscate the command-line arguments, potentially for
+malicious purposes.
+"""
+id = "00e564c5-5b7d-427a-8892-fb4238cb895f"
+license = "Elastic License v2"
+name = "Hexadecimal IP Command-Line Argument"
+os_list = ["linux"]
+reference = ["https://asec.ahnlab.com/en/57635/"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
+process.command_line like~ ("*http://0x*", "*https://0x*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

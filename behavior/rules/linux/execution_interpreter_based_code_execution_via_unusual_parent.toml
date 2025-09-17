@@ -1,0 +1,101 @@
+[rule]
+description = "This rule detects suspicious command-line arguments that are commonly used by attackers to execute malicious code."
+id = "5f6f48d9-592c-46d3-863b-9c06fa248e2d"
+license = "Elastic License v2"
+name = "Interpreter-Based Code Execution via Unusual Parent"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable like (
+  "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/boot/*", "/sys/*", "/lost+found/*", "/media/*", "/proc/*",
+  "/var/backups/*", "/var/log/*", "/var/mail/*", "/var/spool/*"
+) and (
+  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c") or
+  (process.executable like (
+    "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/boot/*", "/sys/*", "/lost+found/*", "/media/*", "/proc/*",
+    "/var/backups/*", "/var/log/*", "/var/mail/*", "/var/spool/*"
+    )
+  )
+) and
+process.command_line like~ ("*python* -c*", "*perl* -e*", "*php* -r*", "*ruby* -e*", "*lua* -e*", "*node* -e*") and
+process.command_line like~ (
+  // Python
+  "*exec(*base64*", "*exec(*decode(*", "*exec(*marshal*", "*exec(*pickle*", "*eval(*exec(*",
+  "*eval(*", "*subprocess.run(*", "*pickle.loads(*", "*marshal.loads(*", "*binascii*",
+  "*dup2*", "*fileno()*", "*bind(*", "*execve(*", "*b64(*", "*b32(*", "*b16(*", "*b85(*", "*zlib.*",
+  "*[::-1]*", "*socket.socket(*", "*socket.connect(*", "*socket.bind(*", "*s.socket(*",
+  "*s.connect(*", "*s.bind(*", "*base64.b*decode(*", "*base64.b*encode(*", "*binascii.b64decode(*",
+  "*binascii.b64encode(*", "*import pty*", "*pty.spawn(*", "*pty.fork()*",
+
+  // PHP
+  "*system(*", "*shell_exec(*", "*passthru(*", "*proc_open(*", "*pcntl_exec(*", "*popen(*",
+  "*assert(*", "*preg_replace(*e*", "*include(*", "*require(*", "*move_uploaded_file(*",
+  "*base64_decode(*", "*gzinflate(*", "*gzuncompress(*", "*str_rot13(*", "*urldecode(*", "*chr(*",
+  "*ord(*", "*strrev(*", "*strtr(*", "*pack(*", "*curl_exec(*", "*curl_multi_exec(*",
+  "*file_get_contents(*", "*fopen(*", "*fsockopen(*", "*stream_socket_client(*", "*socket_create(*",
+  "*socket_connect(*", "*socket_write(*", "*socket_read(*", "*mail(*",
+
+  // Perl
+  "*spawn(*", "*load(*IO::*", "*load(*Marshal*", "*load(*Fiddle*", "*load(*Zlib*", "*load(*Base64*",
+  "*Fiddle.dlopen(*", "*Fiddle::Function.new(*", "*net/http*", "*open-uri*",
+
+  // Ruby
+  "*Marshal.load(*", "*open-uri*", 
+
+  // Lua
+  "*os.execute(*", "*loadstring(*", "*dofile(*",  "*package.loadlib(*", "*base64.decode(*",
+  "*base64.encode(*", "*socket.receive(*", "*socket.send(*", "*socket.tcp(*", "*socket.udp(*",
+  "*socket.listen(*", "*socket.accept(*", "*net.http.request(*", "*net.http.get(*", "*net.http.post(*",
+  "*http.request(*", "*http.get(*", "*http.post(*",
+
+  // Node.js
+  """*require('child_process')*""", """*require("child_process")*""", "*child_process.exec*",
+  "*Buffer.from(*base64*", "*Buffer.from(*).toString(*)*", "*eval(*)*", "*Function(*)*"
+) and not (
+  process.working_directory like (
+    "/var/lib/Acronis/mms", "/opt/varonis*", "/var/opt/ds_agent", "/opt/nessus_agent/*", "/var/opt/microsoft/omsagent/*",
+    "/tmp/plz_sandbox", "/builds/*", "/var/tmp/buildah*", "/opt/azurevstsagent/*", "/jenkins/*"
+  ) or
+  process.executable like ("/var/lib/docker/*", "/tmp/newroot/*") or
+  process.parent.executable like (
+    "/tmp/newroot/*", "/tmp/.mount_Cursor*", "/tmp/petalinux_*", "/tmp/baum/easybuild/*", "/proc/*/ns/*"
+  ) or
+  process.parent.command_line in ("runc init", "./python -m test --pgo --timeout=1200") or
+  process.command_line like ("*postinstall*", "/bin/sh -c node -e *require*nan*") or
+  (process.name like "python*" and process.command_line like "*require*nan*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

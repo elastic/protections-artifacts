@@ -12,12 +12,11 @@ reference = [
     "https://www.elastic.co/security-labs/hunting-for-lateral-movement-using-event-query-language",
     "https://www.elastic.co/security-labs/operation-bleeding-bear",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
   process.name : ("wscript.exe",
-                  "cscript.exe",
                   "rundll32.exe",
                   "regsvr32.exe",
                   "cmstp.exe",
@@ -113,7 +112,6 @@ process where event.action == "start" and
                              "*GeneralTel.dll,RunGeneralTelemetry*",
                              "*setupapi,InstallHinfSection*",
                              "*mshtml.dll*PrintHTML*")) and not
-    (process.name : "cscript.exe" and process.command_line : "*PerfLogs\\*\\ServerManager*") and not
     (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and
      process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe",
                                   "?:\\Program Files\\Hewlett-Packard\\*.exe",
@@ -144,15 +142,16 @@ process where event.action == "start" and
      not (process.parent.executable : "?:\\Windows\\system32\\CompatTelRunner.exe" and process.parent.args : "-m:appraiser.dll") and
      not (process.name : "regsvr32.exe" and process.parent.name == "InstallHPSA.exe" and process.args : "?:\\Windows\\Help\\OEM\\scripts\\checkmui.dll") and
      not (process.name : "wscript.exe" and
-          process.args : ("?:\\PerfLogs\\Admin\\New.PerfMon.Log.Analyzer*.vb", "?:\\Program Files\\Autodesk\\HSMWorks 2023\\installpost.js")) and
-     not (process.name : "regsvr32.exe" and process.args : "?:\\Windows\\servicing\\LCU\\Package_for_RollupFix~*") and
+          process.args : ("?:\\PerfLogs\\Admin\\New.PerfMon.Log.Analyzer*.vb",
+                          "?:\\Program Files\\Autodesk\\HSMWorks 2023\\installpost.js",
+                          "C:\\Windows\\Setup\\Scripts\\UnlockStartLayout.vbs")) and
+     not (process.name : "regsvr32.exe" and process.args : ("?:\\Windows\\servicing\\LCU\\Package_for_RollupFix~*", "C:\\WINDOWS\\Twain_32\\Instrumentarium\\dsd.ocx")) and
      not (process.name : "wscript.exe" and process.args : "?:\\Users\\Public\\PSAppDeployToolkit\\AppDeployToolkit_BlockAppExecutionMessage.vbs") and
      not process.parent.executable : ("?:\\Program Files (x86)\\DesktopCentral_Agent\\EndpointDLP\\bin\\MEDLP.exe", 
                                       "?:\\Program Files (x86)\\Intuit\\QuickBooks *\\QBW*.EXE", 
                                       "?:\\Program Files (x86)\\pdf*\\res\\drivedir\\pdfsave.exe") and
      not process.executable : ("?:\\Program Files\\*\\msbuild.exe", "?:\\Program Files (x86)\\*\\MSBuild.exe") and
-     not process.command_line : "\"C:\\Windows\\System32\\wscript.exe\" C:\\Windows\\Setup\\Scripts\\ShowAllTrayIcons.vbs" and
-     not (process.name : "cscript.exe" and process.args : "xcacls.vbs")
+     not process.command_line : "\"C:\\Windows\\System32\\wscript.exe\" C:\\Windows\\Setup\\Scripts\\ShowAllTrayIcons.vbs"
 '''
 
 min_endpoint_version = "7.15.0"

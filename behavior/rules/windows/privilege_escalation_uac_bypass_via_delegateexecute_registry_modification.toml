@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://medium.com/cybersecpadawan/utilizing-a-common-windows-binary-to-escalate-to-system-privileges-c16482cced4b",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -26,7 +26,10 @@ sequence by process.entity_id with maxspan=1m
    not (process.code_signature.subject_name in ("Stanislav Zinukhov", "Google Inc", "IP Zinukhov Stanislav Igorevich", "Vera") and
         process.code_signature.trusted == true) and
 
-   not process.executable : "?:\\Windows\\explorer.exe"
+   not process.executable : "?:\\Windows\\explorer.exe" and
+
+   not (process.executable : "C:\\Windows\\regedit.exe" and
+        process.parent.executable : ("C:\\Program Files\\Omnissa\\DEM\\FlexService.exe", "C:\\Program Files\\Immidio\\Flex Profiles\\FlexService.exe"))
    ]
   [registry where
    registry.value : "DelegateExecute" and registry.hive : "HKEY_USERS" and

@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-sentinelsneak",
     "https://objective-see.org/blog/blog_0x66.html",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -23,7 +23,8 @@ sequence by process.entity_id with maxspan=15s
  process.args like~ ("*@*.zip", "*@*.gz", "*@*.tgz", "b64=@*") and 
  process.args like~ "http*" and
  (process.parent.name like~ ("osascript", "python*", "node", "ruby", "bash", "sh", "zsh", "perl") or (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false)) and
- not process.args like "Authorization*"]
+ not process.args like "Authorization*" and 
+ not process.parent.command_line like "/bin/bash --init-file /Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh"]
 [network where event.type == "start"]
 '''
 

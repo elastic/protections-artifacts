@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Image Load via Transactional NTFS"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m
@@ -29,11 +29,13 @@ min_endpoint_version = "8.12.0"
 action = "kill_process"
 field = "Target.process.entity_id"
 state = 0
+tree = true
 
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

@@ -1,0 +1,72 @@
+[rule]
+description = """
+Identifies suspicious memory allocations by a browser process. This may indicate an attempt to exploit a vulnerability
+for initial access and execution.
+"""
+id = "d5fb2972-bf70-42a8-ad42-4db62491f2ad"
+license = "Elastic License v2"
+name = "Potential Shellcode Injection by a Browser Process"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and
+ process.Ext.api.name == "VirtualAlloc" and process.Ext.api.parameters.size >= 10000 and
+ process.Ext.api.summary like "*COMMIT*" and process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ process.name in~ ("iexplore.exe", "chrome.exe", "msedge.exe") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*", "chrome.exe", "chrome.exe|*",  "msedge.exe",  "msedge.exe|*") and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                  ("1a9ca25a7d7f11f6be10dee684505ee4b3340a0d3cbc22d959e69322e7cf0848",
+                                   "d09f0ed19b426b1f78de9b736f6c1f667b3e689c1927e6a3466423ddf88fd4a4") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("chrome.exe", "chrome.exe|*", "msedge.exe", "msedge.exe|*") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true)
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1189"
+name = "Drive-by Compromise"
+reference = "https://attack.mitre.org/techniques/T1189/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -74,6 +74,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

@@ -8,7 +8,7 @@ id = "133102a7-f906-4725-b382-09257a0209c2"
 license = "Elastic License v2"
 name = "Script Executed Through Unusual Parent Process"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args_count == 1 and 
@@ -19,7 +19,8 @@ process where event.type == "start" and event.action == "exec" and process.args_
      "/tmp/newroot/*", "./merged/*", "/var/tmp/.mount_*/AppRun", "/tmp/.mount_cursor*/usr/bin//cursor",
      "/tmp/baum/easybuild/*/perl"
    ) or
-   process.parent.name in ("gogo", "nvim", "build-script-build", "jetbrains-toolbox", "runner")
+   process.parent.name in ("gogo", "nvim", "build-script-build", "jetbrains-toolbox", "runner") or
+   process.parent.command_line == "runc init"
 )
 '''
 

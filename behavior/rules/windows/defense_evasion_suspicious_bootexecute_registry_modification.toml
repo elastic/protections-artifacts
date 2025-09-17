@@ -1,0 +1,65 @@
+[rule]
+description = """
+Boot Execute allows native applications with the NtProcessStartup entry point and depends solely on ntdll.dll to run
+prior to the complete initialization of the Windows operating system. Adversaries may abuse this time window to tamper
+with endpoint security services prior they get a chance to start.
+"""
+id = "d9748901-b533-4190-9cf1-0c8cd0512094"
+license = "Elastic License v2"
+name = "Suspicious BootExecute Registry Modification"
+os_list = ["windows"]
+reference = ["https://github.com/rad9800/BootExecuteEDR"]
+version = "1.0.2"
+
+query = '''
+registry where event.action == "modification" and
+ registry.path : "HKLM\\SYSTEM\\ControlSet*\\Control\\Session Manager\\BootExecute" and
+ process.executable != null and registry.data.strings : "??*" and
+ not (process.code_signature.trusted == true and
+      process.code_signature.subject_name in ("NortonLifeLock Inc.", "Avast Software s.r.o.", "AOMEI International Network Limited",
+                                              "QUICK HEAL TECHNOLOGIES LIMITED", "Glarysoft Ltd", "AVG Technologies USA, LLC",
+                                              "VMware, Inc.", "Glarysoft LTD", "Omnissa, LLC", "Bitdefender SRL", "Symantec Corporation",
+                                              "PIRIFORM SOFTWARE LIMITED", "CHENGDU AOMEI Tech Co., Ltd.")) and
+ not process.executable : ("C:\\Windows\\System32\\chkdsk.exe",
+                           "C:\\Windows\\System32\\fsavailux.exe",
+                           "C:\\Windows\\System32\\msiexec.exe") and
+ not registry.data.strings :
+            ("autocheck autochk ?", "autocheck autoche ?", "autocheck autochk /k:? /k:? ?", "autocheck autochk /k:C /k:D /k:G ?",
+             "autocheck autochk /q /v /k:? ?", "autocheck autochk /q /v /k:? *", "autocheck autochk /q /v ?",
+             "autocheck autochk /r \\??\\C:",  "autocheck autochk /p \\??\\C:", "autocheck autochk /?:C ?", "autocheck autochk /q /v ")
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.4.0"

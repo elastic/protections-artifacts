@@ -1,0 +1,47 @@
+[rule]
+description = "Identifies when a process attempts to allocate shellcode from a memory with unusual properties."
+id = "4fd32c09-dcb8-442c-a5ac-b8f3f98ffe6c"
+license = "Elastic License v2"
+name = "Shellcode Behavior from Unusual Memory"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.behaviors in ("allocate_shellcode", "shellcode", "hollow_unbacked", "execute_fluctuation") and
+ process.thread.Ext.call_stack_final_user_module.protection in ("RW-", "R--", "---") and process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+ process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "VirtualProtectEx", "VirtualAllocEx",
+                          "MapViewOfFile", "MapViewOfFile2", "SetThreadContext", "SuspendThread", "ReadProcessMemory", "connect") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and not $entry.subject_name in ("Microsoft Corporation", "Microsoft Windows")) and
+ not (process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\1.0\\powershell.exe" and process.Ext.api.behaviors == "hollow_unbacked" and
+      process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\assembly\\nativeimages_*.ni.dll") and
+ not (process.Ext.api.name == "VirtualProtect" and _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*kernelbase.dll!LoadLibrary*", "*kernel32.dll!ExitProcess*"))) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "6a6f026505c3701e03b065ec38e64b105ff6b7129c249a77b45ad4c59d593e26" and
+ not (process.executable : "C:\\Windows\\System32\\dllhost.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
+      process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|dbgeng.dll|Unbacked|Unknown" and
+      process.thread.Ext.call_stack_final_user_module.protection_provenance_path == "c:\\windows\\system32\\msmpeg2adec.dll") and
+ not (process.executable : "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance_path == "c:\\windows\\syswow64\\d3d9.dll")
+'''
+
+min_endpoint_version = "8.14.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

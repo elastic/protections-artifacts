@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Registry Modification via WMI"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/regprov/stdregprov"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 registry where event.action== "modification" and
@@ -115,7 +115,7 @@ registry where event.action== "modification" and
      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA"
      ) and
      not registry.path : "HKLM\\SYSTEM\\ControlSet001\\Control\\Terminal Server\\WinStations\\RDP-Tcp\\InitialProgram" and
-     not registry.data.strings like "C:\\WindowsAzure\\Packages_*.exe"
+     not registry.data.strings like "C:\\WindowsAzure\\*.exe"
 '''
 
 min_endpoint_version = "8.4.0"

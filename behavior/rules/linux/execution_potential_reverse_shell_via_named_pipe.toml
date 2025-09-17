@@ -7,7 +7,7 @@ id = "40bec6eb-e93b-4d09-8265-66bba186e332"
 license = "Elastic License v2"
 name = "Potential Reverse Shell via Named Pipe"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -34,7 +34,7 @@ sequence by process.parent.entity_id with maxspan=1m
        "/home/jetson/Linux_for_Tegra/rootfs/dev/urandom", "/run/exabgp/exabgp.out", "/dev/vboxusb/*",
        "/var/tmp/.oracle/npohasd*", "/var/tmp/dracut*", "/tmp/.criu*", "/vz/*", "/var/log/misp_upgrade.log.pipe"
      ) or
-     process.command_line like "mknod /tmp/*.tmp p" or
+     process.command_line like ("mknod /tmp/*.tmp p", "mkfifo /run/user/*") or
      (
        process.parent.executable == "./agent-linux-x86_64.sh" and
        process.command_line like "mkfifo /tmp/agent-linux-x86_64.sh.pipe.*"

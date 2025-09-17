@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via Windows OpenSSH"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Ssh/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and
@@ -29,6 +29,7 @@ min_endpoint_version = "7.16.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

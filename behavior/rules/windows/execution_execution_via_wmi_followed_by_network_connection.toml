@@ -7,7 +7,7 @@ id = "cf738466-9fff-44d9-8603-4a7e6e6c8d1f"
 license = "Elastic License v2"
 name = "Execution via WMI followed by Network Connection"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -24,7 +24,10 @@ sequence with maxspan=5m
                                 "?:\\Program Files\\*.exe",
                                 "?:\\Program Files (x86)\\*.exe",
                                 "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
-                                "?:\\Windows\\CCM\\ClientUX\\SCClient.exe")] by process.Ext.effective_parent.entity_id
+                                "?:\\Windows\\CCM\\ClientUX\\SCClient.exe",
+                                "C:\\Windows\\CCM\\CcmExec.exe",
+                                "C:\\Windows\\ccmcache\\*.exe",
+                                "C:\\Windows\\System32\\taskhostw.exe")] by process.Ext.effective_parent.entity_id
 [network where 
    /* omitted 192.168.0.0 for testing */
    not cidrmatch(destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",

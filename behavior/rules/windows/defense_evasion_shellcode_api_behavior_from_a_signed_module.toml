@@ -7,7 +7,7 @@ id = "947ad28a-98de-49cc-988b-fef69785585a"
 license = "Elastic License v2"
 name = "Shellcode API behavior from a signed module"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
@@ -37,7 +37,9 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
                          "68fba9dd89bfad35f8fd657b9af22a8aebda31bffda35058a7f5ae376136e89b",
                          "f60dd9f2fcbd495674dfc1555effb710eb081fc7d4cae5fa58c438ab50405081",
                          "19ebeeb8eb10548abceb31b2a86c05aaf1e9a0c88e15595534d7722c128b1642",
-                         "cc4c335cf61bffdb26957645e8b1cb385e9b8a460b40d66a5af6bacc8570e5c8") and
+                         "cc4c335cf61bffdb26957645e8b1cb385e9b8a460b40d66a5af6bacc8570e5c8",
+                         "d30993b4cdce19b2d798ca51a5331dd45b894adcd1763df4ff8371d53f582cd3",
+                         "ee143a8ed6392faaf0bb4e4f793c733a3ca6e555da343a0728254189955a4d8e") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
     $entry.subject_name : (
       "Microsoft Corporation",
@@ -55,6 +57,7 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
       "Cisco Systems, Inc.",
       "ESET, spol. s r.o.",
       "FireEye, Inc.",
+      "Malwarebytes Inc",
       "Kaspersky Lab",
       "Kaspersky Lab JSC",
       "AO Kaspersky Lab",
@@ -223,7 +226,8 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualProtect") and
       "netSkope Inc", "The Qt Company Oy", "FOXIT SOFTWARE INC.", "Oracle America, Inc.", "Anatomage, Inc.",
       "FenixSim Limited", "Brooks Internet Software, Inc.", "CAPCOM CO., LTD.", "Facepunch Studios Ltd", "Manthe Industries, LLC",
       "AVS-N LLC", "A-Volute SAS", "ООО Научно-Производственное Предприятие АВС-Н", "Lexmark Enterprise Software", "AVS-N, OOO",
-      "KOBIL GmbH", "Threatstar B.V.", "NCSOFT Corporation"
+      "KOBIL GmbH", "Threatstar B.V.", "NCSOFT Corporation", "Blueridge Software", "Code Systems Corpration", "TEKLYNX CORPORATION SAS",
+      "ORIGIN ONLINE MMORPG LTD", "IDEA INFORMATICA SRL"
     ))
 '''
 

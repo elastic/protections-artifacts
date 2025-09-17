@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -32,6 +32,10 @@ sequence by process.entity_id with maxspan=3s
      (
        process.parent.executable == "/etc/update-motd.d/50-amazon-linux-extras-news" and
        process.command_line == "python -m amazon_linux_extras system_motd"
+     ) or
+     (
+       process.executable == "/etc/update-motd.d/50-amazon-linux-extras-news" and
+       process.command_line == "/bin/bash /etc/update-motd.d/50-amazon-linux-extras-news" 
      )
    )
   ]

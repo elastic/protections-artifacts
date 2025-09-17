@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -36,10 +36,13 @@ sequence by process.entity_id with maxspan=1m
             "CyCraft Technology Corporation, TAIWAN BRANCH (CAYMAN)", "Bytedance Pte. Ltd.", "Ubisoft Entertainment Sweden AB",
             "unlocktool.net", "Qinhuangdao Yizhishu Software Development Co., Ltd.", "Sony Interactive Entertainment LLC",
             "NetEase (Hangzhou) Network Co., Ltd", "ETH Zürich", "Wilcom International Pty Limited", "Electronic Arts, Inc.",
-            "miHoYo Co.,Ltd.", "Azul Systems, Inc.", "Shanghai Feilai Information Technology Co., Ltd.") and
+            "miHoYo Co.,Ltd.", "Azul Systems, Inc.", "Shanghai Feilai Information Technology Co., Ltd.", "BattlEye Innovations e.K.",
+            "NCSOFT Corporation", "Tenorshare (Hongkong) Limited") and
        process.code_signature.trusted == true) and
 
-  not process.executable : "?:\\Program Files (x86)\\FunPlus\\Stormshot\\nGame\\3.16.100\\Stormshot.exe" and
+  not process.executable : ("?:\\Program Files (x86)\\FunPlus\\Stormshot\\nGame\\3.16.100\\Stormshot.exe",
+                            "?:\\Program Files (x86)\\TurboServiceMobile\\TurboServiceMobile.exe",
+                            "?:\\Program Files (x86)\\Zhizhen\\Zhizhen\\zhizhen.exe") and
 
   not (process.executable : "?:\\Windows\\System32\\taskhostw.exe" and user.id == "S-1-5-18" and
        _arraysearch(process.thread.Ext.call_stack, $entry,
@@ -71,15 +74,25 @@ sequence by process.entity_id with maxspan=1m
                    $entry.symbol_info: ("?:\\program files*\\avg\\antivirus\\aswhook.dll+*",
                                         "?:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\*\\Data\\Sysfer\\*\\sysfer.dll*",
                                         "?:\\Program Files\\ESET\\ESET Security\\ebehmoni.dll*",
-                                        "?:\\Windows\\System32\\sxwmon64.dll*"))]
+                                        "?:\\Windows\\System32\\sxwmon64.dll*")) and
+
+  not (event.category == "api" and process.Ext.api.parameters.size <= 4096 and
+       ((process.code_signature.subject_name == "unlocktool.net" and process.code_signature.status =="errorUntrustedRoot") or
+        process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("2be89bd37bab3d9d7c08360cc062790450bee504ac689d1d0aa61da1ca2a7b64",
+                                                                        "c4fcf0187e7fbf6939b08e929e10eb9eb5c1e4a45849cae6a677451249db066e",
+                                                                        "5eed55767870ff871513789d8bbdc3343dfe3e0aff2c28faccdfe4c2c881da07",
+                                                                        "f239e80bd672e0b33e9a8a9bf8a379b8b2df799e6462d2231b4ee5aa9d66f52a",
+                                                                        "492664b28b0880fafe8dcb6fff020e185f08d3615b2fbf10828f85e95c68f8a1")))
+  ]
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[threat]]
 framework = "MITRE ATT&CK"
@@ -95,4 +108,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.10.0"

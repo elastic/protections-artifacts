@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Windows Script Interpreter Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.type == "start" and
@@ -67,6 +67,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

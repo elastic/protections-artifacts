@@ -1,0 +1,68 @@
+[rule]
+description = """
+This rule detects the execution of the "mount" command with suspicious arguments that indicate an attempt to remount
+world-writable directories or shared memory directories. This behavior is often associated with attempts to evade
+detection or modify system behavior in a way that could facilitate further malicious activity.
+"""
+id = "5b3b2411-c114-48c5-8f95-21894067d2ba"
+license = "Elastic License v2"
+name = "World Writeable Directory Exec Remount"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.executable in ("/bin/mount", "/usr/bin/mount", "/usr/local/bin/mount") and
+process.args in ("-o", "--options") and process.args like "remount*" and process.args like "exec*" and
+process.args like ("/tmp*", "/var/tmp*", "/dev/shm*") and
+not process.command_line like "*noexec*" and
+not (
+  process.parent.executable like ("/usr/bin/sudo", "/usr/sbin/apt-get.hook", "/usr/bin/python*") or
+  process.working_directory == "/var/lib/usg"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

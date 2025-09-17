@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "exec" and
@@ -57,7 +57,11 @@ process where event.action == "exec" and
       "sysctl hw.model*",
       "ioreg -d2 -c IOPlatformExpertDevice *",
       "ps aux | grep 'ToDesk_Desktop' | grep -v grep",
-      "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*"
+      "PIPE=\"$CFFIXED_USER_HOME/.zoteroIntegrationPipe*", 
+      "/Library/Management/super/com.macjutsu.super.plist",
+      "\"/Applications/Mendeley Desktop.app/Contents/MacOS/MendeleyWordPlugin.app/Contents/MacOS/MendeleyWordPlugin\" setPort *",
+      "http://127.0.0.1:23119/integration/macWordCommand?*",
+      "curl -s -o /dev/null -I -m 2 -w '%{http_code}' -X GET 'http://127.0.0.1:23119/integration/macWordCommand?agent=*"
     ) and
    not process.parent.executable like~
         (

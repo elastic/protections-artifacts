@@ -8,19 +8,19 @@ reference = [
     "https://anti-debug.checkpoint.com/techniques/process-memory.html#patch_ntdll_dbguiremotebreakin",
     "https://anti-debug.checkpoint.com/techniques/process-memory.html#patch_ntdll_dbgbreakpoint",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-api where process.Ext.api.name : "WriteProcessMemory" and process.executable != null and
- process.Ext.api.summary : ("*DbgUiRemoteBreakin*", "*DbgBreakPoint*") and
+api where process.Ext.api.name == "WriteProcessMemory" and process.executable != null and
+ process.Ext.api.summary like ("*DbgUiRemoteBreakin*", "*DbgBreakPoint*") and
  process.thread.Ext.call_stack_final_user_module.name != null and
- not (process.code_signature.status : "trusted" and
+ not (process.code_signature.status == "trusted" and
       process.code_signature.subject_name : ("UBISOFT ENTERTAINMENT INC.", "BattlEye Innovations e.K.", "KOBIL GmbH",
       "Epic Games Inc.", "M.E.DOC LLC", "BOHEMIA INTERACTIVE a.s.", "MetaQuotes Ltd", "Bandicam Company Corp.",
       "BATTLESTATE GAMES LIMITED", "Ubisoft Entertainment Sweden AB", "Star Finanz - Software Entwicklung und Vertriebs GmbH",
       "Environmental Systems Research Institute, Inc.", "miHoYo Co.,Ltd.", "HP Tuners LLC", "COGNOSPHERE PTE. LTD.",
       "SZ DJI Technology Co., Ltd.", "Star Finanz-Software Entwicklung und Vertriebs GmbH",
-      "Sky International AG")) and
+      "Sky International AG", "NetEase (Hangzhou) Network Co., Ltd", "SCRYDE TECH DMCC")) and
  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe") and
   not process.thread.Ext.call_stack_final_user_module.name : ("Kernel", "Unknown", "Undetermined") and
   not (process.code_signature.status : "trusted" and startswith~(process.thread.Ext.call_stack_final_user_module.name, process.name)) and
@@ -34,11 +34,21 @@ api where process.Ext.api.name : "WriteProcessMemory" and process.executable != 
                                "?:\\windows\\assembly\\*",
                                "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
                                "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*") and
-  not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
+  process.Ext.api.summary != "WriteProcessMemory( Self, ntdll.dll!DbgUiRemoteBreakin, 0x5 )" and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                          ("2a9b218ef8897b17ea485d41be9d8145ece535e8f14f44de84ea97048399f5a4",
                           "b98f6fffd39455ebb8a480be09fc020f26a2d9ce14901a39886a3c367e4dc3fe",
                           "fd55b535a38bec99a9e4eec910b5ac032ca29dbf94ca16c344c3006d77404b41",
-                          "44fabd4b4aa67eedde7bebe717fd2951cc6e04c355040b4c0dca340ed5f7ff0e")
+                          "44fabd4b4aa67eedde7bebe717fd2951cc6e04c355040b4c0dca340ed5f7ff0e",
+                          "c515555c4a80c611555e50ba59937e41c7fe95309cb3e531481d07a8573cf23c",
+                          "a4add0c1f03c40889069b3ddf842844e2fcf3e3c475213506d1601fe2ae7a917",
+                          "e7bc8d8ac6b0911435a012e2a81185edcc1eb90f765ac7ade340c2c7e82c84fe",
+                          "e12c0d23bfe1a4408de6f81b98803d8714529ddd80b91f2589acd5fb6f926a65",
+                          "51a73b67d379458e8b4125ce7578d80dbf4f6b3ac6d1f13bef837b346c64e1d5",
+                          "d0b54d2654404f6e1ef21c9fb5808862dfc79e5ddab26afe3115134b98c0e285",
+                          "2be89bd37bab3d9d7c08360cc062790450bee504ac689d1d0aa61da1ca2a7b64",
+                          "c4fcf0187e7fbf6939b08e929e10eb9eb5c1e4a45849cae6a677451249db066e",
+                          "b7d34366f3b7698474c1d488a412dbdc575894a7be43a8d8e01b337b57971c36")
 '''
 
 min_endpoint_version = "8.10.0"

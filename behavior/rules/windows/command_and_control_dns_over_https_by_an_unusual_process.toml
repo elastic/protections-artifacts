@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies DNS queries to known DNS over HTTPS (DoH) Providers by an unusual Microsoft signed binary or files from
+suspicious paths. This may indicate abuse of DoH for Command and Control communications.
+"""
+id = "9371a660-2ee8-4840-820d-8a9754308d53"
+license = "Elastic License v2"
+name = "DNS Over HTTPS by an Unusual Process"
+os_list = ["windows"]
+reference = ["https://www.blackhillsinfosec.com/dns-over-https-for-cobalt-strike/"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "start" and user.id like "S-1-5-21-*" and
+   (
+    (process.executable : "C:\\Windows\\*.exe" and
+     process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation", "Microsoft Windows") and
+     not process.executable : ("C:\\Windows\\Sys?????\\ipconfig.exe",
+                               "C:\\Windows\\Sys?????\\nslookup.exe",
+                               "C:\\Windows\\Sys?????\\TRACERT.EXE",
+                               "C:\\Windows\\Sys?????\\PING.EXE",
+                               "C:\\Windows\\System32\\Microsoft-Edge-WebView\\msedgewebview2.exe")) or
+
+     (process.Ext.relative_file_creation_time <= 900 and process.code_signature.status in ("errorBadDigest", "errorUntrustedRoot")) or
+
+     (process.Ext.relative_file_creation_time <= 900 and process.executable : ("C:\\ProgramData\\*", "C:\\Users\\Public\\*", "C:\\Users\\*\\Downloads\\*"))
+   )
+   ]
+  [dns where dns.question.name : ("cloudflare-dns.com", "mozilla.cloudflare-dns.com", "dns.google", "dns.quad9.net", "doh.opendns.com", "ordns.he.net") and
+   not (dns.question.name : "dns.google" and
+        process.executable : ("C:\\Program Files\\WindowsApps\\Enflick.TextNow-UnlimitedTextCalls_*\\app\\TextNow.exe",
+                              "C:\\Program Files (x86)\\Steam\\steamapps\\common\\assettocorsa\\cache\\cef\\Assetto Corsa CEF.exe"))]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.4.0"

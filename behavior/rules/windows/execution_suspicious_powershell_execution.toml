@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and
@@ -88,6 +88,16 @@ process where event.action == "start" and process.name : "powershell.exe" and
       (process.parent.command_line : "*\\WindowsPowershell\\*\\powershell*" or process.parent.args : ("-Command", "-OutputFormat", "-InputFormat"))) and
 
  not process.parent.name : "powershell.exe" and
+
+ not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
+
+ not process.working_directory : "C:\\ProgramData\\VinitySoft Data\\MariaDb\\" and
+
+ not (process.args : "-NoProfile" and
+     process.parent.executable : ("C:\\Users\\*\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex-x86_64-pc-windows-msvc.exe",
+                                  "C:\\Users\\*\\.cursor\\extensions\\openai.chatgpt-*-universal\\bin\\windows-x86_64\\codex.exe")) and
+
+ not (process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe" and process.command_line : "*Windows.UI.Notifications*") and
 
  not (process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and process.args : "https://go.microsoft.com/fwlink/p/?LinkId=*" and
       process.args :"$env:TEMP\\MicrosoftEdgeWebview2Setup.exe") and

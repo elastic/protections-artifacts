@@ -7,7 +7,7 @@ id = "ad89ce4d-96df-4cc8-bfc5-979a73469b54"
 license = "Elastic License v2"
 name = "Suspicious Command Execution via Busybox Proxy"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "busybox" and (
@@ -20,14 +20,29 @@ process where event.type == "start" and event.action == "exec" and process.name 
 ) and process.parent.executable != null and not (
   process.parent.command_line == "runc init" or
   process.args : ("/var/atlassian/application-data/bamboo-agent*", "/health/sentinel_liveness.sh") or
+  process.parent.args == "/usr/bin/crun" or
   process.command_line : ("ash /scripts*/detect_shell_script*", "ash ./autogen.sh", "ash /tmp/tmp.*") or 
   process.parent.command_line in ("php artisan convert:video", "sh -c busybox sh &") or
-  process.parent.executable == "lib/apk/exec/busybox-1.36.1-r19.trigger" or
+  process.parent.executable like (
+    "lib/apk/exec/busybox-*.trigger", "/usr/bin/apk", "/var/lib/docker/overlay*", "/usr/local/lib/erlang/erts-*/bin/erl_child_setup",
+    "/usr/local/bin/php", "/usr/local/bin/forego", "/bin/busybox", "/sbin/apk", "/usr/local/sbin/php-fpm", "/usr/bin/varnishd",
+    "/run/k3s/containerd/*", "/usr/sbin/zabbix_server", "/sbin/tini"
+  )  or
   (
     process.parent.executable == "/usr/local/bin/node" and process.parent.args == "run" and process.parent.args == "build"
   ) or
   process.parent.name in ("consul", "containerd") or
-  process.executable like "/run/containerd/*"
+  process.executable like "/run/containerd/*" or
+  (
+    process.parent.executable == "/usr/local/openresty/nginx/sbin/nginx" and
+    process.command_line like "sh -c gcc -print-multiarch*/tmp/lua_*"
+  ) or
+  (
+    process.parent.name == "perl" and process.command_line like "sh -c*testfun*"
+  ) or
+  (
+    process.parent.name == "ruby" and process.command_line like "sh -c bundle exec rails server*"
+  )
 )
 '''
 

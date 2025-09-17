@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 process where event.action == "start" and
@@ -98,6 +98,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[actions]]
 action = "kill_process"

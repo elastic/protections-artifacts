@@ -1,0 +1,72 @@
+[rule]
+description = """
+Identifies the load of NTDLL for the second time. This may indicate the use of direct system calls to evade endpoint
+security solutions hooking Windows APIs.
+"""
+id = "85a716db-52f6-4424-9a5a-3ca1c548b5fc"
+license = "Elastic License v2"
+name = "NTDLL library loaded for a second time"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
+    "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
+]
+version = "1.0.5"
+
+query = '''
+library where dll.name : "ntdll.dll" and
+ dll.Ext.load_index >= 2 and
+ process.thread.Ext.call_stack_summary != null and process.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll|*" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "C:\\Windows\\Sys*\\KernelBase.dll!MapViewOfFile*") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info: ("C:\\Windows\\System32\\sysmain.dll!AgTwLoad*",
+                                       "C:\\Program Files (x86)\\kingsoft\\kingsoft antivirus\\kisfdpro64.dll!GetKwsUH+*",
+                                       "C:\\Program Files\\SentinelOne\\Sentinel Agent*\\InProcessClient*")) and
+ not (process.executable : "C:\\Windows\\System32\\smss.exe" and process.thread.Ext.call_stack_summary == "ntdll.dll|smss.exe|ntdll.dll") and
+ not process.executable : ("C:\\Program Files\\Palo Alto Networks\\Traps\\cyserver.exe",
+                           "?:\\Program Files\\Genshin Impact\\Genshin Impact Game\\YuanShen.exe",
+                           "?:\\Program Files\\ESET\\*\\ekrn.exe",
+                           "?:\\Program Files (x86)\\ESET\\*\\ekrn.exe",
+                           "?:\\Program Files (x86)\\Kaspersky Lab\\*\\avp.exe",
+                           "?:\\Program Files\\Kaspersky Lab\\*\\avp.exe",
+                           "?:\\Program Files (x86)\\360\\Total Security\\safemon\\QHActiveDefense.exe",
+                           "?:\\Program Files (x86)\\Intel\\oneAPI\\*\\advisor-gui.exe",
+                           "?:\\Program Files (x86)\\MakeMKV\\makemkvcon64.exe",
+                           "?:\\Program Files (x86)\\MakeMKVII\\makemkvcon64.exe",
+                           "C:\\Program Files (x86)\\CheckPoint\\Endpoint Security\\Anti-Malware\\epam_svc.exe",
+                           "?:\\Program Files (x86)\\tenprotect\\TASLogin.exe",
+                           "?:\\Program Files (x86)\\WeGame\\tenprotect\\TASLogin.exe") and
+ not (user.id == "S-1-5-18" and process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v1.?\\powershell.exe") and
+ not (process.code_signature.subject_name in ("COGNOSPHERE PTE. LTD.", "Blizzard Entertainment, Inc.", "miHoYo Co.,Ltd.",
+      "深圳市脸萌科技有限公司") and process.code_signature.trusted == true) and
+ not process.thread.Ext.call_stack_summary like
+                           ("sysfer.dll|kernelbase.dll|sysfer.dll",
+                            "ntdll.dll|kernelbase.dll|tmmon64.dll",
+                            "ntdll.dll|kernelbase.dll|sysmain.dll|kernel32.dll|ntdll.dll",
+                            "ntdll.dll|bdhkm64.dll|Unbacked|kernelbase.dll|sysmain.dll|kernel32.dll|ntdll.dll",
+                            "ntdll.dll|umppc?????.dll|kernelbase.dll|sysmain.dll|kernel32.dll|ntdll.dll",
+                            "ntdll.dll|kernelbase.dll|vsdebugeng.impl.dll|kernel32.dll|ntdll.dll")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

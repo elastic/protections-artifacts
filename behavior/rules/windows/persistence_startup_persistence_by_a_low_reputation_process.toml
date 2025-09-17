@@ -11,14 +11,18 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
  [process where event.action == "start" and
  (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
- not process.code_signature.status : "errorCode_endpoint*" and
+ not process.code_signature.status like "errorCode_endpoint*" and
+ not process.pe.imphash in ("952608687d343553fa2ebbe1a801044c",
+                            "2ac0df3cb49d714c81e70b5b92c304f2",
+                            "367254f4e83f62f5437681fde2e55f48",
+                            "0d45614ce1da2206df8b743dab46d7e4") and
  not process.hash.sha256 :
                  ("933129e6153f10ed921d772467507389fc4f5d58846b89d3d7b5799cb23eb9b6",
                   "43eceb752381fc93992a317a3df6e3921f06ed5e45de808a75ffe3fe2e0afb89",
@@ -49,7 +53,7 @@ sequence by process.entity_id with maxspan=5m
                   "4997ec399b1292a8698366c605ebfaf72cb5089682a75c408978cb87c8d3a5a3",
                   "6680172392ee701a714d14bb010a00a054e102c664152bfc244dd74d0e32694d") and
  not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18") and
- not (process.executable : "?:\\Windows\\ccmcache\\*.exe" and process.parent.executable : "?:\\Windows\\CCM\\*.exe") and
+ not process.executable : ("?:\\Windows\\ccmcache\\*.exe", "C:\\Windows\\SystemTemp\\*.exe") and
  not (process.executable : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp" and process.args : "/SL5=$*")]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (

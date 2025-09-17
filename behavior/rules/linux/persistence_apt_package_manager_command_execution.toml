@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=5s
@@ -37,7 +37,15 @@ sequence with maxspan=5s
      process.executable like ("/usr/lib/venv-salt-minion/bin/python.original", "./merged/var/lib/containers/*") or
      process.command_line in (
        "python3 /usr/sbin/omv-mkaptidx", "python3 /usr/local/bin/abr-upgrade --upgrade",
-       "sh -c apt-get indextargets -o Dir::State::lists=/var/lib/apt/lists/ --format='$(FILENAME)' 'Created-By: Packages'"
+       "sh -c apt-get indextargets -o Dir::State::lists=/var/lib/apt/lists/ --format='$(FILENAME)' 'Created-By: Packages'",
+       "/usr/bin/perl /usr/sbin/dpkg-preconfigure --apt", "/bin/sh -e /usr/lib/update-notifier/update-motd-updates-available",
+       "/usr/bin/python3 /usr/lib/cnf-update-db", "/usr/bin/python3 /usr/bin/apt-listchanges --apt",
+       "/usr/bin/perl -w /usr/sbin/dpkg-preconfigure --apt", "/bin/sh /usr/lib/needrestart/apt-pinvoke",
+       "/bin/sh /usr/bin/kali-check-apt-sources"
+     ) or
+     process.parent.command_line in (
+       "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper post-install; fi",
+       "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper pre-install; fi"
      )
     )
   ] by process.parent.entity_id

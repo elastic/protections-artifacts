@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog",
     "https://www.elastic.co/security-labs/DPRK-strikes-using-a-new-variant-of-rustbucket",
 ]
-version = "1.0.49"
+version = "1.0.50"
 
 query = '''
 persistence where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -71,7 +71,14 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                       "https://elastic.jamfcloud.com", 
                       "/Users/*/Library/Application Support/*",
                       "/var/run/docker.sock",
-                      "Location of the installed AutomationEngineSyncer executable (to be replaced by installer)") and not
+                      "/opt/homebrew/opt/httpd/bin/httpd",
+                      "/Library/.rpcnet/rpc.net", "/Library/.rpcnet/Ctes",
+                      "/opt/homebrew/opt/jenkins-lts/libexec/jenkins.war",
+                      "/Library/PrivilegedHelperTools/com.docker.socket",
+                      "/opt/homebrew/opt/jenkins/bin/jenkins",
+                      "/Library/airBalticBundle/.AnyConnect/fix_anyconnect_profile.sh",
+                      "Location of the installed AutomationEngineSyncer executable (to be replaced by installer)", 
+                      "/Applications/.com.bomgar.bomgar-scc/Remote Support Customer Client.app/Contents/MacOS/bomgar-scc") and not
   Effective_process.executable like~ ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                   "/usr/local/sbin/FileWave.app/Contents/MacOS/fwcld",
                                   "/Library/PrivilegedHelperTools/com.bomgar.bomgar-scc.ElevationHelper.daemon",
@@ -87,6 +94,7 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                                        "com.apple.cat", 
                                        "com.apple.cfprefsd",
                                        "com.jetbrains.toolbox",
+                                       "com.apple.pico",
                                        "ksinstall",
                                        "com.apple.shove",
                                        "GoToAssistRemoteSupportDaemon",
@@ -94,7 +102,8 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                                        "com.sublimetext.4",
                                        "com.apple.ditto",
                                        "NodewareAgent") and not
-  Persistence.executable like "/Applications/AhnLab/ASTx/astxd"
+  Persistence.executable like "/Applications/AhnLab/ASTx/astxd" and 
+  not process.executable : "/Applications/mcpproxy.app/Contents/MacOS/mcpproxy"
 '''
 
 min_endpoint_version = "8.11.0"

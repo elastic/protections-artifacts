@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.command_line like (
@@ -32,7 +32,7 @@ process where event.type == "start" and event.action == "exec" and process.comma
   "*webhop.net*", "*ethpool.org*", "*slushpool.com*", "*antpool.com*"
 ) and not (
   process.parent.name in ("sendmail", "postfix-local", "check-quota", "zmcontrol", "find", "timeout", "php") or
-  process.name in ("timeout", "host") or
+  process.name in ("timeout", "host", "ptxas") or
   process.command_line like "*zpool.cache*"
 )
 '''

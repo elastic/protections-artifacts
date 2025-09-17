@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies untrusted DLLs loaded by the DNS Server process, potentially indicating the abuse of the ServerLevelPluginDll
+functionality. This can lead to privilege escalation and remote code execution with SYSTEM privileges.
+"""
+id = "97fb3ab6-b109-4c5c-bf43-87a3e74904dc"
+license = "Elastic License v2"
+name = "Unsigned DLL loaded by DNS Service"
+os_list = ["windows"]
+reference = [
+    "https://cube0x0.github.io/Pocing-Beyond-DA/",
+    "https://adsecurity.org/?p=4064",
+    "https://github.com/gtworek/PSBits/tree/master/ServerLevelPluginDll",
+]
+version = "1.0.2"
+
+query = '''
+library where event.action == "load" and
+  process.executable : "?:\\windows\\system32\\dns.exe" and 
+  process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|dns.exe|sechost.dll|kernel32.dll|ntdll.dll" and
+  (dll.code_signature.trusted == false or dll.code_signature.exists == false) and 
+  (dll.Ext.relative_file_creation_time <= 900 or dll.Ext.relative_file_name_modify_time <= 900 or dll.path : ("\\Device\\Mup\\*", "\\\\*"))
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

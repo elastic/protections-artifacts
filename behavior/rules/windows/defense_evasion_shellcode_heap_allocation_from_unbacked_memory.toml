@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies attempt to allocate shellcode via heap memory allocation and from an unsigned final user module. This may
+indicate an attempt to prepare for shellcode injection evading security monitoring for suspicious VirtualAlloc API
+calls.
+"""
+id = "ef671d7c-0bb2-46c9-9a6f-9f44e30d037f"
+license = "Elastic License v2"
+name = "Shellcode Heap Allocation from Unbacked Memory"
+os_list = ["windows"]
+reference = ["https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapcreate"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualAlloc" and
+  process.Ext.api.behaviors == "allocate_shellcode" and process.Ext.api.parameters.size > 4096 and
+  process.thread.Ext.call_stack_summary in
+                             ("ntdll.dll|Unbacked",
+                              "ntdll.dll|Unbacked|kernel32.dll|ntdll.dll",
+                              "ntdll.dll|kernelbase.dll|Unbacked",
+                              "ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll",
+                              "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked",
+                              "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|Unbacked|kernel32.dll|ntdll.dll",                           
+                              "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
+                              "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: ("*kernelbase.dll!HeapCreate*", "*ntdll.dll!RtlCreateHeap*")) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+ process.thread.Ext.call_stack_final_user_module.code_signature != null and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name : ("Hewlett-Packard Company", "Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                                 ("c4cf159dd3796298eced1d69336d6c39f6066ce407ecd9b0c2147a64e897d28f",
+                                                  "cd6ddc67c9866a42d61f4989bf7716f2e445c3c1e6d6bddce877511ad003ced4",
+                                                  "9becd39f90077a5ab064681c0a1be139d15be9ce434bacd48cd1dc894d3911cb",
+                                                  "c5265f4825f6787ece500c20c10c8cefc32b452be8f0aa3f1a71ccc650439b2f")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

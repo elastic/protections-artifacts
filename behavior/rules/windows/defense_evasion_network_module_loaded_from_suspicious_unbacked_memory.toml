@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.53"
+version = "1.0.54"
 
 query = '''
 sequence by process.entity_id
@@ -111,7 +111,9 @@ sequence by process.entity_id
                     "ca52dce8cc2aecc23138a524683ad608b4a5eaed9a7a10336e4cf6c7b9d6e5e0",
                     "b4aa6923bd807af4433c968aa1ded17a3bf8e36f1053fe24dc31dd5a8eb9f4ce",
                     "4acdfb075f5a801b976819cd22bc3a930ad5f8ee92de2d5ad36b0a4f1e5a8b24",
-                    "1c237e9015c81487aa67d56f8aa4788fbb6bfb3039e455485376712cfc978e62") and
+                    "1c237e9015c81487aa67d56f8aa4788fbb6bfb3039e455485376712cfc978e62",
+                    "47585eb41299f97c88028c3dae3ba6049355b8e0a8074abeae9f4f9381832c20",
+                    "a26dfec1922d751c710a2f2ab16a33facb6fef8997d21784681f1be637a78b5d") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -137,6 +139,10 @@ sequence by process.entity_id
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\MAV-Installer.exe",
                                     "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe",
                                     "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe") and
+  not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and
+       process.args : "C:\\Program Files (x86)\\Common Files\\PortsRanch\\WenuMeta\\Micriuuft_Inroles.dll" and
+       process.parent.executable : "C:\\WINDOWS\\system32\\svchost.exe") and
+
   not process.executable :
                   ("C:\\Program Files (x86)\\MultiExtractor\\MultiExtractor.exe",
                    "C:\\Program Files (x86)\\Naverisk\\Agent\\Packages\\SoftwareScanPackage\\SoftwareScanner\\Naverisk.Agent.SoftwareScanner.exe")
@@ -265,8 +271,9 @@ sequence by process.entity_id
                           "89854d294400c78551294400000000008b95d83044008b0685c075038b461003c20385512944008b188b7e1003fa03bd5129440085db0f84a2000000f7c30000",
                           "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc",
                           "ebfecc000073c4f87f0000c0f776c4f87f0000703c76c4f87f0000000000000000000000000000000000004578697454687265616400006b00650072006e0065",
-                          "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424"))
-  ]
+                          "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424",
+                          "a36c3e*85c00f84f9000000568b3548*",
+                          "488905fc764c00483bc30f84a5010000488d1504803d00488bc8ff1593253b00488b0ddc764c00488d15d57f3d00488905de764c00ff1578253b00488b0dc176"))]
   until [process where event.action == "end"]
 '''
 

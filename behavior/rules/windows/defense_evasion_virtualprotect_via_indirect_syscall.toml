@@ -1,0 +1,80 @@
+[rule]
+description = """
+Identifies VirtualProtect API calls using indirect syscall. This may be an attempt to conceal the true source of the
+call.
+"""
+id = "e7d63d66-2d46-4051-a304-4c34f7bbf11d"
+license = "Elastic License v2"
+name = "VirtualProtect via Indirect Syscall"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and
+ process.Ext.api.behaviors == "image_indirect_call" and process.Ext.api.behaviors == "native_api" and
+ (
+  (process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\*.dll" and
+   process.thread.Ext.call_stack_final_user_module.protection_provenance != null) or
+
+  (process.thread.Ext.call_stack_summary == "ntdll.dll|Unknown" and process.thread.Ext.call_stack_final_user_module.name == "Unknown")
+  ) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel*", "ntdll.dll") and
+ not process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|execmodelclient.dll|*" and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "Sentinel Labs, Inc.",  "ESET, spol. s r.o.", "MUSARUBRA US LLC",
+                                          "WIBU-SYSTEMS AG",  "Carbon Black, Inc.", "Adobe Inc.", "Adobe Systems, Incorporated",
+                                          "Mozilla Corporation", "Google LLC", "Fasoo Co., Ltd.", "AhnLab, Inc.")) and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
+                               ("c:\\program files\\common files\\microsoft shared\\clicktorun\\appvisvsubsystems64.dll",
+                                "c:\\program files\\common files\\mcafee\\systemcore\\mfehcthe.dll",
+                                "c:\\program files\\windowsapps\\microsoft.net.native.runtime.*\\mrt*_app.dll",
+                                "c:\\windows\\winsxs\\amd64_microsoft-windows-servicingstack_*\\turbocontainer.dll",
+                                "c:\\windows\\ccm\\localapphandler.dll",
+                                "c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\acrobat.exe",
+                                "c:\\program files (x86)\\adobe\\acrobat reader dc\\reader\\acrord32.exe",
+                                "c:\\windows\\system32\\sppcext.dll",
+                                "c:\\windows\\system32\\geolocation.dll",
+                                "c:\\windows\\system32\\msvcr*.dll",
+                                "c:\\windows\\system32\\windows.devices.sensors.dll") and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info : ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
+                                        "c:\\windows\\system32\\mdmregistration.dll!FindDiscoveryService*",
+                                        "c:\\windows\\sys?????\\ntdll.dll!LdrGetProcedureAddress*",
+                                        "c:\\windows\\sys?????\\ntdll.dll!LdrShutdownProcess*",
+                                        "c:\\windows\\sys?????\\apphelp.dll!SE_DllLoaded*",
+                                        "c:\\windows\\system32\\msvcr100.dll!tanhf*",
+                                        "c:\\windows\\sys?????\\win32u.dll!NtUserCreateWindowEx*")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,$entry.callsite_trailing_bytes like "488da42428000000c3000000000000000000000000000df0adba0d*") and
+ not (process.name:"powershell.exe" and
+      process.parent.executable : ("C:\\Windows\\System32\\Empirum\\EmpInventory.exe",
+                                   "C:\\Program Files\\ESET\\ESET Security\\ekrn.exe",
+                                   "C:\\Program Files\\ESET\\ESET Endpoint Antivirus\\ekrn.exe")) and
+ not (process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
+      process.Ext.api.summary like "VirtualProtect( clr.dll, 0x?, * )")
+'''
+
+min_endpoint_version = "8.14.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.14.2"

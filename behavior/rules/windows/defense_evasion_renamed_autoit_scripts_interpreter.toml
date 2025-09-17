@@ -7,7 +7,7 @@ id = "99f2327e-871f-4b8a-ae75-d1c4697aefe4"
 license = "Elastic License v2"
 name = "Renamed AutoIt Scripts Interpreter"
 os_list = ["windows"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -20,6 +20,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

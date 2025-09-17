@@ -1,0 +1,79 @@
+[rule]
+description = """
+Identifies attempt to modify the content of a system module. This may indicate an attempt to inject code using module
+stomping or DLL hollowing via overwriting the content of a legit DLL with malicious code.
+"""
+id = "542a6a6c-1af2-4e51-a8a4-5406765f5642"
+license = "Elastic License v2"
+name = "Suspicious System Module Image Hollowing"
+os_list = ["windows"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.behaviors == "hollow_image" and
+  process.Ext.api.parameters.size >= 10000 and process.executable != null and
+  process.Ext.api.metadata.target_address_path regex """c:\\windows\\(system32|syswow64)\\[a-z]+.dll""" and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Undetermined", "Unknown", "Kernel") and
+  not process.thread.Ext.call_stack_summary like "*Unknown*" and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Undetermined", "Unbacked", "Kernel*") and
+  /* ntdll, kernelbase and kernel32 are covered by other rules */
+  not process.Ext.api.metadata.target_address_name like ("ntdll.dll*", "kernel32.dll*", "kernelbase.dll*") and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+  not (process.Ext.api.name == "VirtualProtect" and _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*kernelbase.dll!LoadLibrary*", "*kernel32.dll!ExitProcess*", "*kernelbase.dll!GetProcAddressForCaller*", "*ntdll.dll!LdrLoadDll*"))) and
+  not process.thread.Ext.call_stack_final_user_module.path like
+                                         ("c:\\windows\\assembly\\nativeimages_*.dll",
+                                          "c:\\program files\\*",
+                                          "c:\\program files (x86)\\*",
+                                          "c:\\windows\\twain_32\\*.dll",
+                                          "c:\\windows\\system32\\umppc*.dll",
+                                          "c:\\windows\\system32\\spool\\drivers\\*") and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                              ("b6e3adede9b0b9da89c3c6f68ce6a5eb77ab251b5c038cc620cafa48b1fe0037",
+                                               "2cd768547d07855533c32eab8210d17412c89bd53880a60dd78e231248cc579e",
+                                               "f80d5f5de3f7a82e684229028b946f6efa1682d27ec960ef18518542fd12a407",
+                                               "91e9f9606469f8bbd86c68c21e52742b0b1e4598cf44209b3dcc0f45036e42e6",
+                                               "7a1755d119563f58d3d4d0f0923e171907572935aafc4cf27f51a09aa7def754",
+                                               "f81d5f63dccf693fab3772d9600746221f082f4d48bb7987216629f2804263b6",
+                                               "4da2c4cc0a764ea6ee62277f8983afec648cb40785c8395ad6338acb22c2b564",
+                                               "c1807fd6bea0db55972bb8b51490d39226594028f5501c2f69ac62d53bfdc407",
+                                               "3c99abcc2f24c310a3b3fc15585918e970d6d7da688f3b1e1d8b28767e4aaae9",
+                                               "f239acaf38fe64972664f8591722da7c3d40b85c1673beacdbb0ce996a4b4e46",
+                                               "ee6ff9b28dffedaabb0cf13853e7ed0b196e72970d1c206fd9d3d3f84886af87",
+                                               "17f0f709fb7f6190c03b19b6198fd863b6f0d79f46ccfebac6064be747a4cb3e",
+                                               "2c154aeaad085e01361b967adfec84b63db76a82a45681b3e6cdfacb6088e369",
+                                               "7d97ced37fa657963c06ad08efa735d01f59f6b42fec5b4ee6a1d1a4f4ad0a6e",
+                                               "d1e1d111eff2d7d3e60e5ed47d1919a43fe5a44e45f75d4a33f7a6cbc39a4aac",
+                                               "4328398412fdc6eadf57c4e659a45a34716cbccea0f4c025ef7fcd6e27d8ca48",
+                                               "bd0d0b5eadc24168292ba5ac70366519ce96b2fb2bb17ea94062b029e79a6da7",
+                                               "b6454f1ae5fed546f699732b15135bc7baf993931ca8bc8e143fb9fe1df11c1e",
+                                               "8620e418276050cf1f44d9f0a1095649ab7306db790ff352bb9ee03fddd051c0",
+                                               "34eff33b6000a8ad3b3bd448e35bef037063689d996f7367ecf13b7f7fb4a34a",
+                                               "8095edd1ecf015f01d3642a93b62cdef7fedfc8c487e14fc32ab68245d037e7b",
+                                               "8095edd1ecf015f01d3642a93b62cdef7fedfc8c487e14fc32ab68245d037e7b")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

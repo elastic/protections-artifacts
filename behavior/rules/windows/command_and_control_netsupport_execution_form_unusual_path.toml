@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "NetSupport Execution form unusual Path"
 os_list = ["windows"]
 reference = ["https://www.netsupportsoftware.com/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where process.pe.original_file_name : "client??.exe" and
@@ -22,6 +22,7 @@ min_endpoint_version = "8.4.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

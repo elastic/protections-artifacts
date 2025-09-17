@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identifies modifications in registry keys associated with abuse of the Outlook Home Page functionality for command and
+control or persistence.
+"""
+id = "f65102b4-15b1-4e9f-af76-3b8f67201185"
+license = "Elastic License v2"
+name = "Outlook Home Page Registry Modification"
+os_list = ["windows"]
+reference = [
+    "https://cloud.google.com/blog/topics/threat-intelligence/breaking-the-rules-tough-outlook-for-home-page-attacks/",
+    "https://github.com/trustedsec/specula",
+]
+version = "1.0.2"
+
+query = '''
+registry where event.action != "deletion" and
+    registry.path : "HKEY_USERS\\S-1-5-*\\SOFTWARE\\Microsoft\\Office\\*\\Outlook\\Webview\\Inbox\\URL"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1137"
+name = "Office Application Startup"
+reference = "https://attack.mitre.org/techniques/T1137/"
+[[threat.technique.subtechnique]]
+id = "T1137.004"
+name = "Outlook Home Page"
+reference = "https://attack.mitre.org/techniques/T1137/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

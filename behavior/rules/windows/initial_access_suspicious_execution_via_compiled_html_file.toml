@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.ptsecurity.com/ww-en/analytics/pt-esc-threat-intelligence/higaisa-or-winnti-apt-41-backdoors-old-and-new/",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.action == "start" and
@@ -40,6 +40,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

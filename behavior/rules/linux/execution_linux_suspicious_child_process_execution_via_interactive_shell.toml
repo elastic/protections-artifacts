@@ -8,7 +8,7 @@ id = "aa02591f-c9e6-4317-841e-0b075b9515ff"
 license = "Elastic License v2"
 name = "Linux Suspicious Child Process Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args like "-i" and process.args_count <= 2 and
@@ -22,6 +22,7 @@ process.parent.name like (
     "/usr/scratch/xar/23e8559c/bin/python"
   ) or
   process.parent.command_line in ("/bin/sh -c bash -i </dev/tty >/dev/tty 2>/dev/tty", "/bin/bash --login --posix") or
+  process.parent.command_line like "/usr/scratch/*poetry shell" or
   process.command_line == "/opt/cursor.appimage -i"
 )
 '''

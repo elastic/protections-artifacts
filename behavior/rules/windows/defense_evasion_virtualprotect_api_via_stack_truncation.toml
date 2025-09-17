@@ -7,7 +7,7 @@ id = "ef47dbfc-5e0b-4e97-83f6-d40026634999"
 license = "Elastic License v2"
 name = "VirtualProtect API via Stack Truncation"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -26,7 +26,15 @@ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "c:\\wi
                                         /* covered by 9906a386-771f-4003-b426-fbe75bdd6e73 */
                                         "c:\\windows\\system32\\ntdll.dll!NtTestAlert*")) and
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance like ("Kernel", "Kernel|*")))
-)
+) and
+/* Dr.Web Shellguard anti-exploit module */
+not (process.thread.Ext.call_stack_summary == "ntdll.dll|Unknown" and
+     process.executable : ("C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+                           "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+                           "C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE") and
+     process.parent.executable : ("C:\\Windows\\System32\\svchost.exe",
+                                  "C:\\Windows\\explorer.exe",
+                                  "C:\\Windows\\System32\\OpenWith.exe"))
 '''
 
 min_endpoint_version = "8.14.0"

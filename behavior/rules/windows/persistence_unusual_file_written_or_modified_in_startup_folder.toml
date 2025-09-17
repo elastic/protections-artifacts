@@ -7,7 +7,7 @@ id = "30a90136-7831-41c3-a2aa-1a303c1186ac"
 license = "Elastic License v2"
 name = "Unusual File Written or Modified in Startup Folder"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 file where event.action != "deletion" and
@@ -47,9 +47,11 @@ file where event.action != "deletion" and
     not (process.name : "cmd.exe" and file.extension : "cmd") and
     not (process.code_signature.subject_name :
                  ("Intercontinental Exchange, Inc.", "Chocolatey Software, Inc.", "ONELAUNCH TECHNOLOGIES INC.", 
-                  "Notepad++", "Ghisler Software GmbH") and 
+                  "Notepad++", "Ghisler Software GmbH", "Western Union Holdings Inc.", "AnyDesk Software GmbH") and
          process.code_signature.status : ("trusted", "errorExpired", "errorCode_endpoint*")) and
-    not (process.executable : "?:\\Windows\\System32\\notepad.exe" and file.extension : ("bat", "cmd"))
+    not (process.executable : "?:\\Windows\\System32\\notepad.exe" and file.extension : ("bat", "cmd")) and
+    not (process.executable : "C:\\Windows\\SysWOW64\\cscript.exe" and file.name : "WUPOSStartup.exe") and
+    not (process.name : "cmd.exe" and file.name : "MonitorES.exe")
 '''
 
 min_endpoint_version = "8.0.0"

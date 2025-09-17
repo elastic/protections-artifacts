@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies the overwrite of a Windows shortcut (lnk) file by processes that defaults to handle archive extraction. This
+could be the result of an attempt to bypass bypass Microsoft SmartScreen protection.
+"""
+id = "27d1b0dc-a50c-4e7b-9ec5-961351fbe819"
+license = "Elastic License v2"
+name = "Potential Execution via LNK Stomping"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/dismantling-smart-app-control"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=3s
+[file where event.action == "overwrite" and file.extension : "lnk" and
+ process.name : ("explorer.exe", "7zFM.exe", "WinRAR.exe", "Bandizip.exe") and file.Ext.header_bytes : "4c0000000114020000000000c0000000" and
+ process.thread.Ext.call_stack_summary : "ntdll.dll|*|windows.storage.dll|shell32.dll|*" and
+ (
+  file.path : ("?:\\Users\\*\\Downloads\\*.lnk", "?:\\Users\\*\\AppData\\Local\\Temp\\*.lnk") or
+  file.Ext.windows.zone_identifier == 3
+  )] by process.entity_id
+ [process where event.action == "start" and
+  process.parent.name : ("explorer.exe", "7zFM.exe", "WinRAR.exe", "Bandizip.exe") and
+   not process.executable : ("C:\\Program Files (x86)\\*.exe", "C:\\Program Files\\*.exe")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.001"
+name = "Spearphishing Attachment"
+reference = "https://attack.mitre.org/techniques/T1566/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.7.0"

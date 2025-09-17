@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Indirect Command Execution via Console Window Host"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Conhost/"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.action == "start" and
@@ -29,6 +29,7 @@ min_endpoint_version = "7.15.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

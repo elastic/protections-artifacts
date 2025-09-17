@@ -8,12 +8,13 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
-any where process.executable != null and not event.action in ("query", "open") and
+any where process.executable != null and 
  (
-  (Effective_process.name : "TrustedInstaller.exe" and 
+  /* file or registry events */
+  (Effective_process.name : "TrustedInstaller.exe" and not event.action in ("query", "open") and  
    not (process.executable : "?:\\Windows\\system32\\svchost.exe" and 
         file.path : ("?:\\windows\\system32\\config\\systemprofile\\*",
                      "?:\\ProgramData\\Malwarebytes Endpoint Agent\\Plugins\\EDRPlugin\\Backup\\*.frb")) and
@@ -27,6 +28,7 @@ any where process.executable != null and not event.action in ("query", "open") a
 	        ("HKLM\\SOFTWARE\\Policies\\Microsoft\\SystemCertificates\\*", 
 		     "HKLM\\SOFTWARE\\Microsoft\\SystemCertificates\\*"))) or
 
+  /* process events */
   (process.Ext.effective_parent.name : "TrustedInstaller.exe" and
    process.parent.name != null and process.hash.sha256 != null and
    not (process.executable :
@@ -47,7 +49,7 @@ any where process.executable != null and not event.action in ("query", "open") a
                  "\\Device\\VhdHardDisk*\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
                  "\\\\?\\Volume{*}\\Windows\\SoftwareDistribution\\Download\\Install\\securityhealthsetup.exe",
                  "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe") and
-         process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation") and process.code_signature.trusted == true) and
+         process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation", "Microsoft Windows") and process.code_signature.trusted == true) and
 		 
    not (process.executable : 
                ("?:\\Windows\\System32\\WerFault.exe", 
@@ -59,12 +61,12 @@ any where process.executable != null and not event.action in ("query", "open") a
                  "\\Device\\HarddiskVolume*\\Windows\\servicing\\TrustedInstaller.exe",  
                  "\\Device\\VhdHardDisk*\\Windows\\servicing\\TrustedInstaller.exe", 
                  "\\\\?\\Volume{*}\\Windows\\servicing\\TrustedInstaller.exe",
-                 "?:\\WINDOWS\\System32\\svchost.exe"))) and
-
+                 "?:\\WINDOWS\\System32\\svchost.exe")))
+) and 
    not (process.executable : ("?:\\Program Files (x86)\\Panda Security\\*.exe", "?:\\Program Files\\Panda Security\\*.exe") and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Panda Security S.L.") and
 
-   not process.hash.sha256 :
+   not process.hash.sha256 in
                  ("1e07a7a91451303d5cdac0a1673d581f5f7198fcc08fc79e4332aba6400f55a8",
                   "f14ea2efbbf0298963f8a574d6b139616ce6bb1e8ab97848d73312c4184b3812") and
 
@@ -75,25 +77,25 @@ any where process.executable != null and not event.action in ("query", "open") a
         process.executable : "?:\\Program Files\\ProfileUnity\\FlexApp\\ContainerService\\x64\\Sentinel\\LwIoSentinel.exe") and
 
    not (process.executable : "?:\\Program Files (x86)\\Kaspersky Lab\\*.exe" and
-        process.code_signature.trusted == true and process.code_signature.subject_name : "Kaspersky Lab JSC")
- ) and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "Kaspersky Lab JSC") and
 
- not (process.executable : "?:\\Windows\\System32\\btservice.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name : "BeyondTrust Software, Inc") and
+   not (process.executable : "?:\\Windows\\System32\\btservice.exe" and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "BeyondTrust Software, Inc") and
 
- not (process.executable : "?:\\Program Files\\Common Files\\McAfee\\AVSolution\\mcshield.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name : "MUSARUBRA US LLC") and
+   not (process.executable : "?:\\Program Files\\Common Files\\McAfee\\AVSolution\\mcshield.exe" and
+        process.code_signature.trusted == true and process.code_signature.subject_name : "MUSARUBRA US LLC") and
 
- not (process.executable : "C:\\Program Files (x86)\\Panda Security\\WAC\\PSANHost.exe" and
-      process.code_signature.trusted == true and process.code_signature.subject_name == "Panda Security S.L.") and
+  not (process.executable : "C:\\Program Files (x86)\\Panda Security\\WAC\\PSANHost.exe" and
+       process.code_signature.trusted == true and process.code_signature.subject_name == "Panda Security S.L.") and
 
- not (process.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe" and
-      process.parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe") and
+  not (process.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe" and
+       process.parent.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe") and
 
- not (process.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe" and
-      process.parent.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe" and
-      process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
- not (process.executable : "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security for Windows Server\\kavfswp.exe" and
+  not (process.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiFileFetcher.exe" and
+       process.parent.executable : "C:\\Windows\\WinSxS\\amd64_microsoft-windows-servicingstack_*\\TiWorker.exe" and
+       process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
+	   
+  not (process.executable : "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security for Windows Server\\kavfswp.exe" and
       process.code_signature.subject_name == "Kaspersky Lab JSC" and process.code_signature.trusted == true)
 '''
 

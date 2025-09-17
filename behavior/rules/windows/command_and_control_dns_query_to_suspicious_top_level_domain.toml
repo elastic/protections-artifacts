@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -104,6 +104,7 @@ min_endpoint_version = "8.4.0"
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+tree = true
 
 [[optional_actions]]
 action = "rollback"

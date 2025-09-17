@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -24,7 +24,7 @@ process where event.type == "start" and event.action == "exec" and (
 ) and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
 process.command_line like (
-  "* /tmp/.* ", "* /var/tmp/.* ", "* /dev/shm/* ", "*xxd *", "*base64 -*d*", "*|*base64 *",
+  "* /tmp/.* ", "* /var/tmp/.* ", "* /dev/shm/* ", "* xxd *", "*base64 -*d*", "*|*base64 *",
   "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*",
   "*TCPSocket.open*", "*io.popen*", "*os.execute*", "*fsockopen*", "*/etc/cron.*/*", "* ncat *", "* nc *", "* netcat *",
   "* nc.traditional *", "*cat * /etc/passwd*", "*/etc/shadow*", "*/home/*/.ssh/*", "*~/.ssh/*", "*/root/.ssh/*"
@@ -37,7 +37,8 @@ process.command_line like (
     "/bin/sh -c sed -nr 's/^(.*):.*:.{4}:.*:.*:.*:.*$/\\1/p' /etc/passwd", "petalinux*", "*/dev/tcp/localhost/*",
     "*127.0.0.1*", "*nc*-*z*", "cd*/tmp/*", "/bin/sh -c /bin/base64 -w*", "/bin/sh -c*puppet_puppetagent*",
     "/bin/sh -c (printf*", "*localhost*", "/bin/sh -c ssh*", "sh -c * /tmp/lua_*", "sh -c man/base*",
-    "/bin/sh -c */etc/cron.d/puppet_kick-puppet-at-vanguard*", "/bin/bash -c set -o pipefail*", "/bin/sh -c file*"
+    "/bin/sh -c */etc/cron.d/puppet_kick-puppet-at-vanguard*", "/bin/bash -c set -o pipefail*", "/bin/sh -c file*",
+    "/bin/sh -c /usr/bin/base64 -w 0*", "/bin/bash -c -l source*/tmp/claude-*-cwd"
   ) or
   process.args like (
     "curl*", "/usr/bin/rrdtool*", "/usr/bin/openssl*",  "/usr/mibin/genxls*", "'inkscape'*", "/usr/bin/convert*",

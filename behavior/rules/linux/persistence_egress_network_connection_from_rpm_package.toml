@@ -7,14 +7,14 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
    process.parent.args : "/var/tmp/rpm-tmp.*" and not (
-     process.executable == "/sbin/runuser" or
+     process.executable in ("/sbin/runuser", "/usr/sbin/runuser") or
      process.working_directory like~ ("/builds/packages/naudit-repos", "/disco_flowlytics/docker/overlay2/*") or
      process.args : ("/usr/local/cpanel/3rdparty/wp-toolkit/*", "/usr/bin/rpmkeys") or
      (process.executable == "/bin/sudo" and process.args in (

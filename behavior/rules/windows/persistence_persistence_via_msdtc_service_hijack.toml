@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects attempts to hijack the execution of the MSDTC Windows service via the OracleOciLib registry key modification
+forcing to load a random library.
+"""
+id = "aa2a4cd9-0b08-4783-b94e-f65fca46566a"
+license = "Elastic License v2"
+name = "Persistence via MSDTC Service Hijack"
+os_list = ["windows"]
+reference = [
+    "https://www.trendmicro.com/en_sg/research/19/l/waterbear-is-back-uses-api-hooking-to-evade-security-product-detection.html",
+]
+version = "1.0.2"
+
+query = '''
+library where process.executable : "?:\\Windows\\System32\\msdtc.exe" and
+ not dll.code_signature.status : "trusted" and user.id : "S-1-5-20" and
+ (dll.Ext.relative_file_creation_time < 5000 or dll.Ext.relative_file_name_modify_time < 5000) and
+ process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|mtxoci.dll*"
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.7.0"

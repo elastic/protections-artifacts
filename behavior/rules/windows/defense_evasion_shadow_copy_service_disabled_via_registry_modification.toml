@@ -7,15 +7,16 @@ id = "b2409cd4-3b23-4b2d-82e4-bbb25594999a"
 license = "Elastic License v2"
 name = "Shadow Copy Service Disabled via Registry Modification"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 registry where
  registry.path : "HKLM\\SYSTEM\\ControlSet*\\Services\\VSS\\Start" and registry.data.strings : "4" and
- not process.executable : "?:\\Windows\\System32\\services.exe" and process.executable : "?*"
+ not process.executable : "?:\\Windows\\System32\\services.exe" and process.executable : "?*" and
+ not (process.code_signature.subject_name == "Enestech Software (Cyprus) Ltd" and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -52,4 +53,4 @@ name = "Impact"
 reference = "https://attack.mitre.org/tactics/TA0040/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.4.0"

@@ -7,7 +7,7 @@ id = "8f9a6523-fa8f-46d1-b2de-72ef18e85f52"
 license = "Elastic License v2"
 name = "Memory Allocation from a High Entropy Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence
@@ -40,7 +40,8 @@ sequence
                                 "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|wow64.lmd")) and
    not (process.executable : "?:\\Windows\\SysWOW64\\msiexec.exe" and
         process.thread.Ext.call_stack_final_user_module.name like "msi*.tmp" and
-        process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|msi*.tmp")
+        process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|msi*.tmp") and
+   process.thread.Ext.call_stack_final_user_module.hash.sha256 != "b35e38071d8f32e1cfc51f7aa4c7f406461eb062123fd25ef746b3c75416c01a"
    ]
 until [process where event.action == "end"]
 '''

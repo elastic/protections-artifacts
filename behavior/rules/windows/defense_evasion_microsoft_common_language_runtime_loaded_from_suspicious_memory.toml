@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 library where dll.name : "clr.dll" and
@@ -35,7 +35,11 @@ library where dll.name : "clr.dll" and
                 "?:\\Program Files (x86)\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe",
                 "?:\\Program Files\\Adaptiva\\AdaptivaClient\\bin\\AdaptivaClientService.exe",
                 "C:\\Program Files\\Siemens\\teamplay\\bin\\*\\syngo.Cloud.Receiver.Plugin.DicomTagResolver.exe",
-                "?:\\Program Files\\Sql Server Extension\\SqlServerExtension.Service.exe") and
+                "?:\\Program Files\\Sql Server Extension\\SqlServerExtension.Service.exe",
+                "C:\\Program Files\\Siemens\\CloudLink\\*.exe",
+                "C:\\Program Files (x86)\\Razer\\Razer Cortex\\RazerCortex.exe",
+                "C:\\Program Files\\Guard\\Data Vault Publisher for Citect\\*.exe",
+                "C:\\Program Files\\Koios\\Koios DS\\KoiosDS-MVC-App.exe") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes : ("c5f8774883ec10c5fb1104244883ec104889042449ba00000000000000004*",
                                                       "*488b8d48ffffff48894b104c8b658049894424084c896588c745c0*"))

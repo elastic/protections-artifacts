@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Proxy Execution via Run-parts"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/run-parts/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "run-parts" and
@@ -37,7 +37,7 @@ process.parent.command_line like ("/*run-parts *", "run-parts *") and process.pa
   process.command_line in (
     "run-parts --lsbsysinit /etc/update-motd.d", "/bin/run-parts /etc/run_once",
     "run-parts /usr/lib/vmware/viewagent/bin/uninstall",
-    "run-parts /scripts"
+    "run-parts /scripts", "/usr/bin/env bash ./dovecot", "/usr/bin/env bash ./postfix"
   ) or
   process.parent.command_line == "run-parts --lsbsysinit /etc/update-motd.d"
 )

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -25,6 +25,7 @@ sequence by process.entity_id with maxspan=2m
   not (process.name : "powershell.exe" and process.command_line : ("*$env:APPDATA*Browser Assistant*", "*MicrosoftEdgeAutoLaunch*GoogleChromeAutoLaunch*")) and
   not (process.pe.original_file_name : "Teams.exe" and process.code_signature.trusted == true) and
   not (process.name : "cscript.exe" and process.args : "?:\\Program Files\\Nextech\\NxTSAddin\\InstallNXTSAddinForCurrentUser.vbs") and
+  not (process.parent.name : "powershell.exe" and process.parent.args : "'C:\\ProgramData\\CentraStage\\Packages\\*.ps1'") and
   not process.executable :
                  ("C:\\Program Files (x86)\\Exclaimer Ltd\\Cloud Signature Update Agent\\Exclaimer.CloudSignatureAgent.exe",
                   "C:\\Windows\\System32\\wsl.exe",
@@ -34,17 +35,20 @@ sequence by process.entity_id with maxspan=2m
                   "C:\\Program Files\\Nextcloud\\nextcloud.exe",
                   "C:\\Program Files\\WindowsApps\\MSTeams_*\\ms-teams.exe") and
   not (process.code_signature.subject_name in ("CrashPlan Group LLC", "Red Hat, Inc", "d7xTech, Inc", "Code42 Software Inc",
-       "Galactic Advisors, Inc.", "Hamilton Bonaduz AG", "epostbox epb GmbH", "FastTrack Software ApS", "AnyDesk Software GmbH") and
+       "Galactic Advisors, Inc.", "Hamilton Bonaduz AG", "epostbox epb GmbH", "FastTrack Software ApS", "AnyDesk Software GmbH",
+       "Dassault Systemes SolidWorks Corp.") and
        process.code_signature.trusted == true) and
   not process.parent.executable :
                       ("C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\BESClient.exe",
+                       "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe",
                        "C:\\Program Files\\Produce8-Agent\\Produce8-Agent.exe",
                        "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe") and
   process.hash.sha256 != null and
   not process.hash.sha256 in ("7b2ba9a849427f8cafac26fe3c522a62287b70dd05de3464e673706a8871552d",
                              "a22895e55b26202eae166838edbe2ea6aad00d7ea600c11f8a31ede5cbce2048",
                              "b924ad8062eaf4e70437c8be50fa612162795ff0839479546ce907ffa8d6e386",
-                             "e554425243e3e8ca1cd5fe550db41e6fa58a007c74fad400274b128452f38fb8")
+                             "e554425243e3e8ca1cd5fe550db41e6fa58a007c74fad400274b128452f38fb8") and
+  not (process.name : "wscript.exe" and process.args : "C:\\MININT\\Scripts\\LiteTouch.wsf")
   ]
  [any where event.category : ("registry", "file") and event.action != "deletion" and
    (
@@ -62,13 +66,15 @@ sequence by process.entity_id with maxspan=2m
       "HKEY_USERS\\*Classes\\*\\InprocServer32\\*",
       "HKEY_USERS\\*Classes\\*\\LocalServer32\\*") and
      not (process.name : "powershell.exe" and registry.path : "H*\\*\\RunOnce\\Update*") and
+     not (process.name : "powershell.exe" and file.path : "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\KnowledgeLake *.lnk") and
      not registry.data.strings :
                    ("*%ProgramFiles%*",
                     "*:\\Program Files\\*",
                     "*:\\Program Files (x86)\\*",
-                    "ctfmon.exe /n",
+                    "ctfmon.exe /n", "\"\\\\*",
                     "rundll32.exe C:\\WINDOWS\\system32\\advpack.dll,DelNodeRunDLL32*",
-                    "\"C:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe\"  /background"))
+                    "\"C:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe\"  /background",
+                    "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -ToastActivated"))
    )
   ]
 '''

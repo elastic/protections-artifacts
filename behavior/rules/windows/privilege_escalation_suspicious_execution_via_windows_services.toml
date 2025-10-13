@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 process where event.action == "start" and
@@ -143,7 +143,8 @@ process where event.action == "start" and
 	          "4eb8a5b3ba5b30b7c4e4e1db60af75f7cac808aa3bc0cd326bf4863535659def",
 	          "46122ee39283dbca52dde436ef04d47fd962271424726b491ad8584389461177",
 	          "3c16784f9b827aa6583d529f8585c431cd39e7e3a96e31c7b9882d5b48c00087",
-	          "d71fce8dc14cfb082041c2ddd6184baa6e1bc535582e36174bc0a80be9f7a879") and
+	          "d71fce8dc14cfb082041c2ddd6184baa6e1bc535582e36174bc0a80be9f7a879",
+	          "73f834726b1091494d8151ff053eeb4dc6f79dd49525f23a5583c2bdeb176eb8") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",
@@ -196,9 +197,13 @@ process where event.action == "start" and
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

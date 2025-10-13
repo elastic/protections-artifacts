@@ -1,0 +1,71 @@
+[rule]
+description = """
+Detects potential execution of a script or unsigned macOS binary from a mounted device. Malware may abuse DMG files to
+deliver malicious code or scripts to gain initial access.
+"""
+id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
+license = "Elastic License v2"
+name = "Suspicious Script or Process Execution from Mounted Device"
+os_list = ["macos"]
+version = "1.0.39"
+
+query = '''
+sequence with maxspan=2m
+ [file where event.action == "mount" and
+  not (process.executable like "/usr/libexec/lsd" and file.path like~ "/private/var/folders/*/AppTranslocation/*")] as event0
+ [process where event.action == "exec" and 
+  (stringcontains~(process.command_line, event0.file.path) or 
+   stringcontains~(process.parent.command_line, event0.file.path)) and
+   (process.code_signature.trusted == false or 
+    process.code_signature.exists == false or
+    process.name like~ ("curl", "nscurl", "mktemp", "tail", "funzip", "python*", "perl", "osascript") or
+    (process.name == "chmod" and process.args in ("+x", "a+x", "0777", "777")) or
+    (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+     ((process.args == "-c" and process.args like~ ("*curl*", "*nscurl*", "*mktemp*", "*tail*", "*funzip*", "*python*", "*perl*", "*osascript*")) or process.args_count <= 2))) and not
+  process.executable like ("/private/tmp/PKInstallSandbox.*", "/opt/homebrew/Cellar/*") and not
+  process.name == "app-builder_arm64" and not
+  process.args like~ ("/tmp/PKInstallSandbox.*/Scripts/*", 
+                      "/Library/Apple/System/Library/InstallerSandboxes/.*",
+                      "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
+                      "/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and not 
+  process.parent.executable like~ ("/sbin/launchd",
+                                   "/usr/bin/sudo",
+                                   "/Library/PrivilegedHelperTools/*") and not
+  process.Ext.effective_parent.executable in 
+                                            ("/usr/local/jamf/bin/jamf",
+                                             "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
+                                             "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.5.0"

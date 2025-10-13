@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = ".NET COM object created in non-standard Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://github.com/tyranid/DotNetToJScript"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -59,7 +59,9 @@ not (process.executable : "C:\\Program Files\\Microsoft Office\\root\\Office??\\
      process.thread.Ext.call_stack_summary like "*combase.dll|vbscript.dll|mso30win32client.dll*") and
 not (process.executable : "C:\\Windows\\System32\\CredentialUIBroker.exe" and
      process.parent.executable : "C:\\Windows\\System32\\svchost.exe" and
-     process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|jscript.dll|kernel32.dll|ntdll.dll")
+     process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|jscript.dll|kernel32.dll|ntdll.dll") and
+not (process.executable : "C:\\Windows\\System32\\SearchFilterHost.exe" and process.parent.executable : "C:\\Windows\\System32\\SearchIndexer.exe" and
+     process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|clr.dll|mscoreei.dll|mscoree.dll|combase.dll|vbscript.dll|offfiltx.dll|searchfilterhost.exe|rpcrt4.dll|combase.dll|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll")
 '''
 
 min_endpoint_version = "8.8.0"

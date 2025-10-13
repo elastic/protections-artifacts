@@ -7,7 +7,7 @@ id = "0a364281-5edc-4f75-a839-48b150cec3f2"
 license = "Elastic License v2"
 name = "Attempt to Mount a Remote WebDav Share"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,9 @@ process where event.action == "start" and
  not (process.parent.name : "rundll32.exe" and process.parent.args : "?:\\Program Files\\Microsoft Office\\root\\Office16\\MLCFG32.CPL") and
  not process.parent.executable : ("C:\\Program Files\\Microsoft Office\\root\\Office16\\WINPROJ.EXE",
                                   "D:\\SF-Deploy\\Console\\Console.exe",
-                                  "C:\\Program Files\\WindowsApps\\MyCaseInc.MyCaseFileSync_*\\app\\MyCase Desktop.exe")
+                                  "C:\\Program Files\\WindowsApps\\MyCaseInc.MyCaseFileSync_*\\app\\MyCase Desktop.exe",
+                                  "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE") and
+ not (process.name : "xcopy.exe" and process.args : "\\\\*.sharepoint.com\\DavWWWRoot\\sites\\*")
 '''
 
 min_endpoint_version = "7.16.0"

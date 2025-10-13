@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "AMSI Bypass via PowerShell"
 os_list = ["windows"]
 reference = ["https://github.com/0xsyr0/Red-Team-Playbooks/blob/master/5-Installation/5-Installation.md"]
-version = "1.0.1"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -36,7 +36,8 @@ process.Ext.api.parameters.buffer :
                     "*cwBpAC4AZABsAGwA*",
                     "*41 6d 73 69 53 63 61 6e 42 75 66 66 65 72*",
                     "*5492868772801748688168747280728187173688878280688776828*")
-  )
+  ) and
+not process.parent.executable : "C:\\Program Files (x86)\\ManageSoft\\Tracker\\ndtrack.exe"
 '''
 
 min_endpoint_version = "8.16.0"

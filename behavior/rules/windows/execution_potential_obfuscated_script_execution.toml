@@ -8,7 +8,7 @@ id = "a279fa6c-61eb-49ea-926e-704db27855e8"
 license = "Elastic License v2"
 name = "Potential Obfuscated Script Execution"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=1m
@@ -40,7 +40,9 @@ sequence with maxspan=1m
                             "C:\\Program Files\\Java\\jre8\\bin\\java.exe",
                             "C:\\Program Files (x86)\\SofttechLLC\\FlightVector\\FlightVector.exe",
                             "?:\\Program Files\\Automation Anywhere\\Bot Agent\\jre\\bin\\BotLauncher.exe",
-                            "C:\\Program Files\\Eclipse Adoptium\\jdk-*-hotspot\\bin\\java.exe")] as event0
+                            "C:\\Program Files\\Eclipse Adoptium\\jdk-*-hotspot\\bin\\java.exe",
+                            "C:\\Program Files (x86)\\Imprivata\\OneSign Agent\\x64\\ISXAgent.exe",
+                            "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe")] as event0
  [process where event.action == "start" and process.args_count >= 2 and 
   (
    (process.Ext.relative_file_creation_time <= 500 and process.pe.original_file_name : ("node.exe", "AutoIt*.exe")) or 

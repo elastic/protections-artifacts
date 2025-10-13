@@ -10,14 +10,15 @@ os_list = ["windows"]
 reference = [
     "https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
  [process where event.action == "start" and
   (process.Ext.relative_file_creation_time <= 1800 or process.Ext.relative_file_name_modify_time <= 1800) and
   (process.code_signature.trusted == false or process.code_signature.exists == false) and
-  not process.code_signature.status : ("errorExpired", "errorCode_endpoint*")]
+  not process.code_signature.status : ("errorExpired", "errorCode_endpoint*") and
+  not process.hash.sha256 in ("a9774d76822597777e1beaaad9d3a1e441b266836d6ca97a4b7bd908e8a3f518", "c9fe835d7f6fb610c78cb4e3b89bdc9e242d422cceb854fadf88f77c49fa8ff3")]
  [registry where
   process.executable != null and registry.data.strings != null and
   registry.path : ("HKEY_USERS\\*Classes\\*\\InprocServer32\\",

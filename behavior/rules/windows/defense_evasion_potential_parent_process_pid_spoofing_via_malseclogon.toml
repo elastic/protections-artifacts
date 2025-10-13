@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Parent Process PID Spoofing via MalSecLogon"
 os_list = ["windows"]
 reference = ["https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -60,7 +60,8 @@ process where event.action == "start" and
 
     not (process.pe.original_file_name : "VCPkgSrv.exe" and process.code_signature.trusted == true) and
 
-    not process.executable : "?:\\Program Files (x86)\\Varian\\OCS\\*\\VMS.Varis.Vishnu.exe"
+    not process.executable : "?:\\Program Files (x86)\\Varian\\OCS\\*\\VMS.Varis.Vishnu.exe" and
+    not (process.parent.executable : "C:\\Windows\\System32\\mmc.exe" and process.executable : "C:\\Windows\\System32\\mmc.exe" and process.args : "/server:*")
 '''
 
 min_endpoint_version = "8.6.0"

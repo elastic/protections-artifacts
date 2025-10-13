@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -21,7 +21,10 @@ sequence by process.entity_id with maxspan=5m
                            "?:\\Program Files\\Java\\jre*\\bin\\java.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\java.exe",
                            "?:\\Windows\\Microsoft.NET\\*.exe")
-     )
+     ) and
+     not (process.name : "powershell.exe" and process.working_directory : "\\\\VMHOST\\Users\\*\\Downloads\\" and
+          process.parent.executable : "\\Device\\Mup\\VMHOST\\*") and
+     not process.command_line :  "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\""
    ]
   [dns where
     dns.question.name :

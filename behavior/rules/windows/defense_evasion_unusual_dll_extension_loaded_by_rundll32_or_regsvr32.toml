@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
     "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=1s
@@ -20,11 +20,10 @@ sequence by process.entity_id with maxspan=1s
        process.args : "ShowBatteryGauge" and process.args : "updatestatus") and
   not (process.name : "regsvr32.exe" and
        process.args : ("?:\\Program Files (x86)\\DesktopCentral_Agent\\bin\\BSPHelperObject.dll",
-                       "\\\\*\\FullCase\\pegasusimaging.activex.imagxpress*.dll"))
-  ]
+                       "\\\\*\\FullCase\\pegasusimaging.activex.imagxpress*.dll"))]
  [library where process.name : ("rundll32.exe", "regsvr32.exe") and
   dll.hash.sha256 : "??*" and
-  not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb", "*.scr", "*.dll.mui", "*.ime", "*.tsp", "*.rbf") and
+  not dll.name : ("*.dll", "*.cpl", "*.tmp", "*.exe", "*.tlb", "*.scr", "*.dll.mui", "*.ime", "*.tsp", "*.rbf", "*.whl") and
   not (dll.name : ("*.ocx", "*.ax") and process.name : "regsvr32.exe") and
   not dll.code_signature.status : ("trusted", "errorCode_endpoint*")  and
   not dll.path : ("?:\\Windows\\System32\\winspool.drv",

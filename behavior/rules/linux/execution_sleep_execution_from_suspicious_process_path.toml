@@ -1,0 +1,61 @@
+[rule]
+description = """
+This rule detects the execution of the sleep command from a world-writeable directory or hidden process executable.
+Attackers may use sleep to delay execution of malicious code.
+"""
+id = "9e879677-2317-4c1d-bddb-8fa4629be810"
+license = "Elastic License v2"
+name = "Sleep Execution from Suspicious Process Path"
+os_list = ["linux"]
+version = "1.0.7"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
+  (process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") or process.name like ".*") and not (
+    process.executable like~ (
+      "/tmp/newroot/*", "/tmp/JobScheduler-Agent*", "/tmp/petalinux_*", "/tmp/plz_sandbox/third_party/*", "/var/tmp/buildah*",
+      "/infanspr/scripts/.root/.infans-daily-server-script", "/tmp/.mount_jetbrap*", "/tmp/snap.rootfs_*", "/tmp/ubuntu-release-upgrader-*",
+      "/tmp/tmp.*/.venv/bin/pytest", "/tmp/par-*/castnet_webserver", "/tmp/build/.heroku/node/bin/node",
+      "/tmp/.ansible*", "/tmp/*/com.service_now*", "/tmp/*/easybuild/*", "/nix/store/*", "/tmp/tmp.*/ijent",
+      "/tmp/*/.venv/bin/python", "/tmp/text_templater_*", "/var/tmp/container*/usr/bin/dpkg", "/tmp/container*/usr/bin/dpkg",
+      "/run/systemd/mount-rootfs/nix/store/*", "/tmp/xfs-*/yarn", "/tmp/root/spack*"
+    ) or
+    process.name in ("gcc", "xgcc", "nvim") or
+    process.parent.name == "ansible" or
+    process.working_directory like (
+      "/build", "/tmp/newroot/*", "/tmp/plz_sandbox", "/tmp/.build/*", "/tmp/tmp/bwrap*", "/jenkins/workspace/*",
+      "/var/lib/waagent/*", "/tmp/plz_sandbox/*", "/builds/*", "/opt/bmc/bladelogic/RSCD", "/var/lib/one"
+    ) or
+    process.parent.executable like ("/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*")
+  )]
+  [process where event.type == "start" and event.action == "exec" and process.name == "sleep"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

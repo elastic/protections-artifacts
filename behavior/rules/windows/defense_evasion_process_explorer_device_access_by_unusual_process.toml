@@ -7,7 +7,7 @@ id = "9c4bd6d6-9e2f-4ce2-8266-923e1799726c"
 license = "Elastic License v2"
 name = "Process Explorer Device Access by Unusual Process"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
@@ -18,11 +18,12 @@ api where
        _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $caller, $caller.trusted == true and
                      $caller.subject_name : "Microsoft Corporation")) and
   not (process.name : ("procexp64.exe", "procexp.exe", "Handle64.exe", "Handle.exe") and process.code_signature.subject_name : "Microsoft Corporation" and
-       process.thread.Ext.call_stack_final_user_module.name : "Unknown" and process.code_signature.trusted == true) and
+       process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and process.code_signature.trusted == true) and
   not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe") and
        process.code_signature.subject_name : "Microsoft Corporation" and process.code_signature.trusted == true) and
   not process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\apphelp.dll" and
-  not (process.Ext.api.parameters.device == "\\Device\\PROCEXP152" and process.thread.Ext.call_stack_final_user_module.name == "handle64.exe")
+  not (process.Ext.api.parameters.device == "\\Device\\PROCEXP152" and process.thread.Ext.call_stack_final_user_module.name == "handle64.exe") and
+  not (process.executable : "C:\\Windows\\System32\\svchost.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\iphlpsvc.dll")
 '''
 
 min_endpoint_version = "8.14.0"

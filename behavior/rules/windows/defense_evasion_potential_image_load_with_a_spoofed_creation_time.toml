@@ -13,7 +13,7 @@ reference = [
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -31,13 +31,15 @@ sequence with maxspan=5m
               "?:\\Windows\\SysWOW64\\msiexec.exe",
               "?:\\windows\\system32\\drvinst.exe",
               "?:\\windows\\SysWOW64\\drvinst.exe",
+              "C:\\Windows\\System32\\Robocopy.exe",
               "?:\\Program Files (x86)\\*.exe",
               "?:\\Program Files\\*.exe",
               "?:\\Windows\\System32\\DriverStore\\FileRepository\\*.exe") and
 
   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "JACK HENRY & ASSOCIATES, INC.") and 
        process.code_signature.trusted == true) and
-  not file.path : "?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll"
+  not file.path : "?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll" and
+  not (process.name : "xcopy.exe" and file.extension == "pyd")
   ] by file.path as event0
  [library where
 
@@ -78,7 +80,7 @@ sequence with maxspan=5m
               "1a45f5985273d2372a352c07db6a15382780d6fce47d36195c6d1c5822c169b7") and
   not (process.code_signature.subject_name : ("Epicor Software Corporation", "KONICA MINOLTA, INC.", "3CX Ltd",
                                               "WZT", "Tendyron Corporation","INTUIT INC.",
-                                              "MEDENT (Community Computer Service Inc.)") and
+                                              "MEDENT (Community Computer Service Inc.)", "Pitney Bowes Inc.") and
        process.code_signature.trusted == true) and
   not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true) and
   not process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe"

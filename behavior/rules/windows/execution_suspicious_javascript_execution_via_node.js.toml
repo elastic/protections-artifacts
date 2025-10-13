@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious JavaScript Execution via Node.js"
 os_list = ["windows"]
 reference = ["https://nodejs.org"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -23,18 +23,27 @@ process where event.action == "start" and
           ("try{require('./_postinstall')}catch(e){}",
            "try{require('./postinstall')}catch(e){}",
            "--package",
+           "-i",
+           "--inspect",
            ".home",
            "?:\\Program Files\\*",
            "?:\\Program Files (x86)\\*") and
   not (process.args : "--input" and process.args : "--output") and
-  not (process.args : "-e" and process.args : "json") and
+  not (process.args : "-e" and process.args : ("json", "*console.log(*")) and
   not process.args :"C:\\Users\\*\\.pkg-cache\\v3.4\\fetched-v18.5.0-win-x64" and
   not process.working_directory : ("C:\\bulkUploads\\") and
   not process.executable :
                ("D:\\*\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
                 "E:\\*\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe",
                 "C:\\Users\\*\\AppData\\Roaming\\nvm\\v*\\node.exe",
-                "C:\\sts-4.17.1.RELEASE\\.node\\node-v18.12.1-win-x64\\node.exe")
+                "C:\\sts-4.17.1.RELEASE\\.node\\node-v18.12.1-win-x64\\node.exe") and
+  not (process.parent.name : "powershell.exe" and
+       process.parent.args : "try { . \"c:\\Program Files\\Microsoft VS Code\\resources\\app\\out\\vs\\workbench\\contrib\\terminal\\common\\scripts\\shellIntegration.ps1\" } catch {}") and
+  not process.parent.executable :
+                     ("C:\\Program Files\\Eclipse Adoptium\\jdk*-hotspot\\bin\\java.exe",
+                      "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+                      "C:\\Program Files\\Microsoft VS Code\\Code.exe",
+                      "C:\\Program Files\\nodejs\\node.exe")
 '''
 
 min_endpoint_version = "7.15.0"

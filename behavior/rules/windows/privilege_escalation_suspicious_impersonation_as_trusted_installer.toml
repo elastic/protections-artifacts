@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 any where process.executable != null and 
@@ -96,7 +96,9 @@ any where process.executable != null and
        process.code_signature.subject_name == "Microsoft Windows" and process.code_signature.trusted == true) and
 	   
   not (process.executable : "C:\\Program Files (x86)\\Kaspersky Lab\\Kaspersky Security for Windows Server\\kavfswp.exe" and
-      process.code_signature.subject_name == "Kaspersky Lab JSC" and process.code_signature.trusted == true)
+      process.code_signature.subject_name == "Kaspersky Lab JSC" and process.code_signature.trusted == true) and
+  not (process.name : "rundll32.exe" and process.args : "C:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie" and
+       process.parent.executable : "C:\\Windows\\System32\\svchost.exe")
 '''
 
 min_endpoint_version = "8.4.0"

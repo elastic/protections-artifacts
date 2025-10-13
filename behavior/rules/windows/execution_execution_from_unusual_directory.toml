@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/hunting-for-lateral-movement-using-event-query-language",
     "https://www.elastic.co/security-labs/operation-bleeding-bear",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "start" and
@@ -111,7 +111,8 @@ process where event.action == "start" and
                              "*PhotoViewer.dll*ImageView_Fu*",
                              "*GeneralTel.dll,RunGeneralTelemetry*",
                              "*setupapi,InstallHinfSection*",
-                             "*mshtml.dll*PrintHTML*")) and not
+                             "*mshtml.dll*PrintHTML*",
+                             "*setupapi.dll,InstallHinfSection*")) and not
     (process.name : "regsvr32.exe" and process.command_line : "*:\\WINDOWS\\Help\\*" and
      process.parent.executable : ("?:\\Program Files (x86)\\Hewlett-Packard\\*.exe",
                                   "?:\\Program Files\\Hewlett-Packard\\*.exe",
@@ -146,18 +147,26 @@ process where event.action == "start" and
                           "?:\\Program Files\\Autodesk\\HSMWorks 2023\\installpost.js",
                           "C:\\Windows\\Setup\\Scripts\\UnlockStartLayout.vbs")) and
      not (process.name : "regsvr32.exe" and process.args : ("?:\\Windows\\servicing\\LCU\\Package_for_RollupFix~*", "C:\\WINDOWS\\Twain_32\\Instrumentarium\\dsd.ocx")) and
-     not (process.name : "wscript.exe" and process.args : "?:\\Users\\Public\\PSAppDeployToolkit\\AppDeployToolkit_BlockAppExecutionMessage.vbs") and
+     not (process.name : "wscript.exe" and
+          process.args : ("?:\\Users\\Public\\PSAppDeployToolkit\\AppDeployToolkit_BlockAppExecutionMessage.vbs",
+                          "?:\\Users\\Public\\Desktop\\*",
+                          "C:\\Windows\\Setup\\Scripts\\UnlockStartLayout.vbs")) and
      not process.parent.executable : ("?:\\Program Files (x86)\\DesktopCentral_Agent\\EndpointDLP\\bin\\MEDLP.exe", 
                                       "?:\\Program Files (x86)\\Intuit\\QuickBooks *\\QBW*.EXE", 
-                                      "?:\\Program Files (x86)\\pdf*\\res\\drivedir\\pdfsave.exe") and
+                                      "?:\\Program Files (x86)\\pdf*\\res\\drivedir\\pdfsave.exe",
+                                      "?:\\Program Files\\Beyond Compare ?\\BCompare.exe") and
      not process.executable : ("?:\\Program Files\\*\\msbuild.exe", "?:\\Program Files (x86)\\*\\MSBuild.exe") and
-     not process.command_line : "\"C:\\Windows\\System32\\wscript.exe\" C:\\Windows\\Setup\\Scripts\\ShowAllTrayIcons.vbs"
+     not process.command_line : ("\"C:\\Windows\\System32\\wscript.exe\" C:\\Windows\\Setup\\Scripts\\ShowAllTrayIcons.vbs",  "\"C:\\WINDOWS\\System32\\WScript.exe\" \"C:\\Users\\Public\\Desktop\\MapNetworkDrives.vbs\" ")
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

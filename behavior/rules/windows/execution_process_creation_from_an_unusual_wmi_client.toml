@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -60,9 +60,13 @@ api where
 '''
 
 min_endpoint_version = "8.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

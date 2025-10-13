@@ -4,7 +4,7 @@ id = "634dcd98-0656-48a8-bd41-5fa025b6c812"
 license = "Elastic License v2"
 name = "Remote Process Injection via Python"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.behaviors == "cross-process" and process.Ext.api.metadata.target_address_name like "?*" and
@@ -14,9 +14,9 @@ api where process.Ext.api.behaviors == "cross-process" and process.Ext.api.metad
  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*.exe") and
  not (process.Ext.api.name == "WriteProcessMemory" and process.Ext.api.parameters.size == 4) and
  not process.thread.Ext.call_stack_final_user_module.path like
-                                  ("c:\\program files\\side effects software\\*.dll",
+                                  ("c:\\program files\\*.dll",
+                                   "c:\\program files (x86)\\*.dll",
                                    "c:\\programdata\\anaconda3\\python??.dll",
-                                   "c:\\program files (x86)\\printer properties pro\\printer installer client\\bin\\idp\\python*.dll",
                                    "c:\\windows\\systemtemp\\chrome_unpacker_*\\python*.dll")
 '''
 

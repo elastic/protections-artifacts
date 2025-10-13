@@ -7,7 +7,7 @@ id = "971ff66d-a0fe-4fdc-aa74-3cb1a19336f4"
 license = "Elastic License v2"
 name = "Potential DLL Hijacking via Environment Paths"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 library where
@@ -48,7 +48,8 @@ library where
         "?:\\Windows\\Sys*\\wbem\\wmiutils.dll",
         "?:\\Windows\\Sys*\\wbem\\mofd.dll",
         "?:\\Windows\\Sys*\\wbem\\esscli.dll",
-        "?:\\Windows\\Sys*\\wbem\\cimwin32.dll") and
+        "?:\\Windows\\Sys*\\wbem\\cimwin32.dll",
+        "?:\\Windows\\System32\\wbem\\MDMSettingsProv.dll") and
 
  /* not DLL loaded from the process.executable current directory - except windir and subdirs */
  not (endswith~(substring(dll.path, 0, length(dll.path) - (length(dll.name) + 1)), substring(process.executable, 0, length(process.executable) - (length(process.name) + 1))) and
@@ -75,7 +76,8 @@ library where
                "da2d6ff6aa7b28aa5d8e1b9c1f1af9221b929741761a72b965911c97c338fa8f", 
                "a1628b28eb62fada7cd068557c2df466097f05d2de828c34c3d0eb6705c05821", 
                "da2d6ff6aa7b28aa5d8e1b9c1f1af9221b929741761a72b965911c97c338fa8f", 
-               "e416f3765be8358eb2fe789c8f9033bbbeda952ce6a36a350d403e2f07b963f8")
+               "e416f3765be8358eb2fe789c8f9033bbbeda952ce6a36a350d403e2f07b963f8",
+               "ca70262f22d519dc152f9d93db7fe704b2c57517b137d557effca6ba65e4de70")
 '''
 
 min_endpoint_version = "8.10.0"

@@ -12,12 +12,14 @@ reference = [
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.name : "MapViewOfFile*" and
  not (process.code_signature.subject_name : "MPTronic" and process.code_signature.trusted == true) and
- process.Ext.api.behaviors : "cross-process" and process.Ext.api.parameters.protection : "RWX" and process.executable != null and 
+ process.Ext.api.behaviors : "cross-process" and process.Ext.api.parameters.protection : "RWX" and process.executable != null and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                     $entry.callsite_trailing_bytes :
                          ("85c07562488b4b584885c97459488d7b48488974244848897c244048894c243848894c2430488974242848897424204533c94533c033d2488b4b40ff93d80000"))

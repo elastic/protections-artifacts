@@ -12,13 +12,13 @@ license = "Elastic License v2"
 name = "Suspicious Finder Cache File Modification"
 os_list = ["macos"]
 reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 file where event.action == "modification" and file.path like "/Users/*/Library/Caches/com.apple.finder/*" and 
  (process.name in ("osascript", "bash", "sh", "zsh", "curl", "nscurl") or 
  (process.code_signature.exists == false or process.code_signature.trusted == false)) and
- not (process.executable like "/System/*" and file.name like "Cache.db-shm")
+ not (process.executable like "/System/*" and file.name like ("Cache.db-shm", "Cache.db-wal"))
 '''
 
 min_endpoint_version = "8.10.2"

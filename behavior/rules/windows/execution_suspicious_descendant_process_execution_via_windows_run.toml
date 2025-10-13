@@ -1,0 +1,92 @@
+[rule]
+description = """
+Identifies the execution of Windows commands via the Windows Run window. Adversaries may use phishing to instruct the
+victim to copy and paste malicious commands for execution via the Windows Run menu.
+"""
+id = "9afd4fdc-15bc-4725-9164-dfcc2f1cb5ee"
+license = "Elastic License v2"
+name = "Suspicious Descendant Process Execution via Windows Run"
+os_list = ["windows"]
+reference = ["https://blog.sekoia.io/clickfake-interview-campaign-by-lazarus/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ process.name : ("powershell.exe", "curl.exe", "msiexec.exe", "mshta.exe", "wscript.exe", "rundll32.exe", "certutil.exe", "certreq.exe") and process.args_count >= 2 and
+ descendant of [process where event.action == "start" and process.name : ("cmd.exe", "powershell.exe") and
+                process.parent.name : "explorer.exe" and
+                process.parent.thread.Ext.call_stack_summary like "*|user32.dll|shell32.dll|explorer.exe|shcore.dll|*" and
+                _arraysearch(process.parent.thread.Ext.call_stack, $entry, 
+                $entry.symbol_info like ("C:\\Windows\\System32\\user32.dll!DialogBoxParamW*", 
+                                         "C:\\Windows\\System32\\user32.dll!DialogBoxIndirectParamW*", 
+                                         "C:\\Windows\\System32\\shell32.dll!GetFileNameFromBrowse*"))] and
+ not (process.name : "powershell.exe" and
+      process.args :("-NoProfile", "-Command", "-ExecutionPolicy", "-noexit", "-WindowsStyle", "ls", "*-UseBasicParsing*", "-file", "--version", "*Get-WmiObjec*", "Port", "Test-Path", "Get-*")) and
+ not (process.name : "curl.exe" and process.parent.name : ("cmd.exe", "bash.exe")) and
+ not (process.name : "curl.exe" and process.args : ("-L", "-F", "POST")) and
+ not (process.name : "certutil.exe" and not process.args : ("-urlcache", "-decode")) and
+ not (process.name : "rundll32.exe" and process.parent.executable : ("C:\\Windows\\System32\\control.exe", "C:\\$WINDOWS.~BT\\Sources\\SetupHost.exe")) and
+ not (process.name : "rundll32.exe" and
+      process.command_line :("rundll32  printui.dll PrintUIEntry /im",
+                             "rundll32.exe \"C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll\",#1",
+                             "rundll32.exe \"C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper64.dll\",#1",
+                             "rundll32  printui.dll PrintYUEntry /im")) and
+ not (process.name : "rundll32.exe" and
+      process.args : ("C:\\Windows\\system32\\inetcpl.cpl,ClearMyTracksByProcess", "url.dll,FileProtocolHandler", "ndfapi.dll,NdfRunDllDiagnoseWithAnswerFile", "inetcpl.cpl",
+                      "C:\\Program Files\\Notepad++\\contextmenu\\NppShell.dll,CleanupDll", "user32.dll,*", "printui.dll", "keymgr.dll,*", "url,OpenURL")) and
+ not (process.name : "wscript.exe" and process.parent.executable : "C:\\Program Files (x86)\\Beyond Compare ?\\BCompare.exe") and
+ not (process.name : "wscript.exe" and process.args : ("*\\Program Files\\*", "C:\\Windows\\system32\\slmgr.vbs", "\\\\*")) and
+ not (process.name : "msiexec.exe" and process.args : ("/log", "/passive", "/L*V", "WAZUH_AGENT_GROUP=default", "/x", "D:\\*.msi", "/a", "/uninstall", "/unregister", "/regserver", "USERDOMAIN*", "C:\\Windows\\Temp\\*", "/I{*", "TOKEN=*")) and 
+ not process.working_directory : ("?:\\", "?:\\Program Files*", "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\") and 
+ not process.executable : "C:\\Program Files\\*\\curl.exe"
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -12,7 +12,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifileoperation",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=1m
@@ -44,7 +44,8 @@ sequence with maxspan=1m
   not startswith~(dll.name, process.name) and
   not dll.hash.sha256 :
                ("5177f7b0d88bf122b2b7e94293513cefee82970d8b5697e12821ccbe091c8e15",
-                "108c16cecced0112da8095053c4efce83eeca319bf58f83412f8cf7f124a7dd5")] by dll.path
+                "108c16cecced0112da8095053c4efce83eeca319bf58f83412f8cf7f124a7dd5",
+                "ed9ebcff2f6f28511814e726f701ab759398c3132a7382e28dd7c6ed58d32d90")] by dll.path
 '''
 
 min_endpoint_version = "7.16.0"

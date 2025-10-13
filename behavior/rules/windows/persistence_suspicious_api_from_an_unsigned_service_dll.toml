@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious API from an Unsigned Service DLL"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -20,7 +20,7 @@ sequence by process.entity_id with maxspan=2m
 
   process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe") and
 
-  dll.hash.sha256 != "c8bf101bab6d5400f892ee92f2e788a7096192a417707c4fa91f54ee2c29d394"] as event0
+  not dll.hash.sha256 in ("c8bf101bab6d5400f892ee92f2e788a7096192a417707c4fa91f54ee2c29d394", "d615af8e012426c8847c750a0838159d6c41385d2e50388cea28a97999b81614")] as event0
 [api where
 
  process.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\SysWOW64\\svchost.exe") and

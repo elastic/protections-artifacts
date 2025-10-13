@@ -7,19 +7,19 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence by user.id with maxspan=5m
 
- [file where event.action != "deletion" and file.path : "C:\\*" and 
+ [file where event.action == "creation" and file.path : "C:\\*" and
 
    file.extension : ("hta", "vbs", "js", "wsf", "vbe", "jse") and not user.id : "S-1-5-18" and
 
    not (process.code_signature.subject_name :
             ("AUTO/MATE, INC.", "TeamViewer*", "KOBIL Systems GmbH", "Ratiborus MSFree Inc.",
              "Canon Electronics Inc.", "Johannes Schindelin", "Bomgar Corporation", "PFU LIMITED",
-             "Learnpulse") and
+             "Learnpulse", "Azul Systems, Inc.") and
         process.code_signature.trusted == true) and
    not process.executable :
               ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*.exe",
@@ -27,6 +27,8 @@ sequence by user.id with maxspan=5m
 
    not (process.executable : "?:\\Users\\*\\AppData\\Roaming\\zozi-rpa-engine\\openjdk\\bin\\java.exe" and
         file.path : "C:\\Project\\*.vbs") and
+
+   not file.path : "C:\\WINDOWS\\TEMP\\*.vbs" and
 
    not file.Ext.header_bytes :
                  ("0d0a272d2d2d2d2d2d2d2d2d2d2d2d2d", "272a2a2a2a2a2a2a2a2a2a2a2a2a2a2a",
@@ -39,7 +41,7 @@ sequence by user.id with maxspan=5m
      process.name : ("winword.exe", "excel.exe", "outlook.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe",
                      "mspub.exe", "msaccess.exe", "certutil.exe", "tar.exe", "CertReq.exe", "xcopy.exe", 
                      "cmd.exe", "powershell.exe", "mshta.exe", "curl.exe", "pwsh.exe", "rundll32.exe", 
-                     "regsvr32.exe", "msiexec.exe") or
+                     "regsvr32.exe") or
 
      (process.code_signature.trusted == false or process.code_signature.exists == false) or
 
@@ -65,7 +67,8 @@ sequence by user.id with maxspan=5m
   not (process.parent.args : "C:\\XperCon\\_Xtra\\PDF_Rename\\pdf_rename.bat" and process.args : "C:\\XperCon\\_Xtra\\PDF_Rename\\transform.vbs") and
   not (process.parent.args : "C:\\CSM Infopath Templates\\Register CSM InfoPath Templates.exe" and process.args : "C:\\CSM Infopath Templates\\installAllTemplates.vbs") and
   not (process.parent.name : "cmd.exe" and process.parent.args : "%TEMP%\\Spiceworks\\*") and
-  not (process.name : "mshta.exe" and process.parent.name : "mshta.exe"  and process.parent.args : "\\\\*\\netlogon\\ADSelfService_Enroll.hta")
+  not (process.name : "mshta.exe" and process.parent.name : "mshta.exe"  and process.parent.args : "\\\\*\\netlogon\\ADSelfService_Enroll.hta") and
+  not (process.parent.name : "JustWareSmartClient.exe" and process.executable : "C:\\Windows\\SysWOW64\\wscript.exe")
   ]
 '''
 

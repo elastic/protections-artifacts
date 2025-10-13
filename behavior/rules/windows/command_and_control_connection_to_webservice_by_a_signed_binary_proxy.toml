@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.62"
+version = "1.0.63"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -48,10 +48,10 @@ sequence by process.entity_id with maxspan=5m
           process.code_signature.trusted == true) and
      not process.hash.sha256 in ("4337adaa6b26ea9ad6d7bd0871d49531442ba3d8a24aecc1a5a0f26378de4f78", "56b1c3941b781a00e3cd0df0c523242a4521930964f889c4b8baecd282c419b3") and
      not process.executable :
-                       ("C:\\Program Files\\Git\\mingw64\\bin\\curl.exe",
-                        "C:\\Program Files\\Fiery\\Components\\Common files\\curl.exe",
-                        "C:\\Program Files\\Fiery\\Fiery Command WorkStation\\curl.exe",
-                        "C:\\Program Files\\Microsoft Visual Studio\\*\\node.exe") and
+                       ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe",
+                        "?:\\Program Files\\Fiery\\Components\\Common files\\curl.exe",
+                        "?:\\Program Files\\Fiery\\Fiery Command WorkStation\\curl.exe",
+                        "?:\\Program Files\\Microsoft Visual Studio\\*\\node.exe") and
      not (process.name : "rundll32.exe" and
           process.args : ("?:\\Program Files\\Microsoft Office\\root\\*",
                           "?:\\PROGRA~2\\MICROS~1\\Office*.CPL*",
@@ -66,13 +66,17 @@ sequence by process.entity_id with maxspan=5m
                           "?:\\Windows\\System32\\mshtml.dll,PrintHTML", 
                           "?:\\PROGRA~?\\MICROS~?\\Office??\\MLCFG32.CPL,@0", 
                           "AppXDeploymentExtensions.OneCore.dll,ShellRefresh",
-                          "C:\\Windows\\System32\\LogiLDA.dll,LogiFetch")) and
+                          "C:\\Windows\\System32\\LogiLDA.dll,LogiFetch",
+                          "C:\\Windows\\System32\\mshtml.dll,PrintHTML*")) and
       not process.parent.executable : "C:\\Program Files\\Microsoft SQL Server\\150\\DTS\\Binn\\ISServerExec.exe" and
       not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe",
                                        "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe",
-                                       "C:\\Program Files (x86)\\HP\\StatusAlerts\\bin\\HPStatusAlerts.exe") and
+                                       "C:\\Program Files (x86)\\HP\\StatusAlerts\\bin\\HPStatusAlerts.exe",
+                                       "C:\\Program Files\\AutoHotkey\\AutoHotkeyU64.exe") and
       not (process.name : "powershell.exe" and process.parent.name : "wsmprovhost.exe" and
-           process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile")
+           process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile") and
+      not (process.name : "curl.exe" and process.parent.name : "powershell.exe" and
+           process.command_line : "\"C:\\Windows\\System32\\curl.exe\" -L -s -H \"User-Agent: PowerShell\" -H \"Accept: application/vnd.github+json\" https://api.github.com/repos/PowerShell/PowerShell/releases")
   ]
   [dns where
     dns.question.name :
@@ -191,7 +195,9 @@ sequence by process.entity_id with maxspan=5m
          dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
                               "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
-    not (process.name == "dfsvc.exe" and dns.question.name == "innateclient.azurewebsites.net")
+    not (process.name == "dfsvc.exe" and dns.question.name == "innateclient.azurewebsites.net") and
+    not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe") and
+         dns.question.name in ("api.github.com", "raw.githubusercontent.com"))
   ]
 '''
 

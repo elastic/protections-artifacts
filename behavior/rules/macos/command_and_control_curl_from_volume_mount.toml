@@ -10,16 +10,25 @@ license = "Elastic License v2"
 name = "Curl from Volume Mount"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and
-process.parent.name like~ ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and
-process.Ext.effective_parent.executable like "/Volumes/*" and
-not process.args like~ "--version"
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and
+  process.parent.name like~ ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and
+  process.Ext.effective_parent.executable like "/Volumes/*" and
+  not (process.args like~ ("--version", "-V") and process.args_count == 2)]
+[network where event.type == "start" and
+ not destination.domain like "localhost" and not
+ cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8")]
 '''
 
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -45,4 +54,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.5.0"
+min_endpoint_version = "8.16.0"

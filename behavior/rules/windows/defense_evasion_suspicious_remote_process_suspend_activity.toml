@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -130,7 +130,6 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "71b49d2c08f4d9b5952e44ef06846556c944c14ecff4bc2a4071e67921473e46",
                          "379952ec8113b3692872ffb9d07c242968ee1edfac9b3b888496c1480033be91",
                          "aac5bb07168d5a66e21b69dd68f630d7a06fd27be5409daace1d74af244bb60a",
-                         /* TBR */
                          "93b98ec9c3da8c9bc422cff03736ed92f3ed51e2b984a38bf19cca80e15b8c76",
                          "011eb5a6789080192f66cc04c2ceecf57ce867bd854a5b8d530a04f41f50a570",
                          "85ebda733d373181ad89d3b5b34d06d3bcd3003c1d7aa07da6d4dc337ff6180f",
@@ -139,12 +138,30 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "afb9e9f543b2e286d4967a7795d2bb3f31c0b37066494bd68eda2d1570d8ebba",
                          "7ba928d7ed3c0b3659410ed06cf8a3e0f0c875e4edfd7691ce0b646ff41489ad",
                          "afcf23763c3ee1dc16ad80fbdded635bd896b0817997273b18375ac7e0059a18",
-                         "dfa736b6a8a9a7eed8e7b546c2c7f8109add4db799521b27f2ec04ddbad70d86") and
+                         "dfa736b6a8a9a7eed8e7b546c2c7f8109add4db799521b27f2ec04ddbad70d86",
+                         "9d569291755f1937996aecbe32fc5d8df656d0cf4122d4c10130938dfd2229fd",
+                         "e6b7e45f7a6375f51e1b675b547c48cc44ba543c7081790f102b658c7626f8e6",
+                         "8cbfed45a28e410551411cdd6b6329862ed88cf4476b0aafccea5e4fc16e91e8",
+                         "a40e2533a200e9e8f29ccf937b05efc92cc4b56251758d978cf73c83f265a014",
+                         "fce8c609368c54a21e87dee938a5b3ee3fa910658856b8b28e8d86794c09374e",
+                         "d67886a8dee423035ec807b04227aa6c8b8101a8a5e122cfd49f5901668a94ad",
+                         "a587142ad5ffdbd852eed2a25f1f4e4cfd41ce82aee290aff5143093352e581e",
+                         "c2101b8c881e165c2ba9a02efd3a529d86bf8825f2eefab0fe5d3c5cef736fb6",
+                         "e2049b19974678e2e6cf38da5f7cec1e0199e0b3e03606a3b97bd15d796a5971",
+                         "22bc08bf0cec3e84d410e114de0d653c12c20f743ed955f7fc0848f218f47a8d",
+                         "7d4a6781df906d745569beb38f09f1711cde80dc69ba94083cb805adb3208f58",
+                         "f97e4e8a8753608de13d7b4948aeb7f206829a3218007f5f049de151a75be22c",
+                         "389b9caaef229a1d08ce4e65835438e8a0200664e547b8f16688287f82c240ce",
+                         "1d403006ac76665391a294578678f23634d5699525ecc589fad808cbf8284030",
+                         "70adb308b63b5f02126672cd6d89d830c47b19d1c48d55a13cb4f530a4716e6a",
+                         "a3272147ae66166bc1edf8fac3e245e7ab8a2f882efaa52ba6679f96faec5545",
+                         "e9b488ad3101d386a3b2248db0c0dfe43c83fd856c55d181264da762f5352f38") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*")) and
 
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\dbgcore.dll!MiniDumpWriteDump*")
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\dbgcore.dll!MiniDumpWriteDump*") and
+ not process.thread.Ext.call_stack_final_user_module.path like ("e:\\*\\*.exe", "f:\\*\\*.exe")
 '''
 
 min_endpoint_version = "8.14.0"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Windows Installer Transforms"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/msi/about-transforms"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m
@@ -17,7 +17,7 @@ sequence with maxspan=1m
  process.args : ("/i*", "-i*") and process.args : ("/q*", "-q*") and
  process.command_line : "*transforms*=*" and
  (process.parent.code_signature.subject_name in ("Microsoft Corporation", "Microsoft Windows") or process.parent.name : "python*.exe") and
- not process.args : "TRANSFORMS=C:\\Windows\\*.MST"]
+ not process.args : ("TRANSFORMS=C:\\Windows\\*.MST", "\\\\*.msi")]
 [process where event.action in ("start", "already_running") and
  (
   (process.name : "msiexec.exe" and process.args == "/V") or

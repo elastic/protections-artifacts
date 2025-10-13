@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Microsoft OneNote Child Process"
 os_list = ["windows"]
 reference = ["https://blog.sevagas.com/IMG/pdf/redteam_with_onenote.pdf"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -62,7 +62,7 @@ process where event.action == "start" and
   not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and
   not (process.name : "rundll32.exe" and process.args : "?:\\Program Files (x86)\\AllesTechnologyAgent\\Super Shield\\SuperShieldHookCpy32.dll,#1") and 
-  not (process.code_signature.trusted == true and process.code_signature.subject_name : "VideoLAN")
+  not (process.code_signature.trusted == true and process.code_signature.subject_name : ("VideoLAN", "Interact Digital AG"))
 '''
 
 min_endpoint_version = "7.15.0"

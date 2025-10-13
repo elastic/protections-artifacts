@@ -7,7 +7,7 @@ id = "e7d63d66-2d46-4051-a304-4c34f7bbf11d"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Syscall"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -25,7 +25,8 @@ api where process.Ext.api.name == "VirtualProtect" and
                                           "Microsoft Windows Software Compatibility Publisher",
                                           "Sentinel Labs, Inc.",  "ESET, spol. s r.o.", "MUSARUBRA US LLC",
                                           "WIBU-SYSTEMS AG",  "Carbon Black, Inc.", "Adobe Inc.", "Adobe Systems, Incorporated",
-                                          "Mozilla Corporation", "Google LLC", "Fasoo Co., Ltd.", "AhnLab, Inc.")) and
+                                          "Mozilla Corporation", "Google LLC", "Fasoo Co., Ltd.", "AhnLab, Inc.",
+                                          "Data Encryption Systems Ltd")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                ("c:\\program files\\common files\\microsoft shared\\clicktorun\\appvisvsubsystems64.dll",
                                 "c:\\program files\\common files\\mcafee\\systemcore\\mfehcthe.dll",
@@ -37,7 +38,8 @@ api where process.Ext.api.name == "VirtualProtect" and
                                 "c:\\windows\\system32\\sppcext.dll",
                                 "c:\\windows\\system32\\geolocation.dll",
                                 "c:\\windows\\system32\\msvcr*.dll",
-                                "c:\\windows\\system32\\windows.devices.sensors.dll") and
+                                "c:\\windows\\system32\\windows.devices.sensors.dll",
+                                "c:\\windows\\system32\\tmumh\\*\\tmmon64.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
                                         "c:\\windows\\system32\\mdmregistration.dll!FindDiscoveryService*",

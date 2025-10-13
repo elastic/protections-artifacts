@@ -8,13 +8,14 @@ license = "Elastic License v2"
 name = "Evasion via Multiple Memory Section Mapping"
 os_list = ["windows"]
 reference = ["https://github.com/oldboy21/SWAPPALA"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=1m
  [api where process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2") and process.Ext.api.parameters.protection == "RWX" and
   process.Ext.api.parameters.size >= 10000 and process.executable != null and
-  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false)]
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "85a6d48587500f6808c119838293e02b700e99035f8fd8dd0b49cc184ce66b6a"]
  [api where process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2") and process.Ext.api.parameters.protection == "RWX"]
 '''
 

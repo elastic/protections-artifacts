@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -32,7 +32,9 @@ sequence by user.id with maxspan=5m
        file.path : "?:\\Program Files*\\Common Files\\microsoft shared\\ClickToRun\\Updates\\*\\OfficeClickToRun.exe") and 
 
   not process.executable : ("?:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe", 
-                            "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe")
+                            "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe") and
+
+  not (file.path : "C:\\SuperGrate\\mighost.exe" and process.executable : "D:\\SuperGrate\\SuperGrate.exe")
 
  ] by file.path
  [library where
@@ -54,7 +56,7 @@ sequence by user.id with maxspan=5m
                "7e1a25b50775cb246303ae162bba86c9d5fe2bd7fa98044899ffb58919b4ed3a") and
 
   not (dll.path : "?:\\$WINDOWS.~BT\\Sources\\*.dll" and process.executable : "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe") and
-  not dll.path : "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\resources\\app\\ServiceHub\\Services\\Microsoft.VisualStudio.Setup.Service\\MessagePack.dll"
+  not dll.path : "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\*.dll"
   ] by process.executable
 '''
 

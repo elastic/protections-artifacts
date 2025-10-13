@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Binary Proxy Execution via Runexehelper"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Runexehelper/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.action == "start" and process.parent.name : "runexehelper.exe" and 
@@ -23,7 +23,11 @@ process where event.action == "start" and process.parent.name : "runexehelper.ex
                "?:\\Windows\\System32\\stordiag.exe",
                "?:\\Windows\\System32\\dxdiag.exe",
                "?:\\Windows\\System32\\logman.exe",
-               "?:\\Windows\\System32\\licensingdiag.exe")
+               "?:\\Windows\\System32\\licensingdiag.exe",
+               "?:\\Windows\\System32\\dispdiag.exe",
+               "?:\\Windows\\System32\\pnputil.exe",
+               "?:\\Windows\\System32\\hcsdiag.exe",
+               "?:\\Windows\\System32\\ddodiag.exe")
 '''
 
 min_endpoint_version = "7.15.0"

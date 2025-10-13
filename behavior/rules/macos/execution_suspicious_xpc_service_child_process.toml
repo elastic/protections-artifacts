@@ -9,7 +9,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1059/004/",
     "https://objective-see.org/blog/blog_0x59.html",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.type == "start" and process.parent.name : "com.*" and 
@@ -33,7 +33,11 @@ process where event.type == "start" and process.parent.name : "com.*" and
     process.command_line like~ ("sh -c /bin/cp /Library/Preferences/SystemConfiguration/preferences.plist /Library/Preferences/SystemConfiguration/preferences.plist.old",
                                "/bin/sh -c git-upload-pack*", "*sh -c */Library/Application Support/HmaProVpn/hub/userinit.sh*") and 
     not process.Ext.effective_parent.executable == "/Library/Application Support/PasswordManager/com.trendmicro.consumer.pwmsvc" and
-    not (process.parent.code_signature.trusted == true and process.parent.code_signature.exists == true)
+    not (process.parent.code_signature.trusted == true and process.parent.code_signature.exists == true) and
+    not (
+      process.parent.executable == "/Library/AppQuest/com.apple.questd" and
+      process.Ext.effective_parent.executable == "/usr/bin/sudo"
+    )
 '''
 
 min_endpoint_version = "8.11.0"

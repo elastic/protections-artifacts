@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -65,6 +65,7 @@ process where event.action == "start" and
     not (process.name : "regsvr32.exe" and process.args :  "/i:user" and process.args : "/n") and
     not (process.executable : "?:\\ProgramData\\*\\*\\*" and process.code_signature.trusted == true) and
     not (process.name : "cscript.exe" and process.command_line : "cscript IsHTTPSListenerPresent.vbs") and
+    not process.pe.imphash in ("693eeec0e40605ff41c9cee4be66760e", "ccb9e4bcad9dd001d25d6220ffcab2dc") and
     not process.hash.sha256 :
                  ("d09e299150f4a9904cfbedff7a2478ce16b9c1ea6a5bc2fba0bcb2b1f7a845d0",
                   "73634c154e121ea172dce96da629f50aa8eb69f72922f5ff14d1331ea281f105",
@@ -86,11 +87,11 @@ process where event.action == "start" and
    not (process.name : "powershell.exe" and
         process.command_line : ("*Web Client\\Modules\\NAVWebClientManagement\\NAVWebClientManagement.psm1*", "*https://go.microsoft.com/fwlink/p/?LinkId=*")) and
    not (process.name : ("powershell.exe", "cmd.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
-   not (process.code_signature.subject_name == "Dassault Systemes SolidWorks Corp." and process.code_signature.trusted == true) and
+   not (process.code_signature.subject_name in ("Dassault Systemes SolidWorks Corp.", "Turning Technologies, LLC") and process.code_signature.trusted == true) and
    not (process.name : "powershell.exe" and process.args : "Get-ChildItem -Path . -Exclude '.oci' | Remove-Item -Recurse -Force")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -120,4 +121,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"

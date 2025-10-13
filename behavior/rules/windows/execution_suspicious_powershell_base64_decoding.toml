@@ -7,7 +7,7 @@ id = "08fa5da1-81af-413d-a960-f7e489c75cfb"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Base64 Decoding"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and process.parent.executable != null and
@@ -19,6 +19,7 @@ api where process.Ext.api.name == "AmsiScanBuffer" and process.parent.executable
                         "*-bxor*", "*).Content*", "*IEX *", "*iex(*", "*Invoke-Expression", "*Invoke-Expression $*", "*iex;*",
                         "*Start-Process*", "*SeDebugPrivilege*", "*Cryptography.Aes*") and
 
+  not process.Ext.api.parameters.buffer : ("function Get-DecryptedConfig*", "function Unprotect-ConfigFile*") and
   not process.Ext.api.parameters.content_name :
                    ("C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1",
                     "C:\\PowerShell\\AES.ps1",
@@ -34,7 +35,10 @@ api where process.Ext.api.name == "AmsiScanBuffer" and process.parent.executable
                     "C:\\ProgramData\\HP\\MIK\\RunHPIA.ps1",
                     "C:\\Packages\\Plugins\\*.ps1",
                     "C:\\Packages\\Plugins\\*.psm1",
+                    "C:\\temp\\intune-install.ps1",
+                    "C:\\temp\\*\\intune-install.ps1",
                     "C:\\mdeanalyzer\\MDEClientAnalyzer\\MDEClientAnalyzer.ps1",
+                    "C:\\Users\\*\\scoop\\apps\\scoop\\current\\lib\\autoupdate.ps1",
                     "C:\\WINDOWS\\IMECache\\HealthScripts\\*.ps1",
                     "C:\\sysmgt\\sw\\A\\DSMonitoring\\modules\\POSAntiVirusHealth\\POSAntiVirusHealth.psm1",
                     "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*.ps1",

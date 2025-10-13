@@ -7,7 +7,7 @@ id = "98fffa16-53e1-4db9-9126-2d0441cac417"
 license = "Elastic License v2"
 name = "Shellcode Injection via PowerShell"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "connect") and
@@ -42,6 +42,8 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualPro
     not (user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
          process.parent.executable : ("?:\\Windows\\System32\\svchost.exe", "?:\\Windows\\System32\\services.exe") and
          _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance == "Unbacked")) and
+    not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and
+         process.thread.Ext.call_stack_final_user_module.protection_provenance_path == "c:\\windows\\syswow64\\sppc.dll") and
     not process.parent.executable : "C:\\Program Files (x86)\\Msp Agent\\components\\generic-asset-interrogator\\0.2.10\\generic-asset-interrogator.exe" and
     not (process.Ext.api.name == "VirtualProtect" and
          _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
@@ -49,7 +51,7 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualPro
                      $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "SentinelOne Inc."))
 '''
 
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -92,4 +94,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.10.0"
+min_endpoint_version = "8.14.2"

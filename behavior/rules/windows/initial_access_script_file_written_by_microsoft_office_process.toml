@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Script File Written by Microsoft Office Process"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -33,7 +33,9 @@ sequence by user.id with maxspan=1m
   not process.parent.executable :
                   ("?:\\Program Files\\HP\\Sure Click\\ApplicationSupport\\chrome\\*\\BrChrome.exe",
                    "?:\\Program Files (x86)\\HP\\Sure Click\\ApplicationSupport\\chrome\\*\\BrChrome.exe",
-                   "?:\\Program Files (x86)\\Fuji Xerox\\DocuWorks\\bin\\dwviewer.exe") and
+                   "?:\\Program Files (x86)\\Fuji Xerox\\DocuWorks\\bin\\dwviewer.exe",
+                   "C:\\Program Files\\Druide\\*\\Connectix.exe",
+                   "\\Device\\Mup\\*.exe") and
   not (process.command_line : "cmd.exe /c start outlook" and
        process.parent.executable : "?:\\Program Files\\WindowsApps\\Microsoft.OutlookForWindows_*\\olk.exe") and
   not (process.name : "regsvr32.exe" and

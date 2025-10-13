@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
@@ -69,7 +69,11 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
   not (process.name : "WerFault.exe" and
        process.parent.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|faultrep.dll|wersvc.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
   not process.hash.sha256 : "920d49c27f0b42dab747bdf48edfc6b668f3ae4d192a2a4c9b5a6cec14bec77f" and
-  not (event.category == "process" and _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernel32.dll!CreateProcessW*"))
+  not (event.category == "process" and _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info: "*kernel32.dll!CreateProcessW*")) and
+  not (event.category == "library" and dll.path : "C:\\Windows\\System32\\umppc*.dll") and
+  not (event.category == "library" and dll.code_signature.subject_name == "Microsoft Windows Hardware Compatibility Publisher" and
+       dll.code_signature.trusted == true) and
+  not (event.category == "library" and process.code_signature.subject_name == "BeamNG GmbH" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.7.0"

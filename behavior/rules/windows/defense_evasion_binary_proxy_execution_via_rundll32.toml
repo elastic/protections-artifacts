@@ -16,7 +16,7 @@ reference = [
     "https://lolbas-project.github.io/lolbas/Libraries/Url/",
     "https://lolbas-project.github.io/lolbas/Libraries/Desk/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence with maxspan=1m
@@ -43,7 +43,8 @@ sequence with maxspan=1m
         process.parent.name :  "msdt.exe" and
         process.working_directory : "?:\\Windows\\system32\\") and
 
-   not (process.command_line :  "*shell32*WaitForExplorerRestart*" and process.args : "?:\\Windows\\*explorer.exe")
+   not (process.command_line :  "*shell32*WaitForExplorerRestart*" and process.args : "?:\\Windows\\*explorer.exe") and
+   not (process.parent.executable : "C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe" and process.args : "ShellExec_RunDLL")
    ] by process.entity_id
   [process where event.action == "start" and
    not process.executable :

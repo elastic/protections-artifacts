@@ -7,7 +7,7 @@ id = "1543ed0b-2d7b-42f9-93d2-bf9bfd8759e3"
 license = "Elastic License v2"
 name = "DLL Dropped by MSIEXEC followed by SideLoad"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 sequence by user.id with maxspan=1m
@@ -32,7 +32,8 @@ sequence by user.id with maxspan=1m
                  "4bf70e90594a6d3fbc042747bb314f541e84c0d5f7ec1cf82beac0afd94b5348",
                  "dd3f06ea143ccc6aba3a05a7093bc6aac6868086a596c015f4e0279df8b97e7e",
                  "e71745fbe166d319711a68478161d746c9aabf7a3de60513cb924dda1184c083",
-                 "75d93037c940e3a1de752c73f1d91ae440bf68a236874890506d078f1b4209ec") and
+                 "75d93037c940e3a1de752c73f1d91ae440bf68a236874890506d078f1b4209ec",
+                 "f801bb80401c20b582219b2793a80411230a10bbceea4da032b7c9840dbf1f83") and
    not dll.pe.imphash : "c1c7505e1e6e929ebb6b9100e55b050a" and
    not process.executable :
              ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe", "?:\\Windows\\Explorer.exe",
@@ -77,7 +78,8 @@ sequence by user.id with maxspan=1m
                          "Digium, Inc.",
                          "OneSpan North America Inc.",
                          "PortSIP Solutions, Inc.", 
-                         "Zoom Video Communications, Inc.") and process.code_signature.trusted == true) and
+                         "Zoom Video Communications, Inc.",
+                         "ETM professional control GmbH") and process.code_signature.trusted == true) and
     not dll.pe.imphash :
                ("dae02f32a21e03ce65412f6e56942daa",
                 "d41d8cd98f00b204e9800998ecf8427e",

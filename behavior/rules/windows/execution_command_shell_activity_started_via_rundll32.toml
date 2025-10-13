@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Command Shell Activity Started via RunDLL32"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.type == "start" and
@@ -18,6 +18,7 @@ process where event.type == "start" and
     not (process.parent.args : "aepdu.dll,AePduRunUpdate" and process.args : "osloader" and process.args : "%windir%\\system32\\bcdedit") and
     not (process.parent.args : ("?:\\Windows\\System32\\LogiLDA.dll,LogiFetch", "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask") and
          process.name : "powershell.exe" and process.command_line : "*install*") and
+    not process.parent.args : "C:\\Program Files\\NVIDIA Corporation\\*\\NVI2.DLL,ResumeAsync" and
     not (process.args : "dellpointstick://Mainpage/*" and process.parent.args : "Vxd_launch_UI") and
     not (process.parent.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.name : "powershell.exe") and
     not process.parent.args : "AppXDeploymentExtensions.OneCore.dll,ShellRefresh" and

@@ -12,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1027/001/",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=1m
@@ -21,9 +21,11 @@ sequence with maxspan=1m
    file.size >= 100000000 and file.Ext.header_bytes : "4d5a*" and not file.extension : "exe" and
    not user.id : "S-1-5-18" and
   not (process.code_signature.subject_name in ("Trend Micro, Inc.",  "Azul Systems, Inc.", "Wargaming Group Limited",
-      "Avigilon Corporation", "Duck Duck Go, Inc.", "Wargaming Group Limited", "Griff Gate Pte. Ltd.") and
+      "Avigilon Corporation", "Duck Duck Go, Inc.", "Wargaming Group Limited", "Griff Gate Pte. Ltd.", "Corsair Memory, Inc.",
+      "Anaconda, Inc.") and
        process.code_signature.status == "trusted") and
-  not process.executable : ("C:\\ProgramData\\slicer.org\\Slicer *\\bin\\python-real.exe", "C:\\Program Files\\burpsuite_enterprise\\jres\\*\\bin\\java.exe")
+  not process.executable : ("C:\\ProgramData\\slicer.org\\Slicer *\\bin\\python-real.exe", "C:\\Program Files\\burpsuite_enterprise\\jres\\*\\bin\\java.exe") and
+  not file.path : "C:\\ProgramData\\*\\PyQt5\\Qt5\\bin\\Qt5WebEngineCore.dll"
   ] by file.path
  [library where
     (
@@ -40,7 +42,8 @@ sequence with maxspan=1m
     and not dll.code_signature.trusted == true and
     not dll.code_signature.status : "errorExpired" and
     not user.id : "S-1-5-18" and
-    not (process.name : "regsvr32.exe" and dll.path : "C:\\Oracle\\*.dll")] by dll.path
+    not (process.name : "regsvr32.exe" and dll.path : "C:\\Oracle\\*.dll") and
+    not (dll.name : "Qt5WebEngineCore.dll" and process.code_signature.subject_name == "Pitney Bowes Inc.")] by dll.path
 '''
 
 min_endpoint_version = "8.4.0"

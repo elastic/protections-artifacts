@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 process where event.action == "start" and
@@ -49,6 +49,7 @@ process where event.action == "start" and
   /* false positives */
   not (process.args : "%TEMP%\\Spiceworks\\*" and process.parent.name : "wmiprvse.exe") and
   not (process.parent.name : "cmd.exe" and process.command_line : "*!iodp.wapps!PitaLogger*") and
+  not process.working_directory like "C:\\Jenkins\\_Workspace\\*" and
   not process.parent.executable :
                 ("?:\\Perl64\\bin\\perl.exe",
                  "?:\\Program Files\\nodejs\\node.exe",
@@ -139,12 +140,16 @@ process where event.action == "start" and
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
 tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

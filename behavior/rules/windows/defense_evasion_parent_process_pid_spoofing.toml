@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.50"
+version = "1.0.51"
 
 query = '''
 sequence with maxspan=5m
@@ -145,11 +145,14 @@ sequence with maxspan=5m
                  "989e5cb0690ec99115f20fea1bc2cfdcf08d910fc468a99bd8416ccdae5b159c",
                  "adeb733bf80927e6b365fc6a03547d401d51539b1b4623e55199992d242c69ba",
                  "34e985694d5fddbe4a27ab986975e2980b0c0a2005c0779435e7ce16004f4fe8",
-                 "e37d10eead5f14a3ea9d2be0e95012a2928964928e447ac7c4fac9a547f0a863") and
+                 "e37d10eead5f14a3ea9d2be0e95012a2928964928e447ac7c4fac9a547f0a863",
+                 "38011e713b4be8577576062754cad03e9899859488932ae4c9c83e5fbb5cb7d2",
+                 "6f1be9e26e403a885cc3b1ff0e4dbecbc96c0821119d25990c3e211564f215d5",
+                 "eda6b433006b571d1675c6c19f8c7fd786ac5926c063aabea947ea2db636066e") and
 
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
 
-  not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG", "Elaborate Bytes AG") and process.code_signature.trusted == true) and
 
   not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe")
   ] by process.parent.Ext.real.entity_id

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution of Commonly Abused Utilities via Explorer Trampoline"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Explorer/"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "start" and
@@ -42,10 +42,14 @@ process where event.action == "start" and
                       "?:\\windows\\System32\\srchadmin.dll",
                       "fdprint,InvokeTask",
                       "cryptext.dll,CryptExtAddPFX",
+                      "shell32.dll,SHCreateLocalServerRunDll",
                       "?:\\WINDOWS\\System32\\SHELL32.dll,RunAsNewUser_RunDLL", 
-                      "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\3\\*")
+                      "?:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\3\\*",
+                      "C:\\Program Files (x86)\\Stardock\\Fences\\FencesMenu64.dll,StartFences",
+                      "C:\\Windows\\System32\\*.cpl")
       ) and
-  not (process.name : "wscript.exe" and process.args : ("\\\\*\\*\\*.vbs", "C:\\Robocopy\\robocopy_Mail_Config_Veeam.vbs"))
+  not (process.name : ("wscript.exe", "cscript.exe") and
+       process.args : ("\\\\*.vbs", "C:\\Robocopy\\robocopy_Mail_Config_Veeam.vbs", "C:\\Users\\*\\Documents\\*.vbs", "X:\\*.vbs", "W:\\*.vbs"))
 '''
 
 min_endpoint_version = "7.15.0"

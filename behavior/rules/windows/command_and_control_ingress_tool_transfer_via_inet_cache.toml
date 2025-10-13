@@ -12,14 +12,15 @@ reference = [
     "https://attack.mitre.org/techniques/T1105/",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  [process where event.action == "start" and not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
   process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft*" and 
   (process.command_line : "*http*" or (process.executable : "?:\\Windows\\*" and process.args_count <= 1)) and 
-  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe")]
+  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
+  not (process.name : "rundll32.exe" and process.args : "C:\\Windows\\System32\\rundll32.exe  C:\\Windows\\System32\\LogiLDA.dll,LogiFetch")]
  [file where event.action!= "deletion" and file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Windows\\INetCache\\*" and 
   (file.Ext.header_bytes : "4d5a*" or 
    file.extension : ("exe", "pif", "scr", "dll", "cpl", "bat", "cmd", "hta"))]

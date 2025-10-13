@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "DLL Control Panel Items Registry Modification"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 registry where
@@ -26,9 +26,13 @@ registry where
 '''
 
 min_endpoint_version = "8.0.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

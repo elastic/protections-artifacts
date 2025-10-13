@@ -7,7 +7,7 @@ id = "cf738466-9fff-44d9-8603-4a7e6e6c8d1f"
 license = "Elastic License v2"
 name = "Execution via WMI followed by Network Connection"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5m
@@ -19,6 +19,9 @@ sequence with maxspan=5m
   not process.hash.sha256 :
                          ("f4620b3925a5671585e658d009a0909971c75ff24618d95ef366f0b237608ef0",
                           "0e8606ba02828d403e321e37f1568aa321a95d3bdbdb83b73583105b666d79ba") and
+  not (process.Ext.effective_parent.executable : "C:\\Windows\\System32\\inetsrv\\w3wp.exe" and
+       process.command_line : "C:\\Windows\\system32\\cmd.exe /c C:\\SysMgmt\\service\\mwtools\\SD_Installer_Start.cmd") and
+  not (process.code_signature.subject_name == "FUJITSU CLIENT COMPUTING LIMITED" and process.code_signature.trusted == true) and
   not process.Ext.effective_parent.executable : 
                                ("I:\\SCCM\\bin\\X64\\smsexec.exe",
                                 "?:\\Program Files\\*.exe",

@@ -7,11 +7,11 @@ id = "b76c0a04-b504-4a2f-a0cf-b4175a2f3eea"
 license = "Elastic License v2"
 name = "Execution of a Windows Script with Unusual File Extension"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
- process.pe.original_file_name : ("cscript.exe", "wscript.exe") and process.parent.name != null and
+ (process.pe.original_file_name :"wscript.exe" or process.name : "wscript.exe") and process.parent.name != null and
  process.args : ("-e:*", "/e:*", "//e:*") and
  not process.command_line : ("*.js*", "*.vb*", "*.wsf*", "*.wsh*", "*.wsc*", "*.tmp*") and
  /* Issue #286 */
@@ -29,7 +29,8 @@ process where event.action == "start" and
              "C:\\PGM_TC~1\\DHL_FR~1\\xls2csv.bat",
              "C:\\MBS\\UTIL\\repl.bat",
              "C:\\MBS\\UTIL\\PBSCOVER.BAT",
-             "M:\\sendkeys.bat Mayer"))
+             "M:\\sendkeys.bat Mayer",
+             "F:\\wamp64\\www\\centralstores\\cronjobs\\*.bat"))
 '''
 
 min_endpoint_version = "7.15.0"

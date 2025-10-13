@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence with maxspan=5m
@@ -33,7 +33,8 @@ sequence with maxspan=5m
               ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\MSBuild.exe", 
                "?:\\Windows\\Sys*\\inetsrv\\w3wp.exe", 
                "C:\\gstr\\rdcnet\\tools\\gacutil.exe", 
-               "?:\\Program Files\\IIS Express\\iisexpress.exe") and
+               "?:\\Program Files\\IIS Express\\iisexpress.exe",
+               "C:\\Program Files (x86)\\Microsoft Visual Studio\\*\\Common7\\IDE\\devenv.exe") and
     not dll.hash.sha256 : "cd9c2a615d6b842bda79c0f10eb44cc9b428bf4ad25c0cefbd5f43f9599d51f1"]
 '''
 

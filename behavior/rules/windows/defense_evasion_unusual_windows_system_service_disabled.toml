@@ -7,7 +7,7 @@ id = "7c44cfc6-d336-400e-9cc1-2417dfb5c00a"
 license = "Elastic License v2"
 name = "Unusual Windows System Service Disabled"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 registry where
@@ -24,7 +24,7 @@ registry where
           "HKLM\\SYSTEM\\ControlSet001\\Services\\wscsvc\\Start",
           "HKLM\\SYSTEM\\ControlSet001\\Services\\EventLog\\Start") and
  not process.executable : ("?:\\Windows\\System32\\reg.exe", "?:\\Windows\\regedit.exe") and
- not (process.code_signature.subject_name == "Connectwise, LLC" and process.code_signature.trusted == true)
+ not (process.code_signature.subject_name in ("Connectwise, LLC", "Enestech Software (Cyprus) Ltd") and process.code_signature.trusted == true)
 '''
 
 actions = []

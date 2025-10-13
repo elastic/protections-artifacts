@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=5m
@@ -71,7 +71,7 @@ sequence with maxspan=5m
                      "?:\\Users\\*\\AppData\\Local\\Programs\\UiPath\\Studio\\UiPath.Studio.Project.exe",
                      "D:\\*\\Exporter\\bin\\Debug\\Exporter.vshost.exe",
                      "C:\\Windows\\SysWOW64\\SmartDeploy\\ClientService.exe",
-                     "C:\\Program Files\\QSR\\NVivo 14\\NVivo.exe",
+                     "C:\\Program Files\\QSR\\NVivo ??\\NVivo.exe",
                      "C:\\Program Files\\McCormick Systems\\McCormick Estimating\\MaintenanceUtility.exe",
                      "D:\\PROGRAMS\\UiPath\\Studio\\UiPath.Studio.Project.exe",
                      "C:\\Users\\*\\AppData\\Roaming\\GWP\\MSOffice-AddIns\\Deploy-MSOfficeAddIns.exe",
@@ -80,10 +80,13 @@ sequence with maxspan=5m
                      "C:\\Program Files (x86)\\Genetec SV Control Panel\\Control Panel\\SVControlPanel.exe",
                      "D:\\PROGRAMS\\UiPath\\Studio\\UiPath.Studio.Project.exe",
                      "C:\\Program Files (x86)\\Chocolatey GUI\\ChocolateyGui.exe",
-                     "C:\\Program Files\\Royal TS V7\\RoyalTS.exe") and
+                     "C:\\Program Files\\Royal TS V7\\RoyalTS.exe",
+                     "C:\\Program Files\\QSR\\NVivo ??\\NVivo.exe",
+                     "C:\\Program Files\\Password Safe and Repository*\\PSRServer.exe") and
   not _arraysearch(process.parent.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :
                               ("c6460c01833d*e85ff0f95c00fb6c00fb6c0c6460c01488b559048895610488d65c85b5e5f415c415d415e415f",
+                               "*48895610488d65c85b5e5f415c415d415e415f5dc30000001910090010c20c300b60*",
                                "c6460c01833d9c8c755e007406ff15a495755e85c00f95c00fb6c00fb6c0c6460c01488b559048895610488d65c85b5e5f415c415d415e415f5dc31910090010"))
 
   ] by process.parent.entity_id

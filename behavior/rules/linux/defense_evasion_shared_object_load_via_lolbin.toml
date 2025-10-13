@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Shared Object Load via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+library%20load"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
-  (process.name == "bash" and process.args == "-c" and process.args like "*enable*-f*.so*") or
+  (process.name == "bash" and process.args == "-c" and process.args like "* enable *-f*.so*") or
   (process.name == "openssl" and process.args == "-engine" and process.args like "*.so*") or
   (process.name like "python*" and process.args == "-c" and process.args like "*cdll.LoadLibrary*.so*") or
   (process.name like "ruby*" and process.args == "-e" and process.args like "*Fiddle.dlopen*.so*") or 
@@ -24,10 +24,12 @@ process where event.type == "start" and event.action == "exec" and process.paren
 ) and
 not (
   process.parent.executable like (
-    "/root/.cache/bazel/_bazel_root/install/*", "/opt/Xilinx/PetaLinux/*", "/usr/bin/find", "/bin/find"
+    "/root/.cache/bazel/_bazel_root/install/*", "/opt/Xilinx/PetaLinux/*", "/usr/bin/find", "/bin/find", 
+    "/opt/nessus_agent/sbin/nessus-agent-module"
   ) or
   process.parent.name in ("make", "process-wrapper", "bwrap") or
-  (process.name like "python*" and process.command_line like~ "*import torch*torchinductor*")
+  (process.name like "python*" and process.command_line like~ "*import torch*torchinductor*") or
+  process.command_line like "*https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE*"
 )
 '''
 

@@ -1,0 +1,50 @@
+[rule]
+description = """
+Detects when Perl executes suspicious child processes on macOS. Perl can be abused by adversaries to execute malicious
+commands or scripts.
+"""
+id = "45681609-ac5b-4151-9014-204590e87e1d"
+license = "Elastic License v2"
+name = "Suspicious Perl Child Process Execution"
+os_list = ["macos"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.name == "perl" and 
+ (process.name like~ ("python*", "curl", "nscurl", "osascript", "whoami", "cat", "Terminal") or 
+  (process.name in ("sh", "zsh", "bash") and process.args_count == 2 and process.args == "-c" and process.args like ("/Users/*", "/tmp/*", "/private/tmp/*"))) and 
+    not process.Ext.effective_parent.executable like ("/System/*", "/Applications/Xcode.app/Contents/MacOS/Xcode")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

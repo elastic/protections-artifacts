@@ -8,7 +8,7 @@ id = "10076d7d-9ee0-44b7-99c7-9ed24c7ccf1b"
 license = "Elastic License v2"
 name = "Discovery Result Written to a Suspicious File via Discovery Process"
 os_list = ["macos"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -28,7 +28,8 @@ sequence by process.entity_id with maxspan=15s
                                                                 "/Library/Fonts/*",
                                                                 "/Users/*/Library/Fonts/*",
                                                                 "/private/var/root/Library/HTTPStorages/*", 
-                                                                "/*/.*") and 
+                                                                "/*/.*") and
+  not file.path like ("/private/tmp/*.fifo", "/private/tmp/tcl-tk*") and
   not file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
   not Effective_process.executable like "/usr/local/jamf/bin/jamf"]
 '''

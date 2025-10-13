@@ -13,7 +13,7 @@ reference = [
     "https://www.cyberbit.com/endpoint-security/hawkeye-malware-keylogging-technique/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -27,7 +27,9 @@ api where
                           "*\\users\\*\\appdata\\local\\*\\kumospace.exe",
                           "*\\users\\*\\appdata\\local\\microsoft\\teams\\current\\teams.exe") and 
  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and 
- process.thread.Ext.call_stack_final_user_module.hash.sha256 != "2e2dc7f8da5e1cc8510e0b3724dc4448a693f3fb76891cea7be5973aa9d94034"
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                       ("2e2dc7f8da5e1cc8510e0b3724dc4448a693f3fb76891cea7be5973aa9d94034",
+                                        "9e039448344e4f70122a9cb2416cf282d26033ec8a81b3084c8e7076e3242d8b")
 '''
 
 min_endpoint_version = "8.12.0"

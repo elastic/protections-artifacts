@@ -7,7 +7,7 @@ id = "29007eb1-40d9-47fa-82c0-d862db0586b4"
 license = "Elastic License v2"
 name = "Untrusted DLL Loaded by a Persistent Program"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -78,7 +78,8 @@ sequence by process.entity_id with maxspan=1m
               "9c5e11214b88feeefa0649ec267951ec193fd67a3cc0ea08efe83c2542f0465f", 
               "2250edf8968f04eefc1b10502a7a6f5a70461127e892c9f8cdb460d16065b01b", 
               "e2908dec495cc6e621358eb7c5d41403f25eb4bdbf3802866eadea378422d412", 
-              "51b82e3994b6ac4279914579bb75d06121e211d24b54a9ce5ad64101778f6fbb") and
+              "51b82e3994b6ac4279914579bb75d06121e211d24b54a9ce5ad64101778f6fbb",
+              "adfe16ce618fd1be24fe5764934f118d4b7d248eb838bc9dedca5114d8f94199") and
    not dll.pe.imphash :
               ("c1c7505e1e6e929ebb6b9100e55b050a",
                "6ed82d3226365ffafff2c57c1935d352",
@@ -155,6 +156,7 @@ sequence by process.entity_id with maxspan=1m
                          "NUUO Inc.",
                          "Tencent Technology(Shenzhen) Company Limited",
                          "TEDDYSOFT OOD",
+                         "The MathWorks, Inc.",
                          "Exclaimer Ltd") and process.code_signature.trusted == true)]
 '''
 

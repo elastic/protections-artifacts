@@ -7,7 +7,7 @@ id = "54916896-1f73-441d-acec-1141094b15e3"
 license = "Elastic License v2"
 name = "Remote Process Memory Write by Low Reputation Module"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -156,11 +156,12 @@ api where process.Ext.api.name == "WriteProcessMemory" and
                                    "154e97b6c7ff91c3e6687a5e6c2a5e7f5f0206df0d232fd3e80519f8f0cd8a5b",
                                    "c00a1e6ecb6d6febd07397cc3887087eec880ea3f34dda6dff4322eebdbfed29",
                                    "55cf1d3e49027092e6a364cc11b0a33bf3ca829868842067b9468a4b3f7a9c54",
-                                   "89b8da24841c9959a19bb7932c02476b5150c4b17303f79b1252bee12559d419")
+                                   "89b8da24841c9959a19bb7932c02476b5150c4b17303f79b1252bee12559d419",
+                                   "0274eae9163aa1e5184ec44959bc052dc58a090b4d27923ed64aa985b3e8ea82",
+                                   "084b788ef2f160822ffd140665ea1d6065fe04bf0fbc85da2314e8baa630b282")
 '''
 
 min_endpoint_version = "8.14.2"
-optional_actions = []
 reputation = true
 [[actions]]
 action = "kill_process"
@@ -173,6 +174,11 @@ action = "kill_process"
 field = "process.entity_id"
 state = 0
 tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

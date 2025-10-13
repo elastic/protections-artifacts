@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -58,7 +58,7 @@ process where event.action == "start" and
   not process.code_signature.subject_name in ("win.acme.simple@gmail.com", "NCH Software, Inc.", "RealNetworks, Inc.",
                                               "WATERFOX LIMITED", "YY Inc.", "web discover", "WACS",
                                               "Western Digital Technologies, Inc.") and
-  not process.hash.sha256 :
+  not process.hash.sha256 in
               ("18fb4e476f670b532d5227fc8ff9d7d55c151102875d64e80f2dc0cbd569861c",
                "3a87ed304e359392da91bc39cb17af379dcd906c045ffcc4d715086d766acfbc",
                "c0593b4b65bb264a982d61a7b84f38b10a41972b49a217ef3a80a906a0c4ee08",
@@ -71,7 +71,8 @@ process where event.action == "start" and
                "554fa8a3bf2e233f64d9e000bf30f197159406fbfa9920adca0901a265e45379", 
                "fb0ecac0bd7b8f3d81dffb359fb1449fc3cb74a15a1f53a568c1c5ee5a8966a9", 
                "cf635f97d0a3bea30f348277777f36db6b14aea0e7711471e5fb2e13167b80cd", 
-               "22e7528e56dffaa26cfe722994655686c90824b13eb51184abfe44d4e95d473f") and
+               "22e7528e56dffaa26cfe722994655686c90824b13eb51184abfe44d4e95d473f",
+               "97fc042ea077118a6bb19641d7c1e8fb20e6d1714f2234110f88a47722bcf75e") and
 
   not process.executable :
              ("?:\\Users\\*\\AppData\\Local\\GoToMeeting\\*\\g2mupload.exe",

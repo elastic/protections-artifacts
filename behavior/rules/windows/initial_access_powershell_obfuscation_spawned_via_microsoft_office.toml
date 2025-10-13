@@ -11,7 +11,7 @@ reference = [
     "https://github.com/danielbohannon/Invoke-Obfuscation",
     "https://www.elastic.co/security-labs/effective-parenting-detecting-lrpc-based-parent-pid-spoofing",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "start" and
@@ -72,7 +72,10 @@ process where event.action == "start" and
   not process.args : ("Get-AuthenticodeSignature*", "Write-Host") and not process.command_line : "*Get-AppxPackage*Microsoft.Office*" and
   not (process.name : "powershell.exe" and process.command_line : "*Get-CIMInstance -Class Win32_Service*" and 
        process.parent.executable : "C:\\WINDOWS\\System32\\cmd.exe" and process.parent.args : "C:\\WINDOWS\\TEMP\\nessus_*.TMP") and
-  not process.command_line : "powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -"
+  not process.command_line : "powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -" and
+  not (process.name : "powershell.exe" and process.args : "$ErrorActionPreference='silentlycontinue'; $tmp = (Get-Item -Path $env:PROGRAMFILES\\Google\\Chrome\\Application\\chrome.exe).VersionInfo.FileVersion; if ($tmp) {echo $tmp; Exit;}; $tmp = (Get-Item -Path $env:PROGRAMFILES") and
+  not (process.parent.name : "cmd.exe" and process.parent.args : "chcp 65001 & powershell -NonInteractive -WindowStyle Hidden -command &") and
+  not (process.args : "-NoLogo" and process.args : "\\\\*.ps1")
 '''
 
 min_endpoint_version = "7.15.0"

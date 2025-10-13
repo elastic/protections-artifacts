@@ -4,7 +4,7 @@ id = "e6b77636-53e6-416f-81bb-863b74a896e8"
 license = "Elastic License v2"
 name = "Suspicious Windows Core Module Change"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -44,7 +44,10 @@ api where process.Ext.api.name == "VirtualProtect" and
                                                                     "1bb34f11b79fad256ca2e72ea7bcc618815632d585538e1e601c7fc5512ba72d",
                                                                     "4c92f5bcefdec3e38aa8c30f14379c723e573587abe7e8c4fc77f1fae2a0d270",
                                                                     "fe498b13e464d26beacdcba32bc3b26d356b52f9b251546831e3d86923a35d6b",
-                                                                    "8a882e25b9a7d49feee49c70ddc816720f82dccf0691076c098959fb3b2f4711") and
+                                                                    "8a882e25b9a7d49feee49c70ddc816720f82dccf0691076c098959fb3b2f4711",
+                                                                    "d0fdfd7102505692385d4061e2a73504727802594434d31136ff4e75cd5072d5",
+                                                                    "d3813940007faa5f2b15bd53ac9c1d28032252133257c2f3d8ef87563ae55301",
+                                                                    "028f848c8a44b4831741e01e27624fee9c408f63d859021fff533e87ce19f129") and
  not (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows", "Microsoft Corporation", ".NET")) and not process.Ext.api.behaviors == "image_rop") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
@@ -77,7 +80,10 @@ api where process.Ext.api.name == "VirtualProtect" and
                                           "Mozilla Corporation",
                                           "SignPath Foundation",
                                           "Palo Alto Networks",
-                                          "Duncan Ogilvie")) and
+                                          "Duncan Ogilvie",
+                                          "combit Software GmbH",
+                                          "Cisco Systems, Inc.",
+                                          "MetaQuotes Ltd")) and
  not (process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\assembly\\nativeimages_*.ni.dll" and
       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\ntdll.dll")
 '''

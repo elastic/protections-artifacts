@@ -7,7 +7,7 @@ id = "c6231a7f-edb0-455f-9bc0-5a1b0213bb29"
 license = "Elastic License v2"
 name = "Hollow Image Behavior via Native API"
 os_list = ["windows"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.behaviors == "hollow_image" and
@@ -26,6 +26,7 @@ api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.behaviors
                                         "c:\\program files\\*",
                                         "c:\\program files (x86)\\*") and
   not (process.Ext.api.metadata.target_address_name == "clr.dll" and process.Ext.api.parameters.size == 428) and
+  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "c:\\windows\\sys?????\\ntdll.dll!LdrResolveDelayLoadsFromDll*") and
   not (process.thread.Ext.call_stack_final_user_module.path : "c:\\windows\\system32\\spool\\drivers\\x64\\3\\*.dll" and process.Ext.api.parameters.size <= 4096) and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("aac0a89af89d77fa1af4a9a97657f4dfb83b97b73ec02502fe72b72c835abe31",
                                                                       "2c20ff3a1c0da227e018d40c15c35a7c27179b3e19be9cd2a6bd9b8770a2d5b3",
@@ -33,7 +34,11 @@ api where process.Ext.api.name == "VirtualProtect" and process.Ext.api.behaviors
                                                                       "0e103cdf3dfa0416e7cb71940ab2a3f53127e7843e86a2e4621d3a21915c1ff7",
                                                                       "f6686978245410dffddc66015bce1baea96c1c3ed0f9d4c9f476e4cf8cb75afb",
                                                                       "9354d9bdbc7f0779a1a8693296171e13cbe6714c15c9c0f934c67e499fbcdff0",
-                                                                      "4772629a7e2380d28e33fdace1d309d805f6c9973fecc3bb7fe6dc1553d137f1")
+                                                                      "4772629a7e2380d28e33fdace1d309d805f6c9973fecc3bb7fe6dc1553d137f1",
+                                                                      "012773a05c29d8d779b7f529ed4e2919b5c2af260acd5a2bd0fb5efafbf435e1",
+                                                                      "64d5ccfb2a51525f66cb00aeb7959abe68024c7cece2c82192aff44300e944f3",
+                                                                      "d38de4cdb43df6e9992fb88c477ba1bbca4d43aba8c4296626eac2919a81c697",
+                                                                      "2771c5b49d89aff611033d2025b9e0690226a7654d6a5cfc0420b18d8965cc67")
 '''
 
 min_endpoint_version = "8.10.0"

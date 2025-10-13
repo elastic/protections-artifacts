@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 api where 
@@ -27,7 +27,7 @@ api where
                 "Take-Two Interactive Software, Inc.", "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk", 
                 "Activision Publishing Inc", "OpenJS Foundation", "Maksim Moisiuk", "Ubisoft Entertainment Sweden AB", 
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
-                "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd") and
+                "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd", "Unity Technologies SF") and
       process.code_signature.trusted == true) and 
  not process.thread.Ext.call_stack_final_user_module.name like ("Kernel", "Unknown", "dbgeng.dll", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "kernel|*") and
@@ -52,9 +52,13 @@ api where
                          "2dfa7a9d8be474447f8ea53dc864a5bb8cdcc526664636154adfa8b71386f883",
                          "e3fdcd2b4c5215e74b0cabe91ce7fe2800cbf8e2a28157342960bca61bbd6b5d",
                          "f1b668a9cca5c832ae8374c1815cfc8fcb452d05268797f0c022d74000ecd486",
-                         /* TBR */
                          "c0a45f327f40cf8cdc79dc9cccf858ae862a6df0a26c83141cb3c24fc604b483",
-                         "8fb6e0cd1c0d01157ee1a87da9e894f7451988a5349cff5d99f2d3d9c6ffc397") and
+                         "8fb6e0cd1c0d01157ee1a87da9e894f7451988a5349cff5d99f2d3d9c6ffc397",
+                         "4c6bbe178708b9590be27d8423261d6c1abfcdfe6cf90df1654ff60033a48bee",
+                         "7eda2d6011ed2dae3f0c2ec30bdd2ae0c0146bf1baaa827dccb002b6ad793820",
+                         "60ac461ca948a8a26dc3013d3b30fa615666b0d3fe8f5014dfd39a5de5440868",
+                         "1165eb20cab73c780b439fdbea3fd9c6545f1d5488bf6c6194bf4dd49450f618",
+                         "79ab757eaf9d745e9da693510c58b180ac45d6450d8df2260826c285bfe0f2de") and
  not process.executable : ("D:\\laragon\\bin\\php\\php-8.0.25-nts-Win32-vs16-x64\\php.exe", 
                            "D:\\laragon\\bin\\php\\php-8.2.4-nts-Win32-vs16-x64\\php.exe", 
                            "Z:\\SteamLibrary\\steamapps\\common\\*.exe",
@@ -62,6 +66,7 @@ api where
                            "D:\\Steam\\steamapps\\common\\*.exe",
                            "D:\\Visual Studio\\Common7\\IDE\\devenv.exe",
                            "?:\\Program Files\\DebugDiag\\DbgHost.exe",
+                           "?:\\Program Files\\Git\\usr\\bin\\env.exe",
                            "?:\\Program Files\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
                            "?:\\Program Files (x86)\\Microsoft Visual Studio*\\Common?\\IDE\\*.exe",
                            "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
@@ -85,7 +90,8 @@ api where
  not process.thread.Ext.call_stack_summary : ("ntdll.dll|kernelbase.dll|gdb.exe|kernel32.dll|ntdll.dll", "ntdll.dll|bcrypt.dll") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
-                                          "Microsoft Windows Software Compatibility Publisher"))
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "Valve Corp."))
 '''
 
 min_endpoint_version = "8.10.0"

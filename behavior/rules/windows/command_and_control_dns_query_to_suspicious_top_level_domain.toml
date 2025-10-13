@@ -8,7 +8,7 @@ id = "d37ffe39-8e58-460f-938d-3bafbae60711"
 license = "Elastic License v2"
 name = "DNS Query to Suspicious Top Level Domain"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -45,7 +45,10 @@ sequence by process.entity_id with maxspan=1m
                         "?:\\PROGRA~?\\MICROS~?\\*",
                         "?:\\WINDOWS\\Sys*\\shell32.dll,#44",
                         "?:\\PROGRA~?\\MICROS~2\\Office*\\MLCFG32.CPL,@0")) and
-   not process.parent.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe" and
+   not process.parent.executable :
+                    ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
+                     "C:\\Program Files\\Microsoft Visual Studio\\*.exe",
+                     "C:\\Program Files\\Nitro\\PDF Pro\\??\\NitroPDF.exe") and
    not process.hash.sha256 :
                    ("19a9ed41a69c74f130f53572aa1b07b1fa35d93a408dcf9d3f16f0fd72dd1e69",
                     "005f63a30438bf91d23790bfd6ab43d298e73c48024d7f48aec322b798035130",
@@ -76,7 +79,8 @@ sequence by process.entity_id with maxspan=1m
                     "6b1880dce6f28d4a79f4fa3be148ee55793e679485c3db156d26abd6d277b44a",
                     "d3a1446ff14a77a4beb61f4db93afec24a6daa8fad566ddbddbc74943169b5b1",
                     "f79605915297ceac917d58e629bbfb7c50cac8d7c563bf207c5c84abd2956008",
-                    "f0822cd0265b889d65c3bd6af51b5ebd9f13b7e067b97b62d923d3693f9b22ca") and
+                    "f0822cd0265b889d65c3bd6af51b5ebd9f13b7e067b97b62d923d3693f9b22ca",
+                    "9e039448344e4f70122a9cb2416cf282d26033ec8a81b3084c8e7076e3242d8b") and
    not process.executable : ("?:\\Program Files\\Makeblock\\xTool Creative Space\\xTool Creative Space.exe",
                              "?:\\Program Files (x86)\\Popcorn Time\\PopcornTimeDesktop.exe",
                              "?:\\Program Files\\ArcGIS\\DataStore\\framework\\runtime\\pgsql\\bin\\postgres.exe",
@@ -96,7 +100,7 @@ sequence by process.entity_id with maxspan=1m
                        "*.hair", "*.skin", "*.motorcycles", "*.christmas", "*.lol", "*.makeup",
                        "*.mom", "*.rest", "*.monster", "*.bond", "*.beauty", "*.biz", "*.live") and
   not (process.name : "powershell.exe" and dns.question.name : "*.engage.xyz") and
-  not dns.question.name in ("wfdownloader.xyz", "licenseauth.online", "nexaquest.store", "api.ratna.pw", "bo3.ezz.lol")]
+  not dns.question.name in ("wfdownloader.xyz", "licenseauth.online", "nexaquest.store", "api.ratna.pw", "bo3.ezz.lol", "acesso.ws", "*.thomsonreuters.biz")]
 '''
 
 min_endpoint_version = "8.4.0"

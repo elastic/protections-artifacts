@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 api where
@@ -44,7 +44,7 @@ api where
                                "\\Windows\\*") and 
   not process.thread.Ext.call_stack_final_user_module.name : ("Unknown", "Undetermined") and
   not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                   $entry.subject_name in (".NET", "Microsoft Corporation", "Microsoft Windows", "Sophos Limited")) and
+                   $entry.subject_name in (".NET", "Microsoft Corporation", "Microsoft Windows", "Sophos Limited", "EOG Resources, Inc.")) and
   not process.executable : 
                    ("?:\\Program Files (x86)\\Image Express\\ixDrill\\ixDrill.exe", 
                     "?:\\Windows\\System32\\DellTPad\\ApMsgFwd.exe", 

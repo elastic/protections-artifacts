@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -16,7 +16,7 @@ sequence by process.entity_id with maxspan=1m
   not dll.code_signature.status == "trusted" and
   not dll.code_signature.status == "errorCode_endpoint: Failure in an external software component" and
   (dll.Ext.relative_file_creation_time <= 3600 or dll.Ext.relative_file_name_modify_time <= 3600) and 
-  not dll.path : "?:\\windows\\assembly\\nativeimages_*" and
+  not dll.path : ("?:\\windows\\assembly\\nativeimages_*", "c:\\windows\\ccmcache\\*") and
   not (dll.path : "?:\\Windows\\Installer\\*.tmp" and process.name : "msiexec.exe") and
   not dll.hash.sha256 in
               ("29ae6f149e581f8dbdc01eed2d5d20b82b597c4b4c7e102cab6d012b168df4d8",
@@ -74,7 +74,8 @@ sequence by process.entity_id with maxspan=1m
                "3885dbec9db4d8a3a1f6ad12ff0055e64de63d351424b954369e7828950f7fa7",
                "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610",
                "05b5616932031283eea3751dfcad273db805a71b4e35afdbc03bd3c30bc6b6b0",
-               "f5924d522b7d8b4a551c2d4045069c9a711b62b97e2b799e7b42a9931e58fba3") and
+               "f5924d522b7d8b4a551c2d4045069c9a711b62b97e2b799e7b42a9931e58fba3",
+               "0cd9e13dbce7595879d9e972dc04e81da63d1cbf34c99fd3603e2aba68ccf2a5") and
  not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and dll.path : "C:\\Windows\\Installer\\MSI????.tmp")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and

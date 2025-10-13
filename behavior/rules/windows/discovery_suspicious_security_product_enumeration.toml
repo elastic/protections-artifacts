@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -23,11 +23,13 @@ api where
            ("?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe",
             "?:\\Program Files\\Microsoft Security Client\\*.exe",
             "?:\\Program Files\\Windows Defender\\*.exe",
-            "?:\\Program Files (x86)\\Windows Defender\\*.exe") and
+            "?:\\Program Files (x86)\\Windows Defender\\*.exe",
+            "?:\\Program Files (x86)\\Lenovo\\System Update\\ConfigScheduledTask.exe") and
     process.parent.executable :
            ("?:\\Windows\\System32\\services.exe",
             "?:\\Windows\\System32\\svchost.exe",
-            "?:\\Program Files\\Windows Defender\\MpCmdRun.exe")) or
+            "?:\\Program Files\\Windows Defender\\MpCmdRun.exe",
+            "?:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\OfficeClickToRun.exe")) or
 
    (process.executable :
                ("?:\\Windows\\System32\\MRT.exe",
@@ -127,7 +129,8 @@ api where
      process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe", "C:\\Windows\\System32\\EVENTSENTRY\\eventsentry_svc_x64.exe")) or
 
     (process.name : "powershell.exe" and
-     process.command_line : ("powershell  Get-CimInstance –ClassName Win32_DeviceGuard –Namespace root\\Microsoft\\Windows\\DeviceGuard")) or
+     process.command_line : ("powershell  Get-CimInstance –ClassName Win32_DeviceGuard –Namespace root\\Microsoft\\Windows\\DeviceGuard",
+                             "\"C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\PowerShell.exe\" -NoLogo -Noninteractive -NoProfile  -ExecutionPolicy Bypass \"& 'C:\\WINDOWS\\CCM\\SystemTemp\\*.ps1'\" True")) or
 
     (process.name : "cscript.exe" and process.parent.executable : "C:\\Program Files (x86)\\Bostonpost Technology\\Property Manager *\\propertymanager.exe") or
 

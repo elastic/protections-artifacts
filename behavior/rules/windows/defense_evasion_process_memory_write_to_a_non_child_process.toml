@@ -7,7 +7,7 @@ id = "fa2e2435-d285-485e-9890-dff92cb78ab7"
 license = "Elastic License v2"
 name = "Process Memory Write to a Non Child Process"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -35,6 +35,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
  not (process.executable : ("\\\\?\\Volume{*}\\*.exe", "\\Device\\HarddiskVolume*\\Windows\\*.exe") and process.thread.Ext.call_stack_final_user_module.path : "?:\\*\\docker\\*\\windows\\*.dll") and
 
  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined", "Kernel") and
+
+ not (Target.process.name : ("UnrealEditor.exe", "UE4Editor.exe", "UnrealEditor-Win64-DebugGame.exe") and process.Ext.api.parameters.size < 6) and
 
  /* excluding multiple unsigned third party modules from programfiles */
   not process.thread.Ext.call_stack_final_user_module.path :
@@ -168,7 +170,14 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "6649961021d30e565e60c27db58305c6750b580231a0d7331522ad277a769dd3",
                                    "1dc9d6fc9015eee05d40c876b622bef542292f2d81382dbf0845ff82ed18d25d",
                                    "011eb5a6789080192f66cc04c2ceecf57ce867bd854a5b8d530a04f41f50a570",
-                                   "e09816f0c305936ce1061c46a35e7d1883a08acf81f94793d9d07455421761dd")
+                                   "e09816f0c305936ce1061c46a35e7d1883a08acf81f94793d9d07455421761dd",
+                                   "37cf45f320b9bc4ca198bd93ac1f7882756d82f491809ea4f8907c69cfe1c9ae",
+                                   "fce8c609368c54a21e87dee938a5b3ee3fa910658856b8b28e8d86794c09374e",
+                                   "9d569291755f1937996aecbe32fc5d8df656d0cf4122d4c10130938dfd2229fd",
+                                   "a40e2533a200e9e8f29ccf937b05efc92cc4b56251758d978cf73c83f265a014",
+                                   "e2f9e698b01ea5e525396ddb86d5dbfcf85f6f19d6e9b8e4f1d75cbcd0da626d",
+                                   "ff31fa811f9c07cc7fdaa68c9e8bca3a7b4fdf6e0a079a58175ea58ba139c7ae",
+                                   "da8a30160ab0fe450cc42aad45999e22ea848ac9a98814d420c4da884e733e22")
 '''
 
 min_endpoint_version = "8.14.2"

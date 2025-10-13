@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
@@ -28,7 +28,9 @@ api where
   ) and
   not (process.code_signature.subject_name in ("Censornet Limited") and process.code_signature.trusted == true) and
   not (process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and process.name : "powershell.exe" and
-       process.command_line : "powerShell  Add-MpPreference -ControlledFolderAccessAllowedApplications*")
+       process.command_line : "powerShell  Add-MpPreference -ControlledFolderAccessAllowedApplications*") and
+  not (process.name : "powershell.exe" and
+       process.command_line : "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -EncodedCommand JABlAHgAYwBsAHUAcwBpAG8AbgBzAD0AQAAoACIAQwA6AFwAUAByAG8AZwByAGEAbQAgAEYAaQBsAGUAcwBcAEQAQgBlAGEAdgBlAHIAXABkAGIAZQBhAHYAZQByAC4AZQB4AGUAI*")
 '''
 
 min_endpoint_version = "8.15.0"

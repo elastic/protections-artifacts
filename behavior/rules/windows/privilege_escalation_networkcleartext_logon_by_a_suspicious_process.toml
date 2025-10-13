@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "NetworkCleartext Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 authentication where event.action == "log_on" and
  process.Ext.session_info.logon_type == "NetworkCleartext" and process.executable : "C:\\*" and
  user.id like ("S-1-5-21*", "S-1-12-*") and (user.effective.id != null and user.effective.id like ("S-1-5-21*", "S-1-12-*")) and
  not (process.code_signature.trusted == true and
-      process.code_signature.subject_name in ("Varonis Systems, Inc.", "Remote Access World SAS", "TSplus SAS", "Solarwinds Worldwide, LLC")) and
+      process.code_signature.subject_name in ("Varonis Systems, Inc.", "Remote Access World SAS", "TSplus SAS", "Solarwinds Worldwide, LLC", "Siemens AG")) and
  not process.executable :
             ("C:\\Windows\\System32\\inetsrv\\w3wp.exe",
              "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",

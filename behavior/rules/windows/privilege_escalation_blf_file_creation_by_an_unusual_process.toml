@@ -1,0 +1,65 @@
+[rule]
+description = """
+Identifies an unelevated attempt to create a BLF file by an unusual process. This may indicate an attempt to exploit a
+CLFS vulnerability for privilege escalation.
+"""
+id = "734e9e5c-865e-46e0-a4c1-c8fc56910bf2"
+license = "Elastic License v2"
+name = "BLF File Creation by an Unusual Process"
+os_list = ["windows"]
+reference = [
+    "https://securelist.com/windows-clfs-exploits-ransomware/111560/",
+    "https://www.elastic.co/security-labs/itw-windows-lpe-0days-insights-and-detection-strategies",
+    "https://ti.qianxin.com/blog/articles/cve-2025-29824-0-day-vulnerability-exploitation-sample-research-en/",
+]
+version = "1.0.2"
+
+query = '''
+file where event.action == "creation" and user.id != "S-1-5-18" and user.id != null and process.pid != 4 and
+ file.extension : "blf" and file.Ext.header_bytes == "1500010002000200000000004b824cc6" and file.path : "C:\\*.blf" and
+ (process.code_signature.exists == false or process.code_signature.trusted == false) and not process.code_signature.status like "errorCode_endpoint*" and
+ not file.path : ("C:\\Windows\\System32\\*.blf",
+                  "C:\\Windows\\SysWOW64\\*.blf",
+                  "C:\\Windows\\appcompat\\*.blf",
+                  "C:\\Windows\\ServiceProfiles\\*.blf",
+                  "C:\\Users\\*\\AppData\\Local\\Temp\\*\\UsrClass.dat*.blf",
+                  "C:\\Users\\*\\NTUSER.DAT{*}.TM.blf",
+                  "C:\\System Volume Information\\*.blf",
+                  "C:\\$WINDOWS.~BT\\NewOS\\Windows\\*.blf",
+                  "C:\\Users\\*\\AppData\\Local\\Temp\\Ruf*.tmp\\SYSTEM{*}.TM.blf",
+                  "C:\\Users\\*\\SetupRST_RecoveryImage\\Windows\\System32\\config\\*.TM.blf") and
+ not process.executable : ("C:\\Windows\\System32\\SystemSettingsAdminFlows.exe",
+                           "C:\\Windows\\explorer.exe",
+                           "C:\\Program Files\\*.exe",
+                           "C:\\Program Files (x86)\\*.exe",
+                           "C:\\Windows\\System32\\pnputil.exe",
+                           "C:\\$WINDOWS.~BT\\*.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.7.0"

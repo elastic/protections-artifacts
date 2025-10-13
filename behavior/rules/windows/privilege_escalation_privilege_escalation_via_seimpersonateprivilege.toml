@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence with maxspan=3m
@@ -23,10 +23,14 @@ sequence with maxspan=3m
                  "?:\\Windows\\system32\\printfilterpipelinesvc.exe", 
                  "?:\\Windows\\syswow64\\printfilterpipelinesvc.exe",
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\printfilterpipelinesvc.exe", 
-                 "\\Device\\HarddiskVolume*\\Windows\\System32\\wbem\\wmiprvse.exe") and 
+                 "\\Device\\HarddiskVolume*\\Windows\\System32\\wbem\\wmiprvse.exe",
+                 "C:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechModelDownload.exe") and
   not (process.name : "rundll32.exe" and process.args : "?:\\WINDOWS\\sys*\\davclnt.dll,DavSetCookie") and
   not (process.executable : "C:\\Windows\\System32\\conhost.exe" and
-       process.parent.executable : "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe")
+       process.parent.executable : ("C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe",
+                                    "C:\\Program Files\\Windows Defender\\mpcmdrun.exe")) and
+  not (process.parent.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe" and
+       process.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\Classification\\SenseCE.exe")
   ] by process.entity_id
  [process where event.action == "start" and user.id : "S-1-5-18" and 
   (
@@ -51,7 +55,8 @@ sequence with maxspan=3m
     not (process.executable == "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and
          process.parent.executable in
                          ("C:\\Program Files\\Windows Defender\\MpCmdRun.exe",
-                          "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseNdr.exe")) and
+                          "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseNdr.exe",
+                          "C:\\Program Files\\Windows Defender Advanced Threat Protection\\Classification\\SenseCE.exe")) and
     not (process.executable : "C:\\Program Files\\Portrait Displays\\HP Display Control Service\\DeviceCheck.exe" and
          process.parent.executable : "C:\\Windows\\System32\\pacjsworker.exe") and
 
@@ -66,8 +71,11 @@ sequence with maxspan=3m
                       "C:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe",
                       "C:\\Program Files (x86)\\SolarWinds\\Agent\\Plugins\\ADMProbe\\nping.exe") and
     process.hash.sha256 != "8ba8760bcb924e1e7943c3008a80006b29737808cc41a93cabcfeaaec9785276" and
-    not process.parent.executable : "C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe" and
-    not (process.code_signature.subject_name in ("Sophos Ltd", "Entrust Datacard Corporation", "Com4Cure GmbH", "Martin Prikryl", "Stellar Cyber Inc", "Nmap Software LLC") and
+    not process.parent.executable :
+                        ("C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe",
+                         "C:\\Program Files\\LANDESK\\Shavlik Protect Agent\\STAgentUpdater.exe",
+                         "C:\\Windows\\CCM\\Ccm32BitLauncher.exe") and
+    not (process.code_signature.subject_name in ("Sophos Ltd", "Entrust Datacard Corporation", "Com4Cure GmbH", "Martin Prikryl", "Stellar Cyber Inc", "Nmap Software LLC", "SimpleHelp Ltd") and
          process.code_signature.trusted == true) and
     not (process.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and
          process.parent.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe") and
@@ -77,7 +85,10 @@ sequence with maxspan=3m
          process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\ngen.exe") and
     not (process.parent.executable : "C:\\Windows\\System32\\winlogon.exe" and process.executable : "C:\\Windows\\System32\\LogonUI.exe") and
     not (process.parent.executable : "C:\\Windows\\System32\\msiexec.exe" and process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe") and
-    not (process.parent.executable : "C:\\Windows\\System32\\SearchIndexer.exe" and process.executable : "C:\\Windows\\System32\\SearchFilterHost.exe")
+    not (process.parent.executable : "C:\\Windows\\System32\\SearchIndexer.exe" and process.executable : "C:\\Windows\\System32\\SearchFilterHost.exe") and
+    not (process.executable : "C:\\Windows\\System32\\WerFault.exe" and process.parent.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|faultrep.dll|wersvc.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
+    not (process.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*.tmp\\setup.exe" and
+         process.parent.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\*.tmp\\setup.exe")
    ] by process.parent.entity_id
 '''
 

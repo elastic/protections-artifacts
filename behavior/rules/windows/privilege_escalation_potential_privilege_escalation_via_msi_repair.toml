@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via MSI Repair"
 os_list = ["windows"]
 reference = ["https://sec-consult.com/blog/detail/msi-installer-repair-to-system-a-detailed-journey/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and process.Ext.token.integrity_level_name == "system" and
@@ -20,7 +20,8 @@ process where event.action == "start" and process.Ext.token.integrity_level_name
              "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
              "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
              "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
-             "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
+             "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+             "?:\\Program Files (x86)\\Google\\Chrome\\Application\\*\\Installer\\chrmstp.exe")
 '''
 
 min_endpoint_version = "7.15.0"

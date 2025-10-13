@@ -14,7 +14,7 @@ reference = [
     "https://objective-see.org/blog",
     "https://www.elastic.co/security-labs/DPRK-strikes-using-a-new-variant-of-rustbucket",
 ]
-version = "1.0.50"
+version = "1.0.51"
 
 query = '''
 persistence where event.action == "launch_daemon" and (Persistence.runatload == true or Persistence.keepalive == true) and
@@ -81,6 +81,8 @@ persistence where event.action == "launch_daemon" and (Persistence.runatload == 
                       "/Applications/.com.bomgar.bomgar-scc/Remote Support Customer Client.app/Contents/MacOS/bomgar-scc") and not
   Effective_process.executable like~ ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                   "/usr/local/sbin/FileWave.app/Contents/MacOS/fwcld",
+                                  "/usr/local/jamf/bin/jamf",
+                                  "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon",
                                   "/Library/PrivilegedHelperTools/com.bomgar.bomgar-scc.ElevationHelper.daemon",
                                   "/Library/Kandji/Kandji Agent.app/Contents/Helpers/Kandji Library Manager.app/Contents/MacOS/kandji-library-manager") and not
   process.executable like~ ("/System/*",

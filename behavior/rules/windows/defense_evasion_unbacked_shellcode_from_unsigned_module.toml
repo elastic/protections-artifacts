@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
@@ -124,12 +124,16 @@ api where
 '''
 
 min_endpoint_version = "8.14.2"
-optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
 state = 0
 tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
 
 [[threat]]
 framework = "MITRE ATT&CK"

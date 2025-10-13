@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies attempts to change file ownership of system boot critical files. Adversaries may modify file or directory
+ownership to evade access control lists (ACLs) and access protected files.
+"""
+id = "8b32486f-4a3b-4e2b-afca-a02db8185e50"
+license = "Elastic License v2"
+name = "System Boot Files Permission Change"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1222/001/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+  (
+   ((process.name : "icacls.exe" or process.pe.original_file_name  == "iCACLS.EXE") and (process.args : "/reset" or (process.args : "/grant" and process.args : "Everyone:F"))) or
+   ((process.name : "takeown.exe" or process.pe.original_file_name == "takeown.exe") and process.args : "/f")
+   ) and
+   process.command_line : ("*winload.exe*", "*winload.efi*", "*ntoskrnl.exe*", "*bootmgr*")
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1222"
+name = "File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/"
+[[threat.technique.subtechnique]]
+id = "T1222.001"
+name = "Windows File and Directory Permissions Modification"
+reference = "https://attack.mitre.org/techniques/T1222/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

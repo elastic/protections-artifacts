@@ -8,7 +8,7 @@ reference = [
     "https://aidenpearce369.github.io/offsec/AMSI-Memory-Bypass/",
     "https://modexp.wordpress.com/2019/06/03/disable-amsi-wldp-dotnet/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -24,7 +24,7 @@ sequence by process.entity_id with maxspan=3s
                                         "C:\\Windows\\Sys?????\\KernelBase.dll!LoadLibrary*"))]
 [api where event.provider == "Microsoft-Windows-Kernel-Audit-API-Calls" and
  process.Ext.api.name == "SetThreadContext" and process.Ext.api.behaviors != "cross-process" and
- not process.thread.Ext.call_stack_final_user_module.name in ("clr.dll", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("clr.dll", "coreclr.dll", "Unknown", "Undetermined") and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                          ("0799a4a76a1af52b3ca214c54b60dd5cea0c68111d02354eb240a45d165ffdd3",
@@ -33,12 +33,16 @@ sequence by process.entity_id with maxspan=3s
                           "baeded008c8bd259685527543807ff3f6f05d7e43b60a5814656fd6912672277",
                           "e84abf700715ba9dff463985f3648910bcec730df60792a9866be57ce6028636",
                           "aa95131a1bd9d71de05031f41ac4930e9c9afe630fa4eef9b0a82e07e69799ed",
-                          "4622e028bf88c47cc46ea4351e281ec032a7cdf2c00d3172d24b6daef68e156e") and
+                          "4622e028bf88c47cc46ea4351e281ec032a7cdf2c00d3172d24b6daef68e156e",
+                          "7f8e0d6e650cc61a5277c6bca2325c096735122dd46df1d410e2e5da3daa8aaf",
+                          "b980fe2c06d57e913cba14f67faf49b1f337f889bbf52bbccbec1c4383ffb4db") and
  not (process.executable : "C:\\Program Files\\AzureConnectedMachineAgent\\azcmagent.exe" and
       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\windows.devices.sensors.dll") and
+ not (process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files\\*", "c:\\program files (x86)\\*") and
+      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true)) and
  process.thread.Ext.call_stack_final_user_module.name != null and process.thread.Ext.call_stack_final_user_module.name != "Kernel" and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                   $entry.subject_name in ("Rapid7 LLC", "VELOCIDEX ENTERPRISES PTY LTD", "CyberCX Pty Ltd", "Microsoft Windows Hardware Compatibility Publisher", "Exafunction, Inc.", "Proton AG"))]
+                   $entry.subject_name in ("Rapid7 LLC", "VELOCIDEX ENTERPRISES PTY LTD", "CyberCX Pty Ltd", "Microsoft Windows Hardware Compatibility Publisher", "Exafunction, Inc.", "Proton AG", ".NET"))]
 '''
 
 min_endpoint_version = "8.10.0"

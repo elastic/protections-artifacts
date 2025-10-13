@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -44,8 +44,7 @@ sequence by process.entity_id with maxspan=2m
                  "d72f31bf226cd2de3fef3948e22c16c118fa1cc013c5358f4ea597fd0d93642d") and
   not process.executable : "C:\\Program Files\\Autodesk\\Revit 202?\\Revit.exe" and
   not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
-  not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC") and process.code_signature.trusted == true and
-       dll.name : "*.tmp.node")] as event0
+  not (process.code_signature.subject_name in ("Ferox Games B.V.", "Prometric, LLC", "NCS Pearson, Inc.") and process.code_signature.trusted == true)] as event0
  [api where
 
   (process.Ext.api.name == "GetAsyncKeyState" or

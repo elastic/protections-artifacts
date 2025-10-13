@@ -7,7 +7,7 @@ id = "7731dc20-5216-49dc-95fe-a29321a345d5"
 license = "Elastic License v2"
 name = "Suspicious Execution from INET Cache"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.action == "start" and
@@ -25,6 +25,7 @@ process where event.action == "start" and
                   "?:\\Program Files (x86)\\*.exe",
                   "?:\\Windows\\System32\\mspaint.exe",
                   "?:\\Windows\\System32\\notepad.exe",
+                  "C:\\Windows\\SysWOW64\\Codecs\\mpc-hc.exe",
                   "?:\\Windows\\CCM\\*.exe",
                   "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe") and
   not (process.code_signature.trusted == true and not process.code_signature.subject_name : "Microsoft*")

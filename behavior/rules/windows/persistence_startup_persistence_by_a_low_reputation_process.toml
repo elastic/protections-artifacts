@@ -11,7 +11,7 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -51,7 +51,8 @@ sequence by process.entity_id with maxspan=5m
                   "f112a55944329900e670033dc84560703fa4e271bf5be13cc5a14da603155548",
                   "a7bf2135d423ef1a84c35780bb8208a85df23c7228dbb2e3d5b9d5aec989ad2b",
                   "4997ec399b1292a8698366c605ebfaf72cb5089682a75c408978cb87c8d3a5a3",
-                  "6680172392ee701a714d14bb010a00a054e102c664152bfc244dd74d0e32694d") and
+                  "6680172392ee701a714d14bb010a00a054e102c664152bfc244dd74d0e32694d",
+                  "2e2750ca395a0104571e97a77301d6332631592bd9062d6be425a2b32a049ed5") and
  not (process.executable : "C:\\Windows\\Temp\\AgentInstall.exe" and user.id : "S-1-5-18") and
  not process.executable : ("?:\\Windows\\ccmcache\\*.exe", "C:\\Windows\\SystemTemp\\*.exe") and
  not (process.executable : "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp" and process.args : "/SL5=$*")]

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Scheduled Task from a Removable or Mounted ISO Device"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence with maxspan=5m
@@ -23,7 +23,7 @@ sequence with maxspan=5m
                              "?:\\Program Files (x86)\\Microsoft Office\\root\\Integration\\Addons\\OneDriveSetup.exe",
                              "?:\\Program Files (x86)\\AnVir Task Manager\\AnVir.exe",
                              "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe") and
-   not (process.code_signature.subject_name : "Global Security Center" and process.code_signature.trusted == true) and
+   not (process.code_signature.subject_name : ("Global Security Center", "The MathWorks, Inc.") and process.code_signature.trusted == true) and
    not process.hash.sha256 : ("0069d5e4690d717377410d56b56fc543edb333eb099eb591fbe561fd36c4feea",
                               "e720b05e5bc033c8cd48be3d88bf29af9ba51eeed489d6ef23d64f8b99d5648c",
                               "98935483ec3a9d55b45a095e1dc5a98c894aec51131390c914bf6950905629ab") and

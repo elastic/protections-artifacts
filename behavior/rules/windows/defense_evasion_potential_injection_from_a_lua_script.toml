@@ -4,7 +4,7 @@ id = "88c2aeed-e5c1-4e0d-98d4-e22ff972e55b"
 license = "Elastic License v2"
 name = "Potential Injection from a LUA Script"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where
@@ -14,7 +14,8 @@ api where
                ("?:\\Windows\\System32\\cmd.exe",
                 "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
                 "?:\\Program Files\\dotnet\\dotnet.exe",
-                "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Balatro\\Balatro.exe") and
+                "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Balatro\\Balatro.exe",
+                "C:\\Program Files (x86)\\ILLiad\\ILLiadClient.exe") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("kernel", "Kernel|*") and
   not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in

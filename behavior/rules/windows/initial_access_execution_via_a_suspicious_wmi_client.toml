@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via a Suspicious WMI Client"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -50,13 +50,20 @@ process where event.action == "start" and
               "?:\\Program Files*\\Google\\Chrome\\Application\\chrome.exe",
               "?:\\Program Files*\\Mozilla Firefox\\firefox.exe",
               "\\Device\\Mup\\*.exe") and
-  not (process.name : "cmd.exe" and process.args : ("\\\\*\\netlogon\\logon.cmd", "?:\\ProgramData\\Package Cache\" %a in (cybereasonsensor.exe)*"))
+  not (process.name : "cmd.exe" and
+       process.args : ("\\\\*\\netlogon\\logon.cmd",
+                       "?:\\ProgramData\\Package Cache\" %a in (cybereasonsensor.exe)*",
+                       "(x86)\\EOG\\iFileMenu\\iFileMenu.bat"))
 '''
 
 min_endpoint_version = "8.4.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

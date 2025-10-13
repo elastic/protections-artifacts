@@ -7,7 +7,7 @@ id = "e62f022c-88e2-403f-9f83-f76a91dd2203"
 license = "Elastic License v2"
 name = "API Call from a Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id
@@ -27,7 +27,13 @@ sequence by process.entity_id
   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
   not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "Unknown") and
-  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "d1e1d111eff2d7d3e60e5ed47d1919a43fe5a44e45f75d4a33f7a6cbc39a4aac"]
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                         ("d1e1d111eff2d7d3e60e5ed47d1919a43fe5a44e45f75d4a33f7a6cbc39a4aac",
+                                          "3afe14049a0baabf0519d5502d465abc6050d5a0f4a4fdb3bca22ab419c33f2a",
+                                          "cfcaf06eaa34d603ff3a89dd0ddfe4b17c0ee7ad8fa4534634d24e1692a5e352",
+                                          "eb278baed0f9c422e9abb6bd947d7934086ea73080575ecb2ef4a7306ca5b037",
+                                          "d807a7b13f948f60bc9c299f2b6976bf3988532adc02df5ed4f44538f13f4275",
+                                          "8c5350999da9836037c67fd08bfb4e261d6e288a79c6b4fc3c8e3bd3d1f4171e")]
  until [process where event.action:"end"]
 '''
 

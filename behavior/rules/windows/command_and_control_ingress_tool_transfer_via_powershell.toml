@@ -7,7 +7,7 @@ id = "5abd98fb-ffbe-4cd6-9592-3cda7b155ff5"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via PowerShell"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and not user.id : "S-1-5-18" and
@@ -31,7 +31,9 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
   not (process.code_signature.subject_name : ("Chocolatey Software, Inc.", "Chocolatey Software, Inc", "Illumio, Inc.") and process.code_signature.trusted == true) and
   not process.executable : ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*", 
                             "?:\\ProgramData\\chocolatey\\lib\\*", 
-                            "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*.exe") and 
+                            "?:\\Users\\*\\AppData\\Local\\Temp\\ns*.tmp\\*.exe",
+                            "C:\\ProgramData\\chocolatey\\bin\\wacs.exe") and
+  not process.parent.executable : "C:\\Program Files\\dotnet\\dotnet.exe" and
   not process.hash.sha256 : 
                  ("1aac95f980af717c580b1b32885f51e67f0c3631ca0e7cfb2908b75df9a3501c", 
                   "c73c4ac2a7cdc48829fe0f9d7ec91ca41c8b434490d4eb3205aad69c7aa3b921", 
@@ -44,7 +46,8 @@ process where event.action == "start" and not user.id : "S-1-5-18" and
                   "d7c9b99aa403c0e629086e8e4acf6438a5489fe9070dc22d6b033d759414fb76",
                   "e815c36f5f62f2b5de4f2d273553424fc1bce6e735803633a5ca266b62c4efc5",
                   "8ed42db29649e7f20b2821ceef050ba6fa2260aca318b55ba56c3d2fdc292a89",
-                  "95604b7ee58263efb39e260f6f94369d349b31c2bfc1fbf1a6598df126bd04d6")
+                  "95604b7ee58263efb39e260f6f94369d349b31c2bfc1fbf1a6598df126bd04d6",
+                  "271dc2d7dd9fe171618cb4d1f8bd02a7b7cebb75288277f859e6b247b2d01e2d")
 '''
 
 min_endpoint_version = "8.4.0"

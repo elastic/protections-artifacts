@@ -8,14 +8,18 @@ id = "c89c8742-9040-4de8-b3cf-477407fafac1"
 license = "Elastic License v2"
 name = "Suspicious Execution from a Windows Script"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=1m
  [network where process.pid != 4 and event.action == "connection_attempted" and 
   process.uptime >= 300 and user.id != "S-1-5-18" and
   process.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and
-  not cidrmatch(destination.ip, "127.0.0.0/8", "::1")] by process.entity_id
+  not cidrmatch(destination.ip, "127.0.0.0/8", "::1", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+       "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",
+       "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+       "FE80::/10", "FF00::/8")] by process.entity_id
  [process where event.action == "start" and
   process.parent.name : ("cscript.exe", "wscript.exe", "AutoIt*.exe") and
   not process.hash.sha256 :
@@ -24,6 +28,7 @@ sequence with maxspan=1m
   not (process.name : "reg.exe" and process.args : "HKLM\\SOFTWARE\\AutoTools\\ADP SmartAgent\\SmartAgent\\Jobs" and user.id == "S-1-5-18") and
   not (process.name : "reg.exe" and process.args : "HKLM\\TempHiveTanium-*") and
   not process.executable : ("C:\\Windows\\regedit.exe", "C:\\Program Files\\Lexmark\\Print Management Client\\lpmc-app-launcher-win.exe") and
+  not (process.executable : "C:\\Windows\\SysWOW64\\sc.exe" and process.command_line like "sc config JobEngineService*") and
   not process.parent.args :
               ("?:\\Program Files (x86)\\smartagent\\agent\\common\\snapins\\adpcommon\\ADP_*.vbs",
                "C:\\MININT\\Scripts\\LiteTouch.wsf",

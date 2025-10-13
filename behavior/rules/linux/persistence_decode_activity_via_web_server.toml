@@ -8,7 +8,7 @@ id = "eb928496-a992-4cee-9cd7-fc3fbae7e8da"
 license = "Elastic License v2"
 name = "Decode Activity via Web Server"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=5s
@@ -29,8 +29,11 @@ sequence with maxspan=5s
      process.args like~ "/u01/app/oracle/*" or
      process.args == ".bamboo/deploy.sh" or
      process.parent.executable in ("/bin/ruby", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/morpheus/embedded/java/jre/bin/java") or
-     process.parent.executable like ("/usr/bin/python*", "/opt/idea-IU*/jbr/bin/java", "/root/.vscode-server/*", "/home/*/.local/share/nvm/*node") or
-     process.parent.args == "./mmicro-control.pl" or
+     process.parent.executable like (
+       "/usr/bin/python*", "/opt/idea-IU*/jbr/bin/java", "/root/.vscode-server/*", "/home/*/.local/share/nvm/*node", "/h*/*/.cursor-server/*node",
+       "/home/*/cursor-agent/*node"
+     ) or
+     process.parent.args in ("./mmicro-control.pl", "/usr/bin/vncserver") or
      process.parent.command_line like~ ("Serverd*", "*.ansible/tmp/ansible-tmp-*") or
      process.command_line in ("sh -c man/base32.td/base32 --version 2>/dev/null", "/usr/bin/perl edit.cgi") or
      (process.parent.name == "perl"  and process.command_line like~ "sh -c man/base*") or
@@ -38,6 +41,9 @@ sequence with maxspan=5s
      (
        process.parent.executable in ("/usr/lib/jvm/java-17-openjdk-amd64/bin/java", "/usr/bin/java") and
        process.command_line like "/bin/sh -xe /tmp/jenkins*.sh"
+     ) or
+     (
+       process.parent.name == "node" and process.command_line like "/bin/bash*/tmp/claude*"
      )
    )
   ] by process.entity_id

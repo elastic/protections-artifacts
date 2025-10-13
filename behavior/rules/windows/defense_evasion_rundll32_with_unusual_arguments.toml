@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
     "https://www.elastic.co/security-labs/thawing-the-permafrost-of-icedid-summary",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and process.name : "rundll32.exe" and
@@ -140,10 +140,11 @@ process where event.action == "start" and process.name : "rundll32.exe" and
        process.args : "?:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper64.dll,#1") and
   not (process.name : "rundll32.exe" and process.command_line :  "\"C:\\Windows\\System32\\rundll32.exe\" \"C:\\Users\\*\\AppData\\Local\\Temp\\GLF*.tmp\",RunDll32_KillDTG" and
        process.parent.name : "BelMonitor.exe") and
-  not process.command_line : "rundll32.exe \"C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper??.dll\",#1"
+  not process.command_line : "rundll32.exe \"C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper??.dll\",#1" and
+  not (process.parent.code_signature.subject_name == "IDS Imaging Development Systems GmbH" and process.parent.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -174,4 +175,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"

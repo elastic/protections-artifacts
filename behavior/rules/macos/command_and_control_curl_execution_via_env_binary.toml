@@ -7,7 +7,7 @@ id = "6fbfa489-517a-4b1a-ada6-e88da2012e7b"
 license = "Elastic License v2"
 name = "Curl Execution via Env Binary"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -17,7 +17,7 @@ sequence by process.parent.entity_id with maxspan=30s
   process.name in ("bash", "sh", "zsh") and
   process.args == "-c" and process.args like~ ("*curl*", "*nscurl*")]
 [process where event.type == "start" and process.name in ("curl", "nscurl") and
-  not process.parent.executable like ("/Library/Developer/*", "/opt/homebrew/Cellar/*")]
+  not process.parent.executable like ("/Library/Developer/*", "/opt/homebrew/Cellar/*", "/Applications/Xcode.app/Contents/Developer/usr/bin/make")]
 '''
 
 min_endpoint_version = "8.5.0"

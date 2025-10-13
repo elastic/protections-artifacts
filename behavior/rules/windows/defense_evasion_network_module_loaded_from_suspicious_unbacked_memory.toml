@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.54"
+version = "1.0.55"
 
 query = '''
 sequence by process.entity_id
@@ -59,7 +59,8 @@ sequence by process.entity_id
                      "CORE.AI SCIENTIFIC TECHNOLOGIES PRIVATE LIMITED", "ClaimMaster Software LLC", "Cellebrite DI LTD",
                      "Riot Games, Inc.", "Autodesk, Inc.", "ACCA software S.p.A.", "Tempus Technologies, Inc.",
                      "NextgenId, Inc.", "Cloud Software Group, Inc.", "Tempus Technologies, Inc.", "NextgenId, Inc.",
-                     "Cloud Software Group, Inc.", "Bloomberg LP", "GEO NETWORK SRL", "Geo Network - S.R.L.") and
+                     "Cloud Software Group, Inc.", "Bloomberg LP", "GEO NETWORK SRL", "Geo Network - S.R.L.",
+                     "FARO Technologies Inc", "Axis Communications AB", "EWA Technologies, Inc.") and
        process.code_signature.trusted == true) and
 
   not (process.pe.original_file_name in~ ("msedge.exe", "msedgewebview2.exe") and
@@ -70,8 +71,8 @@ sequence by process.entity_id
 
   not (process.name : "powershell.exe" and
        process.parent.executable : "?:\\Program Files (x86)\\Lenovo\\VantageService\\*\\LenovoVantage-(LenovoSystemUpdateAddin).exe") and
-
-  not process.hash.sha256 :
+  not process.pe.imphash in ("d41d8cd98f00b204e9800998ecf8427e", "45e4653ae633e067079dd72666b0158b") and
+  not process.hash.sha256 in
                    ("35542bc04fbfa2e3ef68837640e0459c6f99729c0c73578c08ab351cdf030696",
                     "1005dcfddfbde91cc967ecc6d778c81cb4f7bede03121a3e6e0d9bae12a033e0",
                     "53cec44e4fc9a3477d264c5edc9e376af8fcca20853faa289387f5bd7eaae05f",
@@ -113,7 +114,8 @@ sequence by process.entity_id
                     "4acdfb075f5a801b976819cd22bc3a930ad5f8ee92de2d5ad36b0a4f1e5a8b24",
                     "1c237e9015c81487aa67d56f8aa4788fbb6bfb3039e455485376712cfc978e62",
                     "47585eb41299f97c88028c3dae3ba6049355b8e0a8074abeae9f4f9381832c20",
-                    "a26dfec1922d751c710a2f2ab16a33facb6fef8997d21784681f1be637a78b5d") and
+                    "a26dfec1922d751c710a2f2ab16a33facb6fef8997d21784681f1be637a78b5d",
+                    "be92c45eeb7ffb4b3bf62b76b3218a0c4cdcfa52c8ddb5a47b9abc407dda282e") and
 
   not (process.executable : "?:\\Windows\\SysWOW64\\dllhost.exe" and process.parent.name : "svchost.exe" and
        process.Ext.effective_parent.executable : "?:\\Program Files (x86)\\Skillbrains\\lightshot\\*\\Lightshot.exe") and
@@ -138,7 +140,10 @@ sequence by process.entity_id
                                     "?:\\PROGRA~2\\ADVANC~1\\staging\\_new_setup.exe",
                                     "?:\\PROGRA~2\\ADVANC~1\\downloads\\MAV-Installer.exe",
                                     "?:\\Program Files (x86)\\LiongardInc\\*\\node.exe",
-                                    "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe") and
+                                    "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe",
+                                    "C:\\Program Files\\IperiusRemote\\GlantzSupportClient.exe",
+                                    "C:\\Program Files (x86)\\ReluxDesktop\\converter\\Raster2Vector.exe",
+                                    "C:\\Program Files (x86)\\Assinador Serpro\\uninstall.exe") and
   not (process.executable : "C:\\Windows\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and
        process.args : "C:\\Program Files (x86)\\Common Files\\PortsRanch\\WenuMeta\\Micriuuft_Inroles.dll" and
        process.parent.executable : "C:\\WINDOWS\\system32\\svchost.exe") and
@@ -191,12 +196,14 @@ sequence by process.entity_id
                           "898383080000c7837f080000010000006a0056ff9397080000ff938b*",
                           "41c64?0c01833d*",
                           "c6430c0148ba*f87f0000833a00740c*",
-                          "488b8d70ffffffc6410c01833d*",
+                          "488b8d70ffffffc6410*",
                           "c6470c01833d*",
                           "a3b8eb*",
                           "a314a2e40585c*",
                           "488b9570ffffffc6420*",
                           "49bb60c0*",
+                          "488b8d?0ffffffc6410401833d*",
+                          "488b8d?0ffffffc6410401833d*",
                           "488b5590c6420c01833d*",
                           "8bf08b45d8c6400801833d801*45e88945dc8b45dc8b55",
                           "c6470401833de8eee*84883c4785b5e5f415c415d415e415f5dc31910090010e20c300b",
@@ -213,6 +220,7 @@ sequence by process.entity_id
                           "488944242048837c24200075*", 
                           "c6430c01833d*",
                           "c22800ccccff7424248b0d5c93*",
+                          "a36c3e*985c00f84f9000000568b35*",
                           "a3b022*985c00f84f9000000568b354c81*",
                           "48898424b80000004883bc24b8000000000f8498000000488b442440480510130000488bd0488b8c24b8000000ff94249000000048898424d80000004883bc24",                          "*0000ba0c0000004c8d4c2450448d423441ffd3*",
                           "41c6470c0148ba*7f0000833a00740c48b9*",

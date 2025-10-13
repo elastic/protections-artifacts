@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -56,7 +56,8 @@ not (
     "/usr/sbin/nrpe", "/usr/bin/less", "/snap/lxd/current/sbin/lxd", "/usr/lib/ssh/sshd-session", "/opt/Tanium/TaniumClient/TaniumCX",
     "/opt/aprol/bin/StartManager", "/opt/aprol/scripts/AprolStartStartManager", "/usr/bin/mkosi", "/opt/saltstack/salt/bin/python*",
     "../gossbin/goss", "/opt/SolarWinds/Agent/bin/Plugins/ADMProbe/SolarWinds.ADM.AgentPlugin", "/opt/rapid7/nexpose/nse/.DLLCACHE/nseserv",
-    "/usr/bin/goss", "/usr/bin/cinc-auditor", "/usr/libexec/platform-python", "/opt/oracle/oracle.ahf/common/venv/bin/python3"
+    "/usr/bin/goss", "/usr/bin/cinc-auditor", "/usr/libexec/platform-python", "/opt/oracle/oracle.ahf/common/venv/bin/python3",
+    "/tmp/.mount_Cursor*/usr/share/cursor/cursor"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -89,7 +90,7 @@ not (
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver", "buildah-chroot-exec", "/usr/libexec/crio/crun",
-    "/usr/bin/crun"
+    "/usr/bin/crun", "/usr/bin/vncserver"
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*", "/repo/o11y/out/*/.terraform/*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or

@@ -1,0 +1,73 @@
+[rule]
+description = """
+Detects suspicious execution of the dd command reading from standard input, often used by infostealer malware to convert
+decoded data. This technique is uncommon on macOS and typically indicates malicious activity.
+"""
+id = "c99b8b83-2b2c-43b0-a962-ddb0274c6939"
+license = "Elastic License v2"
+name = "Suspicious DD Execution"
+os_list = ["macos"]
+version = "1.0.5"
+
+query = '''
+sequence by process.Ext.effective_parent.entity_id with maxspan=15s
+[process where event.type == "start" and event.action == "exec" and (process.name in ("bash", "sh", "zsh", "osascript") or (process.code_signature.trusted == false or process.code_signature.exists == false)) and
+  not process.Ext.effective_parent.executable like ("/Library/Addigy/go-agent", 
+                                                    "/usr/local/bin/amagent",
+                                                    "/Library/Sentinel/sentinel-agent.bundle/Contents/MacOS/sentineld_helper.app/Contents/MacOS/sentineld_helper",
+                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
+                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService", 
+                                                    "/usr/local/jamf/bin/jamf")] 
+[process where event.type == "start" and event.action == "exec" and process.name == "dd" and 
+  process.command_line : "*if=/dev/stdin*"]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -8,14 +8,15 @@ license = "Elastic License v2"
 name = "Multi-Layered Deobfuscation via Unusual Parent"
 os_list = ["macos"]
 reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=5s
 [process where event.type == "start" and event.action == "exec" and process.name in ("osascript", "bash", "sh", "zsh") and
   process.args_count <= 3 and
   process.args in ("-c", "-e") and
-  process.args like "echo*"] by process.entity_id
+  process.args like "echo*" and
+  not process.Ext.effective_parent.executable like "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon"] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and process.name in ("base64", "xxd")] by process.parent.entity_id
 [process where event.type == "start" and event.action == "exec" and process.name in ("base64", "xxd")] by process.parent.entity_id
 '''

@@ -1,0 +1,80 @@
+[rule]
+description = """
+Identifies a list of IOCs obtained from popular reconnaissance tools using LDAP search events. Adversaries attempt to
+enumerate information on the Active Directory structure by using various LDAP-based discovery queries to identify
+targets for attack.
+"""
+id = "9e8fec58-4f0d-4a30-8e9e-54c717202064"
+license = "Elastic License v2"
+name = "Suspicious Enumeration via LDAP Search"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1087/002/",
+    "https://github.com/tobor88/PowerShell-Red-Team/blob/master/RedTeamEnum/RedTeamEnum.psm1",
+]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "ldap_search" and user.id != "S-1-5-18" and
+ not process.executable :
+             ("?:\\Program Files\\Azure Advanced Threat Protection Sensor\\*\\Microsoft.Tri.Sensor.exe",
+              "?:\\Windows\\System32\\lsass.exe",
+              "?:\\Windows\\ADFS\\Microsoft.IdentityServer.ServiceHost.exe",
+              "?:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe") and
+ process.Ext.api.parameters.search_filter : (
+  "(|(samAccountType=805306368)(samAccountType=805306369)(objectclass=organizationalUnit))",
+  "(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=524288))",
+  "(&(samAccountType=805306368)(|(homedirectory=?)(scriptpath=?)(profilepath=?)))",
+  "(|(objectClass=user)(objectClass=group))(objectSid=S-1-5-21-1960408961-838170752-1801674531-512))",
+  "(|(samaccounttype=268435456)(samaccounttype=268435457)(samaccounttype=536870912)(samaccounttype=536870913))",
+  "(|(samAccountType=805306368)(samAccountType=805306369)(samAccountType=268435456)(samAccountType=268435457)(samAccountType=536870912)(samAccountType=536870913))",
+  "(&(samaccounttype=805306369)(!(objectclass=msDS-GroupManagedServiceAccount))(!(objectclass=msDS-ManagedServiceAccount)))",
+  "(|(samAccountType=805306368)(samAccountType=805306369)(samAccountType=268435456)(samAccountType=268435457)(samAccountType=536870912)(samAccountType=536870913)(object*",
+  "(|(msDS-AllowedToActOnBehalfOfOtherIdentity=?)(msDS-AllowedToDelegateTo=?)(UserAccountControl:1.2.840.113556.1.4.804:=17301504))",
+  "(|(userAccountControl:1.2.840.113556.1.4.803:=524288)(msDS-AllowedToDelegateTo=?)(msDS-AllowedToActOnBehalfOfOtherIdentity=?))",
+  "(|(objectcategory=computer)(objectcategory=person)(objectcategory=msDS-GroupManagedServiceAccount)(objectcategory=msDS-ManagedServiceAccount))"
+ )
+'''
+
+min_endpoint_version = "9.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1069"
+name = "Permission Groups Discovery"
+reference = "https://attack.mitre.org/techniques/T1069/"
+[[threat.technique.subtechnique]]
+id = "T1069.002"
+name = "Domain Groups"
+reference = "https://attack.mitre.org/techniques/T1069/002/"
+
+
+[[threat.technique]]
+id = "T1087"
+name = "Account Discovery"
+reference = "https://attack.mitre.org/techniques/T1087/"
+[[threat.technique.subtechnique]]
+id = "T1087.002"
+name = "Domain Account"
+reference = "https://attack.mitre.org/techniques/T1087/002/"
+
+
+[[threat.technique]]
+id = "T1482"
+name = "Domain Trust Discovery"
+reference = "https://attack.mitre.org/techniques/T1482/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "9.1.0"

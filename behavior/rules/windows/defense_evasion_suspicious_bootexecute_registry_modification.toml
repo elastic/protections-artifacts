@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious BootExecute Registry Modification"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/BootExecuteEDR"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 registry where event.action == "modification" and
@@ -19,10 +19,11 @@ registry where event.action == "modification" and
       process.code_signature.subject_name in ("NortonLifeLock Inc.", "Avast Software s.r.o.", "AOMEI International Network Limited",
                                               "QUICK HEAL TECHNOLOGIES LIMITED", "Glarysoft Ltd", "AVG Technologies USA, LLC",
                                               "VMware, Inc.", "Glarysoft LTD", "Omnissa, LLC", "Bitdefender SRL", "Symantec Corporation",
-                                              "PIRIFORM SOFTWARE LIMITED", "CHENGDU AOMEI Tech Co., Ltd.")) and
+                                              "PIRIFORM SOFTWARE LIMITED", "CHENGDU AOMEI Tech Co., Ltd.", "Gen Digital Inc.")) and
  not process.executable : ("C:\\Windows\\System32\\chkdsk.exe",
                            "C:\\Windows\\System32\\fsavailux.exe",
-                           "C:\\Windows\\System32\\msiexec.exe") and
+                           "C:\\Windows\\System32\\msiexec.exe",
+                           "C:\\Windows\\regedit.exe") and
  not registry.data.strings :
             ("autocheck autochk ?", "autocheck autoche ?", "autocheck autochk /k:? /k:? ?", "autocheck autochk /k:C /k:D /k:G ?",
              "autocheck autochk /q /v /k:? ?", "autocheck autochk /q /v /k:? *", "autocheck autochk /q /v ?",

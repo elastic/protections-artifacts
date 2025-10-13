@@ -7,12 +7,16 @@ id = "52deef30-e633-49e1-9dd2-da1ad6cb5e43"
 license = "Elastic License v2"
 name = "Interactive Shell Spawned via Hidden Process"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name : ".*" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-i" and
-not process.parent.executable like ("/nix/store/*/rider/bin/.rider-wrapped", "/tmp/newroot/nix/store/*/rider/bin/.rider-wrapped")
+not (
+  process.parent.executable like ("/nix/store/*/rider/bin/.rider-wrapped", "/tmp/newroot/nix/store/*/rider/bin/.rider-wrapped") or
+  process.parent.args == "/usr/bin/crun" or
+  process.parent.command_line == "runc init"
+)
 '''
 
 min_endpoint_version = "7.15.0"

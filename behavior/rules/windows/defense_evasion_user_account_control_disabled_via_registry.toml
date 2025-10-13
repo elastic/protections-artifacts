@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-lua-settings-enablelua",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
@@ -18,7 +18,7 @@ registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
  registry.data.strings : "0" and
  (process.code_signature.trusted == false or
   process.code_signature.exists == false or
-  process.name : ("msiexec.exe", "rundll32.exe", "wscript.exe", "cscript.exe", "powershell.exe"))
+  process.name : ("msiexec.exe", "rundll32.exe", "wscript.exe", "cscript.exe"))
 '''
 
 min_endpoint_version = "8.1.0"

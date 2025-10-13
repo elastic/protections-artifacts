@@ -7,7 +7,7 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
@@ -55,6 +55,9 @@ api where
                                                       "488b5560c6420c*48894570488b4d00e84300000090488b4570488b5560c642*",
                                                       "488b558*c6420c*007406ff15*",
                                                       "c6470c01*007406ff15*",
+                                                      "85c00f95c05*",
+                                                      "8be55dc3cccccccccccc558bec*",
+                                                      "41c6470c01833d*",
                                                       "c6470c0148ba*7f0000ff11488bf0e8*",
                                                       "41c6460c0148ba4810*7f0000833a00740c48b9d819*",
                                                       "*48894e104883c4785b5e5f415c415d415e415f5dc*",
@@ -112,7 +115,9 @@ api where
                               "C:\\Program Files (x86)\\Mitel\\MiContact Center\\Applications\\Ignite\\Ignite.exe",
                               "C:\\Program Files (x86)\\QSR Automations\\ConnectSmart\\KitchenReportViewer\\Bin\\ReportViewer.exe") and
     not (process.code_signature.trusted == true and 
-         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc"))
+         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc")) and
+    not (process.parent.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and process.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and
+         process.command_line : "* --enable-speech-input *")
 '''
 
 min_endpoint_version = "8.14.2"

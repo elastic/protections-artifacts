@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -63,6 +63,7 @@ process where event.action == "start" and
                  ("?:\\Windows\\System32\\svchost.exe",
                   "?:\\Windows\\System32\\CompatTelRunner.exe",
                   "?:\\Windows\\System32\\taskeng.exe") and
+   not process.parent.executable : "C:\\FVS\\FVSSoftware\\*\\bin\\x64\\Rscript.exe" and
    not process.Ext.token.integrity_level_name == "system" and
 
    /* many legit powershell commands uses those non shortened execution flags excluding Sync-AppvPublishingServer lolbas */

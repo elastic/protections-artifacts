@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -84,7 +84,10 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "fdff5c5612e0bcbc8aba52720e5d37e5c3821267179e2fa7341084148ad4b1ea",
                                    "834b0fce44e8db2367967f8d5262a0dafe45e7c5bd69c98f1a9eeec2136dcbc1",
                                    "7eb92b8b9ce2d44a500c56ea04e805cb78614c572dc723c79c59ca93315ba709",
-                                   "3eb37ba3fc39f5749bbb3f17382d0966adf2e061f4f0d1757ebd75fed1302dd6") and
+                                   "3eb37ba3fc39f5749bbb3f17382d0966adf2e061f4f0d1757ebd75fed1302dd6",
+                                   "0b29ecbb5277629a1be89193941ec9d58867118ab7ef6a9d0235f7c5388904d7",
+                                   "0f4828417f3c8f8c6a5d74c39cb1dc746b241901e8bdd53bb09808858b7b0a08",
+                                   "cd08541db31221a2e26238cd6a2bcd6a9ebb9a4c4205c09b1b2050fde409f284") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :

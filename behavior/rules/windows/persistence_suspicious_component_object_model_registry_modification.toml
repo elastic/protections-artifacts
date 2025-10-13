@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://bohops.com/2018/08/18/abusing-the-com-registry-structure-part-2-loading-techniques-for-evasion-and-persistence/",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -24,7 +24,9 @@ sequence by process.entity_id with maxspan=1m
   not process.executable : "\\Device\\HarddiskVolume*.exe" and
   not (process.name == "rundll32.exe" and process.args in ("printui.dll,PrintUIEntryDPIAware", "fdprint,InvokeTask")) and
   not process.hash.sha256 in ("49833d2820afb1d7409dfbd916480f2cdf5787d2e2d94166725beb9064922d5d",
-                              "2cea4ede340af90ace6f7ad569170a3741bb18f22b9c9c306cab37397f74144a")]
+                              "2cea4ede340af90ace6f7ad569170a3741bb18f22b9c9c306cab37397f74144a",
+                              "a9774d76822597777e1beaaad9d3a1e441b266836d6ca97a4b7bd908e8a3f518",
+                              "c9fe835d7f6fb610c78cb4e3b89bdc9e242d422cceb854fadf88f77c49fa8ff3")]
  [registry where event.action == "modification" and
   process.executable != null and registry.data.strings != null and
   registry.path : ("HKEY_USERS\\*Classes\\*\\InprocServer32\\",

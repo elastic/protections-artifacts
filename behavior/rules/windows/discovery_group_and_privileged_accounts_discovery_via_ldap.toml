@@ -1,0 +1,75 @@
+[rule]
+description = "Identifies a list of LDAP queries often used to perform Active Directory groups and privileges reconnaissance."
+id = "447b004a-ac74-4ba4-8131-44efc25fdd47"
+license = "Elastic License v2"
+name = "Group and Privileged Accounts Discovery via LDAP"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1069/002/"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "ldap_search" and user.id != "S-1-5-18" and
+ not process.executable :
+             ("?:\\Program Files\\Azure Advanced Threat Protection Sensor\\*\\Microsoft.Tri.Sensor.exe",
+              "?:\\Windows\\System32\\lsass.exe",
+              "?:\\Windows\\ADFS\\Microsoft.IdentityServer.ServiceHost.exe",
+              "?:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe") and
+ process.Ext.api.parameters.search_filter : (
+  "(&(objectClass=group))",
+  "(&(objectClass=group)(managedBy=?))",
+  "(&(objectClass=group)(managedBy=?)(groupType:1.2.840.113556.1.4.803:=2147483648))",
+  "(&(objectCategory=group)(name=Domain Admins))",
+  "*(adminCount=1)*"
+ ) and
+ not (process.code_signature.subject_name == "Netwrix Corporation" and process.code_signature.trusted == true) and 
+ not (process.executable : "C:\\Windows\\System32\\inetsrv\\w3wp.exe" and process.Ext.api.parameters.search_filter : "(&(objectClass=group))") and
+ not process.executable : ("C:\\Program Files\\IIS Express\\iisexpress.exe",
+                           "C:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe",
+                           "C:\\Program Files (x86)\\ISDecisions\\FileAudit\\FileAuditService.exe",
+                           "C:\\Program Files (x86)\\baramundi\\Management Server\\bServer.exe",
+                           "C:\\Program Files (x86)\\OpenDNS\\OpenDNS Connector\\v*\\CiscoAuditClient.exe",
+                           "C:\\Program Files (x86)\\Cisco\\CiscoADConnector\\v*\\CiscoAuditClient.exe")
+'''
+
+min_endpoint_version = "9.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1069"
+name = "Permission Groups Discovery"
+reference = "https://attack.mitre.org/techniques/T1069/"
+[[threat.technique.subtechnique]]
+id = "T1069.002"
+name = "Domain Groups"
+reference = "https://attack.mitre.org/techniques/T1069/002/"
+
+
+[[threat.technique]]
+id = "T1087"
+name = "Account Discovery"
+reference = "https://attack.mitre.org/techniques/T1087/"
+[[threat.technique.subtechnique]]
+id = "T1087.002"
+name = "Domain Account"
+reference = "https://attack.mitre.org/techniques/T1087/002/"
+
+
+[[threat.technique]]
+id = "T1482"
+name = "Domain Trust Discovery"
+reference = "https://attack.mitre.org/techniques/T1482/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "9.1.0"

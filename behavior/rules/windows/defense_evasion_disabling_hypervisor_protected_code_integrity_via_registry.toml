@@ -11,7 +11,7 @@ reference = [
     "https://www.welivesecurity.com/2023/03/01/blacklotus-uefi-bootkit-myth-confirmed/",
     "https://learn.microsoft.com/en-us/windows/security/threat-protection/device-guard/enable-virtualization-based-protection-of-code-integrity",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 registry where event.action == "modification" and 
@@ -35,11 +35,15 @@ registry where event.action == "modification" and
             "C:\\Windows\\System32\\backgroundTaskHost.exe",
             "C:\\Windows\\UUS\\Packages\\Preview\\amd64\\MoUsoCoreWorker.exe",
             "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe",
+            "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\*\\msedgewebview2.exe",
             "C:\\Windows\\UUS\\amd64\\MoUsoCoreWorker.exe",
-            "C:\\Program Files\\Omnilert\\Omnilert.exe")
+            "C:\\Program Files\\Omnilert\\Omnilert.exe") and
+ not process.thread.Ext.call_stack_summary in
+             ("sysfer.dll|kernelbase.dll|dggpext.dll|policymanagerprecheck.dll|policymanager.dll|deviceenroller.exe|kernel32.dll|ntdll.dll",
+              "sysfer.dll|kernelbase.dll|dggpext.dll|enterprisecsps.dll|configmanager2.dll|enterprisecsps.dll|configmanager2.dll|coredpus.dll|omadmclient.exe|kernel32.dll|ntdll.dll")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.7.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -64,4 +68,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.7.0"

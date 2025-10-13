@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Known TCP Port Traffic Tunneling"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.executable != null and
@@ -69,7 +69,8 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                                                                      "b20871aef3b1b9f70d7f9c49650701365f528dc1f2f54165abbc9488c2fe4809",
                                                                      "f1421c81547b0e78ace01232c7bc2d490065cf75683dbf98581edbca13acc2c5",
                                                                      "760425cda6c9a80ce6c76b599945d4b2fb9a76fa14228fb55f6a59bac1b74b0f",
-                                                                     "c6c142075c6477f1752642f693420f989fe7aaebb7afae5e027da0e1713e5a0c") and
+                                                                     "c6c142075c6477f1752642f693420f989fe7aaebb7afae5e027da0e1713e5a0c",
+                                                                     "0853cab8cd97c9d8f9ad47a77d25d25a4bdb558918d7b7844293a894a4f319d8") and
  not (process.name : "powershell.exe" and
       process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe",
                                    "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
@@ -77,9 +78,13 @@ api where process.Ext.api.name == "connect" and process.executable != null and
 '''
 
 min_endpoint_version = "8.10.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

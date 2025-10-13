@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Connection to WebService by an Unsigned Binary"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/globally-distributed-stealers"]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -34,10 +34,15 @@ sequence by process.entity_id with maxspan=5m
                               "b3dce1fda6820e5e3df33fa2e1bd9c87fe5ed6b2f44f6e6c47a32a870f0e0935",
                               "d49609714d5b5031f2f08470485220323ee056bde2079fb5faf763a77cd53ddb",
                               "6f92b27bb0387b2b49ac2ed9eb7b3632e72507de64c691eb084202e9429786e3",
-                              "3c7f2519b3eb76408e8acc4016da9d710f0d528b2b6b5291102d8d79ffeeb8c1") and
-   not process.parent.executable :
-                   ("C:\\Program Files\\Microsoft Visual Studio\\*\\VsDebugConsole.exe",
-                    "C:\\Program Files\\Microsoft Visual Studio\\*\\devenv.exe")]
+                              "3c7f2519b3eb76408e8acc4016da9d710f0d528b2b6b5291102d8d79ffeeb8c1",
+                              "464637413f656379e8e7b131c57ad7a5eed95d54714a8e0d130da35ba04fca69",
+                              "f3785c74dd0bd8b629f1f8480134a7d9ef94ae9a3d28a72cde8b6f9debdb829c",
+                              "432631e2a7195a94c2a02103031b4f213b66cfcce40f1dffcbbec46b0d3c254b",
+                              "d3d47bd13b9d18619d541f553d0d06174f9daae26d83f7136361b07aca378c86",
+                              "58139bcb2e48d341bd74557d52cf074ccd0f74142da254b47d4e1dfcc4fdffd4",
+                              "0165fe4269fe548c64de31e559bd0f5186316008d797739b39bb10021b356baf") and
+   not process.parent.executable like "C:\\Program Files\\Microsoft Visual Studio\\*.exe" and
+   not process.executable : "C:\\Program Files\\Kairos\\Periscope\\PeriscopeDesktop.exe"]
   [dns where
     dns.question.name :
     (
@@ -90,16 +95,13 @@ sequence by process.entity_id with maxspan=5m
         "yahoo.com",
         "meacz.gq",
         "rwrd.org", 
-        "*.publicvm.com", 
-        "*.blogspot.com",
+        "*.publicvm.com",
         "paste4btc.com",
         "api.notion.com",
-        "graph.microsoft.com",
         "*.sharepoint.com",
         "note.youdao.com",
         "mbasic.facebook.com",
         "login.live.com",
-        "login.microsoftonline.com",
         "api.gofile.io",
         "api.anonfiles.com",
         "api.gofile.io",
@@ -161,7 +163,6 @@ sequence by process.entity_id with maxspan=5m
           "*.ngrok-free.app",
           "www.myexternalip.com",
           "cdn??.space",
-          "msdl.microsoft.com", 
           "steamcommunity.com",
           "*.netlify.app"
     ) and

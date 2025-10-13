@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "start" and
@@ -49,12 +49,17 @@ process where event.action == "start" and
                               "83b5a19f2df77b735069a4f9f1def9c0e207f8636bdd6856ef52977bc23f874b",
                               "d248007eb375cab3994b48ba1346b508de29d1f441a395b9e6fa14fc7913294d",
                               "bf3a8aa99f62748edb9c7921c50778bff5dd0f4d47f7a1263516e10b99903a28",
-                              "ce4a8d8ebe5bcb5ba5ee9a6733bbd6c06433d3fc3a14aef95065689ca06bff06") and
+                              "ce4a8d8ebe5bcb5ba5ee9a6733bbd6c06433d3fc3a14aef95065689ca06bff06",
+                              "dda38aee1ada246114121c82df7441c3b4a7c0b27767a4ea8781623f5ee5df02",
+                              "24a7d85e2b983037985d6dbaa9befd3b48e08ed9bbbe6b242501a250776ec6bc",
+                              "5d4cb2c29245c7c12df3d3a7609ed4b7f24d47c991758c2f73c5131c2be53d03",
+                              "d6236f9ea1a7f98008fc03a761c5373badb79dc70a5e9e17e11f1302d405e011") and
 
    not process.executable : ("?:\\Windows\\explorer.exe",
                              "?:\\Windows\\SysWOW64\\explorer.exe",
                              "?:\\Windows\\SysWOW64\\cmd.exe",
                              "?:\\Windows\\System32\\cmd.exe",
+                             "C:\\Windows\\SysWOW64\\cmd.exe",
                              "?:\\Windows\\hh.exe",
                              "?:\\Windows\\System32\\spool\\drivers\\*",
                              "?:\\Program Files (x86)\\Microsoft Office\\root\\*.EXE",
@@ -69,6 +74,7 @@ process where event.action == "start" and
                              "?:\\Windows\\System32\\taskkill.exe",
                              "?:\\Windows\\System32\\Robocopy.exe",
                              "C:\\Windows\\SysWOW64\\verclsid.exe",
+                             "C:\\Program Files\\Microsoft VS Code\\Code.exe",
                              "\\Device\\Mup\\*",
                              "?:\\Program Files\\Common Files\\microsoft shared\\DW\\DW20.EXE",
                              "?:\\Program Files (x86)\\Common Files\\Microsoft Shared\\DW\\DW20.EXE",
@@ -81,7 +87,7 @@ process where event.action == "start" and
                              "?:\\Program Files\\Internet Explorer\\iexplore.exe",
                              "?:\\Program Files\\7-Zip\\7z.exe",
                              "?:\\Program Files (x86)\\Microsoft Office\\Office??\\MsoSync.exe",
-                             /* TBR */
+                             "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_*\\Notepad\\Notepad.exe",
                              "?:\\Windows\\SysWOW64\\taskkill.exe",
                              "?:\\Windows\\System32\\WerFault.exe")
 '''

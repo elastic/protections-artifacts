@@ -7,7 +7,7 @@ id = "cd886776-8790-4724-9484-3f0008b87da7"
 license = "Elastic License v2"
 name = "Managed .NET Code Execution via PowerShell"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.type == "start" and
@@ -35,7 +35,9 @@ process where event.type == "start" and
                                       "*E:\\3Activator.cmd*", "*https://install.telivy.com/scan-passwords.ps1*",
                                       "*C:\\temp\\PS2EXE-GUI\\ps2exe.ps1*",
                                       "*repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper*") and
-   not (process.parent.args == "$execWrapper" and process.parent.args == "$execWrapper.Split(@(\"`0`0`0`0\")," and process.parent.args == "\"ANSIBLE_BOOTSTRAP_ERROR:")
+   not (process.parent.args == "$execWrapper" and process.parent.args == "$execWrapper.Split(@(\"`0`0`0`0\")," and process.parent.args == "\"ANSIBLE_BOOTSTRAP_ERROR:") and
+   not process.parent.args : ("JABtAD0AZgBvAHIAZQBhAGMAaAAoACQAaQAgAGkAbgAgACQAaQBuAHAAdQB0ACkAewAKA*",
+                              "& { [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $registryPath='HKCU:\\SOFTWARE\\SOTI\\XSight'; New-Item -Path $registryPath -Force; $isPSNuGetProviderExist=(Get-PackageProvider -Name 'NuGet' -ea Ignore).Version -ge [System.Version]'2.8.5.201'; New-ItemProperty 'IsPSNuGetProviderExist' -Path $registryPath -Value $isPSNuGetProviderExist -PropertyType DWORD -Force; $isPSSqlServerModuleExist=(Get-InstalledModule -Name 'SqlServer' -ea Ignore).Version -ge [System.Version]'21.1.18256'; New-ItemProperty 'IsPSSqlServerModuleExist' -Path $registryPath -Value $isPSSqlServerModuleExist -PropertyType DWORD -Force } ")
 '''
 
 min_endpoint_version = "7.15.0"

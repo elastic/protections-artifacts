@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution from an Oversized Executable"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1027/001/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5m
@@ -38,7 +38,7 @@ sequence with maxspan=5m
                "?:\\Users\\*\\Electron\\dist\\StrigoTool-Electron Setup 1.0.0.exe")
  ] by file.path
 [process where event.action == "start" and 
- process.name : ("cmd.exe", "powershell.exe", "cscript.exe", "wscript.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe",
+ process.name : ("cmd.exe", "powershell.exe", "wscript.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe",
                  "certutil.exe", "CertReq.exe", "curl.exe", "msbuild.exe") and
  not (process.name : "wscript.exe" and process.args : "C:\\Prntdrvr\\SFX\\silent.vbs") and
  not (process.name : "cmd.exe" and
@@ -53,9 +53,11 @@ sequence with maxspan=5m
                 "C:\\Windows\\system32\\cmd.exe /d /s /c \"chcp\"",
                 "C:\\windows\\system32\\cmd.exe /c az version -o=json",
                 "C:\\WINDOWS\\system32\\cmd.exe /d /s /c \"wmic CsProduct Get UUID\"",
+                "C:\\windows\\system32\\cmd.exe /d /s /c \"wsl.exe -l -q\"",
                 "cmd /c dir") and
- not (process.name : "cmd.exe" and process.args : ("*.bat", "*.cmd")) and
- not (process.name : "cmd.exe" and process.args : ("*reg.exe QUERY*", "netstat -r", "net session")) and
+ not (process.name : "cmd.exe" and process.args : ("*.bat", "*.cmd", "rmdir", "*.bat ", "*.cmd ")) and
+ not (process.name : "cmd.exe" and process.args : ("*reg.exe QUERY*", "netstat -r", "net session", "wsl.exe -l -q",
+                                                   "C:\\Program Files (x86)\\Annke Vision Site\\Nginx")) and
  not (process.name : "powershell.exe" and
       process.command_line : "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -")
  ] by process.parent.executable

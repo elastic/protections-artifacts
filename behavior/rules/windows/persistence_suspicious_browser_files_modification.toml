@@ -7,7 +7,7 @@ id = "7df7fca3-8a91-4a54-9799-0478a90ae326"
 license = "Elastic License v2"
 name = "Suspicious Browser Files Modification"
 os_list = ["windows"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 any where event.category in ("file", "registry") and not event.action in ("deletion", "query") and
@@ -25,10 +25,11 @@ any where event.category in ("file", "registry") and not event.action in ("delet
 	) and
 	not file.Ext.header_bytes : "2f2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a" and
 	not (process.code_signature.subject_name == "WAVESOR SOFTWARE" and process.code_signature.status ==  "errorChaining" and
-	     process.executable : "?:\\Users\\*\\Wavesor Software\\WaveBrowser\\wavebrowser.exe")
+	     process.executable : "?:\\Users\\*\\Wavesor Software\\WaveBrowser\\wavebrowser.exe") and
+	process.thread.Ext.call_stack_summary != "ntdll.dll|kernelbase.dll|libcef.dll|kernel32.dll|ntdll.dll"
 '''
 
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -61,4 +62,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.1.0"
+min_endpoint_version = "8.7.0"

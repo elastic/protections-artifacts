@@ -7,13 +7,14 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 library where process.pid != 4 and
  process.executable != null and dll.name != null and
  not startswith~(dll.name, process.name) and not dll.name : "ntdll.dll" and
  process.thread.Ext.call_stack_summary : ("ntdll.dll|*", "win32u.dll|*") and
+ dll.name : ("ws2_32.dll", "wininet.dll", "winhttp.dll", "amsi.dll",  "ntdll.dll", "dnsapi.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, 
                   $entry.symbol_info: ("*ntdll.dll*!Ldr*", "*ntdll.dll!LdrLoadDll*", "*KernelBase.dll*!LoadLibrary*", "*ntdll.dll*!*MapViewOfSection*",
                                        "*wow64win.dll+0x*", "*ntdll.dll!NtMapViewOfSection*",
@@ -33,11 +34,12 @@ library where process.pid != 4 and
                                       "C:\\Windows\\System32\\ntdll.dll!TpCallbackMayRunLong*", "C:\\Windows\\System32\\KernelBase.dll!GlobalUnlock+*",
                                       "C:\\Windows\\System32\\ntdll.dll!NtGetTickCount*", "C:\\Windows\\System32\\ntdll.dll!NtSetDebugFilterState*",
                                       "C:\\Windows\\System32\\ntdll.dll!NtWaitForDebugEvent*", "C:\\Windows\\System32\\ntdll.dll!RtlEncodeRemotePointer*",
-                                      "C:\\Windows\\System32\\ntdll.dll!SbExecuteProcedure*", "C:\\Windows\\System32\\ntdll.dll!MD4Init*",
-                                      "C:\\Windows\\System32\\ntdll.dll!ZwWaitForDebugEvent+*", "*ntdll.dll!RtlReAllocateHeap*", "*ntdll.dll!RtlAllocateHeap*")) and
+                                      "C:\\Windows\\System32\\ntdll.dll!SbExecuteProcedure*", "C:\\Windows\\System32\\ntdll.dll!MD4Init*", "*ntdll.dll!*CallbackReturn*",
+                                      "C:\\Windows\\System32\\ntdll.dll!ZwWaitForDebugEvent+*", "*ntdll.dll!RtlReAllocateHeap*", "*ntdll.dll!RtlAllocateHeap*",
+                                      "*ntdll.dll!NtReplyPort*", "*ntdll.dll!ZwCallbackReturn*", "*ntdll.dll!NtCreateWnfStateName*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
- not dll.path : ("?:\\Windows\\assembly\\GAC_32\\System.Data\\*\\System.Data.dll", "C:\\Windows\\System32\\umppc*.dll")
+ not process.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|*"
 '''
 
 min_endpoint_version = "8.8.0"

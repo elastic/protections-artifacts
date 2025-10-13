@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 process where event.action == "start" and
@@ -92,7 +92,7 @@ not (process.code_signature.trusted == true and
                     ("Synology Inc.", "Zoom Video Communications, Inc.", "Beijing Qihu Technology Co., Ltd.", "Chocolatey Software, Inc.", 
 		     "Beijing Qihu Technology Co., Ltd.", "Autodesk, Inc.", "Thomson Reuters Corporation", "Hornetsecurity GmbH")) and
 
-not (process.name : "regsvr32.exe" and process.args : "D:\\SMS_DP$\\sms\\bin\\smsdp.dll" and process.args : "/s") and
+not (process.name : "regsvr32.exe" and process.args : ("?:\\SMS_DP$\\*\\smsdp.dll", "\\\\*\\smsdp.dll") and process.args : "/s") and
 
 not (process.name : "cmd.exe" and
      process.args : ("\\\\127.0.0.1\\ADMIN$\\__*", "DB.name >> %userprofile%\\discoRemote.cmd", "echo SET _cmd=sqlcmd -E -Q SELECT")) and
@@ -116,13 +116,19 @@ not (process.name : "rundll32.exe" and
      process.command_line : "\"?:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\eed_ec.dll,SpeedLauncher") and
 not (process.name : "schtasks.exe" and process.args : ("cmd /c echo N | gpupdate /force", "shutdown /r /f /t *")) and
 not (process.name : "powershell.exe" and
-     process.args : ("\\\\127.0.0.1\\admin$\\temp\\unregistered", "C:\\SMS_DP$\\Ms.Dsp.Do.Inc.Setup\\Install.ps1 -CacheNodeIdParam*"))
+     process.args : ("\\\\*.ps1", "\\\\127.0.0.1\\admin$\\temp\\unregistered", "?:\\SMS_DP$\\*",
+                     "QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQAZQBmAGkAbgBpAHQAaQBvAG4AIABAACcACgB1AHMAaQBuA*",
+                     "cwB0AGEAcgB0AC0AcAByAG8AYwBlAHMAcwAgAHAAbwB3AGUAcgBzAGgAZQBsAGwALgBlAHgAZQAgAC0AQQByAGcAdQBtAGUAbgB0AEwAaQBzAHQAIAAnA*"))
 '''
 
 min_endpoint_version = "7.15.0"
-optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
 field = "process.entity_id"
 state = 0
 

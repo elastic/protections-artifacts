@@ -8,10 +8,11 @@ license = "Elastic License v2"
 name = "Potential VScode Remote Tunnel Established"
 os_list = ["macos", "windows"]
 reference = ["https://badoption.eu/blog/2023/01/31/code_c2.html"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-file where event.action != "deletion" and file.name : "code_tunnel.json"
+file where event.action != "deletion" and file.name : "code_tunnel.json" and
+not process.executable : "C:\\Windows\\explorer.exe"
 '''
 
 min_endpoint_version = "7.15.0"

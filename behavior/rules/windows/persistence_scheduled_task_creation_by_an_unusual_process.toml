@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence with maxspan=5m
@@ -63,7 +63,8 @@ sequence with maxspan=5m
                     "*:\\WINDOWS\\ccmcache\\*",
                     "*EEAawBBAEcAVQBBAGUAQQBCAGwAQQBHAE0AQQBYAHcAQgAzAEEASABJAEEAWQBRAEIAdwBBAEgAQQBBAFoAUQBCAHkAQQBGADgAQQBjAHcA*",
                     "*UABvAHcAZQByAFMAaABlAGwAbAAgAC0ATgBvAFAAcgBvAGYAaQBsAGUAIAA*",
-                    "*-EncodedCommand*")) and
+                    "*-EncodedCommand*",
+                    "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" ")) and
     not (process.name : "powershell.exe" and
          process.parent.executable : ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
                                       "?:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
@@ -79,6 +80,7 @@ sequence with maxspan=5m
                                       "C:\\Windows\\CCM\\OSDRunPowerShellScript.exe",
                                       "C:\\Windows\\System32\\runonce.exe")) and
     not (process.name : "powershell.exe" and user.id : "S-1-5-18") and
+    not (process.name : "powershell.exe" and process.parent.name : "powershell.exe" and process.parent.args : "-EncodedCommand" and process.parent.args : "cABvAHcAZQByAHMAaABlAGw*") and
     not (process.name : "powershell.exe" and process.args : ("-nomeAgente", "\\\\*\\*.ps1", "& 'C:\\oracle_unified_agent\\scripts\\unified-agent-permissions.ps1' ; exit $($LASTEXITCODE)")) and
     not (process.parent.name : "rundll32.exe" and process.parent.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
     not (process.name : "rundll32.exe" and process.command_line : ("*zzzzInvokeManagedCustomActionOutOfProc*", "*tsworkspace,WorkspaceSilentSetup*")) and
@@ -123,7 +125,8 @@ sequence with maxspan=5m
                         "C:\\Program Files\\RepairTech\\Syncro\\Syncro.App.Runner.exe",
                         "C:\\Program Files (x86)\\*\\unins*.exe") and
     not (process.name : "powershell.exe" and process.args : "RemoteSigned") and
-    not (process.name : "cscript.exe" and process.parent.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp"))
+    not (process.name : "cscript.exe" and process.parent.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp")) and
+    not (process.name : "powershell.exe" and process.parent.code_signature.subject_name == "Patch My PC, LLC" and process.parent.code_signature.trusted == true)
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and
@@ -147,7 +150,7 @@ sequence with maxspan=5m
     ] by Effective_process.entity_id
 '''
 
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.8.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -177,4 +180,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.4.0"
+min_endpoint_version = "8.8.0"

@@ -7,7 +7,7 @@ id = "6631e7e4-ecca-4f34-88e1-b86a4ab711b1"
 license = "Elastic License v2"
 name = "Execution from ZIP File via Explorer"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.action == "start" and
@@ -29,9 +29,13 @@ process where event.action == "start" and
                   "AddInProcess32.exe",
                   "AddInUtil.exe",
                   "AppLaunch.exe",
-                  "aspnet_compiler.exe")
- and not (process.name : "rundll32.exe" and
-          process.args : ("cryptext.dll,CryptExt*", "ImageView_Fullscreen", "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication"))
+                  "aspnet_compiler.exe") and
+ not (process.parent.name : "explorer.exe" and process.executable : "C:\\Windows\\SysWOW64\\mshta.exe") and
+ not (process.name : "rundll32.exe" and
+          process.args : ("cryptext.dll,CryptExt*",
+                          "ImageView_Fullscreen",
+                          "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication",
+                          "C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll,#1"))
 '''
 
 min_endpoint_version = "8.7.0"

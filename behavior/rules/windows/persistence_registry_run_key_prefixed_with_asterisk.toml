@@ -13,7 +13,7 @@ reference = [
     "https://docs.microsoft.com/en-us/windows/win32/setupapi/run-and-runonce-registry-keys",
     "https://thedfirreport.com/2021/03/29/sodinokibi-aka-revil-ransomware/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 registry where registry.data.strings != null and
@@ -32,6 +32,7 @@ registry where registry.data.strings != null and
   not (process.name : "Lmi_*.exe" and registry.value : "*LogMeInRescue*") and
   not (process.name : "G2AC_LauncherCustomer.exe" and registry.value : "*GoToAssist*") and
   not (process.name : "G2AC_SessionControl.exe" and registry.value : "*GoToAssist") and
+  not (process.code_signature.subject_name == "GoTo Technologies USA, LLC" and process.code_signature.trusted == true) and
   not process.executable :
            ("?:\\Windows\\System32\\mmc.exe",
             "?:\\WINDOWS\\system32\\rstrui.exe",
@@ -41,7 +42,7 @@ registry where registry.data.strings != null and
             "?:\\Program Files\\*.exe")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -67,4 +68,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.0.0"

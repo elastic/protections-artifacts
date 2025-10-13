@@ -8,7 +8,7 @@ id = "2588a595-c6c7-4d8d-b287-57b9d1e3d7e6"
 license = "Elastic License v2"
 name = "File Downloaded and Piped to Interpreter by Web Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -28,7 +28,7 @@ process.args == "-c" and process.args like ("wget *", "curl *") and
 process.command_line like ("*|*sh", "*|*python*", "*|*php*", "*|*perl*", "*|*busybox*") and
 not (
   process.command_line like "*|*python -m *" or
-  process.parent.executable == "/usr/lib/venv-salt-minion/bin/python.original" or
+  process.parent.executable in ("/usr/lib/venv-salt-minion/bin/python.original", "/opt/puppetlabs/puppet/bin/ruby") or
   process.parent.command_line like "*ansible*" or
   process.parent.name == "node"
 )

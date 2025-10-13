@@ -11,7 +11,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
@@ -27,7 +27,7 @@ api where
   ) and
 
   not (process.code_signature.subject_name == "NV Access Limited" and process.code_signature.trusted == true) and
-  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a"
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a", "0817a2a657a24c0d5fbb60df56960f42fc66b3039d522ec952dab83e2d869364")
 '''
 
 min_endpoint_version = "8.12.0"

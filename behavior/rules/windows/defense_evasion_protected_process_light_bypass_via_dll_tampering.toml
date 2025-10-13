@@ -16,7 +16,7 @@ reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
     "https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack",
 ]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 sequence by process.entity_id
@@ -41,6 +41,7 @@ sequence by process.entity_id
   not (dll.path :
            ("?:\\Windows\\WinSxS\\Temp\\PendingDeletes\\$$DeleteMe*",
             "?:\\Windows\\WinSxS\\amd64_microsoft-windows-hotpatches_*_hotpatch.dll",
+            "?:\\Windows\\SMSS-*.tmp",
             "?:\\Windows\\System32\\win32k.sys",
             "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*.exe") and
        dll.code_signature.subject_name : ("Microsoft Windows", "Microsoft Windows Publisher") and

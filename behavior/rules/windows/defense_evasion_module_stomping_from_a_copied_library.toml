@@ -8,7 +8,7 @@ id = "c3758f2c-66d5-4cbe-820f-1c6207c6e341"
 license = "Elastic License v2"
 name = "Module Stomping from a Copied Library"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 sequence by user.id with maxspan=3m
@@ -22,7 +22,7 @@ sequence by user.id with maxspan=3m
 
  not process.executable : ("?:\\Program Files (x86)\\Citrix\\ICA Client\\concentr.exe",  
                            "?:\\Program Files (x86)\\InstallShield Installation Information\\*\\setup.exe") and
- not file.path : "?:\\Program Files (x86)\\Web Components\\NetStream.dll"] as event0
+ not file.path : ("?:\\Program Files (x86)\\Web Components\\NetStream.dll", "C:\\WINDOWS\\system32\\myah0.cpl")] as event0
 
 [library where
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Execution via Windows Command Line Debugging Utility"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/OtherMSBinaries/Cdb/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -16,7 +16,8 @@ process where event.action == "start" and
   process.code_signature.subject_name == "Microsoft Corporation"  and
   process.args : ("-cf", "-c", "-pd") and
   not process.executable : ("C:\\Program Files (x86)\\*.exe", "C:\\Program Files\\*.exe") and
-  not process.parent.executable : "C:\\Windows\\SysWOW64\\WerFault.exe"
+  not process.parent.executable : "C:\\Windows\\SysWOW64\\WerFault.exe" and
+  not process.args : "!Analyze -show; dqs esp; dqs; dqs; dqs; dqs; dqs; dqs; dqs; dqs; dqs; q"
 '''
 
 min_endpoint_version = "7.15.0"

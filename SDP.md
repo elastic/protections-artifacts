@@ -25,7 +25,7 @@ All Elastic Defend artifact updates are shipped through our staged deployment sy
 We believe in providing our customers with the flexibility to manage their Elastic Defend deployments.
 
 - **Binary Upgrades**: Customers have full control over all binary upgrades of Elastic Defend. We do not automatically upgrade Elastic Defend binaries on our users’ behalf.
-- **Artifact Pinning**: Customers can leverage [artifact pinning](https://www.elastic.co/docs/solutions/security/configure-elastic-defend/configure-updates-for-protection-artifacts to lock artifact updates to a date of their choosing. This provides customers with lower risk tolerance the ability to test artifact updates internally before rolling them out to their entire fleet.
+- **Artifact Pinning**: Customers can leverage [artifact pinning](https://www.elastic.co/docs/solutions/security/configure-elastic-defend/configure-updates-for-protection-artifacts) to lock artifact updates to a date of their choosing. This provides customers with lower risk tolerance the ability to test artifact updates internally before rolling them out to their entire fleet.
 
 - **Release Channels**: Users can select a release channel in [advanced policy options](https://www.elastic.co/docs/reference/security/defend-advanced-settings) to control their participation in the staged artifact deployment:
   a. **Rapid**: Immediately receive candidate artifacts at the start of staged rollout.

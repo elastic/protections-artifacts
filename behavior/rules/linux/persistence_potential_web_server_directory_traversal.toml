@@ -8,7 +8,7 @@ id = "7d39db57-5c5e-4542-a9eb-8f5de524b09c"
 license = "Elastic License v2"
 name = "Potential Web Server Directory Traversal"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -28,12 +28,14 @@ process.command_line like (
   "*/etc/*", "*.ssh*", "*id_rsa*", "*authorized_keys*", "*/root/*", "*/dev/shm/*", "*/var/tmp/*", "*/tmp/*"
 ) and not (
   process.parent.name in ("collect2", "gcc") or
-  process.name in ("collect2", "go", "ld", "chrpath", "node", "copyfiles", "bindgen", "elasticsearch-keystore") or
+  process.name in ("collect2", "go", "ld", "chrpath", "node", "copyfiles", "bindgen", "elasticsearch-keystore", "cc1", "as") or
   process.command_line like (
     "/bin/sh -c git*", "/home/*/.gradle/*Dcli.script=../../../../../../../../../distribution/*",
     "/bin/sh -c printf*I../../../../../../nan*"
   ) or
-  process.executable like "/root/build/qtwebengine/src/core/*/x86_64/host/protoc"
+  process.executable like "/root/build/qtwebengine/src/core/*/x86_64/host/protoc" or
+  process.parent.executable like ("/home/*/.nvm/*node", "/sw/eb/sw/Python/3.12.3-GCCcore-13.3.0/bin/python3.12") or
+  process.args like "-l source*/tmp/claude*"
 )
 '''
 

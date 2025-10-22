@@ -8,7 +8,7 @@ id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
 license = "Elastic License v2"
 name = "Suspicious Perl Command Execution"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -30,7 +30,7 @@ process.args == "-e" and process.command_line like~ (
     "/var/lib/docker/overlay2/*", "/usr/local/lp/apps/sonarpush-helpers/spectre-meltdown-checker.sh",
     "/usr/sbin/debootstrap", "/usr/bin/xterm", "/usr/bin/xargs"
   ) or
-  process.parent.command_line like~ "*testfun()*" or
+  process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*") or
   process.parent.args == "/usr/bin/parallel"
 )
 '''

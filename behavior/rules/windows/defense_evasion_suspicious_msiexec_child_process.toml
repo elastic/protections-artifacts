@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious MsiExec Child Process"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -79,8 +79,9 @@ process where event.action == "start" and
                   "3f59a2799dc6aa6cdddbc62e169fad7e7dd282bffba3538ed2594e3a8d6c1a05",
                   "54b1f519d64469ffcb2c9f417dc9b46e16f44a19522236122741a9df7a877f0a",
                   "ec4a6b16df94b1c78b48796d7f624fc19253140569ccb51dfb7f6771d2b0e53d",
-                  "0f727129cd58c2291dbccac8930ad80c28b6d19ebfa4c5f91deb4c00b7c75774") and
-   not (process.name : "rundll32.exe" and process.args : ("printui.dll,PrintUIEntry", "C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper32.dll,#1")) and
+                  "0f727129cd58c2291dbccac8930ad80c28b6d19ebfa4c5f91deb4c00b7c75774",
+                  "2aee9f92793ccd46579951e44dc8793045b50e1c23824681a64f653bdae58973") and
+   not (process.name : "rundll32.exe" and process.args : ("printui.dll,PrintUIEntry", "C:\\ProgramData\\FastTrack Software\\Admin By Request\\ShellHelper??.dll,#1")) and
    not (process.name : "regsvr32.exe" and process.args : "?:\\ProgramData\\LEAP Office\\Cloud\\Extras\\Automation Extras\\LEAPRedemption64.dll") and
    not (process.name : "cmd.exe" and process.args : "del" and process.args : "/f") and
    not (process.name : "cmd.exe" and process.args : "C:\\Program") and

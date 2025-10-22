@@ -9,14 +9,14 @@ license = "Elastic License v2"
 name = "Potential Evasion via Invalid Code Signature"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 any where
  process.executable != null and process.code_signature.status == "errorBadDigest" and   
  (
   (event.category == "api" and event.category == "intrusion_detection" and 
-   process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode", "unbacked_rwx") and 
+   process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
    not process.Ext.api.name in ("SetWindowsHookEx", "IoCreateDevice") and
    process.thread.Ext.call_stack_final_user_module.name != null and
    not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
@@ -34,7 +34,8 @@ any where
  not (dll.name == "ws2_32.dll" and process.code_signature.subject_name in ("Azul Systems, Inc.", "Ghisler Software GmbH", "Cellebrite DI LTD", "Pagebites, Inc.")) and
  not (process.Ext.api.name in ("NtQueueApcThread", "OpenProcess", "ResumeThread") and process.code_signature.subject_name in ("Azul Systems, Inc.", "Eclipse.org Foundation, Inc.")) and
  not (process.executable : "C:\\AutoVue_Client\\jre\\bin\\javaw.exe" and process.code_signature.subject_name == "Oracle America, Inc.") and
- not (process.executable : "?:\\Users\\*\\AppData\\Local\\Turbo.net\\Sandbox\\GEARView\\*\\GEARViewBasic.exe" and 
+ not (process.executable : ("?:\\Users\\*\\AppData\\Local\\Turbo.net\\Sandbox\\GEARView\\*\\GEARViewBasic.exe",
+                             "\\\\?\\Volume{*}\\VMS_PortableClient_x64\\local\\stubexe\\*\\VMS_Client.exe") and
       process.code_signature.subject_name == "Code Systems Corporation") and
  not process.executable : 
              ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe", 
@@ -55,7 +56,11 @@ any where
                                            "?:\\Windows\\FireEye\\AppMonitorDll*.dll*",
                                            "?:\\Windows\\apppatch\\AppPatch*\\exploitblocker.dll*",
                                            "?:\\windows\\system32\\hmpalert.dll!*")) and
- process.thread.Ext.call_stack_final_user_module.hash.sha256 != "234360be58be376a77169fcc447cf8cbcba959f5c1db256ea2a50eeb92e65f44"
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                               ("234360be58be376a77169fcc447cf8cbcba959f5c1db256ea2a50eeb92e65f44",
+                                                "fcdde72cfb1b2ff1bf953b2ded03b74c7d7273fa7dcef282a594c2819b2c497c",
+                                                "f5071fb08095973d5499e50e6ac176a1bdc33d774ea61e0e3c82605d468e0045",
+                                                "0a32e883d669a5b9bbb7aecc1cee31623aa69950ca9e3fce9d5270caa6ae0f39")
 '''
 
 min_endpoint_version = "8.10.0"

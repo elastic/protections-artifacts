@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and
@@ -19,12 +19,18 @@ process where event.type == "start" and event.action == "exec" and process.name 
 process.args : ("-*i*", "+*i*", "+*u*", "-*u*") and not (
   process.parent.name == "." or
   process.parent.executable like ("./scannerYaraALFA*", "/tmp/newroot/lib/systemd/systemd", "./ldap2sshkeys") or
-  process.parent.executable in ("/tmp/newroot/usr/bin/sudo", "/tmp/newroot/usr/bin/zsh")
+  process.parent.executable in ("/tmp/newroot/usr/bin/sudo", "/tmp/newroot/usr/bin/zsh") or
+  process.parent.args like "/root/.ansible/tmp/ansible-tmp-*/AnsiballZ_file.py"
 )
 '''
 
 min_endpoint_version = "7.15.0"
 optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

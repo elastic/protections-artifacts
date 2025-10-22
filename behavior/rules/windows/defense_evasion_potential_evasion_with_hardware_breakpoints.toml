@@ -9,19 +9,15 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
-any where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
- (
-  event.category == "api" or 
-  (event.category == "library" and 
+library where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
    dll.name : ("wininet.dll", "ws2_32.dll", "dnsapi.dll", "winhttp.dll", "clr.dll", "netapi32.dll",
                 "mscorwks.dll", "System.*.dll", "mscorlib*.dll", "Microsoft.PowerShell.Security*.dll", 
                 "Microsoft.PowerShell.ConsoleHost*.dll", "wmiutils.dll", "fastprox.dll", "wbemprox.dll", 
                 "vaultcli.dll", "taskschd.dll", "dsquery.dll", "mstscax.dll", "ntdll.dll", "wldap32.dll", 
-                "wtsapi32.dll", "psapi.dll"))
-  ) and 
+                "wtsapi32.dll", "psapi.dll") and
  not (process.code_signature.trusted == true and 
       process.code_signature.subject_name : 
                 ("Riot Games, Inc.", "Roblox Corporation", "ROBLOX CORPORATION", "Intelligent Security Systems Corporation", 
@@ -61,13 +57,13 @@ any where process.thread.Ext.hardware_breakpoint_set == true and process.executa
                            "\\Device\\HarddiskVolume4\\Program Files (x86)\\WeGame\\tenprotect\\TASLogin.exe",
                            "C:\\Program Files (x86)\\Hunter\\Aligner\\Execute\\aligner.exe",
                            "D:\\Program Files (x86)\\NWPS\\SwitchPortMapper\\spmap.exe") and
- not process.parent.executable : "C:\\Program Files (x86)\\Microsoft Games\\Age of Empires III\\age3y.exe" and
  not (process.executable : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" and dll.name == "ws2_32.dll" and
       process.thread.Ext.call_stack_summary == "Unbacked" and
       _arraysearch(process.thread.Ext.call_stack, $entry,
        $entry.callsite_trailing_bytes == "c3cd2ec30f1f84000000000000000000000000000000000000000000000000000000000000000000000000004c8bd1b82a000000f604250803fe7f0175030f05")) and
  not (endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|", process.name)) and
-      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.allocation_private_bytes >= 100000 and stringcontains~($entry.symbol_info, process.name)))
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection : "RWX" and $entry.allocation_private_bytes >= 100000 and stringcontains~($entry.symbol_info, process.name))) and
+ not (dll.name : "wininet.dll" and process.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|sscprot.dll|ntdll.dll|kernelbase.dll|combase.dll|shellhelper32.dll|calipermtxf.dll")
 '''
 
 min_endpoint_version = "8.11.0"

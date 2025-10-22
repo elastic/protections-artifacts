@@ -1,0 +1,72 @@
+[rule]
+description = """
+Detects the execution of the VScode portable binary with the tunnel command line option indicating an attempt to
+establish a remote tunnel session to Github or a remote VScode instance.
+"""
+id = "13fd98ce-f1c3-423f-9441-45c50eb462c0"
+license = "Elastic License v2"
+name = "Attempt to establish VScode Remote Tunnel"
+os_list = ["macos", "windows"]
+reference = ["https://badoption.eu/blog/2023/01/31/code_c2.html"]
+version = "1.0.10"
+
+query = '''
+process where event.type == "start" and event.action in ("exec", "start") and 
+ process.name : ("code", "code.exe") and process.args : "tunnel" and 
+ not (process.name : "code-tunnel*.exe" and process.args  : ("status", "--log-to-file"))
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+[[threat.technique.subtechnique]]
+id = "T1102.002"
+name = "Bidirectional Communication"
+reference = "https://attack.mitre.org/techniques/T1102/002/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

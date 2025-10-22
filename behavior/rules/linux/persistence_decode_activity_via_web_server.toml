@@ -8,7 +8,7 @@ id = "eb928496-a992-4cee-9cd7-fc3fbae7e8da"
 license = "Elastic License v2"
 name = "Decode Activity via Web Server"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5s
@@ -26,14 +26,16 @@ sequence with maxspan=5s
    ) and not (
      process.name in ("getkeyfromldapuser.sh", "getVar.sh", "shell-archive") or
      process.executable in ("/opt/omnimesh/apache/lib/passphrase", "/omd/sites/wopub/bin/apply_unsign_msi_patch.sh", "/opt/java/openjdk/lib/jspawnhelper") or
-     process.args like~ "/u01/app/oracle/*" or
+     process.executable like "/tmp/newroot/*" or
+     process.args like~ ("/u01/app/oracle/*", "-l source*/tmp/claude*") or
      process.args == ".bamboo/deploy.sh" or
      process.parent.executable in ("/bin/ruby", "/usr/lib/venv-salt-minion/bin/python.original", "/opt/morpheus/embedded/java/jre/bin/java") or
      process.parent.executable like (
        "/usr/bin/python*", "/opt/idea-IU*/jbr/bin/java", "/root/.vscode-server/*", "/home/*/.local/share/nvm/*node", "/h*/*/.cursor-server/*node",
-       "/home/*/cursor-agent/*node"
+       "/home/*/cursor-agent/*node", "/root/.cursor-server/cli/servers/*/server/node", "/*/*.cursor-server/*node", "/home/*.nvm/versions/node/*/node",
+       "/home/*/.local/share/cursor-agent/*/node"
      ) or
-     process.parent.args in ("./mmicro-control.pl", "/usr/bin/vncserver") or
+     process.parent.args in ("./mmicro-control.pl", "/usr/bin/vncserver", "/usr/local/bin/vncserver") or
      process.parent.command_line like~ ("Serverd*", "*.ansible/tmp/ansible-tmp-*") or
      process.command_line in ("sh -c man/base32.td/base32 --version 2>/dev/null", "/usr/bin/perl edit.cgi") or
      (process.parent.name == "perl"  and process.command_line like~ "sh -c man/base*") or

@@ -9,12 +9,12 @@ license = "Elastic License v2"
 name = "Windows Error Manager/Reporting Masquerading"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/revisiting-blister-new-developments-of-the-blister-loader"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
   [process where event.action == "start" and
-   process.name : ("wermgr.exe", "WerFault.exe") and process.args_count == 1 and
+   process.name : ("wermgr.exe", "WerFault.exe") and process.args_count == 1 and process.parent.executable != null and
    not (process.args : "C:\\WINDOWS\\system32\\wermgr.exe  -upload" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe")]
   [network where event.action == "connection_attempted" and process.name : ("wermgr.exe", "WerFault.exe")]
 '''

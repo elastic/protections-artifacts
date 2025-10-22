@@ -7,7 +7,7 @@ id = "4f7b1362-1299-4ce7-8e02-03b74dad4eb1"
 license = "Elastic License v2"
 name = "Attempt to Hide Files via Registry Modification"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 registry where event.action == "modification" and process.executable != null and
@@ -34,6 +34,7 @@ registry where event.action == "modification" and process.executable != null and
                  "C:\\Windows\\System32\\regsvr32.exe",
                  "C:\\$WINDOWS.~BT\\Sources\\SetupPlatform.exe",
                  "C:\\ADP SmartCompliance PowerTool\\Compliance.exe",
+                 "D:\\USMT\\X64\\loadstate.exe",
                  "C:\\Program Files\\*.exe", 
                  "C:\\Program Files (x86)\\*.exe") and
 not (process.code_signature.subject_name : ("Cyberdigm. Corp.", "CYBERDIGM CO., LTD.", "Electronic Arts, Inc.") and process.code_signature.trusted == true)

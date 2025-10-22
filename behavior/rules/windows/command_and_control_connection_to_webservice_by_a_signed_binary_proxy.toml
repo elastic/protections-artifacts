@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.63"
+version = "1.0.64"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -72,11 +72,13 @@ sequence by process.entity_id with maxspan=5m
       not process.parent.executable : ("C:\\Program Files\\Logi\\LogiBolt\\LogiBolt.exe",
                                        "C:\\Program Files (x86)\\Avaya\\Avaya one-X Agent\\OneXAgentUI.exe",
                                        "C:\\Program Files (x86)\\HP\\StatusAlerts\\bin\\HPStatusAlerts.exe",
-                                       "C:\\Program Files\\AutoHotkey\\AutoHotkeyU64.exe") and
+                                       "C:\\Program Files\\AutoHotkey\\AutoHotkeyU64.exe",
+                                       "C:\\Program Files\\Microsoft VS Code\\Code.exe") and
       not (process.name : "powershell.exe" and process.parent.name : "wsmprovhost.exe" and
            process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Version 5.1 -s -NoLogo -NoProfile") and
       not (process.name : "curl.exe" and process.parent.name : "powershell.exe" and
-           process.command_line : "\"C:\\Windows\\System32\\curl.exe\" -L -s -H \"User-Agent: PowerShell\" -H \"Accept: application/vnd.github+json\" https://api.github.com/repos/PowerShell/PowerShell/releases")
+           process.command_line : "\"C:\\Windows\\System32\\curl.exe\" -L -s -H \"User-Agent: PowerShell\" -H \"Accept: application/vnd.github+json\" https://api.github.com/repos/PowerShell/PowerShell/releases") and
+      not (process.name : "curl.exe" and process.args :  ("DNS: %{time_namelookup}s\\nConnect: %{time_connect}s\\nStartTransfer: %{time_starttransfer}s\\nTotal: %{time_total}s\\n", "https://login.microsoftonline.com/*"))
   ]
   [dns where
     dns.question.name :

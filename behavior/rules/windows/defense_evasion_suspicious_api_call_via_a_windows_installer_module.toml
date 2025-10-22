@@ -7,7 +7,7 @@ id = "43e9d254-28e9-463d-9bc3-5e51721d4b8a"
 license = "Elastic License v2"
 name = "Suspicious API call via a Windows Installer Module"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.name : "msiexec.exe" and
@@ -34,8 +34,10 @@ api where process.name : "msiexec.exe" and
                                           ("85da69c82e3d1faff1e60e6853e30230fc5e3b64faf4245e20089fe75912d910",
                                            "09e957a1d31b9cf8666add20613bf60b6a2d294586f8887961cc6a0e24680fb8",
                                            "3c60786fddc7fb00b2dab7bd2b6c33340e07c73ea8e3d6c47754bb9d15d83166",
-                                           /* TBR - Kaspersky standalone_updater */
-                                           "0c9891da5c64a519c11e7603a41e93e0ff3057cca238ee59ffb5b4a82985011a")
+                                           /* Kaspersky  */
+                                           "0c9891da5c64a519c11e7603a41e93e0ff3057cca238ee59ffb5b4a82985011a",
+                                           "80f84a7b8aad0bdceba677e6a501f71b6b57878e34b6b557e1892083a32b7bd5",
+                                           "0297e306edf0a868e1edffa4de158906142f131b550061a7d68cca721482a953")
 '''
 
 min_endpoint_version = "8.10.0"

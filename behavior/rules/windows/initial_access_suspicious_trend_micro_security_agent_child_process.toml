@@ -1,0 +1,44 @@
+[rule]
+description = """
+Detects a suspicious child process of the Trend Micro Security Agent indicating a possible remote code execution
+attempt.
+"""
+id = "18a93bcb-8f7b-48f7-9f02-107e44993194"
+license = "Elastic License v2"
+name = "Suspicious Trend Micro Security Agent Child Process"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+process where event.action == "start" and
+ (
+  (process.parent.name : "TmsaInstance64.exe" or process.working_directory : "C:\\Program Files (x86)\\Trend Micro\\Security Agent\\CCSF\\module\\BES\\") or
+  descendant of [process where event.action == "start" and process.parent.name : "TmsaInstance64.exe"]
+  ) and
+not (process.code_signature.subject_name == "Trend Micro, Inc." and process.code_signature.trusted == true) and
+not process.executable : ("C:\\Program Files (x86)\\Trend Micro\\*", "?:\\Windows\\System32\\conhost.exe")
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.16.0"

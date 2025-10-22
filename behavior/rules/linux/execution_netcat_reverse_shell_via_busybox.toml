@@ -8,12 +8,12 @@ id = "332a8018-6615-4d2d-aeff-61e85e5ae77b"
 license = "Elastic License v2"
 name = "Netcat Reverse Shell via Busybox"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and process.name == "busybox" and
-   process.args : "*nc*"]
+   process.args like ("*nc*", "*netcat*", "*ncat*") and not process.args == "-z"]
   [network where event.type == "start" and event.action == "connection_attempted" and process.name == "busybox" and 
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",

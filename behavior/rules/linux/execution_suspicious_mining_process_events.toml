@@ -7,7 +7,7 @@ id = "fbf9342e-3d1e-4fba-a828-92fa0fb4d21b"
 license = "Elastic License v2"
 name = "Suspicious Mining Process Events"
 os_list = ["linux"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.action == "exec" and 
@@ -17,10 +17,12 @@ process where event.action == "exec" and
        (process.name=="systemctl" and process.args in ("disable", "stop", "kill", "start", "reload", "restart"))) and
 	   
 	 process.args in ("aliyun.service", "moneroocean_miner.service", "c3pool_miner.service", "pnsd.service", "apache4.service", "pastebin.service", "xvf.service") and
-	 /* exec via interactive shell */
-	 not process.parent.command_line : ("bash", "-bash", "sh") and
-	 
-	 not process.parent.executable : "/usr/local/share/aliyun-assist/*/update_install"
+   not (
+   	 /* exec via interactive shell */
+	   process.parent.command_line : ("bash", "-bash", "sh") or
+	   process.parent.executable : "/usr/local/share/aliyun-assist/*/update_install" or
+     process.parent.args like "/usr/local/share/aliyun-assist/*"
+   )
 '''
 
 min_endpoint_version = "7.15.0"

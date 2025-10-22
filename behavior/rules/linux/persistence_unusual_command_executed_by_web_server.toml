@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -49,7 +49,7 @@ process.command_line like (
   process.parent.args like (
     "../scripts/python/build_all_recipes_firmware.py", "../scripts/python/build_all_no_recipes_firmware.py", "./ssh.py",
     "/opt/ros/noetic/bin/robot_debugger", "./mmicro-control.pl", "/etc/webmin/miniserv.conf", "mintUpdate",
-    "/opt/tm/sshluks-setup/sshluks-setup.py", "/usr/bin/salt-minion"
+    "/opt/tm/sshluks-setup/sshluks-setup.py", "/usr/bin/salt-minion", "/usr/bin/puppet"
   ) or
   process.parent.command_line like (
     "./app", "runc init", "*cron_id=*", "/usr/bin/python*ansible*", "./pyenv/bin/python3 class/jobs.py", "Serverd listgend*",
@@ -70,7 +70,8 @@ process.command_line like (
     process.command_line == "sh -c ssh-keygen -y -f ~/.ssh/id_ed25519"
   ) or
   process.working_directory like~ ("/home/*", "/opt/kbport", "/usr/local/SolarWinds/Agent/bin/Plugins/APM") or
-  (process.working_directory == "/usr/share/httpd" and process.command_line == "/bin/bash -c /etc/cron.tasks/elearning.cron.sh")
+  (process.working_directory == "/usr/share/httpd" and process.command_line == "/bin/bash -c /etc/cron.tasks/elearning.cron.sh") or
+  process.parent.command_line == "python3 /opt/gateway/automation/backupscripts/commonutils/node_json_backup.py -f node_data.json -o /opt/node_json_backup -logfile /var/log/gateway/result_BackupService.log"
 )
 '''
 

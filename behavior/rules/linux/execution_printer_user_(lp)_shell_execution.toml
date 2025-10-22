@@ -17,7 +17,7 @@ reference = [
     "https://gist.github.com/stong/c8847ef27910ae344a7b5408d9840ee1",
     "https://github.com/RickdeJager/cupshax/blob/main/cupshax.py",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and user.name == "lp" and
@@ -27,7 +27,10 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
     "*/tmp/foomatic-*", "*-sDEVICE=ps2write*", "*printf*", "/bin/sh -e -c cat", "/bin/bash -c cat",
     "/bin/bash -e -c cat", "/bin/sh -e -c pdftops*"
   ) or
-  process.args like "gs*"
+  process.args like (
+    "gs*", "/usr/lib/cups/filter/gstopdf", "/usr/lib/cups/filter/gstopxl", "/usr/lib/cups/filter/XeroxOfficeQScript",
+    "/usr/bin/foo2zjs-wrapper", "/usr/bin/foo2zjs-pstops", "foo2zjs-wrapper*"
+  )
 )
 '''
 

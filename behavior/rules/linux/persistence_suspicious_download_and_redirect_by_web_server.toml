@@ -8,7 +8,7 @@ id = "fa71e336-0177-4732-b58b-53eb4a87a286"
 license = "Elastic License v2"
 name = "Suspicious Download and Redirect by Web Server"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -43,7 +43,11 @@ process.command_line like (
   process.parent.command_line like (
     "/usr/bin/php*command:getSatelliteDatas*", "/usr/bin/php*command:getHailDatas*", "*ansible*"
   ) or
-  process.working_directory == "/home/ansible"
+  process.working_directory == "/home/ansible" or
+  (process.parent.args like "scripts/generator/*.py" and process.working_directory == "/usr/src/app") or
+  (process.parent.name == "java" and process.command_line like "*/home/asterisk/audio/*") or
+  (process.parent.name == "node" and process.command_line like~ "/bin/bash -O extglob*") or
+  (process.parent.name == "perl" and process.parent.args == "-X")
 )
 '''
 

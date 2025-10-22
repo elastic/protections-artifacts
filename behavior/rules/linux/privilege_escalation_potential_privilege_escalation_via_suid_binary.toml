@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via SUID Binary"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+suid"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -58,7 +58,9 @@ process where event.type == "start" and event.action == "exec" and (
   ) or
   process.args == "/usr/local/zeek/bin/zeekctl cron" or
   process.parent.args == "/usr/bin/supervisord" or
-  process.working_directory == "/usr/local/spine/bin"
+  process.working_directory == "/usr/local/spine/bin" or
+  (process.name == "sort" and process.parent.args == "/usr/lib/grub/grub-multi-install") or
+  (process.name == "minicom" and process.command_line == "minicom")
 )
 '''
 

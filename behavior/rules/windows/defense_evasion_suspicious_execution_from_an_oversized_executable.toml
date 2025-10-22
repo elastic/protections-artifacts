@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution from an Oversized Executable"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1027/001/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5m
@@ -57,7 +57,10 @@ sequence with maxspan=5m
                 "cmd /c dir") and
  not (process.name : "cmd.exe" and process.args : ("*.bat", "*.cmd", "rmdir", "*.bat ", "*.cmd ")) and
  not (process.name : "cmd.exe" and process.args : ("*reg.exe QUERY*", "netstat -r", "net session", "wsl.exe -l -q",
-                                                   "C:\\Program Files (x86)\\Annke Vision Site\\Nginx")) and
+                                                   "C:\\Program Files (x86)\\Annke Vision Site\\Nginx",
+                                                   "route print 0.0.0.0 mask 0.0.0.0",
+                                                   "powershell -command Get-Culture",
+                                                   "powershell -Command Get-Host")) and
  not (process.name : "powershell.exe" and
       process.command_line : "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -")
  ] by process.parent.executable

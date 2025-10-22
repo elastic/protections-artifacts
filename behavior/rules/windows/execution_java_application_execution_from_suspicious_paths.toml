@@ -7,7 +7,7 @@ id = "b5d02713-e392-47c4-b38b-10b68dbc00a6"
 license = "Elastic License v2"
 name = "JAVA Application Execution from Suspicious Paths"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -26,7 +26,7 @@ sequence by process.entity_id with maxspan=5s
        "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
        "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.88.99.0/24", "224.0.0.0/4",
        "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
-       "FE80::/10", "FF00::/8", "129.153.192.0/19") and
+       "FE80::/10", "FF00::/8", "129.153.192.0/19", "128.194.0.0/16") and
  not (process.executable : "C:\\Program Files\\Amazon Corretto\\jdk*\\bin\\javaw.exe" and destination.ip == "164.154.131.141") and
  not (process.executable : "C:\\Program Files\\Zulu\\zulu-??\\bin\\javaw.exe" and destination.ip == "146.75.93.145")]
 '''

@@ -7,7 +7,7 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence with maxspan=2m
@@ -24,6 +24,12 @@ sequence with maxspan=2m
      ((process.args == "-c" and process.args like~ ("*curl*", "*nscurl*", "*mktemp*", "*tail*", "*funzip*", "*python*", "*perl*", "*osascript*")) or process.args_count <= 2))) and not
   process.executable like ("/private/tmp/PKInstallSandbox.*", "/opt/homebrew/Cellar/*") and not
   process.name == "app-builder_arm64" and not
+  process.command_line in ("/bin/sh /opt/cisco/secureclient/bin/dart_uninstall.sh",
+                           "/bin/sh /opt/cisco/secureclient/bin/umbrella_uninstall.sh",
+                           "/bin/sh /opt/cisco/secureclient/securefirewallposture/bin64/posture_uninstall.sh",
+                           "mktemp -t geinstall",
+                           "chmod 0777 /Library/Caches/Xerox",
+                           "chmod +x decompress") and not
   process.args like~ ("/tmp/PKInstallSandbox.*/Scripts/*", 
                       "/Library/Apple/System/Library/InstallerSandboxes/.*",
                       "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*",
@@ -33,6 +39,13 @@ sequence with maxspan=2m
                                    "/Library/PrivilegedHelperTools/*") and not
   process.Ext.effective_parent.executable in 
                                             ("/usr/local/jamf/bin/jamf",
+                                             "/usr/libexec/sshd-session",
+                                             "/Applications/iTerm.app/Contents/MacOS/iTerm2",
+                                             "/Library/Application Support/com.atera.ateraagent/Agent/.dotnet/dotnet",
+                                             "/Applications/NinjaRMMAgent/programfiles/ninjarmm-macagent",
+                                             "/Applications/censhare Client 2021.1.11 Java11/censhare Client.app/Contents/MacOS/censhare Client",
+                                             "/Applications/censhare Client 2021.1.2 Java11/censhare Client.app/Contents/MacOS/censhare Client",
+                                             "/Volumes/Data Recovery Wizard Installer/Data Recovery Wizard Installer.app/Contents/MacOS/Data Recovery Wizard Installer",
                                              "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService",
                                              "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon")]
 '''

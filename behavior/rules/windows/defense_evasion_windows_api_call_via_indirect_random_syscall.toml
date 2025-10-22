@@ -7,7 +7,7 @@ id = "9bc5d4cd-5748-4425-a4f3-7a704a11029d"
 license = "Elastic License v2"
 name = "Windows API Call via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
@@ -96,7 +96,9 @@ api where
                                                                   "*\\kernelbase.dll!AddExtensionProgId*",
                                                                   "*\\ntdll.dll!NtAllocateReserveObject*",
                                                                   "*\\ntdll.dll!ZwRestoreKey*",
-                                                                  "*\\kernelbase.dll!ProcessIdToSessionId*")) and
+                                                                  "*\\kernelbase.dll!ProcessIdToSessionId*",
+                                                                  "c:\\windows\\system32\\ntdll.dll!NtOpenSection*",
+                                                                  "c:\\windows\\system32\\ntdll.dll!NtImpersonateClientOfPort*")) and
 
  not (process.thread.Ext.call_stack_summary : "ntdll.dll|Unknown|ntdll.dll*" and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll!*TestAlert*")) and

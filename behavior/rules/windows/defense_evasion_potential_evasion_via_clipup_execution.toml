@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies the execution of the ClipUp process from an unusual parent and with the -ppl argument. This may indicate an
+attempt to overwrite protected files to tamper with endpoint security solutions.
+"""
+id = "af6ca1a9-650f-4984-b83d-fc0a3b118c74"
+license = "Elastic License v2"
+name = "Potential Evasion via ClipUp Execution"
+os_list = ["windows"]
+reference = ["https://www.zerosalarium.com/2025/08/countering-edrs-with-backing-of-ppl-protection.html"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+ process.executable : "?:\\Windows\\System32\\ClipUp.exe" and process.args : "-ppl" and process.Ext.protection like "PsProtectedSigner*" and
+ not process.parent.executable : ("?:\\Windows\\System32\\ClipUp.exe", "?:\\Windows\\System32\\smss.exe", "?:\\Windows\\System32\\conhost.exe") and
+ process.parent.executable != null
+'''
+
+min_endpoint_version = "8.0.0"
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.0.0"

@@ -7,7 +7,7 @@ id = "642b43ad-67bf-476b-9581-a434535395f2"
 license = "Elastic License v2"
 name = "Unsigned File Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.action == "start" and
@@ -15,7 +15,7 @@ process where event.action == "start" and
  process.Ext.session_info.logon_type == "Network" and
  process.Ext.session_info.relative_logon_time <= 5 and
  (process.code_signature.exists == false or process.code_signature.trusted == false) and
- process.pe.imphash != "106bf7f7567dfeec85f3670da6d1c029" and
+ not process.pe.imphash in ("106bf7f7567dfeec85f3670da6d1c029", "6e7f9a29f2c85394521a08b9f31f6275") and
  not process.hash.sha256 in
                 ("f1d3489e0af0c498103df0433cee9f36f5d28d34dfe94aac510f7d32d0da5495",
                  "d57875f09a33cda2dc1030a4f82405f1de56b5536b6b87329323dfb2042b5e1c",
@@ -42,7 +42,8 @@ process where event.action == "start" and
       process.parent.executable : "C:\\Program Files\\PowerShell\\7\\pwsh.exe") and
  not (process.code_signature.subject_name == "LLC Breakthrough Technologies" and process.code_signature.status == "errorExpired") and
  not (process.executable : ("C:\\ProgramData\\chocolatey\\bin\\wacs.exe", "C:\\tools\\win-acme\\wacs.exe") and
-      process.args : "--certificatestore" and process.parent.name : ("wacs.exe", "powershell.exe"))
+      process.args : "--certificatestore" and process.parent.name : ("wacs.exe", "powershell.exe")) and
+ not process.executable : "C:\\Program Files\\Mozilla Firefox\\uninstall\\uninstaller.exe"
 '''
 
 min_endpoint_version = "8.6.0"

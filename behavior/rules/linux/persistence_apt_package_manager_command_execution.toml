@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5s
@@ -43,12 +43,15 @@ sequence with maxspan=5s
        "/usr/bin/perl -w /usr/sbin/dpkg-preconfigure --apt", "/bin/sh /usr/lib/needrestart/apt-pinvoke",
        "/bin/sh /usr/bin/kali-check-apt-sources", "/bin/sh /usr/lib/needrestart/apt-pinvoke -m u",
        "/usr/bin/perl /usr/sbin/needrestart",  "/usr/bin/perl -w /usr/bin/apt-show-versions -i",
-       "/usr/bin/perl -w /usr/bin/apt-show-versions -i", "/usr/bin/perl -w /bin/apt-show-versions -i"
+       "/usr/bin/perl -w /usr/bin/apt-show-versions -i", "/usr/bin/perl -w /bin/apt-show-versions -i",
+       "/usr/bin/perl /bin/adequate --help",  "/usr/bin/perl /usr/sbin/needrestart -m u", 
+       "/usr/bin/perl -w /usr/share/debconf/frontend /usr/sbin/needrestart"
      ) or
      process.parent.command_line in (
        "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper post-install; fi",
        "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper pre-install; fi"
-     )
+     ) or
+     process.args in ("/usr/sbin/needrestart", "/usr/lib/needrestart/apt-pinvoke", "/usr/share/proxmox-ve/pve-apt-hook")
     )
   ] by process.parent.entity_id
 '''

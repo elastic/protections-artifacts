@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -75,7 +75,9 @@ sequence by process.entity_id with maxspan=1m
                "ce12e654c48a7145f456ded3337354227c845c4012a6302fa63e6901c580b610",
                "05b5616932031283eea3751dfcad273db805a71b4e35afdbc03bd3c30bc6b6b0",
                "f5924d522b7d8b4a551c2d4045069c9a711b62b97e2b799e7b42a9931e58fba3",
-               "0cd9e13dbce7595879d9e972dc04e81da63d1cbf34c99fd3603e2aba68ccf2a5") and
+               "0cd9e13dbce7595879d9e972dc04e81da63d1cbf34c99fd3603e2aba68ccf2a5",
+               "f6b9cefd13932daad90ac587fec1e5ec542bca1936fcbd3245d0919e48460a9c",
+               "c14d07ccccaaab6c4adbfba16b3f977f64408499dce5aa8df424b2c59a313d48") and
  not (process.executable : "?:\\Windows\\Sys*\\msiexec.exe" and dll.path : "C:\\Windows\\Installer\\MSI????.tmp")] by dll.hash.sha256
 [api where
  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and

@@ -8,7 +8,7 @@ id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
 license = "Elastic License v2"
 name = "Potential Proxy Execution via Systemd-run"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
@@ -22,7 +22,7 @@ process.parent.args_count < 3 and process.parent.name != null and not (
   ) or
   process.parent.executable like (
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/acronis/bin/acp-update-controller", "/snap/*",
-    "/var/lib/amagent/*"
+    "/var/lib/amagent/*", "/opt/msp-agent/msp-agent-core", "/opt/beyondtrust/*"
   ) or
   process.parent.name like ("python*", "platform-python*") or
   process.parent.name in (
@@ -41,7 +41,10 @@ process.parent.args_count < 3 and process.parent.name != null and not (
   ) or
   process.parent.command_line in ("runc init", " /usr/local/bin/main") or
   process.parent.command_line like ("*/var/lib/waagent/*", "bash ./run.sh") or
-  process.args in ("--help", "list-timers", "/usr/lib/udev/kdump-udev-throttler", "kubectl", "--unit=ngt_guest_agent_upgrade") or
+  process.args in (
+    "--help", "list-timers", "/usr/lib/udev/kdump-udev-throttler", "kubectl", "--unit=ngt_guest_agent_upgrade", "i3-zoom", "google-chrome",
+    "thunar", "/usr/bin/google-chrome-stable", "snap.lxd.workaround"
+  ) or
   process.working_directory == "/opt/Tychon/Endpoint/bin"
 )
 '''

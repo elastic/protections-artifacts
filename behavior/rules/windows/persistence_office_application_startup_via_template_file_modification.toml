@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Office Application Startup via Template File Modification"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1137/001/"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 file where event.action in ("creation", "overwrite") and process.pid != 4 and
@@ -16,6 +16,9 @@ file where event.action in ("creation", "overwrite") and process.pid != 4 and
   file.path :
     ("C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Templates\\Normal.dotm",
      "C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Excel\\XLSTART\\PERSONAL.XLSB") and file.size > 0 and
+  not process.thread.Ext.call_stack_summary in
+                        ("sysfer.dll|apphelp.dll|kernelbase.dll|migcore.dll|loadstate.exe|kernel32.dll|ntdll.dll",
+                         "ntdll.dll|apphelp.dll|kernelbase.dll|migcore.dll|loadstate.exe|kernel32.dll|ntdll.dll") and
   not process.executable : ("?:\\Windows\\System32\\svchost.exe",
                             "?:\\Windows\\explorer.exe",
                             "?:\\Program Files\\Citrix\\User Profile Manager\\UserProfileManager.exe",
@@ -29,11 +32,12 @@ file where event.action in ("creation", "overwrite") and process.pid != 4 and
                             "?:\\Program Files (x86)\\Laplink PCmover\\PCmoverHost.exe",
                             "?:\\Windows\\System32\\dllhost.exe",
                             "C:\\Windows\\System32\\cmd.exe",
-                            "D:\\SuperGrate*.exe") and
+                            "D:\\SuperGrate*.exe",
+                            "\\Device\\Mup\\*.exe") and
   not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -63,4 +67,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"

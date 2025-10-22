@@ -7,7 +7,7 @@ id = "2e708541-c6e8-4ded-923f-78a6c160987e"
 license = "Elastic License v2"
 name = "Unusual Network Connection via RunDLL32"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -15,10 +15,7 @@ sequence by process.entity_id with maxspan=5m
    not (process.code_signature.subject_name == "Teramind Inc." and
         process.code_signature.trusted == true and process.Ext.token.integrity_level_name == "system" and
         process.args == "/update" and process.parent.name == "tmagentsvc.exe") and
-   not process.args :
-            ("C:\\Windows\\system32\\rundll32.exe  C:\\Windows\\system32\\PcaSvc.dll,PcaPatchSdbTask",
-             "C:\\Windows\\System32\\rundll32.exe  C:\\Windows\\System32\\LogiLDA.dll,LogiFetch",
-             "C:\\windows\\system32\\rundll32.exe  cryptext.dll,CryptExtOpenCAT *")]
+   not process.args : "C:\\Windows\\system32\\rundll32.exe  *,*"]
   [network where event.action == "connection_attempted" and process.name : "rundll32.exe"]
 '''
 

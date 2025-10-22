@@ -8,13 +8,13 @@ id = "3121956f-8c0b-40ef-b98d-7b7b0ab02d2e"
 license = "Elastic License v2"
 name = "Potential Command and Control via Windows Scripts"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id
  [process where event.action == "start" and
   process.pe.original_file_name : ("wscript.exe", "AutoIt*.exe") and
-  not process.Ext.token.integrity_level_name == "system"]
+  not process.Ext.token.integrity_level_name == "system" and not process.args : "\\\\*\\netlogon\\*.vbs"]
  [network where
   event.action == "connection_attempted" and network.direction == "egress" and network.transport == "tcp" and
    process.uptime >= 300 and source.port >= 49152 and

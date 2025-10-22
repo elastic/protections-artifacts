@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Descendant Process Execution via Windows Run"
 os_list = ["windows"]
 reference = ["https://blog.sekoia.io/clickfake-interview-campaign-by-lazarus/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,8 @@ process where event.action == "start" and
  not (process.name : "wscript.exe" and process.args : ("*\\Program Files\\*", "C:\\Windows\\system32\\slmgr.vbs", "\\\\*")) and
  not (process.name : "msiexec.exe" and process.args : ("/log", "/passive", "/L*V", "WAZUH_AGENT_GROUP=default", "/x", "D:\\*.msi", "/a", "/uninstall", "/unregister", "/regserver", "USERDOMAIN*", "C:\\Windows\\Temp\\*", "/I{*", "TOKEN=*")) and 
  not process.working_directory : ("?:\\", "?:\\Program Files*", "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\") and 
- not process.executable : "C:\\Program Files\\*\\curl.exe"
+ not process.executable : ("C:\\Program Files\\*\\curl.exe", "\\Device\\Mup\\*.exe") and
+ not process.parent.executable :  ("\\Device\\Mup\\*.exe", "D:\\*.exe")
 '''
 
 min_endpoint_version = "8.10.0"

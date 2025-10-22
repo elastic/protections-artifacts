@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Curl or Wget Egress Network Connection via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+shell"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=3s
@@ -44,6 +44,7 @@ sequence with maxspan=3s
        "nice -10 /opt/aws/discovery/update", "xargs -n 1 curl -o lpsc -L", "/usr/bin/ruby /usr/bin/rake run:server_hooks",
        "nohup ./update2.sh"
      ) or
+     process.parent.command_line in ("/bin/sh -c nice -n 15 $HOME/bin/cron.pl > /dev/null 2>&1", "/bin/sh /etc/cron.daily/rkhunter") or
      process.command_line like ("*/home/linuxbrew/.linuxbrew/*", "*Homebrew*", "*webhook*") or
      process.args like ("/usr/lib/jvm/*", "/root/.forge/provision-*.sh", "/usr/src/ucrm/scripts/update-certificates.sh", "/etc/periodic/weekly/update_mmdb.sh") or
      (process.name == "nohup" and process.command_line like "nohup /usr/*/*.sh") or

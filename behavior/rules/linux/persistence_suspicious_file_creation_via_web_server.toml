@@ -7,7 +7,7 @@ id = "a67ef648-f04e-475c-8f53-a2db038ee834"
 license = "Elastic License v2"
 name = "Suspicious File Creation via Web Server"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -43,7 +43,7 @@ sequence by process.entity_id with maxspan=3s
      file.name like~ "cookie*.txt" or
      file.path like ("/tmp/requestdir/*", "/var/www/html/storage*", "/var/www/*/Cache/*", "/var/www/*/cache/*") or
      file.extension like ("log", "*-*-*", "webm") or
-     process.executable like~ "root/miniconda3/bin/python*"
+     process.executable like~ "/root/miniconda3/bin/python*"
    )
   ]
 '''

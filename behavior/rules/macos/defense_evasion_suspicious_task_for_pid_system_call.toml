@@ -15,7 +15,7 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 process where event.action == "process_open" and
@@ -34,7 +34,10 @@ process where event.action == "process_open" and
   not (startswith~(process.parent.executable, Target.process.executable) or 
    startswith~(process.executable, Target.process.executable)) and 
   not process.hash.sha256 : ("d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a",
-                             "bee1a00ffb1c4b7c2c4784a1fdcb849dc7853b9deb5173ff4c5a08209c84bc26")
+                             "bee1a00ffb1c4b7c2c4784a1fdcb849dc7853b9deb5173ff4c5a08209c84bc26") and 
+  not (process.executable like "/Users/*/micromamba/envs/grid/bin/python3.11" and Target.process.executable == "/bin/bash") and 
+  not (process.executable like "/Users/*/.local/share/uv/python/cpython-*-macos-aarch64-none/bin/python*" and Target.process.executable like "/Users/*/Code/eis-ray/.venv/lib/python*/site-packages/ray/core/src/ray/gcs/gcs_server") and 
+  not (process.executable like "/Users/*/anaconda?/bin/python*" and Target.process.executable like "/Users/*/anaconda?/envs/python*/bin/python*")
 '''
 
 min_endpoint_version = "8.4.0"

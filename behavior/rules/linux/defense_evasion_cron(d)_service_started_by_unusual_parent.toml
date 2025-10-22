@@ -7,7 +7,7 @@ id = "3ee903d9-6839-48d6-9437-3823b77bbeaa"
 license = "Elastic License v2"
 name = "Cron(d) Service Started by Unusual Parent"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemctl" and
@@ -19,10 +19,11 @@ process.parent.executable != null and not (
   ) or
   process.parent.executable in (
     "/opt/deepfence/start_deepfence_agent.sh", "/usr/bin/monit", "/usr/local/bin/gluster-client-toolkit", "/usr/bin/puppet",
-    "/opt/puppetlabs/puppet/bin/ruby"
+    "/opt/puppetlabs/puppet/bin/ruby", "/usr/local/sbin/devprom-restore", "/usr/bin/monit"
   ) or
   process.parent.executable like ("/opt/eset/*", "/opt/monit/monit-*/bin/monit") or
-  process.parent.command_line like ("/usr/bin/python*", "/home/*/.ansible/tmp/ansible-tmp-*")
+  process.parent.command_line like ("/usr/bin/python*", "/home/*/.ansible/tmp/ansible-tmp-*") or
+  process.parent.args == "/usr/bin/deb-systemd-invoke"
 )
 '''
 

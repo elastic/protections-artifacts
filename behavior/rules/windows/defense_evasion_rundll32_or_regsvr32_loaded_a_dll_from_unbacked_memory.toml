@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id
@@ -31,7 +31,8 @@ sequence by process.entity_id
                      ("?:\\Program Files\\Royal TS V6\\RoyalTS.exe",
                       "?:\\Program Files (x86)\\Kaarya LLC\\myKaarma Desktop\\KaarmaDesktop.exe",
                       "?:\\Program Files (x86)\\Steam\\steamapps\\common\\Sun Haven\\Sun Haven.exe",
-                      "?:\\Program Files\\Symantec\\Symantec Endpoint Protection\\*\\Bin64\\ccSvcHst.exe") and
+                      "?:\\Program Files\\Symantec\\Symantec Endpoint Protection\\*\\Bin64\\ccSvcHst.exe",
+                      "?:\\Program Files (x86)\\VCOM\\VcomConsole.exe") and
 
   not (process.args : "--zoam=IndexCigar\\license.dat" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and 
   not (process.name : "rundll32.exe" and 

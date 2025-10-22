@@ -10,12 +10,12 @@ os_list = ["windows"]
 reference = [
     "https://qtechbabble.wordpress.com/2020/06/26/use-pendingfilerenameoperations-registry-key-to-automatically-delete-a-file-on-reboot/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 registry where process.name != null and
  registry.value : "AllowProtectedRenames" and registry.data.strings : "1" and 
- not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (86)\\*") and 
+ not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (86)\\*", "\\Device\\Mup\\lansweeper\\*$\\uninstall_flash_player.exe") and
  not (process.code_signature.status : "trusted" and not process.code_signature.subject_name : "Microsoft*")
 '''
 

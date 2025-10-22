@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -74,7 +74,8 @@ sequence by process.entity_id with maxspan=2m
                     "ctfmon.exe /n", "\"\\\\*",
                     "rundll32.exe C:\\WINDOWS\\system32\\advpack.dll,DelNodeRunDLL32*",
                     "\"C:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe\"  /background",
-                    "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -ToastActivated"))
+                    "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -ToastActivated",
+                    "Powershell.exe -NoProfile -ExecutionPolicy ByPass -WindowStyle Hidden -file C:\\*\\RunOnce\\Logon.ps1"))
    )
   ]
 '''

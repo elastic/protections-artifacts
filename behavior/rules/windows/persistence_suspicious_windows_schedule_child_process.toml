@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -72,7 +72,9 @@ process where event.action == "start" and
                "fb0ecac0bd7b8f3d81dffb359fb1449fc3cb74a15a1f53a568c1c5ee5a8966a9", 
                "cf635f97d0a3bea30f348277777f36db6b14aea0e7711471e5fb2e13167b80cd", 
                "22e7528e56dffaa26cfe722994655686c90824b13eb51184abfe44d4e95d473f",
-               "97fc042ea077118a6bb19641d7c1e8fb20e6d1714f2234110f88a47722bcf75e") and
+               "97fc042ea077118a6bb19641d7c1e8fb20e6d1714f2234110f88a47722bcf75e",
+               "47ffb3d3e793d11a029d83f77e7c02d91af275116ef8f28a5699b64b6386c91c",
+               "02a31b0fcb2603643518fb1a164a7a2abe8f3f494daf88ebc3d93c9b98a50e46") and
 
   not process.executable :
              ("?:\\Users\\*\\AppData\\Local\\GoToMeeting\\*\\g2mupload.exe",
@@ -83,7 +85,11 @@ process where event.action == "start" and
   not (process.name : "powershell.exe" and
        process.args : ("Invoke-WebRequest http://sms.revize.com/*", "Import-Module PSScheduledJob; $jobDef*", "$w = $env:APPDATA*",
                        "[Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes('Newtonsoft.Json.dll*",
-                       "$f=$env:APPDATA+'\\Browser Assistant\\*")) and
+                       "$f=$env:APPDATA+'\\Browser Assistant\\*",
+                       "& ((Get-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop').SCRNSAVE.EXE)",
+                       "($wc.DownloadString(https://install.mondoo.com/ps1));",
+                       "$h=Get-Content -Path 'BE.txt' -Raw;[byte[]]$bytes=($h -split '(.{2})' -ne '' -replace '^', '0X');[Reflection.Assembly]::Load($bytes);[WebCompanion.BrowserExtension.S]::Start()",
+                       "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value 'C:\\*.jpg'\nSet-ItemProperty -Path 'HKCU:\\Control Panel\\Desktop' -Name WallpaperStyle -Value 2\nRUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters")) and
   not (process.name : ("rundll32.exe", "regsvr32.exe") and
        process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\windows\\system32\\mmcndmgr.dll", 
                        "dfshim.dll,ShOpenVerbShortcut", "Files\\McAfee\\Agent\\\\ma_aac_service.dll,", 
@@ -94,7 +100,9 @@ process where event.action == "start" and
                        "C:\\Users\\Public\\InvisibleTimerbatch.bat",
                        "Client\\props\\schedule-nojava.cmd",
                        "rmdir")) and
-  not (process.name : "mshta.exe" and process.args : "\"& '\\\\*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1'\"\", 0 : window.close)")
+  not (process.name : "mshta.exe" and
+       process.args : ("*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1*",
+                       "*\\Program Files (x86)\\combit\\*\\ServicePackNotification.ps1*"))
 '''
 
 min_endpoint_version = "8.4.0"

@@ -1,0 +1,54 @@
+[rule]
+description = "Identifies a list of suspicious LDAP queries often used by reconnaissance tools to enumerate domain user accounts."
+id = "c3b3cd2e-04f5-457f-8d69-f92468f22eae"
+license = "Elastic License v2"
+name = "Domain Accounts Enumeration via LDAP Search"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1087/002/"]
+version = "1.0.2"
+
+query = '''
+api where process.Ext.api.name == "ldap_search" and not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+ not process.executable :
+             ("?:\\Program Files\\Azure Advanced Threat Protection Sensor\\*\\Microsoft.Tri.Sensor.exe",
+              "?:\\Windows\\ADFS\\Microsoft.IdentityServer.ServiceHost.exe") and
+ process.Ext.api.parameters.search_filter : (
+  "(&(samAccountType=805306368)(samAccountName=?)",
+  "(&(objectCategory=person)(lastLogon>=*",
+  "(&(objectCategory=person)(objectClass=user)(lastLogon>=*",
+  "(&(objectCategory=person)(objectClass=user)(directReports=?)(!(manager=?)))"
+ )
+'''
+
+min_endpoint_version = "9.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1087"
+name = "Account Discovery"
+reference = "https://attack.mitre.org/techniques/T1087/"
+[[threat.technique.subtechnique]]
+id = "T1087.002"
+name = "Domain Account"
+reference = "https://attack.mitre.org/techniques/T1087/002/"
+
+
+[[threat.technique]]
+id = "T1482"
+name = "Domain Trust Discovery"
+reference = "https://attack.mitre.org/techniques/T1482/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "9.1.0"

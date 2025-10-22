@@ -1,7 +1,8 @@
 [rule]
 description = """
-Identifies attempts to enumerate the state of keyboard keys and the call is coming from Python, AutoIt or LUA libraries.
-Adversaries may log user keystrokes to intercept credentials or other information from the user as the user types them.
+Identifies attempts to enumerate the state of keyboard keys and the call is coming from Python, AutoIt, NodeJs or LUA
+libraries. Adversaries may log user keystrokes to intercept credentials or other information from the user as the user
+types them.
 """
 id = "ca00acf2-6e1b-4823-8fdd-7339ffa7079f"
 license = "Elastic License v2"
@@ -11,7 +12,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1056/001/",
     "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -23,7 +24,7 @@ api where
   ) and
   (
    process.thread.Ext.call_stack_final_user_module.name : ("libffi*.dll", "python*.dll", "luacom.dll", "lua?.?.dll", "lua??.dll") or 
-   process.code_signature.subject_name == "AutoIt Consulting Ltd"
+   process.code_signature.subject_name in ("AutoIt Consulting Ltd", "OpenJS Foundation")
   ) and
 
   not (process.code_signature.subject_name == "NV Access Limited" and process.code_signature.trusted == true) and

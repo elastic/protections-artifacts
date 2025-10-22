@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -33,7 +33,12 @@ sequence by process.entity_id with maxspan=5s
      process.name == "node" or
      process.parent.executable : ("/var/lib/dpkg/*", "/var/lib/docker/*", "/usr/bin/supervisord") or
      process.parent.name == "pip3" or
-     process.executable == "/opt/intel/oneapi/intelpython/python3.12/bin/python"
+     process.executable == "/opt/intel/oneapi/intelpython/python3.12/bin/python" or
+     process.parent.args like (
+       "/usr/lib/update-notifier/update-motd-updates-available", "/usr/bin/dpkg", "/usr/sbin/dpkg-preconfigure --apt || true",
+       "/usr/sbin/needrestart", "test -x /usr/lib/needrestart/apt-pinvoke && /usr/lib/needrestart/apt-pinvoke || true", 
+       "/var/lib/dpkg/*"
+     )
    )
   ]
   [network where event.action == "connection_attempted" and event.type == "start" and not (

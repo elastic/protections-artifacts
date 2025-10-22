@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 library where dll.pe.original_file_name : "ntdll.dll" and
@@ -18,6 +18,7 @@ library where dll.pe.original_file_name : "ntdll.dll" and
  not dll.path : ("?:\\Windows\\SysWOW64\\ntdll.dll",
                  "?:\\Windows\\System32\\ntdll.dll",
                  "?:\\Windows\\System32\\ntdll.dll.???",
+                 "?:\\Windows\\SyChpe32\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\amd64_microsoft-windows-ntdll_*\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\wow64_microsoft-windows-ntdll_*\\ntdll.dll",
                  "?:\\Windows\\WinSxS\\Temp\\InFlight\\*\\amd64_microsoft-windows-ntdll_*\\ntdll.dll",

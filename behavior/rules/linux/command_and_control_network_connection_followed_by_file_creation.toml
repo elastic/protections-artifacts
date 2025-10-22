@@ -8,7 +8,7 @@ id = "08ad673a-7f99-417e-8b93-a79d4faeeed3"
 license = "Elastic License v2"
 name = "Network Connection Followed by File Creation"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -37,11 +37,12 @@ sequence by process.entity_id with maxspan=5s
         "/usr/local/ltechagent*", "/var/lib/cloudendure/agent_keystore_temp", "/var/cache/yum/*",
         "/run/aws-node/ipam.json.tmp*", "/run/systemd/journal/streams/.*"
       ) or
+      (process.executable == "/tmp/terraform" and file.path like "/tmp/terraform-provider*") or 
       process.name in ("podman", "minikube", "logrotate", "java", "aws-k8s-agent", "grafana", "postman") or
       process.executable : (
         "/etc/cron.daily/logrotate", "/etc/update-motd.d/50-motd-news", "/etc/cron.hourly/0yum-hourly.cron",
         "/etc/cron.hourly/BitdefenderRedline", "/tmp/token_handler", "/tmp/.sentry-cli*.exe", 
-        "/etc/cron.daily/0yum-daily.cron"
+        "/etc/cron.daily/0yum-daily.cron", "/etc/init.d/fortiedr"
       )
     )
   ]

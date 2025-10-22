@@ -8,17 +8,23 @@ license = "Elastic License v2"
 name = "Suspicious Execution via a Hidden Process"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name : ".*" and process.args : (
   "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*", "*TCPSocket.open*",
   "*io.popen*", "*os.execute*", "*fsockopen*", "*disown*"
-)
+) and
+not process.parent.command_line == "runc init"
 '''
 
 min_endpoint_version = "7.15.0"
 optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

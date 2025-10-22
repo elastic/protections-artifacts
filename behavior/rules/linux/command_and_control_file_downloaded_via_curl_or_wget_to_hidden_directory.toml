@@ -8,7 +8,7 @@ id = "dc1cee03-4923-4c6b-b00b-8a5c323bb753"
 license = "Elastic License v2"
 name = "File Downloaded via Curl or Wget to Hidden Directory"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -31,7 +31,8 @@ process where event.type == "start" and event.action == "exec" and (
     "https://release-registry.services.sentry.io/apps/sentry-cli/*package=sentry-cli",
     "https*github*astral-sh/rye/*",
     "https://github.com/codecrafters-io/*"
-  )
+  ) or
+  process.working_directory like ("/tmp/wbrashear/easybuild/*", "/var/tmp/pamac-build-*")
 )
 '''
 

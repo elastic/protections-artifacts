@@ -8,7 +8,7 @@ id = "0898f7c9-f667-4db1-a1ce-ddbf61a32361"
 license = "Elastic License v2"
 name = "Suspicious Communication via Mail Protocol"
 os_list = ["windows"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=3m
@@ -32,6 +32,7 @@ sequence by process.entity_id with maxspan=3m
                          "C:\\Users\\*\\AppData\\Local\\Temp\\Temp?_*\\*",
                          "C:\\Users\\*\\AppData\\Local\\Temp\\BNZ.*")
   ) and
+  not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\Common7\\IDE\\CommonExtensions\\Platform\\Debugger\\VsDebugConsole.exe" and
   not process.executable :
               ("?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe",
                "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\NisSrv.exe",

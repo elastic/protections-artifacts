@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
@@ -29,14 +29,7 @@ sequence by process.entity_id with maxspan=3s
      ) or
      (process.parent.executable == "/etc/update-motd.d/50-motd-news" and process.args == "https://motd.ubuntu.com") or
      (process.parent.executable == "/etc/update-motd.d/motd.sh" and process.command_line == "curl -s ifconfig.me") or
-     (
-       process.parent.executable == "/etc/update-motd.d/50-amazon-linux-extras-news" and
-       process.command_line == "python -m amazon_linux_extras system_motd"
-     ) or
-     (
-       process.executable == "/etc/update-motd.d/50-amazon-linux-extras-news" and
-       process.command_line == "/bin/bash /etc/update-motd.d/50-amazon-linux-extras-news" 
-     )
+     process.parent.executable == "/etc/update-motd.d/50-amazon-linux-extras-news"
    )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and destination.ip != null and not (

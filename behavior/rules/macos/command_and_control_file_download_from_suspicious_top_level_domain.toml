@@ -1,0 +1,59 @@
+[rule]
+description = """
+Identifies network connections to commonly abused Top Level Domains followed by the immdiate creation of a Python, Shell
+Script, Applescript, or Binary. This may indicate an attempt to establish initial access or command and control by a
+malicious payload.
+"""
+id = "9a3acafe-2ecd-487f-8c1f-1697fe9d33c7"
+license = "Elastic License v2"
+name = "File Download from Suspicious Top Level Domain"
+os_list = ["macos"]
+version = "1.0.11"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+[network where event.type == "start" and
+  destination.domain like~ ("*.team", "*.team.", "*.lol", "*.lol.", "*.app", "*.app.", "*.kr", "*.kr.", "*.ke", "*.ke.", "*.nu", "*.nu.", "*.space", "*.space.", "*.capital", "*.capital.", "*.in", "*.in.", "*.cfd", "*.cfd.", "*.online", "*.online.", 
+                            "*.info", "*.info.", "*.top", "*.top.", "*.buzz", "*.buzz.", "*.xyz", "*.xyz.", "*.rest", "*.rest.", "*.ml", "*.ml.", "*.cf", "*.cf.", "*.gq", "*.gq.", "*.ga", "*.ga.", "*.onion", "*.onion.",
+                            "*.network", "*.network.", "*.monster", "*.monster.", "*.marketing", "*.marketing.", "*.cyou", "*.cyou.", "*.quest", "*.quest.", "*.cc", "*.cc.", "*.bar", "*.bar.", "*.click", "*.click.", "*.cam", "*.cam.",
+                            "*.surf", "*.surf.", "*.tk", "*.tk.", "*.shop", "*.shop.", "*.club", "*.club.", "*.icu", "*.icu.", "*.pw", "*.pw.", "*.ws", "*.ws.", "*.rest", "*.rest.", "*.hair", "*.hair.",
+                            "*.mom", "*.mom.", "*.beauty", "*.beauty.", "*.boats", "*.boats.", "*.online", "*.online.", "*.fun", "*.fun.", "*.life", "*.life.", "*.store", "*.store.")]
+[file where event.action == "modification" and file.extension in ("py", "sh", "scpt", "pyc") and file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/private/var/tmp/*", "/var/tmp/*", "/private/var/root/*", "/var/root/*") and
+  not file.path like~ "/private/var/folders/*" and
+  not file.extension in ("so", "dylib")]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

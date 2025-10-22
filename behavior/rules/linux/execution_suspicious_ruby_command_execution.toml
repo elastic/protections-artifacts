@@ -8,7 +8,7 @@ id = "a3a3b49c-c135-4959-8a1b-33392bb60991"
 license = "Elastic License v2"
 name = "Suspicious Ruby Command Execution"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -19,7 +19,7 @@ process.args like "-e*" and process.command_line like~ (
   "*net/http*", "*socket*", "*open-uri*", "*pack(*", "*unpack(*"
 ) and
 not (
-  process.working_directory like~ ("/etc/puppet/rack", "/builds/*") or
+  process.working_directory like~ ("/etc/puppet/rack", "/builds/*", "/var/tmp/portage/*") or
   process.command_line like "*rails_env*" or 
   process.parent.command_line in ("emacs --daemon", "runc init") or
   process.parent.name in ("emacs-gtk", "mmonit", "make") or

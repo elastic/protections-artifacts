@@ -20,9 +20,9 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.99 | fbb1608127b6680d0d84a84121e3defc144d15f539a0c7aba5abba2011ba24a4 |
-| production-rules-macos-v1 | 1.0.99 | 0147bbf48b95f36330a528077cad9c665e4a5f4b4c98a4c47a7633318715828e |
-| production-rules-windows-v1 | 1.0.99 | 608fb0db8fa37493c5cdcbb4e319ff911937bb8b021efc3efb7d58d1cf88d3bf |
+| production-rules-linux-v1 | 1.0.100 | 1d2cf747b4ef21f397a06f6f3c61d48ad88ff3b923690ab411a2bb183f3cb8f6 |
+| production-rules-macos-v1 | 1.0.100 | 100640ea6af1be6250e54209b4043a18e5ddd95232ea15fb1a30d5a499047af6 |
+| production-rules-windows-v1 | 1.0.100 | 4d36c59bfb415550c22495b3800dfee4be6931704baaf17ae5a8d44d30ad83ff |
 
 ### Rules Summary per Tactic
 

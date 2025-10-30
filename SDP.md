@@ -7,7 +7,8 @@ The Safe Deployment Practices (SDP) employed by Elastic Defend ensure its stable
 - **Continuous Monitoring and Rollback**: We continuously monitor the health and performance of Elastic Defend deployments. Throughout the deployment window, we track key metrics to measure the health of the update. Our system automatically recognizes stability issues or other abnormalities. In the event of an issue, the deployment is blocked and all hosts return to the known stable artifact. 
 - [Customer Empowerment and Control](#customer-control): We believe in giving our customers control over their security environment. We provide features that allow customers to manage and control updates according to their needs and risk tolerance.
 
-### Rigorous Testing
+## Rigorous Testing
+
 Elastic Defend employs a multi-layered testing approach to ensure the quality and stability of our releases:
 
 - **Unit Tests**: Each artifact repository contains unit tests to ensure that artifacts are correctly formatted and logically sound.

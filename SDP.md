@@ -15,7 +15,8 @@ Elastic Defend employs a multi-layered testing approach to ensure the quality an
 - **Full End-to-End Testing**: We perform full end-to-end testing for every artifact update on real systems. This process simulates real-world scenarios by detonating known malware and goodware across all supported platforms (Windows, Linux, macOS). It identifies any instabilities before release.
 - **Diagnostic Mode Testing:** To further reduce the risk of false positives, we utilize diagnostic mode testing. Before any protections are deployed in an active mode, they are run in passive ("diagnostic") mode. This allows us to collect telemetry and fine-tune new protections without impacting customer systems.
 
-### Staged Artifact Deployments
+## Staged Artifact Deployments
+
 All Elastic Defend artifact updates are shipped through our staged deployment system to mitigate disruptions caused by unstable updates.
 
 - **Gradual Rollout**: Artifact updates are initially applied to a set of Elastic internal endpoints. Next, the updates are applied to a slowly increasing number of customer machines over a gradual deployment period.

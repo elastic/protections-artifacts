@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 sequence with maxspan=5m
@@ -111,7 +111,8 @@ sequence with maxspan=5m
                    "f943329f6399ecd418268484bc61d98887b7fc8454c2409a79adc3b965ae75a0",
                    "ae27abffcc06755840792abb83a67b847782afa01bb26c2631671ed3932930b6",
                    "6af431b97e8571a2c072a746a44b5e0dcb3685268f75459e789063e03b7698cb",
-                   "b31ed4807259472689f984e348f10e15125fae9df1298e6befddd5411a2a7dda") and
+                   "b31ed4807259472689f984e348f10e15125fae9df1298e6befddd5411a2a7dda",
+                   "d0916c34fb5a3580baf74f401277ceb480eec5b4e0a61aea3400f2491922019a") and
     not (process.name : "powershell.exe" and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.parent.executable : "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe" and process.name : "powershell.exe") and
     process.pe.original_file_name != "Adobe Installer" and

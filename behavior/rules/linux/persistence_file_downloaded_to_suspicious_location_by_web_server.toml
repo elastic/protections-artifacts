@@ -8,7 +8,7 @@ id = "30e19006-e1b4-4328-9553-b0284c5cec00"
 license = "Elastic License v2"
 name = "File Downloaded to Suspicious Location by Web Server"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -40,7 +40,9 @@ process.command_line like (
   (
     process.parent.executable == "/opt/local/python-3.12.3/bin/python3" and
     process.parent.args == "tools/configure_dependencies.py"
-  )
+  ) or
+  (process.parent.name == "java" and process.command_line like~ "*/home/asterisk/audio/WIP/*.txt") or
+  process.parent.args == "/usr/local/bin/d42grep"
 )
 '''
 

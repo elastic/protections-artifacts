@@ -10,17 +10,18 @@ id = "74d77df0-c4ef-41d8-a07a-c37ef2ea91ad"
 license = "Elastic License v2"
 name = "Untrusted or Unsigned Binary Executed via Launch Service"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=30s
 [persistence where event.action == "launch_daemon" and (process.name in ("cp", "mv", "sed") or (process.code_signature.trusted == false or process.code_signature.exists == false)) and
-  Persistence.args like~ ("/Library/Application Support/*", "/Applications/*", "/Users/*/Library/Application Support/*")] as event0
+  Persistence.args like~ ("/Library/Application Support/*", "/Applications/*", "/Users/*/Library/Application Support/*") and
+  not Effective_process.executable like "/Library/Kandji/Kandji Agent.app/Contents/Helpers/Kandji Library Manager.app/Contents/MacOS/kandji-library-manager"] as event0
 [process where event.type == "start" and event.action == "exec" and startswith~(event0.Persistence.args, process.executable) and
   (process.code_signature.exists == false or process.code_signature.trusted == false)]
 '''
 
-min_endpoint_version = "8.10.2"
+min_endpoint_version = "8.11.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -51,4 +52,4 @@ name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
 
 [internal]
-min_endpoint_version = "8.10.2"
+min_endpoint_version = "8.11.0"

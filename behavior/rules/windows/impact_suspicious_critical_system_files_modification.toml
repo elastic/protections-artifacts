@@ -7,7 +7,7 @@ id = "e2c925f7-fccb-4199-a345-cab12acedab0"
 license = "Elastic License v2"
 name = "Suspicious Critical System Files Modification"
 os_list = ["windows"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 file where process.pid != 4 and process.executable != null and
@@ -29,7 +29,7 @@ file where process.pid != 4 and process.executable != null and
               "C:\\Windows\\System32\\Boot\\winload.efi",
               "C:\\Windows\\System32\\Boot\\winload.exe",
               "C:\\Windows\\WinSxS\\amd64_microsoft-windows-os-kernel_*\\ntoskrnl.exe"))
-) and not process.executable : ("C:\\Windows\\System32\\poqexec.exe")
+) and not process.executable : ("C:\\Windows\\System32\\poqexec.exe", "C:\\Windows\\WinSxS\\*\\TiWorker.exe")
 '''
 
 min_endpoint_version = "7.15.0"

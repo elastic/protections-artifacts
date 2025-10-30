@@ -7,7 +7,7 @@ id = "e7d63d66-2d46-4051-a304-4c34f7bbf11d"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Syscall"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -27,6 +27,8 @@ api where process.Ext.api.name == "VirtualProtect" and
                                           "WIBU-SYSTEMS AG",  "Carbon Black, Inc.", "Adobe Inc.", "Adobe Systems, Incorporated",
                                           "Mozilla Corporation", "Google LLC", "Fasoo Co., Ltd.", "AhnLab, Inc.",
                                           "Data Encryption Systems Ltd")) and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "ebdf952adb27745e16e033f3364ce090833e6ecdafa450241793b6f290410fe9" and
+ not process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\tmumh\\*\\tmmon64.dll" and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
                                ("c:\\program files\\common files\\microsoft shared\\clicktorun\\appvisvsubsystems64.dll",
                                 "c:\\program files\\common files\\mcafee\\systemcore\\mfehcthe.dll",

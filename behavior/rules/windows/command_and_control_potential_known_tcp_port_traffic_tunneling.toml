@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Known TCP Port Traffic Tunneling"
 os_list = ["windows"]
 reference = ["https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.executable != null and
@@ -42,7 +42,8 @@ api where process.Ext.api.name == "connect" and process.executable != null and
                            "C:\\Program Files (x86)\\Symbol Technologies\\Staging_Solution\\Symbol.StageNow.V2Client.exe",
                            "C:\\Program Files (x86)\\Printer Properties Pro\\Printer Installer Client\\bin\\SNMP\\PrinterInstaller_SNMPMonitor.exe",
                            "C:\\Program Files\\Veritas\\Backup Exec\\pvlsvr.exe",
-                           "C:\\Windows\\LTSvc\\LTSVC.exe") and
+                           "C:\\Windows\\LTSvc\\LTSVC.exe",
+                           "?:\\Program Files\\Microsoft VS Code\\Code.exe") and
  not (process.parent.executable : "C:\\Windows\\System32\\wsmprovhost.exe" and
       process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe" and
       process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v*\\powershell.exe\" -Version ?.? -s -NoLogo -NoProfile") and 

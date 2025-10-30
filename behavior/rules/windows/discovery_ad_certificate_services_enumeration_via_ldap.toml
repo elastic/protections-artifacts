@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "AD Certificate Services Enumeration via LDAP"
 os_list = ["windows"]
 reference = ["https://posts.specterops.io/bofhound-ad-cs-integration-91b706bc7958"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 api where process.Ext.api.name == "ldap_search" and
@@ -25,7 +25,8 @@ api where process.Ext.api.name == "ldap_search" and
              ("?:\\Program Files\\Azure Advanced Threat Protection Sensor\\*\\Microsoft.Tri.Sensor.exe",
               "?:\\Windows\\System32\\lsass.exe",
               "?:\\Windows\\ADFS\\Microsoft.IdentityServer.ServiceHost.exe",
-              "?:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe")
+              "?:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe",
+              "?:\\Program Files\\Semperis\\Management Server\\Semperis.TaskServerSvcHost.exe")
 '''
 
 min_endpoint_version = "9.1.0"

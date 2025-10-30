@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/windows/security/threat-protection/microsoft-defender-smartscreen/microsoft-defender-smartscreen-overview",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=1m
@@ -72,7 +72,8 @@ sequence with maxspan=1m
            "Foxit Software Incorporated",
            "Samsung Electronics CO., LTD.",
            "REFINITIV US LLC",
-           "WEPA, INC.") and
+           "WEPA, INC.",
+           "Wolters Kluwer United States INC.") and
        process.code_signature.trusted == true) and
   not (process.name : "rundll32.exe" and
        process.args :

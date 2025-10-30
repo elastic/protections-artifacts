@@ -4,7 +4,7 @@ id = "e6b77636-53e6-416f-81bb-863b74a896e8"
 license = "Elastic License v2"
 name = "Suspicious Windows Core Module Change"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -47,7 +47,8 @@ api where process.Ext.api.name == "VirtualProtect" and
                                                                     "8a882e25b9a7d49feee49c70ddc816720f82dccf0691076c098959fb3b2f4711",
                                                                     "d0fdfd7102505692385d4061e2a73504727802594434d31136ff4e75cd5072d5",
                                                                     "d3813940007faa5f2b15bd53ac9c1d28032252133257c2f3d8ef87563ae55301",
-                                                                    "028f848c8a44b4831741e01e27624fee9c408f63d859021fff533e87ce19f129") and
+                                                                    "028f848c8a44b4831741e01e27624fee9c408f63d859021fff533e87ce19f129",
+                                                                    "cee9a6ff8026dde09eda9f892c57cc928d42e4a4d22bb740fe38ee6e91797a28") and
  not (_arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows", "Microsoft Corporation", ".NET")) and not process.Ext.api.behaviors == "image_rop") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",

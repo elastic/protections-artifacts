@@ -11,7 +11,7 @@ reference = [
     "https://blog.xpnsec.com/protecting-your-malware/",
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and process.executable != null and 
@@ -63,6 +63,8 @@ process where event.type == "start" and process.executable != null and
                $entry.symbol_info : "?:\\Program Files*\\N-able Technologies\\AVDefender\\*.dll!*")) and
  not (process.executable : "?:\\Windows\\System32\\CastSrv.exe" and process.parent.args : "CCastServerControlInteractiveUser" and
       process.parent.executable : "?:\\Windows\\System32\\CastSrv.exe") and
+ not (process.name : "powershell.exe" and user.id == "S-1-5-19" and process.parent.name : "powershell.exe" and
+      process.parent.args : "& {$OutputEncoding = [Console]::OutputEncoding =[System.Text.Encoding]::UTF8;$scriptFileStream = [System.IO.File]::Open('C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Downloads\\PSScript*") and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "8945ac65488b042530000000448ba05012000065488b042530000000448b6868eb0a448b642460448b6c24644d85ff7409498b0748894598eb0448897598448b")
 '''
 

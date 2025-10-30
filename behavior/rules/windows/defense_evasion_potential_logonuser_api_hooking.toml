@@ -7,7 +7,7 @@ id = "19523b07-b1ce-4b4e-882c-18e9492e9591"
 license = "Elastic License v2"
 name = "Potential LogonUser API Hooking"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect") and
@@ -15,7 +15,8 @@ api where process.Ext.api.name in ("WriteProcessMemory", "VirtualProtect") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
  not process.thread.Ext.call_stack_final_user_module.path in ("c:\\windows\\syswow64\\werfault.exe", "c:\\windows\\system32\\werfault.exe") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
- process.thread.Ext.call_stack_final_user_module.hash.sha256 != "fdfc853b183d682c912e6487a64dbaea98f8d09207a55d0a512e550c988d6273"
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != "fdfc853b183d682c912e6487a64dbaea98f8d09207a55d0a512e550c988d6273" and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\system32\\ntdll.dll!LdrLoadDll*")
 '''
 
 min_endpoint_version = "8.10.0"

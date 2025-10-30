@@ -12,12 +12,13 @@ reference = [
     "https://www.elastic.co/security-labs/inital-research-of-jokerspy",
     "https://www.microsoft.com/security/blog/2022/01/10/new-macos-vulnerability-powerdir-could-lead-to-unauthorized-user-data-access/",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 file where file.name : "TCC.db" and 
 process.executable != null and not
 event.action in ("open", "deletion") and
+not process.code_signature.team_id == "UBF8T346G9" and
 not process.executable like~ (
   "/Applications/Xcode*.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/TCC.framework/Support/tccd",
   "/System/Library/PrivateFrameworks/TCC.framework/*",

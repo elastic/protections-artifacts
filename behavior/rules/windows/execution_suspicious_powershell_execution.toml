@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.46"
+version = "1.0.47"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -106,7 +106,9 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                       "IEX (New-Object Net.WebClient).DownloadString('https://install.demo-toolkit.de/dtkupdater.ps1?apikey=*",
                       "D:\\PowerShell\\webclient.cmd",
                       "Invoke-WebRequest -Uri https://www.7-zip.org/a/7zr.exe -o '7zr.exe';",
-                       "\"& 'C:\\Program Files (x86)\\combit\\*") and
+                      "\"& 'C:\\Program Files (x86)\\combit\\*",
+                      "Get-CimInstance -Namespace root\\wmi -ClassName WmiMonitorID | *",
+                      "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory*") and
 
  not (process.parent.name : "cmd.exe" and
       process.parent.args : ("D:\\PowerShell\\webclient.cmd",  "C:\\Temp\\FST-Robocopy-wEmailNotif.cmd", "C:\\istip-installation\\install.bat")) and

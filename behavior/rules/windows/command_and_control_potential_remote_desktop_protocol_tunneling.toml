@@ -11,7 +11,7 @@ reference = [
     "https://blog.netspi.com/how-to-access-rdp-over-a-reverse-ssh-tunnel/",
     "https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES/blob/4ceed2f4706daf601c212a8f91c113dd85349a2c/Command%20and%20Control/DE_RDP_Tunneling_4624.evtx",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=2m
@@ -34,7 +34,8 @@ sequence with maxspan=2m
                   "C:\\Program Files (x86)\\N-able Technologies\\Windows Agent\\bin\\agent.exe",
                   "C:\\Program Files\\Tenable\\Nessus Agent\\nessus-agent-module.exe",
                   "C:\\Program Files\\Intuit\\QuickBooks Enterprise Solutions *\\CefSharp.BrowserSubprocess.exe",
-                  "C:\\Program Files\\WindowsApps\\DuckDuckGo.DesktopBrowser_*\\WindowsBrowser\\WebView2\\msedgewebview2.exe") and
+                  "C:\\Program Files\\WindowsApps\\DuckDuckGo.DesktopBrowser_*\\WindowsBrowser\\WebView2\\msedgewebview2.exe",
+                  "C:\\Windows\\LTSvc\\LTSVC.exe") and
   not (process.name : "powershell.exe" and
        process.parent.executable : ("C:\\Program Files\\Tychon\\TychonEngine.exe",
                                     "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",

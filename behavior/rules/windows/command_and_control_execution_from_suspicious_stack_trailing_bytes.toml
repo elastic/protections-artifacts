@@ -4,7 +4,7 @@ id = "0a26ccb6-41b9-418d-9314-854aadcb1fba"
 license = "Elastic License v2"
 name = "Execution from Suspicious Stack Trailing Bytes"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 any where event.category in ("library", "api") and
@@ -20,6 +20,8 @@ any where event.category in ("library", "api") and
                                                               "8b4c244c*4c897424204531c0ba0200000048894424604989c1b902000000ff15*",
                                                               "488b5550488b4d58e8d70700004533ff0fb74b0641ffc44883c728443be17288498bc6eb0233c0488b9c24a00000004883c460415f415e415d415c5f5e5dc3cc",
                                                               /* CNH */
+                                                              "85c00f88f300000033c04883c720493bfe*",
+                                                              "*85c0752a488d4424304889442420448b4c24304c8b442450488b542448*",
                                                               "4883c448c3000000*8954241048894c24084883ec48e8*",
                                                               "4883c448c3000000*4885c0744065488b0425300000004889442420488b442420*",
                                                               "89442434e9*488b8c2440010000e8*85c0752?488d4424304889442420*",
@@ -117,7 +119,9 @@ any where event.category in ("library", "api") and
                                                               "0fb745064783c6286a205a3bf872816a006a006affff9424c800000083bdc40000000074268b85c00000008b74180c8b0685c0741633ed456a005553ffd08d76",
                                                               /* GPulse */
                                                               "8bcb8bd585ed74182bf30f1f8400000000008a040e8d49018841ff83ea0175f28d44242450ff7424285553ffd7*",
-                                                              "8b45e4508b4dac51*83c40c8b45ac998b4dc48981c00c00008991c40c0000c745cc000000008d55cc528b45fc8b4804518b55e8528b45e450ff55a8"
+                                                              "8b45e4508b4dac51*83c40c8b45ac998b4dc48981c00c00008991c40c0000c745cc000000008d55cc528b45fc8b4804518b55e8528b45e450ff55a8",
+                                                              /* AdC2 */
+                                                              "8b53544889c631c04839c2740b8a0c07880c0648ffc0ebf00fb7*"
                                                               ))
 '''
 

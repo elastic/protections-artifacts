@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Uncommon Persistence via Registry Modification"
 os_list = ["windows"]
 reference = ["https://www.microsoftpressstore.com/articles/article.aspx?p=2762082&seqNum=2"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 registry where event.action== "modification" and
@@ -39,7 +39,8 @@ registry where event.action== "modification" and
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Internet Explorer\\Extensions\\*\\Exec",
 		 "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Command Processor\\Autorun") and
 
-  not process.executable : "?:\\Program Files (x86)\\ASUS\\OOBERegBackup\\OOBERegBackup.exe"
+  not process.executable : "?:\\Program Files (x86)\\ASUS\\OOBERegBackup\\OOBERegBackup.exe" and
+  not (registry.value == "shell" and registry.data.strings : "C:\\Program Files (x86)\\KioWare Client Platform\\KioWare Client.exe -Shell -LogOffExit")
 '''
 
 min_endpoint_version = "8.0.0"

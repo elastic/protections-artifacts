@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 sequence with maxspan=5m
@@ -154,11 +154,13 @@ sequence with maxspan=5m
 
   not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG", "Elaborate Bytes AG") and process.code_signature.trusted == true) and
 
-  not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe")
+  not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe") and
+
+  not (process.parent.executable : "C:\\Windows\\explorer.exe" and process.parent.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|nsis_tauri_utils.dll")
   ] by process.parent.Ext.real.entity_id
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -193,4 +195,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"

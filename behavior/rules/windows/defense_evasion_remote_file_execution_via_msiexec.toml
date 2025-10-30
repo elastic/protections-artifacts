@@ -13,7 +13,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.guardicore.com/labs/purple-fox-rootkit-now-propagates-as-a-worm/",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 sequence with maxspan=1m
@@ -63,7 +63,8 @@ not process.args :
            "SERVERURL=https://*.apparmor.com",
            "INSTALLARGS=--url=https://*.fleet.us-east-2.aws.elastic-cloud.com:443*",
            "https://cdn.zabbix.com/zabbix/binaries/stable/*.msi",
-           "INSTALLARGS=--url=https://fleet.*--enrollment-token=*") and
+           "INSTALLARGS=--url=https://fleet.*--enrollment-token=*",
+           "?:\\*\\http*.msi") and
 not process.parent.executable :
                      ("C:\\Program Files (x86)\\Novell\\ZENworks\\bin\\ZenworksWindowsService.exe",
                       "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\Updates\\AgentUpgrader.exe",

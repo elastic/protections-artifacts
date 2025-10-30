@@ -1,20 +1,20 @@
 [rule]
 description = """
-Identifies the use of the `mount` command to bind mount a directory to `/proc` in order to hide files or processes from
+Identifies the use of the "mount" command to bind mount a directory to "/proc" in order to hide files or processes from
 detection. This technique is used in the wild by malware samples to evade detection by hiding files or processes from
-security tools that rely on `/proc` to gather information about running processes.
+security tools that rely on "/proc" to gather information about running processes.
 """
 id = "69b41dec-033a-4629-9b1d-dd2c54b507b9"
 license = "Elastic License v2"
 name = "Defense Evasion via Bind Mount"
 os_list = ["linux"]
 reference = ["https://dfir.ch/posts/slash-proc/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mount" and
-process.args in ("-o", "--options") and process.args : "/proc/*" and process.args_count >= 5 and
-not process.args : "/proc/*/*"
+process.args in ("-B", "--bind", "-R", "--rbind", "-M", "--move") and
+process.args : "/proc/*" and process.args_count >= 5 and not process.args : "/proc/*/*"
 '''
 
 min_endpoint_version = "7.15.0"

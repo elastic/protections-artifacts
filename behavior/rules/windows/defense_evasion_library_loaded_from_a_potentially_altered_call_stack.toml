@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Library Loaded From a Potentially Altered Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 library where process.executable != null and
@@ -33,12 +33,13 @@ library where process.executable != null and
                                                  "ntdll.dll|kernelbase.dll|wsmsvc.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll",
                                                  "ntdll.dll|advapi32.dll|system.management.automation.ni.dll|clr.dll|*",
                                                  "ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|dwminit.dll|kernel32.dll|ntdll.dll",
-                                                 "ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|wmidcprv.dll|wmidcom.dll|ntdll.dll|kernel32.dll|ntdll.dll",
+                                                 "ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|*",
+                                                 "ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|seagull_v3_configdispatcher.dll|winspool.drv|printisolationproxy.dll|rpcrt4.dll|combase.dll|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll",
                                                  "ntdll.dll|kernelbase.dll|netjoin.dll|wkssvc.dll|rpcrt4.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll",
                                                  "ntdll.dll|kernelbase.dll|doclient.dll|ucrtbase.dll|kernel32.dll|ntdll.dll",
+                                                 "ntdll.dll|kernelbase.dll|msi.dll|kernel32.dll|ntdll.dll",
                                                  "ntdll.dll|umppc2*.dll|ntdll.dll|kernelbase.dll|combase.dll|qmgr.dll|combase.dll|qmgr.dll|combase.dll|rpcrt4.dll|combase.dll|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll",
-                                                 "ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|devicesoftwareinstallationclient.dll|drvstore.dll|devicesoftwareinstallationclient.dll|drvstore.dll|devicesoftwareinstallationclient.dll|devicesetupmanager.dll|ntdll.dll|kernel32.dll|ntdll.dll",
-                                                 "ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|doclient.dll|rpcrt4.dll|combase.dll|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll",
+                                                 "ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|devicesoftwareinstallationclient.dll|drvstore.dll|devicesoftwareinstallationclient.dll|drvstore.dll|*",
                                                  "ntdll.dll|kernelbase.dll|ucrtbase.dll|msvcp_win.dll|coremessaging.dll|dcomp.dll|windows.ui.xaml.dll|coremessaging.dll|user32.dll|ntdll.dll") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.symbol_info : ("*KernelBase.dll!LoadLibrary*", "*KernelBase.dll+0x*","*ntdll.dll!TpCallbackIndependent*",
@@ -47,7 +48,10 @@ library where process.executable != null and
                    "*KernelBase.dll!FreeLibraryAndExitThread*", "?:\\Users\\*", "?:\\Program Files*", "?:\\ProgramData*",
                    "?:\\*\\Mount*", "\\Device\\Mup*", "D:\\*", "F:\\*", "F:\\*", "I:\\*", "?:\\Windows\\temp\\*",
                    "*ntdll.dll!LdrResolveDelayLoadedAPI*", "*KernelBase.dll!FindFirstFileExW*",
-                   "*ntdll.dll!TpReleaseCleanupGroupMembers*", "*KernelBase.dll!VirtualUnlock*", "*KernelBase.dll!GetCPHashNode*"))
+                   "*ntdll.dll!TpReleaseCleanupGroupMembers*", "*KernelBase.dll!VirtualUnlock*", "*KernelBase.dll!GetCPHashNode*",
+                   "C:\\Windows\\System32\\KernelBase.dll!GetEnvironmentVariableW+*", "C:\\Windows\\System32\\KernelBase.dll!DeviceIoControl*",
+                   "C:\\Windows\\System32\\KernelBase.dll!GetComputerName*", "C:\\Windows\\System32\\KernelBase.dll!CreateProcessInternal*",
+                   "C:\\Windows\\System32\\KernelBase.dll!GetProcAddress*"))
 '''
 
 min_endpoint_version = "8.10.0"

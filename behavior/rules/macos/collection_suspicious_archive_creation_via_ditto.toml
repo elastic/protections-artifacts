@@ -11,7 +11,7 @@ reference = [
     "https://moonlock.com/atomic-macos-stealer",
     "https://medium.com/@dineshdevadoss04/breaking-down-atomic-macos-stealer-amos-8cd5eea56024",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "ditto" and
@@ -19,7 +19,7 @@ process where event.type == "start" and event.action == "exec" and process.name 
  process.args like ("/Users/*", "/private/tmp/*", "/tmp/*", "/var/folders/*") and
  process.args like~ "*.zip*" and
  (process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false) and
- not process.parent.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*") and 
+ not process.parent.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*", "/usr/local/Homebrew/*") and 
  not process.Ext.effective_parent.executable like ("/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", "/opt/homebrew/*")
 '''
 

@@ -12,7 +12,7 @@ reference = [
     "https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 file where event.action != "deletion" and
@@ -22,7 +22,8 @@ file where event.action != "deletion" and
          "?:\\Users\\*\\AppData\\*\\Microsoft OneDrive\\*.dll",
          "?:\\Users\\*\\AppData\\*\\Microsoft\\Teams\\*.dll",
          "?:\\Users\\*\\AppData\\Local\\slack\\app-*\\*.dll",
-         "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\*") and
+         "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\*",
+         "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\User Data\\Well Known Domains\\*\\well_known_domains.dll") and
  process.name : ("winword.exe", "excel.exe", "powerpnt.exe", "MSACCESS.EXE", "MSPUB.EXE", "fltldr.exe", "cmd.exe",
                  "certutil.exe", "mshta.exe", "cscript.exe", "wscript.exe", "curl.exe", "powershell.exe", "pwsh.exe",
                  "mstsc.exe") and

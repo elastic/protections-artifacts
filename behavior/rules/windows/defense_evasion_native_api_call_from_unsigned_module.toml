@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -18,6 +18,7 @@ process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx", "WriteProcessMemo
 process.thread.Ext.call_stack_final_user_module.name != "Unbacked" and process.thread.Ext.call_stack_final_user_module.name != null and
 _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
 not process.thread.Ext.call_stack_final_user_module.protection_provenance like "Kernel*" and
+not (process.executable : "C:\\Windows\\explorer.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\dxgi.dll") and
 not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\assembly\\nativeimages_*.ni.dll",
                                                                "c:\\windows\\microsoft.net\\framework*.dll",
                                                                "?:\\program files (x86)\\*",
@@ -64,7 +65,8 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  "e4aefb3e93a05959581f99378cfb034c5c4bf072063fa82572fe271a835d7c3d",
                                  "3e7873f34404c87d7b2db9f6a460f3caa22a36f093a01ad50494863b392569ce",
                                  "cd2688a74a151b03282388dadb8b6aaca309f2535c8b2b21d1243846d2b259dc",
-                                 "d5006c0d9e14d5c9e96936405c4ad2a6aab4e6756dac16fcbdfffe47efb807dd") and
+                                 "d5006c0d9e14d5c9e96936405c4ad2a6aab4e6756dac16fcbdfffe47efb807dd",
+                                 "182607dfc1170294301053ff004bbc9db5ffa68e5d36d29fe64a22a13d75aeb1") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
 ($entry.trusted == true or $entry.status == "errorExpired") and
 $entry.subject_name in (

@@ -7,7 +7,7 @@ id = "f5bbe671-5351-4566-b708-6e09d1de7dd2"
 license = "Elastic License v2"
 name = "Remote Memory Write to a non Child Process"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and process.executable != null and
@@ -20,7 +20,7 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
               "?:\\Program Files (x86)\\*.exe",
               "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*.exe") and
  not stringcontains~(process.Ext.api.summary, process.name) and
- not process.thread.Ext.call_stack_final_user_module.name : ("kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.protection_provenance : ("Kernel|*", "kernel")) and
  not (process.name : "rundll32.exe" and process.parent.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio\\*\\MSBuild\\Current\\Bin\\Tracker.exe") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name == "Admin By Request ApS") and
@@ -35,7 +35,8 @@ api where process.Ext.api.name == "WriteProcessMemory" and process.executable !=
                                 "\\Windows\\SysWOW64\\*.dll",
                                 "?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll",
                                 "?:\\Windows\\FireEye\\AppMonitorDll.dll",
-                                "?:\\windows\\assembly\\nativeimages_v*\\system.numerics.vectors.ni.dll") and
+                                "?:\\windows\\assembly\\nativeimages_v*\\system.numerics.vectors.ni.dll",
+                                "?:\\windows\\syswow64\\rundll32.exe") and
  not (process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*\\MSBuild\\Current\\Bin\\amd64\\Tracker.exe" and
       process.command_line : "rundll32.exe \"C:\\Program Files (x86)\\MSBuild\\*\\FileTracker\\FileTracker*.dll\",#1") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in

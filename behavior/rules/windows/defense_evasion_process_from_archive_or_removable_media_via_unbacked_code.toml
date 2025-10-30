@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence by user.id with maxspan=3m
@@ -40,7 +40,8 @@ sequence by user.id with maxspan=3m
                             "*mscorlib.ni.dll|microsoft.visualbasic.ni.dll|Unbacked*",
                             "ntdll.dll|kernelbase.dll|kernel32.dll|system.ni.dll|clr.dll|mscorlib.ni.dll|Unbacked",
                             "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|kernel32.dll|Unbacked|kernel32.dll|ntdll.dll") and
-  not (process.code_signature.trusted == true and process.code_signature.subject_name == "Reason Cybersecurity Inc.")
+  not (process.code_signature.trusted == true and process.code_signature.subject_name in ("Reason Cybersecurity Inc.", "Environmental Systems Research Institute, Inc.", "Chaos Software GmbH")) and
+  not process.executable : ("?:\\Program Files (x86)\\*.exe", "?:\\Program Files\\*.exe")
   ] by process.parent.entity_id
 '''
 

@@ -7,7 +7,7 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
@@ -116,7 +116,7 @@ api where
                               "C:\\Program Files (x86)\\Mitel\\MiContact Center\\Applications\\Ignite\\Ignite.exe",
                               "C:\\Program Files (x86)\\QSR Automations\\ConnectSmart\\KitchenReportViewer\\Bin\\ReportViewer.exe") and
     not (process.code_signature.trusted == true and 
-         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc")) and
+         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc", "FUJIFILM Healthcare Americas Corporation", "Anego Studios SIA")) and
     not (process.parent.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and process.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and
          process.command_line : "* --enable-speech-input *")
 '''

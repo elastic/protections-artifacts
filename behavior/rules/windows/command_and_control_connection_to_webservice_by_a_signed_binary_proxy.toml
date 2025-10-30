@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.64"
+version = "1.0.65"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -198,7 +198,7 @@ sequence by process.entity_id with maxspan=5m
                               "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
     not (process.name == "dfsvc.exe" and dns.question.name == "innateclient.azurewebsites.net") and
-    not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe") and
+    not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe", "C:\\Users\\*\\Git\\mingw64\\bin\\curl.exe") and
          dns.question.name in ("api.github.com", "raw.githubusercontent.com"))
   ]
 '''

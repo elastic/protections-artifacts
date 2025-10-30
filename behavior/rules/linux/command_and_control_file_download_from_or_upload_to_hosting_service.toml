@@ -7,7 +7,7 @@ id = "5c18132a-e279-404e-a8d8-922546d469a7"
 license = "Elastic License v2"
 name = "File Download from or Upload to Hosting Service"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget") and
@@ -15,7 +15,7 @@ process.command_line like~ (
   "*pastebin.*", "*ghostbin.*", "*hastebin.*", "*termbin.*", "*dpaste.*", "*controlc.*", "*0bin.net*", "*p.ip.fi*", "*sprunge.us*", "*paste.ee*",
   "*paste.ofcode.org*", "*textbin.net*", "*transfer.sh*", "*anonfiles.*", "*easyupload.io*", "*gofile.io*", "*send.cm*", "*ufile.io*",
   "*pixeldrain.com*", "*bayfiles.*", "*megaupload.*", "*mediafire.*", "*zippyshare.com*", "*dropapk.to*", "*shorturl.at*", "*tinyurl.com*",
-  "*bit.ly/*", "*cutt.ly/*", "*is.gd/*", "*rebrand.ly/*", "*adf.ly/*", "*rb.gy/*", "*bashupload.com/*"
+  "*bit.ly/*", "*cutt.ly/*", "*is.gd/*", "*rebrand.ly/*", "*adf.ly/*", "*rb.gy/*", "*bashupload.com/*", "*bujang.online/*"
 ) and not process.parent.executable in ("/opt/aws/awsagent/bin/update", "/batch/pac.liste.categorie.sh")
 '''
 

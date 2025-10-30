@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Powershell via Windows Power User Menu"
 os_list = ["windows"]
 reference = ["https://x.com/g0njxa/status/1958506796798140569"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,7 +20,7 @@ sequence by process.entity_id with maxspan=1m
                                               "#*", "$targetUser*", "wget https://*_windows_amd64.zip",
                                               "Get-LicCertificate*", "*go.microsoft.com/fwlink/*", "#---------*") and
   not process.Ext.api.parameters.content_name : "?*"]
- [any where event.category in ("network", "dns") and process.name == "powershell.exe"]
+ [any where event.category in ("network", "dns") and process.name == "powershell.exe" and dns.question.name != "go.microsoft.com"]
 '''
 
 min_endpoint_version = "8.16.0"

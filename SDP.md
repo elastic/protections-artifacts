@@ -2,9 +2,9 @@
 
 The Safe Deployment Practices (SDP) employed by Elastic Defend ensure its stable operation for our customers. We understand that security software updates can be disruptive if not handled carefully. Therefore, we have designed our SDP with the following core principles in mind:
 
-- **Automated and Rigorous Testing**: We utilize extensive automated testing throughout the deployment pipeline. This includes unit tests and end-to-end system tests to identify and resolve potential issues before they reach customers.
-- **Staged Artifact Deployments**: We employ staged deployments to minimize the impact of potential issues. Updates are rolled out to a small subset of users or environments initially and then gradually expanded to the entire user base.
-- **Continuous Monitoring and Rollback**: We continuously monitor the health and performance of Elastic Defend deployments. Throughout the deployment window, we track key metrics to measure the health of the update. Our system automatically recognizes stability issues or other abnormalities. In the event of an issue, the deployment is blocked and all hosts return to the known stable artifact. 
+- [Automated and Rigorous Testing](#rigorous-testing): We utilize extensive automated testing throughout the deployment pipeline. This includes unit tests and end-to-end system tests to identify and resolve potential issues before they reach customers.
+- [Staged Artifact Deployments](#staged-artifact-deployments): We employ staged deployments to minimize the impact of potential issues. Updates are rolled out to a small subset of users or environments initially and then gradually expanded to the entire user base.
+- [Continuous Monitoring and Rollback](#staged-artifact-deployments): We continuously monitor the health and performance of Elastic Defend deployments. Throughout the deployment window, we track key metrics to measure the health of the update. Our system automatically recognizes stability issues or other abnormalities. In the event of an issue, the deployment is blocked and all hosts return to the known stable artifact.
 - [Customer Empowerment and Control](#customer-control): We believe in giving our customers control over their security environment. We provide features that allow customers to manage and control updates according to their needs and risk tolerance.
 
 ## Rigorous Testing

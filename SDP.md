@@ -1,4 +1,4 @@
-### Elastic Defend Safe Deployment Practices (SDP)
+# Elastic Defend Safe Deployment Practices (SDP)
 
 The Safe Deployment Practices (SDP) employed by Elastic Defend ensure its stable operation for our customers. We understand that security software updates can be disruptive if not handled carefully. Therefore, we have designed our SDP with the following core principles in mind:
 

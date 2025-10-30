@@ -23,7 +23,8 @@ All Elastic Defend artifact updates are shipped through our staged deployment sy
 - **Health Telemetry and Monitoring**: Throughout the rollout, we continuously collect health telemetry from the participating endpoints. This telemetry includes information on system stability, crashes, false positives, and policy failures.
 - **Automated Rollback**: If at any point key health metrics drop below established thresholds, the deployment is automatically halted, and all endpoints revert to the prior stable artifact.
 
-### Customer Control
+## Customer Control
+
 We believe in providing our customers with the flexibility to manage their Elastic Defend deployments.
 
 - **Binary Upgrades**: Customers have full control over all binary upgrades of Elastic Defend. We do not automatically upgrade Elastic Defend binaries on our users’ behalf.

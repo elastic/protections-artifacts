@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/invisible-miners-unveiling-ghostengine",
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.52"
+version = "1.0.53"
 
 query = '''
 process where event.action == "start" and
@@ -177,10 +177,12 @@ process where event.action == "start" and
                    "facb69c35c1d63aeca9d9e55525660b728445acd0df1b6a23e52acf329baf94c",
                    "879f58323b0ee3313a0e43d507373a6ac9bc5b3cfbd6eac6411c252af261b60e",
                    "c7b895a4a21b597a5a7dc3c1a2d4c5e9823649688da9b57dd0c1bcea28c739ba",
-                   "186546f3a23be3069550c185363034e686e87a3eccc9f5c7f3a5a92f15a0b1cb")
+                   "186546f3a23be3069550c185363034e686e87a3eccc9f5c7f3a5a92f15a0b1cb") and
+  not (process.parent.code_signature.subject_name == "Data Spotlite Inc." and process.parent.code_signature.trusted == true and
+       process.executable : "C:\\CYRISMA_Agent\\App\\powershell.exe")
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -210,4 +212,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.10.0"

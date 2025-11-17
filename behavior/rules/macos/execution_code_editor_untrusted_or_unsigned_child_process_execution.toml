@@ -7,7 +7,7 @@ id = "9b9776bb-6bf3-4c06-94ff-64159b52a2f3"
 license = "Elastic License v2"
 name = "Code Editor Untrusted or Unsigned Child Process Execution"
 os_list = ["macos"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -23,9 +23,14 @@ process where event.type == "start" and event.action == "exec" and
                            "/nix/store/*",
                            "/usr/local/microsoft/powershell/7/pwsh", 
                            "/usr/local/Cellar/*",
+                           "/opt/nordic/ncs/toolchains/*/Cellar/*",
                            "/Users/*/homebrew/Cellar/*") and 
  not process.command_line == "bento completion zsh --silent" and
- not process.code_signature.signing_id like~ ("python3-*", "ruby-*", "python-*", "node-*", "rg-*")
+ not process.code_signature.signing_id like~ ("python3-*", 
+                                              "ruby-*", 
+                                              "python-*", 
+                                              "node-*", 
+                                              "rg-*")
 '''
 
 min_endpoint_version = "8.7.0"

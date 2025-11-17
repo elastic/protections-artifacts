@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -18,11 +18,12 @@ process.command_line like~ ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh
   process.command_line like~ (
     "*/dev/tcp/sirh_db/*", "*/dev/tcp/itom-vault/8200*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*",
     "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/::1/*", "*/dev/tcp/livelog.default.svc.cluster.local*",
-    "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*"
+    "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*",
+    "*/dev/tcp/splunk*telconet.net/*"
   ) or
-  process.parent.command_line == "runc init" or
+  process.parent.command_line in ("runc init", "/usr/bin/python /opt/oracle/dcs/exacd_netchk/exacd_netchk.py") or
   process.working_directory == "/opt/rapid7/ir_agent/components/endpoint_broker/common" or
-  process.parent.executable like "/opt/cdf/data/containerd/*" or
+  process.parent.executable like ("/opt/cdf/data/containerd/*", "/usr/bin/consul") or
   (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*") or
   (
     process.args like "/dev/tcp/nomzk-client-svc/*" and

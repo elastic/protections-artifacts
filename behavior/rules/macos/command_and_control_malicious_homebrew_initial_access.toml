@@ -8,12 +8,12 @@ id = "88cb5440-a3fd-465a-8fbf-3769df14a577"
 license = "Elastic License v2"
 name = "Malicious Homebrew Initial Access"
 os_list = ["macos"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl" and 
  process.args like~ "http*/Homebrew/install/HEAD/install.sh" and
- not process.args like "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+ not process.args like~ "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 '''
 
 min_endpoint_version = "8.16.0"

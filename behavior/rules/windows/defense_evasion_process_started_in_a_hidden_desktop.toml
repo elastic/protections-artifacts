@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the execution of a process in an hidden desktop within the default interactive window station. This may
+indicate an attempt to conceal malicious activity from the plain sight of users.
+"""
+id = "b90e3fdf-b525-4e27-914a-920f1afd1b4e"
+license = "Elastic License v2"
+name = "Process Started in a Hidden Desktop"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1564/003/",
+    "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and process.Ext.desktop_name like "WinSta0\\*"
+'''
+
+min_endpoint_version = "9.1.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.003"
+name = "Hidden Window"
+reference = "https://attack.mitre.org/techniques/T1564/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.0"

@@ -8,7 +8,7 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -27,7 +27,8 @@ process.args == "-c" and process.command_line : "* exec -a *" and not (
   process.working_directory in ("/opt/novell/umc/apps/umc-server", "/opt/novell/umc/apps/oes-rest") or 
   process.args in (
     "exec -a sp-monitor /opt/sp/serverpilot/monitor/bin/monitor",
-    "exec -a sp-stats /opt/sp/serverpilot/stats/bin/sp-stats"
+    "exec -a sp-stats /opt/sp/serverpilot/stats/bin/sp-stats",
+    "/usr/bin/bcompare", "/usr/lib64/beyondcompare/BCompare"
   )
 )
 '''

@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects when a .pl file gets created or modified by a non-perl binary. Perl is a scripting language that comes
+pre-installed on macOS and is a trusted binary offering an extensive set of capabilities and advantages to an adversary.
+Its use on a macOS system is not common and therefor specific behaviors exhibited can be classified as malicious or
+suspicious at least.
+"""
+id = "f2fa4350-6700-46d1-b79c-fedd385f6984"
+license = "Elastic License v2"
+name = "Perl Script File Creation or Modification"
+os_list = ["macos"]
+version = "1.0.7"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+[network where event.type == "start"]
+[file where event.action == "modification" and file.extension == "pl" and 
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+  file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*") and
+  not Effective_process.executable like "/nix/store/*-nix-*/bin/nix"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

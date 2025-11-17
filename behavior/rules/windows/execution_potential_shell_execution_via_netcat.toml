@@ -1,0 +1,55 @@
+[rule]
+description = """
+Detects execution of a Windows command shell spawned as a result of connecting to or from a Netcat listener. Attackers
+often use Netcat to run commands on remote systems.
+"""
+id = "2e80dd26-3966-4a16-9fad-ac643b5dd66e"
+license = "Elastic License v2"
+name = "Potential Shell Execution via NetCat"
+os_list = ["windows"]
+reference = ["https://github.coventry.ac.uk/pages/aa9863/5063CEM/3_LinuxAndShells/Netcat/"]
+version = "1.0.2"
+
+query = '''
+process where event.action == "start" and
+process.name : ("cmd.exe", "powershell.exe") and process.parent.args : "-e" and process.args_count == 1 and
+ (
+  (process.parent.args_count == 5 and process.parent.command_line regex~ """.*[0-9]{1,3}(\.[0-9]{1,3}){3}.*""") or
+  (process.parent.args : "-*l*" and process.parent.args : "-*p*" and process.parent.args : ("cmd.exe", "powershell.exe") and
+   not process.parent.name : ("cmd.exe", "powershell.exe") and process.parent.args_count <= 5)
+  )
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.0"

@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://www.bleepingcomputer.com/news/security/malicious-microsoft-vscode-extensions-steal-passwords-open-remote-shells/",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.action == "exec" and 
@@ -21,8 +21,7 @@ process where event.action == "exec" and
 	     process.args == "-c" and process.args like~ ("*curl*", "*nscurl*", "*osascript*", "*zip*")) or
 	  
      (process.name in~ ("tclsh*", "osascript", "curl", "nscurl"))
-    ) and
- not process.parent.code_signature.team_id == "Q6L2SF6YDW"
+    ) and not process.parent.code_signature.team_id in ("Q6L2SF6YDW", "2DC432GLL2")
 '''
 
 min_endpoint_version = "8.11.0"

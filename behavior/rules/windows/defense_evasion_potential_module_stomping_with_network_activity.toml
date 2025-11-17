@@ -7,14 +7,14 @@ id = "c059ead9-d15e-4d13-86ee-ac5d8b9d6c34"
 license = "Elastic License v2"
 name = "Potential Module Stomping with Network Activity"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 registry where event.action == "modification" and process.executable != null and registry.value == "CachePrefix" and
  registry.path : "HKEY_USERS\\*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\*" and
  /* unusual stacks start module */
- process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|wininet.dll\|ntdll.dll\|kernelbase.dll\|wininet.dll\|[a-z]+\.dll""" and
- _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes : "?*") and
+ process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|wininet.dll\|ntdll.dll\|kernelbase.dll\|wininet.dll\|[a-z0-9\_\.\-]+\.dll""" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, ($entry.callsite_trailing_bytes : "?*" or $entry.protection == "RWX")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*")
 '''
 

@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects suspicious use of sudo's --chroot / -R option consistent with attempts to exploit CVE-2025-32463 (the "sudo
+chroot" privilege escalation), where an attacker tricks sudo into using attacker-controlled NSS files or libraries to
+gain root.
+"""
+id = "1ec98de0-3c28-4a56-b4ff-becb13cacb6e"
+license = "Elastic License v2"
+name = "Potential CVE-2025-32463 Sudo Chroot Execution Attempt"
+os_list = ["linux"]
+reference = [
+    "https://www.stratascale.com/vulnerability-alert-CVE-2025-32463-sudo-chroot",
+    "https://github.com/kh4sh3i/CVE-2025-32463",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name == "sudo" and process.args in ("-R", "--chroot") and
+// To enforce the -R and --chroot arguments to be for sudo specifically, while wildcarding potential full sudo paths
+process.command_line like ("*sudo -R*", "*sudo --chroot*") and
+not process.args == "chown"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

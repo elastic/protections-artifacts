@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=5s
@@ -45,7 +45,9 @@ sequence with maxspan=5s
        "/usr/bin/perl /usr/sbin/needrestart",  "/usr/bin/perl -w /usr/bin/apt-show-versions -i",
        "/usr/bin/perl -w /usr/bin/apt-show-versions -i", "/usr/bin/perl -w /bin/apt-show-versions -i",
        "/usr/bin/perl /bin/adequate --help",  "/usr/bin/perl /usr/sbin/needrestart -m u", 
-       "/usr/bin/perl -w /usr/share/debconf/frontend /usr/sbin/needrestart"
+       "/usr/bin/perl -w /usr/share/debconf/frontend /usr/sbin/needrestart",
+       "/usr/bin/python3 /sbin/katello-tracer-upload",
+       "/usr/bin/python3 /usr/bin/package-profile-upload"
      ) or
      process.parent.command_line in (
        "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper post-install; fi",

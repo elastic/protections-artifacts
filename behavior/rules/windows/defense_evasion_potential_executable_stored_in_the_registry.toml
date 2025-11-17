@@ -7,11 +7,14 @@ id = "38386f44-1e2b-4c03-9d3b-d3bc63482616"
 license = "Elastic License v2"
 name = "Potential Executable Stored in the Registry"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
-registry where registry.data.strings : ("TVqQ*", "4d5a90000*") and not length(registry.data.strings) <= 100 and 
-not (process.executable : "?:\\Program Files (x86)\\Schneider Electric\\Software Update\\SoftwareUpdate.exe" and registry.value : "FusTMP")
+registry where registry.data.strings : ("TVqQ*", "4d5a90000*") and not length(registry.data.strings) <= 100 and process.executable != null and
+not (process.executable : "?:\\Program Files (x86)\\Schneider Electric\\Software Update\\SoftwareUpdate.exe" and registry.value : "FusTMP") and
+not (process.executable : "C:\\Windows\\System32\\taskhostw.exe" and
+     registry.path == "HKLM\\SYSTEM\\ControlSet001\\Services\\UCPD\\DR\\0000" and user.id == "S-1-5-18") and
+not process.executable : "C:\\Program Files\\Tenable\\Nessus Agent\\nessusd.exe"
 '''
 
 min_endpoint_version = "7.15.0"

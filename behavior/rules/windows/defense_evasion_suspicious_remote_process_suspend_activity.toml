@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -160,10 +160,14 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
                          "d0cc0a62b6640f6284e4481dfda62ab2a6f488a483c38a54f218653fec7b47e9",
                          "3c1b985c6a707733b4a93213e8178509366d29b1f2201790b625599d0696966c",
                          "8fb6e0cd1c0d01157ee1a87da9e894f7451988a5349cff5d99f2d3d9c6ffc397",
-                         "3f9845508e733e1199c623a36fd6fe235239628731fb7b2b28295dfd39680f0f") and
+                         "3f9845508e733e1199c623a36fd6fe235239628731fb7b2b28295dfd39680f0f",
+                         "a678fc07f50186fae590d58f1538da74ad808b4ed32122e626a39994e60fe22f") and
 
  not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and 
       process.thread.Ext.call_stack_final_user_module.path : ("?:\\windows\\*", "?:\\program files (x86)\\*", "?:\\program files\\*")) and
+
+ not (process.executable : ("?:\\Windows\\System32\\WerFault.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and
+      process.thread.Ext.call_stack_summary like "ntdll.dll|*|faultrep.dll|werfault.exe|kernel32.dll|ntdll.dll") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\dbgcore.dll!MiniDumpWriteDump*") and
  not process.thread.Ext.call_stack_final_user_module.path like ("e:\\*\\*.exe", "f:\\*\\*.exe")

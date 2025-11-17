@@ -10,7 +10,7 @@ os_list = ["macos"]
 reference = [
     "https://www.sentinelone.com/blog/session-cookies-keychains-ssh-keys-and-more-7-kinds-of-data-malware-steals-from-macos-users/",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 file where event.action == "open" and process.executable != null and 
@@ -18,7 +18,8 @@ file where event.action == "open" and process.executable != null and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
  not Effective_process.executable in ("/Applications/Vorta.app/Contents/MacOS/vorta-darwin",
                                       "/Applications/CleanMyMac X.app/Contents/MacOS/CleanMyMac X",
-                                      "/Applications/CleanMyMac X.app/Contents/Library/LoginItems/CleanMyMac X HealthMonitor.app/Contents/MacOS/CleanMyMac X HealthMonitor")
+                                      "/Applications/CleanMyMac X.app/Contents/Library/LoginItems/CleanMyMac X HealthMonitor.app/Contents/MacOS/CleanMyMac X HealthMonitor") and
+ not process.code_signature.signing_id like~ "rg-*"
 '''
 
 min_endpoint_version = "8.10.2"

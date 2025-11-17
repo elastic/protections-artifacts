@@ -1,0 +1,53 @@
+[rule]
+description = """
+Identifies suspicious child processes spawned from the Windows Server Update Service. This may indicate successful
+exploitation and execution via CVE-2025-59287.
+"""
+id = "b2768980-3858-4bc7-a08e-c9bd9d6bb314"
+license = "Elastic License v2"
+name = "Suspicious Windows Server Update Service Child Process"
+os_list = ["windows"]
+reference = [
+    "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-59287",
+    "https://hawktrace.com/blog/CVE-2025-59287",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and
+ (
+  (process.parent.name : "w3wp.exe" and process.parent.args : "WsusPool") or
+  process.parent.name : "WsusService.exe" or
+  descendant of [process where event.action == "start" and process.name : "WsusService.exe"] or
+  descendant of [process where event.action == "start" and process.name : "w3wp.exe" and process.args : "WsusPool"]
+  ) and
+  not process.executable : ("C:\\Windows\\System32\\conhost.exe",
+                            "C:\\Windows\\system32\\WerFault.exe",
+                            "C:\\Windows\\Microsoft.NET\\Framework64\\*\\cvtres.exe",
+                            "C:\\Windows\\Microsoft.NET\\Framework64\\*\\csc.exe",
+                            "C:\\Windows\\Microsoft.NET\\Framework64\\*\\vbc.exe")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

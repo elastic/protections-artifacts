@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -29,6 +29,9 @@ api where
   not (process.code_signature.subject_name in ("Censornet Limited") and process.code_signature.trusted == true) and
   not (process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and process.name : "powershell.exe" and
        process.command_line : "powerShell  Add-MpPreference -ControlledFolderAccessAllowedApplications*") and
+  not (process.name : "wmic.exe" and
+       process.command_line : ("WMIC  /NAMESPACE:\\\\root\\Microsoft\\Windows\\Defender PATH MSFT_MpPreference call Add ExclusionPath=\"c:\\windows\\puppet\\activate\\*",
+                               "WMIC  /NAMESPACE:\\\\root\\Microsoft\\Windows\\Defender PATH MSFT_MpPreference call Add ExclusionPath=\"C:\\Windows\\AAct_Tools\\*")) and
   not process.command_line : "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -Command Add-MpPreference -ExclusionProcess \"UltraSearch.exe\" " and
   not (process.name : "powershell.exe" and
        process.command_line : ("*JABlAHgAYwBsAHUAcwBpAG8AbgBzAD0AQAAoACIAQwA6AFwAUAByAG8AZwByAGEAbQAgAEYAaQBsAGUAcwBcAEQAQgBlAGEAdgBlAHIAXABkAGIAZQBhAHYAZQByAC4AZQB4AGUAI*",

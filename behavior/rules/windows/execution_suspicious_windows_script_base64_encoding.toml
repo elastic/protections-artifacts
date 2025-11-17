@@ -7,7 +7,7 @@ id = "0c23f47e-2f47-48fb-b00c-201368a9975c"
 license = "Elastic License v2"
 name = "Suspicious Windows Script Base64 Encoding"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != null and
@@ -15,16 +15,17 @@ api where process.Ext.api.name == "AmsiScanBuffer" and process.executable != nul
   (process.Ext.api.parameters.buffer : "*bin.base64*" and
    process.Ext.api.parameters.buffer : ("*.Run(*", "*.ShellExecute(*", "*.responseBody*", "*XMLHTTP*", "*WinHttp*", "*.responseText*", "*http:*", "https:*")) and
 
-  not process.Ext.api.parameters.content_name : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*") and
+  not process.Ext.api.parameters.content_name : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "C:\\Windows\\IMECache\\*\\RunHidden.vbs") and
   not process.parent.executable :
                      ("?:\\Program Files\\HP\\*.exe",
                       "?:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe",
                       "?:\\Program Files\\Bentley\\*.exe",
                       "?:\\Program Files\\System Center Operations Manager\\Gateway\\MonitoringHost.exe",
                       "?:\\Program Files\\Microsoft Monitoring Agent\\Agent\\MonitoringHost.exe",
-                      "C:\\Program Files (x86)\\Bentley\\*.exe",
-                      "C:\\Program Files\\Bentley\\*.exe",
-                      "C:\\Windows\\LSDeployment\\RemoteDeployment*.exe")
+                      "?:\\Program Files\\Common Files\\Bentley Shared\\CONNECTION Client\\Bentley.Connect.Client.exe",
+                      "?:\\Program Files (x86)\\Bentley\\*.exe",
+                      "?:\\Program Files\\Bentley\\*.exe",
+                      "?:\\Windows\\LSDeployment\\RemoteDeployment*.exe")
 '''
 
 min_endpoint_version = "8.16.0"

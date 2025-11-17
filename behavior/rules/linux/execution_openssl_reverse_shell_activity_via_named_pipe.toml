@@ -1,0 +1,71 @@
+[rule]
+description = """
+This rule detects the execution of a named pipe, followed by a network connection initiated by the openssl process.
+Attackers may use openssl to establish a reverse connection.
+"""
+id = "a62907d2-673a-4d64-99c0-34b6ed0c8b32"
+license = "Elastic License v2"
+name = "OpenSSL Reverse Shell Activity via Named Pipe"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and process.name in ("mkfifo", "mknod")]
+  [network where event.type == "start" and event.action == "connection_attempted" and process.name == "openssl"]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

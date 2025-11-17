@@ -7,7 +7,7 @@ id = "c99b8b83-2b2c-43b0-a962-ddb0274c6939"
 license = "Elastic License v2"
 name = "Suspicious DD Execution"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.Ext.effective_parent.entity_id with maxspan=15s
@@ -17,7 +17,8 @@ sequence by process.Ext.effective_parent.entity_id with maxspan=15s
                                                     "/Library/Sentinel/sentinel-agent.bundle/Contents/MacOS/sentineld_helper.app/Contents/MacOS/sentineld_helper",
                                                     "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                     "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService", 
-                                                    "/usr/local/jamf/bin/jamf")] 
+                                                    "/usr/local/jamf/bin/jamf") and
+  not process.parent.command_line like "/bin/bash /Library/Scripts/Elastic SHIELD Firewall Manager LAUNCHD"] 
 [process where event.type == "start" and event.action == "exec" and process.name == "dd" and 
   process.command_line : "*if=/dev/stdin*"]
 '''

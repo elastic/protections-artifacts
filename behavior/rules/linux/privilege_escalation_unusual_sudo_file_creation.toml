@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "Unusual Sudo File Creation"
 os_list = ["linux"]
 reference = ["https://www.exploit-db.com/exploits/50808"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
   [process where event.type == "start" and event.action == "exec" and not (
-    process.command_line like ("sudo -e /etc/serverd/*.conf", "*sudo via ansible*") or
-    process.args == "sudoedit" or
+    process.command_line like ("sudo -e /etc/serverd/*.conf", "*sudo via ansible*", "sudo -e /etc/hosts") or
+    process.args in ("sudoedit", "/usr/libexec/qemu-binfmt/aarch64-binfmt-P") or
     process.working_directory like "/tmp/newroot/*"
   )]
   [file where event.type == "creation" and process.name == "sudo" and

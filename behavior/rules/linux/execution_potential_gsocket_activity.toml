@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Gsocket Activity"
 os_list = ["linux"]
 reference = ["https://github.com/hackerschoice/gsocket", "https://www.gsocket.io/", "https://www.thc.org/ssh-it/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -19,7 +19,7 @@ process.command_line : (
   "*GS_ARGS=*", "*gs-netcat*", "*gs-sftp*", "*gs-mount*", "*gs-full-pipe*", "*GS_NOINST=*", "*GSOCKET_ARGS=*",
   "*GS_DSTDIR=*", "*GS_URL_BASE=*", "*GS_OSARCH=*", "*GS_DEBUG=*", "*GS_HIDDEN_NAME=*", "*GS_HOST=*",
   "*GS_PORT=*", "*GS_TG_TOKEN=*", "*GS_TG_CHATID=*", "*GS_DISCORD_KEY=*", "*GS_WEBHOOK_KEY=*"
-) and not process.parent.name in ("make", "ninja", "qmake")
+) and not process.parent.name in ("make", "ninja", "qmake", "gmake")
 '''
 
 min_endpoint_version = "7.15.0"

@@ -8,7 +8,7 @@ id = "14f332f1-b20b-4628-b6de-14a4626fba79"
 license = "Elastic License v2"
 name = "File Downloaded from Suspicious Source by Web Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -29,8 +29,8 @@ process.command_line regex~ """.*http?://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{
 process.command_line : ("* -o *", "* --output*") and not (
   process.command_line like "*/dev/null*" or 
   (
-    process.parent.executable in ("/usr/bin/php", "/usr/sbin/apache2") and
-    process.command_line like "*/var/www/html/cacti/*"
+    process.parent.executable like ("/usr/bin/php*", "/usr/sbin/apache2") and
+    (process.command_line like "*/var/www/html/cacti/*" or process.parent.command_line like "/var/www/html/cacti/*")
   ) or
   process.parent.command_line like "*ansible-tmp*"
 )

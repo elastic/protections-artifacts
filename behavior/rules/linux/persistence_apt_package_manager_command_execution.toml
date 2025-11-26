@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=5s
@@ -49,11 +49,9 @@ sequence with maxspan=5s
        "/usr/bin/python3 /sbin/katello-tracer-upload",
        "/usr/bin/python3 /usr/bin/package-profile-upload"
      ) or
-     process.parent.command_line in (
-       "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper post-install; fi",
-       "sh -c if [ -x /usr/bin/etckeeper ]; then etckeeper pre-install; fi"
-     ) or
-     process.args in ("/usr/sbin/needrestart", "/usr/lib/needrestart/apt-pinvoke", "/usr/share/proxmox-ve/pve-apt-hook")
+     process.parent.command_line like "sh -c if [ -x*" or
+     process.args in ("/usr/sbin/needrestart", "/usr/lib/needrestart/apt-pinvoke", "/usr/share/proxmox-ve/pve-apt-hook") or
+     process.parent.args == "/usr/share/debconf/frontend"
     )
   ] by process.parent.entity_id
 '''

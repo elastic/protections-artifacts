@@ -1,0 +1,49 @@
+[rule]
+description = """
+Detects when an abnormally large amount of JavaScript is supplied to Node.js for execution via the evaluate flag. This
+behavior has been observed in DPRK-attributed malware campaigns.
+"""
+id = "76259650-ed25-4d48-9cb2-e4a32073f945"
+license = "Elastic License v2"
+name = "Abnormally Large Javascript Evaluation via Nodejs"
+os_list = ["macos"]
+reference = ["https://kl4r10n.tech/blog/dprk-new-malware"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "node" and process.args == "node" and
+ process.args == "-e" and process.args_count == 3 and process.command_line == null and process.parent.name == "node"
+'''
+
+min_endpoint_version = "8.10.2"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.10.2"

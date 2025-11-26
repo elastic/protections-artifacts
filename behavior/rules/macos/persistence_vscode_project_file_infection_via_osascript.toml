@@ -1,0 +1,62 @@
+[rule]
+description = """
+Detects when Osascript is used to modify a VScode project file. XCSSET has been observed recently utilizing AppleScript
+to inject malicious payloads and commands within VScode project files on compromised systems.
+"""
+id = "e9fb14ff-6d88-4c31-a1a8-4f48722b0c6a"
+license = "Elastic License v2"
+name = "VScode Project File Infection via Osascript"
+os_list = ["macos"]
+reference = [
+    "https://www.microsoft.com/en-us/security/blog/2025/03/11/new-xcsset-malware-adds-new-obfuscation-persistence-techniques-to-infect-xcode-projects/",
+]
+version = "1.0.4"
+
+query = '''
+file where event.action == "modification" and (process.name == "osascript" or Effective_process.name == "osascript") and file.extension == "pbxproj"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.001"
+name = "Compromise Software Dependencies and Development Tools"
+reference = "https://attack.mitre.org/techniques/T1195/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1554"
+name = "Compromise Host Software Binary"
+reference = "https://attack.mitre.org/techniques/T1554/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "8.16.0"

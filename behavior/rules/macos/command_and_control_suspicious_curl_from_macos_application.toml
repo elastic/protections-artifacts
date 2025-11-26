@@ -13,7 +13,7 @@ reference = [
     "https://objective-see.org/blog/blog_0x71.html#-vpn-trojan-covid",
     "https://attack.mitre.org/techniques/T1105/",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -23,7 +23,9 @@ process where event.type == "start" and event.action == "exec" and
  process.Ext.effective_parent.executable like "/Applications/*" and
  process.args_count <= 10 and 
  not process.args like "/Applications/*" and
- not process.Ext.effective_parent.executable in ("/Applications/iTerm.app/Contents/MacOS/iTerm2", "/Applications/Warp.app/Contents/MacOS/stable")
+ not process.Ext.effective_parent.executable in ("/Applications/iTerm.app/Contents/MacOS/iTerm2",
+                                                 "/Applications/Visual Studio Code.app/Contents/MacOS/Electron", 
+                                                 "/Applications/Warp.app/Contents/MacOS/stable")
 '''
 
 min_endpoint_version = "8.5.0"

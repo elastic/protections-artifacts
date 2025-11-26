@@ -7,7 +7,7 @@ id = "336ada1c-69f8-46e8-bdd2-790c85429696"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via CURL"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,8 @@ process where event.action == "start" and
   not process.command_line : "*curl -o \\\\.\\nul -v -I -L -s --connect-timeout*" and
   not process.args : ("https://mirror.init7.net/ctan/systems*", "http://localhost:*",
                       "https://*.ctan.org*", "texlive/curl", "http*.local/*",
-                      "http://control.firstvoucher.com/api/build/*zip") and
+                      "http://control.firstvoucher.com/api/build/*zip",
+                      "https://blackhole.blob.core.windows.net/*") and
 
   /* avoid breaking privileged install */
   not user.id : "S-1-5-18"

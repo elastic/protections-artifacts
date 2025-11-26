@@ -7,12 +7,12 @@ id = "f4744b1a-3775-4387-8529-abc08076a612"
 license = "Elastic License v2"
 name = "External IP address discovery via Curl"
 os_list = ["macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  ((process.parent.executable like ("/Applications/*", "/Volumes/*", "/private/var/folders/*")) or
-  (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name in~ ("terminal", "bash", "zsh", "sh")) or
+  (process.parent.name in ("bash", "sh", "zsh") and process.parent.command_line : "*http*" and process.Ext.effective_parent.name in~ ("terminal", "bash", "zsh", "sh")) or
   (process.parent.code_signature.trusted == false or process.code_signature.exists == false)) and
  process.name in ("curl", "nscurl") and
  process.args_count <= 5 and
@@ -65,9 +65,11 @@ process where event.type == "start" and event.action == "exec" and
           "*myip.opendns.com*"
          ) and
 not process.args like~ ("https://ipinfo.io/region", "https://ipinfo.io/city") and
+not process.parent.command_line : "*/Users/*/.tmux/plugins/tmux-powerline/powerline.sh*" and
 not process.parent.executable == "/Applications/Xcode.app/Contents/Developer/usr/bin/make" and
 not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
-                                                "/usr/local/jamf/bin/jamf")
+                                                "/usr/local/jamf/bin/jamf") and 
+not (process.parent.name == "bash" and process.command_line == "curl --max-time 2 -s https://whatismyip.akamai.com/")
 '''
 
 min_endpoint_version = "8.16.0"

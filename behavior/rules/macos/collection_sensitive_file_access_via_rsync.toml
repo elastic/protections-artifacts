@@ -1,0 +1,53 @@
+[rule]
+description = """
+Detects the rsync process accessing files, which may indicate data collection and potential exfiltration activities.
+Threat actors leverage rsync, which is natively installed on macOS, to copy and synchronize sensitive files for data
+theft. This technique has been observed in campaigns by groups like BlueNoroff.
+"""
+id = "bbd9fa06-36fa-4007-bf45-dab9678207a1"
+license = "Elastic License v2"
+name = "Sensitive File Access via Rsync"
+os_list = ["macos"]
+reference = ["https://fieldeffect.com/blog/zoom-doom-bluenoroff-call-opens-the-door"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name == "rsync"]
+[file where event.action == "open" and process.name == "rsync"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1005"
+name = "Data from Local System"
+reference = "https://attack.mitre.org/techniques/T1005/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1048"
+name = "Exfiltration Over Alternative Protocol"
+reference = "https://attack.mitre.org/techniques/T1048/"
+
+
+[threat.tactic]
+id = "TA0010"
+name = "Exfiltration"
+reference = "https://attack.mitre.org/tactics/TA0010/"
+
+[internal]
+min_endpoint_version = "8.16.0"

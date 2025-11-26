@@ -11,7 +11,7 @@ id = "6929ab87-7b2f-4ef8-858a-1f8f1c239cac"
 license = "Elastic License v2"
 name = "Suspicious D-Bus Method Call"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "dbus-send" and
@@ -19,7 +19,10 @@ process where event.type == "start" and event.action == "exec" and process.name 
 process.args in ("--system", "--session", "-y", "-s") and
 process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.parent.args_count == 1 and not (
   process.parent.executable like~ ("/home/*/.nix-profile/*", "/nix/store/*") or
-  process.args in ("--dest=org.x.sticky", "--dest=com.vixalien.sticky", "--dest=org.gnome.SessionManager", "--dest=org.gnome.ScreenSaver")
+  process.args in (
+    "--dest=org.x.sticky", "--dest=com.vixalien.sticky", "--dest=org.gnome.SessionManager", "--dest=org.gnome.ScreenSaver",
+    "/io/elementary/terminal"
+  )
 )
 '''
 

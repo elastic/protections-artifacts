@@ -11,7 +11,7 @@ reference = [
     "https://lengjibo.github.io/token/",
     "https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and process.parent.executable != null and
@@ -67,7 +67,7 @@ process where event.action == "start" and process.parent.executable != null and
                             "f3607f433952cb23d9eb0fc5e31fd0c4079cad3133dc79d149022900d208876c") and
  not ((process.executable : "C:\\Windows\\SoftwareDistribution\\Download\\Install\\SecurityHealthSetup.exe" or process.pe.original_file_name == "SecurityHealthSetup.exe") and
       process.Ext.effective_parent.executable : "C:\\Windows\\servicing\\TrustedInstaller.exe" and
-      process.code_signature.subject_name == "Microsoft Corporation" and process.code_signature.trusted == true)
+      process.code_signature.subject_name in ("Microsoft Corporation", "Microsoft Windows") and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.4.0"

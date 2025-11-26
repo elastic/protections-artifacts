@@ -1,0 +1,61 @@
+[rule]
+description = """
+Detects when a payload is dropped to a temporary location and executed via osascript. This technique is used by malware
+like Apfell agent to establish new callbacks.
+"""
+id = "2cf4a0ba-6d6e-4984-963e-ee4785f8c9b6"
+license = "Elastic License v2"
+name = "Osascript Payload Drop and Execute"
+os_list = ["macos"]
+reference = [
+    "https://github.com/MythicAgents/apfell/",
+    "https://github.com/MythicAgents/apfell/blob/master/documentation-payload/apfell/commands/spawn_drop_and_execute.md",
+    "https://www.elastic.co/security-labs/beyond-the-wail",
+]
+version = "1.0.19"
+
+query = '''
+sequence with maxspan=15s
+[file where event.action == "modification" and 
+  (file.path like~ ("/Users/Shared/*", 
+                    "/tmp/*", 
+                    "/private/tmp/*", 
+                    "/var/tmp/*", 
+                    "/private/var/tmp/*",
+                    "/Users/*/Library/Assistant/CustomVocabulary/*", 
+                    "/private/var/folders/*", 
+                    "/var/folders/*") or
+   file.name like ".*") and
+   file.extension in ("scpt", "sh", "js", "lock")] as event0
+[process where event.type == "start" and event.action == "exec" and 
+  process.name == "osascript" and stringcontains~(process.command_line, event0.file.name) and
+  not process.args == "-e"]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.11.0"

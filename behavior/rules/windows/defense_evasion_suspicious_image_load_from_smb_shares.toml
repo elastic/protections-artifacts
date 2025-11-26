@@ -7,7 +7,7 @@ id = "c9674e88-8423-442a-9712-ba6271bcff10"
 license = "Elastic License v2"
 name = "Suspicious Image Load from SMB Shares"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -34,6 +34,10 @@ sequence by process.entity_id with maxspan=1m
    dll.name : ("dsquery.dll", "System.Management.Automation.dll")
   ) and 
   not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
+  not dll.hash.sha256 in ("fb26504a5d5a1b2045e526f873b84bbba57ea5715a16d2f48e26919abc273240",
+                          "69f405cc2dd111d208799ad47273551e9d572423bcf251bc9347d481a162b207",
+                          "550c6c449f101e9eebf00906ef04de5427f9e8dc27fef57bd03cb02f8cd3a0f7",
+                          "aee47f2535e0196552513d37be8411a9b9c649a50c3d847488162580d8b88793") and
 
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_leading_bytes :

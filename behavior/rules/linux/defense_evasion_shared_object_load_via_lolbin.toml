@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Shared Object Load via LoLBin"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+library%20load"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -25,7 +25,7 @@ process where event.type == "start" and event.action == "exec" and process.paren
 not (
   process.parent.executable like (
     "/root/.cache/bazel/_bazel_root/install/*", "/opt/Xilinx/PetaLinux/*", "/usr/bin/find", "/bin/find", 
-    "/opt/nessus_agent/sbin/nessus-agent-module"
+    "/opt/nessus_agent/sbin/nessus-agent-module", "/sw/eb/sw/Python/*/bin/python*"
   ) or
   process.parent.name in ("make", "process-wrapper", "bwrap") or
   (process.name like "python*" and process.command_line like~ "*import torch*torchinductor*") or

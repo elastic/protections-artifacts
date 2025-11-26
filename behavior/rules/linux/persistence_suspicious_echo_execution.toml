@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -24,7 +24,7 @@ process.parent.executable != null and
 not (
   process.args like (
     "*/dev/tcp/127.0.0.1/*", "/opt/rapid7/ir_agent/components/insight_agent/common/ir_agent*", "printf*",
-    "*/etc/init.d/XS-Nanny-Watch-Dog*", "LANG=C*"
+    "*/etc/init.d/XS-Nanny-Watch-Dog*", "LANG=C*", "/usr/bin/rsync*"
   ) or
   process.parent.name in (
     "make", "code", "terraform", "pyinfra", "fzf", "bwrap", "start_pxcontroller_pxstorage.py", "timeout", "sshd",
@@ -57,11 +57,13 @@ not (
     "/opt/aprol/bin/StartManager", "/opt/aprol/scripts/AprolStartStartManager", "/usr/bin/mkosi", "/opt/saltstack/salt/bin/python*",
     "../gossbin/goss", "/opt/SolarWinds/Agent/bin/Plugins/ADMProbe/SolarWinds.ADM.AgentPlugin", "/opt/rapid7/nexpose/nse/.DLLCACHE/nseserv",
     "/usr/bin/goss", "/usr/bin/cinc-auditor", "/usr/libexec/platform-python", "/opt/oracle/oracle.ahf/common/venv/bin/python3",
-    "/tmp/.mount_Cursor*/usr/share/cursor/cursor"
+    "/tmp/.mount_Cursor*/usr/share/cursor/cursor", "/usr/bin/mmdebstrap", "/usr/bin/gawk", "/opt/oracle.ahf/python/bin/python3",
+    "/usr/bin/gmake"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
-    "/usr/bin/perl /bkupdata1/icbm.pl", "/snap/microk8s/current/bin/runc init"
+    "/usr/bin/perl /bkupdata1/icbm.pl", "/snap/microk8s/current/bin/runc init", "/usr/bin/python3 /usr/sbin/registercloudguest",
+    "/usr/bin/python3 /usr/local/bin/start_pxcontroller_pxstorage.py"
   ) or
   process.command_line like (
     "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*", "*/dev/tcp/localhost/*",
@@ -94,7 +96,7 @@ not (
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*", "/repo/o11y/out/*/.terraform/*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or
-  (process.parent.name == "node" and process.command_line like~ "*/tmp/claude*") or
+  (process.parent.name == "node" and process.command_line like~ ("*/tmp/claude*", "/usr/bin/bash -O extglob -c*")) or
   (process.parent.name == "php" and process.command_line like "sh -c timeout 7200 ssh*")
 )
 '''

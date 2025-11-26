@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Impersonation as Trusted Installer"
 os_list = ["windows"]
 reference = ["https://www.tiraniddo.dev/2017/08/the-art-of-becoming-trustedinstaller.html"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 any where process.executable != null and 
@@ -100,7 +100,8 @@ any where process.executable != null and
   not (process.name : "rundll32.exe" and process.args : "C:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie" and
        process.parent.executable : "C:\\Windows\\System32\\svchost.exe") and
   not (process.pe.original_file_name == "SecurityHealthSetup.exe" and process.code_signature.trusted == true and
-      process.code_signature.subject_name == "Microsoft Windows" and process.Ext.effective_parent.executable : "C:\\Windows\\servicing\\TrustedInstaller.exe")
+      process.code_signature.subject_name == "Microsoft Windows" and process.Ext.effective_parent.executable : "C:\\Windows\\servicing\\TrustedInstaller.exe") and
+  not (event.action == "deletion" and process.executable : "C:\\Windows\\System32\\svchost.exe" and file.path : "C:\\Windows\\Logs\\SRP\\SRP.log")
 '''
 
 min_endpoint_version = "8.4.0"

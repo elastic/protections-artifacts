@@ -8,7 +8,7 @@ id = "028d01ae-bfbf-438e-a0d0-23aee55ea5c9"
 license = "Elastic License v2"
 name = "Suspicious Python Command Execution"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -43,7 +43,7 @@ process.args == "-c" and process.command_line like~ (
     "/var/lib/amazon/ssm/*", "/var/anaconda3/envs/*", "/tmp/plz_sandbox/test", "/usr/bin/cockpit-bridge",
     "/pro/bin/sys/dbutils/dbaValidateOsUserCredentials.sh", "/usr/sbin/lxc", "/sbin/lxc", "/data/flash/Linux_for_Tegra/flash.sh",
     "/usr/bin/ansible-playbook", "/usr/local/bin/teleport", "/usr/local/bin/odoo-helper", "/home/*/bin/join-zoom.sh",
-    "/usr/lib/openssh/sshd-session"
+    "/usr/lib/openssh/sshd-session", "/usr/sbin/lxd"
   ) or
   process.args like~ """import zlib,base64; exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTb*""" or
   process.working_directory like~ (

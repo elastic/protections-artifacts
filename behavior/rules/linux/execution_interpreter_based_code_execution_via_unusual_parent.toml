@@ -4,7 +4,7 @@ id = "5f6f48d9-592c-46d3-863b-9c06fa248e2d"
 license = "Elastic License v2"
 name = "Interpreter-Based Code Execution via Unusual Parent"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like (
@@ -59,7 +59,9 @@ process.command_line like~ (
   ) or
   process.executable like ("/var/lib/docker/*", "/tmp/newroot/*") or
   process.parent.executable like (
-    "/tmp/newroot/*", "/tmp/.mount_Cursor*", "/tmp/petalinux_*", "/tmp/baum/easybuild/*", "/proc/*/ns/*"
+    "/tmp/newroot/*", "/tmp/.mount_Cursor*", "/tmp/petalinux_*", "/tmp/baum/easybuild/*", "/proc/*/ns/*",
+    "/tmp/.mount_cursor*/cursor", "/tmp/nsjail*", "/tmp/petalinux*", "/tmp/cmdickens/easybuild/*", "/tmp/cairosvg*",
+    "/tmp/petalinx_*"
   ) or
   process.parent.command_line in ("runc init", "./python -m test --pgo --timeout=1200") or
   process.command_line like ("*postinstall*", "/bin/sh -c node -e *require*nan*") or

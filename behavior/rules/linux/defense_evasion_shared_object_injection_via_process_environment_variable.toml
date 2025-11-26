@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -52,7 +52,9 @@ process where event.type == "start" and event.action == "exec" and process.env_v
     "LD_PRELOAD=/home/*/lib/python*/site-packages/*", "*LD_PRELOAD=*MATLAB*ld_shim.so.2.*", 
     "LD_PRELOAD=/tmp/intercept-*/libear.so",
     "LD_PRELOAD=/opt/dynatrace/oneagent/agent/bin/current/linux-x86-64/liboneagentproc.so",
-    "LD_PRELOAD=/home/*/.local/lib/vivaldi/media-codecs-*/libffmpeg.so"
+    "LD_PRELOAD=/home/*/.local/lib/vivaldi/media-codecs-*/libffmpeg.so",
+    "LD_PRELOAD=/usr/local/lib/libmimalloc.so", "LD_PRELOAD=/home/*/opt/commvault/Base/libCvDllFilter.so",
+    "LD_PRELOAD=/usr/lib/libjemalloc.so.2:/opt/zlib-ng/lib/libz.so"
   ) or
   process.parent.command_line == "runc init" or
   process.parent.executable like (

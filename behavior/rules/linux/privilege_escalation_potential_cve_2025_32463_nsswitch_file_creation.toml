@@ -1,0 +1,55 @@
+[rule]
+description = """
+Detects suspicious creation of the nsswitch.conf file, outside of the regular /etc/nsswitch.conf path, consistent with
+attempts to exploit CVE-2025-32463 (the "sudo chroot" privilege escalation), where an attacker tricks sudo into using
+attacker-controlled NSS files or libraries to gain root.
+"""
+id = "cc81a704-da59-4baf-9b93-c9d893f17ab0"
+license = "Elastic License v2"
+name = "Potential CVE-2025-32463 Nsswitch File Creation"
+os_list = ["linux"]
+reference = [
+    "https://www.stratascale.com/vulnerability-alert-CVE-2025-32463-sudo-chroot",
+    "https://github.com/kh4sh3i/CVE-2025-32463",
+]
+version = "1.0.4"
+
+query = '''
+file where event.type == "creation" and file.path like "/*/etc/nsswitch.conf" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and not 
+(
+  process.name in ("bash", "dash") and file.path like (
+    "/var/tmp/mkinitramfs_*", "/tmp/tmp.*/mkinitramfs_*", "/tmp/petalinux*/etc/nsswitch.conf",
+    "/tmp/selfextract.*/mkinitramfs_*/etc/nsswitch.conf", "/var/tmp/dracut.*/initramfs/etc/nsswitch.conf",
+    "/tmp/user/0/mkinitramfs_*/etc/nsswitch.conf"
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "7.15.0"

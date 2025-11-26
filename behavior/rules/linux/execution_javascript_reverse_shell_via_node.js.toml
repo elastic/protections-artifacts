@@ -1,0 +1,71 @@
+[rule]
+description = """
+This rule detects the creation of a Javascript reverse shell through Node.js. Attackers may spawn reverse shells to
+establish persistence onto a target system. By using Node.js, attackers may attempt to evade detection and leverage the
+platform's capabilities for various malicious purposes, such as downloading and executing payloads, establishing
+persistence, or exfiltrating data.
+"""
+id = "88c1728e-2d2e-48ff-9c77-a084efdd4498"
+license = "Elastic License v2"
+name = "Javascript Reverse Shell via Node.js"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.type == "start" and event.action == "exec" and process.name == "node" and 
+   process.args == "node" and process.args_count == 2 and process.args : (
+     "/tmp/*.js", "/var/tmp/*.js", "/dev/shm/*.js", "/tmp/*.mjs", "/var/tmp/*.mjs", "/dev/shm/*.mjs"
+   )]
+  [network where event.type == "start" and event.action == "connection_attempted" and not (
+    destination.port == 53 or
+    cidrmatch(
+     destination.ip, "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+      "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.2.0/24",
+      "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24",  "100.64.0.0/10",
+      "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "::1", "FE80::/10",
+      "FF00::/8"
+    )
+   )
+  ]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

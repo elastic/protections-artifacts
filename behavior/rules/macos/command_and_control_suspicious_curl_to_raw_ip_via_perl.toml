@@ -1,0 +1,43 @@
+[rule]
+description = """
+Detects when curl or nscurl is spawned by Perl to make an outbound network connection to a raw IP address over HTTP
+(port 80). This technique is commonly observed in npm typosquatting attacks where malicious packages use Perl as an
+intermediary to execute curl commands for downloading additional payloads or exfiltrating data. Perl's trusted binary
+status on macOS makes it an attractive vector for adversaries to execute suspicious network operations while evading
+detection.
+"""
+id = "19310762-9a8c-4a19-a226-18112fcad215"
+license = "Elastic License v2"
+name = "Suspicious Curl to Raw IP via Perl"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and process.parent.name == "perl"]
+[network where event.type == "start" and destination.domain == null and destination.port == 80]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

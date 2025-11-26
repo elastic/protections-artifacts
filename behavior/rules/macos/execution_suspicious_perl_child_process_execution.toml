@@ -7,12 +7,13 @@ id = "45681609-ac5b-4151-9014-204590e87e1d"
 license = "Elastic License v2"
 name = "Suspicious Perl Child Process Execution"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "perl" and 
  (process.name like~ ("python*", "curl", "nscurl", "osascript", "whoami", "cat", "Terminal") or 
-  (process.name in ("sh", "zsh", "bash") and process.args_count == 2 and process.args == "-c" and process.args like ("/Users/*", "/tmp/*", "/private/tmp/*"))) and 
+  (process.name in ("sh", "zsh", "bash") and process.args_count == 2 and process.args == "-c" and process.args like ("/Users/*", "/tmp/*", "/private/tmp/*"))) and
+    not process.parent.command_line like "perl /Library/TeX/texbin/tlmgr*" and 
     not process.Ext.effective_parent.executable like ("/System/*", "/Applications/Xcode.app/Contents/MacOS/Xcode")
 '''
 

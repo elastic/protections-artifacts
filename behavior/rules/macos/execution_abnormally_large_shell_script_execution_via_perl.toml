@@ -1,0 +1,52 @@
+[rule]
+description = """
+Detects when Perl spawns a shell interpreter to execute an abnormally large script, indicated by a null command line
+despite having the expected argument count. This technique is commonly observed in npm typosquatting attacks where
+malicious packages use Perl as an intermediary to execute large embedded payloads that exceed normal command line size
+limits. Adversaries leverage Perl's trusted status to execute obfuscated or encoded shell scripts that perform
+credential harvesting, data exfiltration, or deploy additional malware stages.
+"""
+id = "484593e7-3996-49e7-97ce-452408a30f10"
+license = "Elastic License v2"
+name = "Abnormally Large Shell Script Execution via Perl"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("bash", "zsh", "sh") and process.command_line == null and process.args_count == 3 and
+  process.parent.name == "perl" and process.Ext.effective_parent.name in ("bash", "zsh", "sh")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

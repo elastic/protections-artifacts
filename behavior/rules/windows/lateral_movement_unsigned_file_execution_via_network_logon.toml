@@ -7,7 +7,7 @@ id = "642b43ad-67bf-476b-9581-a434535395f2"
 license = "Elastic License v2"
 name = "Unsigned File Execution via Network Logon"
 os_list = ["windows"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.action == "start" and
@@ -37,7 +37,10 @@ process where event.action == "start" and
                  "39adf69d9a231bd572f1c70a510c40b54939e8edd31511ce7100a579592634f4",
                  "b7e0698740f3ddca92a093e19d1c41db4fe46cb6cd748ca7ca0d4af9949f3273",
                  "b6c85a7c7134cc2748069ea6339af553ce8c4ef28b5807b64209009ae0e85c20",
-                 "d8b3c7eaa1e0b2788ee65ce9be002b875f8b128c7df2ea7b4f9f8b2eb6ff4c65") and
+                 "d8b3c7eaa1e0b2788ee65ce9be002b875f8b128c7df2ea7b4f9f8b2eb6ff4c65",
+                 "7b5b071975a394a2d4ef2192cfd2cebe3b732b05134663274204885a198caa7f",
+                 "dfe85716d2bca3047b8eff311583de17ec2bef35cbaedff72a7802c185c32ba6",
+                 "8560aaad29f8310b4a743b445b9a930a40b52d0be77ce0c845a657db5c6a5d84") and
  not (process.pe.original_file_name == "Source.DBVersionControl.dll" and
       process.parent.executable : "C:\\Program Files\\PowerShell\\7\\pwsh.exe") and
  not (process.code_signature.subject_name == "LLC Breakthrough Technologies" and process.code_signature.status == "errorExpired") and

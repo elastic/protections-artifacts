@@ -1,0 +1,61 @@
+[rule]
+description = """
+Detects when curl or nscurl is executed with the user's keychain database file path in the command line, indicating
+potential exfiltration of sensitive credentials. This technique is commonly observed in npm typosquatting attacks and
+macOS stealers where malicious packages use curl to upload the keychain database to attacker-controlled servers. The
+macOS keychain contains highly sensitive credential data including passwords, certificates, and encryption keys that
+adversaries seek to exfiltrate for further compromise.
+"""
+id = "de452505-4d5a-4d44-90ff-56b4912a20f3"
+license = "Elastic License v2"
+name = "User Keychain Exfiltration via Curl"
+os_list = ["macos"]
+reference = [
+    "https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester",
+    "https://hunt.io/blog/macos-malware-impersonates-the-unarchiver-app-to-steal-user-data",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and process.command_line : "*/Users/*/Library/Keychains/login.keychain-db*"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1555"
+name = "Credentials from Password Stores"
+reference = "https://attack.mitre.org/techniques/T1555/"
+[[threat.technique.subtechnique]]
+id = "T1555.001"
+name = "Keychain"
+reference = "https://attack.mitre.org/techniques/T1555/001/"
+
+
+
+[threat.tactic]
+id = "TA0006"
+name = "Credential Access"
+reference = "https://attack.mitre.org/tactics/TA0006/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1048"
+name = "Exfiltration Over Alternative Protocol"
+reference = "https://attack.mitre.org/techniques/T1048/"
+
+
+[threat.tactic]
+id = "TA0010"
+name = "Exfiltration"
+reference = "https://attack.mitre.org/tactics/TA0010/"
+
+[internal]
+min_endpoint_version = "8.16.0"

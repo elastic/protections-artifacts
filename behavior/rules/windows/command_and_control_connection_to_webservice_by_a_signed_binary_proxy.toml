@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.65"
+version = "1.0.66"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -197,9 +197,10 @@ sequence by process.entity_id with maxspan=5m
          dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
                               "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
+    not (process.name : "powershell.exe" and dns.question.name == "gps-prod-api.azurewebsites.net") and
     not (process.name == "dfsvc.exe" and dns.question.name == "innateclient.azurewebsites.net") and
-    not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe", "C:\\Users\\*\\Git\\mingw64\\bin\\curl.exe") and
-         dns.question.name in ("api.github.com", "raw.githubusercontent.com"))
+    not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe", "C:\\Users\\*\\Git\\mingw64\\bin\\curl.exe", "C:\\curl\\bin\\curl.exe") and
+         dns.question.name in ("api.github.com", "raw.githubusercontent.com", "graph.microsoft.com"))
   ]
 '''
 

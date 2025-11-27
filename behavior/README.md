@@ -20,41 +20,42 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.102 | a13427fdd2d8ead88ff3c5b8a6b36d673fda0dd50f38c90831d77142d89e864e |
-| production-rules-macos-v1 | 1.0.102 | e9233d4817b2bd8aacb09f8e54bbf3d61fa361c23725540a82de1a9b127c19c5 |
-| production-rules-windows-v1 | 1.0.102 | 7785b10274608595b493389a9639e15771dcae3b3563f1ea9d16babe7b8833d7 |
+| production-rules-linux-v1 | 1.0.103 | b63ee683cd02b6726b1a528dee3c1b73c74d08a9d121f0e9a1c840da24d9d8e0 |
+| production-rules-macos-v1 | 1.0.103 | 1d6cd7452aa58eb4bf38664a7dab7523be7cc8f372e9c5e027103877165bab57 |
+| production-rules-windows-v1 | 1.0.103 | 8258bb281e3d01bf215035c105d65c69ca5d741e4a10df68879d8b87169752a3 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.102', '1.0.101') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.103', '1.0.102') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Credential Access    |         2 |       0 |       1 |                 3 |
-| Defense Evasion      |         3 |       0 |       0 |                 3 |
-| Execution            |         1 |       1 |       2 |                 4 |
-| Initial Access       |         2 |       0 |       0 |                 2 |
+| Collection           |         0 |       0 |       1 |                 1 |
+| Command and Control  |         1 |       0 |       4 |                 5 |
+| Defense Evasion      |         4 |       0 |       0 |                 4 |
+| Execution            |         0 |       5 |       5 |                10 |
+| Exfiltration         |         0 |       0 |       1 |                 1 |
+| Persistence          |         0 |       0 |       1 |                 1 |
 | Privilege Escalation |         0 |       1 |       0 |                 1 |
-| Total by OS          |         8 |       2 |       3 |                13 |
+| Total by OS          |         5 |       6 |      12 |                23 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Collection           |        11 |       0 |       9 |                20 |
-| Command and Control  |        37 |      13 |      41 |                91 |
+| Collection           |        11 |       0 |      10 |                21 |
+| Command and Control  |        38 |      13 |      45 |                96 |
 | Credential Access    |        49 |       4 |      32 |                85 |
-| Defense Evasion      |       302 |      50 |      58 |               410 |
+| Defense Evasion      |       307 |      49 |      58 |               414 |
 | Discovery            |        20 |       1 |       4 |                25 |
-| Execution            |        92 |      57 |      94 |               243 |
-| Exfiltration         |         0 |       0 |       1 |                 1 |
+| Execution            |        92 |      62 |      99 |               253 |
+| Exfiltration         |         0 |       0 |       2 |                 2 |
 | Impact               |        19 |       6 |       2 |                27 |
 | Initial Access       |        62 |       1 |       2 |                65 |
 | Lateral Movement     |        10 |       2 |       2 |                14 |
-| Persistence          |        57 |      34 |      24 |               115 |
-| Privilege Escalation |        69 |      14 |       8 |                91 |
-| Total by OS          |       728 |     182 |     277 |              1187 |
-
+| Persistence          |        57 |      34 |      25 |               116 |
+| Privilege Escalation |        69 |      15 |       8 |                92 |
+| Total by OS          |       734 |     187 |     289 |              1210 |
 
 ### The Zen of Security Rules
 

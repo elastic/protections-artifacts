@@ -7,7 +7,7 @@ id = "2d0e4305-c7b8-46af-8473-775a49c18ec3"
 license = "Elastic License v2"
 name = "Unusual Command Executed by Web Server"
 os_list = ["linux"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -69,6 +69,7 @@ process.command_line like (
     process.parent.executable like~ "/var/lib/docker/overlay2/*/merged/usr/local/bin/ruby" and
     process.command_line == "sh -c ssh-keygen -y -f ~/.ssh/id_ed25519"
   ) or
+  (process.parent.name like "python*" and process.working_directory in ("/root", "/")) or
   process.working_directory like~ ("/home/*", "/opt/kbport", "/usr/local/SolarWinds/Agent/bin/Plugins/APM") or
   (process.working_directory == "/usr/share/httpd" and process.command_line == "/bin/bash -c /etc/cron.tasks/elearning.cron.sh") or
   process.parent.command_line == "python3 /opt/gateway/automation/backupscripts/commonutils/node_json_backup.py -f node_data.json -o /opt/node_json_backup -logfile /var/log/gateway/result_BackupService.log"

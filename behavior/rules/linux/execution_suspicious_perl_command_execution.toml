@@ -8,7 +8,7 @@ id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
 license = "Elastic License v2"
 name = "Suspicious Perl Command Execution"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -22,16 +22,16 @@ process.args == "-e" and process.command_line like~ (
 ) and not (
   process.working_directory like~ ("/builds/*", "/root/.perl-cpm/*/MIME-tools-*", "/root/.cpan*", "/scratch/*") or
   process.command_line like (
-    "perl -e eval { use MIME::Base64; print 1; }", "/home/*/bin/sendEmail*",
+    "perl -e eval { use MIME::Base64; print 1; }", "/home/*/bin/sendEmail*", "*transfer fish server*",
     """perl -e $|=1; print "### 100 transfer fish server\n"; while(<STDIN>) { last if /^__END__/; $code.=$_; } exit(eval($code))"""
   ) or
   process.parent.name in ("make", "filter_stderr") or
   process.parent.executable like~ (
     "/var/lib/docker/overlay2/*", "/usr/local/lp/apps/sonarpush-helpers/spectre-meltdown-checker.sh",
-    "/usr/sbin/debootstrap", "/usr/bin/xterm", "/usr/bin/xargs"
+    "/usr/sbin/debootstrap", "/usr/bin/xterm", "/usr/bin/xargs", "/var/lib/dpkg/info/sudo.postinst", "/usr/bin/gmake"
   ) or
-  process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*") or
-  process.parent.args == "/usr/bin/parallel"
+  process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*", "/usr/bin/perl t/utf8.t") or
+  process.parent.args in ("/usr/bin/parallel", "/usr/sbin/debootstrap")
 )
 '''
 

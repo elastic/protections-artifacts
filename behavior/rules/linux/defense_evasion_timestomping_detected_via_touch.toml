@@ -8,7 +8,7 @@ id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
 license = "Elastic License v2"
 name = "Timestomping Detected via Touch"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -37,7 +37,7 @@ process.parent.executable != null and process.args like (
   process.args in (
     "/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff", "/etc/aliases.db", "/opt/cursor/cursor"
   ) or
-  process.args like ("--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*", "/var/tmp/portage*", "/snap/*", "/var/tmp/pmlogger_*/stamp") or
+  process.args like ("--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*", "/var/tmp/portage*", "/snap/*", "/var/tmp/pmlogger_*/stamp", "/opt/ubki/*.jar") or
   process.command_line in ("/bin/touch -a /tmp/au_status", "touch -d 2 seconds ago /etc/postfix/main.cf") or
   process.parent.command_line == "runc init" or
   process.working_directory in ("/opt/libexec", "/opt/local/src/connectxx/build/src/mdp")

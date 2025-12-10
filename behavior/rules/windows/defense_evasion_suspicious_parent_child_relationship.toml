@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -88,7 +88,8 @@ process where event.action == "start" and
    not (process.executable : ("C:\\Windows\\System32\\spoolsv.exe", "C:\\Windows\\System32\\RuntimeBroker.exe") and
         process.parent.executable : ("C:\\Program Files (x86)\\Workplace\\Components\\WorkplaceContainerComponent\\Current\\Workplace Starter.exe",
                                      "C:\\Program Files (x86)\\Workplace\\Components\\WorkplaceContainerComponent\\Current\\Workplace Container Helper.exe")) and
-   not (process.executable : "C:\\Windows\\Sys?????\\wbem\\WmiPrvSE.exe" and process.args : "/RegServer" and process.parent.name : ("powershell.exe", "cmd.exe"))
+   not (process.executable : "C:\\Windows\\Sys?????\\wbem\\WmiPrvSE.exe" and process.args : "/RegServer" and process.parent.name : ("powershell.exe", "cmd.exe")) and 
+   not (process.parent.name == "lsass.exe" and process.args : "C:\\Program` Files\\PasswordRBL\\passwdfw.ps1")
 '''
 
 min_endpoint_version = "7.15.0"

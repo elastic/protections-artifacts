@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.52"
+version = "1.0.53"
 
 query = '''
 sequence with maxspan=5m
@@ -102,6 +102,8 @@ sequence with maxspan=5m
   not (process.executable : "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and 
        process.args : "?:\\ProgramData\\PlatformInstall\\GideCode\\rtcresofz_Mecrrcpl.dll" and 
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
+
+  not (user.id == "S-1-5-18" and process.executable : "C:\\Windows\\System32\\msiexec.exe" and process.parent.executable : "C:\\Windows\\System32\\msiexec.exe") and
        
   not (process.executable : ("C:\\Windows\\System32\\sihost.exe", "C:\\Windows\\System32\\ShellHost.exe") and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.entity_id
@@ -152,11 +154,12 @@ sequence with maxspan=5m
 
   not (process.args : "$execWrapper" and process.name : "powershell.exe" and process.parent.name : "cmd.exe") and
 
-  not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG", "Elaborate Bytes AG") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc", "Proton AG", "Elaborate Bytes AG", "vast limits GmbH", "Read AI", "wespond UG (Haftungsbeschränkt)", "Reference Health") and process.code_signature.trusted == true) and
 
   not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe") and
 
-  not (process.parent.executable : "C:\\Windows\\explorer.exe" and process.parent.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|nsis_tauri_utils.dll")
+  not (process.parent.executable : "C:\\Windows\\explorer.exe" and process.parent.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|nsis_tauri_utils.dll") and
+  not (process.executable like "C:\\Program Files\\WindowsApps\\*.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
   ] by process.parent.Ext.real.entity_id
 '''
 

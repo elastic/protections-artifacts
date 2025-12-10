@@ -8,7 +8,7 @@ id = "eb928496-a992-4cee-9cd7-fc3fbae7e8da"
 license = "Elastic License v2"
 name = "Decode Activity via Web Server"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence with maxspan=5s
@@ -33,7 +33,7 @@ sequence with maxspan=5s
      process.parent.executable like (
        "/usr/bin/python*", "/opt/idea-IU*/jbr/bin/java", "/root/.vscode-server/*", "/home/*/.local/share/nvm/*node", "/h*/*/.cursor-server/*node",
        "/home/*/cursor-agent/*node", "/root/.cursor-server/cli/servers/*/server/node", "/*/*.cursor-server/*node", "/home/*.nvm/versions/node/*/node",
-       "/home/*/.local/share/cursor-agent/*/node"
+       "/home/*/.local/share/cursor-agent/*/node", "/home/linuxbrew/*node", "/home/*/.pyenv/*python*"
      ) or
      process.parent.args in ("./mmicro-control.pl", "/usr/bin/vncserver", "/usr/local/bin/vncserver") or
      process.parent.command_line like~ ("Serverd*", "*.ansible/tmp/ansible-tmp-*") or

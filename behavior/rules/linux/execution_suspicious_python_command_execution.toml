@@ -8,7 +8,7 @@ id = "028d01ae-bfbf-438e-a0d0-23aee55ea5c9"
 license = "Elastic License v2"
 name = "Suspicious Python Command Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -22,7 +22,8 @@ process.args == "-c" and process.command_line like~ (
 ) and process.working_directory like (
   "/var/www/*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/home/*", "/root/*"
 ) and not (
-  process.parent.args in ("pip", "install", "--pgo") or
+  process.parent.args in ("pip", "install", "--pgo", "/tmp/portage/bin/pid-ns-init") or
+  process.parent.args like "/home/*/bin/join-zoom.sh" or
   process.parent.name in ("pip", "pytest", "pip3", "sudo", "sshd", "teleport") or
   process.executable like~ ("/var/lib/docker/*", "/tmp/plz_sandbox/*") or
   process.command_line like (
@@ -43,7 +44,7 @@ process.args == "-c" and process.command_line like~ (
     "/var/lib/amazon/ssm/*", "/var/anaconda3/envs/*", "/tmp/plz_sandbox/test", "/usr/bin/cockpit-bridge",
     "/pro/bin/sys/dbutils/dbaValidateOsUserCredentials.sh", "/usr/sbin/lxc", "/sbin/lxc", "/data/flash/Linux_for_Tegra/flash.sh",
     "/usr/bin/ansible-playbook", "/usr/local/bin/teleport", "/usr/local/bin/odoo-helper", "/home/*/bin/join-zoom.sh",
-    "/usr/lib/openssh/sshd-session", "/usr/sbin/lxd"
+    "/usr/lib/openssh/sshd-session", "/usr/sbin/lxd", "/usr/sbin/tailscaled"
   ) or
   process.args like~ """import zlib,base64; exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTb*""" or
   process.working_directory like~ (
@@ -54,7 +55,9 @@ process.args == "-c" and process.command_line like~ (
     "/var/tmp/portage/*", "/tmp/build/*/ansible", "/root/thg-intelligence", "/home/*/*/*/*", "/root/airflow"
   ) or
   process.parent.command_line like~ "/nix/store/*pytest*" or
-  process.parent.command_line in ("/bin/bash /docker-entrypoint.sh worker", "/bin/bash /docker-entrypoint.sh")
+  process.parent.command_line in ("/bin/bash /docker-entrypoint.sh worker", "/bin/bash /docker-entrypoint.sh") or
+  (process.parent.args == "/usr/sbin/lxc" and process.parent.args in ("list", "info", "version")) or
+  (process.working_directory like "/tmp/tmp.*" and process.command_line == "python3 -c import socket; s = socket.socket(); s.bind(('', 0)); print(s.getsockname()[1]); s.close()")
 )
 '''
 

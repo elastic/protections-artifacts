@@ -7,7 +7,7 @@ id = "18439a4c-cd67-43f5-ac42-5c4210edeacb"
 license = "Elastic License v2"
 name = "Linux External IP Address Discovery via Curl"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "curl"
@@ -36,12 +36,17 @@ not (
     "./Linux_Inventory_Sheets.sh", "/opt/qvm/bin/update_info_qsuite", "/usr/lib/check_mk_agent/local/public_ip_check",
     "/opt/teleport/system/bin/teleport", "/opt/Elastic/Endpoint/elastic-endpoint", "/etc/update-motd.d/motd.sh",
     "/opt/coe/cadence/IC231/tools.lnx86/cda/bin/64bit/cda.exe", "/etc/update-motd.d/10-armbian-header",
-    "/opt/saltstack/salt/bin/python*", "/usr/bin/python*"
+    "/opt/saltstack/salt/bin/python*", "/usr/bin/python*", "/usr/local/bin/detect-external-ip"
   ) or
   process.parent.args == "/var/www/html/admin/modules/leucoalarm/scripts/system.php" or
   (
     process.parent.executable == "/usr/bin/java" and
     process.args : "/opt/streamsets-datacollector/libexec/bootstrap-libs/*"
+  ) or
+  process.parent.command_line == "runc init" or
+  (
+    process.parent.executable == "/usr/bin/busybox" and
+    (process.parent.command_line == "sh /etc/cont-init.d/50-ddns" or process.working_directory == "/opt/outline-server")
   )
 )
 '''

@@ -8,7 +8,7 @@ id = "fa71e336-0177-4732-b58b-53eb4a87a286"
 license = "Elastic License v2"
 name = "Suspicious Download and Redirect by Web Server"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -21,7 +21,7 @@ process where event.type == "start" and event.action == "exec" and (
   user.name in (
     "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
   ) or
-  user.id in (99, 33, 498, 48)
+  user.id in (33, 498, 48)
 ) and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
 process.args == "-c" and process.args : ("wget *", "curl *") and
@@ -35,7 +35,8 @@ process.command_line like (
   "*~/.ssh/*", "*nohup*", "*xxd *", "*/etc/shadow*", "*chattr *", "* nc *"
 ) and not (
   process.parent.name in ("cron", "crond") or
-  process.parent.executable : "/opt/puppetlabs/*" or
+  process.parent.args == "/usr/local/bin/d42grep" or
+  process.parent.executable like ("/opt/puppetlabs/*", "/root/.cursor-server/*/node", "/home/.cursor-server/*/node") or
   process.command_line : (
     "*nginx*.tar.gz*", "*rubyext-ruby*.tar.gz*", "*Content-Type: application/json*", "*Authorization: Bearer*",
     "sh -c curl* | grep*", """sh -c curl -H "Deliver-To*"""
@@ -47,7 +48,9 @@ process.command_line like (
   (process.parent.args like "scripts/generator/*.py" and process.working_directory == "/usr/src/app") or
   (process.parent.name == "java" and process.command_line like "*/home/asterisk/audio/*") or
   (process.parent.name == "node" and process.command_line like~ "/bin/bash -O extglob*") or
-  (process.parent.name == "perl" and process.parent.args == "-X")
+  (process.parent.name == "perl" and process.parent.args == "-X") or
+  (process.parent.executable == "/usr/bin/perl" and process.working_directory like "/home/*") or
+  (process.parent.args == "/cav/gtm/mumps" and process.working_directory == "/cav/gtm")
 )
 '''
 

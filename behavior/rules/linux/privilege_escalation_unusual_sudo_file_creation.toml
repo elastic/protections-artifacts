@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Unusual Sudo File Creation"
 os_list = ["linux"]
 reference = ["https://www.exploit-db.com/exploits/50808"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -23,7 +23,7 @@ sequence by process.entity_id with maxspan=15s
    not (
      file.path like (
       "/tmp/sh-thd.*", "/tmp/krb5cc_*", "/tmp/pam_krb5_tmp_*", "/tmp/ansible_ansible.legacy.*",
-      "/tmp/hsperfdata*"
+      "/tmp/hsperfdata*", "/tmp/newroot/run/sudo/ts/*"
     ) or
     file.name == ".sudo_as_admin_successful"
   )]

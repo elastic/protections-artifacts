@@ -7,7 +7,7 @@ id = "79165167-8419-4755-80c7-b151e08eee37"
 license = "Elastic License v2"
 name = "Reverse Shell Executed via Web Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=5s
@@ -31,7 +31,10 @@ sequence with maxspan=5s
       (process.args : "*sh*" and process.args : ("*/net/tcp*", "*/dev/tcp/*", "*/dev/udp/*")) or
       (process.args : ("*vim*", "*view*") and process.args : "*socket*") or
       (process.args : "*busybox*")
-    ) and not process.executable == "/opt/gam/gam"
+    ) and not (
+      process.executable == "/opt/gam/gam" or
+      process.working_directory == "/etc/openvpn"
+    )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(

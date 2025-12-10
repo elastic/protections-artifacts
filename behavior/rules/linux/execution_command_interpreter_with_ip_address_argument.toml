@@ -7,7 +7,7 @@ id = "99c1bc0d-6d96-4e3c-b246-c23a65971455"
 license = "Elastic License v2"
 name = "Command Interpreter with IP Address Argument"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -20,7 +20,8 @@ sequence by process.entity_id with maxspan=5s
      process.parent.executable like (
        "/mnt/Xilinx/PetaLinux/*", "/usr/local/cpanel/3rdparty/bin/php", "/var/anaconda3/envs/*/python",
        "/usr/share/cagefs-skeleton/usr/local/cpanel/3rdparty/bin/php"
-     )
+     ) or
+     (process.parent.executable like "/usr/local/cpanel/3rdparty/php/*/bin/php" and process.command_line like "*downloads.wordpress.org/*.*.*.*.zip*")
    )]
   [network where event.type == "start" and event.action == "connection_attempted" and process.name in ("curl", "wget") and
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(

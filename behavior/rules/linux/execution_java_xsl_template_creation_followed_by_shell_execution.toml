@@ -1,27 +1,27 @@
 [rule]
 description = """
-This rule detects shell executions spawned by Java parent processes in specific user directories, excluding Oracle
-SYSMAN schema and Enterprise Management Daemon (EMD) related working directories. Such behavior may indicate
-exploitation attempts or command execution.
+This rule detects the creation of a Java XSL or XSLT template file followed by a shell execution. This behavior is
+indicative of template injection attacks, where an attacker creates a malicious XSL/XSLT template to execute arbitrary
+shell commands via the Java process.
 """
-id = "565c5297-16f2-47aa-8537-2982475d30b2"
+id = "a8aa81be-a4e2-408f-8041-faa9b4169807"
 license = "Elastic License v2"
-name = "Shell Execution via Java Parent Process"
+name = "Java XSL Template Creation Followed by Shell Execution"
 os_list = ["linux"]
 reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.1"
+version = "1.0.3"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.name == "java" and
-process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
-process.working_directory like~ "/u0?/*" and user.id == 54321 and not (
-  process.working_directory like~ ("/u0*/*/sysman/emd", "/u0?/app/oracle/product/*/dbhome_*", "/u0?/app/oracle/product/*/db_*") or
-  process.command_line == "/bin/sh -c /u01/client_1/client/scheduler/execution_agent/bin/jssu" or
-  (process.working_directory == "/u01/domains/bi" and process.command_line like "*weblogic.Server*")
-)
+sequence with maxspan=1m 
+  [file where event.type == "creation" and process.name == "java" and file.extension in ("xsl", "xslt")] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+   process.args == "-c" and process.parent.name == "java" and
+   not process.args like ("kill -0*", "kill -9*", "echo $$", "cd*", "ls*", "kill -15*", "test*", "ulimit*", "python3 workspace.py")
+  ] by process.parent.entity_id
 '''
 
 min_endpoint_version = "7.15.0"
@@ -29,7 +29,12 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
-state = 0
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

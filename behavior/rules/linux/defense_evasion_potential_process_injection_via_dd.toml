@@ -1,15 +1,17 @@
 [rule]
 description = """
-This rule detects the use of the `dd` command to read or write to the `/proc/<pid>/mem` file. This activity can be used
-to inject code into a running process without the need for `ptrace`. This technique is used by malware to evade
+This rule detects the use of the "dd" command to read or write to the "/proc/<pid>/mem" file. This activity can be used
+to inject code into a running process without the need for "ptrace". This technique is used by malware to evade
 detection.
 """
 id = "38108046-32a6-407f-b5fd-6943ffdcdab0"
 license = "Elastic License v2"
 name = "Potential Process Injection via dd"
 os_list = ["linux"]
-reference = ["https://cyber.aon.com/aon_cyber_labs/linux-based-inter-process-code-injection-without-ptrace2/"]
-version = "1.0.3"
+reference = [
+    "https://web.archive.org/web/20250129100828/https://cyber.aon.com/aon_cyber_labs/linux-based-inter-process-code-injection-without-ptrace2/",
+]
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "dd" and

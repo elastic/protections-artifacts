@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
@@ -43,7 +43,9 @@ not (
       "/var/spool/cron/root", "/var/spool/cron", "/etc/crontab", "/etc/ld.so.preload", "/etc/hosts", "/etc/fstab",
       "/etc/ssh/sshd_config", "/etc/sssd/sssd.conf", "/etc/vxagent/involflt"
     )
-  )
+  ) or
+  (process.working_directory == "/mdm_shared/postgresql/15/main" and process.command_line == "chattr -iua /tmp") or
+  (process.parent.args == "/opt/forticlientems/bin/setup_cli.sh" and process.command_line == "chattr +i /usr/local/bin/ems_vm_shell.sh")
 )
 '''
 

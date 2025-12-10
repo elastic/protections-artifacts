@@ -7,7 +7,7 @@ id = "742037b3-3ef6-4a33-84ed-b26fc6ae322c"
 license = "Elastic License v2"
 name = "Linux File Made Executable by Suspicious Parent"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.name == "chmod" and
@@ -16,7 +16,8 @@ process.parent.executable != null and not (
   (process.parent.executable == "/etc/init.d/nagios" and process.args in (
     "/dev/shm/tmp", "/dev/shm/var", "/dev/shm/checkresults")
   ) or
-  process.parent.executable == "./install-attachment-registration-manager.sh"
+  process.parent.executable == "./install-attachment-registration-manager.sh" or
+  process.parent.command_line == "runc init"
 )
 '''
 

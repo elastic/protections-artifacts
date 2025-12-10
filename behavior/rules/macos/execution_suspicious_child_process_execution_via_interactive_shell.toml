@@ -8,7 +8,7 @@ id = "f10a679a-c266-494f-b3aa-53830949d288"
 license = "Elastic License v2"
 name = "Suspicious Child Process Execution via Interactive Shell"
 os_list = ["macos"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 sequence by process.Ext.effective_parent.entity_id with maxspan=1m
@@ -17,7 +17,7 @@ sequence by process.Ext.effective_parent.entity_id with maxspan=1m
   process.parent.name like~ ("osascript", "python*", "node")]
 [process where event.type == "start" and event.action == "exec" and 
   process.name like~ ("curl", "whoami", "pwd", "nscurl", "wget", "dscl", "osascript", ".*") and
-  not process.args in~ ("SendEnv=GIT_PROTOCOL", "-V", "--version", "-ss") and
+  not process.args like~ ("SendEnv=GIT_PROTOCOL", "-V", "--version", "-ss", "localhost*") and
   not process.parent.executable like~ 
                                   ("/Library/Developer/CommandLineTools/usr/bin/git",
                                    "/Users/*/.pyenv/*",

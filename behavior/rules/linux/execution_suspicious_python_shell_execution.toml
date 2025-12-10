@@ -7,7 +7,7 @@ id = "d9617a18-cf8b-4bae-b335-598ddabc287c"
 license = "Elastic License v2"
 name = "Suspicious Python Shell Execution"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.working_directory != null and
@@ -29,7 +29,8 @@ process.parent.command_line like~ (
   ) or
   process.parent.args like~ (
     """import zlib,base64; exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTb*""",
-    "easybuild.main", "*Thomas Nagy*", "*https://waf.io/book/index.html#_obtaining_the_waf_file*"
+    "easybuild.main", "*Thomas Nagy*", "*https://waf.io/book/index.html#_obtaining_the_waf_file*",
+    "/usr/lib/portage/python*/pid-ns-init", "/usr/lib/python-exec/python*/emerge", "/usr/bin/py3compile"
   ) or
   process.parent.command_line == "/usr/local/bin/python -u -c import sys;exec(eval(sys.stdin.readline()))"  or
   process.parent.command_line like (

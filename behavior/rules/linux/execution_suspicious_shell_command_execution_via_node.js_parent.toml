@@ -1,0 +1,88 @@
+[rule]
+description = """
+This rule detects when a shell command is executed as a child process of a Node.js process. Attackers may use Node.js to
+run shell commands for various malicious purposes, such as downloading and executing payloads, establishing persistence,
+or exfiltrating data.
+"""
+id = "5f6dbe52-6643-486f-9130-256f58ba9a0c"
+license = "Elastic License v2"
+name = "Suspicious Shell Command Execution via Node.js Parent"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.parent.executable in ("/bin/node", "/usr/bin/node", "/usr/local/bin/node") and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and (
+  (process.command_line like "*echo *" and process.command_line like (
+    "*./.*", "*http://*", "*https://*", "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*",
+    "*import*subprocess*call*", "*TCPSocket.new*", "*TCPSocket.open*", "*io.popen*", "*os.execute*",
+    "*fsockopen*", "*disown*", "*wget*", "*curl*"
+    )
+  ) or
+  (
+    process.command_line like (
+      "*/etc/cron*", "*/etc/rc.local*", "*/dev/tcp/*", "*/etc/init.d*", "*/etc/update-motd.d*",
+      "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *", "*base16 *", "*/etc/profile.d/*",
+      "*/dev/shm/*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*" , "*~/.ssh/*", "*autostart*",
+      "*xxd *", "*/etc/shadow*", "*/var/tmp/*"
+    )
+  ) or
+  (process.command_line regex~ """.*http?://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.*""")
+) and 
+not (
+  process.executable like "/tmp/newroot/*" or
+  process.command_line like ("*169.254.169.254*", "*localhost*", "*127.0.0.1*", "*SNAPSHOT_FILE=*", "*/tmp/claude-shell-snapshot*") or
+  process.args like ("-l SNAPSHOT_FILE*", "-l source*", "NODE_TLS_REJECT_UNAUTHORIZED=0*", "*.claude/*", "ssh-keyscan*", "supergateway --sse*") or
+  (
+    process.command_line like "/bin/sh -c rm -rf /dev/shm/streams/*" and
+    process.parent.args == "/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js"
+  ) or
+  process.command_line == """/bin/sh -c echo BROWSER=none > .env && echo DEMO=true >> .env && echo PORT=3000 >> .env && printf "PUBLIC_URL=http://$(hostname -I | awk '{print $1}'):3000/\n" >> .env && echo WDS_SOCKET_PORT=3000 >> .env && printf "WDS_SOCKET_HOST=$(hostname -I | awk '{print $1}')\n" >> .env && echo JSX_IMPORT_SOURCE=@ac/library-utils/dist/web-components/wc-jsx >> .env"""
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

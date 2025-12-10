@@ -7,7 +7,7 @@ id = "40bec6eb-e93b-4d09-8265-66bba186e332"
 license = "Elastic License v2"
 name = "Potential Reverse Shell via Named Pipe"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=1m
@@ -32,7 +32,8 @@ sequence by process.parent.entity_id with maxspan=1m
      process.args like (
        "collect/ss_stats.txt", "/tmp/tmp.*", "collect/ss.txt", "collect/sysctl.txt", "collect/systemctl-status.txt",
        "/home/jetson/Linux_for_Tegra/rootfs/dev/urandom", "/run/exabgp/exabgp.out", "/dev/vboxusb/*",
-       "/var/tmp/.oracle/npohasd*", "/var/tmp/dracut*", "/tmp/.criu*", "/vz/*", "/var/log/misp_upgrade.log.pipe"
+       "/var/tmp/.oracle/npohasd*", "/var/tmp/dracut*", "/tmp/.criu*", "/vz/*", "/var/log/misp_upgrade.log.pipe",
+       "/home/vscode/cedar-dev-environment/cedar/venv/bin/python" 
      ) or
      process.command_line like ("mknod /tmp/*.tmp p", "mkfifo /run/user/*") or
      (

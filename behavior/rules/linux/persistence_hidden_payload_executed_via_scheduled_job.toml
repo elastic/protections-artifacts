@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -37,7 +37,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c /webmail/tools/alluser.pl > /webmail/modules/ad_sync/etc/.always_keep.list",
     "/bin/sh -c bash /root/.pf-new-vpn-ssl-check.sh",
     "/bin/sh -c /bin/bash $HOME/.backup.sh",
-    "/bin/sh -c /bin/mysql_tzinfo_to_sql /usr/share/zoneinfo/| /bin/mysql --defaults-file=/root/.my.cnf mysql"
+    "/bin/sh -c /bin/mysql_tzinfo_to_sql /usr/share/zoneinfo/| /bin/mysql --defaults-file=/root/.my.cnf mysql",
+    "/bin/sh -c /bin/echo -n >/data/EXPORT/.approved"
   ) or
   process.command_line like (
     "*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*", "/bin/sh -c /backup/store_Weight_LABEL/.create_site.sh*",

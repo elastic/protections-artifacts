@@ -9,13 +9,16 @@ id = "4c0a820c-fe42-400b-8b20-57bc7d256f36"
 license = "Elastic License v2"
 name = "Suspicious Dscl Auth Validation"
 os_list = ["macos"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "dscl" and 
  process.args like~ "-authonly" and ((process.parent.code_signature.exists == false or process.parent.code_signature.trusted == false) or process.parent.name in ("sh", "zsh", "bash")) and
  not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                  "/Library/csdaemon/csdaemon",
+                                                 "/Applications/NinjaRMMAgent/programfiles/ninjarmm-macagent",
+                                                 "/usr/bin/dscl",
+                                                 "/usr/local/jamf/bin/jamf",
                                                  "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService")
 '''
 

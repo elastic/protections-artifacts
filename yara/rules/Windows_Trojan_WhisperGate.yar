@@ -9,7 +9,7 @@ rule Windows_Trojan_WhisperGate_9192618b {
         reference = "https://www.elastic.co/security-labs/operation-bleeding-bear"
         reference_sample = "dcbbae5a1c61dbbbb7dcd6dc5dd1eb1169f5329958d38b58c3fd9384081c9b78"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

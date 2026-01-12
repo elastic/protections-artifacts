@@ -8,7 +8,7 @@ rule Windows_Hacktool_Gmer_8aabdd5e {
         threat_name = "Windows.Hacktool.Gmer"
         reference_sample = "18c909a2b8c5e16821d6ef908f56881aa0ecceeaccb5fa1e54995935fcfd12f7"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_Nimplant_44ff3211 {
         threat_name = "Windows.Trojan.Nimplant"
         reference_sample = "b56e20384f98e1d2417bb7dcdbfb375987dd075911b74ea7ead082494836b8f4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

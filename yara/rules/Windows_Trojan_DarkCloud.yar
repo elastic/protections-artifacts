@@ -8,7 +8,7 @@ rule Windows_Trojan_DarkCloud_9905abce {
         threat_name = "Windows.Trojan.DarkCloud"
         reference_sample = "500cb8459c19acd5a1144c4b509c14dbddec74ad623896bfe946fde1cd99a571"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

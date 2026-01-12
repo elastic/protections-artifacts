@@ -10,7 +10,7 @@ rule Windows_Trojan_Behinder_b9a49f4b {
         reference = "https://www.elastic.co/security-labs/ref2924-howto-maintain-persistence-as-an-advanced-threat"
         reference_sample = "a50ca8df4181918fe0636272f31e19815f1b97cce6d871e15e03b0ee0e3da17b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

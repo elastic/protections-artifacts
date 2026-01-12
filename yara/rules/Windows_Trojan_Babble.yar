@@ -8,7 +8,7 @@ rule Windows_Trojan_Babble_0d6c9505 {
         threat_name = "Windows.Trojan.Babble"
         reference_sample = "fa292bfcf81223bab0f79d4ce08187e37d68960005629df0241ea22f0b95d7a8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_OnlyLogger_b9e88336 {
         threat_name = "Windows.Trojan.OnlyLogger"
         reference_sample = "69876ee4d89ba68ee86f1a4eaf0a7cb51a012752e14c952a177cd5ffd8190986"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_OnlyLogger_ec14d5f2 {
         threat_name = "Windows.Trojan.OnlyLogger"
         reference_sample = "f45adcc2aad5c0fd900df4521f404bc9ca71b01e3378a5490f5ae2f0c711912e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

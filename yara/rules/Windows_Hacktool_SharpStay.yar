@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpStay_eac706c5 {
         threat_name = "Windows.Hacktool.SharpStay"
         reference_sample = "498d201f65b57a007a79259ce7015eb7eb1bba660d44deafea716e36316a9caa"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

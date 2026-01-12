@@ -9,7 +9,7 @@ rule Windows_Ransomware_Ragnarok_1cab7ea1 : beta {
         threat_name = "Windows.Ransomware.Ragnarok"
         reference = "https://twitter.com/malwrhunterteam/status/1256263426441125888?s=20"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Ragnarok_7e802f95 : beta {
         threat_name = "Windows.Ransomware.Ragnarok"
         reference = "https://twitter.com/malwrhunterteam/status/1256263426441125888?s=20"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -52,7 +52,7 @@ rule Windows_Ransomware_Ragnarok_efafbe48 : beta {
         threat_name = "Windows.Ransomware.Ragnarok"
         reference = "https://twitter.com/malwrhunterteam/status/1256263426441125888?s=20"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -81,7 +81,7 @@ rule Windows_Ransomware_Ragnarok_5625d3f6 : beta {
         threat_name = "Windows.Ransomware.Ragnarok"
         reference = "https://twitter.com/malwrhunterteam/status/1256263426441125888?s=20"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

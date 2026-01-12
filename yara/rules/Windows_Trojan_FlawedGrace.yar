@@ -8,7 +8,7 @@ rule Windows_Trojan_FlawedGrace_8c5eb04b {
         threat_name = "Windows.Trojan.FlawedGrace"
         reference_sample = "966112f3143d751a95c000a990709572ac8b49b23c0e57b2691955d6fda1016e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

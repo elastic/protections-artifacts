@@ -8,7 +8,7 @@ rule Windows_Trojan_Latrodectus_841ff697 {
         threat_name = "Windows.Trojan.Latrodectus"
         reference_sample = "aee22a35cbdac3f16c3ed742c0b1bfe9739a13469cf43b36fb2c63565111028c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

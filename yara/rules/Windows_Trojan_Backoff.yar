@@ -7,7 +7,7 @@ rule Windows_Trojan_Backoff_22798f00 {
         last_modified = "2022-09-29"
         threat_name = "Windows.Trojan.Backoff"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

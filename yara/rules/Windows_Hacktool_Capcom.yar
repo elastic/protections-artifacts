@@ -9,7 +9,7 @@ rule Windows_Hacktool_Capcom_7abae448 {
         threat_name = "Windows.Hacktool.Capcom"
         reference_sample = "da6ca1fb539f825ca0f012ed6976baf57ef9c70143b7a1e88b4650bf7a925e24"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

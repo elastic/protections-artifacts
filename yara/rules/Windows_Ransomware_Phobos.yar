@@ -9,7 +9,7 @@ rule Windows_Ransomware_Phobos_a5420148 : beta {
         threat_name = "Windows.Ransomware.Phobos"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.phobos"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Ransomware_Phobos_ff55774d : beta {
         threat_name = "Windows.Ransomware.Phobos"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.phobos"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -53,7 +53,7 @@ rule Windows_Ransomware_Phobos_11ea7be5 : beta {
         threat_name = "Windows.Ransomware.Phobos"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.phobos"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

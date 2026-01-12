@@ -8,7 +8,7 @@ rule Windows_Ransomware_Agenda_d7b1af3f {
         threat_name = "Windows.Ransomware.Agenda"
         reference_sample = "117fc30c25b1f28cd923b530ab9f91a0a818925b0b89b8bc9a7f820a9e630464"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

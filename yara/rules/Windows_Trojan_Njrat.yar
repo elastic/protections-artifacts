@@ -8,7 +8,7 @@ rule Windows_Trojan_Njrat_30f3c220 {
         threat_name = "Windows.Trojan.Njrat"
         reference_sample = "741a0f3954499c11f9eddc8df7c31e7c59ca41f1a7005646735b8b1d53438c1b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -33,7 +33,7 @@ rule Windows_Trojan_Njrat_eb2698d2 {
         threat_name = "Windows.Trojan.Njrat"
         reference_sample = "d537397bc41f0a1cb964fa7be6658add5fe58d929ac91500fc7770c116d49608"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

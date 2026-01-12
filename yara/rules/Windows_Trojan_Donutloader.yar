@@ -7,7 +7,7 @@ rule Windows_Trojan_Donutloader_f40e3759 {
         last_modified = "2022-01-13"
         threat_name = "Windows.Trojan.Donutloader"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -27,7 +27,7 @@ rule Windows_Trojan_Donutloader_5c38878d {
         last_modified = "2021-01-13"
         threat_name = "Windows.Trojan.Donutloader"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -47,7 +47,7 @@ rule Windows_Trojan_Donutloader_21e801e0 {
         threat_name = "Windows.Trojan.Donutloader"
         reference_sample = "c3bda62725bb1047d203575bbe033f0f95d4dd6402c05f9d0c69d24bd3224ca6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

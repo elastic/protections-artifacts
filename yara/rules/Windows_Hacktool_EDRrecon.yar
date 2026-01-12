@@ -8,7 +8,7 @@ rule Windows_Hacktool_EDRrecon_69453aff {
         threat_name = "Windows.Hacktool.EDRrecon"
         reference_sample = "f62e51b2405c0d42c53ff1f560376ef0530ba2eea1c97e18f2a3cf148346bcd1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Hacktool_EDRrecon_ca314aa1 {
         threat_name = "Windows.Hacktool.EDRrecon"
         reference_sample = "f62e51b2405c0d42c53ff1f560376ef0530ba2eea1c97e18f2a3cf148346bcd1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

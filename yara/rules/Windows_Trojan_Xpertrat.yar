@@ -8,7 +8,7 @@ rule Windows_Trojan_Xpertrat_ce03c41d {
         threat_name = "Windows.Trojan.Xpertrat"
         reference_sample = "d7f2fddb43eb63f9246f0a4535dfcca6da2817592455d7eceaacde666cf1aaae"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Hacktool_Rubeus_43f18623 {
         threat_name = "Windows.Hacktool.Rubeus"
         reference_sample = "b7b4691ad1cdad7663c32d07e911a03d9cc8b104f724c2825fd4957007649235"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

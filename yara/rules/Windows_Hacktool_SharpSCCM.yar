@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpSCCM_9bef8dab {
         threat_name = "Windows.Hacktool.SharpSCCM"
         reference_sample = "2e169c4fd16627029445bb0365a2f9ee61ab6b3757b8ad02fd210ce85dc9c97f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

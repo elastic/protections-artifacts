@@ -8,7 +8,7 @@ rule Windows_Trojan_HijackLoader_a8444812 {
         threat_name = "Windows.Trojan.HijackLoader"
         reference_sample = "065c379a33ef1539e8a68fd4b7638fe8a30ec19fc128642ed0c68539656374b9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

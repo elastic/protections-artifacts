@@ -8,7 +8,7 @@ rule Windows_Trojan_DreamJob_00cf26dc {
         threat_name = "Windows.Trojan.DreamJob"
         reference_sample = "0c69fd9be0cc9fadacff2c0bacf59dab6d935b02b5b8d2c9cb049e9545bb55ce"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

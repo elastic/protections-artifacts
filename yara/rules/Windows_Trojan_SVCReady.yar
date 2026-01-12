@@ -8,7 +8,7 @@ rule Windows_Trojan_SVCReady_af498d39 {
         threat_name = "Windows.Trojan.SVCReady"
         reference_sample = "08e427c92010a8a282c894cf5a77a874e09c08e283a66f1905c131871cc4d273"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

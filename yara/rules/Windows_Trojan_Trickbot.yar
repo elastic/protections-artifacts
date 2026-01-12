@@ -8,7 +8,7 @@ rule Windows_Trojan_Trickbot_01365e46 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "5c450d4be39caef1d9ec943f5dfeb6517047175fec166a52970c08cd1558e172"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Trickbot_06fd4ac4 {
         description = "Identifies Trickbot unpacker"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -47,7 +47,7 @@ rule Windows_Trojan_Trickbot_ce4305d1 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -66,7 +66,7 @@ rule Windows_Trojan_Trickbot_1e56fad7 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -85,7 +85,7 @@ rule Windows_Trojan_Trickbot_93c9a2a4 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -104,7 +104,7 @@ rule Windows_Trojan_Trickbot_5340afa3 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -123,7 +123,7 @@ rule Windows_Trojan_Trickbot_e7932501 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -142,7 +142,7 @@ rule Windows_Trojan_Trickbot_cd0868d5 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -161,7 +161,7 @@ rule Windows_Trojan_Trickbot_515504e2 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -180,7 +180,7 @@ rule Windows_Trojan_Trickbot_a0fc8f35 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -199,7 +199,7 @@ rule Windows_Trojan_Trickbot_cb95dc06 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -218,7 +218,7 @@ rule Windows_Trojan_Trickbot_9d4d3fa4 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -237,7 +237,7 @@ rule Windows_Trojan_Trickbot_34f00046 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -256,7 +256,7 @@ rule Windows_Trojan_Trickbot_f2a18b09 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -275,7 +275,7 @@ rule Windows_Trojan_Trickbot_d916ae65 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -294,7 +294,7 @@ rule Windows_Trojan_Trickbot_52722678 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -313,7 +313,7 @@ rule Windows_Trojan_Trickbot_28a60148 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -332,7 +332,7 @@ rule Windows_Trojan_Trickbot_997b25a0 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -351,7 +351,7 @@ rule Windows_Trojan_Trickbot_b17b33a1 {
         last_modified = "2021-08-23"
         threat_name = "Windows.Trojan.Trickbot"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -372,7 +372,7 @@ rule Windows_Trojan_Trickbot_23d77ae5 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "844974A2D3266E1F9BA275520C0E8A5D176DF69A0CCD5135B99FACF798A5D209"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -406,7 +406,7 @@ rule Windows_Trojan_Trickbot_5574be7d {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "8c5c0d27153f60ef8aec57def2f88e3d5f9a7385b5e8b8177bab55fa7fac7b18"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -442,7 +442,7 @@ rule Windows_Trojan_Trickbot_1473f0b4 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "9cfb441eb5c60ab1c90b58d4878543ee554ada2cceee98d6b867e73490d30fec"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -469,7 +469,7 @@ rule Windows_Trojan_Trickbot_dcf25dde {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "BA2A255671D33677CAB8D93531EB25C0B1F1AC3E3085B95365A017463662D787"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -512,7 +512,7 @@ rule Windows_Trojan_Trickbot_46dc12dd {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "BF38A787AEE5AFDCAB00B95CCDF036BC7F91F07151B4444B54165BB70D649CE5"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -538,7 +538,7 @@ rule Windows_Trojan_Trickbot_78a26074 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "8CD75FA8650EBCF0A6200283E474A081CC0BE57307E54909EE15F4D04621DDE0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -574,7 +574,7 @@ rule Windows_Trojan_Trickbot_217b9c97 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "1E90A73793017720C9A020069ED1C87879174C19C3B619E5B78DB8220A63E9B7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -611,7 +611,7 @@ rule Windows_Trojan_Trickbot_d2110921 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "05EF40F7745DB836DE735AC73D6101406E1D9E58C6B5F5322254EB75B98D236A"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -642,7 +642,7 @@ rule Windows_Trojan_Trickbot_0114d469 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "083CB35A7064AA5589EFC544AC1ED1B04EC0F89F0E60383FCB1B02B63F4117E9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -677,7 +677,7 @@ rule Windows_Trojan_Trickbot_07239dad {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "DBD534F2B5739F89E99782563062169289F23AA335639A9552173BEDC98BB834"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -713,7 +713,7 @@ rule Windows_Trojan_Trickbot_fd7a39af {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "D5BB8D94B71D475B5EB9BB4235A428563F4104EA49F11EF02C8A08D2E859FD68"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -749,7 +749,7 @@ rule Windows_Trojan_Trickbot_2d89e9cd {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "3963649ebfabe8f6277190be4300ecdb68d4b497ac5f81f38231d3e6c862a0a8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -795,7 +795,7 @@ rule Windows_Trojan_Trickbot_32930807 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "e999b83629355ec7ff3b6fda465ef53ce6992c9327344fbf124f7eb37808389d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -818,7 +818,7 @@ rule Windows_Trojan_Trickbot_618b27d2 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "d3ec8f4a46b21fb189fc3d58f3d87bf9897653ecdf90b7952dcc71f3b4023b4e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -853,7 +853,7 @@ rule Windows_Trojan_Trickbot_6eb31e7b {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "3e3d82ea4764b117b71119e7c2eecf46b7c2126617eafccdfc6e96e13da973b1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -882,7 +882,7 @@ rule Windows_Trojan_Trickbot_91516cf4 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "6cd0d4666553fd7184895502d48c960294307d57be722ebb2188b004fc1a8066"
         severity = 80
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -906,7 +906,7 @@ rule Windows_Trojan_Trickbot_be718af9 {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "c1f1bc58456cff7413d7234e348d47a8acfdc9d019ae7a4aba1afc1b3ed55ffa"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -931,7 +931,7 @@ rule Windows_Trojan_Trickbot_f8dac4bc {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "13d102d546b9384f944f2a520ba32fb5606182bed45a8bba681e4374d7e5e322"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -963,7 +963,7 @@ rule Windows_Trojan_Trickbot_9c0fa8fe {
         threat_name = "Windows.Trojan.Trickbot"
         reference_sample = "f528c3ea7138df7c661d88fafe56d118b6ee1d639868212378232ca09dc9bfad"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

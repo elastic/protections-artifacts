@@ -8,7 +8,7 @@ rule Windows_Trojan_DustyWarehouse_a6cfc9f7 {
         threat_name = "Windows.Trojan.DustyWarehouse"
         reference_sample = "8c4de69e89dcc659d2fff52d695764f1efd7e64e0a80983ce6d0cb9eeddb806c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_DustyWarehouse_3fef514b {
         threat_name = "Windows.Trojan.DustyWarehouse"
         reference_sample = "4ad024f53595fdd380f5b5950b62595cd47ac424d2427c176a7b2dfe4e1f35f7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

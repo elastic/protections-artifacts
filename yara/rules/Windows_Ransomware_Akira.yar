@@ -8,7 +8,7 @@ rule Windows_Ransomware_Akira_c8c298ba {
         threat_name = "Windows.Ransomware.Akira"
         reference_sample = "a2df5477cf924bd41241a3326060cc2f913aff2379858b148ddec455e4da67bc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

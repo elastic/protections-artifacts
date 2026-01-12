@@ -9,7 +9,7 @@ rule Windows_Ransomware_Ryuk_25d3c5ba : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Ryuk_878bae7e : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -52,7 +52,7 @@ rule Windows_Ransomware_Ryuk_6c726744 : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -77,7 +77,7 @@ rule Windows_Ransomware_Ryuk_1a4ad952 : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -98,7 +98,7 @@ rule Windows_Ransomware_Ryuk_72b5fd9d : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -119,7 +119,7 @@ rule Windows_Ransomware_Ryuk_8ba51798 : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -147,7 +147,7 @@ rule Windows_Ransomware_Ryuk_88daaf8e : beta {
         threat_name = "Windows.Ransomware.Ryuk"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.ryuk"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

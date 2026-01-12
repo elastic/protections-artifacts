@@ -8,7 +8,7 @@ rule Windows_Ransomware_Cicada3301_99fee259 {
         threat_name = "Windows.Ransomware.Cicada3301"
         reference_sample = "7b3022437b637c44f42741a92c7f7ed251845fd02dda642c0a47fde179bd984e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

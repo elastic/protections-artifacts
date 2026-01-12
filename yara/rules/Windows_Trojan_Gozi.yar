@@ -8,7 +8,7 @@ rule Windows_Trojan_Gozi_fd494041 {
         threat_name = "Windows.Trojan.Gozi"
         reference_sample = "0a1c1557bdb8c1b99e2b764fc6b21a07e33dc777b492a25a55cbd8737031e237"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -41,7 +41,7 @@ rule Windows_Trojan_Gozi_261f5ac5 {
         threat_name = "Windows.Trojan.Gozi"
         reference_sample = "31835c6350177eff88265e81335a50fcbe0dc46771bf031c836947851dcebb4f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_PizzaPotion_d334c613 {
         threat_name = "Windows.Trojan.PizzaPotion"
         reference_sample = "37bee101cf34a84cba49adb67a555c6ebd3b8ac7c25d50247b0a014c82630003"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_DodgeBox_095012d2 {
         threat_name = "Windows.Trojan.DodgeBox"
         reference_sample = "c6a3a1ea84251aed908702a1f2a565496d583239c5f467f5dcd0cfc5bfb1a6db"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

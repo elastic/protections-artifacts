@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpView_2c7603ad {
         threat_name = "Windows.Hacktool.SharpView"
         reference_sample = "c0621954bd329b5cabe45e92b31053627c27fa40853beb2cce2734fa677ffd93"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

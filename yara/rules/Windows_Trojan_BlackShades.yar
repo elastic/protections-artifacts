@@ -8,7 +8,7 @@ rule Windows_Trojan_BlackShades_9d095c44 {
         threat_name = "Windows.Trojan.BlackShades"
         reference_sample = "e58e352edaa8ae7f95ab840c53fcaf7f14eb640df9223475304788533713c722"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -35,7 +35,7 @@ rule Windows_Trojan_BlackShades_be382dac {
         threat_name = "Windows.Trojan.BlackShades"
         reference_sample = "e58e352edaa8ae7f95ab840c53fcaf7f14eb640df9223475304788533713c722"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

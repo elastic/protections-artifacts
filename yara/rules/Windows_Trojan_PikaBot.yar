@@ -9,7 +9,7 @@ rule Windows_Trojan_PikaBot_8c6750b5 {
         reference = "https://www.elastic.co/security-labs/pikabot-i-choose-you"
         reference_sample = "59f42ecde152f78731e54ea27e761bba748c9309a6ad1c2fd17f0e8b90f8aed1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -35,7 +35,7 @@ rule Windows_Trojan_PikaBot_5b220e9c {
         reference = "https://www.elastic.co/security-labs/pikabot-i-choose-you"
         reference_sample = "d836b06b0118e6d258e318b1cfdc509cacc0859c6a6b3d7c5f4d2525e00d97b2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -62,7 +62,7 @@ rule Windows_Trojan_PikaBot_5441f511 {
         threat_name = "Windows.Trojan.PikaBot"
         reference = "https://www.elastic.co/security-labs/pikabot-i-choose-you"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -88,7 +88,7 @@ rule Windows_Trojan_PikaBot_95db8b5a {
         threat_name = "Windows.Trojan.PikaBot"
         reference = "https://www.elastic.co/security-labs/pikabot-i-choose-you"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

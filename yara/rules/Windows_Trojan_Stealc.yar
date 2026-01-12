@@ -8,7 +8,7 @@ rule Windows_Trojan_Stealc_b8ab9ab5 {
         threat_name = "Windows.Trojan.Stealc"
         reference_sample = "0d1c07c84c54348db1637e21260dbed09bd6b7e675ef58e003d0fe8f017fd2c8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -36,7 +36,7 @@ rule Windows_Trojan_Stealc_a2b71dc4 {
         threat_name = "Windows.Trojan.Stealc"
         reference_sample = "0d1c07c84c54348db1637e21260dbed09bd6b7e675ef58e003d0fe8f017fd2c8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -59,7 +59,7 @@ rule Windows_Trojan_Stealc_5d3f297c {
         threat_name = "Windows.Trojan.Stealc"
         reference_sample = "885c8cd8f7ad93f0fd43ba4fb7f14d94dfdee3d223715da34a6e2fbb4d25b9f4"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -79,7 +79,7 @@ rule Windows_Trojan_Stealc_41db1d4d {
         threat_name = "Windows.Trojan.Stealc"
         reference_sample = "a68bc167669c7c98b6742209acea111be61e6002aa652a7b8116af47b284b084"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

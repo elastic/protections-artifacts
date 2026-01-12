@@ -8,7 +8,7 @@ rule Windows_Trojan_Garble_eae7f2f7 {
         threat_name = "Windows.Trojan.Garble"
         reference_sample = "4820a1ec99981e03675a86c4c01acba6838f04945b5f753770b3de4e253e1b8c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

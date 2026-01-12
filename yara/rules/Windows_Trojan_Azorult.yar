@@ -8,7 +8,7 @@ rule Windows_Trojan_Azorult_38fce9ea {
         threat_name = "Windows.Trojan.Azorult"
         reference_sample = "405d1e6196dc5be1f46a1bd07c655d1d4b36c32f965d9a1b6d4859d3f9b84491"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

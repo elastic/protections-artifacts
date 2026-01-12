@@ -8,7 +8,7 @@ rule Windows_Trojan_PlugX_5f3844ff {
         threat_name = "Windows.Trojan.PlugX"
         reference_sample = "a823380e46878dfa8deb3ca0dc394db1db23bb2544e2d6e49c0eceeffb595875"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_PlugX_f338dab5 {
         threat_name = "Windows.Trojan.PlugX"
         reference_sample = "8af3fc1f8bd13519d78ee83af43daaa8c5e2c3f184c09f5c41941e0c6f68f0f7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -54,7 +54,7 @@ rule Windows_Trojan_PlugX_31930182 {
         threat_name = "Windows.Trojan.PlugX"
         reference_sample = "22bbf2f3e262eaeb6d2621396510f6cd81a1ce77600f7f6cb67340335596c544"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

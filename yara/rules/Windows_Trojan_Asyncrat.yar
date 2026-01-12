@@ -8,7 +8,7 @@ rule Windows_Trojan_Asyncrat_11a11ba1 {
         threat_name = "Windows.Trojan.Asyncrat"
         reference_sample = "fe09cd1d13b87c5e970d3cbc1ebc02b1523c0a939f961fc02c1395707af1c6d1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

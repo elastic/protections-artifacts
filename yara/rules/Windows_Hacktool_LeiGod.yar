@@ -8,7 +8,7 @@ rule Windows_Hacktool_LeiGod_89397ebf {
         threat_name = "Windows.Hacktool.LeiGod"
         reference_sample = "ae5cc99f3c61c86c7624b064fd188262e0160645c1676d231516bf4e716a22d3"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Hacktool_LeiGod_3f5c98c4 {
         threat_name = "Windows.Hacktool.LeiGod"
         reference_sample = "0c42fe45ffa9a9c36c87a7f01510a077da6340ffd86bf8509f02c6939da133c5"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

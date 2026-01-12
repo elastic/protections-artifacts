@@ -8,7 +8,7 @@ rule Windows_Ransomware_Generic_99f5a632 {
         threat_name = "Windows.Ransomware.Generic"
         reference_sample = "4dc13bb83a16d4ff9865a51b3e4d24112327c526c1392e14d56f20d6f4eaf382"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

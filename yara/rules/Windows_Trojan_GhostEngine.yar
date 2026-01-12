@@ -8,7 +8,7 @@ rule Windows_Trojan_GhostEngine_8ea2aa65 {
         threat_name = "Windows.Trojan.GhostEngine"
         reference_sample = "2fe78941d74d35f721556697491a438bf3573094d7ac091b42e4f59ecbd25753"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

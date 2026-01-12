@@ -8,7 +8,7 @@ rule Windows_Ransomware_Hellokitty_8859e8e8 {
         threat_name = "Windows.Ransomware.Hellokitty"
         reference_sample = "3ae7bedf236d4e53a33f3a3e1e80eae2d93e91b1988da2f7fcb8fde5dcc3a0e9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -41,7 +41,7 @@ rule Windows_Ransomware_Hellokitty_4b668121 {
         threat_name = "Windows.Ransomware.Hellokitty"
         reference_sample = "9a7daafc56300bd94ceef23eac56a0735b63ec6b9a7a409fb5a9b63efe1aa0b0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Ransomware_Hellokitty_d9391a1a {
         threat_name = "Windows.Ransomware.Hellokitty"
         reference_sample = "10887d13dba1f83ef34e047455a04416d25a83079a7f3798ce3483e0526e3768"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

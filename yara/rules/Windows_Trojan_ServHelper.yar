@@ -8,7 +8,7 @@ rule Windows_Trojan_ServHelper_f4dee200 {
         threat_name = "Windows.Trojan.ServHelper"
         reference_sample = "05d183430a7afe16a3857fc4e87568fcc18518e108823c37eabf0514660aa17c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_ServHelper_370c5287 {
         threat_name = "Windows.Trojan.ServHelper"
         reference_sample = "05d183430a7afe16a3857fc4e87568fcc18518e108823c37eabf0514660aa17c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

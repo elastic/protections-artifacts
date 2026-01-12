@@ -8,7 +8,7 @@ rule Windows_Trojan_RudeBird_3cbf7bc6 {
         threat_name = "Windows.Trojan.RudeBird"
         reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

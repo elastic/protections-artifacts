@@ -8,7 +8,7 @@ rule Windows_Trojan_KoiLoader_1131bc57 {
         threat_name = "Windows.Trojan.KoiLoader"
         reference_sample = "cea8d5807cff4a8b639cdc801c2fa43d1268cf232ebec6a182dd6f6247cd9493"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

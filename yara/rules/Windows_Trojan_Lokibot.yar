@@ -8,7 +8,7 @@ rule Windows_Trojan_Lokibot_1f885282 {
         threat_name = "Windows.Trojan.Lokibot"
         reference_sample = "916eded682d11cbdf4bc872a8c1bcaae4d4e038ac0f869f59cc0a83867076409"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Lokibot_0f421617 {
         threat_name = "Windows.Trojan.Lokibot"
         reference_sample = "de6200b184832e7d3bfe00c193034192774e3cfca96120dc97ad6fed1e472080"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

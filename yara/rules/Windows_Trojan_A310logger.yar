@@ -8,7 +8,7 @@ rule Windows_Trojan_A310logger_520cd7ec {
         threat_name = "Windows.Trojan.A310logger"
         reference_sample = "60fb9597e5843c72d761525f73ca728409579d81901860981ebd84f7d153cfa3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

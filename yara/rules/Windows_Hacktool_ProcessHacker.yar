@@ -8,7 +8,7 @@ rule Windows_Hacktool_ProcessHacker_3d01069e {
         threat_name = "Windows.Hacktool.ProcessHacker"
         reference_sample = "70211a3f90376bbc61f49c22a63075d1d4ddd53f0aefa976216c46e6ba39a9f4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_STRRAT_a3e48cd2 {
         threat_name = "Windows.Trojan.STRRAT"
         reference_sample = "97e67ac77d80d26af4897acff2a3f6075e0efe7997a67d8194e799006ed5efc9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "memory"
         license = "Elastic License v2"
         os = "windows"

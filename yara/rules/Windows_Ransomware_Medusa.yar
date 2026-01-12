@@ -8,7 +8,7 @@ rule Windows_Ransomware_Medusa_fda487fd {
         threat_name = "Windows.Ransomware.Medusa"
         reference_sample = "3a6d5694eec724726efa3327a50fad3efdc623c08d647b51e51cd578bddda3da"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

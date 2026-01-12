@@ -8,7 +8,7 @@ rule Windows_Trojan_DiamondFox_18bc11e3 {
         threat_name = "Windows.Trojan.DiamondFox"
         reference_sample = "a44c46d4b9cf1254aaabd1e689f84c4d2c3dd213597f827acabface03a1ae6d1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

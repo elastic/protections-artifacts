@@ -8,7 +8,7 @@ rule Windows_Trojan_Pony_d5516fe8 {
         threat_name = "Windows.Trojan.Pony"
         reference_sample = "423e792fcd00265960877482e8148a0d49f0898f4bbc190894721fde22638567"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

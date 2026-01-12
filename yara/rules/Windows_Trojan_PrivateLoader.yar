@@ -8,7 +8,7 @@ rule Windows_Trojan_PrivateLoader_96ac2734 {
         threat_name = "Windows.Trojan.PrivateLoader"
         reference_sample = "077225467638a420cf29fb9b3f0241416dcb9ed5d4ba32fdcf2bf28f095740bb"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

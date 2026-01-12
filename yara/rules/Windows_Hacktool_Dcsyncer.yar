@@ -9,7 +9,7 @@ rule Windows_Hacktool_Dcsyncer_425579c5 {
         threat_name = "Windows.Hacktool.Dcsyncer"
         reference_sample = "af7dbc84efeb186006d75d095f54a266f59e6b2348d0c20591da16ae7b7d509a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

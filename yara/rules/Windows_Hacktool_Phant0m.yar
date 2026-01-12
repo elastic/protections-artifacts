@@ -8,7 +8,7 @@ rule Windows_Hacktool_Phant0m_2d6f9b57 {
         threat_name = "Windows.Hacktool.Phant0m"
         reference_sample = "30978aadd7d7bc86e735facb5046942792ad1beab6919754e6765e0ccbcf89d6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Wiper_IsaacWiper_239cd2dc {
         threat_name = "Windows.Wiper.IsaacWiper"
         reference_sample = "13037b749aa4b1eda538fda26d6ac41c8f7b1d02d83f47b0d187dd645154e033"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

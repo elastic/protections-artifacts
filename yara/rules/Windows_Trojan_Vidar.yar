@@ -8,7 +8,7 @@ rule Windows_Trojan_Vidar_9007feb2 {
         threat_name = "Windows.Trojan.Vidar"
         reference_sample = "34c0cb6eaf2171d3ab9934fe3f962e4e5f5e8528c325abfe464d3c02e5f939ec"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Vidar_114258d5 {
         threat_name = "Windows.Trojan.Vidar"
         reference_sample = "34c0cb6eaf2171d3ab9934fe3f962e4e5f5e8528c325abfe464d3c02e5f939ec"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -53,7 +53,7 @@ rule Windows_Trojan_Vidar_32fea8da {
         threat_name = "Windows.Trojan.Vidar"
         reference_sample = "6f5c24fc5af2085233c96159402cec9128100c221cb6cb0d1c005ced7225e211"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -75,7 +75,7 @@ rule Windows_Trojan_Vidar_c374cd85 {
         threat_name = "Windows.Trojan.Vidar"
         reference_sample = "1c677585a8b724332849c411ffe2563b2b753fd6699c210f0720352f52a6ab72"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -95,7 +95,7 @@ rule Windows_Trojan_Vidar_65d3d7e5 {
         threat_name = "Windows.Trojan.Vidar"
         reference_sample = "83d7c2b437a5cbb314c457d3b7737305dadb2bc02d6562a98a8a8994061fe929"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_XtremeRAT_cd5b60be {
         threat_name = "Windows.Trojan.XtremeRAT"
         reference_sample = "735f7bf255bdc5ce8e69259c8e24164e5364aeac3ee78782b7b5275c1d793da8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

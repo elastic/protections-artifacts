@@ -9,7 +9,7 @@ rule Windows_Ransomware_Egregor_f24023f3 : beta {
         threat_name = "Windows.Ransomware.Egregor"
         reference = "https://www.bankinfosecurity.com/egregor-ransomware-adds-to-data-leak-trend-a-15110"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -35,7 +35,7 @@ rule Windows_Ransomware_Egregor_4ec2b90c : beta {
         threat_name = "Windows.Ransomware.Egregor"
         reference = "https://www.bankinfosecurity.com/egregor-ransomware-adds-to-data-leak-trend-a-15110"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

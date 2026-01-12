@@ -8,7 +8,7 @@ rule Windows_Trojan_CastleLoader_173548b8 {
         threat_name = "Windows.Trojan.CastleLoader"
         reference_sample = "1b6befc65b19a63b4131ce5bcc6e8c0552fe1e1d136ab94bc7d81b3924056156"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

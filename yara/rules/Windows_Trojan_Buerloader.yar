@@ -8,7 +8,7 @@ rule Windows_Trojan_Buerloader_c8a60f46 {
         threat_name = "Windows.Trojan.Buerloader"
         reference_sample = "3abed86f46c8be754239f8c878f035efaae91c33b8eb8818c5bbed98c4d9a3ac"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Ransomware_Mountlocker_126a76e2 {
         threat_name = "Windows.Ransomware.Mountlocker"
         reference_sample = "4a5ac3c6f8383cc33c795804ba5f7f5553c029bbb4a6d28f1e4d8fb5107902c1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

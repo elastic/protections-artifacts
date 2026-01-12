@@ -8,7 +8,7 @@ rule Windows_Trojan_WikiLoader_c57f3f88 {
         threat_name = "Windows.Trojan.WikiLoader"
         reference_sample = "0f71b1805d7feb6830b856c5a5328d3a132af4c37fcd747d82beb0f61c77f6f5"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_WikiLoader_99681f1c {
         threat_name = "Windows.Trojan.WikiLoader"
         reference_sample = "0b02cfe16ac73f2e7dc52eaf3b93279b7d02b3d64d061782dfed0c55ab621a8e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

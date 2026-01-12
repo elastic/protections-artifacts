@@ -8,7 +8,7 @@ rule Windows_Trojan_Beam_e41b243a {
         threat_name = "Windows.Trojan.Beam"
         reference_sample = "233a1f1dcbb679d31dab7744358b434cccabfc752baf53ba991388ced098f7c8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_Beam_5a951d13 {
         threat_name = "Windows.Trojan.Beam"
         reference_sample = "233a1f1dcbb679d31dab7744358b434cccabfc752baf53ba991388ced098f7c8"
         severity = 99
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

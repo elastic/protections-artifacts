@@ -8,7 +8,7 @@ rule Windows_Ransomware_Rook_ee21fa67 {
         threat_name = "Windows.Ransomware.Rook"
         reference_sample = "c2d46d256b8f9490c9599eea11ecef19fde7d4fdd2dea93604cee3cea8e172ac"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Wiper_DoubleZero_65ec0c50 {
         threat_name = "Windows.Wiper.DoubleZero"
         reference_sample = "3b2e708eaa4744c76a633391cf2c983f4a098b46436525619e5ea44e105355fe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

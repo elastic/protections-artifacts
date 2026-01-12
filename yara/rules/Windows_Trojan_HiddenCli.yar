@@ -8,7 +8,7 @@ rule Windows_Trojan_HiddenCli_a9aa62d1 {
         threat_name = "Windows.Trojan.HiddenCli"
         reference_sample = "913431f1d36ee843886bb052bfc89c0e5db903c673b5e6894c49aabc19f1e2fc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

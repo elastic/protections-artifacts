@@ -8,7 +8,7 @@ rule Windows_Trojan_StormKitty_6256031a {
         threat_name = "Windows.Trojan.StormKitty"
         reference_sample = "0c69015f534d1da3770dbc14183474a643c4332de6a599278832abd2b15ba027"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

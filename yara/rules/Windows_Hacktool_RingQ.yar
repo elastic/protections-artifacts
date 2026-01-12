@@ -8,7 +8,7 @@ rule Windows_Hacktool_RingQ_b9715540 {
         threat_name = "Windows.Hacktool.RingQ"
         reference_sample = "450e01c32618cd4e4a327147896352ed1b34dca9fb28389dba450acf95f8b735"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

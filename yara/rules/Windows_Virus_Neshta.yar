@@ -8,7 +8,7 @@ rule Windows_Virus_Neshta_2a5a14c8 {
         threat_name = "Windows.Virus.Neshta"
         reference_sample = "f298214764ee9ab690cb4b376d8a7893edcd9c05a3c4e6f3a56010974a130bd7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

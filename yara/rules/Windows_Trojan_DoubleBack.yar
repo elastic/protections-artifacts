@@ -8,7 +8,7 @@ rule Windows_Trojan_DoubleBack_d2246a35 {
         threat_name = "Windows.Trojan.DoubleBack"
         reference_sample = "03d2a0747d06458ccddf65ff5847a511a105e0ad4dcb5134082623af6f705012"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

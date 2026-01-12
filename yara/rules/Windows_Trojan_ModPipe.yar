@@ -7,7 +7,7 @@ rule Windows_Trojan_ModPipe_12bc2604 {
         last_modified = "2023-09-20"
         threat_name = "Windows.Trojan.ModPipe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

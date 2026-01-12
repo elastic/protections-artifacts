@@ -8,7 +8,7 @@ rule Windows_Trojan_SourShark_f0247cce {
         threat_name = "Windows.Trojan.SourShark"
         reference_sample = "07eb88c69437ee6e3ea2fbab5f2fbd8e846125d18c1da7d72bb462e9d083c9fc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Trojan_SourShark_adee8a17 {
         threat_name = "Windows.Trojan.SourShark"
         reference_sample = "07eb88c69437ee6e3ea2fbab5f2fbd8e846125d18c1da7d72bb462e9d083c9fc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

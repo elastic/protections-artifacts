@@ -8,7 +8,7 @@ rule Windows_Trojan_FalseFont_d1f0d357 {
         threat_name = "Windows.Trojan.FalseFont"
         reference_sample = "364275326bbfc4a3b89233dabdaf3230a3d149ab774678342a40644ad9f8d614"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_Raccoon_af6decc6 {
         threat_name = "Windows.Trojan.Raccoon"
         reference_sample = "fe09bef10b21f085e9ca411e24e0602392ab5044b7268eaa95fb88790f1a124d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Raccoon_58091f64 {
         threat_name = "Windows.Trojan.Raccoon"
         reference_sample = "fe09bef10b21f085e9ca411e24e0602392ab5044b7268eaa95fb88790f1a124d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -49,7 +49,7 @@ rule Windows_Trojan_Raccoon_deb6325c {
         threat_name = "Windows.Trojan.Raccoon"
         reference_sample = "f7b1aaae018d5287444990606fc43a0f2deb4ac0c7b2712cc28331781d43ae27"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

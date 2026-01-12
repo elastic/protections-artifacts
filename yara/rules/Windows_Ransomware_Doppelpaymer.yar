@@ -9,7 +9,7 @@ rule Windows_Ransomware_Doppelpaymer_6660d29f : beta {
         threat_name = "Windows.Ransomware.Doppelpaymer"
         reference = "https://www.crowdstrike.com/blog/doppelpaymer-ransomware-and-dridex-2/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Ransomware_Doppelpaymer_6ab188da : beta {
         threat_name = "Windows.Ransomware.Doppelpaymer"
         reference = "https://www.crowdstrike.com/blog/doppelpaymer-ransomware-and-dridex-2/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -52,7 +52,7 @@ rule Windows_Ransomware_Doppelpaymer_4fb1a155 : beta {
         threat_name = "Windows.Ransomware.Doppelpaymer"
         reference = "https://www.crowdstrike.com/blog/doppelpaymer-ransomware-and-dridex-2/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

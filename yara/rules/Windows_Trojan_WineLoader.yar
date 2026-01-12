@@ -8,7 +8,7 @@ rule Windows_Trojan_WineLoader_13e8860a {
         threat_name = "Windows.Trojan.WineLoader"
         reference_sample = "f5cb3234eff0dbbd653d5cdce1d4b1026fa9574ebeaf16aaae3d4e921b6a7f9d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

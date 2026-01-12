@@ -8,7 +8,7 @@ rule Windows_Ransomware_Nightsky_a7f19411 {
         threat_name = "Windows.Ransomware.Nightsky"
         reference_sample = "1fca1cd04992e0fcaa714d9dfa97323d81d7e3d43a024ec37d1c7a2767a17577"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Ransomware_Nightsky_253c4d0d {
         threat_name = "Windows.Ransomware.Nightsky"
         reference_sample = "2c940a35025dd3847f7c954a282f65e9c2312d2ada28686f9d1dc73d1c500224"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

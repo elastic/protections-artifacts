@@ -10,7 +10,7 @@ rule Windows_Trojan_Zeus_e51c60d7 {
         reference = "https://www.virusbulletin.com/virusbulletin/2014/10/paper-evolution-webinjects"
         reference_sample = "d7e9cb60674e0a05ad17eb96f8796d9f23844a33f83aba5e207b81979d0f2bf3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

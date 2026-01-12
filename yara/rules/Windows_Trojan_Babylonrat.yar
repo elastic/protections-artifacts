@@ -8,7 +8,7 @@ rule Windows_Trojan_Babylonrat_0f66e73b {
         threat_name = "Windows.Trojan.Babylonrat"
         reference_sample = "4278064ec50f87bb0471053c068b13955ed9d599434e687a64bf2060438a7511"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

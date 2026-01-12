@@ -8,7 +8,7 @@ rule Windows_Ransomware_Crytox_29859242 {
         threat_name = "Windows.Ransomware.Crytox"
         reference_sample = "55a27cb6280f31c077987d338151b13e9dc0cc1c14d47a32e64de6d6c1a6a742"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

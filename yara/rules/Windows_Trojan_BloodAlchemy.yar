@@ -8,7 +8,7 @@ rule Windows_Trojan_BloodAlchemy_3793364e {
         threat_name = "Windows.Trojan.BloodAlchemy"
         reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_BloodAlchemy_e510798d {
         threat_name = "Windows.Trojan.BloodAlchemy"
         reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -50,7 +50,7 @@ rule Windows_Trojan_BloodAlchemy_63084eea {
         threat_name = "Windows.Trojan.BloodAlchemy"
         reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -70,7 +70,7 @@ rule Windows_Trojan_BloodAlchemy_c2d80609 {
         threat_name = "Windows.Trojan.BloodAlchemy"
         reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -90,7 +90,7 @@ rule Windows_Trojan_BloodAlchemy_de591c5a {
         threat_name = "Windows.Trojan.BloodAlchemy"
         reference = "https://www.elastic.co/security-labs/disclosing-the-bloodalchemy-backdoor"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

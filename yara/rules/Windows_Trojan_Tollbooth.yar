@@ -8,7 +8,7 @@ rule Windows_Trojan_Tollbooth_85bfcc68 {
         threat_name = "Windows.Trojan.Tollbooth"
         reference_sample = "c1ca053e3c346513bac332b5740848ed9c496895201abc734f2de131ec1b9fb2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

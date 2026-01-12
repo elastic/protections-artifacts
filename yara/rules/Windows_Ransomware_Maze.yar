@@ -9,7 +9,7 @@ rule Windows_Ransomware_Maze_61254061 : beta {
         threat_name = "Windows.Ransomware.Maze"
         reference = "https://www.bleepingcomputer.com/news/security/it-services-giant-cognizant-suffers-maze-ransomware-cyber-attack/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Ransomware_Maze_46f40c40 : beta {
         threat_name = "Windows.Ransomware.Maze"
         reference = "https://www.bleepingcomputer.com/news/security/it-services-giant-cognizant-suffers-maze-ransomware-cyber-attack/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -54,7 +54,7 @@ rule Windows_Ransomware_Maze_20caee5b : beta {
         threat_name = "Windows.Ransomware.Maze"
         reference = "https://www.bleepingcomputer.com/news/security/it-services-giant-cognizant-suffers-maze-ransomware-cyber-attack/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -81,7 +81,7 @@ rule Windows_Ransomware_Maze_f88f136f : beta {
         threat_name = "Windows.Ransomware.Maze"
         reference = "https://www.bleepingcomputer.com/news/security/it-services-giant-cognizant-suffers-maze-ransomware-cyber-attack/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

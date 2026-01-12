@@ -8,7 +8,7 @@ rule Windows_Trojan_NapListener_e8f16920 {
         threat_name = "Windows.Trojan.NapListener"
         reference_sample = "6e8c5bb2dfc90bca380c6f42af7458c8b8af40b7be95fab91e7c67b0dee664c4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Trojan_NapListener_414180a7 {
         threat_name = "Windows.Trojan.NapListener"
         reference_sample = "6e8c5bb2dfc90bca380c6f42af7458c8b8af40b7be95fab91e7c67b0dee664c4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

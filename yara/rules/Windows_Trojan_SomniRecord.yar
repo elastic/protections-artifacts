@@ -9,7 +9,7 @@ rule Windows_Trojan_SomniRecord_097e66bd {
         reference = "https://www.elastic.co/security-labs/not-sleeping-anymore-somnirecords-wakeup-call"
         reference_sample = "54114c23f499738a06fd8b8ab2a8458c03ac8cc81e706702fcd1c64a075e4dcc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

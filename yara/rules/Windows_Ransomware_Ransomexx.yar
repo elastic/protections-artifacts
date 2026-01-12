@@ -8,7 +8,7 @@ rule Windows_Ransomware_Ransomexx_fabff49c {
         threat_name = "Windows.Ransomware.Ransomexx"
         reference_sample = "480af18104198ad3db1518501ee58f9c4aecd19dbbf2c5dd7694d1d87e9aeac7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

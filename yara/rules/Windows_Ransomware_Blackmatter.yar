@@ -8,7 +8,7 @@ rule Windows_Ransomware_Blackmatter_b548d151 {
         threat_name = "Windows.Ransomware.Blackmatter"
         reference_sample = "072158f5588440e6c94cb419ae06a27cf584afe3b0cb09c28eff0b4662c15486"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Ransomware_Blackmatter_8394f6d5 {
         threat_name = "Windows.Ransomware.Blackmatter"
         reference_sample = "072158f5588440e6c94cb419ae06a27cf584afe3b0cb09c28eff0b4662c15486"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

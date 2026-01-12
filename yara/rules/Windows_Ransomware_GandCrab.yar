@@ -8,7 +8,7 @@ rule Windows_Ransomware_GandCrab_8d0ca31d {
         threat_name = "Windows.Ransomware.GandCrab"
         reference_sample = "29eee4f8b088ec1cdac03a04ca834479fce9a0fdf696224c6f19d573f4e2a703"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

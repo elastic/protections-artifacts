@@ -8,7 +8,7 @@ rule Windows_Trojan_DragonBreath_b27bc56b {
         threat_name = "Windows.Trojan.DragonBreath"
         reference_sample = "45023fd0e694d66c284dfe17f78c624fd7e246a6c36860a0d892d232a30949be"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

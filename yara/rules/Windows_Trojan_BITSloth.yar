@@ -8,7 +8,7 @@ rule Windows_Trojan_BITSloth_05fc3a0a {
         threat_name = "Windows.Trojan.BITSloth"
         reference_sample = "0944b17a4330e1c97600f62717d6bae7e4a4260604043f2390a14c8d76ef1507"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

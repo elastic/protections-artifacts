@@ -9,7 +9,7 @@ rule Windows_Trojan_Gh0st_ee6de6bc {
         threat_name = "Windows.Trojan.Gh0st"
         reference_sample = "ea1dc816dfc87c2340a8b8a77a4f97618bccf19ad3b006dce4994be02e13245d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

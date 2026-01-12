@@ -8,7 +8,7 @@ rule Windows_Ransomware_Azov_e1ef131e {
         threat_name = "Windows.Ransomware.Azov"
         reference_sample = "0a80e3b2fef96a8f300cfa92a3fe80e9006ed1e81d2bdc84936ffe7281bfc284"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

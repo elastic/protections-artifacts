@@ -8,7 +8,7 @@ rule Windows_Hacktool_COFFLoader_81ba13b8 {
         threat_name = "Windows.Hacktool.COFFLoader"
         reference_sample = "c2e03659eb1594dc958e01344cfa9ba126d66736b089db5e3dd1b1c3e3e7d2f7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

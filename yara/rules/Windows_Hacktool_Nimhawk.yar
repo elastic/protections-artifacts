@@ -8,7 +8,7 @@ rule Windows_Hacktool_Nimhawk_cdcc3540 {
         threat_name = "Windows.Hacktool.Nimhawk"
         reference_sample = "39381b1eeddcb05084480e3afe525d4c3c304c768a0c0da71118ff4cd6a4219c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

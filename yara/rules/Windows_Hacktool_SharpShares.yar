@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpShares_88cdcd52 {
         threat_name = "Windows.Hacktool.SharpShares"
         reference_sample = "bbdd3620a67aedec4b9a68b2c9cc880b6631215e129816aea19902a6f4bc6f41"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -9,7 +9,7 @@ rule Windows_Ransomware_Haron_a1c12e7e {
         threat_name = "Windows.Ransomware.Haron"
         reference_sample = "6e6b78a1df17d6718daa857827a2a364b7627d9bfd6672406ad72b276014209c"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Haron_23b76cb7 {
         threat_name = "Windows.Ransomware.Haron"
         reference_sample = "6e6b78a1df17d6718daa857827a2a364b7627d9bfd6672406ad72b276014209c"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

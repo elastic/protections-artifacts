@@ -8,7 +8,7 @@ rule Windows_Hacktool_ChromeKatz_fa232bba {
         threat_name = "Windows.Hacktool.ChromeKatz"
         reference_sample = "3f6922049422df14f1a1777001fea54b18fbfb0a4b03c4ee27786bfbc3b8ab87"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

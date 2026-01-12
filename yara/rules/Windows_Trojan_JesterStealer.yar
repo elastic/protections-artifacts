@@ -8,7 +8,7 @@ rule Windows_Trojan_JesterStealer_b35c6f4b {
         threat_name = "Windows.Trojan.JesterStealer"
         reference_sample = "10c3846867f70dd26c5a54332ed22070c9e5e0e4f52f05fdae12ead801f7933b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -34,7 +34,7 @@ rule Windows_Trojan_JesterStealer_8f657f58 {
         threat_name = "Windows.Trojan.JesterStealer"
         reference_sample = "10c3846867f70dd26c5a54332ed22070c9e5e0e4f52f05fdae12ead801f7933b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

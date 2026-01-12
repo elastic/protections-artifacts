@@ -9,7 +9,7 @@ rule Windows_Ransomware_Clop_6a1670aa : beta {
         threat_name = "Windows.Ransomware.Clop"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.clop"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Clop_e04959b5 : beta {
         threat_name = "Windows.Ransomware.Clop"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.clop"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -60,7 +60,7 @@ rule Windows_Ransomware_Clop_9ac9ea3e : beta {
         threat_name = "Windows.Ransomware.Clop"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.clop"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -81,7 +81,7 @@ rule Windows_Ransomware_Clop_606020e7 : beta {
         threat_name = "Windows.Ransomware.Clop"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.clop"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

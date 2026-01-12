@@ -8,7 +8,7 @@ rule Windows_Trojan_Bazar_711d59f6 {
         threat_name = "Windows.Trojan.Bazar"
         reference_sample = "f29253139dab900b763ef436931213387dc92e860b9d3abb7dcd46040ac28a0e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Bazar_9dddea36 {
         threat_name = "Windows.Trojan.Bazar"
         reference_sample = "63df43daa61f9a0fbea2e5409b8f0063f7af3363b6bc8d6984ce7e90c264727d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -48,7 +48,7 @@ rule Windows_Trojan_Bazar_3a2cc53b {
         threat_name = "Windows.Trojan.Bazar"
         reference_sample = "b057eb94e711995fd5fd6c57aa38a243575521b11b98734359658a7a9829b417"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Trojan_Bazar_de8d625a {
         threat_name = "Windows.Trojan.Bazar"
         reference_sample = "1ad9ac4785b82c8bfa355c7343b9afc7b1f163471c41671ea2f9152a1b550f0c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

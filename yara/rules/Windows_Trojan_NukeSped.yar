@@ -8,7 +8,7 @@ rule Windows_Trojan_NukeSped_b8e6cc07 {
         threat_name = "Windows.Trojan.NukeSped"
         reference_sample = "2dff6d721af21db7d37fc1bd8b673ec07b7114737f4df2fa8b2ecfffbe608a00"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

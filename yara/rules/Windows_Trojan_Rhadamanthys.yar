@@ -8,7 +8,7 @@ rule Windows_Trojan_Rhadamanthys_21b60705 {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "3ba97c51ba503fa4bdcfd5580c75436bc88794b4ae883afa1d92bb0b2a0f5efe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -34,7 +34,7 @@ rule Windows_Trojan_Rhadamanthys_1da1c2c2 {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "9bfc4fed7afc79a167cac173bf3602f9d1f90595d4e41dab68ff54973f2cedc1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -61,7 +61,7 @@ rule Windows_Trojan_Rhadamanthys_ae00f48c {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "56b5ff5132ec1c5836223ced287d51a9ecee8d2b081f449245e136b1262a8714"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -83,7 +83,7 @@ rule Windows_Trojan_Rhadamanthys_cf5dd2e2 {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "39ccc224c2c6d89d0bce3d9e2c677465cbc7524f2d2aa903f79ad26b340dec3d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -106,7 +106,7 @@ rule Windows_Trojan_Rhadamanthys_c4760266 {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "05074675b07feb8e7556c5af449f5e677e0fabfb09b135971afbb11743bf3165"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -126,7 +126,7 @@ rule Windows_Trojan_Rhadamanthys_baba80fb {
         threat_name = "Windows.Trojan.Rhadamanthys"
         reference_sample = "dd22cb2318d66fa30702368a7f06e445fba4b69daf9c45f8e83562d2c170a073"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

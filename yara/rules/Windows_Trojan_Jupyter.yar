@@ -8,7 +8,7 @@ rule Windows_Trojan_Jupyter_56152e31 {
         threat_name = "Windows.Trojan.Jupyter"
         reference_sample = "ce486097ad2491aba8b1c120f6d0aa23eaf59cf698b57d2113faab696d03c601"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -9,7 +9,7 @@ rule Windows_Trojan_EagerBee_7029ba21 {
         reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         reference_sample = "09005775fc587ac7bf150c05352e59dc01008b7bf8c1d870d1cea87561aa0b06"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_EagerBee_a64b323b {
         reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         reference_sample = "339e4fdbccb65b0b06a1421c719300a8da844789a2016d58e8ce4227cb5dc91b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

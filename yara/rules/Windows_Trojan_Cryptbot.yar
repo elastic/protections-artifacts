@@ -8,7 +8,7 @@ rule Windows_Trojan_Cryptbot_489a6562 {
         threat_name = "Windows.Trojan.Cryptbot"
         reference_sample = "423563995910af04cb2c4136bf50607fc26977dfa043a84433e8bd64b3315110"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_Cryptbot_b5ba0d9f {
         threat_name = "Windows.Trojan.Cryptbot"
         reference_sample = "ec0d356acab765845f3a575925bcf37bb123d9e31a7d715a40ab9a45c8ab9747"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

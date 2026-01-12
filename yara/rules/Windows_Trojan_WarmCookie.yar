@@ -9,7 +9,7 @@ rule Windows_Trojan_WarmCookie_7d32fa90 {
         reference = "https://www.elastic.co/security-labs/dipping-into-danger"
         reference_sample = "ccde1ded028948f5cd3277d2d4af6b22fa33f53abde84ea2aa01f1872fad1d13"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -42,7 +42,7 @@ rule Windows_Trojan_WarmCookie_e8cd480d {
         reference = "https://www.elastic.co/security-labs/dipping-into-danger"
         reference_sample = "f4d2c9470b322af29b9188a3a590cbe85bacb9cc8fcd7c2e94d82271ded3f659"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -67,7 +67,7 @@ rule Windows_Trojan_WarmCookie_344e4d3f {
         reference = "https://www.elastic.co/security-labs/dipping-into-danger"
         reference_sample = "46733541444536d7b64d25e709f1432eb844569eb7473800c2f1998617022d15"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

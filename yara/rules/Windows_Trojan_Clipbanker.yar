@@ -8,7 +8,7 @@ rule Windows_Trojan_Clipbanker_7efaef9f {
         threat_name = "Windows.Trojan.Clipbanker"
         reference_sample = "02b06acb113c31f5a2ac9c99f9614e0fab0f78afc5ae872e46bae139c2c9b1f6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_Clipbanker_b60a50b8 {
         threat_name = "Windows.Trojan.Clipbanker"
         reference_sample = "02b06acb113c31f5a2ac9c99f9614e0fab0f78afc5ae872e46bae139c2c9b1f6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -52,7 +52,7 @@ rule Windows_Trojan_Clipbanker_f9f9e79d {
         threat_name = "Windows.Trojan.Clipbanker"
         reference_sample = "0407e8f54490b2a24e1834d99ec0452f217499f1e5a64de3d28439d71d16d43c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -72,7 +72,7 @@ rule Windows_Trojan_Clipbanker_787b130b {
         threat_name = "Windows.Trojan.Clipbanker"
         reference_sample = "0407e8f54490b2a24e1834d99ec0452f217499f1e5a64de3d28439d71d16d43c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

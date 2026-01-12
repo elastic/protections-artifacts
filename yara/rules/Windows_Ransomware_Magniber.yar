@@ -8,7 +8,7 @@ rule Windows_Ransomware_Magniber_ea0140a1 {
         threat_name = "Windows.Ransomware.Magniber"
         reference_sample = "a2448b93d7c50801056052fb429d04bcf94a478a0a012191d60e595fed63eec4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Ransomware_Magniber_97d7575b {
         threat_name = "Windows.Ransomware.Magniber"
         reference_sample = "a2448b93d7c50801056052fb429d04bcf94a478a0a012191d60e595fed63eec4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

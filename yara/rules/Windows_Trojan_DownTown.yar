@@ -8,7 +8,7 @@ rule Windows_Trojan_DownTown_901c4fdd {
         threat_name = "Windows.Trojan.DownTown"
         reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Trojan_DownTown_145ecd2f {
         threat_name = "Windows.Trojan.DownTown"
         reference = "https://www.elastic.co/security-labs/introducing-the-ref5961-intrusion-set"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

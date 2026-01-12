@@ -8,7 +8,7 @@ rule Windows_Trojan_Limerat_24269a79 {
         threat_name = "Windows.Trojan.Limerat"
         reference_sample = "ec781a714d6bc6fac48d59890d9ae594ffd4dbc95710f2da1f1aa3d5b87b9e01"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

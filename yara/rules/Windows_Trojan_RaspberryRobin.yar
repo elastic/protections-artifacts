@@ -8,7 +8,7 @@ rule Windows_Trojan_RaspberryRobin_4b4d6899 {
         threat_name = "Windows.Trojan.RaspberryRobin"
         reference_sample = "2f0451f38adb74cb96c857de455887b00c5038b68210294c7f52b0b5ff64cc1e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

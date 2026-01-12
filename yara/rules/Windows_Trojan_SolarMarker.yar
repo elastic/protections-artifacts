@@ -9,7 +9,7 @@ rule Windows_Trojan_SolarMarker_d466e548 {
         reference_sample = "330f5067c93041821be4e7097cf32fb569e2e1d00e952156c9aafcddb847b873"
         reference_sample = "e2a620e76352fa7ac58407a711821da52093d97d12293ae93d813163c58eb84b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_SolarMarker_08bfc26b {
         threat_name = "Windows.Trojan.SolarMarker"
         reference_sample = "c1a6d2d78cc50f080f1fe4cadc6043027bf201d194f2b73625ce3664433a3966"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

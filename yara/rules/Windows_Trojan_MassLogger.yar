@@ -8,7 +8,7 @@ rule Windows_Trojan_MassLogger_511b001e {
         threat_name = "Windows.Trojan.MassLogger"
         reference_sample = "177875c756a494872c516000beb6011cec22bd9a73e58ba6b2371dba2ab8c337"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

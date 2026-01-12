@@ -8,7 +8,7 @@ rule Windows_Ransomware_WannaCry_d9855102 {
         threat_name = "Windows.Ransomware.WannaCry"
         reference_sample = "0b7878babbaf7c63d808f3ce32c7306cb785fdfb1ceb73be07fb48fdd091fdfb"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

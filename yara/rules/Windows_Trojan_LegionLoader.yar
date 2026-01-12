@@ -8,7 +8,7 @@ rule Windows_Trojan_LegionLoader_9699226a {
         threat_name = "Windows.Trojan.LegionLoader"
         reference_sample = "45670ffa9b24542ae84e3c9eb5ce609c2bcd29129215a7f37eb74b6211e32b22"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

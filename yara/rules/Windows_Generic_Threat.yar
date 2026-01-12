@@ -8,7 +8,7 @@ rule Windows_Generic_Threat_bc6ae28d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ce00873eb423c0259c18157a07bf7fd9b07333e528a5b9d48be79194310c9d97"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Generic_Threat_ce98c4bc {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "950e8a29f516ef3cf1a81501e97fbbbedb289ad9fb93352edb563f749378da35"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -49,7 +49,7 @@ rule Windows_Generic_Threat_0cc1481e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "6ec7781e472a6827c1406a53ed4699407659bd57c33dd4ab51cabfe8ece6f23f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -69,7 +69,7 @@ rule Windows_Generic_Threat_2507c37c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "04296258f054a958f0fd013b3c6a3435280b28e9a27541463e6fc9afe30363cc"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -89,7 +89,7 @@ rule Windows_Generic_Threat_e052d248 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ed2bbc0d120665044aacb089d8c99d7c946b54d1b08a078aebbb3b91f593da6e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -109,7 +109,7 @@ rule Windows_Generic_Threat_2bb7fbe3 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "65cc8704c0e431589d196eadb0ac8a19151631c8d4ab7375d7cb18f7b763ba7b"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -129,7 +129,7 @@ rule Windows_Generic_Threat_994f2330 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0a30cb09c480a2659b6f989ac9fe1bfba1802ae3aad98fa5db7cdd146fee3916"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -149,7 +149,7 @@ rule Windows_Generic_Threat_bf7aae24 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "6dfc63894f15fc137e27516f2d2a56514c51f25b41b00583123142cf50645e4e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -169,7 +169,7 @@ rule Windows_Generic_Threat_d542e5a5 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "3fc4ae7115e0bfa3fc6b75dcff867e7bf9ade9c7f558f31916359d37d001901b"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -189,7 +189,7 @@ rule Windows_Generic_Threat_8d10790b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "911535923a5451c10239e20e7130d371e8ee37172e0f14fc8cf224d41f7f4c0f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -209,7 +209,7 @@ rule Windows_Generic_Threat_347f9f54 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "45a051651ce1edddd33ecef09bb0fbb978adec9044e64f786b13ed81cabf6a3f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -229,7 +229,7 @@ rule Windows_Generic_Threat_20469956 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "a1f2923f68f5963499a64bfd0affe0a729f5e7bd6bcccfb9bed1d62831a93c47"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -249,7 +249,7 @@ rule Windows_Generic_Threat_742e8a70 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "94f7678be47651aa457256375f3e4d362ae681a9524388c97dc9ed34ba881090"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -269,7 +269,7 @@ rule Windows_Generic_Threat_79174b5c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c15118230059e85e7a6b65fe1c0ceee8997a3d4e9f1966c8340017a41e0c254c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -289,7 +289,7 @@ rule Windows_Generic_Threat_232b71a9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1e8b34da2d675af96b34041d4e493e34139fc8779f806dbcf62a6c9c4d9980fe"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -309,7 +309,7 @@ rule Windows_Generic_Threat_d331d190 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "6d869d320d977f83aa3f0e7719967c7e54c1bdae9ae3729668d755ee3397a96f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -329,7 +329,7 @@ rule Windows_Generic_Threat_24191082 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "4d20878c16d2b401e76d8e7c288cf8ef5aa3c8d4865f440ee6b44d9f3d0cbf33"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -349,7 +349,7 @@ rule Windows_Generic_Threat_efdb9e81 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1c3302b14324c9f4e07829f41cd767ec654db18ff330933c6544c46bd19e89dd"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -370,7 +370,7 @@ rule Windows_Generic_Threat_34622a35 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c021c6adca0ddf38563a13066a652e4d97726175983854674b8dae2f6e59c83f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -390,7 +390,7 @@ rule Windows_Generic_Threat_0ff403df {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b3119dc4cea05bef51d1f373b87d69bcff514f6575d4c92da4b1c557f8d8db8f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -410,7 +410,7 @@ rule Windows_Generic_Threat_b1f6f662 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1b7eaef3cf1bb8021a00df092c829932cccac333990db1c5dac6558a5d906400"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -432,7 +432,7 @@ rule Windows_Generic_Threat_2c80562d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ee8decf1e8e5a927e3a6c10e88093bb4b7708c3fd542d98d43f1a882c6b0198e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -454,7 +454,7 @@ rule Windows_Generic_Threat_e96f9e97 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "bfbab69e9fc517bc46ae88afd0603a498a4c77409e83466d05db2797234ea7fc"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -474,7 +474,7 @@ rule Windows_Generic_Threat_005fd471 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "502814ed565a923da15626d46fde8cc7fd422790e32b3cad973ed8ec8602b228"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -496,7 +496,7 @@ rule Windows_Generic_Threat_54b0ec47 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9c14203069ff6003e7f408bed71e75394de7a6c1451266c59c5639360bf5718c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -517,7 +517,7 @@ rule Windows_Generic_Threat_acf6222b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ce0def96be08193ab96817ce1279e8406746a76cfcf4bf44e394920d7acbcaa6"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -537,7 +537,7 @@ rule Windows_Generic_Threat_5e718a0c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "430b9369b779208bd3976bd2adc3e63d3f71e5edfea30490e6e93040c1b3bac6"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -557,7 +557,7 @@ rule Windows_Generic_Threat_fac6d993 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "f3e7c88e72cf0c1f4cbee588972fc1434065f7cc9bd95d52379bade1b8520278"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -576,7 +576,7 @@ rule Windows_Generic_Threat_e7eaa4ca {
         last_modified = "2024-01-12"
         threat_name = "Windows.Generic.Threat"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -596,7 +596,7 @@ rule Windows_Generic_Threat_97703189 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "968ba3112c54f3437b9abb6137f633d919d75137d790af074df40a346891cfb5"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -616,7 +616,7 @@ rule Windows_Generic_Threat_ca0686e1 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "15c7ce1bc55549efc86dea74a90f42fb4665fe15b14f760037897c772159a5b5"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -636,7 +636,7 @@ rule Windows_Generic_Threat_97c1a260 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2cc85ebb1ef07948b1ddf1a793809b76ee61d78c07b8bf6e702c9b17346a20f1"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -656,7 +656,7 @@ rule Windows_Generic_Threat_a440f624 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "3564fec3d47dfafc7e9c662654865aed74aedeac7371af8a77e573ea92cbd072"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -677,7 +677,7 @@ rule Windows_Generic_Threat_b577c086 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "27dd61d4d9997738e63e813f8b8ea9d5cf1291eb02d20d1a2ad75ac8aa99459c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -697,7 +697,7 @@ rule Windows_Generic_Threat_62e1f5fc {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "4a692e244a389af0339de8c2d429b541d6d763afb0a2b1bb20bee879330f2f42"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -719,7 +719,7 @@ rule Windows_Generic_Threat_55d6a1ab {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1ca6ed610479b5aaaf193a2afed8f2ca1e32c0c5550a195d88f689caab60c6fb"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -740,7 +740,7 @@ rule Windows_Generic_Threat_f7d3cdfd {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "f9df83d0b0e06884cdb4a02cd2091ee1fadeabb2ea16ca34cbfef4129ede251f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -760,7 +760,7 @@ rule Windows_Generic_Threat_0350ed31 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "008f9352765d1b3360726363e3e179b527a566bc59acecea06bd16eb16b66c5d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -780,7 +780,7 @@ rule Windows_Generic_Threat_13236f14 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "a46bbcce396495c513190b272d3bc43d6579a201f5e8d103628c62888a82fa8b"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -801,7 +801,7 @@ rule Windows_Generic_Threat_a1cef0cd {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "71f519c6bd598e17e1298d247a4ad37b78685ca6fd423d560d397d34d16b7db8"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -821,7 +821,7 @@ rule Windows_Generic_Threat_e5f4703f {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "362bda1fad3fefce7d173617909d3c1a0a8e234e22caf3215ee7c6cef6b2743b"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -841,7 +841,7 @@ rule Windows_Generic_Threat_8b790aba {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ec98bfff01d384bdff6bbbc5e17620b31fa57c662516157fd476ef587b8d239e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -862,7 +862,7 @@ rule Windows_Generic_Threat_76a7579f {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "76c73934bcff7e4ee08b068d1e02b8f5c22161262d127de2b4ac2e81d09d84f6"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -882,7 +882,7 @@ rule Windows_Generic_Threat_3f060b9c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "32e7a40b13ddbf9fc73bd12c234336b1ae11e2f39476de99ebacd7bbfd22fba0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -902,7 +902,7 @@ rule Windows_Generic_Threat_dbae6542 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c73f533f96ed894b9ff717da195083a594673e218ee9a269e360353b9c9a0283"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -922,7 +922,7 @@ rule Windows_Generic_Threat_808f680e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "df6955522532e365239b94e9d834ff5eeeb354eec3e3672c48be88725849ac1c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -942,7 +942,7 @@ rule Windows_Generic_Threat_073909cf {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "89a6dc518c119b39252889632bd18d9dfdae687f7621310fb14b684d2f85dad8"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -962,7 +962,7 @@ rule Windows_Generic_Threat_820fe9c9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1102a499b8a863bdbfd978a1d17270990e6b7fe60ce54b9dd17492234aad2f8c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -982,7 +982,7 @@ rule Windows_Generic_Threat_89efd1b4 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "937c8bc3c89bb9c05b2cb859c4bf0f47020917a309bbadca36236434c8cdc8b9"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1002,7 +1002,7 @@ rule Windows_Generic_Threat_61315534 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "819447ca71080f083b1061ed6e333bd9ef816abd5b0dd0b5e6a58511ab1ce8b9"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1022,7 +1022,7 @@ rule Windows_Generic_Threat_eab96cf2 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2be8a2c524f1fb2acb2af92bc56eb9377c4e16923a06f5ac2373811041ea7982"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1042,7 +1042,7 @@ rule Windows_Generic_Threat_11a56097 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "98d538c8f074d831b7a91e549e78f6549db5d2c53a10dbe82209d15d1c2e9b56"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1063,7 +1063,7 @@ rule Windows_Generic_Threat_f3bef434 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "98d538c8f074d831b7a91e549e78f6549db5d2c53a10dbe82209d15d1c2e9b56"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1083,7 +1083,7 @@ rule Windows_Generic_Threat_c6f131c5 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "247314baaaa993b8db9de7ef0e2998030f13b99d6fd0e17ffd59e31a8d17747a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1103,7 +1103,7 @@ rule Windows_Generic_Threat_b2a054f8 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "63d2478a5db820731a48a7ad5a20d7a4deca35c6b865a17de86248bef7a64da7"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1125,7 +1125,7 @@ rule Windows_Generic_Threat_fcab7e76 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "67d7e016e401bd5d435eecaa9e8ead341aed2f373a1179069f53b64bda3f1f56"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1145,7 +1145,7 @@ rule Windows_Generic_Threat_90e4f085 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1a6a290d98f5957d00756fc55187c78030de7031544a981fd2bb4cfeae732168"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1167,7 +1167,7 @@ rule Windows_Generic_Threat_04a9c177 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0cccdde4dcc8916fb6399c181722eb0da2775d86146ce3cb3fc7f8cf6cd67c29"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1187,7 +1187,7 @@ rule Windows_Generic_Threat_45d1e986 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fd159cf2f9bd48b0f6f5958eef8af8feede2bcbbea035a7e56ce1ff72d3f47eb"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1207,7 +1207,7 @@ rule Windows_Generic_Threat_83c38e63 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2121a0e5debcfeedf200d7473030062bc9f5fbd5edfdcd464dfedde272ff1ae7"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1228,7 +1228,7 @@ rule Windows_Generic_Threat_bd24be68 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fd159cf2f9bd48b0f6f5958eef8af8feede2bcbbea035a7e56ce1ff72d3f47eb"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1248,7 +1248,7 @@ rule Windows_Generic_Threat_a0c7b402 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "5814d7712304800d92487b8e1108d20ad7b44f48910b1fb0a99e9b36baa4333a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1268,7 +1268,7 @@ rule Windows_Generic_Threat_42b3e0d7 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "99ad416b155970fda383a63fe61de2e4d0254e9c9e09564e17938e8e2b49b5b7"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1288,7 +1288,7 @@ rule Windows_Generic_Threat_66142106 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "cd164a65fb2a496ad7b54c782f25fbfca0540d46d2c0d6b098d7be516c4ce021"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1308,7 +1308,7 @@ rule Windows_Generic_Threat_51a1d82b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1a7adde856991fa25fac79048461102fba58cda9492d4f5203b817d767a81018"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1328,7 +1328,7 @@ rule Windows_Generic_Threat_dee3b4bf {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c7f4b63fa5c7386d6444c0d0428a8fe328446efcef5fda93821f05e86efd2fba"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1348,7 +1348,7 @@ rule Windows_Generic_Threat_fdbcd3f2 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9258e4fe077be21ad7ae348868f1ac6226f6e9d404c664025006ab4b64222369"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1368,7 +1368,7 @@ rule Windows_Generic_Threat_b7852ccf {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "5ac70fa959be4ee37c0c56f0dd04061a5fed78fcbde21b8449fc93e44a8c133a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1390,7 +1390,7 @@ rule Windows_Generic_Threat_c3c8f21a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9a102873dd37d08f53dcf6b5dad2555598a954d18fb3090bbf842655c5fded35"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1410,7 +1410,7 @@ rule Windows_Generic_Threat_a3d51e0c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "18bd25df1025cd04b0642e507b0170bc1a2afba71b2dc4bd5e83cc487860db0d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1430,7 +1430,7 @@ rule Windows_Generic_Threat_54ccad4d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fe4aad002722d2173dd661b7b34cdb0e3d4d8cd600e4165975c48bf1b135763f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1452,7 +1452,7 @@ rule Windows_Generic_Threat_6ee18020 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "d58d8f5a7efcb02adac92362d8c608e6d056824641283497b2e1c1f0e2d19b0a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1472,7 +1472,7 @@ rule Windows_Generic_Threat_8eb547db {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "3fc821b63dfa653b86b11201073997fa4dc273124d050c2a7c267ac789d8a447"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1492,7 +1492,7 @@ rule Windows_Generic_Threat_803feff4 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "8f150dfb13e4a2ff36231f873e4c0677b5db4aa235d8f0aeb41e02f7e31c1e05"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1512,7 +1512,7 @@ rule Windows_Generic_Threat_9c7d2333 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "85219f1402c88ab1e69aa99fe4bed75b2ad1918f4e95c448cdc6a4b9d2f9a5d4"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1532,7 +1532,7 @@ rule Windows_Generic_Threat_747b58af {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ee28e93412c59d63155fd79bc99979a5664c48dcb3c77e121d17fa985fcb0ebe"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1554,7 +1554,7 @@ rule Windows_Generic_Threat_c3c4e847 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "86b37f0b2d9d7a810b5739776b4104f1ded3a1228c4ec2d104d26d8eb26aa7ba"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1574,7 +1574,7 @@ rule Windows_Generic_Threat_6542ebda {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2073e51c7db7040c6046e36585873a0addc2bcddeb6e944b46f96c607dd83595"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1594,7 +1594,7 @@ rule Windows_Generic_Threat_1417511b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2fc9bd91753ff3334ef7f9861dc1ae79cf5915d79fa50f7104cbb3262b7037da"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1614,7 +1614,7 @@ rule Windows_Generic_Threat_7526f106 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "5a297c446c27a8d851c444b6b32a346a7f9f5b5e783564742d39e90cd583e0f0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1635,7 +1635,7 @@ rule Windows_Generic_Threat_cbe3313a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1ca2a28c851070b9bfe1f7dd655f2ea10ececef49276c998a1d2a1b48f84cef3"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1655,7 +1655,7 @@ rule Windows_Generic_Threat_779cf969 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ef281230c248442c804f1930caba48f0ae6cef110665020139f826ab99bbf274"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1675,7 +1675,7 @@ rule Windows_Generic_Threat_d568682a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0d98bc52259e0625ec2f24078cf4ae3233e5be0ade8f97a80ca590a0f1418582"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1695,7 +1695,7 @@ rule Windows_Generic_Threat_ccb6a7a2 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "60503212db3f27a4d68bbfc94048ffede04ad37c78a19c4fe428b50f27af7a0d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1716,7 +1716,7 @@ rule Windows_Generic_Threat_d62f1d01 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "380892397b86f47ec5e6ed1845317bf3fd9c00d01f516cedfe032c0549eef239"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1736,7 +1736,7 @@ rule Windows_Generic_Threat_2bb6f41d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "afa060352346dda4807dffbcac75bf07e8800d87ff72971b65e9805fabef39c0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1757,7 +1757,7 @@ rule Windows_Generic_Threat_c54ed0ed {
         last_modified = "2024-02-08"
         threat_name = "Windows.Generic.Threat"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1777,7 +1777,7 @@ rule Windows_Generic_Threat_dbe41439 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "64afd2bc6cec17402473a29b94325ae2e26989caf5a8b916dc21952149d71b00"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1797,7 +1797,7 @@ rule Windows_Generic_Threat_51a52b44 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "303aafcc660baa803344bed6a3a7a5b150668f88a222c28182db588fc1e744e0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1817,7 +1817,7 @@ rule Windows_Generic_Threat_5c18a7f9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fd272678098eae8f5ec8428cf25d2f1d8b65566c59e363d42c7ce9ffab90faaa"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1837,7 +1837,7 @@ rule Windows_Generic_Threat_ab01ba9e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2b237716d0c0c9877f54b3fa03823068728dfe0710c5b05e9808eab365a1408e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1859,7 +1859,7 @@ rule Windows_Generic_Threat_917d7645 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "19b54a20cfa74cbb0f4724155244b52ca854054a205be6d148f826fa008d6c55"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1879,7 +1879,7 @@ rule Windows_Generic_Threat_7a09e97d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c0c1e333e60547a90ec9d9dac3fc6698b088769bc0f5ec25883b2c4d1fd680a9"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1899,7 +1899,7 @@ rule Windows_Generic_Threat_dc4ede3b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c49f20c5b42c6d813e6364b1fcb68c1b63a2f7def85a3ddfc4e664c4e90f8798"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1919,7 +1919,7 @@ rule Windows_Generic_Threat_bb480769 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "010e3aeb26533d418bb7d2fdcfb5ec21b36603b6abb63511be25a37f99635bce"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1939,7 +1939,7 @@ rule Windows_Generic_Threat_5fbf5680 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1b0553a9873d4cda213f5464b5e98904163e347a49282db679394f70d4571e77"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1959,7 +1959,7 @@ rule Windows_Generic_Threat_aa30a738 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "7726a691bd6c1ee51a9682e0087403a2c5a798ad172c1402acf2209c34092d18"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1979,7 +1979,7 @@ rule Windows_Generic_Threat_9a8dc290 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "d951562a841f3706005d7696052d45397e3b4296d4cd96bf187920175fbb1676"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1999,7 +1999,7 @@ rule Windows_Generic_Threat_bbf2a354 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b4e6c748ad88070e39b53a9373946e9e404623326f710814bed439e5ea61fc3e"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2019,7 +2019,7 @@ rule Windows_Generic_Threat_da0f3cbb {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b2c456d0051ffe1ca7e9de1e944692b10ed466eabb38242ea88e663a23157c58"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2039,7 +2039,7 @@ rule Windows_Generic_Threat_7d555b55 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "7efa5c8fd55a20fbc3a270cf2329d4a38f10ca372f3428bee4c42279fbe6f9c3"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2059,7 +2059,7 @@ rule Windows_Generic_Threat_0a38c7d0 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "69ea7d2ea3ed6826ddcefb3c1daa63d8ab53dc6e66c59cf5c2506a8af1c62ef4"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2079,7 +2079,7 @@ rule Windows_Generic_Threat_98527d90 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fa24e7c6777e89928afa2a0afb2fab4db854ed3887056b5a76aef42ae38c3c82"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2099,7 +2099,7 @@ rule Windows_Generic_Threat_9f4a80b2 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "47d57d00e2de43f33cd56ff653adb59b804e4dbe37304a5fa6a202ee20b50c24"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2119,7 +2119,7 @@ rule Windows_Generic_Threat_39e1eb4c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "a733258bf04ffa058db95c8c908a79650400ebd92600b96dd28ceecac311f94a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2139,7 +2139,7 @@ rule Windows_Generic_Threat_d51dd31b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2a61c0305d82b6b4180c3d817c28286ab8ee56de44e171522bd07a60a1d8492d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2160,7 +2160,7 @@ rule Windows_Generic_Threat_3a321f0a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "91056e8c53dc1e97c7feafab31f0943f150d89a0b0026bcfb3664d2e93ccfe2b"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2180,7 +2180,7 @@ rule Windows_Generic_Threat_a82f45a8 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ad07428104d3aa7abec2fd86562eaa8600d3e4b0f8d78ba1446f340d10008b53"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2200,7 +2200,7 @@ rule Windows_Generic_Threat_d6625ad7 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "878c9745320593573597d62c8f3adb3bef0b554cd51b18216f6d9f5d1a32a931"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2220,7 +2220,7 @@ rule Windows_Generic_Threat_61bbb571 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "41e2a6cecb1735e8f09b1ba5dccff3c08afe395b6214396e545347927d1815a8"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2240,7 +2240,7 @@ rule Windows_Generic_Threat_4a605e93 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1a84e25505a54e8e308714b53123396df74df1bde223bb306c0dc6220c1f0bbb"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2260,7 +2260,7 @@ rule Windows_Generic_Threat_b509dfc8 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9b5124e5e1be30d3f2ad1020bbdb93e2ceeada4c4d36f71b2abbd728bd5292b8"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2280,7 +2280,7 @@ rule Windows_Generic_Threat_7a49053e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "29fb2b18cfd72a2966640ff59e67c89f93f83fc17afad2dfcacf9f53e9ea3446"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2302,7 +2302,7 @@ rule Windows_Generic_Threat_fca7f863 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9d0e786dd8f1dc05eae910c6bcf15b5d05b4b6b0543618ca0c2ff3c4bb657af3"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2322,7 +2322,7 @@ rule Windows_Generic_Threat_cafbd6a3 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "97081a51aa016d0e6c9ecadc09ff858bf43364265a006db9d7cc133f8429bc46"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2343,7 +2343,7 @@ rule Windows_Generic_Threat_d8f834a9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c118c2064a5839ebd57a67a7be731fffe89669a8f17c1fe678432d4ff85e7929"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2363,7 +2363,7 @@ rule Windows_Generic_Threat_de3f91c6 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "e2cd4a8ccbf4a3a93c1387c66d94e9506b5981357004929ce5a41fcedfffb20f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2383,7 +2383,7 @@ rule Windows_Generic_Threat_f0516e98 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "21d01bd53f43aa54f22786d7776c7bc90320ec6f7a6501b168790be46ff69632"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2404,7 +2404,7 @@ rule Windows_Generic_Threat_3c4d9cbe {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "21d01bd53f43aa54f22786d7776c7bc90320ec6f7a6501b168790be46ff69632"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2424,7 +2424,7 @@ rule Windows_Generic_Threat_deb82e8c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0f5791588a9898a3db29326785d31b52b524c3097370f6aa28564473d353cd38"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2445,7 +2445,7 @@ rule Windows_Generic_Threat_278c589e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "cccc6c1bf15a7d5725981de950475e272c277bc3b9d266c5debf0fc698770355"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2465,7 +2465,7 @@ rule Windows_Generic_Threat_6b621667 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b50b39e460ecd7633a42f0856359088de20512c932fc35af6531ff48c9fa638a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2485,7 +2485,7 @@ rule Windows_Generic_Threat_7693d7fd {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fc40cc5d0bd3722126302f74ace414e6934eca3a8a5c63a11feada2130b34b89"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2505,7 +2505,7 @@ rule Windows_Generic_Threat_df5de012 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "13c06d7b030a46c6bb6351f40184af9fafaf4c67b6a2627a45925dd17501d659"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2525,7 +2525,7 @@ rule Windows_Generic_Threat_0e8530f5 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9f44d9acf79ed4450195223a9da185c0b0e8a8ea661d365a3ddea38f2732e2b8"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2546,7 +2546,7 @@ rule Windows_Generic_Threat_ba807e3e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "cabd0633b37e6465ece334195ff4cc5c3f44cfe46211165efc07f4073aed1049"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2566,7 +2566,7 @@ rule Windows_Generic_Threat_4578ee8c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "699fecdb0bf27994d67492dc480f4ba1320acdd75e5881afbc5f73c982453fed"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2586,7 +2586,7 @@ rule Windows_Generic_Threat_ebf62328 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "dfce19aa2e1a3e983c3bfb2e4bbd7617b96d57602d7a6da6fee7b282e354c9e1"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2608,7 +2608,7 @@ rule Windows_Generic_Threat_dcc622a4 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "94a3f10396c07783586070119becf0924de9a7caf449d6e07065837d54e6222d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2628,7 +2628,7 @@ rule Windows_Generic_Threat_046aa1ec {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c74cf499fb9298d43a6e64930addb1f8a8d8336c796b9bc02ffc260684ec60a2"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2648,7 +2648,7 @@ rule Windows_Generic_Threat_85c73807 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "7f560a22c1f7511518656ac30350229f7a6847d26e1b3857e283f7dcee2604a0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2668,7 +2668,7 @@ rule Windows_Generic_Threat_642df623 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "e5ba85d1a6a54df38b5fa655703c3457783f4a4f71e178f83d8aac878d4847da"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2688,7 +2688,7 @@ rule Windows_Generic_Threat_27a2994f {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "e534914e06d90e119ce87f5abb446c57ec3473a29a7a9e7dc066fdc00dc68adc"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2708,7 +2708,7 @@ rule Windows_Generic_Threat_dbceec58 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fbec30528e6f261aebf0d41f3cd6d35fcc937f1e20e1070f99b1b327f02b91e0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2728,7 +2728,7 @@ rule Windows_Generic_Threat_7407eb79 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9ae0f053c8e2c4f4381eac8265170b79301d4a22ec1fdb86e5eb212c51a75d14"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2748,7 +2748,7 @@ rule Windows_Generic_Threat_3613fa12 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1403ec99f262c964e3de133a10815e34d2f104b113b0197ab43c6b7b40b536c0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2768,7 +2768,7 @@ rule Windows_Generic_Threat_b125fff2 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "9c641c0c8c2fd8831ee4e3b29a2a65f070b54775e64821c50b8ccd387e602097"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2788,7 +2788,7 @@ rule Windows_Generic_Threat_d7e5ec2d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fe711664a565566cbc710d5e678a9a30063a2db151ebec226e2abcd24c0a7e68"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2808,7 +2808,7 @@ rule Windows_Generic_Threat_1636c2bf {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "6e43916db43d8217214bbe4eb32ed3d82d0ac423cffc91d053a317a3dbe6dafb"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2828,7 +2828,7 @@ rule Windows_Generic_Threat_0a640296 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "3682eff62caaf2c90adef447d3ff48a3f9c34c571046f379d2eaf121976f1d07"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2848,7 +2848,7 @@ rule Windows_Generic_Threat_b1ef4828 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "29b20ff8ebad05e4a33c925251d08824ca155f5d9fa72d6f9e359e6ec6c61279"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2869,7 +2869,7 @@ rule Windows_Generic_Threat_48cbdc20 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "7a7704c64e64d3a1f76fc718d5b5a5e3d46beeeb62f0493f22e50865ddf66594"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2890,7 +2890,7 @@ rule Windows_Generic_Threat_420e1cdc {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b20254e03f7f1e79fec51d614ee0cfe0cb87432f3a53cf98cf8c047c13e2d774"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2910,7 +2910,7 @@ rule Windows_Generic_Threat_4c37e16e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "d83a8ed5e192b3fe9d74f3a9966fa094d23676c7e6586c9240d97c252b8e4e74"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2931,7 +2931,7 @@ rule Windows_Generic_Threat_5be3a474 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b902954d634307260d5bd8fb6248271f933c1cbc649aa2073bf05e79c1aedb66"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2951,7 +2951,7 @@ rule Windows_Generic_Threat_b191061e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "bd4ef6fae7f29def8e5894bf05057653248f009422de85c1e425d04a0b2df258"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2971,7 +2971,7 @@ rule Windows_Generic_Threat_05f52e4d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "e578b795f8ed77c1057d8e6b827f7426fd4881f02949bfc83bcad11fa7eb2403"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -2991,7 +2991,7 @@ rule Windows_Generic_Threat_c34e19e9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "f9048348a59d9f824b45b16b1fdba9bfeda513aa9fbe671442f84b81679232db"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3011,7 +3011,7 @@ rule Windows_Generic_Threat_e691eaa1 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "afa5f36860e69b9134b93e9ad32fed0a5923772e701437e1054ea98e76f28a77"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3031,7 +3031,7 @@ rule Windows_Generic_Threat_5e33bb4b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "13c06d7b030a46c6bb6351f40184af9fafaf4c67b6a2627a45925dd17501d659"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3051,7 +3051,7 @@ rule Windows_Generic_Threat_be64ba10 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "24bb4fc117aa57fd170e878263973a392d094c94d3a5f651fad7528d5d73b58a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3072,7 +3072,7 @@ rule Windows_Generic_Threat_7bb75582 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "35f9698e9b9f611b3dd92466f18f97f4a8b4506ed6f10d4ac84303177f43522d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3092,7 +3092,7 @@ rule Windows_Generic_Threat_59698796 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "35f9698e9b9f611b3dd92466f18f97f4a8b4506ed6f10d4ac84303177f43522d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3112,7 +3112,7 @@ rule Windows_Generic_Threat_2ae9b09e {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "dc8f4784c368676cd411b7d618407c416d9e56d116dd3cd17c3f750e6cb60c40"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3132,7 +3132,7 @@ rule Windows_Generic_Threat_604a8763 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "2a51fb11032ec011448184a4f2837d05638a7673d16dcf5dcf4005de3f87883a"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3152,7 +3152,7 @@ rule Windows_Generic_Threat_f45b3f09 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "577f1dbd76030c7e44ed28c748551691d446e268189af94e1fa1545f06395178"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3172,7 +3172,7 @@ rule Windows_Generic_Threat_3f390999 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "1b6fc4eaef3515058f85551e7e5dffb68b9a0550cd7f9ebcbac158dac9ababf1"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3192,7 +3192,7 @@ rule Windows_Generic_Threat_abd1c09d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "3ff09d2352c2163465d8c86f94baa25ba85c35698a5e3fbc52bc95afc06b7e85"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3212,7 +3212,7 @@ rule Windows_Generic_Threat_b7870213 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "04cb0d5eecea673acc575e54439398cc00e78cc54d8f43c4b9bc353e4fc4430d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3232,7 +3232,7 @@ rule Windows_Generic_Threat_2bba6bae {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "d9955c716371422750b77d64256dade6fbd028c8d965db05c0d889d953480373"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3252,7 +3252,7 @@ rule Windows_Generic_Threat_4db75701 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "fa7847d21d5a350cf96d7ecbcf13dce63e6a0937971cfb479700c5b31850bba9"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3272,7 +3272,7 @@ rule Windows_Generic_Threat_54a914c9 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c418c5ad8030985bb5067cda61caba3b7a0d24cb8d3f93fc09d452fbdf4174ec"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3292,7 +3292,7 @@ rule Windows_Generic_Threat_38a88967 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "6e425eb1a27c4337f05d12992e33fe0047e30259380002797639d51ef9509739"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3312,7 +3312,7 @@ rule Windows_Generic_Threat_e8abb835 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "e42262671325bec300afa722cefb584e477c3f2782c8d4c6402d6863df348cac"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3332,7 +3332,7 @@ rule Windows_Generic_Threat_492d7223 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "c0d9c9297836aceb4400bcb0877d1df90ca387f18f735de195852a909c67b7ef"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3352,7 +3352,7 @@ rule Windows_Generic_Threat_ea296356 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "4c48a0fe90f3da7bfdd32961da7771a0124b77e1ac1910168020babe8143e959"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3372,7 +3372,7 @@ rule Windows_Generic_Threat_aeaeb5cf {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "f57d955d485904f0c729acff9db1de9cb42f32af993393d58538f07fa273b431"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3392,7 +3392,7 @@ rule Windows_Generic_Threat_c8424507 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "d556b02733385b823cfe4db7e562e90aa520e2e6fb00fceb76cc0a6a1ff47692"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3413,7 +3413,7 @@ rule Windows_Generic_Threat_9af87ddb {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "b1fbc11744e21dc08599412887a3a966572614ce25ccd3c8c98f04bcbdda3898"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3433,7 +3433,7 @@ rule Windows_Generic_Threat_d7b57912 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0906599be152dd598c7f540498c44cc38efe9ea976731da05137ee6520288fe4"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3453,7 +3453,7 @@ rule Windows_Generic_Threat_23d33b48 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "acbc22df07888498ae6f52f5458e3fb8e0682e443a8c2bc97177a0320b4e2098"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3473,7 +3473,7 @@ rule Windows_Generic_Threat_4b0b73ce {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "236fc00cd7c75f70904239935ab90f51b03ff347798f56cec1bdd73a286b24c1"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3493,7 +3493,7 @@ rule Windows_Generic_Threat_1f2e969c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "7def75df729ed66511fbe91eadf15bc69a03618e78c48e27c35497db2a6a97ae"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3513,7 +3513,7 @@ rule Windows_Generic_Threat_27c975fd {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0108af363959f90919f24220caf426fba50be3d61f3735bb0f2acbbcc1f56e0c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3533,7 +3533,7 @@ rule Windows_Generic_Threat_d170474c {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "63da7ea6d4cd240485ad5c546dd60b90cb98d6f4f18df4bc708f5ec689be952f"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3553,7 +3553,7 @@ rule Windows_Generic_Threat_f57e5e2a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "bff5112830cc3547c206fb1d028c592a11a3c7cd457ef445b765af86a1e76001"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3573,7 +3573,7 @@ rule Windows_Generic_Threat_4fe0deb6 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "5836ef66985e851b37a369b04cce579afdb3b241d46a096bf8b1e8d4df053cd2"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3593,7 +3593,7 @@ rule Windows_Generic_Threat_c9003b7b {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ff2a1def8c4fae4166e249edab62d73f44ba3c05d5e3c9fda11399bfe1fcee6c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3613,7 +3613,7 @@ rule Windows_Generic_Threat_21253888 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "95e523f4003a10a906ef7c68a258d402e25f235fa9f2b022faff7cae41185b9c"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3633,7 +3633,7 @@ rule Windows_Generic_Threat_06dcb833 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "f7fde85aefb7123ef805c85394907ef73e0983499b49f2290a83aa2b0a2e5e9d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3653,7 +3653,7 @@ rule Windows_Generic_Threat_5435fe36 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "8c0e26af4f9c783844ea457c3eb7bb2bbe1bf3f860ce180bacab00456f3ae7c1"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3673,7 +3673,7 @@ rule Windows_Generic_Threat_491a8310 {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "59c6846b4676378d9c80d7ced825f0463d1b333546bfcad919ee262cbf6db250"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3693,7 +3693,7 @@ rule Windows_Generic_Threat_2f726f2d {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "ede9bd928a216c9844f290be0de6985ed54dceaff041906dca3a3468293464b6"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3713,7 +3713,7 @@ rule Windows_Generic_Threat_23ead7ed {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "0bcd82ed4ea3e12cbaabc50df612d48078604e4d0985e9a240afc24630afa4d7"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -3733,7 +3733,7 @@ rule Windows_Generic_Threat_3055c14a {
         threat_name = "Windows.Generic.Threat"
         reference_sample = "69e0e00babc6365144a98c2866353ef973b7dfe69ae37068f807d4b12c017161"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

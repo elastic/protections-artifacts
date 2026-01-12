@@ -8,7 +8,7 @@ rule Windows_Trojan_SadBridge_6e83eaeb {
         threat_name = "Windows.Trojan.SadBridge"
         reference_sample = "b432cdd217b171f3ad4a8a959fa0357bd7917f078a9546aed1649af00fc4bda6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

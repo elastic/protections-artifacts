@@ -8,7 +8,7 @@ rule Windows_Trojan_Sythe_02b2811a {
         threat_name = "Windows.Trojan.Sythe"
         reference_sample = "2d54a8ba40cc9a1c74db7a889bc75a38f16ae2d025268aa07851c1948daa1b4d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

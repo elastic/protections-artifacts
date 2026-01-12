@@ -8,7 +8,7 @@ rule Windows_Trojan_DTrack_57db861f {
         threat_name = "Windows.Trojan.DTrack"
         reference_sample = "c8df8511bccc588daf87583ea40836acfddefb5416b860799835ea6f93f9ce5f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

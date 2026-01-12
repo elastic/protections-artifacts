@@ -8,7 +8,7 @@ rule Windows_Hacktool_ClrOxide_d92d9575 {
         threat_name = "Windows.Hacktool.ClrOxide"
         reference_sample = "f3a4900eff80563bff586ced172c3988347980f902aceef2f9f9f6d188fac8e3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

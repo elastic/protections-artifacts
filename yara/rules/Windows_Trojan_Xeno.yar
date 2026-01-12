@@ -8,7 +8,7 @@ rule Windows_Trojan_Xeno_f92ffb82 {
         threat_name = "Windows.Trojan.Xeno"
         reference_sample = "22dbdbcdd4c8b6899006f9f07e87c19b6a2947eeff8cc89c653309379b388cf4"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Xeno_89f9f060 {
         threat_name = "Windows.Trojan.Xeno"
         reference_sample = "b74733d68e95220ab0630a68ddf973b0c959fd421628e639c1b91e465ba9299b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

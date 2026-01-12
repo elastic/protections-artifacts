@@ -8,7 +8,7 @@ rule Windows_Trojan_Havoc_77f3d40e {
         threat_name = "Windows.Trojan.Havoc"
         reference_sample = "3427dac129b760a03f2c40590c01065c9bf2340d2dfa4a4a7cf4830a02e95879"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -44,7 +44,7 @@ rule Windows_Trojan_Havoc_9c7bb863 {
         threat_name = "Windows.Trojan.Havoc"
         reference_sample = "261b92d9e8dcb9d0abf1627b791831ec89779f2b7973b1926c6ec9691288dd57"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -65,7 +65,7 @@ rule Windows_Trojan_Havoc_88053562 {
         threat_name = "Windows.Trojan.Havoc"
         reference_sample = "2f0b59f8220edd0d34fba92905faf0b51aead95d53be8b5f022eed7e21bdb4af"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -85,7 +85,7 @@ rule Windows_Trojan_Havoc_ffecc8af {
         threat_name = "Windows.Trojan.Havoc"
         reference_sample = "495d323651c252e38814b77b9c6c913b9489e769252ac8bbaf8432f15e0efe44"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

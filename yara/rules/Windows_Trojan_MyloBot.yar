@@ -8,7 +8,7 @@ rule Windows_Trojan_MyloBot_a895174a {
         threat_name = "Windows.Trojan.MyloBot"
         reference_sample = "33831d9ad64d0f52f507f08ef81607aafa6ced58a189969af6cf57c659c982d2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

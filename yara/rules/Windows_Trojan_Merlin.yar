@@ -8,7 +8,7 @@ rule Windows_Trojan_Merlin_e8ecb3be {
         threat_name = "Windows.Trojan.Merlin"
         reference_sample = "768c120e63d3960a0842dcc538749955ab7caabaeaf3682f6d1e30666aac65a8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

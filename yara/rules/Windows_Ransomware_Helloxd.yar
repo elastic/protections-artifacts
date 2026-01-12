@@ -8,7 +8,7 @@ rule Windows_Ransomware_Helloxd_0c50f01b {
         threat_name = "Windows.Ransomware.Helloxd"
         reference_sample = "435781ab608ff908123d9f4758132fa45d459956755d27027a52b8c9e61f9589"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

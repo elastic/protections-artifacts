@@ -9,7 +9,7 @@ rule Windows_Trojan_AgentTesla_d3ac2b2f {
         reference = "https://www.elastic.co/security-labs/attack-chain-leads-to-xworm-and-agenttesla"
         reference_sample = "65463161760af7ab85f5c475a0f7b1581234a1e714a2c5a555783bdd203f85f4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Trojan_AgentTesla_e577e17e {
         reference = "https://www.elastic.co/security-labs/attack-chain-leads-to-xworm-and-agenttesla"
         reference_sample = "ed43ddb536e6c3f8513213cd6eb2e890b73e26d5543c0ba1deb2690b5c0385b6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -89,7 +89,7 @@ rule Windows_Trojan_AgentTesla_f2a90d14 {
         reference = "https://www.elastic.co/security-labs/attack-chain-leads-to-xworm-and-agenttesla"
         reference_sample = "ed43ddb536e6c3f8513213cd6eb2e890b73e26d5543c0ba1deb2690b5c0385b6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -110,7 +110,7 @@ rule Windows_Trojan_AgentTesla_a2d69e48 {
         reference = "https://www.elastic.co/security-labs/attack-chain-leads-to-xworm-and-agenttesla"
         reference_sample = "edef51e59d10993155104d90fcd80175daa5ade63fec260e3272f17b237a6f44"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -132,7 +132,7 @@ rule Windows_Trojan_AgentTesla_ebf431a8 {
         reference = "https://www.elastic.co/security-labs/attack-chain-leads-to-xworm-and-agenttesla"
         reference_sample = "0cb3051a80a0515ce715b71fdf64abebfb8c71b9814903cb9abcf16c0403f62b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

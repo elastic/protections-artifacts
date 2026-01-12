@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpHound_5adf9d6d {
         threat_name = "Windows.Hacktool.SharpHound"
         reference_sample = "1f74ed6e61880d19e53cde5b0d67a0507bfda0be661860300dcb0f20ea9a45f4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

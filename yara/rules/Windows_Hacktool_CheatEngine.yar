@@ -9,7 +9,7 @@ rule Windows_Hacktool_CheatEngine_fedac96d {
         threat_name = "Windows.Hacktool.CheatEngine"
         reference_sample = "b20b339a7b61dc7dbc9a36c45492ba9654a8b8a7c8cbc202ed1dfed427cfd799"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

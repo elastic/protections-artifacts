@@ -8,7 +8,7 @@ rule Windows_Hacktool_GodPotato_5f1aad81 {
         threat_name = "Windows.Hacktool.GodPotato"
         reference_sample = "00171bb6e9e4a9b8601e988a8c4ac6f5413e31e1b6d86d24b0b53520cd02184c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

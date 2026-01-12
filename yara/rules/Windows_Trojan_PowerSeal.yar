@@ -8,7 +8,7 @@ rule Windows_Trojan_PowerSeal_d63f5e54 {
         threat_name = "Windows.Trojan.PowerSeal"
         reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_PowerSeal_2e50f393 {
         threat_name = "Windows.Trojan.PowerSeal"
         reference = "https://www.elastic.co/security-labs/elastic-charms-spectralviper"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_MetaStealer_f94e2464 {
         threat_name = "Windows.Trojan.MetaStealer"
         reference_sample = "14ca15c0751207103c38f1a2f8fdc73e5dd3d58772f6e5641e54e0c790ecd132"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -43,7 +43,7 @@ rule Windows_Trojan_MetaStealer_a07e395c {
         threat_name = "Windows.Trojan.MetaStealer"
         reference_sample = "973a9056040af402d6f92f436a287ea164fae09c263f80aba0b8d5366ed9957a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpWMI_a67d6fe5 {
         threat_name = "Windows.Hacktool.SharpWMI"
         reference_sample = "2134a5e1a5eece1336f831a7686c5ea3b6ca5aaa63ab7e7820be937da0678e15"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

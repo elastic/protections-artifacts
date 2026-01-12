@@ -9,7 +9,7 @@ rule Windows_Trojan_Lobshot_013c1b0b {
         reference = "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware"
         reference_sample = "e4ea88887753a936eaf3361dcc00380b88b0c210dcbde24f8f7ce27991856bf6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

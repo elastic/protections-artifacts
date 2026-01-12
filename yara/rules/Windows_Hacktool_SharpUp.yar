@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpUp_e5c87c9a {
         threat_name = "Windows.Hacktool.SharpUp"
         reference_sample = "45e92b991b3633b446473115f97366d9f35acd446d00cd4a05981a056660ad27"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

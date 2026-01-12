@@ -8,7 +8,7 @@ rule Windows_Trojan_Pingpull_09dd9559 {
         threat_name = "Windows.Trojan.Pingpull"
         reference_sample = "de14f22c88e552b61c62ab28d27a617fb8c0737350ca7c631de5680850282761"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

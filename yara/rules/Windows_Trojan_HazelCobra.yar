@@ -8,7 +8,7 @@ rule Windows_Trojan_HazelCobra_6a9fe48a {
         threat_name = "Windows.Trojan.HazelCobra"
         reference_sample = "b5acf14cdac40be590318dee95425d0746e85b1b7b1cbd14da66f21f2522bf4d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

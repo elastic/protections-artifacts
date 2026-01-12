@@ -10,7 +10,7 @@ rule Windows_Trojan_Kronos_cdd2e2c5 {
         reference = "https://www.virusbulletin.com/virusbulletin/2014/10/paper-evolution-webinjects"
         reference_sample = "baa9cedbbe0f5689be8f8028a6537c39e9ea8b0815ad76cb98f365ca5a41653f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_Fickerstealer_cc02e75e {
         threat_name = "Windows.Trojan.Fickerstealer"
         reference_sample = "a4113ccb55e06e783b6cb213647614f039aa7dbb454baa338459ccf37897ebd6"
         severity = 80
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Fickerstealer_f2159bec {
         threat_name = "Windows.Trojan.Fickerstealer"
         reference_sample = "a4113ccb55e06e783b6cb213647614f039aa7dbb454baa338459ccf37897ebd6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

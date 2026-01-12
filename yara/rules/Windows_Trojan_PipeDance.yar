@@ -9,7 +9,7 @@ rule Windows_Trojan_PipeDance_01c18057 {
         reference = "https://www.elastic.co/security-labs/twice-around-the-dance-floor-with-pipedance"
         reference_sample = "9d3f739e35182992f1e3ade48b8999fb3a5049f48c14db20e38ee63eddc5a1e7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

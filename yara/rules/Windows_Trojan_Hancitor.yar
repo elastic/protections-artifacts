@@ -8,7 +8,7 @@ rule Windows_Trojan_Hancitor_6738d84a {
         threat_name = "Windows.Trojan.Hancitor"
         reference_sample = "a674898f39377e538f9ec54197689c6fa15f00f51aa0b5cc75c2bafd86384a40"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

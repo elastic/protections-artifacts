@@ -8,7 +8,7 @@ rule Windows_Trojan_Sliver_46525b49 {
         threat_name = "Windows.Trojan.Sliver"
         reference_sample = "ecce5071c28940a1098aca3124b3f82e0630c4453f4f32e1b91576aac357ac9c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Sliver_c9cae357 {
         threat_name = "Windows.Trojan.Sliver"
         reference_sample = "27210d8d6e16c492c2ee61a59d39c461312f5563221ad4a0917d4e93b699418e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -49,7 +49,7 @@ rule Windows_Trojan_Sliver_1dd6d9c2 {
         threat_name = "Windows.Trojan.Sliver"
         reference_sample = "dc508a3e9ea093200acfc1ceebebb2b56686f4764fd8c94ab8c58eec7ee85c8b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

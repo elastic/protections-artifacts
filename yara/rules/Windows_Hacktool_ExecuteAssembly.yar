@@ -8,7 +8,7 @@ rule Windows_Hacktool_ExecuteAssembly_f41f4df6 {
         threat_name = "Windows.Hacktool.ExecuteAssembly"
         reference_sample = "a468ba2ba77aafa2a572c8947d414e74604a7c1c6e68a0b87fbfce4f8854dd61"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Ransomware_WhisperGate_c80f3b4b {
         threat_name = "Windows.Ransomware.WhisperGate"
         reference_sample = "a196c6b8ffcb97ffb276d04f354696e2391311db3841ae16c8c9f56f36a38e92"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Ransomware_WhisperGate_3476008e {
         threat_name = "Windows.Ransomware.WhisperGate"
         reference_sample = "9ef7dbd3da51332a78eff19146d21c82957821e464e8133e9594a07d716d892d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

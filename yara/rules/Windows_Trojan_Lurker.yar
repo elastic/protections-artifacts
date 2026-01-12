@@ -8,7 +8,7 @@ rule Windows_Trojan_Lurker_0ee51802 {
         threat_name = "Windows.Trojan.Lurker"
         reference_sample = "5718fd4f807e29e48a8b6a6f4484426ba96c61ec8630dc78677686e0c9ba2b87"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

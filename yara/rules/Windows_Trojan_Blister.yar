@@ -9,7 +9,7 @@ rule Windows_Trojan_Blister_cb99a1df {
         reference = "https://www.elastic.co/security-labs/elastic-security-uncovers-blister-malware-campaign"
         reference_sample = "0a7778cf6f9a1bd894e89f282f2e40f9d6c9cd4b72be97328e681fe32a1b1a00"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_Blister_9d757838 {
         reference = "https://www.elastic.co/security-labs/elastic-security-uncovers-blister-malware-campaign"
         reference_sample = "863de84a39c9f741d8103db83b076695d0d10a7384e4e3ba319c05a6018d9737"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -54,7 +54,7 @@ rule Windows_Trojan_Blister_68b53e1b {
         reference = "https://www.elastic.co/security-labs/elastic-security-uncovers-blister-malware-campaign"
         reference_sample = "5fc79a4499bafa3a881778ef51ce29ef015ee58a587e3614702e69da304395db"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -76,7 +76,7 @@ rule Windows_Trojan_Blister_487b0966 {
         reference = "https://www.elastic.co/security-labs/elastic-security-uncovers-blister-malware-campaign"
         reference_sample = "5fc79a4499bafa3a881778ef51ce29ef015ee58a587e3614702e69da304395db"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -98,7 +98,7 @@ rule Windows_Trojan_Blister_26f8c5f2 {
         threat_name = "Windows.Trojan.Blister"
         reference_sample = "cba30fb1731e165acc256d99d32f3c9e5abfa27d152419d24a91d8b79c5c5cb0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

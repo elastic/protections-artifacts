@@ -8,7 +8,7 @@ rule Windows_Trojan_Revengerat_db91bcc6 {
         threat_name = "Windows.Trojan.Revengerat"
         reference_sample = "30d8f81a19976d67b495eb1324372598cc25e1e69179c11efa22025341e455bd"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

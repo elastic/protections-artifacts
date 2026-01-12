@@ -8,7 +8,7 @@ rule Windows_Hacktool_SafetyKatz_072b7370 {
         threat_name = "Windows.Hacktool.SafetyKatz"
         reference_sample = "89a456943cf6d2b3cd9cdc44f13a23640575435ed49fa754f7ed358c1a3b6ba9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

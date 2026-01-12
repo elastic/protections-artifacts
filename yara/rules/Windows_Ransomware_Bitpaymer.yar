@@ -9,7 +9,7 @@ rule Windows_Ransomware_Bitpaymer_d74273b3 : beta {
         threat_name = "Windows.Ransomware.Bitpaymer"
         reference = "https://www.welivesecurity.com/2018/01/26/friedex-bitpaymer-ransomware-work-dridex-authors/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Bitpaymer_bca25ac6 : beta {
         threat_name = "Windows.Ransomware.Bitpaymer"
         reference = "https://www.welivesecurity.com/2018/01/26/friedex-bitpaymer-ransomware-work-dridex-authors/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

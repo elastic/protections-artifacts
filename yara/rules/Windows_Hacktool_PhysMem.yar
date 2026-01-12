@@ -9,7 +9,7 @@ rule Windows_Hacktool_PhysMem_cc0978df {
         threat_name = "Windows.Hacktool.PhysMem"
         reference_sample = "c299063e3eae8ddc15839767e83b9808fd43418dc5a1af7e4f44b97ba53fbd3d"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Hacktool_PhysMem_b3fa382b {
         threat_name = "Windows.Hacktool.PhysMem"
         reference_sample = "88df37ede18bea511f1782c1a6c4915690b29591cf2c1bf5f52201fbbb4fa2b9"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

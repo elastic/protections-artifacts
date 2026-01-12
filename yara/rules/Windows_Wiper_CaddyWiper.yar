@@ -8,7 +8,7 @@ rule Windows_Wiper_CaddyWiper_484bd98a {
         threat_name = "Windows.Wiper.CaddyWiper"
         reference_sample = "a294620543334a721a2ae8eaaf9680a0786f4b9a216d75b55cfd28f39e9430ea"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

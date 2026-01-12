@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpGPOAbuse_14ea480e {
         threat_name = "Windows.Hacktool.SharpGPOAbuse"
         reference_sample = "d13f87b9eaf09ef95778b2f1469aa34d03186d127c8f73c73299957d386c78d1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

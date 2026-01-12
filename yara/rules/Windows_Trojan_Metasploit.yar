@@ -8,7 +8,7 @@ rule Windows_Trojan_Metasploit_a6e956c9 {
         description = "Identifies the API address lookup function leverage by metasploit shellcode"
         threat_name = "Windows.Trojan.Metasploit"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Metasploit_38b8ceec {
         description = "Identifies the API address lookup function used by metasploit. Also used by other tools (like beacon)."
         threat_name = "Windows.Trojan.Metasploit"
         severity = 85
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -48,7 +48,7 @@ rule Windows_Trojan_Metasploit_7bc0f998 {
         description = "Identifies the API address lookup function leverage by metasploit shellcode"
         threat_name = "Windows.Trojan.Metasploit"
         severity = 84
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Trojan_Metasploit_f7f826b4 {
         description = "Identifies metasploit kernel->user shellcode. Likely used in ETERNALBLUE and BlueKeep exploits."
         threat_name = "Windows.Trojan.Metasploit"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -88,7 +88,7 @@ rule Windows_Trojan_Metasploit_24338919 {
         description = "Identifies metasploit wininet reverse shellcode. Also used by other tools (like beacon)."
         threat_name = "Windows.Trojan.Metasploit"
         severity = 80
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -108,7 +108,7 @@ rule Windows_Trojan_Metasploit_0f5a852d {
         description = "Identifies 64 bit metasploit wininet reverse shellcode. May also be used by other malware families."
         threat_name = "Windows.Trojan.Metasploit"
         severity = 80
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -129,7 +129,7 @@ rule Windows_Trojan_Metasploit_c9773203 {
         threat_name = "Windows.Trojan.Metasploit"
         reference = "https://github.com/rapid7/metasploit-framework/blob/04e8752b9b74cbaad7cb0ea6129c90e3172580a2/external/source/shellcode/windows/x64/src/block/block_api.asm"
         severity = 10
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -151,7 +151,7 @@ rule Windows_Trojan_Metasploit_dd5ce989 {
         reference = "https://www.rapid7.com/blog/post/2015/03/25/stageless-meterpreter-payloads/"
         reference_sample = "86cf98bf854b01a55e3f306597437900e11d429ac6b7781e090eeda3a5acb360"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -174,7 +174,7 @@ rule Windows_Trojan_Metasploit_96233b6b {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "e7a2d966deea3a2df6ce1aeafa8c2caa753824215a8368e0a96b394fb46b753b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -195,7 +195,7 @@ rule Windows_Trojan_Metasploit_4a1c4da8 {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "9582d37ed9de522472abe615dedef69282a40cfd58185813c1215249c24bbf22"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -215,7 +215,7 @@ rule Windows_Trojan_Metasploit_91bc5d7d {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "0dd993ff3917dc56ef02324375165f0d66506c5a9b9548eda57c58e041030987"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -235,7 +235,7 @@ rule Windows_Trojan_Metasploit_a91a6571 {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "ff7795edff95a45b15b03d698cbdf70c19bc452daf4e2d5e86b2bbac55494472"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -255,7 +255,7 @@ rule Windows_Trojan_Metasploit_b29fe355 {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "4f0ab4e42e6c10bc9e4a699d8d8819b04c17ed1917047f770dc6980a0a378a68"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -277,7 +277,7 @@ rule Windows_Trojan_Metasploit_66140f58 {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "01a0c5630fbbfc7043d21a789440fa9dadc6e4f79640b370f1a21c6ebf6a710a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -297,7 +297,7 @@ rule Windows_Trojan_Metasploit_2092c42a {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "e47d88c11a89dcc84257841de0c9f1ec388698006f55a0e15567354b33f07d3c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -318,7 +318,7 @@ rule Windows_Trojan_Metasploit_46e1c247 {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "ef70e1faa3b1f40d92b0a161c96e13c96c43ec6651e7c87ee3977ed07b950bab"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -339,7 +339,7 @@ rule Windows_Trojan_Metasploit_b62aac1e {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "af9af81f7e46217330b447900f80c9ce38171655becb3b63e51f913b95c71e70"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -360,7 +360,7 @@ rule Windows_Trojan_Metasploit_47f5d54a {
         threat_name = "Windows.Trojan.Metasploit"
         reference_sample = "bc3754cf4a04491a7ad7a75f69dd3bb2ddf0d8592ce078b740d7c9c7bc85a7e1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -380,7 +380,7 @@ rule Windows_Trojan_Metasploit_0cc81460 {
         last_modified = "2025-05-27"
         threat_name = "Windows.Trojan.Metasploit"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -399,7 +399,7 @@ rule Windows_Trojan_Metasploit_1ca1e384 {
         last_modified = "2025-05-27"
         threat_name = "Windows.Trojan.Metasploit"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

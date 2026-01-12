@@ -8,7 +8,7 @@ rule Windows_Ransomware_Conti_89f3f6fa {
         threat_name = "Windows.Ransomware.Conti"
         reference_sample = "eae876886f19ba384f55778634a35a1d975414e83f22f6111e3e792f706301fe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

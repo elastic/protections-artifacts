@@ -8,7 +8,7 @@ rule Windows_Trojan_GuidLoader_d3a30cec {
         threat_name = "Windows.Trojan.GuidLoader"
         reference_sample = "f90420847e1f2378ac8c52463038724533a9183f02ce9ad025a6a10fd4327f12"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

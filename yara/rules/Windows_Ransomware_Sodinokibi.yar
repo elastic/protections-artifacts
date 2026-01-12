@@ -10,7 +10,7 @@ rule Windows_Ransomware_Sodinokibi_83f05fbe : beta {
         reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -45,7 +45,7 @@ rule Windows_Ransomware_Sodinokibi_182b2cea : beta {
         reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -73,7 +73,7 @@ rule Windows_Ransomware_Sodinokibi_a282ba44 : beta {
         reference = "https://www.elastic.co/security-labs/ransomware-interrupted-sodinokibi-and-the-supply-chain"
         reference = "https://malpedia.caad.fkie.fraunhofer.de/details/win.revil"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

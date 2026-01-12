@@ -8,7 +8,7 @@ rule Windows_Trojan_Shellter_89e693fc {
         threat_name = "Windows.Trojan.Shellter"
         reference_sample = "c865f24e4b9b0855b8b559fc3769239b0aa6e8d680406616a13d9a36fbbc2d30"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

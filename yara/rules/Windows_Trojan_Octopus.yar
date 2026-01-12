@@ -8,7 +8,7 @@ rule Windows_Trojan_Octopus_15813e26 {
         description = "Identifies Octopus, an Open source pre-operation C2 server based on Python and PowerShell"
         threat_name = "Windows.Trojan.Octopus"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

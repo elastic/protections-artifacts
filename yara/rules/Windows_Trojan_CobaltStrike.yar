@@ -8,7 +8,7 @@ rule Windows_Trojan_CobaltStrike_c851687a {
         description = "Identifies UAC Bypass module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -46,7 +46,7 @@ rule Windows_Trojan_CobaltStrike_0b58325e {
         description = "Identifies Keylogger module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -86,7 +86,7 @@ rule Windows_Trojan_CobaltStrike_2b8cddf8 {
         description = "Identifies dll load module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -123,7 +123,7 @@ rule Windows_Trojan_CobaltStrike_59b44767 {
         description = "Identifies getsystem module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -151,7 +151,7 @@ rule Windows_Trojan_CobaltStrike_7efd3c3f {
         description = "Identifies Hashdump module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 70
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -177,7 +177,7 @@ rule Windows_Trojan_CobaltStrike_6e971281 {
         description = "Identifies Interfaces module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -210,7 +210,7 @@ rule Windows_Trojan_CobaltStrike_09b79efa {
         description = "Identifies Invoke Assembly module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -241,7 +241,7 @@ rule Windows_Trojan_CobaltStrike_6e77233e {
         description = "Identifies Kerberos module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -278,7 +278,7 @@ rule Windows_Trojan_CobaltStrike_de42495a {
         description = "Identifies Mimikatz module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -310,7 +310,7 @@ rule Windows_Trojan_CobaltStrike_72f68375 {
         description = "Identifies Netdomain module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -337,7 +337,7 @@ rule Windows_Trojan_CobaltStrike_15f680fb {
         description = "Identifies Netview module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -369,7 +369,7 @@ rule Windows_Trojan_CobaltStrike_5b4383ec {
         description = "Identifies Portscan module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -401,7 +401,7 @@ rule Windows_Trojan_CobaltStrike_91e08059 {
         description = "Identifies Post Ex module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -430,7 +430,7 @@ rule Windows_Trojan_CobaltStrike_ee756db7 {
         description = "Attempts to detect Cobalt Strike based on strings found in BEACON"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -500,7 +500,7 @@ rule Windows_Trojan_CobaltStrike_9c0d5561 {
         description = "Identifies PowerShell Runner module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -532,7 +532,7 @@ rule Windows_Trojan_CobaltStrike_59ed9124 {
         description = "Identifies PsExec module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -569,7 +569,7 @@ rule Windows_Trojan_CobaltStrike_8a791eb7 {
         description = "Identifies Registry module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -606,7 +606,7 @@ rule Windows_Trojan_CobaltStrike_d00573a3 {
         description = "Identifies Screenshot module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -634,7 +634,7 @@ rule Windows_Trojan_CobaltStrike_7bcd759c {
         description = "Identifies SSH Agent module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -657,7 +657,7 @@ rule Windows_Trojan_CobaltStrike_a56b820f {
         description = "Identifies Timestomp module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -694,7 +694,7 @@ rule Windows_Trojan_CobaltStrike_92f05172 {
         description = "Identifies UAC cmstp module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -725,7 +725,7 @@ rule Windows_Trojan_CobaltStrike_417239b5 {
         description = "Identifies UAC token module from Cobalt Strike"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -773,7 +773,7 @@ rule Windows_Trojan_CobaltStrike_29374056 {
         description = "Identifies Cobalt Strike MZ Reflective Loader."
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -794,7 +794,7 @@ rule Windows_Trojan_CobaltStrike_949f10e3 {
         description = "Identifies the API address lookup function used by Cobalt Strike along with XOR implementation by Cobalt Strike."
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -815,7 +815,7 @@ rule Windows_Trojan_CobaltStrike_8751cdf9 {
         description = "Identifies Cobalt Strike wininet reverse shellcode along with XOR implementation by Cobalt Strike."
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 99
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -836,7 +836,7 @@ rule Windows_Trojan_CobaltStrike_663fc95d {
         description = "Identifies CobaltStrike via unidentified function code"
         threat_name = "Windows.Trojan.CobaltStrike"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -857,7 +857,7 @@ rule Windows_Trojan_CobaltStrike_b54b94ac {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -882,7 +882,7 @@ rule Windows_Trojan_CobaltStrike_f0b627fc {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "b362951abd9d96d5ec15d281682fa1c8fe8f8e4e2f264ca86f6b061af607f79b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -907,7 +907,7 @@ rule Windows_Trojan_CobaltStrike_dcdcdd8c {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -933,7 +933,7 @@ rule Windows_Trojan_CobaltStrike_a3fb2616 {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -957,7 +957,7 @@ rule Windows_Trojan_CobaltStrike_8ee55ee5 {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -978,7 +978,7 @@ rule Windows_Trojan_CobaltStrike_8d5963a2 {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "9fe43996a5c4e99aff6e2a1be743fedec35e96d1e6670579beb4f7e7ad591af9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -999,7 +999,7 @@ rule Windows_Trojan_CobaltStrike_1787eef5 {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "36d32b1ed967f07a4bd19f5e671294d5359009c04835601f2cc40fb8b54f6a2a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1023,7 +1023,7 @@ rule Windows_Trojan_CobaltStrike_4106070a {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "98789a11c06c1dfff7e02f66146afca597233c17e0d4900d6a683a150f16b3a4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1044,7 +1044,7 @@ rule Windows_Trojan_CobaltStrike_3dc22d14 {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "7898194ae0244611117ec948eb0b0a5acbc15cd1419b1ecc553404e63bc519f9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -1065,7 +1065,7 @@ rule Windows_Trojan_CobaltStrike_7f8da98a {
         threat_name = "Windows.Trojan.CobaltStrike"
         reference_sample = "e3bc2bec4a55ad6cfdf49e5dbd4657fc704af1758ca1d6e31b83dcfb8bf0f89d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -9,7 +9,7 @@ rule Windows_Trojan_Netwire_6a7df287 {
         reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "e6f446dbefd4469b6c4d24988dd6c9ccd331c8b36bdbc4aaf2e5fc49de2c3254"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Trojan_Netwire_1b43df38 {
         reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "e6f446dbefd4469b6c4d24988dd6c9ccd331c8b36bdbc4aaf2e5fc49de2c3254"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -53,7 +53,7 @@ rule Windows_Trojan_Netwire_f85e4abc {
         reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "ab037c87d8072c63dc22b22ff9cfcd9b4837c1fee2f7391d594776a6ac8f6776"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -74,7 +74,7 @@ rule Windows_Trojan_Netwire_f42cb379 {
         reference = "https://www.elastic.co/security-labs/netwire-dynamic-configuration-extraction"
         reference_sample = "ab037c87d8072c63dc22b22ff9cfcd9b4837c1fee2f7391d594776a6ac8f6776"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

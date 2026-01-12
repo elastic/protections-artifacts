@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpAppLocker_9645cf22 {
         threat_name = "Windows.Hacktool.SharpAppLocker"
         reference_sample = "0f7390905abc132889f7b9a6d5b42701173aafbff5b8f8882397af35d8c10965"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

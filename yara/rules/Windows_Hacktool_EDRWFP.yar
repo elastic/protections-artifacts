@@ -8,7 +8,7 @@ rule Windows_Hacktool_EDRWFP_f6d7db7a {
         threat_name = "Windows.Hacktool.EDRWFP"
         reference_sample = "a1fc2f3ded852f75e36e70ae39087e21ae5b6af10e2038d04e61bd500ba511e2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

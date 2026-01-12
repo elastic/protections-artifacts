@@ -8,7 +8,7 @@ rule Windows_Trojan_PoshC2_e2d3881e {
         threat_name = "Windows.Trojan.PoshC2"
         reference_sample = "7a718a4f74656346bd9a2e29e008705fc2b1c4d167a52bd4f6ff10b3f2cd9395"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

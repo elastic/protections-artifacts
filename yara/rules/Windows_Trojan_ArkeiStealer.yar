@@ -8,7 +8,7 @@ rule Windows_Trojan_ArkeiStealer_84c7086a {
         threat_name = "Windows.Trojan.ArkeiStealer"
         reference_sample = "708d9fb40f49192d4bf6eff62e0140c920a7eca01b9f78aeaf558bef0115dbe2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

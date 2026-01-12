@@ -8,7 +8,7 @@ rule Windows_Trojan_Darkcomet_1df27bcc {
         threat_name = "Windows.Trojan.Darkcomet"
         reference_sample = "7fbe87545eef49da0df850719536bb30b196f7ad2d5a34ee795c01381ffda569"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

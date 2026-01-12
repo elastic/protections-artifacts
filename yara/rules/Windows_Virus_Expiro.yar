@@ -8,7 +8,7 @@ rule Windows_Virus_Expiro_84e99ff0 {
         threat_name = "Windows.Virus.Expiro"
         reference_sample = "47107836ead700bddbe9e8a0c016b5b1443c785442b2addbb50a70445779bad7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

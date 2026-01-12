@@ -8,7 +8,7 @@ rule Windows_Trojan_CyberGate_517aac7d {
         threat_name = "Windows.Trojan.CyberGate"
         reference_sample = "07b8f25e7b536f5b6f686c12d04edc37e11347c8acd5c53f98a174723078c365"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_CyberGate_9996d800 {
         threat_name = "Windows.Trojan.CyberGate"
         reference_sample = "07b8f25e7b536f5b6f686c12d04edc37e11347c8acd5c53f98a174723078c365"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -52,7 +52,7 @@ rule Windows_Trojan_CyberGate_c219a2f3 {
         threat_name = "Windows.Trojan.CyberGate"
         reference_sample = "b7204f8caf6ace6ae1aed267de0ad6b39660d0e636d8ee0ecf88135f8a58dc42"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -7,7 +7,7 @@ rule Windows_Shellcode_Generic_8c487e57 {
         last_modified = "2022-07-18"
         threat_name = "Windows.Shellcode.Generic"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -26,7 +26,7 @@ rule Windows_Shellcode_Generic_f27d7beb {
         last_modified = "2022-09-29"
         threat_name = "Windows.Shellcode.Generic"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -45,7 +45,7 @@ rule Windows_Shellcode_Generic_29dcbf7a {
         last_modified = "2023-06-13"
         threat_name = "Windows.Shellcode.Generic"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

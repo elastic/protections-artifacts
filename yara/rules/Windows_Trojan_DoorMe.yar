@@ -9,7 +9,7 @@ rule Windows_Trojan_DoorMe_246eda61 {
         reference = "https://www.elastic.co/security-labs/update-to-the-REF2924-intrusion-set-and-related-campaigns"
         reference_sample = "96b226e1dcfb8ea2155c2fa508125472c8c767569d009a881ab4c39453e4fe7f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

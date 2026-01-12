@@ -8,7 +8,7 @@ rule Windows_Trojan_CaesarKbd_32bb198b {
         threat_name = "Windows.Trojan.CaesarKbd"
         reference_sample = "d4335f4189240a3bcafa05fab01f0707cc8e3dd7a2998af734c24916d9e37ca8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Hacktool_NetFilter_e8243dae {
         threat_name = "Windows.Hacktool.NetFilter"
         reference_sample = "760be95d4c04b10df89a78414facf91c0961020e80561eee6e2cb94b43b76510"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Hacktool_NetFilter_dd576d28 {
         threat_name = "Windows.Hacktool.NetFilter"
         reference_sample = "88cfe6d7c81d0064045c4198d6ec7d3c50dc3ec8e36e053456ed1b50fc8c23bf"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -48,7 +48,7 @@ rule Windows_Hacktool_NetFilter_b4f2a520 {
         threat_name = "Windows.Hacktool.NetFilter"
         reference_sample = "5d0d5373c5e52c4405f4bd963413e6ef3490b7c4c919ec2d4e3fb92e91f397a0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -68,7 +68,7 @@ rule Windows_Hacktool_NetFilter_1cae6e26 {
         threat_name = "Windows.Hacktool.NetFilter"
         reference_sample = "e2ec3b2a93c473d88bfdf2deb1969d15ab61737acc1ee8e08234bc5513ee87ea"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

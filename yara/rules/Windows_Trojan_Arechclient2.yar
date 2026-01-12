@@ -8,7 +8,7 @@ rule Windows_Trojan_Arechclient2_b6ea1c83 {
         threat_name = "Windows.Trojan.Arechclient2"
         reference_sample = "c4b907418319f5066d5358640aac38ff53c46c8250aeacaa92987e163cb6b224"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

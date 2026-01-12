@@ -8,7 +8,7 @@ rule Windows_Trojan_Dridex_63ddf193 {
         threat_name = "Windows.Trojan.Dridex"
         reference_sample = "b1d66350978808577159acc7dc7faaa273e82c103487a90bf0d040afa000cb0d"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Dridex_c6f01353 {
         threat_name = "Windows.Trojan.Dridex"
         reference_sample = "739682ccb54170e435730c54ba9f7e09f32a3473c07d2d18ae669235dcfe84de"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

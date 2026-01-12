@@ -8,7 +8,7 @@ rule Windows_Trojan_Matanbuchus_b521801b {
         threat_name = "Windows.Trojan.Matanbuchus"
         reference_sample = "4eb85a5532b98cbc4a6db1697cf46b9e2b7e28e89d6bbfc137b36c0736cd80e2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_Matanbuchus_4ce9affb {
         threat_name = "Windows.Trojan.Matanbuchus"
         reference_sample = "4eb85a5532b98cbc4a6db1697cf46b9e2b7e28e89d6bbfc137b36c0736cd80e2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -51,7 +51,7 @@ rule Windows_Trojan_Matanbuchus_c7811ccc {
         threat_name = "Windows.Trojan.Matanbuchus"
         reference_sample = "4eb85a5532b98cbc4a6db1697cf46b9e2b7e28e89d6bbfc137b36c0736cd80e2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

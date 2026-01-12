@@ -8,7 +8,7 @@ rule Windows_Trojan_Parallax_d72ec0e2 {
         threat_name = "Windows.Trojan.Parallax"
         reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_Parallax_b4ea4f1a {
         threat_name = "Windows.Trojan.Parallax"
         reference = "https://www.elastic.co/security-labs/exploring-the-ref2731-intrusion-set"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

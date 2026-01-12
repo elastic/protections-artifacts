@@ -8,7 +8,7 @@ rule Windows_Ransomware_Grief_9953339a {
         threat_name = "Windows.Ransomware.Grief"
         reference_sample = "0864575d4f487e52a1479c61c2c4ad16742d92e16d0c10f5ed2b40506bbc6ca0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

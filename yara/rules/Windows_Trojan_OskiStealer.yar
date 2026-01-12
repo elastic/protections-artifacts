@@ -8,7 +8,7 @@ rule Windows_Trojan_OskiStealer_a158b1e3 {
         threat_name = "Windows.Trojan.OskiStealer"
         reference_sample = "568cd515c9a3bce7ef21520761b02cbfc95d8884d5b2dc38fc352af92356c694"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

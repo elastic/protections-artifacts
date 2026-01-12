@@ -8,7 +8,7 @@ rule Windows_Trojan_Mata_3f3c563d {
         threat_name = "Windows.Trojan.Mata"
         reference_sample = "5d1c95d0c827fe89897ae32d39d61fe9406306a753b07c19da6c00c066023391"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

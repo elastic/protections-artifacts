@@ -8,7 +8,7 @@ rule Windows_Hacktool_Mimikatz_1388212a {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "66b4a0681cae02c302a9b6f1d611ac2df8c519d6024abdb506b4b166b93f636a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -53,7 +53,7 @@ rule Windows_Hacktool_Mimikatz_674fd079 {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "66b4a0681cae02c302a9b6f1d611ac2df8c519d6024abdb506b4b166b93f636a"
         severity = 99
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -87,7 +87,7 @@ rule Windows_Hacktool_Mimikatz_355d5d3a {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "945245ca795e0a3575ee4fdc174df9d377a598476c2bf4bf0cdb0cde4286af96"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -122,7 +122,7 @@ rule Windows_Hacktool_Mimikatz_71fe23d9 {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "856687718b208341e7caeea2d96da10f880f9b5a75736796a1158d4c8755f678"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -143,7 +143,7 @@ rule Windows_Hacktool_Mimikatz_b393864f {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "8206ce9c42582ac980ff5d64f8e3e310bc2baa42d1a206dd831c6ab397fbd8fe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"
@@ -163,7 +163,7 @@ rule Windows_Hacktool_Mimikatz_1ff74f7e {
         threat_name = "Windows.Hacktool.Mimikatz"
         reference_sample = "1b6aad500d45de7b076942d31b7c3e77487643811a335ae5ce6783368a4a5081"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

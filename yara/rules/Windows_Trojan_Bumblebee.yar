@@ -8,7 +8,7 @@ rule Windows_Trojan_Bumblebee_35f50bea {
         threat_name = "Windows.Trojan.Bumblebee"
         reference_sample = "9fff05a5aa9cbbf7d37bc302d8411cbd63fb3a28dc6f5163798ae899b9edcda6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Bumblebee_70bed4f3 {
         threat_name = "Windows.Trojan.Bumblebee"
         reference_sample = "9fff05a5aa9cbbf7d37bc302d8411cbd63fb3a28dc6f5163798ae899b9edcda6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

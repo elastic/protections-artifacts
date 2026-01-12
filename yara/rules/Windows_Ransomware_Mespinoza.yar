@@ -8,7 +8,7 @@ rule Windows_Ransomware_Mespinoza_3adb59f5 {
         threat_name = "Windows.Ransomware.Mespinoza"
         reference_sample = "6f3cd5f05ab4f404c78bab92f705c91d967b31a9b06017d910af312fa87ae3d6"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

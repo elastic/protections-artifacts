@@ -8,7 +8,7 @@ rule Windows_Trojan_DoubleLoader_3660c98a {
         threat_name = "Windows.Trojan.DoubleLoader"
         reference_sample = "d94f7224a065a09a9f0c116bcb021bae2e941e2cd544eb0a0b1d1a325ae87667"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

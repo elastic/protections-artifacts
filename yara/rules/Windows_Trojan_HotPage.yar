@@ -8,7 +8,7 @@ rule Windows_Trojan_HotPage_414f235f {
         threat_name = "Windows.Trojan.HotPage"
         reference_sample = "b8464126b64c809b4ab47aa91c5f322ce2c0ae4fd668a43de738a5caa7567225"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

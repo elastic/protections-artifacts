@@ -8,7 +8,7 @@ rule Windows_Ransomware_Avoslocker_7ae4d4f2 {
         threat_name = "Windows.Ransomware.Avoslocker"
         reference_sample = "43b7a60c0ef8b4af001f45a0c57410b7374b1d75a6811e0dfc86e4d60f503856"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

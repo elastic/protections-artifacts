@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharPersist_06606812 {
         threat_name = "Windows.Hacktool.Sharpersist"
         reference_sample = "e9711f47cf9171f79bf34b342279f6fd9275c8ae65f3eb2c6ebb0b8432ea14f8"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

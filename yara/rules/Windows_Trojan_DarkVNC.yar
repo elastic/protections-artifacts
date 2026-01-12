@@ -8,7 +8,7 @@ rule Windows_Trojan_DarkVNC_bd803c2e {
         threat_name = "Windows.Trojan.DarkVNC"
         reference_sample = "0fcc1b02fdaf211c772bd4fa1abcdeb5338d95911c226a9250200ff7f8e45601"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

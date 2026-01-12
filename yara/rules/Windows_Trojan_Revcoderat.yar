@@ -8,7 +8,7 @@ rule Windows_Trojan_Revcoderat_8e6d4182 {
         threat_name = "Windows.Trojan.Revcoderat"
         reference_sample = "77732e74850050bb6f935945e510d32a0499d820fa1197752df8bd01c66e8210"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

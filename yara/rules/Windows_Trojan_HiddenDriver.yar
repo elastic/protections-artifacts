@@ -8,7 +8,7 @@ rule Windows_Trojan_HiddenDriver_e26590fd {
         threat_name = "Windows.Trojan.HiddenDriver"
         reference_sample = "f9dd0b57a5c133ca0c4cab3cca1ac8debdc4a798b452167a1e5af78653af00c1"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

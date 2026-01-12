@@ -8,7 +8,7 @@ rule Windows_Shellcode_Rdi_edc62a10 {
         threat_name = "Windows.Shellcode.Rdi"
         reference_sample = "64485ffc283e981c8b77db5a675c7ba2a04d3effaced522531185aa46eb6a36b"
         severity = 90
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Shellcode_Rdi_eee75d2c {
         threat_name = "Windows.Shellcode.Rdi"
         reference_sample = "8c4de69e89dcc659d2fff52d695764f1efd7e64e0a80983ce6d0cb9eeddb806c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -48,7 +48,7 @@ rule Windows_Shellcode_Rdi_918f8e2f {
         threat_name = "Windows.Shellcode.Rdi"
         reference_sample = "d8dab346c6235426e6119f8eb6bf81cafda8fb8ea88b86205e34d9c369b3b746"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

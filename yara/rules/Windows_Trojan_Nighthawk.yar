@@ -8,7 +8,7 @@ rule Windows_Trojan_Nighthawk_9f3a5abb {
         threat_name = "Windows.Trojan.Nighthawk"
         reference_sample = "b775a8f7629966592cc7727e2081924a7d7cf83edd7447aa60627a2b67d87c94"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -35,7 +35,7 @@ rule Windows_Trojan_Nighthawk_2a2e3b9d {
         threat_name = "Windows.Trojan.Nighthawk"
         reference_sample = "38881b87826f184cc91559555a3456ecf00128e01986a9df36a72d60fb179ccf"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -56,7 +56,7 @@ rule Windows_Trojan_Nighthawk_23489175 {
         threat_name = "Windows.Trojan.Nighthawk"
         reference_sample = "697742d5dd071add40b700022fd30424cb231ffde223d21bd83a44890e06762f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

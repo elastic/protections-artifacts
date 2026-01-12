@@ -8,7 +8,7 @@ rule Windows_Trojan_ProtectS_9f6eaa90 {
         threat_name = "Windows.Trojan.ProtectS"
         reference_sample = "c0330e072b7003f55a3153ac3e0859369b9c3e22779b113284e95ce1e2ce2099"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

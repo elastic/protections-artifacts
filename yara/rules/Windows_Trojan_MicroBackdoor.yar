@@ -8,7 +8,7 @@ rule Windows_Trojan_MicroBackdoor_903e33c3 {
         threat_name = "Windows.Trojan.MicroBackdoor"
         reference_sample = "fbbfcc81a976b57739ef13c1545ea4409a1c69720469c05ba249a42d532f9c21"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_MicroBackdoor_46f2e5fd {
         threat_name = "Windows.Trojan.MicroBackdoor"
         reference_sample = "fbbfcc81a976b57739ef13c1545ea4409a1c69720469c05ba249a42d532f9c21"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

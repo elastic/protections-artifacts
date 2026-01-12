@@ -8,7 +8,7 @@ rule Windows_Hacktool_BlackBone_2ff5ec38 {
         threat_name = "Windows.Hacktool.BlackBone"
         reference_sample = "4e3887f950bff034efedd40f1e949579854a24140128246fa6141f2c34de6017"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_SysJoker_1ef19a12 {
         threat_name = "Windows.Trojan.SysJoker"
         reference_sample = "61df74731fbe1eafb2eb987f20e5226962eeceef010164e41ea6c4494a4010fc"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -31,7 +31,7 @@ rule Windows_Trojan_SysJoker_34559bcd {
         threat_name = "Windows.Trojan.SysJoker"
         reference_sample = "1ffd6559d21470c40dcf9236da51e5823d7ad58c93502279871c3fe7718c901c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

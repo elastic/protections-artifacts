@@ -8,7 +8,7 @@ rule Windows_Ransomware_Stop_1e8d48ff {
         threat_name = "Windows.Ransomware.Stop"
         reference_sample = "821b27488f296e15542b13ac162db4a354cbf4386b6cd40a550c4a71f4d628f3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

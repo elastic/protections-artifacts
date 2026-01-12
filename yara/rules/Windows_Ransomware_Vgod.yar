@@ -8,7 +8,7 @@ rule Windows_Ransomware_Vgod_86a877fd {
         threat_name = "Windows.Ransomware.Vgod"
         reference_sample = "241c3b02a8e7d5a2b9c99574c28200df2a0f8c8bd7ba4d262e6aa8ed1211ba1f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

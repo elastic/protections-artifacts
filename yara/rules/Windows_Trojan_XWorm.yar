@@ -8,7 +8,7 @@ rule Windows_Trojan_XWorm_732e6c12 {
         threat_name = "Windows.Trojan.XWorm"
         reference_sample = "bf5ea8d5fd573abb86de0f27e64df194e7f9efbaadd5063dee8ff9c5c3baeaa2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -34,7 +34,7 @@ rule Windows_Trojan_XWorm_b7d6eaa8 {
         threat_name = "Windows.Trojan.XWorm"
         reference_sample = "6fc4ff3f025545f7e092408b035066c1138253b972a2e9ef178e871d36f03acd"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -59,7 +59,7 @@ rule Windows_Trojan_XWorm_7078e1c8 {
         threat_name = "Windows.Trojan.XWorm"
         reference_sample = "034c8a18c15521069af36595357d9c8413a33544af8d3ea5f0ac7d471841e0ec"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

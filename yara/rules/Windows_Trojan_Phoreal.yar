@@ -9,7 +9,7 @@ rule Windows_Trojan_Phoreal_66e91de3 {
         reference = "https://www.elastic.co/security-labs/phoreal-malware-targets-the-southeast-asian-financial-sector"
         reference_sample = "88f073552b30462a00d1d612b1638b0508e4ef02c15cf46203998091f0aef4de"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

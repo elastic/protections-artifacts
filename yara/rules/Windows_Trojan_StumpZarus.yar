@@ -8,7 +8,7 @@ rule Windows_Trojan_StumpZarus_3f13c4a2 {
         threat_name = "Windows.Trojan.StumpZarus"
         reference_sample = "8e84a13620e269ace4ebcae88b8fc81e3df40cf60116919938a4b6e3d7945352"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

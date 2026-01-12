@@ -8,7 +8,7 @@ rule Windows_Trojan_PathLoader_d62822f8 {
         threat_name = "Windows.Trojan.PathLoader"
         reference_sample = "9a11d6fcf76583f7f70ff55297fb550fed774b61f35ee2edd95cf6f959853bcf"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

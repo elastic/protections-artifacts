@@ -8,7 +8,7 @@ rule Windows_Trojan_ShelbyC2_dae5bc1d {
         threat_name = "Windows.Trojan.ShelbyC2"
         reference_sample = "fb8d4c24bcfd853edb15c5c4096723b239f03255f17cec42f2d881f5f31b6025"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -8,7 +8,7 @@ rule Windows_Trojan_Smokeloader_4e31426e {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "1ce643981821b185b8ad73b798ab5c71c6c40e1f547b8e5b19afdaa4ca2a5174"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Smokeloader_4ee15b92 {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "09b9283286463b35ea2d5abfa869110eb124eb8c1788eb2630480d058e82abf2"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -48,7 +48,7 @@ rule Windows_Trojan_Smokeloader_ea14b2a5 {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "15fe237276b9c2c6ceae405c0739479d165b406321891c8a31883023e7b15d54"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -69,7 +69,7 @@ rule Windows_Trojan_Smokeloader_de52ed44 {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "c689a384f626616005d37a94e6a5a713b9eead1b819a238e4e586452871f6718"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -90,7 +90,7 @@ rule Windows_Trojan_Smokeloader_bf391fe0 {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "fe2489230d024f5e0e7d0da0210f93e70248dc282192c092cbb5e0eddc7bd528"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -111,7 +111,7 @@ rule Windows_Trojan_Smokeloader_a01aa3ab {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "3a189a736cfdfbb1e3789326c35cecfa901a2adccc08c66c5de1cac8e4c1791b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -132,7 +132,7 @@ rule Windows_Trojan_Smokeloader_62eb5427 {
         threat_name = "Windows.Trojan.Smokeloader"
         reference_sample = "21e7fcce8ffb7826108800b6aee21d6b8ea9275975b639ed5ca9f8ddd747329e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

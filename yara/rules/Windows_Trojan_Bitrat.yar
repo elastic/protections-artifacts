@@ -8,7 +8,7 @@ rule Windows_Trojan_Bitrat_34bd6c83 {
         threat_name = "Windows.Trojan.Bitrat"
         reference_sample = "37f70ae0e4e671c739d402c00f708761e98b155a1eefbedff1236637c4b7690a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_Bitrat_54916275 {
         threat_name = "Windows.Trojan.Bitrat"
         reference_sample = "d3b2c410b431c006c59f14b33e95c0e44e6221b1118340c745911712296f659f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

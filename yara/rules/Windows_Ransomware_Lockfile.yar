@@ -8,7 +8,7 @@ rule Windows_Ransomware_Lockfile_74185716 {
         threat_name = "Windows.Ransomware.Lockfile"
         reference_sample = "bf315c9c064b887ee3276e1342d43637d8c0e067260946db45942f39b970d7ce"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

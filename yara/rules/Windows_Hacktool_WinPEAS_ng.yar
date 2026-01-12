@@ -9,7 +9,7 @@ rule Windows_Hacktool_WinPEAS_ng_66197d54 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -37,7 +37,7 @@ rule Windows_Hacktool_WinPEAS_ng_e8ed269c {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -67,7 +67,7 @@ rule Windows_Hacktool_WinPEAS_ng_413caa6b {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -97,7 +97,7 @@ rule Windows_Hacktool_WinPEAS_ng_23fee092 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -125,7 +125,7 @@ rule Windows_Hacktool_WinPEAS_ng_861d3264 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -155,7 +155,7 @@ rule Windows_Hacktool_WinPEAS_ng_57587f8c {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -185,7 +185,7 @@ rule Windows_Hacktool_WinPEAS_ng_cae025b1 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -213,7 +213,7 @@ rule Windows_Hacktool_WinPEAS_ng_4a9b9603 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -241,7 +241,7 @@ rule Windows_Hacktool_WinPEAS_ng_4db2c852 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -271,7 +271,7 @@ rule Windows_Hacktool_WinPEAS_ng_bcedc8b2 {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -301,7 +301,7 @@ rule Windows_Hacktool_WinPEAS_ng_b6bb3e7c {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -331,7 +331,7 @@ rule Windows_Hacktool_WinPEAS_ng_94474b0b {
         threat_name = "Windows.Hacktool.WinPEAS-ng"
         reference_sample = "f3e1e5b6fd2d548dfe0af8730b15eb7ef40e128a0777855f569b2a99d6101195"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

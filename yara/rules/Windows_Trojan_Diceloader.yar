@@ -8,7 +8,7 @@ rule Windows_Trojan_Diceloader_b32c6b99 {
         threat_name = "Windows.Trojan.Diceloader"
         reference_sample = "a3b3f56a61c6dc8ba2aa25bdd9bd7dc2c5a4602c2670431c5cbc59a76e2b4c54"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -34,7 +34,7 @@ rule Windows_Trojan_Diceloader_15eeb7b9 {
         threat_name = "Windows.Trojan.Diceloader"
         reference_sample = "a1202df600d11ad2c61050e7ba33701c22c2771b676f54edd1846ef418bea746"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

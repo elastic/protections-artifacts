@@ -8,7 +8,7 @@ rule Windows_Trojan_RoningLoader_a4e851ac {
         threat_name = "Windows.Trojan.RoningLoader"
         reference_sample = "c84764a19543e9bdfe06263d3dd68bbf9df381bbe4d0c0da480bc4eddea293b6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

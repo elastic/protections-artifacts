@@ -8,7 +8,7 @@ rule Windows_Trojan_ShelbyLoader_ca4d5de6 {
         threat_name = "Windows.Trojan.ShelbyLoader"
         reference_sample = "0354862d83a61c8e69adc3e65f6e5c921523eff829ef1b169e4f0f143b04091f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

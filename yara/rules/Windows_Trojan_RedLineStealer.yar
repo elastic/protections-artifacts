@@ -8,7 +8,7 @@ rule Windows_Trojan_RedLineStealer_17ee6a17 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "497bc53c1c75003fe4ae3199b0ff656c085f21dffa71d00d7a3a33abce1a3382"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -36,7 +36,7 @@ rule Windows_Trojan_RedLineStealer_f54632eb {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "d82ad08ebf2c6fac951aaa6d96bdb481aa4eab3cd725ea6358b39b1045789a25"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -65,7 +65,7 @@ rule Windows_Trojan_RedLineStealer_3d9371fd {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "0ec522dfd9307772bf8b600a8b91fd6facd0bf4090c2b386afd20e955b25206a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -91,7 +91,7 @@ rule Windows_Trojan_RedLineStealer_63e7e006 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "e062c99dc9f3fa780ea9c6249fa4ef96bbe17fd1df38dbe11c664a10a92deece"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -113,7 +113,7 @@ rule Windows_Trojan_RedLineStealer_f07b3cb4 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "5e491625475fc25c465fc7f6db98def189c15a133af7d0ac1ecbc8d887c4feb6"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -134,7 +134,7 @@ rule Windows_Trojan_RedLineStealer_4df4bcb6 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "9389475bd26c1d3fd04a083557f2797d0ee89dfdd1f7de67775fcd19e61dfbb3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -154,7 +154,7 @@ rule Windows_Trojan_RedLineStealer_15ee6903 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "46b506cafb2460ca2969f69bcb0ee0af63b6d65e6b2a6249ef7faa21bde1a6bd"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -175,7 +175,7 @@ rule Windows_Trojan_RedLineStealer_6dfafd7b {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "809e303ba26b894f006b8f2d3983ff697aef13b67c36957d98c56aae9afd8852"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -195,7 +195,7 @@ rule Windows_Trojan_RedLineStealer_983cd7a7 {
         threat_name = "Windows.Trojan.RedLineStealer"
         reference_sample = "7aa20c57b8815dd63c8ae951e1819c75b5d2deec5aae0597feec878272772f35"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

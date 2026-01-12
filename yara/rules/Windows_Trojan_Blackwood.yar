@@ -8,7 +8,7 @@ rule Windows_Trojan_Blackwood_2b94bce9 {
         threat_name = "Windows.Trojan.Blackwood"
         reference_sample = "c37dd77f659059da7e12e13b063036ee69097a4d2f88c170832fff78f3788991"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

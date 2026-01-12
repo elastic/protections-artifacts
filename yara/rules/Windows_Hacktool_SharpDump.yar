@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpDump_7c17d8b1 {
         threat_name = "Windows.Hacktool.SharpDump"
         reference_sample = "14c3ea569a1bd9ac3aced4f8dd58314532dbf974bfa359979e6c7b6a4bbf41ca"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

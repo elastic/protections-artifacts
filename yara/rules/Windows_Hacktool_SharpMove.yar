@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpMove_05e28928 {
         threat_name = "Windows.Hacktool.SharpMove"
         reference_sample = "051f60f9f4665b96f764810defe9525ae7b4f9898249b83a23094cee63fa0c3b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

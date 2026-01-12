@@ -8,7 +8,7 @@ rule Windows_Trojan_Afdk_c952fcfa {
         threat_name = "Windows.Trojan.Afdk"
         reference_sample = "6723a9489e7cfb5e2d37ff9160d55cda065f06907122d73764849808018eb7a0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Trojan_Afdk_5f8cc135 {
         threat_name = "Windows.Trojan.Afdk"
         reference_sample = "6723a9489e7cfb5e2d37ff9160d55cda065f06907122d73764849808018eb7a0"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

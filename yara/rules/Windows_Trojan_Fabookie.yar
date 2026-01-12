@@ -8,7 +8,7 @@ rule Windows_Trojan_Fabookie_024f8759 {
         threat_name = "Windows.Trojan.Fabookie"
         reference_sample = "6c6345c6f0a5beadc4616170c87ec8a577de185d53345581e1b00e72af24c13e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

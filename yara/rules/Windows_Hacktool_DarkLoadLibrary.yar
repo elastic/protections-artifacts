@@ -8,7 +8,7 @@ rule Windows_Hacktool_DarkLoadLibrary_c25ee4eb {
         threat_name = "Windows.Hacktool.DarkLoadLibrary"
         reference_sample = "5546194a71bc449789c3697f9c106860ac0a21e1ccf2b1196120b3f92f4b5306"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

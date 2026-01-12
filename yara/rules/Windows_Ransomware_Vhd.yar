@@ -8,7 +8,7 @@ rule Windows_Ransomware_Vhd_b6c1dc32 {
         threat_name = "Windows.Ransomware.Vhd"
         reference_sample = "6cb9afff8166976bd62bb29b12ed617784d6e74b110afcf8955477573594f306"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

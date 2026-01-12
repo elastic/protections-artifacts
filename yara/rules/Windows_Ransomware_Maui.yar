@@ -8,7 +8,7 @@ rule Windows_Ransomware_Maui_266dea64 {
         threat_name = "Windows.Ransomware.Maui"
         reference_sample = "5b7ecf7e9d0715f1122baf4ce745c5fcd769dee48150616753fec4d6da16e99e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

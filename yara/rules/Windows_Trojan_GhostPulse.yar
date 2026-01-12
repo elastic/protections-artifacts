@@ -9,7 +9,7 @@ rule Windows_Trojan_GhostPulse_a1311f49 {
         reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         reference_sample = "0175448655e593aa299278d5f11b81f2af76638859e104975bdb5d30af5c0c11"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Trojan_GhostPulse_3fe1d02d {
         threat_name = "Windows.Trojan.GhostPulse"
         reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -51,7 +51,7 @@ rule Windows_Trojan_GhostPulse_3673d337 {
         reference = "https://www.elastic.co/security-labs/ghostpulse-haunts-victims-using-defense-evasion-bag-o-tricks"
         reference_sample = "3013ba32838f6d97d7d75e25394f9611b1c5def94d93588f0a05c90b25b7d6d5"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -72,7 +72,7 @@ rule Windows_Trojan_GhostPulse_8ae8310b {
         threat_name = "Windows.Trojan.GhostPulse"
         reference_sample = "5b64f91b41a7390d89cd3b1fccf02b08b18b7fed17a43b0bfac63d75dc0df083"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -93,7 +93,7 @@ rule Windows_Trojan_GhostPulse_9e22c56d {
         threat_name = "Windows.Trojan.GhostPulse"
         reference_sample = "349b4dfa1e93144b010affba926663264288a5cfcb7b305320f466b2551b93df"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -115,7 +115,7 @@ rule Windows_Trojan_GhostPulse_bb38fcb3 {
         threat_name = "Windows.Trojan.GhostPulse"
         reference_sample = "b54d9db283e6c958697bfc4f97a5dd0ba585bc1d05267569264a2d700f0799ae"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -136,7 +136,7 @@ rule Windows_Trojan_GhostPulse_caea316b {
         threat_name = "Windows.Trojan.GhostPulse"
         reference_sample = "454e898405a10ecc06b4243c25f86c855203722a4970dee4c4e1a4e8e75f5137"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

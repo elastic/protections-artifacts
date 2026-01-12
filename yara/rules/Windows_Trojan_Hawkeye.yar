@@ -8,7 +8,7 @@ rule Windows_Trojan_Hawkeye_77c36ace {
         threat_name = "Windows.Trojan.Hawkeye"
         reference_sample = "28e28025060f1bafd4eb96c7477cab73497ca2144b52e664b254c616607d94cd"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -32,7 +32,7 @@ rule Windows_Trojan_Hawkeye_975d546c {
         threat_name = "Windows.Trojan.Hawkeye"
         reference_sample = "aca133bf1d72cf379101e6877871979d6e6e8bc4cc692a5ba815289735014340"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

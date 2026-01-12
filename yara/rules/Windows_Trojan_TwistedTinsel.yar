@@ -8,7 +8,7 @@ rule Windows_Trojan_TwistedTinsel_aa56e527 {
         threat_name = "Windows.Trojan.TwistedTinsel"
         reference_sample = "ef1cbdf9a23ae028a858e1d09529982eaeda61197ae029e091918690d3a86e2e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

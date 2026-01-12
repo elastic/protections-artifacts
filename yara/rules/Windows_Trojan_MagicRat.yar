@@ -8,7 +8,7 @@ rule Windows_Trojan_MagicRat_c14c4d85 {
         threat_name = "Windows.Trojan.MagicRat"
         reference_sample = "9dc04153455d054d7e04d46bcd8c13dd1ca16ab2995e518ba9bf33b43008d592"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

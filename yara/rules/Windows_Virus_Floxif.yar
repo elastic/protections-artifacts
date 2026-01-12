@@ -8,7 +8,7 @@ rule Windows_Virus_Floxif_493d1897 {
         threat_name = "Windows.Virus.Floxif"
         reference_sample = "e628b7973ee25fdfd8f849fdf5923c6fba48141de802b0b4ce3e9ad2e40fe470"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

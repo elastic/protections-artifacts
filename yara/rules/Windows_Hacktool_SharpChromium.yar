@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpChromium_41ce5080 {
         threat_name = "Windows.Hacktool.SharpChromium"
         reference_sample = "9dd65aa53728d51f0f3b9aaf51a24f8a2c3f84b4a4024245575975cf9ad7f2e5"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

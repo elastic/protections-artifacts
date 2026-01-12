@@ -8,7 +8,7 @@ rule Windows_Ransomware_Makop_3ac2c13c {
         threat_name = "Windows.Ransomware.Makop"
         reference_sample = "854226fc4f5388d40cd9e7312797dd63739444d69a67e4126ef60817fa6972ad"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -28,7 +28,7 @@ rule Windows_Ransomware_Makop_3e388338 {
         threat_name = "Windows.Ransomware.Makop"
         reference_sample = "854226fc4f5388d40cd9e7312797dd63739444d69a67e4126ef60817fa6972ad"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

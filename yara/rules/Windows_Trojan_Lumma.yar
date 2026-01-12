@@ -8,7 +8,7 @@ rule Windows_Trojan_Lumma_693a5234 {
         threat_name = "Windows.Trojan.Lumma"
         reference_sample = "88340abcdc3cfe7574ee044aea44808446daf3bb7bf9fc60b16a2b1360c5d9c0"
         severity = 50
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -29,7 +29,7 @@ rule Windows_Trojan_Lumma_30608a8c {
         threat_name = "Windows.Trojan.Lumma"
         reference_sample = "672e06b9729da0616b103c19d68b812bed33e3e12c788a584f13925f81d68129"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -50,7 +50,7 @@ rule Windows_Trojan_Lumma_4ad749b0 {
         threat_name = "Windows.Trojan.Lumma"
         reference_sample = "1f953271bc983b3a561b85083bc14a13d18b81a34855d0a6d9fe902934347f92"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -58,5 +58,27 @@ rule Windows_Trojan_Lumma_4ad749b0 {
         $a = { 55 89 E5 83 E4 F8 83 EC 10 DD 45 08 DD 54 24 08 8B 4C 24 0C 89 CA C1 EA 14 81 E2 FF 07 00 00 81 FA FF 07 00 00 74 25 66 B8 FF FF 85 D2 75 31 DD 1C 24 B8 FF FF FF 7F 23 44 24 04 31 C9 0B 04 24 }
     condition:
         all of them
+}
+
+rule Windows_Trojan_Lumma_f2dabb49 {
+    meta:
+        author = "Elastic Security"
+        id = "f2dabb49-9da9-49e2-ba5a-be380f0d9c5e"
+        fingerprint = "23aed246ebf9ef771450e457082e57e7868efff1ad3f94df0cc99c03005d5040"
+        creation_date = "2025-08-27"
+        last_modified = "2026-01-06"
+        threat_name = "Windows.Trojan.Lumma"
+        reference_sample = "26803ff0e079e43c413e10d9a62d344504a134d20ad37af9fd3eaf5c54848122"
+        severity = 100
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $crypto_setup_pattern = { B8 38 ?2 4? 00 B? [3] 00 B? [3] 00 96 F3 A5 }
+        $decryption_function_pattern = { 55 53 57 56 81 EC 1? 01 00 00 8B ?? 24 3? 01 00 00 85 ?? 0F 84 ?? 08 00 00 }
+        $c2_decryption_branch_pattern = { 8D 8? E0 ?2 4? 00 8D 74 24 ?? FF 3? 56 5? 68 ?? ?? 45 00 E8 ?? ?? FF FF }
+    condition:
+        2 of them
 }
 

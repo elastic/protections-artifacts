@@ -9,7 +9,7 @@ rule Windows_Hacktool_Iox_98cd1cd8 {
         reference = "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657"
         reference_sample = "d4544a521d4e6eb07336816b1aae54f92c5c4fd2eb31dcfbdf26e4ef890e73db"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

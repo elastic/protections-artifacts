@@ -9,7 +9,7 @@ rule Windows_Hacktool_SleepObfLoader_460a1a75 {
         reference = "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657"
         reference_sample = "84b3bc58ec04ab272544d31f5e573c0dd7812b56df4fa445194e7466f280e16d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

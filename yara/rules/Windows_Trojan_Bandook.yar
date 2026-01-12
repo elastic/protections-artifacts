@@ -8,7 +8,7 @@ rule Windows_Trojan_Bandook_38497690 {
         threat_name = "Windows.Trojan.Bandook"
         reference_sample = "4d079586a51168aac708a9ab7d11a5a49dfe7a16d9ced852fbbc5884020c0c97"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

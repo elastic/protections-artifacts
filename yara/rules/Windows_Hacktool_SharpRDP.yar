@@ -8,7 +8,7 @@ rule Windows_Hacktool_SharpRDP_80895fcb {
         threat_name = "Windows.Hacktool.SharpRDP"
         reference_sample = "6e909861781a8812ee01bc59435fd73fd34da23fa9ad6d699eefbf9f84629876"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

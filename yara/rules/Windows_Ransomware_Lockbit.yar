@@ -8,7 +8,7 @@ rule Windows_Ransomware_Lockbit_89e64044 {
         threat_name = "Windows.Ransomware.Lockbit"
         reference_sample = "0d6524b9a1d709ecd9f19f75fa78d94096e039b3d4592d13e8dbddf99867182d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -30,7 +30,7 @@ rule Windows_Ransomware_Lockbit_a1c60939 {
         threat_name = "Windows.Ransomware.Lockbit"
         reference_sample = "0d6524b9a1d709ecd9f19f75fa78d94096e039b3d4592d13e8dbddf99867182d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -50,7 +50,7 @@ rule Windows_Ransomware_Lockbit_369e1e94 {
         threat_name = "Windows.Ransomware.Lockbit"
         reference_sample = "d61af007f6c792b8fb6c677143b7d0e2533394e28c50737588e40da475c040ee"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

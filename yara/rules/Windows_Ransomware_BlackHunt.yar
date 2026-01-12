@@ -8,7 +8,7 @@ rule Windows_Ransomware_BlackHunt_7b46cb9c {
         threat_name = "Windows.Ransomware.BlackHunt"
         reference_sample = "6c4e968c9b53906ba0e86a41eccdabe2b736238cb126852023e15850e956293d"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

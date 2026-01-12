@@ -8,7 +8,7 @@ rule Windows_Hacktool_Seatbelt_674fd535 {
         threat_name = "Windows.Hacktool.Seatbelt"
         reference_sample = "a0e467aacd383727d46e766f1c45b424a6d46248118c155c22c538e8773b3ae7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

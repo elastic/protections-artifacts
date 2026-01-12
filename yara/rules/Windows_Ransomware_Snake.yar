@@ -9,7 +9,7 @@ rule Windows_Ransomware_Snake_550e0265 : beta {
         threat_name = "Windows.Ransomware.Snake"
         reference = "https://labs.sentinelone.com/new-snake-ransomware-adds-itself-to-the-increasing-collection-of-golang-crimeware/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -34,7 +34,7 @@ rule Windows_Ransomware_Snake_119f9c83 : beta {
         threat_name = "Windows.Ransomware.Snake"
         reference = "https://labs.sentinelone.com/new-snake-ransomware-adds-itself-to-the-increasing-collection-of-golang-crimeware/"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

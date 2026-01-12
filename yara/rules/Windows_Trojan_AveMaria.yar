@@ -8,7 +8,7 @@ rule Windows_Trojan_AveMaria_31d2bce9 {
         threat_name = "Windows.Trojan.AveMaria"
         reference_sample = "5767bca39fa46d32a6cb69ef7bd1feaac949874768dac192dbf1cf43336b3d7b"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -40,7 +40,7 @@ rule Windows_Trojan_AveMaria_e01305a0 {
         threat_name = "Windows.Trojan.AveMaria"
         reference_sample = "21f1e24abcda47e08ba3e6bf19c0b2d9adb52b908f625c4a08f74ade5b863bf9"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

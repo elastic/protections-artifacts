@@ -8,7 +8,7 @@ rule Windows_Ransomware_Royal_b7d42109 {
         threat_name = "Windows.Ransomware.Royal"
         reference_sample = "491c2b32095174b9de2fd799732a6f84878c2e23b9bb560cd3155cbdc65e2b80"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -7,7 +7,7 @@ rule Windows_Trojan_BruteRatel_1916686d {
         last_modified = "2022-12-01"
         threat_name = "Windows.Trojan.BruteRatel"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -39,7 +39,7 @@ rule Windows_Trojan_BruteRatel_9b267f96 {
         last_modified = "2022-07-18"
         threat_name = "Windows.Trojan.BruteRatel"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -66,7 +66,7 @@ rule Windows_Trojan_BruteRatel_684a39f2 {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "5f4782a34368bb661f413f33e2d1fb9f237b7f9637f2c0c21dc752316b02350c"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -94,7 +94,7 @@ rule Windows_Trojan_BruteRatel_ade6c9d5 {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "dc9757c9aa3aff76d86f9f23a3d20a817e48ca3d7294307cc67477177af5c0d4"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -118,7 +118,7 @@ rule Windows_Trojan_BruteRatel_4110d879 {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "e0fbbc548fdb9da83a72ddc1040463e37ab6b8b544bf0d2b206bfff352175afe"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -139,7 +139,7 @@ rule Windows_Trojan_BruteRatel_5b12cbab {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "8165798fec8294523f25aedfc6699faad0c5d75f60bc7cefcbb2fa13dbc656e3"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -159,7 +159,7 @@ rule Windows_Trojan_BruteRatel_5e383ae0 {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "0b506ef32f58ee2b1e5701ca8e13c67584739ab1d00ee4a0c2f532c09a15836f"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -193,7 +193,7 @@ rule Windows_Trojan_BruteRatel_644ac114 {
         threat_name = "Windows.Trojan.BruteRatel"
         reference_sample = "ace6a99d95ef859d4ab74db6900753e754273a12a34721f1aa8f1a9df3d8ec35"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

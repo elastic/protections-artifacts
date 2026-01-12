@@ -8,7 +8,7 @@ rule Windows_Trojan_FinalDraft_ce03cf22 {
         threat_name = "Windows.Trojan.FinalDraft"
         reference_sample = "39e85de1b1121dc38a33eca97c41dbd9210124162c6d669d28480c833e059530"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

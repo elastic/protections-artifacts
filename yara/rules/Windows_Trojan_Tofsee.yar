@@ -8,7 +8,7 @@ rule Windows_Trojan_Tofsee_26124fe4 {
         threat_name = "Windows.Trojan.Tofsee"
         reference_sample = "e658fe6d3bd685f41eb0527432099ee01075bfdb523ef5aa3e5ebd42221c8494"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

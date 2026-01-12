@@ -8,7 +8,7 @@ rule Windows_Trojan_Glupteba_70557305 {
         threat_name = "Windows.Trojan.Glupteba"
         reference_sample = "3ad13fd7968f9574d2c822e579291c77a0c525991cfb785cbe6cdd500b737218"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -33,7 +33,7 @@ rule Windows_Trojan_Glupteba_4669dcd6 {
         threat_name = "Windows.Trojan.Glupteba"
         reference_sample = "1b55042e06f218546db5ddc52d140be4303153d592dcfc1ce90e6077c05e77f7"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

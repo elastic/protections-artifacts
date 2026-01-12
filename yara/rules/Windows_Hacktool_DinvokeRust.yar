@@ -8,7 +8,7 @@ rule Windows_Hacktool_DinvokeRust_512d3b59 {
         threat_name = "Windows.Hacktool.DinvokeRust"
         reference_sample = "ebf0f1bfd166d2d49b642fa43cb0c7364c0c605d9a7f108dc49d9f1cc859ab4a"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

@@ -9,7 +9,7 @@ rule Windows_Trojan_SuddenIcon_99487621 {
         reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         reference_sample = "aa4e398b3bd8645016d8090ffc77d15f926a8e69258642191deb4e68688ff973"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -36,7 +36,7 @@ rule Windows_Trojan_SuddenIcon_8b07c275 {
         reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         reference_sample = "aa4e398b3bd8645016d8090ffc77d15f926a8e69258642191deb4e68688ff973"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -57,7 +57,7 @@ rule Windows_Trojan_SuddenIcon_ac021ae0 {
         threat_name = "Windows.Trojan.SuddenIcon"
         reference = "https://www.elastic.co/security-labs/elastic-users-protected-from-suddenicon-supply-chain-attack"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"
@@ -85,7 +85,7 @@ rule Windows_Trojan_SuddenIcon_bdae76c9 {
         threat_name = "Windows.Trojan.SuddenIcon"
         reference_sample = "11be1803e2e307b647a8a7e02d128335c448ff741bf06bf52b332e0bbf423b03"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

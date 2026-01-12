@@ -8,7 +8,7 @@ rule Windows_Trojan_DBatLoader_f93a8e90 {
         threat_name = "Windows.Trojan.DBatLoader"
         reference_sample = "f72d7e445702bbf6b762ebb19d521452b9c76953d93b4d691e0e3e508790256e"
         severity = 100
-        arch_context = "x86"
+        arch_context = "x86, arm64"
         scan_context = "file, memory"
         license = "Elastic License v2"
         os = "windows"

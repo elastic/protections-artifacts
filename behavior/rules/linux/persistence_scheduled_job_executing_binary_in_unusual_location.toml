@@ -12,7 +12,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -41,7 +41,8 @@ process where event.type == "start" and event.action == "exec" and (
   ) or
   process.command_line like~ ("*/etc/init.d/*start*", "*/etc/init.d/*reload*", "*/etc/init.d/*stop*", "*/etc/cron.daily/*") or
   process.args like~ "/run/jaws-ansible-processors/pcaps/pcap_processor.sh*" or
-  process.executable like "/nix/store/*/bin/.Hyprland-wrapped"
+  process.executable like "/nix/store/*/bin/.Hyprland-wrapped" or
+  process.args == "/etc/init.d/inotify-monitor report"
 )
 '''
 

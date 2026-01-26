@@ -7,7 +7,7 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 registry where process.executable : ("C:\\*", "D:\\*") and
@@ -67,13 +67,16 @@ registry where process.executable : ("C:\\*", "D:\\*") and
                                              "Zoom Video Communications, Inc.", "Vertafore, Inc.", "Anatomage, Inc.", "Articulate Global, Inc.", 
                                              "Lenovo", "Mozilla Corporation", "TurbolabData_ABSKey.pfx", "eVision Holdings, LLC", "Zscaler, Inc.", 
                                              "March Networks Corporation", "EZLinks Golf LLC", "Prop Modest", "Audit Detective, LLC",
-                                             "Shanghai Microvirt Software Technology CO., LTD.", "Laserfiche") and
+                                             "Shanghai Microvirt Software Technology CO., LTD.", "Laserfiche", "MAGNET FORENSICS INC.") and
       process.code_signature.trusted == true) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes : ("*908b45ac488b55a0c6420c01488b55a0488b8d68ffffff48894a10488d65",
                                                     "*488b8d70ffffff49894c24104881c4a80000005b5e5f415c",
                                                     "50528bcb8b03ff50245a58e9ab000000558bec538b5d0ceb07558bec538b5d0856578bcb8b03ff50042be08bfc8d75088bcb8b03ff501c83f8087e068b0683c6",
-                                                    "cc8945fc8b45fcc9c3558bec51ff0ddba50d1ba50d5ba50d9ae20edaa5536fba5a5a96c20e95e20e95c6660fe2944fa50d58a50d9ba50ddba50d1ba50d5ba50d"))
+                                                    "cc8945fc8b45fcc9c3558bec51ff0ddba50d1ba50d5ba50d9ae20edaa5536fba5a5a96c20e95e20e95c6660fe2944fa50d58a50d9ba50ddba50d1ba50d5ba50d",
+                                                    "85c07444b8ffffffff89442444669085c074354c8d4c244441b800040000488d5530*",
+                                                    "85c00f84f90000006a008d85e0faffffc785e0faffff00010000508d85f0feffff506a1356*",
+                                                    "8b4d9cc6410801833d*5a58c74588000000008945a88955ac*"))
 '''
 
 min_endpoint_version = "8.10.0"

@@ -1,0 +1,74 @@
+[rule]
+description = """
+Detects when a JavaScript file within an application's directory structure gets modified via Node.js. Malicious npm
+packages have been observed hijacking legitimate applications like Cursor editor by injecting malicious JavaScript code
+into application files to enable persistent code execution.
+"""
+id = "9c20c94b-aad6-4052-b5b4-70d968e70971"
+license = "Elastic License v2"
+name = "Application Javascript Injection via Nodejs"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/malicious-npm-packages-hijack-cursor-editor-on-macos"]
+version = "1.0.1"
+
+query = '''
+file where event.action == "modification" and file.extension == "js" and
+ file.path like "/Applications/*" and (process.name == "node" or Effective_process.name == "node")
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.001"
+name = "Compromise Software Dependencies and Development Tools"
+reference = "https://attack.mitre.org/techniques/T1195/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1554"
+name = "Compromise Host Software Binary"
+reference = "https://attack.mitre.org/techniques/T1554/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

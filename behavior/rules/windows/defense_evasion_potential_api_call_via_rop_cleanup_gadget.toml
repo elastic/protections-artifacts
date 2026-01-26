@@ -1,0 +1,45 @@
+[rule]
+description = """
+Identifies Windows Native API calls where ROP cleanup gadgets are present in trailing bytes, and the call originates
+from an unusual or undetermined Microsoft-signed module. This behavior may indicate post-execution ROP cleanup after
+in-memory code execution or stealthy memory manipulation. The detection focuses on ROP teardown patterns,
+differentiating them from standard compiler epilogues.
+"""
+id = "6c8baa0b-7dd6-43b9-acab-06e21e93beb4"
+license = "Elastic License v2"
+name = "Potential API Call via ROP Cleanup Gadget"
+os_list = ["windows"]
+reference = ["https://github.com/klezVirus/Moonwalk--"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.behaviors == "image_rop" and process.Ext.api.behaviors == "proxy_call" and
+ process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "SetThreadContext", "SuspendThread", "VirtualProtectEx") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unbacked") and
+ process.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll|*" and process.thread.Ext.call_stack_final_user_module.name == "Undetermined" and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.callsite_trailing_bytes regex """5[8-9a-f]c3.+""")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

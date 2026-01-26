@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies attempts to allocate remote memory into a target process early before the start of its initial thread, this
+behavior is often associated with remote process injection preparation.
+"""
+id = "d0ffac28-7e18-416e-b9f6-d16cc8cdeeb4"
+license = "Elastic License v2"
+name = "Early Remote Memory Allocation"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+ [api where process.Ext.api.behaviors == "cross-process" and process.Ext.api.behaviors =="parent-child" and
+  process.Ext.api.name in ("VirtualAllocEx", "MapViewOfFile", "MapViewOfFile2") and
+  Target.process.Ext.token.integrity_level_name != "low" and process.thread.Ext.call_stack_summary != null and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+  not process.thread.Ext.call_stack_final_user_module.path like ("?:\\program files\\*", "?:\\program files (x86)\\*") and
+  process.thread.Ext.call_stack_final_user_module.protection_provenance != "Kernel" and
+  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "0ebf9d054ab20f8ce5ac2cd5f66244af4289faaac743bd616809d08cec78d6c2"] by process.entity_id, Target.process.entity_id
+ [process where event.action == "start"] by process.parent.entity_id, process.entity_id
+'''
+
+min_endpoint_version = "8.12.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Target.process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.12.0"

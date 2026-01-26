@@ -1,0 +1,100 @@
+[rule]
+description = """
+This rule detects behavior linked to potential Java application exploitation, where a Java process makes an outbound
+connection to a public IP and, within a minute, spawns a shell (sh, bash, etc.) with -c. This sequence is a strong
+indicator of payload retrieval and command execution, consistent with remote code execution.
+"""
+id = "b7cb162f-75d8-43f3-9fb4-498215980533"
+license = "Elastic License v2"
+name = "Suspicious Shell Execution via Java Application"
+os_list = ["linux"]
+reference = [
+    "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
+    "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
+]
+version = "1.0.7"
+
+query = '''
+sequence with maxspan=1m 
+	[network where event.type == "start" and event.action == "connection_attempted" and process.name == "java" and
+	 not (
+	   destination.ip == "0.0.0.0" or
+	   cidrmatch(
+         destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+         "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+         "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+         "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+         "FF00::/8"
+       )
+     )
+    ] by process.entity_id
+	[process where event.type == "start" and event.action == "exec" and process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
+	 process.args == "-c" and process.parent.name == "java" and process.command_line like~ (
+     "*|*sh *", "*/dev/shm/*", "*/var/www/*", "*/run/*", "*/var/run/*", "* netcat *", "* ncat *", "*python*", "* nc *",
+     "* php*", "*perl*", "*ruby*", "*echo *", "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*",
+     "*TCPSocket.new*", "*TCPSocket.open*", "*io.popen*", "*os.execute*", "*fsockopen*", "*disown*", "*/etc/cron*",
+     "*/etc/rc.local*", "*/etc/init.d*", "*/etc/update-motd.d*", "*/etc/ld.so*", "*/etc/sudoers*", "*base64 *", "*base32 *",
+     "*/etc/profile*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*", "*~/.ssh/*", "*nohup*", "*xxd *", "*/etc/shadow*", "*chattr *"
+   ) and
+   not (
+     process.args like (
+       "for f in*", "id*", "[*", "/usr/bin/mpstat*", "(cp*jenkins-result.txt*", "cat /application/*nohup_*.out*"
+     ) or
+     process.command_line in (
+       "/bin/bash -c echo ping",
+       "/bin/sh -c export LC_ALL=en_US.UTF-8;if [ -e /tmp ]; then /usr/bin/echo /tmp ; fi ; ",
+       "sh -c stty -echo < /dev/tty",
+       "/bin/sh -c which perl",
+       """/bin/sh -c if (which rpm >/dev/null 2>&1 && rpm -qa | grep 'gtk3' >/dev/null 2>&1) || (which dpkg >/dev/null 2>&1 && dpkg -l | grep 'libgtk-3' >/dev/null 2>&1); then echo "true";else echo "false";fi"""
+     ) or
+     process.command_line like "*executeXauthorityCommandWithTimeoutIfPossible*" or
+     process.working_directory like ("/var/opt/oracle/dbaastools_base/pilot*", "/opt/wn/service/agents/esfclient") or
+     process.parent.executable like "/opt/pycharm*/bin/java" or
+     process.parent.args == "/usr/share/jenkins/agent.jar"
+   )] by process.parent.entity_id
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+[[threat.technique]]
+id = "T1203"
+name = "Exploitation for Client Execution"
+reference = "https://attack.mitre.org/techniques/T1203/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

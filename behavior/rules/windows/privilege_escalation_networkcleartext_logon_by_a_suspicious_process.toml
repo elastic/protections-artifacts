@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "NetworkCleartext Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 authentication where event.action == "log_on" and
@@ -19,6 +19,7 @@ authentication where event.action == "log_on" and
  not process.executable :
             ("C:\\Windows\\System32\\inetsrv\\w3wp.exe",
              "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
+             "C:\\Windows\\System32\\inetsrv\\appcmd.exe",
              "C:\\Windows\\System32\\mmc.exe",
              "C:\\Windows\\System32\\wsmprovhost.exe",
              "C:\\Program Files\\*.exe",
@@ -26,7 +27,8 @@ authentication where event.action == "log_on" and
              "C:\\Windows\\System32\\inetsrv\\InetMgr.exe",
              "C:\\Windows\\System32\\inetsrv\\WMSvc.exe",
              "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
-             "C:\\Windows\\System32\\CPrepSrv.exe")
+             "C:\\Windows\\System32\\CPrepSrv.exe",
+             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
 '''
 
 min_endpoint_version = "8.15.1"

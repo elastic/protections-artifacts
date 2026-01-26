@@ -7,7 +7,7 @@ id = "6644d936-36a2-4d21-95f3-4826e6b61b9b"
 license = "Elastic License v2"
 name = "Systemd Execution Followed by Network Connection"
 os_list = ["linux"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=3s
@@ -51,7 +51,8 @@ sequence with maxspan=3s
        "/usr/lib/snapd/snapd", "/usr/sbin/adclient", "/redwood/*/bin/network-processor", "/tmp/.mount_*/desktop",
        "/opt/aws/*/aws", "/root/.nvm/versions/node/*/bin/node", "/run/systemd/mount-rootfs/*",
        "/run/current-system/sw/bin/nix-build", "/tmp/.mount_*", "/usr/Fidelis/Endpoint/Platform/endpoint",
-       "/anaconda/envs/*/lib/python*/site-packages/dotnetcore2/bin/dotnet"
+       "/anaconda/envs/*/lib/python*/site-packages/dotnetcore2/bin/dotnet", "/var/vanta/launcher",
+       "/hab/pkgs/chef/deployment-service/*/bin/deployment-service"
      ) or
      process.name in ("@amznnosql-workbench", "zypper", "fleet-server", "postgres", "ssmtp")
    )

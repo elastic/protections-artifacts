@@ -1,0 +1,66 @@
+[rule]
+description = """
+Detects the use of the Open binary to open a file from a suspicious location via the Apple Preview application. Threat
+actors commonly display decoy files or images to appear legitimate and distract users from malicious activities running
+in the background, often as part of Gatekeeper bypass or initial infection chains.
+"""
+id = "87bbe441-6b10-47b8-bd1b-0732cb4bb7c8"
+license = "Elastic License v2"
+name = "Decoy file Open via Preview App"
+os_list = ["macos"]
+reference = [
+    "https://pberba.github.io/security/2025/11/11/macos-infection-vector-applescript-bypass-gatekeeper/",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "open" and
+  process.args in ("-a", "-g") and process.args == "/System/Applications/Preview.app" and
+  process.args like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*", "/var/root/*", "/private/var/root/*") and
+  process.args_count <= 4
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

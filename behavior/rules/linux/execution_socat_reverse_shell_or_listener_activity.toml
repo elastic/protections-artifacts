@@ -7,7 +7,7 @@ id = "613da93c-226e-4150-9125-3b476103c0b9"
 license = "Elastic License v2"
 name = "Socat Reverse Shell or Listener Activity"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "socat" and
@@ -19,7 +19,8 @@ not (
   process.parent.executable like "/var/lib/docker/*" or
   process.parent.command_line == "runc init" or
   process.parent.name in ("kube-apiserver", "apiserver_entrypoint.sh", "start-proxy") or
-  (process.working_directory == "/usr/share/epoptes-client" and process.parent.command_line == "epoptes-client")
+  (process.working_directory == "/usr/share/epoptes-client" and process.parent.command_line == "epoptes-client") or
+  process.parent.args == "/usr/bin/wsrep_sst_xtrabackup-v2"
 )
 '''
 

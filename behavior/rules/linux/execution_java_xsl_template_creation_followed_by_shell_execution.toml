@@ -12,14 +12,14 @@ reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m 
   [file where event.type == "creation" and process.name == "java" and file.extension in ("xsl", "xslt")] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-   process.args == "-c" and process.parent.name == "java" and
+   process.args == "-c" and process.parent.name == "java" and process.working_directory like~ "/u0?/*" and user.id == 54321 and
    not process.args like ("kill -0*", "kill -9*", "echo $$", "cd*", "ls*", "kill -15*", "test*", "ulimit*", "python3 workspace.py")
   ] by process.parent.entity_id
 '''

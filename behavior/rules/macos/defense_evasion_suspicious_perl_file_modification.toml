@@ -1,0 +1,68 @@
+[rule]
+description = """
+Detects when Perl modifies script files in temporary directories or creates hidden files with scripting extensions. This
+behavior is commonly observed in npm typosquatting attacks where malicious packages leverage Perl to stage additional
+payloads or create hidden persistence mechanisms. Adversaries abuse Perl's trusted status to write malicious scripts
+that can be executed later for credential harvesting, data exfiltration, or maintaining access.
+"""
+id = "7f7a0f09-a2f3-4449-a83d-5b5279c6f704"
+license = "Elastic License v2"
+name = "Suspicious Perl File Modification"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
+version = "1.0.1"
+
+query = '''
+file where process.name == "perl" and file.extension in ("pl", "applescript", "scpt", "py", "sh") and 
+ (file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*", "/private/var/tmp/*") or file.name : ".*")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.001"
+name = "Hidden Files and Directories"
+reference = "https://attack.mitre.org/techniques/T1564/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

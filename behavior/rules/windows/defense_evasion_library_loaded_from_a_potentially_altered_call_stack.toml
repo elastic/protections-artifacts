@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Library Loaded From a Potentially Altered Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 library where process.executable != null and
@@ -30,6 +30,7 @@ library where process.executable != null and
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|combase.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|clr.dll|*",
                                                  "ntdll.dll|*kernelbase.dll|clr.dll|*",
+                                                 "ntdll.dll|ctiuser.dll|ntdll.dll|kernelbase.dll|ctiuser.dll|*",
                                                  "ntdll.dll|kernelbase.dll|wsmsvc.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll",
                                                  "ntdll.dll|advapi32.dll|system.management.automation.ni.dll|clr.dll|*",
                                                  "ntdll.dll|kernel32.dll|kernelbase.dll|kernel32.dll|dwminit.dll|kernel32.dll|ntdll.dll",
@@ -51,7 +52,7 @@ library where process.executable != null and
                    "*ntdll.dll!TpReleaseCleanupGroupMembers*", "*KernelBase.dll!VirtualUnlock*", "*KernelBase.dll!GetCPHashNode*",
                    "C:\\Windows\\System32\\KernelBase.dll!GetEnvironmentVariableW+*", "C:\\Windows\\System32\\KernelBase.dll!DeviceIoControl*",
                    "C:\\Windows\\System32\\KernelBase.dll!GetComputerName*", "C:\\Windows\\System32\\KernelBase.dll!CreateProcessInternal*",
-                   "C:\\Windows\\System32\\KernelBase.dll!GetProcAddress*"))
+                   "C:\\Windows\\System32\\KernelBase.dll!GetProcAddress*", "C:\\Windows\\Sys*\\ntdll.dll!LdrShutdownThread*"))
 '''
 
 min_endpoint_version = "8.10.0"

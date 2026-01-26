@@ -7,19 +7,21 @@ id = "1471cf36-7e5c-47cc-bf39-2234df0e676a"
 license = "Elastic License v2"
 name = "Linux Powershell Egress Network Connection"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and process.parent.name : "pwsh" and not (
     process.name in ("kubectl", "helm", "pwsh", "yum", "dnf", "dotnet", "ansible-lint") or
     process.executable like (
-      "/run/containerd/*python3", "/jenkins-data/docker/*python3", "/tmp/Download-References/DepotDownloader/DepotDownloader"
+      "/run/containerd/*python3", "/jenkins-data/docker/*python3", "/tmp/Download-References/DepotDownloader/DepotDownloader",
+      "/home/*/.local/bin/az"
     ) or
     process.parent.executable like ("/jenkins-data/docker*", "/var/run/docker/*", "/run/containerd/*") or
     process.command_line == "/usr/bin/gh auth status" or
     (process.name like~ "python*" and process.args == "azure.cli") or
-    process.working_directory like "/opt/azurevstsagent/agent*"
+    process.working_directory like "/opt/azurevstsagent/agent*" or
+    process.args == "/bin/dnf"
   )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (

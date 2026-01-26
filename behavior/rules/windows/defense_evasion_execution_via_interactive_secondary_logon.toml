@@ -1,0 +1,60 @@
+[rule]
+description = "Identifies suspicious execution via interactive logon using the seclogon service."
+id = "dd9f4c9b-657a-463e-9d5e-70848c7aa27e"
+license = "Elastic License v2"
+name = "Execution via Interactive Secondary Logon"
+os_list = ["windows"]
+reference = [
+    "https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html",
+    "https://github.com/CarlosG13/SecLogon-RPC",
+]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=1m
+ [authentication where event.action == "log_on" and process.Ext.session_info.logon_type == "Interactive" and
+   process.executable : "?:\\Windows\\System32\\svchost.exe" and user.effective.id != "S-1-0-0"] by Target.process.Ext.authentication_id, user.effective.id, process.entity_id
+ [process where event.action == "start" and
+  process.parent.thread.Ext.call_stack_summary like "ntdll.dll|*kernelbase.dll|kernel32.dll|seclogon.dll|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll" and
+  not process.parent.executable : ("C:\\Windows\\System32\\runas.exe",
+                                   "C:\\Program Files (x86)\\EGS\\EGS_WeighingScaleService\\runasspc.exe",
+                                   "C:\\Program Files (x86)\\Historia Clinica Agente\\PsExec.exe") and
+  not (process.name == "rundll32.exe" and process.args : "C:\\WINDOWS\\System32\\SHELL32.dll,RunAsNewUser_RunDLL"
+       and process.parent.executable : ("C:\\Windows\\explorer.exe", "C:\\Windows\\System32\\RuntimeBroker.exe")) and
+  not (process.code_signature.trusted == true and
+       process.code_signature.subject_name in ("Ghisler Software GmbH", "ISL Online Ltd.", "TeamViewer GmbH", "TeamViewer Germany GmbH",
+                                               "CAS Software AG", "N-ABLE TECHNOLOGIES LTD", "Bomgar Corporation", "Splashtop Inc.",
+                                               "GoTo Technologies USA, LLC", "BeyondTrust Corporation", "AnyDesk Software GmbH",
+                                               "SCHNEIDER ELECTRIC USA, INC.", "PURSLANE")) and
+  not (process.parent.code_signature.subject_name == "Oliver Hessing" and process.parent.code_signature.trusted == true)
+  ] by process.Ext.authentication_id, user.id, process.parent.Ext.real.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+[[threat.technique.subtechnique]]
+id = "T1134.004"
+name = "Parent PID Spoofing"
+reference = "https://attack.mitre.org/techniques/T1134/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

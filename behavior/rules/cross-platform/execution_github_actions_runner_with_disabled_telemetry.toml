@@ -1,0 +1,88 @@
+[rule]
+description = """
+This rule detects commands spawned by the GitHub Actions Runner.Worker process on self-hosted runner machines and where
+RUNNER_TRACKING_ID environment variable is set to an invalid value. RUNNER_TRACKING_ID is an internal environment
+variable used by GitHub's self-hosted runner to decide whether to generate telemetry. This may indicate an attempt to
+execute malicious commands without leaving any GitHub-side forensic trace.
+"""
+id = "167ae29d-ac26-4cf0-8cfb-596a63a95e4e"
+license = "Elastic License v2"
+name = "GitHub Actions Runner with Disabled Telemetry"
+os_list = ["linux", "macos"]
+reference = [
+    "https://www.elastic.co/blog/shai-hulud-worm-npm-supply-chain-compromise",
+    "https://socket.dev/blog/shai-hulud-strikes-again-v2",
+    "https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack",
+]
+version = "1.0.1"
+
+query = '''
+process where event.action == "exec" and
+  (
+   process.parent.name in ("Runner.Worker", "Runner.Listener") or
+   descendant of [process where event.action == "start" and process.parent.name in ("Runner.Worker", "Runner.Listener")]
+   ) and
+   process.env_vars : "RUNNER_TRACKING_ID*" and not process.env_vars like~ "RUNNER_TRACKING_ID=github_*"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.001"
+name = "Compromise Software Dependencies and Development Tools"
+reference = "https://attack.mitre.org/techniques/T1195/001/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

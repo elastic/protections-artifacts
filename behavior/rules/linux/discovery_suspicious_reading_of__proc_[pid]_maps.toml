@@ -1,0 +1,65 @@
+[rule]
+description = """
+This rule detects suspicious reading of the /proc/[pid]/maps file which contains the memory mappings for a process.
+Adversaries may read this file to gather information about the memory layout of a process, which can be useful for
+exploiting memory corruption vulnerabilities or for performing process injection techniques. Legitimate use cases
+include debugging and performance monitoring.
+"""
+id = "7a9c2b27-7693-4cc8-882e-eb4f0f9bfc4f"
+license = "Elastic License v2"
+name = "Suspicious Reading of /proc/[pid]/maps"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and
+process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
+  process.parent.executable like (
+    "/var/lib/dpkg/tmp.ci/preinst", "/var/lib/docker/overlay2/*/bin/sqlservr", "/proc/*/bin/sqlservr",  "/opt/data/db2inst1/sqllib/bin/db2cos",
+    "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/sqlservr", "/opt/mssql/bin/sqlservr", "/usr/lib/ocf/resource.d/heartbeat/Filesystem"
+  ) or
+  process.parent.args in ("/sbin/chkrootkit", "/usr/sbin/chkrootkit", "/opt/mssql/bin/handle-crash.sh", "/var/lib/dpkg/tmp.ci/preinst") or
+  process.working_directory like (
+    "/opt/secl/linux-ir-scripts-v3", "/etc/audit/rules.d", "/opt/Tanium/TaniumClient/*", "/var/opt/mssql/log", "/opt/oracle.ahf/*",
+    "/opt/sentinelone/addons/data/SentinelRSO/uac.zip-*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/mssql/log",
+    "/opt/traps/download/upgrades", "/var/lib/3cxpbx"
+  ) or
+  process.parent.command_line == "/usr/bin/bash --init-file /usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" or
+  (process.command_line == "grep -Eow /.*ld-.*.so /proc/self/maps" and process.parent.args == "/usr/bin/finalrd") or
+  (process.parent.args == "--deb" and process.args == "--upgrade") or
+  (process.parent.args == "ir_triage" and process.parent.args == "./uac") or
+  (process.parent.args == "./setup.sh" and process.parent.args == "--deb") or
+  (process.parent.executable == "/opt/traps/rpm-installer/setup.sh" and process.command_line == "cat /proc/self/maps") or
+  (process.parent.name == "thieves.sh" and process.command_line like "grep r--p 00000000 /proc/*/maps") or
+  (process.working_directory like "/tmp/selfgz*" and process.command_line == "cat /proc/self/maps") or
+  (process.name == "grep" and process.args == "-qiE" and process.args like "libsdmp*libserviceDiscovery*so")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1057"
+name = "Process Discovery"
+reference = "https://attack.mitre.org/techniques/T1057/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

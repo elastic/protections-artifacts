@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/invisible-miners-unveiling-ghostengine",
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.53"
+version = "1.0.54"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,6 @@ process where event.action == "start" and
    process.name : (
     "at.exe",
     "atbroker.exe",
-    "arp.exe",
     "bcdedit.exe",
     "cmstp.exe",
     "conhost.exe",
@@ -79,7 +78,7 @@ process where event.action == "start" and
     (process.pe.original_file_name : "WerFault.exe" or process.name : "WerFault.exe") or
     (process.pe.original_file_name : "wermgr.exe" or process.name : "wermgr.exe") or
     (process.pe.original_file_name : "IE4UINIT.EXE" or process.name : "ie4uinit.exe") or
-    (process.pe.original_file_name == "curl.exe" and process.code_signature.subject_name : "Microsoft *")
+    (process.pe.original_file_name == "curl.exe" and process.code_signature.subject_name : "Microsoft *" and process.executable : "C:\\Users\\*")
     )
     and
     
@@ -130,7 +129,7 @@ process where event.action == "start" and
   not (process.name : "services.exe" and process.args : "-i*" and process.parent.name : "monitor.exe") and
   not (process.name : "RegAsm.exe" and process.args : ("directdeposit.vb.tlb", "?:\\Program Files (x86)\\*.dll", "?:\\Program Files\\*.dll")) and
   not process.executable : "D:\\Reform V*\\Reform_PDC_Server_v*\\Plugins\\Monitoring\\CScript.exe" and
-  not (process.name : "rundll32.exe" and process.code_signature.subject_name == "Teramind Inc." and process.code_signature.trusted == true) and
+  not (process.name : "rundll32.exe" and process.code_signature.subject_name in ("Teramind Inc.", "STAKHANOVETS LIMITED LIABILITY COMPANY") and process.code_signature.trusted == true) and
   not (process.name : "regsvr32.exe" and
        process.args : ("?:\\Sage\\Sage300 Programs\\GL69A\\FRCOM690.DLL",
                        "?:\\Program Files (x86)\\*.dll",

@@ -1,0 +1,77 @@
+[rule]
+description = """
+Identifies local thread context manipulation using SetThreadContext API. This may indicate an attempt to hijack process
+thread execution.
+"""
+id = "71f908de-8f53-4cb4-8f3a-6fa473fe9488"
+license = "Elastic License v2"
+name = "Suspicious Thread Context Manipulation"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
+version = "1.0.5"
+
+query = '''
+api where
+  process.Ext.api.name == "SetThreadContext" and process.Ext.api.behaviors != "cross-process" and process.executable != null and
+  (
+   process.thread.Ext.call_stack_summary in ("ntdll.dll|kernelbase.dll|Unbacked", "ntdll.dll|Unbacked") or
+   process.Ext.api.behaviors in ("proxy_call", "native_api")
+   ) and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("Kernel", "Unknown") and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+ not (process.Ext.api.behaviors == "native_api" and
+      process.executable : ("C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\acrocef_?\\RdrCEF.exe",
+                            "C:\\Program Files (x86)\\Adobe\\Acrobat *\\Acrobat\\AcroCEF\\AcroCEF.exe",
+                            "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe",
+                            "C:\\Program Files (x86)\\Adobe\\Acrobat *\\Acrobat\\AcroRd32.exe",
+                            "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroCEF\\RdrCEF.exe",
+                            "C:\\Windows\\ADWS\\Microsoft.ActiveDirectory.WebServices.exe")) and
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                    ("732cce11d43ca62b49f816b8742ed2269e7b9817078fc35e1b275ee75ccc3ae0",
+                                     "fc5f3e6ffbe1fad672368245b3e31c1cdd75fe069f560ad3252d5ae756d91860",
+                                     "24781435da6510e1996ed7cd0d58b218a5b8dd65d2afe24ff9f570fe727540c9",
+                                     "dc905c5802a2d5e0d307ac6fabe117184f1b05288641ee68f051c061a2a0bd90",
+                                     "c7430d4f0f46d787d3c1f21375c69d7266e9c37b709b978f8e8e488c10dec49e",
+                                     "ad374dd246c4ef3262e0cfb964acaea19f133c40d8e0b7057a20a06472a88026",
+                                     "64e288dd3c1a21dca1c9e43a50fe9e9dc5023f6ce3e8b919cdca1fc9b1dd6b60",
+                                     "18a5f38f87e38e906f9d5f6e965cb5d16cfa570cb52b977fc1cd50df48265abe",
+                                     "0d02ae1920ed421b0b65a9267c1d42bfbd9e9bc83bc28715910b00b25fdf5f93",
+                                     "a52418bbb36e76beb042b2ee1201057b4740232c619fa477bd6922f69677fc18") and
+ not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.Ext.api.behaviors == "native_api") and
+ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\system32\\umppc*.dll",
+                                                                "c:\\windows\\ccm\\ccmwmiproviderbase.dll",
+                                                                "c:\\windows\\system32\\appxsip.dll",
+                                                                "c:\\windows\\winsxs\\temp\\pendingdeletes\\$$deletemekernelbase.dll*",
+                                                                "c:\\windows\\winsxs\\amd64_microsoft.*\\msvcp*.dll") and
+ not process.thread.Ext.call_stack_final_hook_module.path in ("c:\\program files\\cisco\\amp\\exprev\\protector64.dll", "c:\\windows\\system32\\microsoftaccounttokenprovider.dll", "c:\\windows\\system32\\webservices.dll") and
+ not (process.Ext.api.behaviors in ("native_api", "image_indirect_call") and process.thread.Ext.call_stack_final_user_module.path like ("c:\\program files (x86)\\*", "c:\\program files\\*")) and
+ not (process.Ext.api.behaviors == "native_api" and process.thread.Ext.call_stack_final_user_module.protection_provenance == "Undetermined") and
+ not (process.Ext.api.behaviors == "proxy_call" and process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|dbgeng.dll|kernel32.dll|ntdll.dll" and
+      process.executable : "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\DataCollection\\*\\OpenHandleCollector.exe") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\system32\\csxumd64_*.dll"
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

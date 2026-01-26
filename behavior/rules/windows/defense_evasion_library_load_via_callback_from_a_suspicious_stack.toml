@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies the load of a library indirectly via a callback function. This may be the result of an evasion attempt to
+hide the origin of the API call from the call stack such as unbacked memory region.
+"""
+id = "1dc1dc6d-1fff-48b1-8a2c-9d0d94d6fdbe"
+license = "Elastic License v2"
+name = "Library Load via Callback from a Suspicious Stack"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+    "https://klezvirus.github.io/posts/Callback-Hell/",
+]
+version = "1.0.2"
+
+query = '''
+library where
+ process.thread.Ext.call_stack_summary like
+                          ("ntdll.dll|kernelbase.dll|*|ntdll.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll", 
+                           "ntdll.dll|kernelbase.dll|*|gdi32full.dll|kernelbase.dll|ntdll.dll|kernel32.dll|ntdll.dll", 
+                           "ntdll.dll|kernelbase.dll|*|gdi32full.dll|user32.dll|ntdll.dll|kernel32.dll|ntdll.dll") and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "C:\\Windows\\System32\\ntdll.dll!TpCallbackIndependent*")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

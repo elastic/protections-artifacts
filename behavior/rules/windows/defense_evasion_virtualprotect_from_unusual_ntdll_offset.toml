@@ -1,0 +1,75 @@
+[rule]
+description = """
+Identifies calls to Windows memory APIs from unusual NTDLL offsets. This may indicate an attempt to bypass API
+monitoring using Return Oriented Programming (ROP) assembly gadgets to execute a syscall instruction.
+"""
+id = "036c0b79-9cba-4f01-a529-e0ef86981bad"
+license = "Elastic License v2"
+name = "VirtualProtect from Unusual NTDLL Offset"
+os_list = ["windows"]
+reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
+version = "1.0.3"
+
+query = '''
+api where
+ process.Ext.api.name == "VirtualProtect" and process.thread.Ext.call_stack_summary like "ntdll.dll|*" and
+ _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry,
+                  $entry.symbol_info: ("?:\\windows\\system32\\ntdll.dll!ZwProtectVirtualMemory*",
+                                       "?:\\windows\\system32\\ntdll.dll!NtProtectVirtualMemory*",
+                                       "?:\\windows\\syswow64\\ntdll.dll!NtProtectVirtualMemory*",
+                                       "?:\\windows\\system32\\ntdll.dll!NtProtectVirtualMemory*",
+                                       "?:\\windows\\system32\\ntdll.dll!LdrLoadDll*",
+                                       "?:\\windows\\syswow64\\ntdll.dll!LdrLoadDll*",
+                                       "?:\\windows\\syswow64\\kernelbase.dll!VirtualProtect*",
+                                       "?:\\windows\\system32\\kernelbase.dll!VirtualProtect*",
+                                       "?:\\windows\\system32\\ntdll.dll+0x*",
+                                       "?:\\windows\\syswow64\\ntdll.dll+0x*")) and
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\sys?????\\ntdll.dll!*+0x14") and
+ not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Undetermined", "Kernel|*") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
+ not process.thread.Ext.call_stack_summary like "ntdll.dll|Unknown|wow64.dll|Unknown|wow64.dll|ntdll.dll|*" and
+ not process.thread.Ext.call_stack_final_user_module.path like
+                                         ("c:\\windows\\assembly\\nativeimages_*\\system.ni.dll",
+                                          "c:\\program files (x86)\\common files\\kaspersky lab\\*\\klhkum.*.dll") and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and 
+ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                                             ("0c3b7b36302a1971e87f443e7c32a17facd3581457fd5087ee745806bf630516",
+                                              "ed19fae1f5122a66713aac93c24b47584c31c25dc73f076c15d0d3cd298f1338",
+                                              "a4934c1c5f5fa0c299427d228aceaadbff5674a3284d93f013d50c76ae382097",
+                                              "8d0a251e6641d6460b20535705a60562dc2b3efb5ed1cfc7895c632dd8ee3f0d",
+                                              "45baaaa253c6cc6e79e8c54ea9a8b167f0cd237879a74134804a13d4da97592a",
+                                              "3c69aef1794392dbcc33e54374e730c415bfdaf042315f2562ec4cb0cbad4d81",
+                                              "f83edc04210f95b944921a7254f9dda5ab9a84e0b511c85d85b72a8394bbba80",
+                                              "0be3da7c113fa1476cb1ef621ff875ed655e63dc7407f3180a8820433d150fd3",
+                                              "efd03f2525e69cdc30b5736af74d9485728b8a94d5624da87f1431b3706980ab")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

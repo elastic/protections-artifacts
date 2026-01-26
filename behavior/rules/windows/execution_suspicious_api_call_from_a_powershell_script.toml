@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 api where
@@ -48,7 +48,14 @@ not process.parent.executable :
                   "C:\\Program Files\\RevBits EPS\\RevBitsEPS.exe",
                   "C:\\Program Files (x86)\\Quest\\KACE\\KInventory.exe",
                   "C:\\ProgramData\\Lenovo\\Vantage\\Addins\\LenovoBatteryGaugeAddin\\*\\x64\\BGHelper.exe",
-                  "C:\\Program Files\\PDQ\\PDQConnectAgent\\pdq-connect-agent.exe") and
+                  "C:\\Program Files\\PDQ\\PDQConnectAgent\\pdq-connect-agent.exe",
+                  "C:\\Program Files (x86)\\ossec-agent\\wazuh-agent.exe",
+                  "C:\\Program Files\\SentinelOne\\Sentinel Agent *\\Addons\\SentinelAddonHost.exe",
+                  "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe",
+                  "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
+                  "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer.*\\setup.exe",
+                  "C:\\Windows\\CCM\\CcmExec.exe",
+                  "C:\\Windows\\System32\\gpscript.exe") and
 
 /* module listing */
 not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and
@@ -70,6 +77,7 @@ not process.thread.Ext.call_stack_summary like
                             "ntdll.dll|bdhkm64.dll|Unbacked|ntdll.dll|kernelbase.dll|bdhkm64.dll|Unbacked",
                             "ntdll.dll|umppc*.dll|scriptcontrol64_*.dll|Unbacked",
                             "ntdll.dll|edrdotnet.unmanagedlib.???.dll|Unbacked",
+                            "ntdll.dll|$$deletemekernelbase.dll*|inprocessclient64.dll|Unbacked",
                             "ntdll.dll|hmpalert.dll|advapi32.dll|Unknown",
                             "ntdll.dll|inprocessclient64.dll|kernelbase.dll|inprocessclient64.dll|Unknown",
                             "ntdll.dll|cyvrtrap.dll|edrdotnet.unmanagedlib.???.dll|Unbacked",
@@ -78,7 +86,8 @@ not process.thread.Ext.call_stack_summary like
                             "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|protector32.dll|kernelbase.dll|protector32.dll|Unbacked",
                             "ntdll.dll|minprocessclient.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|inprocessclient32.dll|kernelbase.dll|inprocessclient32.dll|Unbacked|clr.dll|*",
                             "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|psninjhookms32.dll|Unbacked|psninjhookms32.dll|Unbacked|psninjhookms32.dll|Unbacked|clr.dll|clrjit.dll|clr.dll|Unbacked*",
-                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|dbgeng.dll|Unbacked|clr.dll|dbgeng.dll|mscorlib.ni.dll|clr.dll|powershell.exe|kernel32.dll|ntdll.dll") and
+                            "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|dbgeng.dll|Unbacked|clr.dll|dbgeng.dll|mscorlib.ni.dll|clr.dll|powershell.exe|kernel32.dll|ntdll.dll",
+                            "ntdll.dll|clr.dll|presentationcore.ni.dll|clr.dll|presentationcore.ni.dll|clr.dll|microsoft.powershell.gpowershell.ni.dll|clr.dll|mscorlib.ni.dll|Unbacked") and
 not _arraysearch(process.thread.Ext.call_stack, $entry,
                  $entry.callsite_trailing_bytes like ("41c644240c01*85f60f95c00fb6c00fb6c041c644240c01488b55884989542410488d65c85b5e5f415c41*",
                                                       "c6430c01*488d65c85b5e5f415c415d415e415f5dc3*",
@@ -87,7 +96,13 @@ not _arraysearch(process.thread.Ext.call_stack, $entry,
                                                       "488b95c0feffffc6420c01*",
                                                       "*41c6470c01488b459049894710488d65c85b5e5f415c415d415e415f5dc30000001910090010*",
                                                       "488bc8488bd7488b00488b4040ff5030b901000000ba7b030000*",
-                                                      "488945d8488b4dd8488bd6488b45d8488b00488b4040ff5030*")) and
+                                                      "488945d8488b4dd8488bd6488b45d8488b00488b4040ff5030*",
+                                                      "8b65e459c6460801833d48*",
+                                                      "8b0c2464890d0000000083c40c5f5e5b5d*", "34006500330035*",
+                                                      "904883c428c30019040100044200*",
+                                                      "*488d65e05b5e5f415e5dc35541565756534883ec30c5f877488b692048*",
+                                                      "*f8488b5e30488d4f08488bd6*", "488bc8488bd7488b00488b4040ff5030b*",
+                                                      "8bf0488b4c2428488bf9488bcf488bf985f67479*")) and
 not (process.Ext.api.name in ("VirtualProtect", "VirtualAlloc") and
      _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",

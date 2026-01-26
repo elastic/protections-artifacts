@@ -11,12 +11,12 @@ reference = [
     "https://unit42.paloaltonetworks.com/slow-pisces-new-custom-malware/",
     "https://slowmist.medium.com/cryptocurrency-apt-intelligence-unveiling-lazarus-groups-intrusion-techniques-a1a6efda7d34",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 library where event.action == "load" and dll.path like "/Users/*" and process.name like~ "python*" and 
- not dll.name : ("*.so", "*.dylib", "Python", "*.*_extension") and
- not dll.path like~ "*/site-packages/*/Qt*/lib/Qt*.framework/Versions/*/Qt*"
+ not dll.name : ("*.so", "*.dylib", "Python", "*.*_extension", "*.dylib.*") and
+ not dll.path like~ ("*/site-packages/*/Qt*/lib/Qt*.framework/Versions/*/Qt*", "/Users/*/.pyenv/versions/*/lib/python*/site-packages/*")
 '''
 
 min_endpoint_version = "8.16.0"

@@ -8,7 +8,7 @@ id = "aa02591f-c9e6-4317-841e-0b075b9515ff"
 license = "Elastic License v2"
 name = "Linux Suspicious Child Process Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args like "-i" and process.args_count <= 2 and
@@ -22,7 +22,12 @@ process.parent.name like (
     "/usr/scratch/xar/23e8559c/bin/python"
   ) or
   process.parent.command_line in ("/bin/sh -c bash -i </dev/tty >/dev/tty 2>/dev/tty", "/bin/bash --login --posix") or
-  process.parent.command_line like "/usr/scratch/*poetry shell" or
+  process.parent.command_line like (
+    "/usr/scratch/*poetry shell", "*/u01/app/oracle.ahf/tfa/internal/tmp/*.sh*", "*/opt/oracle/oracle.ahf/tfa/internal/*.sh*",
+    "bash -c ls -al; $SHELL -i", "bash -c cd ~/GIT/salt/pillars; $SHELL -i", "bash -c cd ~/GIT/ansible-infra; $SHELL -i",
+    "bash -c cd ~/GIT/salt/states; $SHELL -i", "bash -c cd ~/GIT/puppet/hieradata; $SHELL -i",
+    "bash -c cd ~/GIT/puppet/ind_legacy; $SHELL -i"
+  ) or
   process.command_line == "/opt/cursor.appimage -i" or
   process.parent.executable like (
     "/mnt/*/.vscode-server/bin/*/node", "/vscode/vscode-server/bin/*/node", "/home/*/.vscode-server/bin/*/node",

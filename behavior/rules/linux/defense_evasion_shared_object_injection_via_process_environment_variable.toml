@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.43"
+version = "1.0.45"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -54,8 +54,12 @@ process where event.type == "start" and event.action == "exec" and process.env_v
     "LD_PRELOAD=/opt/dynatrace/oneagent/agent/bin/current/linux-x86-64/liboneagentproc.so",
     "LD_PRELOAD=/home/*/.local/lib/vivaldi/media-codecs-*/libffmpeg.so",
     "LD_PRELOAD=/usr/local/lib/libmimalloc.so", "LD_PRELOAD=/home/*/opt/commvault/Base/libCvDllFilter.so",
-    "LD_PRELOAD=/usr/lib/libjemalloc.so.2:/opt/zlib-ng/lib/libz.so"
+    "LD_PRELOAD=/usr/lib/libjemalloc.so.2:/opt/zlib-ng/lib/libz.so",
+    "LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so", "LD_PRELOAD=/usr/lib/libnss_wrapper.so",
+    "LD_PRELOAD=/tmp/*/openwrt-imagebuilder*/runas.so", "LD_PRELOAD=/tmp/pressure-vessel-libs-*/libMangoHud_shim.so",
+    "LD_PRELOAD=/home/libjemalloc.so.2"
   ) or
+  (process.env_vars == "LD_PRELOAD=./getrandom.so" and process.parent.command_line == "/opt/perlbrew/perls/perl-5.40.3/bin/perl t/getrandom.t") or
   process.parent.command_line == "runc init" or
   process.parent.executable like (
     "/usr/local/bin/fluentd", "/nix/store/*", "/usr/lib/pressure-vessel/from-host/bin/pressure-vessel-adverb", 

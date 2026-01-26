@@ -8,7 +8,7 @@ id = "1e5af062-4973-42d1-94bb-0c1ecbd8daa4"
 license = "Elastic License v2"
 name = "Potential Proxy Execution via Systemd-run"
 os_list = ["linux"]
-version = "1.0.20"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "systemd-run" and
@@ -18,11 +18,12 @@ process.parent.args_count < 3 and process.parent.name != null and not (
     "/tmp/newroot/usr/libexec/ptyxis-agent", "/usr/local/sbin/clamscan.sh", "/opt/sentinelone/bin/sentinelone-agent",
     "/usr/local/bin/salt-minion", "/var/vanta/launcher", "/opt/traps/bin/pmd", "/usr/sbin/gdm", "/usr/bin/salt-minion",
     "/opt/GC_Ext/GC/gc_linux_service", "/usr/lib/plesk-task-manager", "/opt/forticlient/epctrl", "/usr/lib/snapd/snap-exec",
-    "/usr/bin/yay", "/usr/local/bin/hexnode_agent", "/opt/halcyon/halcyonar/agent", "/usr/local/bin/qsetup", "/usr/bin/pamac"
+    "/usr/bin/yay", "/usr/local/bin/hexnode_agent", "/opt/halcyon/halcyonar/agent", "/usr/local/bin/qsetup", "/usr/bin/pamac",
+    "/usr/bin/elephant", "/usr/bin/Hyprland"
   ) or
   process.parent.executable like (
     "/opt/tableau/tableau_server/packages/scripts.*/after-install", "/opt/acronis/bin/acp-update-controller", "/snap/*",
-    "/var/lib/amagent/*", "/opt/msp-agent/msp-agent-core", "/opt/beyondtrust/*"
+    "/var/lib/amagent/*", "/opt/msp-agent/msp-agent-core", "/opt/beyondtrust/*", "/var/lib/rancher/k3s/*/bin/k3s"
   ) or
   process.parent.name like ("python*", "platform-python*") or
   process.parent.name in (
@@ -34,7 +35,7 @@ process.parent.args_count < 3 and process.parent.name != null and not (
     "/usr/bin/systemd-run /usr/bin/systemctl start man-db-cache-update", "systemd-run env", "systemd-run --user dalla open spain",
     "systemd-run --user dnf-automatic-notifyonly.timer", "systemd-run --user systemctl suspend", "systemd-run /var/lib/aws-replication-agent/uninstall-agent.sh",
     "systemd-run --on-active=10 --timer-property=AccuracySec=100ms --slice=system.slice systemctl start gc-agent",
-    "systemd-run --user --scope --unit=tmux-server -- tmux"
+    "systemd-run --user --scope --unit=tmux-server -- tmux", "systemd-run bash -c sleep 60 && reboot"
   ) or
   process.command_line like~ (
     "systemd-run --scope -p CPUQuota=10% rpm -qa*", "systemd-run --scope -p CPUQuota=10% dpkg -l*"
@@ -43,10 +44,13 @@ process.parent.args_count < 3 and process.parent.name != null and not (
   process.parent.command_line like ("*/var/lib/waagent/*", "bash ./run.sh") or
   process.args in (
     "--help", "list-timers", "/usr/lib/udev/kdump-udev-throttler", "kubectl", "--unit=ngt_guest_agent_upgrade", "i3-zoom", "google-chrome",
-    "thunar", "/usr/bin/google-chrome-stable", "snap.lxd.workaround", "--unit=firefox", "--unit=slack", "--slice=zoom.slice"
+    "thunar", "/usr/bin/google-chrome-stable", "snap.lxd.workaround", "--unit=firefox", "--unit=slack", "--slice=zoom.slice",
+    "autorandr-launcher", "--unit=restart-dbus", "--unit=autorandr-debounce"
   ) or
-  process.args like "--unit=app-Hyprland-wezterm-*.scope" or
-  process.working_directory == "/opt/Tychon/Endpoint/bin"
+  process.args like ("--unit=app-Hyprland-wezterm-*.scope", "--unit=app-Hyprland-swaybg-*.scope", "--unit=rmf_sim_*") or
+  process.working_directory == "/opt/Tychon/Endpoint/bin" or
+  (process.args in ("rpm", "dpkg") and process.args like~ "CPUQuota=*") or
+  (process.args == "--slice=app-graphical.slice" and process.args == "--description=xdg-terminal-exec")
 )
 '''
 

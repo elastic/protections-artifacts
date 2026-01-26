@@ -1,0 +1,76 @@
+[rule]
+description = """
+This rule detects when a child process is executed from a memory file descriptor (memfd). Attackers may use memfd to
+create and execute code directly in memory, bypassing traditional file-based detection mechanisms. The use of memfd for
+child process execution is uncommon and may indicate an attempt to evade security controls.
+"""
+id = "edc713a8-f352-4b12-ba50-b24944dfbd2d"
+license = "Elastic License v2"
+name = "In-Memory Child Process Execution"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.executable like "?memfd:*" and
+not (
+  process.executable == "/usr/bin/fusermount" or
+  (
+    process.working_directory == "/run/nordlayer" and
+    process.parent.command_line in (
+      "/proc/self/fd/4 -config /etc/nordlayer/config.hcl",
+      "/dev/fd/4 -config /etc/nordlayer/config.hcl"
+    )
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

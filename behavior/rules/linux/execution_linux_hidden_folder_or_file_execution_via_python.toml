@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Linux Hidden Folder or File Execution via Python"
 os_list = ["linux"]
 reference = ["https://github.com/rapid7/metasploit-framework"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 process.executable like~ ("/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*") and
 process.args : "python*" and process.args : ("/tmp/.*", "/var/tmp/.*", "/dev/shm/.*") and 
 not process.parent.name in ("browser_tests", "unit_tests", "arduino-cli", "node", "python.original") and
-not process.args like ("/tmp/.build/*", "/tmp/.sentrycli*", "/var/tmp/.mount_GIMP*", "/tmp/.mount_GIMP*") and
+not process.args like ("/tmp/.build/*", "/tmp/.sentrycli*", "/var/tmp/.mount_GIMP*", "/tmp/.mount_GIMP*", "/tmp/*/ansible-tmp-*/AnsiballZ*.py", "/tmp/selfgz*.py") and
 not (process.parent.executable like "/home/*/node_modules/@openai/codex/bin/codex-x86_64-unknown-linux-musl" and process.command_line like "python3 /tmp/.tmp*")
 '''
 

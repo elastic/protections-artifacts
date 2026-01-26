@@ -4,17 +4,16 @@ id = "51e79dda-9a89-4825-93ec-ce560d7d5459"
 license = "Elastic License v2"
 name = "VirtualProtect API Call from Unusual Stack"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where
  process.Ext.api.name == "VirtualProtect" and
  process.thread.Ext.call_stack_summary like "ntdll.dll|kernelbase.dll*" and
 
- /* covered by d869a5ff-5bda-4417-90c9-c353a949d26e */
- process.Ext.api.behaviors != "image_rop" and
-
- _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\system32\\ndll.dll!NtProtectVirtualMemory*") and
+ _arraysearch(process.thread.Ext.call_stack, $entry,
+              $entry.symbol_info like ("c:\\windows\\system32\\ndll.dll!NtProtectVirtualMemory*",
+                                       "c:\\windows\\system32\\ntdll.dll!ZwProtectVirtualMemory*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("*\\kernelbase.dll!VirtualProtect*",
                                         "*\\kernelbase.dll!LoadLibrary*",

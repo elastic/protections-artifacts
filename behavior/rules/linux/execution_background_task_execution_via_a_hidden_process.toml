@@ -7,13 +7,16 @@ id = "2dc02903-9487-4152-87ac-f1c6c7f3a7d3"
 license = "Elastic License v2"
 name = "Background Task Execution via a Hidden Process"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 (process.parent.name like~ ".*" or process.name like~ ".*") and
 (process.parent.args like~ "*&" or process.args like~ "*&") and
-not process.parent.command_line == "runc init"
+not (
+  process.parent.command_line == "runc init" or
+  process.parent.executable in (".", "/usr/bin/podman")
+)
 '''
 
 min_endpoint_version = "7.15.0"

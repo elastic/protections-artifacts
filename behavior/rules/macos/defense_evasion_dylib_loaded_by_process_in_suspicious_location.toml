@@ -10,7 +10,7 @@ id = "b97ecb91-b4bb-480e-a855-47f2a9ec107c"
 license = "Elastic License v2"
 name = "Dylib Loaded by Process in Suspicious Location"
 os_list = ["macos"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -28,7 +28,7 @@ sequence by process.entity_id with maxspan=10s
                             "/Library/Fonts/*")]
 [library where event.action == "load" and 
   not dll.code_signature.trusted == true and not
-  dll.path like ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", 
+  dll.path like ("/Library/Apple/*", "/private/var/db/oah/*", "/System/Library/*", "/private/var/root/Library/Developer/CoreSimulator/*", 
               "/private/var/root/Library/Caches/ms-playwright/*", "/Library/Developer/*", 
               "/usr/lib/libobjc-trampolines.dylib")]
 '''

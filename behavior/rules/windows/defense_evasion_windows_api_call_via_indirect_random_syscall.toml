@@ -7,7 +7,7 @@ id = "9bc5d4cd-5748-4425-a4f3-7a704a11029d"
 license = "Elastic License v2"
 name = "Windows API Call via Indirect Random Syscall"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
@@ -98,16 +98,25 @@ api where
                                                                   "*\\ntdll.dll!ZwRestoreKey*",
                                                                   "*\\kernelbase.dll!ProcessIdToSessionId*",
                                                                   "c:\\windows\\system32\\ntdll.dll!NtOpenSection*",
-                                                                  "c:\\windows\\system32\\ntdll.dll!NtImpersonateClientOfPort*")) and
+                                                                  "c:\\windows\\system32\\ntdll.dll!NtImpersonateClientOfPort*",
+                                                                  "*\\ntdll.dll!NtReleaseMutant+0x14",
+                                                                  "*\\ntdll.dll!NtQueryKey+0x14*",
+                                                                  "*\\ntdll.dll!NtQueryKey+0x14*",
+                                                                  "*\\ntdll.dll!NtEnumerateKey+0x14*",
+                                                                  "*\\ntdll.dll!NtQueryTimer+0x14*",
+                                                                  "*\\ntdll.dll!ZwDuplicateToken+0x14*",
+                                                                  "*\\ntdll.dll!NtDuplicateToken*",
+                                                                  "*\\ntdll.dll!NtdllDefWindowProc_W*",
+                                                                  "*\\ntdll.dll!NtEnumerateKey+0x14*")) and
 
  not (process.thread.Ext.call_stack_summary : "ntdll.dll|Unknown|ntdll.dll*" and
       _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll!*TestAlert*")) and
 
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Kernel|*", "Undetermined") and
- not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and
+ not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "clr.dll", "coreclr.dll") and
  not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\system32\\umppc*.dll", "c:\\windows\\syswow64\\ntdll.dll", "c:\\windows\\syswow64\\windows.storage.dll") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature,
-                  $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC", "Microsoft Windows Hardware Compatibility Publisher", "Activision Publishing Inc") and $entry.status == "trusted") and
+                  $entry, $entry.subject_name: ("Mozilla Corporation", "Google LLC", "Microsoft Windows Hardware Compatibility Publisher", "Activision Publishing Inc", "baramundi software GmbH", "Matrix42 GmbH") and $entry.status == "trusted") and
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                               ("47178fac2c375587e1d971b9a095167e573985cbdf72ea8f32113f0b90f26b22",
                                                "d1e49681e09cedf8a5751538273bc69d2c78d50469e8bc95203fc2643fa17a5f",

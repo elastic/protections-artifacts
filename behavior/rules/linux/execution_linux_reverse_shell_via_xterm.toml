@@ -1,0 +1,85 @@
+[rule]
+description = """
+This rule detects potential reverse shell activity initiated via the xterm terminal emulator. Attackers may use xterm to
+establish a reverse shell connection to a remote host by specifying a display address that includes the attacker's IP
+and port. This behavior is often indicative of unauthorized remote access attempts.
+"""
+id = "b364b480-0714-4694-a950-5563dbaae85e"
+license = "Elastic License v2"
+name = "Linux Reverse Shell via Xterm"
+os_list = ["linux"]
+reference = ["https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and process.name == "xterm" and process.args == "-display" and
+   /*
+    xterm uses ip:port format, where the port is set to 6000 + display number.
+   */
+   process.command_line regex """.*[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,3}.*"""
+  ]
+  [network where event.type == "start" and event.action == "connection_attempted" and process.name == "xterm" and
+   /*
+    X11 protocol says display is an unsigned 16-bit integer, but Xorg / Xephyr / Xnest impose their own limits
+    Most practical servers only accept:
+      - 0 ≤ DISPLAY ≤ 63, or
+      - 0 ≤ DISPLAY ≤ 255, depending on implementation 
+   */
+   destination.port >= 6000 and destination.port <= 6999]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

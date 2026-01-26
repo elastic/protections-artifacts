@@ -9,17 +9,15 @@ id = "87bd993d-d2fa-4047-bc7b-d6a4527d6ab8"
 license = "Elastic License v2"
 name = "Unusual Process Execution"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.executable like (
-  "/boot/*", "/sys/*", "/lost+found/*", "/proc/*", "/var/mail/*"
+  "/boot/*", "/sys/*", "/lost+found/*", "/var/mail/*"
 ) and not (
   process.executable like (
-    "/proc/self/fd/*", "/proc/*/exe", "/proc/*/ns/*", "/proc/self/*", "/var/spool/postfix", "/proc/mounts", "/sys/dev/block/*",
-    "/boot/loader/entries", "/proc/self/cgroup/*", "/proc/thread-self/*", "/proc/filesystems/*", "/proc/*/stat/*",
-    "/proc/*/comm/*", "/proc/meminfo/*", "/sys/devices/*", "/proc/*/mountinfo/*", "/sys/fs/cgroup/*", "/sys/module/*",
-    "/proc/sys/kernel/cap_last_cap/usr/local/bin/ruby", "/proc/stat/mnt/*"
+    "/var/spool/postfix", "/sys/dev/block/*", "/boot/loader/entries", "/sys/devices/*", "/sys/fs/cgroup/*",
+    "/sys/module/*", "/sys/usr/bin/docker"
   ) or
   process.parent.executable like (
     "/proc/self/fd/*", "/proc/*/exe", "/usr/libexec/postfix/master", "/usr/libexec/postfix/pipe", "/usr/share/code/code",

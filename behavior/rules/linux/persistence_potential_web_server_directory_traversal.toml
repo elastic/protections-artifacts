@@ -8,20 +8,21 @@ id = "7d39db57-5c5e-4542-a9eb-8f5de524b09c"
 license = "Elastic License v2"
 name = "Potential Web Server Directory Traversal"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
-  process.parent.name like (
-    "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "php-*", "node", "mongrel_rails",
-    "java", "gunicorn", "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik",
-    "tornado", "hypercorn", "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "python*", "flask",
-    "rails", "ruby*", "perl*", "mongrel", "java"
+  process.parent.name in (
+      "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "mongrel_rails", "gunicorn",
+      "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik", "tornado", "hypercorn",
+      "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "flask", "rails", "mongrel", "php-cgi",
+      "php-fcgi", "php-cgi.cagefs", "catalina.sh", "hiawatha", "lswsctrl"
   ) or
-  user.name in (
-    "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
-  ) or
-  user.id in (99, 33, 498, 48)
+  process.parent.name like "php-fpm*" or
+  user.name in ("apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9") or
+  user.id in (33, 498, 48) or
+  (process.parent.name == "java" and process.parent.working_directory like "/u0?/*") or
+  process.parent.working_directory like "/var/www/*"
 ) and
 process.command_line like ("*/.../*", "*../../../../../*") and
 process.command_line like (
@@ -42,7 +43,7 @@ process.command_line like (
 )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.2.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -97,4 +98,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.2.0"

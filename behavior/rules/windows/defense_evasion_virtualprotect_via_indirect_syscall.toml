@@ -7,7 +7,7 @@ id = "e7d63d66-2d46-4051-a304-4c34f7bbf11d"
 license = "Elastic License v2"
 name = "VirtualProtect via Indirect Syscall"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -26,7 +26,7 @@ api where process.Ext.api.name == "VirtualProtect" and
                                           "Sentinel Labs, Inc.",  "ESET, spol. s r.o.", "MUSARUBRA US LLC",
                                           "WIBU-SYSTEMS AG",  "Carbon Black, Inc.", "Adobe Inc.", "Adobe Systems, Incorporated",
                                           "Mozilla Corporation", "Google LLC", "Fasoo Co., Ltd.", "AhnLab, Inc.",
-                                          "Data Encryption Systems Ltd")) and
+                                          "Data Encryption Systems Ltd", "Aviata, Inc.")) and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != "ebdf952adb27745e16e033f3364ce090833e6ecdafa450241793b6f290410fe9" and
  not process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\tmumh\\*\\tmmon64.dll" and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like
@@ -56,7 +56,8 @@ api where process.Ext.api.name == "VirtualProtect" and
                                    "C:\\Program Files\\ESET\\ESET Security\\ekrn.exe",
                                    "C:\\Program Files\\ESET\\ESET Endpoint Antivirus\\ekrn.exe")) and
  not (process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
-      process.Ext.api.summary like "VirtualProtect( clr.dll, 0x?, * )")
+      process.Ext.api.summary like "VirtualProtect( clr.dll, 0x?, * )") and
+ not (process.thread.Ext.call_stack_summary == "ntdll.dll|protector64.dll|wsmsvc.dll" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\wsmsvc.dll")
 '''
 
 min_endpoint_version = "8.14.2"

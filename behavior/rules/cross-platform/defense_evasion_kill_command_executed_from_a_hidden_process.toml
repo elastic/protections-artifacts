@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Kill Command Executed from a Hidden Process"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name : ".*" and
@@ -18,6 +18,11 @@ process.name in ("kill", "pkill", "killall") and not process.parent.name in ("."
 
 min_endpoint_version = "7.15.0"
 optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

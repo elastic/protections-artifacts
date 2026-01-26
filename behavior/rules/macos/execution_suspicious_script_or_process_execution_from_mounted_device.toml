@@ -1,0 +1,86 @@
+[rule]
+description = """
+Detects potential execution of a script or unsigned macOS binary from a mounted device. Malware may abuse DMG files to
+deliver malicious code or scripts to gain initial access.
+"""
+id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
+license = "Elastic License v2"
+name = "Suspicious Script or Process Execution from Mounted Device"
+os_list = ["macos"]
+version = "1.0.43"
+
+query = '''
+sequence with maxspan=30s
+ [file where event.action == "mount" and
+  not (process.executable like "/usr/libexec/lsd" and file.path like~ "/private/var/folders/*/AppTranslocation/*") and
+  not file.path like~ "/Volumes/*/Contents/MacOS/*"] as event0
+ [process where event.action == "exec" and 
+  (stringcontains~(process.executable, event0.file.path) or 
+   stringcontains~(process.parent.executable, event0.file.path)) and
+   (
+     /* Focus on truly suspicious patterns */
+     (process.code_signature.trusted == false and process.code_signature.exists == true and process.args_count >= 2) or
+     /* Shells executing inline commands with suspicious content */
+     (process.name in ("bash", "sh", "zsh") and process.args == "-c" and 
+      process.args like~ ("*curl*http*", "*wget*", "*python*-c*", "*perl*-e*", "*base64*", "*chmod*+x*")) or
+     /* Scripting interpreters with suspicious args */
+     (process.name like~ "python*" and (process.args == "-c" or process.args : "*exec(*" or process.args : "*eval(*")) or
+     (process.name == "perl" and process.args == "-e") or
+     (process.name == "osascript" and process.args == "-e") or
+     /* chmod making things executable */
+     (process.name == "chmod" and process.args in ("+x", "a+x", "0777", "777") and process.args like "/Volumes/*")
+   ) and 
+  /* Legitimate installer patterns */
+  not process.executable like~ ("/Volumes/*/Contents/MacOS/*",
+                                "/Volumes/*/*.app/Contents/MacOS/*",
+                                "/private/tmp/PKInstallSandbox.*",
+                                "/opt/homebrew/Cellar/*") and
+  not process.args like~ ("/tmp/PKInstallSandbox.*/Scripts/*", 
+                         "/Library/Apple/System/Library/InstallerSandboxes/.*",
+                         "/private/tmp/dmg.*/.PKInstallSandboxManager-SystemSoftware/*") and
+  /* Legitimate parent processes */
+  not process.parent.executable like~ ("/sbin/launchd",
+                                       "/usr/bin/sudo",
+                                       "/Library/PrivilegedHelperTools/*",
+                                       "/System/Library/*") and
+  /* Legitimate management tools - consolidated */
+  not process.Ext.effective_parent.executable like~ ("/usr/local/jamf/bin/*",
+                                                     "/Library/Application Support/JAMF/*",
+                                                     "/Library/Kandji/*",
+                                                     "/Library/Application Support/Mosyle/*",
+                                                     "/Applications/NinjaRMMAgent/*",
+                                                     "/Library/Application Support/com.atera.ateraagent/*")]
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

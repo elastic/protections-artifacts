@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -37,7 +37,8 @@ sequence by process.entity_id with maxspan=1m
             "unlocktool.net", "Qinhuangdao Yizhishu Software Development Co., Ltd.", "Sony Interactive Entertainment LLC",
             "NetEase (Hangzhou) Network Co., Ltd", "ETH Zürich", "Wilcom International Pty Limited", "Electronic Arts, Inc.",
             "miHoYo Co.,Ltd.", "Azul Systems, Inc.", "Shanghai Feilai Information Technology Co., Ltd.", "BattlEye Innovations e.K.",
-            "NCSOFT Corporation", "Tenorshare (Hongkong) Limited") and
+            "NCSOFT Corporation", "Tenorshare (Hongkong) Limited", "CAPCOM CO., LTD.", "Micromine Australia Pty Ltd",
+            "Zhuhai Kingsoft Office Software Co., Ltd.") and
        process.code_signature.trusted == true) and
 
   not process.executable : ("?:\\Program Files (x86)\\FunPlus\\Stormshot\\nGame\\3.16.100\\Stormshot.exe",

@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.53"
+version = "1.0.54"
 
 query = '''
 process where event.action == "start" and
@@ -96,7 +96,10 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\IDE\\devenv.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
                  "?:\\Program Files (x86)\\Vim\\vim*\\vimrun.exe",
-                 "C:\\Program Files\\Microsoft Visual Studio\\*\\DtsDebugHost.exe") and
+                 "C:\\Program Files\\NetBeans-28\\bin\\netbeans64.exe",
+                 "C:\\Program Files\\Microsoft Visual Studio\\*\\DtsDebugHost.exe",
+                 "C:\\Program Files (x86)\\Microsoft Visual Studio\\*\\DtsDebugHost.exe",
+                 "C:\\Program Files (x86)\\Quest Software\\*\\Toad.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and
@@ -117,6 +120,7 @@ process where event.action == "start" and
              "usebackq delims=: tokens=2") and
   not process.command_line :
                ("\"cmd\" /c %NETBEANS_MAVEN_COMMAND_LINE%",
+                "cmd /c %NETBEANS_MAVEN_COMMAND_LINE%",
                 "/c echo %TERM%",
                 "*RunAsync.vbs*",
                 "?:\\Windows\\system32\\cmd.exe /q /d /s /c \"npm.cmd ^\"install^\" ^\"--no-bin-links^\" ^\"--production^\"\"") and

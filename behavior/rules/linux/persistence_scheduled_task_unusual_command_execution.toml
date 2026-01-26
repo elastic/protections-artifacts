@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.14"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("systemd", "cron", "crond") and
@@ -40,10 +40,17 @@ not (
   """sh -c /usr/bin/curl http://localhost:9901/server_info | /usr/bin/jq -r ".version"""",
   "/bin/sh -c export PM2_HOME=/home/genusadmin/.pm2 && curl -f http://localhost:8000/health || /usr/bin/pm2 restart genus --update-env >> /home/genusadmin/pm2_restart.log 2>&1",
   "/bin/sh -c export PM2_HOME=/home/genusadmin/.pm2 && curl -f http://localhost:8001/health || /usr/bin/pm2 restart genus --update-env >> /home/genusadmin/pm2_restart.log 2>&1",
+  "/bin/sh -c export PM2_HOME=/home/genusadmin/.pm2 && curl -f http://localhost:8000/health || /usr/bin/pm2 restart genus --update-env >> /home/puvvnl_prod_user/pm2_restart.log 2>&1",
   "/bin/bash -c curl -s https://get.upwind.io/sensor.sh | bash -s -- upgrade",
   "/bin/sh -c /opt/arcsight/backup_local/backup.sh || /opt/arcsight/backup_local/backup_error.sh",
   """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env"""
   ) or
+  process.args like (
+    "sudo curl*raw.githubusercontent.com/*/backup-scripts/refs/heads/main/fortigate-backup.sh*",
+    "/usr/bin/curl -s -H*zendesk.com/api/v2/ticket_metrics.json*",
+    "wget --proxy=off*cat*batch_trigger.log",
+    "export PM2_HOME=*"
+  ) or 
   process.working_directory like "/opt/nessus_agent/*"
 )
 '''

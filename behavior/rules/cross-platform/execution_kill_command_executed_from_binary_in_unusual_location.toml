@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Kill Command Executed from Binary in Unusual Location"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
@@ -16,7 +16,8 @@ process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") an
   process.parent.executable like (
     "/tmp/newroot/*", "/tmp/JobScheduler-Agent-start_rib-*", "/tmp/ubuntu-release-upgrader-*", "/tmp/.criu*",
     "/tmp/home-manager-build*/generation/activate", "/tmp/wpsupgrade.prerm", "/tmp/.mount_Cursor*", "/var/tmp/buildah*",
-    "/tmp/JackettUpdate*/Jackett/JackettUpdater"
+    "/tmp/JackettUpdate*/Jackett/JackettUpdater", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/user/*/ubuntu-release-upgrader-*/noble",
+    "/tmp/snap.rootfs_*/snap/zoom-client/*/zoom/zoom", "/tmp/B1ServerTools.*/opt/sap/SAPBusinessOne/Common/*/bin/java"
   ) or
   process.executable like "./merged/*" or
   process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun") or
@@ -28,6 +29,11 @@ process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") an
 
 min_endpoint_version = "7.15.0"
 optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

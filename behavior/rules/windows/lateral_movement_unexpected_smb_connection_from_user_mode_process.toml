@@ -9,14 +9,14 @@ id = "2fbbd139-3919-4b6b-9c50-9452b0aef005"
 license = "Elastic License v2"
 name = "Unexpected SMB Connection from User-mode Process"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
   [process where event.action == "start" and
    process.executable : "?:\\Windows\\*.exe" and
    /* Issue #338 */
-   not (process.code_signature.subject_name : ("RAPIDFIRE TOOLS INC.", "KASEYA US LLC", "Kaseya Holdings Inc", "Veeam Software Group GmbH") and
+   not (process.code_signature.subject_name : ("RAPIDFIRE TOOLS INC.", "KASEYA US LLC", "Kaseya Holdings Inc", "Veeam Software Group GmbH", "TYCHON, LLC") and
         process.code_signature.trusted == true) and
    not (process.executable : "C:\\Windows\\System32\\conhost.exe" and
         process.parent.executable :

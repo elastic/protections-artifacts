@@ -7,7 +7,7 @@ id = "98fffa16-53e1-4db9-9126-2d0441cac417"
 license = "Elastic License v2"
 name = "Shellcode Injection via PowerShell"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "connect") and
@@ -48,7 +48,8 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualPro
     not (process.Ext.api.name == "VirtualProtect" and
          _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*", "c:\\windows\\sys?????\\kernelbase.dll!LoadLibrary*"))) and
     not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
-                     $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "SentinelOne Inc."))
+                     $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "SentinelOne Inc.")) and
+    not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\assembly\\nativeimages_*\\microsoft.powershell.commands.diagnostics.ni.dll"
 '''
 
 min_endpoint_version = "8.14.2"

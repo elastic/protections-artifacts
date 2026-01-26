@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://www.reversinglabs.com/blog/fake-recruiter-coding-tests-target-devs-with-malicious-python-packages",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=3s
@@ -19,7 +19,13 @@ sequence by process.parent.entity_id with maxspan=3s
   process.name in ("sh", "zsh", "bash") and process.args == "-c" and process.args like~ "python*" and 
   process.args like~ "*.py" and process.args_count == 3 and 
   not process.command_line like~ "* pip*"]
-[network where event.type == "start"]
+[network where event.type == "start" and
+   not cidrmatch(destination.ip, 
+       "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 
+       "192.0.0.0/24", "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", 
+       "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", 
+       "100.64.0.0/10", "192.175.48.0/24", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24",
+       "::1", "FE80::/10", "FF00::/8")]
 '''
 
 min_endpoint_version = "8.16.0"

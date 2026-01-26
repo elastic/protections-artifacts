@@ -7,7 +7,7 @@ id = "d9617a18-cf8b-4bae-b335-598ddabc287c"
 license = "Elastic License v2"
 name = "Suspicious Python Shell Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.working_directory != null and
@@ -32,7 +32,10 @@ process.parent.command_line like~ (
     "easybuild.main", "*Thomas Nagy*", "*https://waf.io/book/index.html#_obtaining_the_waf_file*",
     "/usr/lib/portage/python*/pid-ns-init", "/usr/lib/python-exec/python*/emerge", "/usr/bin/py3compile"
   ) or
-  process.parent.command_line == "/usr/local/bin/python -u -c import sys;exec(eval(sys.stdin.readline()))"  or
+  process.parent.command_line in (
+    "/usr/local/bin/python -u -c import sys;exec(eval(sys.stdin.readline()))",
+    "/usr/bin/python3 -u -c import sys;exec(eval(sys.stdin.readline()))"
+  ) or
   process.parent.command_line like (
     "*pip-setuptools-caller*", "*pip-install*",
     "python -c import sys;import base64;sys.stdout.write('@Main\n');exec(base64.b64decode(sys.stdin.readline().rstrip()))#ZeroNetworks"
@@ -45,7 +48,14 @@ process.parent.command_line like~ (
     "/opt/prj/connectxx/cmake-build-flexible-forwarder", "/opt/wBuild/docker/overlay2/*", "/opt/zeek",
     "/scratch/*", "/var/tmp/portage/*", "/tmp/baum/easybuild/*"
   ) or
-  (process.parent.executable == "/opt/oracle.ahf/python/bin/python3.10" and process.command_line like~ "/bin/sh -c command -v *")
+  (process.parent.executable == "/opt/oracle.ahf/python/bin/python3.10" and process.command_line like~ "/bin/sh -c command -v *") or
+  (
+    process.parent.name like "python2*" and (
+      process.parent.args like ("feishu.py", "/home/*/lib/python/pyflow/pyflowTaskWrapper.py") or
+      process.args like "sudo status*" or
+      process.command_line == "sh -c uname -p 2> /dev/null"
+    )
+  )
 )
 '''
 

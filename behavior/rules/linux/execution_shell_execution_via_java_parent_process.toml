@@ -12,15 +12,24 @@ reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "java" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
 process.working_directory like~ "/u0?/*" and user.id == 54321 and not (
-  process.working_directory like~ ("/u0*/*/sysman/emd", "/u0?/app/oracle/product/*/dbhome_*", "/u0?/app/oracle/product/*/db_*") or
+  process.working_directory like~ ("/u0*/*/sysman/emd", "/u0?/app/oracle/product/*/dbhome_*", "/u0?/app/oracle/product/*/db_*", "/u01/app/oracle/crsdata/*/cvu/cvutrc") or
   process.command_line == "/bin/sh -c /u01/client_1/client/scheduler/execution_agent/bin/jssu" or
-  (process.working_directory == "/u01/domains/bi" and process.command_line like "*weblogic.Server*")
+  (process.working_directory == "/u01/domains/bi" and process.command_line like "*weblogic.Server*") or
+  process.args like ("/tmp/CVU_19_*/exectask.sh*", "java -cp*/u01/MW/bi/modules/oracle.bi.sysman/scripts/../env/stdout_config.properties*") or
+  (
+    process.parent.executable like "/u01/app/*grid/jdk/bin/java" and
+    process.args like ("/bin/rpm*", "/u01/app/grid/bin/*", "/bin/uname -m", "/u01/app/oracle/product/*/bin/*")
+  ) or
+  (
+    process.parent.executable like "/u01/app/oracle/*/jdk/*bin/java" and
+    process.args like ("/u01/app/oracle/product/*/bin/*", "/usr/sbin/lpc*", "stty*")
+  )
 )
 '''
 

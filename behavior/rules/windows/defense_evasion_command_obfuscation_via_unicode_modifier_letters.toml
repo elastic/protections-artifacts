@@ -1,0 +1,51 @@
+[rule]
+description = """
+Identifies the presence of unicode modifier letters in the process command_line. Adversaries sometimes replace ASCII
+characters with visually similar Unicode modifier letters or combining marks to evade simple string-based detections.
+"""
+id = "2c7b91fa-f43d-46aa-887d-e5f3f032b29e"
+license = "Elastic License v2"
+name = "Command Obfuscation via Unicode Modifier Letters"
+os_list = ["windows"]
+reference = ["https://www.wietzebeukema.nl/blog/windows-command-line-obfuscation"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and user.id != "S-1-5-18" and
+ (
+   process.name : ("reg.exe", "net.exe", "net1.exe", "certutil.exe", "MSHTA.EXE", "msiexec.exe", "bitsadmin.exe", "CertReq.exe", "PrintBrm.exe", "MSBuild.exe", "wuauclt.exe", "curl.exe", "wget.exe", "ssh.exe", "Cmd.Exe", "PowerShell.EX", "CONHOST.EXE", "wscript.exe", "cscript.exe", "REGSVR32.EXE", "RUNDLL32.EXE", "procdump.exe", "ntdsutil.exe", "diskshadow.exe", "schtasks.exe", "sc.exe", "wmic.exe", "VSSADMIN.EXE", "WBADMIN.EXE", "sftp.exe", "scp.exe", "esentutl.exe", "InstallUtil.exe", "wevtutil.exe") or
+   process.pe.original_file_name in ("reg.exe", "net.exe", "net1.exe", "CertUtil.exe", "MSHTA.EXE", "msiexec.exe", "bitsadmin.exe", "CertReq.exe", "PrintBrm.exe", "MSBuild.exe", "wuauclt.exe", "curl.exe", "wget.exe", "ssh.exe", "Cmd.Exe", "PowerShell.EX", "CONHOST.EXE", "wscript.exe", "cscript.exe", "REGSVR32.EXE", "RUNDLL32.EXE", "procdump", "ntdsutil.exe", "diskshadow.exe", "schtasks.exe", "sc.exe", "wmic.exe", "VSSADMIN.EXE", "WBADMIN.EXE", "sftp.exe", "scp.exe", "esentutl.exe", "InstallUtil.exe", "wevtutil.exe")
+ ) and
+ process.command_line regex """.*[ʰ-˿ᴬ-ᶻ]+.*""" and
+ not (process.name : "cmd.exe" and process.parent.executable : ("C:\\Program Files\\Smaart Suite\\Smaart.exe", "C:\\Program Files (x86)\\NetDocuments\\ndOffice\\ndOffice.exe", "C:\\Program Files (x86)\\Smaart 8\\Smaart.exe", "E:\\Spectrum\\Notifier\\sd_notifier\\SD_Notifier.exe")) and
+ not (process.name : "rundll32.exe" and process.args : "C:\\WINDOWS\\system32\\davclnt.dll,DavSetCookie")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.010"
+name = "Command Obfuscation"
+reference = "https://attack.mitre.org/techniques/T1027/010/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

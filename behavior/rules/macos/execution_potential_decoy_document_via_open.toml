@@ -11,14 +11,15 @@ os_list = ["macos"]
 reference = [
     "https://github.com/center-for-threat-informed-defense/adversary_emulation_library/tree/4a57b3dd5d28ad1bd79e927e04b20fd4d66934a0/ocean_lotus",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "open" and
  process.args_count < 3 and 
  process.args like~ ("/tmp/*.doc*", "/tmp/*.pdf*", "/private/tmp/*.doc*", "/private/tmp/*.pdf*", "/Users/Shared/*.doc*", "/Users/Shared/*.pdf*", "/Users/*/Library/*.pdf") and
  not process.args like~ "/tmp/PKInstallSandbox*" and
- not process.args == "-R"
+ not process.args == "-R" and
+ not process.Ext.effective_parent.executable == "/usr/bin/open"
 '''
 
 min_endpoint_version = "8.11.0"

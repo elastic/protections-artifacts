@@ -1,0 +1,47 @@
+[rule]
+description = """
+Identifies an unusual Microsoft signed process enabling the SeDebugPrivilege required to debug and adjust the memory of
+a process owned by another account. This could be the result of code injection or process hollowing.
+"""
+id = "ad3953d1-072a-4dcd-8d64-47353e2d52e6"
+license = "Elastic License v2"
+name = "SeDebugPrivilege Enabled by an Unusual Microsoft Binary"
+os_list = ["windows"]
+reference = [
+    "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4703",
+]
+version = "1.0.4"
+
+query = '''
+any where event.category == "iam" and event.action == "token_right_adjusted" and
+ winlog.event_data.EnabledPrivilegeList == "SeDebugPrivilege" and user.id != "S-1-5-18" and winlog.event_data.EnabledPrivilegeList != "SeLockMemoryPrivilege" and
+   process.code_signature.subject_name in ("Microsoft Windows", "Microsoft Corporation", "Microsoft Windows Publisher") and
+   process.executable : "C:\\Windows\\*.exe" and endswith~(process.command_line, process.executable) and
+   not (process.executable : "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and process.parent.executable : "C:\\Windows\\System32\\svchost.exe") and
+   not process.executable : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
+   not (process.executable : "C:\\Windows\\explorer.exe" and process.parent.executable : "C:\\Windows\\System32\\userinit.exe") and
+   not (process.executable : "C:\\Windows\\System32\\ServerManager.exe" and process.parent.executable : "C:\\Windows\\System32\\ServerManagerLauncher.exe")
+'''
+
+min_endpoint_version = "9.0.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "9.0.0"

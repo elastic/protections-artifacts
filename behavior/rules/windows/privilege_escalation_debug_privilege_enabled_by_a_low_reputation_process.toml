@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies an unsigned process enabling the SeDebugPrivilege required to debug and adjust the memory of a process owned
+by another account.
+"""
+id = "82547ffb-7186-4317-8a15-599a291d1f73"
+license = "Elastic License v2"
+name = "Debug Privilege Enabled by a Low Reputation Process"
+os_list = ["windows"]
+reference = [
+    "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4703",
+]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+[process where event.action == "start" and
+  (process.Ext.relative_file_creation_time <= 900 or process.Ext.relative_file_name_modify_time <= 900) and
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and not process.code_signature.status like "errorCode_endpoint*" and 
+  not process.parent.executable : "C:\\Program Files (x86)\\Common Files\\VAudio\\Interop.Exe" and
+  not process.hash.sha256 in ("6ab0815affa73b779a0da5bfff3e8498f279a4254ca67948d068811d58b89118",
+                              "167d04f2824b3af925c2d34228f2c5b3aa44dd3ae0b8e0a146076c0b7794f56c",
+                              "555dc00f5988f1106adc1254aca6fab54ed25a0a4c1dff787f1b85a50c686d55",
+                              "2ab171f42975d7539965d96c0750d43be14335e8f604a403cd8574ef7936e700")]
+[any where event.category == "iam" and event.action == "token_right_adjusted" and winlog.event_data.EnabledPrivilegeList == "SeDebugPrivilege" and
+ not winlog.event_data.EnabledPrivilegeList == "SeLockMemoryPrivilege"]
+'''
+
+min_endpoint_version = "8.18.0"
+optional_actions = []
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1134"
+name = "Access Token Manipulation"
+reference = "https://attack.mitre.org/techniques/T1134/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.18.0"

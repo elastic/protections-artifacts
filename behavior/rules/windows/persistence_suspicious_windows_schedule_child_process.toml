@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "start" and
@@ -88,6 +88,7 @@ process where event.action == "start" and
                        "$f=$env:APPDATA+'\\Browser Assistant\\*",
                        "& ((Get-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop').SCRNSAVE.EXE)",
                        "($wc.DownloadString(https://install.mondoo.com/ps1));",
+                       "Remove-Item HKCU:\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\tel\\UserChoice -Recurse -Force -ErrorAction SilentlyContinue",
                        "$h=Get-Content -Path 'BE.txt' -Raw;[byte[]]$bytes=($h -split '(.{2})' -ne '' -replace '^', '0X');[Reflection.Assembly]::Load($bytes);[WebCompanion.BrowserExtension.S]::Start()",
                        "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value 'C:\\*.jpg'\nSet-ItemProperty -Path 'HKCU:\\Control Panel\\Desktop' -Name WallpaperStyle -Value 2\nRUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters")) and
   not (process.name : ("rundll32.exe", "regsvr32.exe") and
@@ -96,8 +97,7 @@ process where event.action == "start" and
                        "?:\\ProgramData\\Lenovo\\Vantage\\Addins\\ThinkSpectrumAddin\\*\\Spectrum_Core.dll,RunDLL", 
                        "?:\\Windows\\System32\\dfshim.dll,ShOpenVerbApplication")) and
   not (process.name : "cmd.exe" and 
-       process.args : ("C:\\Users\\Public\\SageBackup-Phoenix.bat", 
-                       "C:\\Users\\Public\\InvisibleTimerbatch.bat",
+       process.args : ("C:\\Users\\Public\\*.bat",
                        "Client\\props\\schedule-nojava.cmd",
                        "rmdir")) and
   not (process.name : "mshta.exe" and

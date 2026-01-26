@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
@@ -62,7 +62,7 @@ process where event.action == "start" and
       not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe"))
    )
    and
-   not process.hash.sha256 :
+   not process.hash.sha256 in
 	         ("c9ef35bed70ffa0981bafd0071185b56fdad8f9c97f3582a4dae9b420959fb97",
 	          "18dc098895ccc8246d417445a36d933c5f8487419b848ebe651fd0e11cb22afa",
 	          "ea98309a35f92443b9c50736ce208656ec72af114ec8aceeb02dfa041ec2d6bc",
@@ -145,7 +145,10 @@ process where event.action == "start" and
 	          "46122ee39283dbca52dde436ef04d47fd962271424726b491ad8584389461177",
 	          "3c16784f9b827aa6583d529f8585c431cd39e7e3a96e31c7b9882d5b48c00087",
 	          "d71fce8dc14cfb082041c2ddd6184baa6e1bc535582e36174bc0a80be9f7a879",
-	          "73f834726b1091494d8151ff053eeb4dc6f79dd49525f23a5583c2bdeb176eb8") and
+	          "73f834726b1091494d8151ff053eeb4dc6f79dd49525f23a5583c2bdeb176eb8", 
+			  "7e1c9498c44a60315c3f5e41c9a8247d605c66328653cef4560277592de79e93", 
+			  "e501b3cc3f0a32e14ba475038712e24c312c9468780eaf36f47aa73a16bf5f1f", 
+			  "64a080388fcd44c14246de991b9a90f0541f9878d2164469d7bf7499c568ca32") and
 
   not (process.pe.original_file_name :
                 ("OneDriveStandaloneUpdater.exe",

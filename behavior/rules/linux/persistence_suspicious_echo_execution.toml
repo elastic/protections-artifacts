@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.22"
+version = "1.0.24"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -58,12 +58,18 @@ not (
     "../gossbin/goss", "/opt/SolarWinds/Agent/bin/Plugins/ADMProbe/SolarWinds.ADM.AgentPlugin", "/opt/rapid7/nexpose/nse/.DLLCACHE/nseserv",
     "/usr/bin/goss", "/usr/bin/cinc-auditor", "/usr/libexec/platform-python", "/opt/oracle/oracle.ahf/common/venv/bin/python3",
     "/tmp/.mount_Cursor*/usr/share/cursor/cursor", "/usr/bin/mmdebstrap", "/usr/bin/gawk", "/opt/oracle.ahf/python/bin/python3",
-    "/usr/bin/gmake", "/usr/libexec/platform-python*", "/usr/bin/watch", "/usr/share/windsurf/windsurf", "/home/*/.local/bin/kiro-cli-chat"
+    "/usr/bin/gmake", "/usr/libexec/platform-python*", "/usr/bin/watch", "/usr/share/windsurf/windsurf", "/home/*/.local/bin/kiro-cli-chat",
+    "/home/*/.vscode/*/claude", "/home/*/.local/share/claude/*", "/home/*/.local/share/JetBrains/*/language_server_linux_x64", "/sbin/lvs",
+    "/opt/coe/cadence/IC618/tools.lnx86/dfII/bin/64bit/virtuoso", "/home/*/.local/bin/claude", "/home/*/.vscode-server/*/claude",
+    "/root/.vscode-server/*/claude", "/home/*/.cache/aws/toolkits/language-servers/AmazonQ/*/servers/node",
+    "/home/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/vendor/x86_64-unknown-linux-musl/codex/codex", "/usr/sbin/tailscaled",
+    "/tmp/go-build*", "/opt/windsurf/windsurf", "/var/lib/docker/overlay2/*/usr/local/bin/node"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
     "/usr/bin/perl /bkupdata1/icbm.pl", "/snap/microk8s/current/bin/runc init", "/usr/bin/python3 /usr/sbin/registercloudguest",
-    "/usr/bin/python3 /usr/local/bin/start_pxcontroller_pxstorage.py", "/usr/bin/python3 /bin/cockpit-bridge --privileged"
+    "/usr/bin/python3 /usr/local/bin/start_pxcontroller_pxstorage.py", "/usr/bin/python3 /bin/cockpit-bridge --privileged",
+    "node -r dotenv/config dist/server.mjs", "node /usr/local/bin/claude", "claude"
   ) or
   process.command_line like (
     "*ansible*", "*grep*", "*/usr/lib/python*/site-packages/*", "*/dev/tcp/localhost/*",
@@ -72,7 +78,9 @@ not (
     "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;",
     "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
     "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf",
-    "sh -c *clsecho*", "/bin/bash -c /usr/local/nagios/libexec/mkls*", "/usr/bin/crun*", "*/usr/bin/ssh-keygen*"
+    "sh -c *clsecho*", "/bin/bash -c /usr/local/nagios/libexec/mkls*", "/usr/bin/crun*", "*/usr/bin/ssh-keygen*",
+    "bash -c source /etc/profile.local; echo $REGISTRY_AUTH_FILE",
+    """/bin/sh -c echo -e "\n Hi, before stop today is $(date) \n" >> /tmp/daily_stop_start_tomcat-apnbdwef.log; /etc/init.d/tomcat-apnbdwef stop >> /tmp/daily_stop_start_tomcat-apnbdwef.log; echo -e "\n Hi, before start today is $(date) \n" >> /tmp/daily_stop_start_tomcat-apnbdwef.log; /etc/init.d/tomcat-apnbdwef start >> /tmp/daily_stop_start_tomcat-apnbdwef.log"""
   ) or
   process.command_line == """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env""" or
   process.parent.command_line like (
@@ -92,13 +100,14 @@ not (
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver", "buildah-chroot-exec", "/usr/libexec/crio/crun",
-    "/usr/bin/crun", "/usr/bin/vncserver"
+    "/usr/bin/crun", "/usr/bin/vncserver", "/tmp/ansible_*/ansible_module_command.py"
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*", "/repo/o11y/out/*/.terraform/*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or
   (process.parent.name == "node" and process.command_line like~ ("*/tmp/claude*", "/usr/bin/bash -O extglob -c*")) or
   (process.parent.name == "php" and process.command_line like "sh -c timeout 7200 ssh*") or
-  (process.parent.name == "node" and process.args == "extglob")
+  (process.parent.name == "node" and process.args == "extglob") or
+  (process.parent.name like "python3*" and process.args like ("declare -A categories*", "files=*", "set -x*$BACKUP_NAME.tar.gz*"))
 )
 '''
 

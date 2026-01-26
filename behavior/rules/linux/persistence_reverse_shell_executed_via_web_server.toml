@@ -7,34 +7,39 @@ id = "79165167-8419-4755-80c7-b151e08eee37"
 license = "Elastic License v2"
 name = "Reverse Shell Executed via Web Server"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and (
-     process.parent.name in ("apache", "nginx", "apache2", "httpd", "lighttpd", "caddy") or
-     user.name in (
-       "apache", "www-data", "httpd", "nobody", "nginx", "lighttpd",
-       "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+     process.parent.name in (
+       "apache", "nginx", "apache2", "httpd", "lighttpd", "caddy", "mongrel_rails", "gunicorn",
+       "uwsgi", "openresty", "cherokee", "h2o", "resin", "puma", "unicorn", "traefik", "tornado", "hypercorn",
+       "daphne", "twistd", "yaws", "webfsd", "httpd.worker", "flask", "rails", "mongrel", "php-cgi",
+       "php-fcgi", "php-cgi.cagefs", "catalina.sh", "hiawatha", "lswsctrl"
      ) or
-     user.id in (99, 65534, 33, 498, 99, 48)
-    ) and (
-      (process.args : "*python*" and process.args : ("*import*pty*spawn*", "*import*subprocess*call*")) or
-      (process.args : "*perl*" and process.args : "*socket*" and process.args : ("*exec*", "*system*")) or
-      (process.args : "*ruby*" and process.args : ("*TCPSocket.new*", "*TCPSocket.open*")) or
-      (process.args : "*lua*" and process.args : "*socket.tcp*" and process.args : ("*io.popen*", "*os.execute*")) or
-      (process.args : "*php*" and process.args : "*fsockopen*" and process.args : "*sh*") or
-      (process.args : "*node*" and process.args : "*spawn*sh*" and process.args : "*connect*") or
-      (process.args : "*awk*" and process.args : "*/inet/tcp/*") or
-      (process.args : "*nc*" and process.args regex~ """[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}""") or
-      (process.args : "*socat*" and process.args : ("*exec*", "*tty*", "*file*") and process.args : ("*tcp*", "*udp*", "*openssl*")) or
-      (process.args : "*sh*" and process.args : ("*/net/tcp*", "*/dev/tcp/*", "*/dev/udp/*")) or
-      (process.args : ("*vim*", "*view*") and process.args : "*socket*") or
-      (process.args : "*busybox*")
-    ) and not (
-      process.executable == "/opt/gam/gam" or
-      process.working_directory == "/etc/openvpn"
-    )
+     process.parent.name like "php-fpm*" or
+     user.name in ("apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9") or
+     user.id in (33, 498, 48) or
+     (process.parent.name == "java" and process.parent.working_directory like "/u0?/*") or
+     process.parent.working_directory like "/var/www/*"
+   ) and (
+     (process.args : "*python*" and process.args : ("*import*pty*spawn*", "*import*subprocess*call*")) or
+     (process.args : "*perl*" and process.args : "*socket*" and process.args : ("*exec*", "*system*")) or
+     (process.args : "*ruby*" and process.args : ("*TCPSocket.new*", "*TCPSocket.open*")) or
+     (process.args : "*lua*" and process.args : "*socket.tcp*" and process.args : ("*io.popen*", "*os.execute*")) or
+     (process.args : "*php*" and process.args : "*fsockopen*" and process.args : "*sh*") or
+     (process.args : "*node*" and process.args : "*spawn*sh*" and process.args : "*connect*") or
+     (process.args : "*awk*" and process.args : "*/inet/tcp/*") or
+     (process.args : "*nc*" and process.args regex~ """[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}""") or
+     (process.args : "*socat*" and process.args : ("*exec*", "*tty*", "*file*") and process.args : ("*tcp*", "*udp*", "*openssl*")) or
+     (process.args : "*sh*" and process.args : ("*/net/tcp*", "*/dev/tcp/*", "*/dev/udp/*")) or
+     (process.args : ("*vim*", "*view*") and process.args : "*socket*") or
+     (process.args : "*busybox*")
+   ) and not (
+     process.executable == "/opt/gam/gam" or
+     process.working_directory == "/etc/openvpn"
+   )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(

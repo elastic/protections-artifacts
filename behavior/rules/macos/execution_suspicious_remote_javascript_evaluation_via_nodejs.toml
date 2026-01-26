@@ -1,0 +1,53 @@
+[rule]
+description = """
+Detects when Node.js makes an outbound network connection followed immediately by the command line evaluation of
+JavaScript. Threat actors will host a remote JavaScript payload that will be fetched and executed via the Node.js
+evaluate flag.
+"""
+id = "57bb41f8-091f-42d5-9eaf-588dfa32d7e3"
+license = "Elastic License v2"
+name = "Suspicious Remote Javascript Evaluation via Nodejs"
+os_list = ["macos"]
+reference = ["https://kl4r10n.tech/blog/dprk-new-malware"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=20s
+[network where event.action == "connection_attempted" and process.name == "node"] by process.entity_id
+[process where event.type == "start" and event.action == "exec" and process.name == "node" and
+ process.args == "-e" and process.args_count == 3 and
+ not process.command_line : ("*try*require*./postinstall*catch*", "*import*./config/scripts/postinstall.js*catch*", "*try{require*./config/scripts/postinstall*catch*", "*try*require*./scripts/postinstall.js*catch*")] by process.parent.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

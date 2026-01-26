@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects the creation or modification of AppLocker executable rules that explicitly deny execution of known endpoint
+security or EDR components by file path. Adversaries may abuse AppLocker policies to prevent security agents from
+starting after reboot or policy refresh, resulting in impaired defensive visibility and protection on the endpoint.
+"""
+id = "2ace03f0-e37f-444a-a208-fa6da672f73c"
+license = "Elastic License v2"
+name = "Endpoint Security Evasion via Malicious AppLocker Deny Rules"
+os_list = ["windows"]
+reference = ["https://github.com/zero2504/EDR-GhostLocker/tree/main"]
+version = "1.0.1"
+
+query = '''
+registry where event.action == "modification" and registry.value == "Value" and
+ registry.path : "H*\\Software\\Policies\\Microsoft\\Windows\\SrpV2\\Exe\\*\\Value" and
+ registry.data.strings : "*Deny*" and
+ registry.data.strings : ("*Elastic*",
+                          "*WinDefend*",
+                          "*MsMpEng*",
+                          "*MpDefenderCoreService*",
+                          "*Windows Defender*",
+                          "*CrowdStrike*",
+                          "*SentinelOne*")
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.16.0"

@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -90,7 +90,11 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not process.parent.name : "powershell.exe" and
 
- not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.")) and
+ not (process.parent.name : "cmd.exe" and process.parent.args : ("*.cmd", "*.bat") and process.command_line: "*Get-Content*Set-Content*") and
+
+ not (process.args : "NT\\CurrentVersion').InstallationType;" and process.args : "[System.Text.Encoding]::UTF8.GetBytes($OutStr);") and
+
+ not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin")) and
 
  not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
 

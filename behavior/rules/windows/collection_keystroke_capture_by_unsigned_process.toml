@@ -1,0 +1,62 @@
+[rule]
+description = """
+Identifies attempts to install an application-defined hook procedure to monitor keystroke messages. Adversaries may log
+user keystrokes to intercept credentials or other information from the user as the user types them.
+"""
+id = "10f7051d-2b32-411b-acdc-b7529662c921"
+license = "Elastic License v2"
+name = "Keystroke Capture by Unsigned Process"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1056/001/",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa",
+    "https://www.elastic.co/security-labs/protecting-your-devices-from-information-theft-keylogger-protection",
+]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+ [process where event.action == "start" and
+  process.Ext.relative_file_creation_time <= 300 and user.id != "S-1-5-18" and
+  (process.code_signature.trusted == false or process.code_signature.exists == false) and
+  not process.executable : ("?:\\Prgram Files\\*.exe", "?:\\Prgram Files (x86)\\*.exe")]
+ [api where process.Ext.api.name == "SetWindowsHookEx" and
+  process.Ext.api.parameters.hook_type == "WH_KEYBOARD_LL" and process.Ext.api.parameters.hook_module == "null" and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
+                               ("487076852893ed0b55052648a3957d4061792b90d9bf6d9e418e62de00512323",
+                                "42c077bc38c9423e9375382b70e88c0bf6dbde5694aac85499fcdf70a6eb4935",
+                                "5bb0e800cfcb99fb56642fc7f9a1fa1c6fd9a46233698ed9b452508682a1ea2c",
+                                "146190a6b1e60a44d2f30577b5ca58688ad7a9cb779ec0b33d0edb9dd91cf43b",
+                                "51208c76fdeb4f2bc8b5008f4df0ec416b068a22f6785177f5ac33c485dc66c9")
+  ]
+'''
+
+min_endpoint_version = "8.12.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1056"
+name = "Input Capture"
+reference = "https://attack.mitre.org/techniques/T1056/"
+[[threat.technique.subtechnique]]
+id = "T1056.001"
+name = "Keylogging"
+reference = "https://attack.mitre.org/techniques/T1056/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.12.0"

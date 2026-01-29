@@ -7,7 +7,7 @@ id = "d9617a18-cf8b-4bae-b335-598ddabc287c"
 license = "Elastic License v2"
 name = "Suspicious Python Shell Execution"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.working_directory != null and
@@ -40,6 +40,7 @@ process.parent.command_line like~ (
     "*pip-setuptools-caller*", "*pip-install*",
     "python -c import sys;import base64;sys.stdout.write('@Main\n');exec(base64.b64decode(sys.stdin.readline().rstrip()))#ZeroNetworks"
   ) or
+  process.args like "sshpass*" or
   process.working_directory like~ (
     "/builds/*", "/var/lib/waagent/*", "/workspaces/*", "/build/*", "/opt/airflow", "/opt/bliu/.tmp/pip-install-*",
     "/tmp/pip-install-*", "/var/tmp/pip-install-*", "/tmp/pip-build*", "/tmp/pip-wheel-*",

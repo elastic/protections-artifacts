@@ -8,7 +8,7 @@ id = "8c2977dd-07ce-4a8e-8ccd-5e4183138675"
 license = "Elastic License v2"
 name = "Egress Network Connection Followed by Command Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5s
@@ -38,7 +38,7 @@ sequence with maxspan=5s
    ) and not (
      process.parent.executable in (
        "/srv/nessus_agent/sbin/nessus-agent-module", "/var/log/amazon/ssm/patch-baseline-operations", "./app",
-       "./config.json/usr/local/bin/py.test"
+       "./config.json/usr/local/bin/py.test", "./runc"
      ) or
      process.parent.name in ("nseserv", "nexserv", "pycharm") or
      process.parent.command_line == "/usr/bin/php ./boot-watcher.php" or

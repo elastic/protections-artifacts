@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -20,7 +20,8 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/.ansible*", "/tmp/*/com.service_now*", "/tmp/*/easybuild/*", "/nix/store/*", "/tmp/tmp.*/ijent",
       "/tmp/*/.venv/bin/python", "/tmp/text_templater_*", "/var/tmp/container*/usr/bin/dpkg", "/tmp/container*/usr/bin/dpkg",
       "/run/systemd/mount-rootfs/nix/store/*", "/tmp/xfs-*/yarn", "/tmp/root/spack*", "/tmp/nix-shell-*/node",
-      "/tmp/nix-shell-*/yarn", "/var/tmp/portage/*", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/nsjail.1000.root/usr/bin/sleep"
+      "/tmp/nix-shell-*/yarn", "/var/tmp/portage/*", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/nsjail.1000.root/usr/bin/sleep",
+      "/tmp/usr/bin/*"
     ) or
     process.name in ("gcc", "xgcc", "nvim") or
     process.parent.name == "ansible" or

@@ -14,7 +14,7 @@ reference = [
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
     "https://www.infosecmatter.com/metasploit-module-library/?mm=exploit/linux/local/apt_package_manager_persistence",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=5s
@@ -50,8 +50,13 @@ sequence with maxspan=5s
        "/usr/bin/python3 /usr/bin/package-profile-upload"
      ) or
      process.parent.command_line like ("sh -c if [ -x*", "sh -c -- if [ -x*") or
-     process.args in ("/usr/sbin/needrestart", "/usr/lib/needrestart/apt-pinvoke", "/usr/share/proxmox-ve/pve-apt-hook", "/usr/bin/dpkg-source") or
-     process.parent.args == "/usr/share/debconf/frontend"
+     process.args in (
+       "/usr/sbin/needrestart", "/usr/lib/needrestart/apt-pinvoke", "/usr/share/proxmox-ve/pve-apt-hook", "/usr/bin/dpkg-source",
+       "/usr/bin/which", "/usr/share/tuxedo/grub-hook", "/usr/local/libexec/libreoffice-postinstall", "/usr/share/tuxedo/sddm-hook",
+       "/usr/local/bin/pve-remove-nag.sh"
+     ) or
+     process.parent.args == "/usr/share/debconf/frontend" or
+     (process.executable like ("/tmp/usr/bin/*", "/tmp/bin/*") and process.parent.executable == "/tmp/bin/sh")
     )
   ] by process.parent.entity_id
 '''

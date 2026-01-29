@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -30,7 +30,7 @@ not (
   process.parent.executable like (
     "/opt/cdf/data/containerd/*", "/usr/bin/consul", "/usr/sbin/sshd", "/usr/bin/runc", "/usr/share/cursor/cursor", 
     "/home/*/.nvm/versions/node/*/bin/node", "/home/*/t38-k8s/*/k8sts", "/home/*/.opencode/bin/opencode",
-    "/usr/bin/gnome-shell"
+    "/usr/bin/gnome-shell", "/usr/bin/coreutils"
   ) or
   (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*") or
   (

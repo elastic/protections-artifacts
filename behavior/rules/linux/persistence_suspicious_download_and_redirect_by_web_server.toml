@@ -8,7 +8,7 @@ id = "fa71e336-0177-4732-b58b-53eb4a87a286"
 license = "Elastic License v2"
 name = "Suspicious Download and Redirect by Web Server"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -34,9 +34,10 @@ process.command_line like (
   "*fsockopen*", "*disown*", "*/etc/cron*", "*/etc/rc.local*", "*/etc/init.d*", "*/etc/update-motd.d*", "*/etc/ld.so*",
   "*/etc/sudoers*", "*base64 *", "*base32 *", "*/etc/profile*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*",
   "*~/.ssh/*", "*nohup*", "*xxd *", "*/etc/shadow*", "*chattr *", "* nc *"
-) and not (
+) and process.parent.executable != null and
+not (
   process.parent.name in ("cron", "crond") or
-  process.parent.args == "/usr/local/bin/d42grep" or
+  process.parent.args in ("/usr/local/bin/d42grep", "/usr/bin/zjsp") or
   process.parent.executable like ("/opt/puppetlabs/*", "/root/.cursor-server/*/node", "/home/.cursor-server/*/node") or
   process.command_line : (
     "*nginx*.tar.gz*", "*rubyext-ruby*.tar.gz*", "*Content-Type: application/json*", "*Authorization: Bearer*",

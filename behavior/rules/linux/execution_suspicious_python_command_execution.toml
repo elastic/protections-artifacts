@@ -8,7 +8,7 @@ id = "028d01ae-bfbf-438e-a0d0-23aee55ea5c9"
 license = "Elastic License v2"
 name = "Suspicious Python Command Execution"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -54,7 +54,7 @@ process.args == "-c" and process.command_line like~ (
     "/tmp/baum/easybuild/*", "/tmp/zenix-flashing/*", "/opt/ansible*", "/pro/bin/sys/monitor", "/home/jenkins/workspace/*",
     "/var/tmp/portage/*", "/tmp/build/*/ansible", "/root/thg-intelligence", "/home/*/*/*/*", "/root/airflow"
   ) or
-  process.parent.command_line like~ "/nix/store/*pytest*" or
+  process.parent.command_line like~ ("/nix/store/*pytest*", "/bin/bash -c -l source /home/*/.claude/shell-snapshots/snapshot-bash-*") or
   process.parent.command_line in ("/bin/bash /docker-entrypoint.sh worker", "/bin/bash /docker-entrypoint.sh") or
   (process.parent.args == "/usr/sbin/lxc" and process.parent.args in ("list", "info", "version")) or
   (process.working_directory like "/tmp/tmp.*" and process.command_line == "python3 -c import socket; s = socket.socket(); s.bind(('', 0)); print(s.getsockname()[1]); s.close()") or

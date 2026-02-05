@@ -7,7 +7,7 @@ id = "b3f91726-0afa-43e5-a07b-da1c7fa35243"
 license = "Elastic License v2"
 name = "PowerShell Script with Screen Capture Capability"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -16,7 +16,9 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
   process.Ext.api.parameters.buffer : ("*System.Drawing*", "*Drawing.Graphics*") and
   not process.Ext.api.parameters.content_name : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "H:\\Scripts\\*") and
   not process.command_line : "*D:\\Teamboard_Backup\\Teamboard_*" and
-  not process.parent.executable : "C:\\Program Files\\Microsoft VS Code\\Code.exe" and
+  not process.parent.executable : ("C:\\Program Files\\Microsoft VS Code\\Code.exe",
+                                   "C:\\Program Files\\RepairTech\\Syncro\\Syncro.Service.Runner.exe",
+                                   "C:\\Program Files\\RepairTech\\Syncro\\Syncro.App.Runner.exe") and
   not process.Ext.api.parameters.buffer like "# WPF Color Picker with global Ctrl+LeftClick capture*"
 '''
 

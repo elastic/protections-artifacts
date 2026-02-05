@@ -9,7 +9,7 @@ id = "7a9c2b27-7693-4cc8-882e-eb4f0f9bfc4f"
 license = "Elastic License v2"
 name = "Suspicious Reading of /proc/[pid]/maps"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and
@@ -30,9 +30,10 @@ process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
   (process.parent.args == "ir_triage" and process.parent.args == "./uac") or
   (process.parent.args == "./setup.sh" and process.parent.args == "--deb") or
   (process.parent.executable == "/opt/traps/rpm-installer/setup.sh" and process.command_line == "cat /proc/self/maps") or
-  (process.parent.name == "thieves.sh" and process.command_line like "grep r--p 00000000 /proc/*/maps") or
+  ((process.parent.name == "thieves.sh" or process.parent.args == "./thieves.sh") and process.command_line like "grep r--p 00000000 /proc/*/maps") or
   (process.working_directory like "/tmp/selfgz*" and process.command_line == "cat /proc/self/maps") or
-  (process.name == "grep" and process.args == "-qiE" and process.args like "libsdmp*libserviceDiscovery*so")
+  (process.name == "grep" and process.args == "-qiE" and process.args like "libsdmp*libserviceDiscovery*so") or
+  (process.parent.executable == "/usr/lib/systemd/systemd" and process.parent.command_line == "/sbin/init")
 )
 '''
 

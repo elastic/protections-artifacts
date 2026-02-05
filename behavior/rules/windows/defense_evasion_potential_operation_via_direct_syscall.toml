@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 any where process.pid != 4 and process.executable != null and process.name : "?*" and
@@ -63,7 +63,9 @@ any where process.pid != 4 and process.executable != null and process.name : "?*
                     "?:\\Program Files\\Anatomage\\Invivo\\InVivoDental.exe",
                     "?:\\Program Files\\Anatomage\\Invivo\\Invivo.exe",
                     "?:\\Program Files\\Anatomage\\InvivoDental\\InVivoDental.exe",
-                    "C:\\Program Files\\Rocscience\\Settle3\\Settle3.exe") and
+                    "C:\\Program Files\\Rocscience\\Settle3\\Settle3.exe",
+                    "C:\\PC SOFT\\WINDEV Suite 2026\\Programs\\wx64.exe",
+                    "C:\\Program Files (x86)\\PC SOFT\\WINDEV Suite 2026\\Programs\\wx64.exe") and
   not process.thread.Ext.call_stack_summary like "ntdll.dll|wow64.dll|wow64cpu.dll*" and
   not process.parent.thread.Ext.call_stack_summary : "ntdll.dll|wow64.dll|wow64cpu.dll|*" and
   not (process.name : "WerFault.exe" and

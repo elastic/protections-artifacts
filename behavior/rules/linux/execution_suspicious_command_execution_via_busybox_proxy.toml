@@ -7,7 +7,7 @@ id = "ad89ce4d-96df-4cc8-bfc5-979a73469b54"
 license = "Elastic License v2"
 name = "Suspicious Command Execution via Busybox Proxy"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "busybox" and (
@@ -26,7 +26,7 @@ process where event.type == "start" and event.action == "exec" and process.name 
 ) and not (
   process.parent.command_line in ("runc init", "/usr/local/bin/runc init") or
   process.parent.executable == "./runc" or
-  process.parent.executable like "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/php" or
+  process.parent.executable like ("/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/php", "/tmp/go-build*.test") or
   process.command_line == "sh -c echo EXEC" or
   process.parent.name in ("ninja_test", "ocamlrun", "ocamlopt.opt", "make", "process-wrapper")
 )

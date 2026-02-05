@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -63,7 +63,8 @@ not (
     "/opt/coe/cadence/IC618/tools.lnx86/dfII/bin/64bit/virtuoso", "/home/*/.local/bin/claude", "/home/*/.vscode-server/*/claude",
     "/root/.vscode-server/*/claude", "/home/*/.cache/aws/toolkits/language-servers/AmazonQ/*/servers/node",
     "/home/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/vendor/x86_64-unknown-linux-musl/codex/codex", "/usr/sbin/tailscaled",
-    "/tmp/go-build*", "/opt/windsurf/windsurf", "/var/lib/docker/overlay2/*/usr/local/bin/node"
+    "/tmp/go-build*", "/opt/windsurf/windsurf", "/var/lib/docker/overlay2/*/usr/local/bin/node",
+    "/usr/lib/x86_64-linux-gnu/lxc/rootfs/usr/lib/openssh/sshd-session", "/cav/gtm/mumps"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -107,7 +108,7 @@ not (
   (process.parent.name == "node" and process.command_line like~ ("*/tmp/claude*", "/usr/bin/bash -O extglob -c*")) or
   (process.parent.name == "php" and process.command_line like "sh -c timeout 7200 ssh*") or
   (process.parent.name == "node" and process.args == "extglob") or
-  (process.parent.name like "python3*" and process.args like ("declare -A categories*", "files=*", "set -x*$BACKUP_NAME.tar.gz*"))
+  (process.parent.name like "python*" and process.args like ("declare -A categories*", "files=*", "set -x*$BACKUP_NAME.tar.gz*", "*while_finding_grubconfigs*"))
 )
 '''
 

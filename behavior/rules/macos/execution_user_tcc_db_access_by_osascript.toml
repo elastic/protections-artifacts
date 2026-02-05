@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "User TCC DB Access by Osascript"
 os_list = ["macos"]
 reference = ["https://github.com/cedowens/SwiftBelt-JXA/blob/main/SwiftBelt-JXA.js"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 file where event.action == "open" and process.executable != null and 
@@ -31,6 +31,16 @@ state = 0
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+[[threat.technique]]
 id = "T1106"
 name = "Native API"
 reference = "https://attack.mitre.org/techniques/T1106/"
@@ -40,6 +50,23 @@ reference = "https://attack.mitre.org/techniques/T1106/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.006"
+name = "TCC Manipulation"
+reference = "https://attack.mitre.org/techniques/T1548/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

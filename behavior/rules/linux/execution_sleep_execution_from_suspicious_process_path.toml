@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -33,6 +33,7 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*", "/tmp/newroot/usr/bin/ansible-playbook",
       "/usr/bin/ansible-playbook"
     ) or
+    process.parent.command_line like "*github.com/community-scripts/ProxmoxVE/*" or
     process.parent.command_line == "bash -c while true; do sleep 1;head -v -n 8 /proc/meminfo; head -v -n 2 /proc/stat /proc/version /proc/uptime /proc/loadavg /proc/sys/fs/file-nr /proc/sys/kernel/hostname; tail -v -n 32 /proc/net/dev;echo '==> /proc/df <==';df -l;echo '==> /proc/who <==';who;echo '==> /proc/end <==';echo '##Moba##'; done"
   )]
   [process where event.type == "start" and event.action == "exec" and process.name == "sleep"]

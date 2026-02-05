@@ -9,11 +9,12 @@ license = "Elastic License v2"
 name = "Application Javascript Injection via Nodejs"
 os_list = ["macos"]
 reference = ["https://socket.dev/blog/malicious-npm-packages-hijack-cursor-editor-on-macos"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 file where event.action == "modification" and file.extension == "js" and
- file.path like "/Applications/*" and (process.name == "node" or Effective_process.name == "node")
+ file.path like "/Applications/*" and (process.name == "node" or Effective_process.name == "node") and 
+ Effective_process.executable != "/Applications/Visual Studio Code 2.app/Contents/MacOS/Electron"
 '''
 
 min_endpoint_version = "8.11.0"

@@ -7,7 +7,7 @@ id = "9602ed93-b5cf-4397-ba37-6e752082847c"
 license = "Elastic License v2"
 name = "AppleScript Decoded via Base64"
 os_list = ["macos"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=10s
@@ -29,6 +29,23 @@ action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
 
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

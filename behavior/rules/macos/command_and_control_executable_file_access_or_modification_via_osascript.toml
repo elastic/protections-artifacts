@@ -7,7 +7,7 @@ id = "cb3fe671-de31-41f4-bf71-3a39b024fd0e"
 license = "Elastic License v2"
 name = "Executable File Access or Modification via Osascript"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 file where event.action != "deletion" and 
@@ -22,6 +22,23 @@ action = "kill_process"
 field = "process.entity_id"
 state = 0
 
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

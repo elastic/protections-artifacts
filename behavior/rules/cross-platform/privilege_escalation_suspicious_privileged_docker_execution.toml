@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Suspicious Privileged Docker Execution"
 os_list = ["linux", "macos"]
 reference = ["https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "docker" and
 process.args == "--privileged" and process.args == "run" and process.args == "-v" and
 process.args : "/:/*" and
 not (
-  process.args like "docker.elastic.co/beats/elastic-agent*" or
+  process.args like ("docker.elastic.co/beats/elastic-agent*", "/usr/bin/ceph-osd") or
   (process.args == "prepare" and process.args in ("/:/hostfs", "/:/hostfs/")) or
   (process.args == "aktosecurity/mirror-api-logging:k8s_ebpf" and process.args == "akto-api-security-traffic-collector") or
   (process.args == "/usr/sbin/ceph-volume" and process.args == "--group-add=disk" and process.args == "--stop-signal=SIGTERM") or

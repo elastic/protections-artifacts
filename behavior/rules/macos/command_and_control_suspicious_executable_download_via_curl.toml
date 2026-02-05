@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious Executable Download via Curl"
 os_list = ["macos"]
 reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -26,6 +26,23 @@ action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
 
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

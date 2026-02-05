@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Decoy Document via User Execution"
 os_list = ["windows"]
 reference = ["https://www.welivesecurity.com/2022/03/23/mustang-panda-hodur-old-tricks-new-korplug-variant/"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence with maxspan=5s
@@ -24,7 +24,8 @@ sequence with maxspan=5s
                ("?:\\Program Files (x86)\\SmartAdvocate\\SADocumentLauncher\\SADocumentLauncher.exe",
                 "C:\\Program Files\\Python*\\python.exe",
                 "C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.*.exe",
-                "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE") and
+                "C:\\Program Files (x86)\\Microsoft Office\\root\\Office??\\OUTLOOK.EXE",
+                "C:\\Program Files\\Microsoft Office\\root\\Office??\\OUTLOOK.EXE") and
   not process.parent.executable : ("\\Device\\Mup\\*",
                                    "?:\\Program Files\\IBM\\ClientSolutions\\Start_Programs\\Windows_x86-64\\acspcoc.exe",
                                    "C:\\Windows\\Microsoft.NET\\Framework64\\v*\\dfsvc.exe") and

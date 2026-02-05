@@ -7,7 +7,7 @@ id = "ac72d6b3-c647-42e3-bafc-03ccf3180204"
 license = "Elastic License v2"
 name = "Kerberos Config File Accessed by Osascript"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.action == "open" and 
@@ -30,15 +30,32 @@ state = 0
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]
-id = "T1649"
-name = "Steal or Forge Authentication Certificates"
-reference = "https://attack.mitre.org/techniques/T1649/"
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
 
 
 [threat.tactic]
-id = "TA0006"
-name = "Credential Access"
-reference = "https://attack.mitre.org/tactics/TA0006/"
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
 
 [internal]
 min_endpoint_version = "8.11.1"

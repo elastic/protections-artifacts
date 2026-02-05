@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.41"
+version = "1.0.42"
 
 query = '''
 process where event.action == "start" and
@@ -39,7 +39,7 @@ process where event.action == "start" and
    (process.name : "taskhost.exe" and not process.parent.name : ("services.exe", "svchost.exe")) or
    (process.name : "taskhostw.exe" and not process.parent.name : ("services.exe", "svchost.exe", "taskhostw.exe")) or
    (process.name : ("wmiprvse.exe", "wsmprovhost.exe", "winrshost.exe") and not process.parent.name : "svchost.exe") or
-   (process.name : "sihost.exe" and not process.parent.name : ("svchost.exe", "sihost.exe")) or
+   (process.name : "sihost.exe" and not process.parent.name : ("svchost.exe", "sihost.exe", "powershell.exe")) or
    (process.name : ("winlogon.exe", "csrss.exe", "SearchProtocolHost.exe", "fontdrvhost.exe", "userinit.exe", "dwm.exe", "LogonUI.exe", "taskhostw.exe") and
     (process.parent.executable : ("?:\\Users\\*\\AppData\\*", "?:\\Users\\Public\\*", "?:\\Users\\*\\Downloads\\*", "?:\\ProgramData\\*",
                                  "?:\\Windows\\Temp\\*", "?:\\Users\\*\\Desktop\\*", "\\Device\\CdRom*", "\\Device\\Mup\\*") or

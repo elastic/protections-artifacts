@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Proxy Execution via PHP"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/php/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -30,7 +30,7 @@ and not (
     "sh -c /usr/sbin/sendmail -t -i ", "sh -c exec rpm -q --queryformat '%{VERSION}.%{RELEASE}' SecurityCenter",
     "sh -c /usr/bin/convert -version 2>&1", "sh -c /usr/bin/convert -list delegate 2>&1"
   ) or
-  process.args : "/var/lib/asterisk/bin/backup.php*" or
+  process.args like ("/var/lib/asterisk/bin/backup.php*", "/usr/sbin/sendmail*") or
   process.executable in ("/usr/bin/newrelic-daemon", "/usr/bin/git") or 
   process.command_line like "*git*" or
   process.parent.command_line == "php get_monatsdaten.php -v -s1 -r"

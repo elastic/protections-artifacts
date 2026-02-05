@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Suspicious Execution via Script Editor"
 os_list = ["macos"]
 reference = ["https://wojciechregula.blog/post/macos-red-teaming-initial-access-via-applescript-url/"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.action == "exec" and
 
- process.parent.executable == "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor" and
+ (process.parent.executable == "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor" or process.Ext.effective_parent.executable == "/System/Applications/Utilities/Script Editor.app/Contents/MacOS/Script Editor") and
 
  // Suspicious processes spawned by the Script Editor
  (process.name like~ ("curl", "nscurl", "osascript", "python*", "perl*", "mktemp", "chmod", "php", "nohup", "openssl", "plutil", "PlistBuddy", "xattr", "mktemp", "sqlite3", "funzip", "open") or

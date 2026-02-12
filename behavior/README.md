@@ -20,15 +20,15 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.108 | 13ad889fc65e6d4a37eddb3ffe56b12196ce42d1979666c581e1448bfcd55967 |
-| production-rules-macos-v1 | 1.0.108 | 4e62ac061765fe140d0bef75e1810cb66df39a548221ada3127ee69f43c13bf8 |
-| production-rules-windows-v1 | 1.0.108 | 53f879f89b1f604d250330712031145200dcf701062827f9dc2bbccee4ad3fcd |
+| production-rules-linux-v1 | 1.0.109 | 1be338d0edc3057daaa2472f1d4b2c26a63e7814181430af774b426764607d62 |
+| production-rules-macos-v1 | 1.0.109 | 9dc35dbdd93dac57178363f10a32da7823fa53645a6c6090b58dcd098c08bcab |
+| production-rules-windows-v1 | 1.0.109 | f5960502669ff054e330736592ca14db0d02653e2a66357db14ece732e6374a3 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.108', '1.0.106') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.109', '1.0.108') by OS/MITRE Tactic.
 
-No rule updates have been made between versions 1.0.108 and 1.0.106
+No rule updates have been made between versions 1.0.109 and 1.0.108
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
@@ -47,7 +47,3 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Persistence          |        60 |      34 |      20 |               114 |
 | Privilege Escalation |        71 |      16 |       9 |                96 |
 | Total by OS          |       757 |     204 |     285 |              1246 |
-
-### The Zen of Security Rules
-
-We incorporate the [Zen of Security Rules](https://zenofsecurity.io/rules) into all of our rule development and planning. We strive to follow these principles to ensure practical rule design for resiliency at scale. 

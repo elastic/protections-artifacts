@@ -9,14 +9,14 @@ license = "Elastic License v2"
 name = "Suspicious Remote Javascript Evaluation via Nodejs"
 os_list = ["macos"]
 reference = ["https://kl4r10n.tech/blog/dprk-new-malware"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=20s
 [network where event.action == "connection_attempted" and process.name == "node"] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and process.name == "node" and
  process.args == "-e" and process.args_count == 3 and
- not process.command_line : ("*try*require*./postinstall*catch*", "*import*./config/scripts/postinstall.js*catch*", "*try{require*./config/scripts/postinstall*catch*", "*try*require*./scripts/postinstall.js*catch*")] by process.parent.entity_id
+ not process.command_line : ("*try*require*postinstall*catch*", "*import*postinstall*catch*")] by process.parent.entity_id
 '''
 
 min_endpoint_version = "8.16.0"

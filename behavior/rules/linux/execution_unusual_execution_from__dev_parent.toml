@@ -7,15 +7,14 @@ id = "eb575588-dce7-4934-966c-c0e9ebc456c5"
 license = "Elastic License v2"
 name = "Unusual Execution from /dev Parent"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.executable like "/dev/*" and 
-process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "/var/www/*", "/bin/*", "/usr/bin/*", "/usr/local/bin/*") and
+process where event.type == "start" and event.action == "exec" and process.parent.executable like "/dev/*" and
+process.executable like ("/tmp/*", "/var/tmp/*", "/var/www/*", "/bin/*", "/usr/bin/*", "/usr/local/bin/*") and
 not (
-  process.parent.executable like (
-    "/dev/fd/*", "/dev/null/*", "/dev/shm/gitlab/sidekiq/*", "/dev/shm/root/.ansible/tmp/ansible_mitogen_action_*.sh"
-  ) or
+  process.args like "/dev/shm/*" or
+  process.parent.executable like ("/dev/fd/*", "/dev/null/*", "/dev/shm/*") or
   process.parent.command_line == "runc init" or
   process.name in ("buildkitd", "uname") or
   process.executable == "/usr/bin/fusermount"

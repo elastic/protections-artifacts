@@ -7,11 +7,11 @@ id = "50f67a77-d499-4f1f-8dfc-c47616b47a71"
 license = "Elastic License v2"
 name = "Reverse Shell via NetworkManager Dispatcher Script"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5s
-  [process where event.type == "start" and event.action == "exec" and process.parent.executable like~ "/etc/NetworkManager/dispatcher.d/*"] by process.entity_id
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable like "/etc/NetworkManager/dispatcher.d/*"] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and 
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
@@ -40,6 +40,11 @@ state = 1
 action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

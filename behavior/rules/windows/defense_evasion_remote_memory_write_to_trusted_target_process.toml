@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -227,7 +227,8 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "176d01497ed5abfedd82db3889a0f8f60a8e254fe841d95cda94de20e0dd4b42",
                                    "250c5f755d35a56189c7d557f1ea3b2827f26ff83c563df8a6cedb0114777fc0",
                                    "f3553d5c7a36f67eb9934cc372ded8c2d592ae671ebd4297b0fbfd1cedad4205",
-                                   "0740759a6e479b0ff718e00c6f2d5f3c67db2ac31c787d2caa7e683588c23a03") and
+                                   "0740759a6e479b0ff718e00c6f2d5f3c67db2ac31c787d2caa7e683588c23a03",
+                                   "4e0421b9849e2f873399832c44c1e858eef3dc37ac2ccd6dcb340ad35dfab63a") and
   not (process.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio*\\bin\\lib.exe" and
        Target.process.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio*.exe" and process.thread.Ext.call_stack_final_user_module.name == "qt5xml.dll")
 '''

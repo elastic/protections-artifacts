@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Remote Code Execution via Langflow"
 os_list = ["linux"]
 reference = ["https://nvd.nist.gov/vuln/detail/CVE-2025-3248", "https://github.com/verylazytech/CVE-2025-3248"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "langflow" and
@@ -22,6 +22,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

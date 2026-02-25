@@ -9,10 +9,21 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.command_line like (
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
+  process.name like (
+    "telnet.netkit", "ping", "telnet", "xmrig", "dash", "bash", "sh", "zsh", "ash", "fish", "ksh", "tcsh",
+    "csh", "nohup", "pgrep", "python*", "perl*", "ruby*", "php*", "lua*", "sed", "pkill", "docker", "dig",
+    "nslookup", "inetutils-telnet", "nc.openbsd", "nc", "netcat", "ncat", "curl", "wget", "sudo", "grep", ".*"
+  ) or
+  process.executable like (
+    "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/boot/*", "./*", "/sys/*", "/lost+found/*", "/media/*", "/proc/*",
+    "/var/backups/*", "/var/log/*", "/var/mail/*", "/var/spool/*"
+  )
+) and
+process.command_line like (
   "*cnpool.cc*", "*lindon-pool.win*", "*supportxmr.com*", "*comgandalph3000.com*", "*minergate.com*",
   "*fjhan.club*", "*emercoin.com*", "*poolto.be*", "*520fjh.org*", "*xmrpool.xyz*", "*simka.pw*", "*noobxmr.com*",
   "*miner.rocks*", "*minerpool.pw*", "*minemonero.gq*", "*usxmrpool.com*", "*moneroocean.stream*", "*mypool.online*",
@@ -29,7 +40,11 @@ process where event.type == "start" and event.action == "exec" and process.comma
   "*c3pool.com*", "*somec.cc*", "*hellominer.com*", "*usa-138.com*", "*mixpools.org*", "*xmrpool.net*",
   "*moneroworld.com*", "*minerxmr.ru*", "*d5pool.us*", "*hashcity.org*", "*hex7e4.ru*", "*zpool.ca*", "*minexmr.com*",
   "*monerohash.com*", "*multipool.us*", "*moneropool.nl*", "*nbminer.com*", "*ppxxmr.com*", "*xmrfast.com*",
-  "*webhop.net*", "*ethpool.org*", "*slushpool.com*", "*antpool.com*"
+  "*webhop.net*", "*ethpool.org*", "*slushpool.com*", "*antpool.com*", "*nicehash.com*", "*nicehash.net*",
+  "*zergpool.com*", "*mining-dutch.nl*", "*blockmasters.co*", "*bsod.pw*", "*fairpool.xyz*", "*miningrigrentals.com*",
+  "*hashing24.com*", "*ethermine.org*", "*flexpool.io*", "*hiveon.net*", "*sparkpool.com*", "*2miners.org*",
+  "*poolin.com*", "*viabtc.com*", "*btc.com*", "*f2pool.org*", "*coinhive.com*", "*cryptoloot.pro*", "*webmine.cz*",
+  "*minero.cc*", "*monerohash.org*", "*monerohash.net*", "*moneropool.ru*", "*moneroocean.stream*", "*rx.unmineable.com*"
 ) and not (
   process.parent.name in ("sendmail", "postfix-local", "check-quota", "zmcontrol", "find", "timeout", "php") or
   process.name in ("timeout", "host", "ptxas") or

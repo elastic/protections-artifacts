@@ -8,7 +8,7 @@ id = "94f548c8-cad2-4bc5-bf61-c0e42558ef65"
 license = "Elastic License v2"
 name = "Unusual SSH Parent/Child Execution"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence with maxspan=3s
@@ -22,9 +22,12 @@ sequence with maxspan=3s
       process.executable like~ (
         "/tmp/VeeamApp*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/tmp/.mount_nvim.*",
         "./merged/var/lib/containers/*", "/run/systemd/mount-rootfs/*", "./merged/*/containers/*",
-        "/run/k3s/containerd/io.containerd.runtime.v2.task/*"
+        "/run/k3s/containerd/io.containerd.runtime.v2.task/*", "/tmp/.mount_*", "/tmp/usr/bin/groups",
+        "./merged/usr/bin/clear"
       ) or
-      process.parent.executable like ("./merged/bin/bash", "/tmp/nsjail*", "/run/user/1000/nsjail/*") or
+      process.parent.executable like (
+        "./merged/bin/bash", "/tmp/nsjail*", "/run/user/1000/nsjail/*", "/usr/bin/run-parts", "/usr/bin/env"
+      ) or
       process.parent.command_line in (
         "bash -c /bin/bash; uname -a &> /dev/null",
         "sh -c /usr/local/bin/sshd-with-logs"

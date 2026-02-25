@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Null Terminated Call Stack"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -55,15 +55,11 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                "a468d7d26eddc66f722eded0c643860da4c290b6cd3466c477f7fd39af71d717",
                "045b159c6df007c7bfd65e74ede8a7db2019edd75d46fe87c46d1ab08b85c112",
                "db49a6f421d0df47ee562a99b88d6b57fc5ef4905bd0957122144030d2f24a7f",
-               "db49a6f421d0df47ee562a99b88d6b57fc5ef4905bd0957122144030d2f24a7f",
                "c6ae64a5f73fdf704d7625a29c3293cd757f3dcc91c7f0a72caacce2d4e06c71",
                "67593729cc35b6cf18431e204fa19730943bac57a9a4216bc2b3a35cd8c37b79",
-               "016a8cdb4c207947ce2efe00310de94d322c6928ffb664134b23037403c41c0b",
-               "c15ad2661a216a18b44ec356573ca1826081f9547c784ec3e95c93f8c7ff65ae",
                "681309fb5768a7e6782dea30405ffcb722d6ce3eab77f8b342c99bf39cdc8e4d",
                "7dd6f9234290591bbeffd20e795cae70cf150e75da03b857b4e7b970dae726f7",
-               "fda9250ca73685a1bb717e9a23564bc234a410301110e9d08d2a74b8d29f4eb5",
-               "c547ad0c67524371f40db48c998db222f3b75cef21109c62aea28227df8a6f2c") and
+               "fda9250ca73685a1bb717e9a23564bc234a410301110e9d08d2a74b8d29f4eb5") and
 not process.Ext.api.metadata.target_address_path in ("c:\\program files\\asus\\aura lighting effect add-on x64\\basswasapi.dll", "c:\\program files\\asus\\aura lighting effect add-on x64\\bass.dll") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
                   $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher")) and

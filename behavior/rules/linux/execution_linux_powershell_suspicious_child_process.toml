@@ -7,15 +7,17 @@ id = "e9731cea-c3fc-4183-a76c-9a798ae0a2b0"
 license = "Elastic License v2"
 name = "Linux Powershell Suspicious Child Process"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.name : "pwsh" and process.name : (
-  "nc", "ncat", "netcat", "socat", "nc.openbsd", "ngrok", "ping", "python*", "php*", "perl", "ruby", "lua*", "openssl",
+process where event.type == "start" and event.action == "exec" and process.parent.name == "pwsh" and
+process.name like (
+  "nc", "ncat", "netcat", "socat", "nc.openbsd", "ngrok", "ping", "python*", "php*", "perl*", "ruby*", "lua*", "openssl",
   "telnet"
-) and not (
-  (process.name : "python*" and process.args == "azure.cli") or
-  process.parent.executable : (
+) and
+not (
+  (process.name like "python*" and process.args == "azure.cli") or
+  process.parent.executable like~ (
     "/opt/ansible*/Evaluate-STIG/powershell/pwsh", "/evaluate/Evaluate-STIG/powershell/pwsh",
     "/opt/Evaluate-STIG/powershell/pwsh"
   ) or
@@ -28,6 +30,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

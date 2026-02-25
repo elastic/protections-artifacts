@@ -8,11 +8,14 @@ id = "b86c5998-3068-43e8-bfb5-ecb593e34ca9"
 license = "Elastic License v2"
 name = "Python Network Connection Followed by Command Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
-sequence with maxspan=5s
-  [network where event.type == "start" and event.action == "connection_attempted" and process.name like "python*" and not (
+sequence with maxspan=3s
+  [network where event.type == "start" and event.action == "connection_attempted" and
+   process.name like "python*" and 
+   process.executable like ("/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*") and
+   not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
        destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
        "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
@@ -22,9 +25,10 @@ sequence with maxspan=5s
      )
    )
   ] by process.entity_id
-  [process where event.type == "start" and event.action == "exec" and process.parent.name like "python*" and
+  [process where event.type == "start" and event.action == "exec" and
+   process.parent.executable like ("/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*") and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
-   process.parent.args_count < 3 and process.args like (
+   process.parent.args_count < 3 and process.command_line like (
      "*whoami*", "* wget *", "* chmod *", "* busybox *", "* chattr *", "* php*", "* perl*", "* ruby*", "* lua*",
      "*netcat *", "*ncat *", "*/dev/shm/*", "* base64 *", "*base32*"
    ) and not (

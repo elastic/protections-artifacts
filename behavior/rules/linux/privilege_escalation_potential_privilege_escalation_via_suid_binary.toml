@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Potential Privilege Escalation via SUID Binary"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+suid"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -22,23 +22,23 @@ process where event.type == "start" and event.action == "exec" and (
     "atobm", "base32", "base64", "basenc", "basez", "bc", "bridge", "busctl",
     "busybox", "bzip2", "cabal", "capsh", "choom", "chroot", "clamscan", "cmp",
     "column", "comm", "cpio", "cpulimit", "csh", "csplit", "csvtool", "cupsfilter",
-    "dd", "debugfs", "dialog", "diff", "dig", "distcc", "dmsetup", "docker",
+    "dd", "debugfs", "dialog", "diff", "dig", "distcc",
     "dosbox", "ed", "efax", "elvish", "emacs", "eqn", "espeak", "expand", "expect",
-    "fish", "fmt", "fold", "gawk", "gcore", "gdb", "genie", "genisoimage", "gimp",
+    "fish", "fmt", "fold", "gcore", "gdb", "genie", "genisoimage", "gimp",
     "gtester", "hd", "hexdump", "highlight", "hping3", "iconv", "install",
-    "ionice", "ispell", "jjs", "join", "jrunscript", "julia", "ksshell", "kubectl",
-    "ld.so", "less", "links", "logsave", "look", "lua", "make", "mawk", "minicom",
+    "ionice", "ispell", "jjs", "join", "jrunscript", "julia", "ksshell",
+    "ld.so", "less", "links", "logsave", "look", "lua", "make",
     "mosquitto", "msgattrib", "msgcat", "msgconv", "msgfilter", "msgmerge", "msguniq", "multitime",
-    "nasm", "nawk", "ncftp", "nft", "nl", "nm", "nmap", "nohup", "ntpdate",
+    "nasm", "ncftp", "nft", "nl", "nm", "nmap", "nohup", "ntpdate",
     "od", "openssl", "openvpn", "pandoc", "paste", "perf", "perl", "pexec", "pg", "php", "pidstat",
-    "pr", "ptx", "python", "rc", "readelf", "restic", "rev", "rlwrap", "rsync", "rtorrent",
-    "rview", "sash", "scanmem", "setarch", "setlock", "shuf",
-    "soelim", "softlimit", "sort", "sqlite3", "ss", "ssh-agent", "ssh-keygen", "ssh-keyscan",
-    "sshpass", "start-stop-daemon", "stdbuf", "strace", "strings", "sysctl", "tac",
-    "taskset", "tbl", "tclsh", "tee", "terraform", "tftp", "tic", "time", "troff",
-    "ul", "unexpand", "uniq", "unshare", "unsquashfs", "unzip", "update-alternatives", "uudecode",
+    "pr", "ptx", "python", "rc", "readelf", "restic", "rlwrap", "rsync", "rtorrent",
+    "rview", "sash", "scanmem", "setarch", "setlock",
+    "soelim", "softlimit", "sqlite3", "ss", "ssh-agent", "ssh-keygen", "ssh-keyscan",
+    "sshpass", "start-stop-daemon", "stdbuf", "strace", "sysctl", "tac",
+    "taskset", "tbl", "tclsh", "tee", "tftp", "tic", "time", "troff",
+    "ul", "unexpand", "unshare", "unsquashfs", "unzip", "update-alternatives", "uudecode",
     "uuencode", "vagrant", "varnishncsa", "view", "vigr", "vipw", "w3m", "watch",
-    "wget", "whiptail", "xargs", "xdotool", "xmodmap", "xmore", "xxd", "xz", "yash", "zsh",
+    "whiptail", "xdotool", "xmodmap", "xmore", "xxd", "xz", "yash", "zsh",
     "zsoelim"
   ) or
   process.name == "ip" and (
@@ -48,7 +48,13 @@ process where event.type == "start" and event.action == "exec" and (
   (process.name in ("bash", "sh", "dash", "ksh") and process.args == "-p") or
   (process.name == "php" and process.args == "-r") or
   (process.name in ("rvim", "vim", "vimdiff") and process.args == "-c") or
-  (process.name == "perl" and process.args == "-e")
+  (process.name == "perl" and process.args == "-e") or
+  (process.name == "minicom" and process.args == "-D") or
+  (process.name == "dmsetup" and process.args == "--exec") or
+  (process.name == "xargs" and process.args == "-a") or
+  (process.name == "wget" and process.args like "--use-askpass=*") or
+  (process.name == "docker" and process.args == "run" and process.args == "chroot") or
+  (process.name in ("nawk", "gawk", "mawk") and process.command_line like "*system*")
 ) and not (
   process.parent.name in ("spine", "sudo", "gcc") or
   process.parent.executable like~ (

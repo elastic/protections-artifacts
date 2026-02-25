@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -64,7 +64,9 @@ not (
     "/root/.vscode-server/*/claude", "/home/*/.cache/aws/toolkits/language-servers/AmazonQ/*/servers/node",
     "/home/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/vendor/x86_64-unknown-linux-musl/codex/codex", "/usr/sbin/tailscaled",
     "/tmp/go-build*", "/opt/windsurf/windsurf", "/var/lib/docker/overlay2/*/usr/local/bin/node",
-    "/usr/lib/x86_64-linux-gnu/lxc/rootfs/usr/lib/openssh/sshd-session", "/cav/gtm/mumps"
+    "/usr/lib/x86_64-linux-gnu/lxc/rootfs/usr/lib/openssh/sshd-session", "/cav/gtm/mumps", "/usr/bin/kiro-cli-chat",
+    "/bin/rphcp", "/u1/grid/*/perl/bin/perl", "/home/*/.vscode-oss/extensions/openai.chatgp*universal/bin/linux-x86_64/codex",
+    "/opt/teleport/system/bin/teleport", "/opt/claude-code/bin/claude", "/usr/cachesys/bin/cache"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -101,7 +103,7 @@ not (
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver", "buildah-chroot-exec", "/usr/libexec/crio/crun",
-    "/usr/bin/crun", "/usr/bin/vncserver", "/tmp/ansible_*/ansible_module_command.py"
+    "/usr/bin/crun", "/usr/bin/vncserver", "/tmp/ansible_*/ansible_module_command.py", "/opt/calculus/farmer/app/farmer.py"
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*", "/repo/o11y/out/*/.terraform/*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or

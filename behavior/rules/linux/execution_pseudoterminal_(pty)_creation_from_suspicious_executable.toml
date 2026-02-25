@@ -10,14 +10,17 @@ id = "bc695d3c-1ae0-485f-8c65-d6adb4a2759b"
 license = "Elastic License v2"
 name = "Pseudoterminal (PTY) Creation from Suspicious Executable"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
   [process where event.type == "start" and event.action == "exec" and
     process.executable like ("/dev/shm/*", "/tmp/*", "/var/tmp/*") and not (
       process.executable like "/tmp/ubuntu-release-upgrader-*/jammy" or
-      process.working_directory like ("/scratch/*", "/tmp/ubuntu-release-upgrader-*", "/tmp/newroot/*")
+      process.working_directory like (
+        "/scratch/*", "/tmp/ubuntu-release-upgrader-*", "/tmp/newroot/*",
+        "/tmp/vscode-cli-*", "/tmp/.mount_*", "/tmp/cmdickens/easybuild/*"
+      )
     )]
   [file where event.type == "creation" and file.path == "/dev/ptmx"]
 '''

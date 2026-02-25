@@ -9,10 +9,10 @@ id = "88c1728e-2d2e-48ff-9c77-a084efdd4498"
 license = "Elastic License v2"
 name = "Javascript Reverse Shell via Node.js"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-sequence by process.entity_id with maxspan=1m
+sequence by process.entity_id with maxspan=10s
   [process where event.type == "start" and event.action == "exec" and process.name == "node" and 
    process.args == "node" and process.args_count == 2 and process.args : (
      "/tmp/*.js", "/var/tmp/*.js", "/dev/shm/*.js", "/tmp/*.mjs", "/var/tmp/*.mjs", "/dev/shm/*.mjs"
@@ -35,6 +35,21 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 1
 
 [[threat]]

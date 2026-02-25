@@ -8,11 +8,12 @@ license = "Elastic License v2"
 name = "Bind Shell via Node"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/node/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "node" and
-process.args == "-e" and process.args : "*spawn*sh*" and process.args : "*listen*"
+process.args == "-e" and process.command_line : "*spawn*sh*" and process.command_line : "*listen*" and
+not process.parent.executable like "/home/*/.local/zed.app/libexec/zed-editor"
 '''
 
 min_endpoint_version = "7.15.0"

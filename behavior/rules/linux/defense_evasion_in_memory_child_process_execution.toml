@@ -9,12 +9,12 @@ license = "Elastic License v2"
 name = "In-Memory Child Process Execution"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like "?memfd:*" and
 not (
-  process.executable == "/usr/bin/fusermount" or
+  process.executable in ("/usr/bin/fusermount", "/usr/bin/fusermount3") or
   (
     process.working_directory == "/run/nordlayer" and
     process.parent.command_line in (

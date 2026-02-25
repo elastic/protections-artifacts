@@ -1,17 +1,24 @@
 [rule]
 description = """
-This rule detects when a process is started directly by calling `/proc/self/exe`. This is a technique used by malware to
-masquerade the legimate binary name as `exe` in an attempt to evade detection.
+This rule detects when a process is started directly by calling "/proc/self/exe". This is a technique used by malware to
+masquerade the legitimate binary name as "exe" in an attempt to evade detection.
 """
 id = "eb66a097-a2e0-4fc9-b1e8-c59d26fd9f93"
 license = "Elastic License v2"
 name = "Potential Masquerading via /proc/self/exe"
 os_list = ["linux"]
 reference = ["https://x.com/CraigHRowland/status/1858296306202292613"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.command_line == "/proc/self/exe"
+process where event.type == "start" and event.action == "exec" and (
+  process.executable like (
+    "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/home/*", "/root/*"
+  ) or
+  process.name like ".*"
+) and
+process.command_line == "/proc/self/exe" and
+not process.parent.executable in ("/usr/bin/bwrap", "/.init")
 '''
 
 min_endpoint_version = "7.15.0"

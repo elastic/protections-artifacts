@@ -1,7 +1,7 @@
 [rule]
 description = """
 Identifies attempts to load the BindFltApi module by an unusual process. This may indicate the presence of folder
-redirection functionnality using the bind link feature of Windows.
+redirection functionality using the bind link feature of Windows.
 """
 id = "167be4b9-c953-4610-860e-4c5cde709683"
 license = "Elastic License v2"
@@ -11,7 +11,7 @@ reference = [
     "https://www.zerosalarium.com/2025/10/DR-Redir-Break-EDR-Via-BindLink-Cloud-Filter.html",
     "https://learn.microsoft.com/en-us/windows/win32/bindlink/",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 library where (dll.name : ("bindfltapi.dll", "bindflt.dll") or dll.pe.original_file_name in ("BindFltApi.dll", "BindFlt.dll")) and

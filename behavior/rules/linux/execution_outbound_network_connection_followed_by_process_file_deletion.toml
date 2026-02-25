@@ -9,12 +9,13 @@ id = "e64787a1-801e-48d2-a09e-d474bba68197"
 license = "Elastic License v2"
 name = "Outbound Network Connection Followed by Process File Deletion"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
   [network where event.type == "start" and event.action == "connection_attempted" and
-   process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") and not (
+   process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") and
+   not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
@@ -25,7 +26,8 @@ sequence by process.parent.entity_id with maxspan=10s
      process.executable like (
        "/tmp/regctl", "/tmp/token_handler", "/tmp/tmp.*/juliainstaller", "/tmp/tmp.*/rustup-init",
        "/tmp/tmp.*/elan-init", "/var/tmp/tmp.*/rustup-init", "/tmp/SophosCentralInstall*/bin/telemetry",
-       "/tmp/bdconfigure.*/bdconfigure64"
+       "/tmp/bdconfigure.*/bdconfigure64", "/tmp/nanolayer*/nanolayer", "/tmp/tmp.*/pgp-file-protect",
+       "/tmp/tmp.*/rover", "/tmp/tmp.*/sq-ccm", "/tmp/trizen-fric/jfrog-cli/src/jfrog-cli-*/jf"
      )
    )] as event0
   [file where event.type == "deletion" and process.name == "rm" and startswith~(file.path, event0.process.executable)]
@@ -40,8 +42,18 @@ state = 0
 
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

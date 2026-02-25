@@ -12,7 +12,7 @@ reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=1m 
@@ -49,7 +49,11 @@ sequence with maxspan=1m
      ) or
      process.command_line like "*executeXauthorityCommandWithTimeoutIfPossible*" or
      process.working_directory like ("/var/opt/oracle/dbaastools_base/pilot*", "/opt/wn/service/agents/esfclient") or
-     process.parent.executable like "/opt/pycharm*/bin/java" or
+     process.parent.executable like (
+       "/opt/pycharm*/bin/java", "/tdst/java/*/bin/java", "/crm/java/*/bin/java", "/*/java/jdk1.8.0_151/bin/java",
+       "/home/*/BurpSuitePro/jre/bin/java", "/opt/Tanium/TaniumClient/extensions/comply/jre/bin/java",
+       "/opt/oracle/dcs/java/dcs-agent/*/bin/java"
+     ) or
      process.parent.args == "/usr/share/jenkins/agent.jar"
    )] by process.parent.entity_id
 '''

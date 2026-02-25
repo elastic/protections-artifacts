@@ -1,20 +1,23 @@
 [rule]
 description = """
-Detects when a file located in a suspicious location is made executable using chmod via an abnormal or suspicious parent
-process. Malware will often drop a second stage payload or file and will need to make it executable before invoking it.
+Detects when a file located in the shared memory directory is made executable using chmod via an abnormal or suspicious
+parent process. Malware will often drop a second stage payload or file and will need to make it executable before
+invoking it.
 """
 id = "742037b3-3ef6-4a33-84ed-b26fc6ae322c"
 license = "Elastic License v2"
-name = "Linux File Made Executable by Suspicious Parent"
+name = "Shared Memory File Turned Executable by Suspicious Parent"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
-process where event.action == "exec" and event.type == "start" and process.name == "chmod" and
-process.args like ("+x", "a+x", "0777", "755", "777") and process.args like "/dev/shm/*" and
-process.parent.executable != null and not (
-  (process.parent.executable == "/etc/init.d/nagios" and process.args in (
-    "/dev/shm/tmp", "/dev/shm/var", "/dev/shm/checkresults")
+process where event.type == "start" and event.action == "exec" and process.name == "chmod" and
+process.args in ("4755", "755", "777", "0777", "+x", "a+x") and
+process.args like "/dev/shm/*" and process.parent.executable != null and
+not (
+  (
+    process.parent.executable == "/etc/init.d/nagios" and
+    process.args in ("/dev/shm/tmp", "/dev/shm/var", "/dev/shm/checkresults")
   ) or
   process.parent.executable == "./install-attachment-registration-manager.sh" or
   process.parent.command_line == "runc init"
@@ -26,6 +29,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Proxy Execution via Sed"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/sed/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=3s
@@ -28,8 +28,18 @@ state = 0
 
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

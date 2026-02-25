@@ -7,11 +7,11 @@ id = "e8d8eb78-d6aa-456f-a24e-c073026f7809"
 license = "Elastic License v2"
 name = "Shell via NetworkManager Dispatcher Script"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
-process.parent.executable like~ "/etc/NetworkManager/dispatcher.d/*" and
+process.parent.executable like "/etc/NetworkManager/dispatcher.d/*" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish")
 '''
 

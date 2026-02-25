@@ -7,22 +7,22 @@ id = "99c1bc0d-6d96-4e3c-b246-c23a65971455"
 license = "Elastic License v2"
 name = "Command Interpreter with IP Address Argument"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
-  [process where event.type == "start" and event.action == "exec" and
-   process.parent.name like~ ("python*", "perl*", "ruby*", "php*", "lua*", "node") and
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable like (
+     "/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*",
+     "/bin/perl*", "/usr/bin/perl*", "/usr/local/bin/perl*",
+     "/bin/ruby*", "/usr/bin/ruby*", "/usr/local/bin/ruby*",
+     "/bin/php*", "/usr/bin/php*", "/usr/local/bin/php*",
+     "/bin/lua*", "/usr/bin/lua*", "/usr/local/bin/lua*",
+     "/bin/node", "/usr/bin/node", "/usr/local/bin/node"
+   ) and
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
    process.command_line like~ ("*curl*http*", "*wget*http*") and
-   process.command_line regex~ ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*" and not (
-     process.command_line like~ ("*localhost*", "*127.0.0.1*") or
-     process.parent.executable like (
-       "/mnt/Xilinx/PetaLinux/*", "/usr/local/cpanel/3rdparty/bin/php", "/var/anaconda3/envs/*/python",
-       "/usr/share/cagefs-skeleton/usr/local/cpanel/3rdparty/bin/php"
-     ) or
-     (process.parent.executable like "/usr/local/cpanel/3rdparty/php/*/bin/php" and process.command_line like "*downloads.wordpress.org/*.*.*.*.zip*")
-   )]
+   process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*" and
+   not process.command_line like~ ("*localhost*", "*127.0.0.1*")]
   [network where event.type == "start" and event.action == "connection_attempted" and process.name in ("curl", "wget") and
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",

@@ -7,22 +7,20 @@ id = "fbf9342e-3d1e-4fba-a828-92fa0fb4d21b"
 license = "Elastic License v2"
 name = "Suspicious Mining Process Events"
 os_list = ["linux"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
-process where event.action == "exec" and 
-
-      ((process.name=="service" and process.args=="stop") or
-       (process.name=="chkconfig" and process.args=="off") or
-       (process.name=="systemctl" and process.args in ("disable", "stop", "kill", "start", "reload", "restart"))) and
-	   
-	 process.args in ("moneroocean_miner.service", "c3pool_miner.service", "pnsd.service", "apache4.service", "pastebin.service", "xvf.service") and
-   not (
-   	 /* exec via interactive shell */
-	   process.parent.command_line : ("bash", "-bash", "sh") or
-	   process.parent.executable : "/usr/local/share/aliyun-assist/*/update_install" or
-     process.parent.args like "/usr/local/share/aliyun-assist/*"
-   )
+process where event.type == "start" and event.action == "exec" and (
+  (process.name == "service" and process.args == "stop") or
+  (process.name == "chkconfig" and process.args == "off") or
+  (process.name == "systemctl" and process.args in ("disable", "stop", "kill", "start", "reload", "restart"))
+) and
+process.args in ("moneroocean_miner.service", "c3pool_miner.service", "pnsd.service", "apache4.service", "pastebin.service", "xvf.service") and
+not (
+  process.parent.command_line in ("bash", "-bash", "sh") or
+  process.parent.executable like "/usr/local/share/aliyun-assist/*/update_install" or
+  process.parent.args like "/usr/local/share/aliyun-assist/*"
+)
 '''
 
 min_endpoint_version = "7.15.0"

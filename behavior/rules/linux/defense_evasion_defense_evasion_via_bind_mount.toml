@@ -9,12 +9,12 @@ license = "Elastic License v2"
 name = "Defense Evasion via Bind Mount"
 os_list = ["linux"]
 reference = ["https://dfir.ch/posts/slash-proc/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mount" and
 process.args in ("-B", "--bind", "-R", "--rbind", "-M", "--move") and
-process.args : "/proc/*" and process.args_count >= 5 and not process.args : "/proc/*/*"
+process.args like "/proc/*" and process.args_count >= 5 and not process.args like "/proc/*/*"
 '''
 
 min_endpoint_version = "7.15.0"
@@ -22,6 +22,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

@@ -11,7 +11,7 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like "/etc/init.d/*" and
@@ -30,6 +30,11 @@ not (
 
 min_endpoint_version = "7.15.0"
 optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
 [[actions]]
 action = "kill_process"
 field = "process.parent.entity_id"

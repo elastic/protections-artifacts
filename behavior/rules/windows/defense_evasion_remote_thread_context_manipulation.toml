@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Remote Thread Context Manipulation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 api where 
@@ -21,11 +21,11 @@ api where
   not (process.code_signature.subject_name :
                ("Duncan Ogilvie", "International Business Machines Corporation", "COGNOSPHERE PTE. LTD.",
                 "CAPCOM CO., LTD.", "Larian Studios Games Ltd.", "Valve Corp.", "Rockstar Games, Inc.",
-                "Johannes Schindelin", "Unity Technologies ApS", "Larian Studios Games Ltd.", 
+                "Johannes Schindelin", "Unity Technologies ApS",
                 "Paradox Interactive AB (publ)", "CD PROJEKT SPÓŁKA AKCYJNA", "JetBrains s.r.o.",
-                "Open Source Developer, Maksim Moisiuk", "Take-Two Interactive Software, Inc.", 
-                "Take-Two Interactive Software, Inc.", "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk", 
-                "Activision Publishing Inc", "OpenJS Foundation", "Maksim Moisiuk", "Ubisoft Entertainment Sweden AB", 
+                "Open Source Developer, Maksim Moisiuk", "Take-Two Interactive Software, Inc.",
+                "Facepunch Studios Ltd", "Nox Limited", "Maksim Moisiuk",
+                "Activision Publishing Inc", "OpenJS Foundation", "Ubisoft Entertainment Sweden AB", 
                 "Epic Games Inc.", "NEXON Korea Corporation.", "Molotov", "Agilebits", "Gaijin Network Ltd", "Open Source Developer, Duncan Ogilvie",
                 "COMPUTACION EN ACCION SA DE CV", "MPTronic", "Docker Inc", "Embark Studios AB", "Piriform Software Ltd", "Unity Technologies SF") and
       process.code_signature.trusted == true) and 

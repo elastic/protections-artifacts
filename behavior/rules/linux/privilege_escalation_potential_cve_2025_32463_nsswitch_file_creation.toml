@@ -12,7 +12,7 @@ reference = [
     "https://www.stratascale.com/vulnerability-alert-CVE-2025-32463-sudo-chroot",
     "https://github.com/kh4sh3i/CVE-2025-32463",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.type == "creation" and file.path like "/*/etc/nsswitch.conf" and
@@ -22,7 +22,8 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
     "/var/tmp/mkinitramfs_*", "/tmp/tmp.*/mkinitramfs_*", "/tmp/petalinux*/etc/nsswitch.conf",
     "/tmp/selfextract.*/mkinitramfs_*/etc/nsswitch.conf", "/var/tmp/dracut.*/initramfs/etc/nsswitch.conf",
     "/tmp/user/0/mkinitramfs_*/etc/nsswitch.conf", "/opt/mkinitramfs_*/etc/nsswitch.conf",
-    "/opt/dumpling-nxp/*/etc/nsswitch.conf"
+    "/opt/dumpling-nxp/*/etc/nsswitch.conf", "/tmp/store/vfs/dir/*", "/opt/tmp/mkinitramfs_*",
+    "/opt/nvidia_tmpfs/mkinitramfs*"
   )
 )
 '''

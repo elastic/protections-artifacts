@@ -8,13 +8,18 @@ id = "133102a7-f906-4725-b382-09257a0209c2"
 license = "Elastic License v2"
 name = "Script Executed Through Unusual Parent Process"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.args_count == 1 and 
- process.name like ("perl*", "python*", "php*", "ruby*", "lua*") and (
-   process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/boot/*") or process.parent.name like ".*"
- ) and not (
+process where event.type == "start" and event.action == "exec" and process.args_count == 1 and process.executable like (
+   "/bin/perl*", "/usr/bin/perl*", "/usr/local/bin/perl*",
+   "/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*",
+   "/bin/php*", "/usr/bin/php*", "/usr/local/bin/php*",
+   "/bin/ruby*", "/usr/bin/ruby*", "/usr/local/bin/ruby*",
+   "/bin/lua*", "/usr/bin/lua*", "/usr/local/bin/lua*"
+ ) and
+ (process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/boot/*") or process.parent.name like ".*") and
+ not (
    process.parent.executable like~ (
      "/tmp/newroot/*", "./merged/*", "/var/tmp/.mount_*/AppRun", "/tmp/.mount_cursor*/usr/bin//cursor",
      "/tmp/baum/easybuild/*/perl", "/var/tmp/buildah*", "/tmp/taddm/fileinfo*", "/tmp/wbrashear/easybuild/*",

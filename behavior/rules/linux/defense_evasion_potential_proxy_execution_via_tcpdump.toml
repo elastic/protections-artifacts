@@ -8,10 +8,11 @@ license = "Elastic License v2"
 name = "Potential Proxy Execution via Tcpdump"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/tcpdump/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name == "tcpdump" and process.args == "-z"
+process where event.type == "start" and event.action == "exec" and process.name == "tcpdump" and process.args == "-z" and
+not process.parent.executable == "/usr/lib/systemd/systemd"
 
 // potential tunings
 // IOC: /sbin/tcpdump -ln -i lo -w /dev/null -W 1 -G 1 -z $TF -Z root

@@ -8,7 +8,7 @@ id = "8bfc0b79-b3f1-4869-98b9-745b0bf1cb6e"
 license = "Elastic License v2"
 name = "Suspicious Shortcut Modification"
 os_list = ["windows"]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -21,7 +21,7 @@ sequence by process.entity_id with maxspan=1m
  ) and 
  not process.executable : 
            ("?:\\Program Files\\*.exe", 
-            "?:\\Program Files\\*.exe",
+            "?:\\Program Files (x86)\\*.exe",
             "?:\\Config.Msi\\*.rbf",
             "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\Application\\*\\Installer\\setup.exe",
             "?:\\Windows\\servicing\\TrustedInstaller.exe",

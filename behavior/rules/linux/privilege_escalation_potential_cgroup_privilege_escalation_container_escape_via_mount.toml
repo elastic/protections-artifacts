@@ -11,12 +11,16 @@ license = "Elastic License v2"
 name = "Potential Cgroup Privilege Escalation/Container Escape via Mount"
 os_list = ["linux"]
 reference = ["https://0xdf.gitlab.io/2021/05/17/digging-into-cgroups.html"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "mount" and
 process.args in ("-t", "--types") and process.args in ("-o", "--options") and process.args == "cgroup" and
-process.args_count >= 7 and not process.parent.executable == "/opt/resource/in"
+process.args_count >= 7 and
+not process.parent.executable in (
+  "/opt/resource/in", "/opt/piavpn/bin/pia-daemon", "/opt/expressvpn/bin/expressvpn-daemon", "/usr/lib/systemd/systemd",
+  "/usr/bin/cgroupfs-mount"
+)
 '''
 
 min_endpoint_version = "7.15.0"
@@ -24,6 +28,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

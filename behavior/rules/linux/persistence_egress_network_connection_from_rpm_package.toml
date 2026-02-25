@@ -7,13 +7,14 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and
    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
    process.parent.args : "/var/tmp/rpm-tmp.*" and not (
+     (process.name == "curl" and process.command_line like "*.microsoft.com/api/report*") or
      process.executable in ("/sbin/runuser", "/usr/sbin/runuser") or
      process.working_directory like~ ("/builds/packages/naudit-repos", "/disco_flowlytics/docker/overlay2/*") or
      process.args : ("/usr/local/cpanel/3rdparty/wp-toolkit/*", "/usr/bin/rpmkeys") or
@@ -39,8 +40,10 @@ sequence with maxspan=3s
       process.executable in (
       "/opt/cisco/amp/bin/ampinsthelper", "/usr/libexec/platform-python", "/sbin/update-pciids",
       "/etc/nginx/ea-nginx/config-scripts/global/config-scripts-global-cloudflare",
-      "/opt/kerio/GFIAgent/GFIAgentInstaller", "/usr/share/centrifydc/libexec/adinfo"
-      )
+      "/opt/kerio/GFIAgent/GFIAgentInstaller", "/usr/share/centrifydc/libexec/adinfo",
+      "/opt/teleport/system/bin/tsh"
+      ) or
+      process.executable like "/usr/local/cpanel/3rdparty/perl/*/bin/perl"
     )
   ] by process.parent.entity_id
 '''

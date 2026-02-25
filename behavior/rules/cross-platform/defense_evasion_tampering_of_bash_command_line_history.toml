@@ -7,22 +7,36 @@ id = "31da6564-b3d3-4fc8-9a96-75ad0b364363"
 license = "Elastic License v2"
 name = "Tampering of Bash Command-Line History"
 os_list = ["linux", "macos"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
-process where event.type in ("start", "process_started") and
- (
-  ((process.args : ("rm", "echo") or
-    (process.args : "ln" and process.args : "-sf" and process.args : "/dev/null") or
-    (process.args : "truncate" and process.args : "-s0"))
-    and process.args : (".bash_history", "/root/.bash_history", "/home/*/.bash_history","/Users/.bash_history",
-                        "/Users/*/.bash_history",".zsh_history", "/root/.zsh_history", "/home/*/.zsh_history",
-                        "/Users/.zsh_history", "/Users/*/.zsh_history")) or
-  (process.name : "history" and process.args : "-c") or
-  (process.args : "export" and process.args : ("HISTFILE=/dev/null", "HISTFILESIZE=0")) or
-  (process.args : "unset" and process.args : "HISTFILE") or
-  (process.args : "set" and process.args : "history" and process.args : "+o")
- )
+process where event.type == "start" and event.action == "exec" and (
+  (
+    (
+      process.name in (
+        "echo", "rm", "sudo", ".buildkit_qemu_emulator", "vim.basic", "ln", "truncate", "cat",
+        "coreutils", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish"
+      ) and (
+        process.args in ("rm", "echo") or
+        (process.args == "ln" and process.args == "-sf" and process.args == "/dev/null") or
+        (process.args == "truncate" and process.args == "-s0")
+      )
+    ) and
+    process.args like (
+      ".bash_history", "/root/.bash_history", "/home/*/.bash_history","/Users/.bash_history",
+      "/Users/*/.bash_history",".zsh_history", "/root/.zsh_history", "/home/*/.zsh_history",
+      "/Users/.zsh_history", "/Users/*/.zsh_history"
+    )
+  ) or
+  (
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "sudo", "logger") and (
+      (process.args == "export" and process.args : ("HISTFILE=/dev/null", "HISTFILESIZE=0")) or
+      (process.args == "unset" and process.args : "HISTFILE") or
+      (process.args == "set" and process.args == "history" and process.args == "+o")
+   )
+  ) or
+  (process.name == "history" and process.args == "-c")
+)
 '''
 
 min_endpoint_version = "7.15.0"

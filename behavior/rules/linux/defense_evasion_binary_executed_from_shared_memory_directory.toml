@@ -10,13 +10,13 @@ license = "Elastic License v2"
 name = "Binary Executed from Shared Memory Directory"
 os_list = ["linux"]
 reference = ["https://intezer.com/blog/incident-response/orbit-new-undetected-linux-threat/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and 
- process.executable : ("/dev/shm/*", "/run/shm/*") and not (
-   (process.executable : "/dev/shm/gitlab/*" and process.pid == 0) or
-   (process.executable: "/dev/shm/ansible-tmp*")
+process where event.type == "start" and event.action == "exec" and process.executable like ("/dev/shm/*", "/run/shm/*") and
+not (
+   (process.executable like "/dev/shm/gitlab/*" and process.pid == 0) or
+   (process.executable like "/dev/shm/ansible-tmp*")
  )
 '''
 

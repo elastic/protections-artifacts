@@ -14,7 +14,7 @@ reference = [
     "https://pwnshift.github.io/2020/10/01/persistence.html",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -30,8 +30,10 @@ sequence by process.entity_id with maxspan=5s
    ) and descendant of [process where event.action == "exec" and process.name == "dnf"] and not (
      process.working_directory == "/tmp/newroot" or
      process.command_line like "*petalinux.xilinx.com*" or
-     process.executable like "/var/lib/docker/overlay2/*" or
-     process.parent.executable == "/usr/lib/opt/kolide-k2/bin/launcher"
+     process.executable like ("/var/lib/docker/overlay2/*", "/tmp/newroot/*", "/builds/*", "/workspaces/*") or
+     process.parent.executable == "/usr/lib/opt/kolide-k2/bin/launcher" or
+     process.args like "/home/ansible/.ansible/*" or
+     (process.name like "python*" and process.args == "azure.cli")
    )
   ]
   [network where event.action == "connection_attempted" and event.type == "start" and not (

@@ -14,29 +14,36 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=3s
   [process where event.type == "change" and event.action == "uid_change" and (
      process.name in ("su", "sudo", "sshd", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") or
-     process.name : ("python*", "php*", "perl*", "ruby*", "lua*")
+     process.name like ("python*", "php*", "perl*", "ruby*", "lua*")
    ) and not (
-     process.executable : ("/srv/snp/docker/*", "/nix/store/*") or
+     process.executable like ("/srv/snp/docker/*", "/nix/store/*") or
        process.args in (
          "/usr/lib/ubuntu-advantage/apt_news.py", "/usr/lib/ubuntu-advantage/esm_cache.py", "apt-get", "apt",
          "systemctl"
       ) or
-       process.command_line : "su cloudendure -c /usr/bin/nice*"
+       process.command_line like "su cloudendure -c /usr/bin/nice*"
      )
   ] by process.entity_id
-  [process where event.type == "start" and event.action == "exec" and process.executable : (
+  [process where event.type == "start" and event.action == "exec" and process.executable like (
      "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/srv/*", "/tmp/*",
      "/var/tmp/*", "/var/log/*"
    ) and process.args_count == 1 and
-   not process.executable : (
-     "/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*", "/var/tmp/cpuid/cpuid", "/tmp/.mount_*/jetbrains-toolbox",
-     "/var/tmp/buildah*/mnt/rootfs/bin/readlink", "/var/tmp/rackware/bin/rwdmi"
+   not (
+     process.executable like (
+       "/run/*/newroot/*", "/srv/snp/docker/*", "/tmp/newroot/*", "/var/tmp/cpuid/cpuid", "/tmp/.mount_*/jetbrains-toolbox",
+       "/var/tmp/buildah*/mnt/rootfs/bin/readlink", "/var/tmp/rackware/bin/rwdmi", "/srv/zorg-sync/venv/bin/python",
+       "/tmp/makeself.*", "/tmp/selfgz*", "/tmp/tmp.*/rustup-init", "/tmp/go-build*"
+     ) or
+     process.parent.executable like (
+       "/tmp/newroot/*", "/tmp/usr/bin/sudo", "/tmp/usr/sbin/sshd", "/tmp/go-build*", "/snap/btop/*/usr/local/bin/btop",
+       "/opt/appimagelauncher.AppDir/usr/lib/*/appimagelauncher/binfmt-bypass", "/tmp/snap.rootfs_*"
+     )
    )
   ] by process.parent.entity_id
 '''
@@ -46,6 +53,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 1
 
 [[threat]]

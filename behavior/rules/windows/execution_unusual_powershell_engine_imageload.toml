@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Unusual PowerShell Engine ImageLoad"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -25,7 +25,10 @@ sequence by process.entity_id with maxspan=1m
                             "?:\\Windows\\System32\\WindowsPowerShell\\*",
                             "?:\\windows\\System32\\DriverStore\\*",
                             "?:\\Windows\\system32\\Essentials\\Dashboard.exe", 
-                            "?:\\Windows\\Microsoft.NET\\Framework\\*\\RegAsm.exe") and
+                            "?:\\Windows\\Microsoft.NET\\Framework\\*\\RegAsm.exe",
+                            "?:\\Windows\\System32\\vmconnect.exe") and
+  not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework\\*\\aspnet_compiler.exe" and
+       process.parent.executable : "?:\\Program Files\\Microsoft Visual Studio\\*\\MSBuild.exe") and
   not (process.name : "rundll32.exe" and process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*") and
   not (process.name : "rundll32.exe" and process.args :"AppXDeploymentExtensions.OneCore.dll,ShellRefresh" and
        process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and

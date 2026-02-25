@@ -1,6 +1,6 @@
 [rule]
 description = """
-This rule detects the execution of the `kill` or `pkill` command from a binary located in an unusual location. Miners
+This rule detects the execution of the "kill" or "pkill" command from a binary located in an unusual location. Miners
 and other types of malware may attempt to kill competing processes to maintain control of the system.
 """
 id = "b9935dcc-e885-4954-9999-3c016b990737"
@@ -8,19 +8,21 @@ license = "Elastic License v2"
 name = "Kill Command Executed from Binary in Unusual Location"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
-process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") and not (
+(process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./.*") or process.parent.name like ".*") and
+  not (
   process.parent.executable like (
     "/tmp/newroot/*", "/tmp/JobScheduler-Agent-start_rib-*", "/tmp/ubuntu-release-upgrader-*", "/tmp/.criu*",
     "/tmp/home-manager-build*/generation/activate", "/tmp/wpsupgrade.prerm", "/tmp/.mount_Cursor*", "/var/tmp/buildah*",
     "/tmp/JackettUpdate*/Jackett/JackettUpdater", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/user/*/ubuntu-release-upgrader-*/noble",
-    "/tmp/snap.rootfs_*/snap/zoom-client/*/zoom/zoom", "/tmp/B1ServerTools.*/opt/sap/SAPBusinessOne/Common/*/bin/java"
+    "/tmp/snap.rootfs_*/snap/zoom-client/*/zoom/zoom", "/tmp/B1ServerTools.*/opt/sap/SAPBusinessOne/Common/*/bin/java",
+    "/nix/store/*"
   ) or
   process.executable like "./merged/*" or
-  process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun") or
+  process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun", ".", ".azotebg") or
   process.command_line in ("pkill -f /nop", "killall -e -9 lmgrd", "killall steam-runtime-launcher-service") or
   (process.parent.executable == "/tmp/o.chaban/devpod/agent" and process.command_line == "pkill -HUP dockerd") or
   (process.parent.name == "upgrade-execute.sh" and process.command_line == "pkill -SIGHUP -f acconsole")

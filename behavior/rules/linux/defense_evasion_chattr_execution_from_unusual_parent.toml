@@ -1,6 +1,6 @@
 [rule]
 description = """
-This rule detects the execution of the `chattr` command from an unusual parent process. The `chattr` command is used to
+This rule detects the execution of the "chattr" command from an unusual parent process. The "chattr" command is used to
 change file attributes, and is often used by attackers to hide files or directories or mark them as immutable and/or
 undeletable.
 """
@@ -11,12 +11,13 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name == "chattr" and
-(process.parent.executable : ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*") or process.parent.name : ".*") and
-process.args : ("-*i*", "+*i*", "+*u*", "-*u*") and not (
+process where event.type == "start" and event.action == "exec" and process.name == "chattr" and 
+process.executable like ("/bin/chattr", "/usr/bin/chattr", "/usr/local/bin/chattr") and
+(process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*") or process.parent.name like ".*") and
+process.args like~ ("-*i*", "+*i*", "+*u*", "-*u*") and not (
   process.parent.name == "." or
   process.parent.executable like (
     "./scannerYaraALFA*", "/tmp/newroot/lib/systemd/systemd", "./ldap2sshkeys", "/tmp/newroot/var/lib/docker/rootfs/overlayfs/*/entrypoint.sh",

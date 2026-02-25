@@ -10,14 +10,16 @@ license = "Elastic License v2"
 name = "Curl from Volume Mount"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
-sequence by process.entity_id with maxspan=10s
+sequence by process.entity_id with maxspan=5s
 [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and
   process.parent.name like~ ("bash", "sh", "zsh", "osascript", "tclsh*", "python*") and
   process.Ext.effective_parent.executable like "/Volumes/*" and
-  not (process.args : ("--version", "-V", "--user-agent", "*elastic.cloud*") and process.args_count == 2)]
+  process.args_count >= 3 and
+  process.args in ("-o", "--output", "-O", "--remote-name", "--download", "-dl", "-dir", "--directory", "-L", "--location") and
+  not process.args : ("--version", "-V", "*elastic.cloud*")]
 [network where event.type == "start" and
  not destination.domain like "localhost" and not
  cidrmatch(

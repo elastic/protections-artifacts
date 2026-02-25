@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
@@ -31,7 +31,8 @@ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\ass
                                                                "c:\\windows\\syswow64\\cyinjct.dll",
                                                                "c:\\windows\\system32\\cyvrtrap.dll",
                                                                "c:\\windows\\system32\\edrpm64.dll",
-                                                               "c:\\windows\\system32\\esensordbi.dll") and
+                                                               "c:\\windows\\system32\\esensordbi.dll",
+                                                               "c:\\windows\\system32\\hmpalert.dll") and
 not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files (x86)\\*", "c:\\program files\\*") and
 not (process.executable : "C:\\Windows\\System32\\lsass.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\lsasrv.dll") and
 not (process.executable : "C:\\Windows\\System32\\csrss.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\sxssrv.dll") and
@@ -66,7 +67,10 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  "3e7873f34404c87d7b2db9f6a460f3caa22a36f093a01ad50494863b392569ce",
                                  "cd2688a74a151b03282388dadb8b6aaca309f2535c8b2b21d1243846d2b259dc",
                                  "d5006c0d9e14d5c9e96936405c4ad2a6aab4e6756dac16fcbdfffe47efb807dd",
-                                 "182607dfc1170294301053ff004bbc9db5ffa68e5d36d29fe64a22a13d75aeb1") and
+                                 "182607dfc1170294301053ff004bbc9db5ffa68e5d36d29fe64a22a13d75aeb1",
+                                 "e17249c2157e01acceb725d50ede423fb63fd75d615433276ae846742f06112c",
+                                 "c0403bb03cd6860d227b6a24772d30ac511bf51cddda16414abba13567d95e66",
+                                 "32954725dfc81d4d557a693f5d6901ac9d0556a6b51f00a5c2beed8a337a8e5d") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
 ($entry.trusted == true or $entry.status == "errorExpired") and
 $entry.subject_name in (

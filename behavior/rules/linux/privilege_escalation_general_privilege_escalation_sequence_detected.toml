@@ -8,11 +8,12 @@ id = "d8194360-9d84-43fb-bd8a-51db153d6632"
 license = "Elastic License v2"
 name = "General Privilege Escalation Sequence Detected"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=10s
   [process where event.type == "start" and event.action == "exec" and user.id != 0 and
+   process.executable like ("/tmp/*", "/dev/shm/*", "/var/tmp/*", "/root/*", "/home/*", "./*", "/boot/*") and
    not process.parent.executable in ("/usr/bin/sw-engine", "/usr/sbin/sshd", "/usr/sbin/sw-engine-fpm", "/usr/lib/systemd/systemd")] by process.entity_id
   [process where event.type == "change" and event.action == "uid_change" and user.id == 0] by process.entity_id
   [process where event.type == "start" and event.action == "exec" and process.name in ("whoami", "id", "logname") and user.id == 0] by process.parent.entity_id
@@ -27,8 +28,28 @@ state = 0
 
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 2
 
 [[threat]]
 framework = "MITRE ATT&CK"

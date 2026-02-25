@@ -7,19 +7,21 @@ id = "68cf34b4-0751-457a-b8fd-55208cdb42fe"
 license = "Elastic License v2"
 name = "UID Change to 0 from Unusual Process Executable"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and user.id != 0]
 [process where event.type == "change" and event.action == "uid_change" and user.id == 0 and
-process.executable like ("/tmp/*", "/dev/shm/*", "/var/tmp/*") and not (
+process.executable like ("/tmp/*", "/dev/shm/*", "/var/tmp/*") and process.parent.executable != null and
+not (
   process.executable like (
     "/tmp/ubuntu-release-upgrader-*", "/tmp/go-build*", "/tmp/newroot/*", "/tmp/CVU_*", "/tmp/usr/bin/bwrap",
     "/tmp/varonis*", "/tmp/usr/sbin/sshd", "/tmp/baum/easybuild/*", "/tmp/.mount_cursor*", "/var/tmp/foreman-ssh-cmd*",
     "/tmp/tmp.*/nix-installer", "/var/tmp/buildah*"
     ) or
-  process.working_directory like ("/var/lib/rundeck", "/usr/sap/tmp", "/oracle/*/jobscheduler_agent", "/var/tmp/one/im/kvm-probes.d")
+  process.working_directory like ("/var/lib/rundeck", "/usr/sap/tmp", "/oracle/*/jobscheduler_agent", "/var/tmp/one/im/kvm-probes.d") or
+  process.parent.executable like ("/tmp/newroot/*", "/usr/lib/systemd/systemd", "/tmp/.criu.mntns*")
 )]
 '''
 

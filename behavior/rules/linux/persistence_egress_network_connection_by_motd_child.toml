@@ -12,11 +12,11 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=3s
-  [process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable like "/etc/update-motd.d/*"
    and not (
      (process.name in ("wget", "curl") and process.args == "https://motd.ubuntu.com") or
      process.executable in (
@@ -44,6 +44,21 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

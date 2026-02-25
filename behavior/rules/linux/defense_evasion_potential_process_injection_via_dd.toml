@@ -11,13 +11,11 @@ os_list = ["linux"]
 reference = [
     "https://web.archive.org/web/20250129100828/https://cyber.aon.com/aon_cyber_labs/linux-based-inter-process-code-injection-without-ptrace2/",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "dd" and
-process.args : "if=*" and process.args : "of=/proc/*/mem*"
-// add if noisy
-// and process.args : "seek=*"
+process.args like "if=*" and process.args like "of=/proc/*/mem*"
 '''
 
 min_endpoint_version = "7.15.0"

@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Suspicious Execution via setsid and nohup"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("setsid", "nohup") and
-process.args : (
+process.command_line like~ (
   "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*", "*TCPSocket.open*",
   "*io.popen*", "*os.execute*", "*fsockopen*", "*disown*"
 )
@@ -23,6 +23,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

@@ -7,7 +7,7 @@ id = "325933f6-e0b9-4cd2-bc4f-a91d78f97f1d"
 license = "Elastic License v2"
 name = "Registry Modification via WMI StdRegProv"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -17,7 +17,7 @@ api where
    process.executable != "C:\\Program Files (x86)\\GreenwayTR\\GMTGC.exe" and
 
    not (process.code_signature.trusted == true and
-        process.code_signature.subject_name in ("Reason Cybersecurity Inc.", "Micro-Star International CO., LTD.", "Lansweeper NV", "YANDEX LLC", "Beijing Sogou Technology Development Co., Ltd.", "HP Inc.")) and
+        process.code_signature.subject_name in ("Reason Cybersecurity Inc.", "Micro-Star International CO., LTD.", "Lansweeper NV", "LANSWEEPER NV", "YANDEX LLC", "Beijing Sogou Technology Development Co., Ltd.", "HP Inc.", "95895A1E-217A-4242-9200-7E698391758E", "Omnissa, LLC")) and
        
    not (process.executable == "C:\\Windows\\SysWOW64\\wscript.exe" and process.parent.executable == "C:\\Windows\\SysWOW64\\cmd.exe" and
         process.command_line in ("WSCRIPT /B parseXML.vbs base_agentdata.xml agentdata.xml", "WSCRIPT /B ae_scan.vbs agentdata")) and

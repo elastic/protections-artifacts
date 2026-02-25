@@ -5,12 +5,13 @@ may indicate an attempt to evade detection by removing the malicious executable 
 """
 id = "49ab63a4-ed52-49ac-855b-c298b38b0cb9"
 license = "Elastic License v2"
-name = "Egress Network Connection from Deleted Executable"
+name = "Egress Network Connection from Deleted Executable by Root"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
-network where event.type == "start" and event.action == "connection_attempted" and process.executable like~ "* (deleted)" and 
+network where event.type == "start" and event.action == "connection_attempted" and process.executable like "* (deleted)" and 
+user.id == 0 and
 not (
   destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",

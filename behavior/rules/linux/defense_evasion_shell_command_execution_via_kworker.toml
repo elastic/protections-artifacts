@@ -9,12 +9,22 @@ id = "94943f02-5580-4d1d-a763-09e958bd0f57"
 license = "Elastic License v2"
 name = "Shell Command Execution via Kworker"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-process where event.action == "exec" and event.type == "start" and process.parent.name like "kworker*" and 
+process where event.type == "start" and event.action == "exec" and process.parent.name like "kworker*" and 
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
-process.args : "*sh" and process.args_count >= 3 and process.command_line : (
+process.args in (
+  "bash", "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash",
+  "sh", "/bin/sh", "/usr/bin/sh", "/usr/local/bin/sh",
+  "dash", "/bin/dash", "/usr/bin/dash", "/usr/local/bin/dash",
+  "tcsh", "/bin/tcsh", "/usr/bin/tcsh", "/usr/local/bin/tcsh",
+  "csh", "/bin/csh", "/usr/bin/csh", "/usr/local/bin/csh",
+  "zsh", "/bin/zsh", "/usr/bin/zsh", "/usr/local/bin/zsh",
+  "ksh", "/bin/ksh", "/usr/bin/ksh", "/usr/local/bin/ksh",
+  "fish", "/bin/fish", "/usr/bin/fish", "/usr/local/bin/fish"
+) and
+process.args_count >= 3 and process.command_line like (
   "*ip*", "*whoami*", "*id*", "*hostname*", "*touch*", "*curl*", "*wget*", "*chmod*", "*busybox*", "*chattr*", "*echo*",
   "*python*", "*php*", "*perl*", "*ruby*", "*lua*", "*openssl*", "*nc*", "*netcat*", "*ncat*"
 ) and not (
@@ -28,6 +38,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

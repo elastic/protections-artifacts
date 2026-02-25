@@ -7,7 +7,7 @@ id = "ce95fc52-051e-4409-9c99-f2daf3e6e609"
 license = "Elastic License v2"
 name = "Execution via Obfuscated PowerShell Script"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -32,11 +32,14 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
                      "C:\\ProgramData\\chocolatey\\*.ps1",
                      "C:\\WINDOWS\\IMECache\\*",
                      "C:\\ProgramData\\CentraStage\\Packages\\*\\command.ps1") and
+  not process.command_line : "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -windowstyle hidden -nologo Invoke-Expression $env:Include" and
   not process.parent.executable : ("C:\\Program Files (x86)\\ManageSoft\\Tracker\\ndtrack.exe",
                                    "C:\\Program Files (x86)\\CentraStage\\Gui.exe",
-                                   "C:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe", 
+                                   "C:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShell.exe",
+                                   "C:\\Program Files\\SentinelOne\\Sentinel Agent *\\Addons\\SentinelAddonHost.exe",
                                    "C:\\Program Files (x86)\\Spiceworks Agent Shell\\AgentShellService.exe",
                                    "C:\\Program Files\\Microsoft VS Code\\Code.exe",
+                                   "C:\\Windows\\System32\\gpscript.exe",
                                    "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
                                    "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
                                    "C:\\Program Files\\Axis Communications\\AXIS Camera Station\\Components\\AXIS System Health Monitoring\\AXISSystemHealthMonitoring.exe")

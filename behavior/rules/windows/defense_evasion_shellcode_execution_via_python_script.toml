@@ -4,10 +4,11 @@ id = "1d0a1b39-a29e-4370-a712-546ed047f5f5"
 license = "Elastic License v2"
 name = "Shellcode Execution via Python Script"
 os_list = ["windows"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where process.code_signature.subject_name == "Python Software Foundation" and
+ not process.Ext.api.name in ("TpAllocWork", "TpCallbackStart") and
  process.Ext.api.behaviors in ("shellcode", "allocate_shellcode", "execute_shellcode") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*", "Unknown", "Unknown|*", "clr.dll") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Kernel") and
@@ -17,7 +18,9 @@ api where process.code_signature.subject_name == "Python Software Foundation" an
  not process.Ext.api.metadata.target_address_path : "c:\\windows\\system32\\tmumh\\20019\\tmmon\\2.9.0.1181\\tmmon64.dll" and
  not (process.thread.Ext.call_stack_final_user_module.name == "Unbacked" and process.thread.Ext.call_stack_final_user_module.protection_provenance == "Unbacked") and
  not (process.Ext.api.name in ("NtQueueApcThread", "SetThreadContext") and process.Ext.api.behaviors == "execute_shellcode" and
-      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys*\\kernelbase.dll!CreateProcess*", "c:\\program files\\eset\\eset security\\ebehmoni.dll*")))
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\sys*\\kernelbase.dll!CreateProcess*", "c:\\program files\\eset\\eset security\\ebehmoni.dll*"))) and
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "Microsoft Windows Software Compatibility Publisher", "Bromium UK Limited"))
 '''
 
 min_endpoint_version = "8.10.0"

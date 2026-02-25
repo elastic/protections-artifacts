@@ -1,29 +1,35 @@
 [rule]
 description = """
 Identifies the execution of curl, wget or ftpg to download payloads named by architecture type in preparation for
-execution. This behavior is consistent with Mirrai bot deployment shell scripts.
+execution. This behavior is consistent with Mirai bot deployment shell scripts.
 """
 id = "276a5df0-7e20-4218-ade1-3f3ed711d4cb"
 license = "Elastic License v2"
 name = "Potential Multi Architecture File Downloads"
 os_list = ["linux"]
 reference = ["https://malpedia.caad.fkie.fraunhofer.de/details/elf.mirai"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
- [process where event.action == "exec" and process.name : ("curl", "wget", "ftpg") and
-     process.args: ("http*mipsel","http*i686","http*sparc","http*mips","http*sh4","http*x86","http*armv6l",
-                    "http*powerpc","http*i586","http*m68k","http*armv4l","http*armv5l","http*mpsl","http*arm4",
-                    "http*arm5","http*arm6","http*arm7","http*ppc")]
- [process where event.action == "exec" and process.name : ("curl", "wget", "ftpg") and
-     process.args: ("http*mipsel","http*i686","http*sparc","http*mips","http*sh4","http*x86","http*armv6l",
-                    "http*powerpc","http*i586","http*m68k","http*armv4l","http*armv5l","http*mpsl","http*arm4",
-                    "http*arm5","http*arm6","http*arm7","http*ppc")]
- [process where event.action == "exec" and process.name : ("curl", "wget", "ftpg") and
-     process.args: ("http*mipsel","http*i686","http*sparc","http*mips","http*sh4","http*x86","http*armv6l",
-                    "http*powerpc","http*i586","http*m68k","http*armv4l","http*armv5l","http*mpsl","http*arm4",
-                    "http*arm5","http*arm6","http*arm7","http*ppc")]
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget", "ftpg") and
+   process.args like~ (
+     "http*mipsel", "http*i686", "http*sparc", "http*mips", "http*sh4","http*x86", "http*armv6l", "http*powerpc",
+     "http*i586", "http*m68k", "http*armv4l", "http*armv5l", "http*mpsl", "http*arm4", "http*arm5", "http*arm6",
+     "http*arm7", "http*ppc"
+   )]
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget", "ftpg") and
+   process.args like~ (
+     "http*mipsel", "http*i686", "http*sparc", "http*mips", "http*sh4","http*x86", "http*armv6l", "http*powerpc",
+     "http*i586", "http*m68k", "http*armv4l", "http*armv5l", "http*mpsl", "http*arm4", "http*arm5", "http*arm6",
+     "http*arm7", "http*ppc"
+   )]
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget", "ftpg") and
+   process.args like~ (
+     "http*mipsel", "http*i686", "http*sparc", "http*mips", "http*sh4","http*x86", "http*armv6l", "http*powerpc",
+     "http*i586", "http*m68k", "http*armv4l", "http*armv5l", "http*mpsl", "http*arm4", "http*arm5", "http*arm6",
+     "http*arm7", "http*ppc"
+   )]
 '''
 
 min_endpoint_version = "7.15.0"
@@ -47,6 +53,16 @@ state = 2
 action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 2
 
 [[threat]]
 framework = "MITRE ATT&CK"

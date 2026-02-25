@@ -7,7 +7,7 @@ id = "c709fe69-b699-4498-b858-eb6afcfd17ab"
 license = "Elastic License v2"
 name = "Privileged Domain Group Enumeration via LDAP"
 os_list = ["windows"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "ldap_search" and
@@ -18,7 +18,8 @@ api where process.Ext.api.name == "ldap_search" and
                              "cn=read-only domain controllers", "cn=exchange organization administrators*",
                              "cn=backup admins*", "cn=group policy creator owners*", "cn=domain controllers*")) or
   (process.Ext.api.parameters.search_filter : "*(objectClass=user)(memberof*" and process.Ext.api.parameters.search_filter : "*Admin*")
-  )
+  ) and
+  not process.executable : "C:\\Program Files\\Semperis\\Management Server\\Semperis.TaskServerSvcHost.exe"
 '''
 
 min_endpoint_version = "9.1.0"

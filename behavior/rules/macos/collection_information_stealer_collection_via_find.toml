@@ -1,0 +1,59 @@
+[rule]
+description = """
+Detects when the find command is used to search for files followed by the creation or modification of text files,
+indicating potential automated collection of sensitive information. This technique is commonly observed in npm
+typosquatting attacks and information stealers where adversaries use find to locate specific files and then aggregate
+the results into text files for staging before exfiltration. The find command with file type filters allows attackers to
+efficiently enumerate and collect target files across the filesystem.
+"""
+id = "406b2b26-bfaa-4a20-9551-cc4a95635a9e"
+license = "Elastic License v2"
+name = "Information Stealer Collection via Find"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
+version = "1.0.3"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+[process where event.type == "start" and event.action == "exec" and process.name == "find" and 
+  process.args like "/Users/*/Library/Application Support/*" and process.args == "-type" and process.args == "f"]
+[file where file.extension == "txt"]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1074"
+name = "Data Staged"
+reference = "https://attack.mitre.org/techniques/T1074/"
+[[threat.technique.subtechnique]]
+id = "T1074.001"
+name = "Local Data Staging"
+reference = "https://attack.mitre.org/techniques/T1074/001/"
+
+
+[[threat.technique]]
+id = "T1119"
+name = "Automated Collection"
+reference = "https://attack.mitre.org/techniques/T1119/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "8.16.0"

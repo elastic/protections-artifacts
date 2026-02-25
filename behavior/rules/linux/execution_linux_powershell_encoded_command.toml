@@ -8,15 +8,16 @@ id = "cd6e64ec-2890-4bd8-9d07-bef06465b06f"
 license = "Elastic License v2"
 name = "Linux Powershell Encoded Command"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.action == "exec" and event.type == "start" and process.name == "pwsh" and
 process.args : ("-EncodedCommand", "-enc", "-E") and process.args : ("-nop", "-noprofile") and 
 length(process.command_line) >= 100 and not (
   process.parent.name in ("node", "code", "code-insiders", "cursor") or
-  process.parent.args : "*Invoke-Pester*" or
-  process.parent.executable like "/data/user/docker/*" or
+  process.parent.command_line : "*Invoke-Pester*" or
+  process.parent.args == "--utility-sub-type=node.mojom.NodeService" or
+  process.parent.executable like ("/data/user/docker/*", "/tmp/.mount_Cursor*/usr/share/cursor/cursor") or
   process.parent.executable in ("/usr/lib/electron30/electron", "/usr/lib/electron32/electron", "/tmp/newroot/proc/self/exe") or
   (
     process.args == "IAAoAEcAZQB0AC0ASABvAHMAdAApAC4AVgBlAHIAcwBpAG8AbgAuAFQAbwBTAHQAcgBpAG4AZwAoACkAIAA=" and 
@@ -35,6 +36,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

@@ -10,29 +10,29 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell via Suspicious Utility"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
-sequence by process.entity_id with maxspan=10s
-  [process where event.type == "start" and event.action in ("fork", "exec") and (
-    (process.name : "python*" and process.args : "-c" and process.args : (
+sequence by process.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action  == "exec" and (
+    (process.name like "python*" and process.args == "-c" and process.command_line like~ (
      "*import*pty*spawn*", "*import*subprocess*call*"
     )) or
-    (process.name : "perl*" and process.args : "-e" and process.args : "*socket*" and process.args : (
+    (process.name like "perl*" and process.args == "-e" and process.command_line like~ "*socket*" and process.command_line like~ (
      "*exec*", "*system*"
     )) or
-    (process.name : "ruby*" and process.args : ("-e", "-rsocket") and process.args : (
+    (process.name like "ruby*" and process.args in ("-e", "-rsocket") and process.command_line like~ (
      "*TCPSocket.new*", "*TCPSocket.open*"
      )) or
-    (process.name : "lua*" and process.args : "-e" and process.args : "*socket.tcp*" and process.args : (
+    (process.name like "lua*" and process.args == "-e" and process.command_line like~ "*socket.tcp*" and process.command_line like~ (
      "*io.popen*", "*os.execute*"
     )) or
-    (process.name : "php*" and process.args : "-r" and process.args : "*fsockopen*" and process.args : "*/bin/*sh*") or 
-    (process.name == "node" and process.args == "-e" and process.args : "*spawn*sh*" and process.args : "*connect*") or
-    (process.name : ("awk", "gawk", "mawk", "nawk") and process.args : "*/inet/tcp/*")
+    (process.name like "php*" and process.args == "-r" and process.command_line like~ "*fsockopen*" and process.command_line like~ "*/bin/*sh*") or 
+    (process.name == "node" and process.args == "-e" and process.command_line like~ "*spawn*sh*" and process.command_line like~ "*connect*") or
+    (process.name in ("awk", "gawk", "mawk", "nawk") and process.command_line like~ "*/inet/tcp/*")
    )]
-  [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name : ("python*", "php*", "perl", "ruby", "lua*", "*awk", "node") and not (
+  [network where event.type == "start" and event.action == "connection_attempted" and 
+   process.name like ("python*", "php*", "perl", "ruby", "lua*", "*awk", "node") and not (
      destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
        destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
        "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
@@ -52,8 +52,18 @@ state = 0
 
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

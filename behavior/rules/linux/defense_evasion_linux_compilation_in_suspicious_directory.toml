@@ -8,22 +8,16 @@ id = "52001df2-a3bf-411d-a09c-5f36a9f976b8"
 license = "Elastic License v2"
 name = "Linux Compilation in Suspicious Directory"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence with maxspan=10s
   [process where event.action == "exec" and event.type == "start" and
-   process.name like~ (
-     "gcc*", "g++*", "c++", "cc", "c99", "c89", "cc1*", "cc1plus*", "clang*", "clang++*",
-     "musl-gcc", "musl-clang", "*-linux-gnu-gcc*", "*-linux-gnu-g++*", "*-pc-linux-gnu-gcc*",
-     "tcc", "zig", "ccache", "distcc"
-   ) and
-    not process.parent.name in ("go", "cgo")
-  ] as event0
-  [file where event.action == "creation" and process.name like~ (
-    "ld", "ld.*", "lld", "ld.lld", "mold", "collect2", "*-linux-gnu-ld*", "*-pc-linux-gnu-ld*"
-   ) and file.path : "/dev/shm/*" and stringcontains~(event0.process.command_line, file.name)
-  ]
+   process.name like ("*gcc*", "*g++*", "c++", "cc", "c99", "c89", "cc1*", "clang*", "musl-clang", "tcc", "zig", "ccache", "distcc") and
+   not process.parent.name in ("go", "cgo")] as event0
+  [file where event.action == "creation" and file.path like "/dev/shm/*" and
+   process.name like ("ld", "ld.*", "lld", "ld.lld", "mold", "collect2", "*-linux-gnu-ld*", "*-pc-linux-gnu-ld*") and
+   stringcontains~(event0.process.command_line, file.name)]
 '''
 
 min_endpoint_version = "8.5.0"
@@ -35,8 +29,18 @@ state = 0
 
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

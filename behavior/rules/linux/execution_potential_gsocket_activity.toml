@@ -10,15 +10,15 @@ license = "Elastic License v2"
 name = "Potential Gsocket Activity"
 os_list = ["linux"]
 reference = ["https://github.com/hackerschoice/gsocket", "https://www.gsocket.io/", "https://www.thc.org/ssh-it/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and
-process.command_line : (
+process.command_line like~ (
   "*GS_ARGS=*", "*gs-netcat*", "*gs-sftp*", "*gs-mount*", "*gs-full-pipe*", "*GS_NOINST=*", "*GSOCKET_ARGS=*",
-  "*GS_DSTDIR=*", "*GS_URL_BASE=*", "*GS_OSARCH=*", "*GS_DEBUG=*", "*GS_HIDDEN_NAME=*", "*GS_HOST=*",
-  "*GS_PORT=*", "*GS_TG_TOKEN=*", "*GS_TG_CHATID=*", "*GS_DISCORD_KEY=*", "*GS_WEBHOOK_KEY=*"
+  "*GS_DSTDIR=*", "*GS_URL_BASE=*", "*GS_OSARCH=*", "*GS_HIDDEN_NAME=*", "*GS_HOST=*",
+  "* GS_PORT=*", "*GS_TG_TOKEN=*", "*GS_TG_CHATID=*", "*GS_DISCORD_KEY=*", "*GS_WEBHOOK_KEY=*"
 ) and not (
   process.parent.name in ("make", "ninja", "qmake", "gmake") or
   process.parent.executable like ("/tmp/newroot/nix/store/*/generator/generator", "/usr/share/cursor/cursor") or

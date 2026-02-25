@@ -12,7 +12,7 @@ reference = [
     "https://www.rapid7.com/blog/post/2023/05/05/appdomain-manager-injection-new-techniques-for-red-teams/",
     "https://github.com/netbiosX/GhostLoader/tree/master",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=5m
@@ -47,7 +47,9 @@ sequence with maxspan=5m
   not dll.hash.sha256 : ("4810a7b50ffb5e044ac64432b7fcfe4795cc4c6494e1d7f25f9f9cfe388d2ea6",
                          "9a5294182e611ccdae9962d2e26a84c3287cd18409b4985d468055b690d9134c",
                          "506e3d9184a6c08ae75c1bb7f3d72901ff6eeade3f6ed06237de878276f9fed7",
-                         "eb0153d13e522520015d09e679618b4cc61bd43d0fcd402922b6507daf706edc") and
+                         "eb0153d13e522520015d09e679618b4cc61bd43d0fcd402922b6507daf706edc",
+                         "73e6c417b244cfc12f8128732a9af5a336247136b04bdf79e64829bf32d53d67",
+                         "7f503243ac077b20f47739c03f1ee57fb9fc487ae34c73c485226c4049806487") and
   not (process.code_signature.subject_name : "Volvo Car Corporation" and process.code_signature.trusted == true)
 ]
 '''

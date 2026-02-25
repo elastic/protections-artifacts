@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Memory Protection Fluctuation"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=30s
@@ -59,11 +59,7 @@ sequence by process.entity_id, process.Ext.api.parameters.address with maxspan=3
                                                 "ea7930ed7ddc763c25df5897dfd8ed4ea34c07a5ddbf398bbeccf10361cf4229",
                                                 "5124b3a0bd20b3b5e84dea626a11db69c28a96953dea0862e719e12222bff417",
                                                 "e30aabb518361fbeaf8068ffc786845ee84abbf1f71ae7d2733a11286531595a",
-                                                "29a4795452cb3d618edcbdc02790d8026b75197d220b2904091802c08c515aee",
-                                                "10cc18de06e6da9f9f50e631517574a1cda426c763ac6d32ce9dc7aa318a12a2",
-                                                "5cdf6b8fa6b2e42335817bc76154f4368836c8312e0347dee2d9ff7dc9957eac",
-                                                "c58928c71946618d3cb398e11de5479b72425d94fa79c1610162d86446164b46",
-                                                "2bda92ee609ccfa0458615fd1362f8f247fe5e4b8d4c52b08188f21b165c8573")
+                                                "29a4795452cb3d618edcbdc02790d8026b75197d220b2904091802c08c515aee")
   ]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "RW-"]
  [api where process.Ext.api.name : "VirtualProtect*" and process.Ext.api.parameters.protection : "R-X"]

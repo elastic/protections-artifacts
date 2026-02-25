@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "NetworkCleartext Logon by a Suspicious Process"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1134/002/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 authentication where event.action == "log_on" and
@@ -17,18 +17,18 @@ authentication where event.action == "log_on" and
  not (process.code_signature.trusted == true and
       process.code_signature.subject_name in ("Varonis Systems, Inc.", "Remote Access World SAS", "TSplus SAS", "Solarwinds Worldwide, LLC", "Siemens AG")) and
  not process.executable :
-            ("C:\\Windows\\System32\\inetsrv\\w3wp.exe",
-             "C:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
-             "C:\\Windows\\System32\\inetsrv\\appcmd.exe",
-             "C:\\Windows\\System32\\mmc.exe",
-             "C:\\Windows\\System32\\wsmprovhost.exe",
-             "C:\\Program Files\\*.exe",
-             "C:\\Program Files (x86)\\*.exe",
-             "C:\\Windows\\System32\\inetsrv\\InetMgr.exe",
-             "C:\\Windows\\System32\\inetsrv\\WMSvc.exe",
-             "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
-             "C:\\Windows\\System32\\CPrepSrv.exe",
-             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
+            ("?:\\Windows\\System32\\inetsrv\\w3wp.exe",
+             "?:\\Windows\\SysWOW64\\inetsrv\\w3wp.exe",
+             "?:\\Windows\\System32\\inetsrv\\appcmd.exe",
+             "?:\\Windows\\System32\\mmc.exe",
+             "?:\\Windows\\System32\\wsmprovhost.exe",
+             "?:\\Program Files\\*.exe",
+             "?:\\Program Files (x86)\\*.exe",
+             "?:\\Windows\\System32\\inetsrv\\InetMgr.exe",
+             "?:\\Windows\\System32\\inetsrv\\WMSvc.exe",
+             "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe",
+             "?:\\Windows\\System32\\CPrepSrv.exe",
+             "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
 '''
 
 min_endpoint_version = "8.15.1"

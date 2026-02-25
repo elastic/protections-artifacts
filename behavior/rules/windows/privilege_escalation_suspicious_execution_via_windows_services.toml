@@ -7,7 +7,7 @@ id = "84595d39-df78-49d6-a999-48792482b255"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Services"
 os_list = ["windows"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "start" and
@@ -92,7 +92,6 @@ process where event.action == "start" and
 	          "2b25e0331289460dbaed2d851b92f43e6999f694bf17964a8786f3a4cce602a6",
 	          "99b3e6d71329624cb75a88bb66e3249510f6008a38de5535ca5ccb8f580519e0",
 	          "9dbd07d864d31d13b96f1bd61bf83dcd04b43f5266019c99592671cd819968e6",
-	          "9dbd07d864d31d13b96f1bd61bf83dcd04b43f5266019c99592671cd819968e6",
 	          "70da895606ecde4b0ceaee6d19ddcc42be35ec32fa3667f3efbe2f79457de9c4",
 	          "a74dd36806499b164906b0b9a7b7118fb19a02562a7229c544d77dd946449881",
 	          "9860f515da98b85f61d2ee816271717b77245a1163ba498d5253974d9f7c78b3",
@@ -116,7 +115,6 @@ process where event.action == "start" and
 	          "9d2e4a42cbcdd9315b6c86a36af632c86293940287dc26930e1c7932eb7c6cb2",
 	          "cd1dd8cff168b57aebbd59a62e48e592be8571082e1e5416613cd6ad27edc2ce",
 	          "5fc1af2ed768d259612242c76dee2a29fd84379a7eb1a30da13cbc036f16385e",
-	          "7e0ff000ce7cacd201a76a017ee669f34e71f557fa468280cf27b0d2370dd8ad",
 	          "41292975a38a69c0afc8b22b8622209e40ffb8cb6017fa16f15be8d94639fb93",
 	          "cdcdcd2866eb4156875cb8a2304d2dce9d9ba764f67e5a79c98556c9efa2aeaa",
 	          "4aa716bf7c4c1e164d6f58cef08a69118dbf22cca00def1c604b6e090a302520",
@@ -130,13 +128,11 @@ process where event.action == "start" and
 	          "488df57af2d0a29d555b3ad233e5ac17058582ef040b3a89471d4c519b9b4db7",
 	          "92512032cefa1fd63490ab00eb974b15ae557578d901faf4aa6c3ff4c214a239",
 	          "7e46a30ec382d6973695520a3c88337bed3f33d5d30b64cac689fb83ebd29d8f", 
-	          "7e46a30ec382d6973695520a3c88337bed3f33d5d30b64cac689fb83ebd29d8f", 
 	          "1186244a77bd08d3a5aad8f24f9cf59ae228782adde32467e0622c5236586190", 
 	          "ae16d853600d647688f414e023ce8644ceacf1d6ada050792ee665c4465c939b", 
 	          "cf41501fa77ffece7a67b9cd996b6a3fceafefb44bf192c9078a2f0e30e01f97",
 	          "88f1612d7e774e0bbd6708ca946bcdb3c671a18048b2a4f5ad33c6a7c2db02de",
 	          "73a91d7dbdff150632a9501c94b4f328e61fc8a8e52d27b2646921ddee8acae2",
-	          "1186244a77bd08d3a5aad8f24f9cf59ae228782adde32467e0622c5236586190",
 	          "e72f59681ef6dd09608772cde8bb0dcbb42e97118ad58ad8fe2d3501d73bcd2e",
 	          "b75268bc78de915eff442611f9c7503b4f872b22d7c54547694923cce6427b4e",
 	          "854ed6e135b1405329003f0595c3ca462faf5381ac5d6f93bccfece61d6a2d88",
@@ -158,17 +154,17 @@ process where event.action == "start" and
 
   not (process.code_signature.subject_name : ("Practical Dental Solutions LLC", "ISL Online Ltd.", "Nanosystems S.r.l.",
    "Opera Software AS", "Kaspersky Lab JSC", "AO Kaspersky Lab", "LogMeIn, Inc.", "Bright Data Ltd", "Malwarebytes Inc",
-   "SEIKO EPSON CORPORATION", "Nanosystems S.r.l.", "KOINO Co., Ltd.", "Panda Security S.L.", "Endgame, Inc.", "Bright Data Ltd",
+   "SEIKO EPSON CORPORATION", "KOINO Co., Ltd.", "Panda Security S.L.", "Endgame, Inc.",
    "Acrosync LLC", "Midassoft Corporation Limted", "ForensiT Limited", "ConnectWise, LLC", "ScreenConnect Software",
    "Beijing Duyou Science and Technology Co.,Ltd.", "N-ABLE TECHNOLOGIES LTD", "Icona S.R.L.", "Dropbox, Inc", "ISL Online",
    "CodeLathe, LLC", "Google LLC", "Connectwise, LLC", "Mozilla Corporation", "Huawei Technologies Co., Ltd.", "Icona srl",
    "Plarium Global LTD", "Trend Micro, Inc.", "HeroSpeed Digital Technology Co.,Ltd", "IDrive, Inc.", "Secure By Design Inc.",
    "SecureLink, Inc.", "Google Inc", "Wondershare Technology Group Co.,Ltd", "Malwarebytes Inc.", "Suse LLC", "FLEXTECH INC.",
-   "DameWare Development, LLC.", "Acronis International GmbH", "Broadcom Inc", "Symantec Corporation", "Ivanti, Inc.", 
-   "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Rsupport Co., Ltd.", "Private trade unitary enterprise LST",
-   "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.", "Acronis International GmbH",
-   "Sikka Software Corporation", "TeamViewer Germany GmbH", "Brother Industries, Ltd.", "Pro Softnet Corporation", "Raman Karpuk", 
-   "ATEMPO SAS", "N-ABLE TECHNOLOGIES LTD", "Broadcom Inc", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd", "NinjaOne LLC",
+   "DameWare Development, LLC.", "Acronis International GmbH", "Broadcom Inc", "Symantec Corporation", "Ivanti, Inc.",
+   "Rsupport Co., Ltd.", "SAP", "VMware, Inc.", "Private trade unitary enterprise LST",
+   "Solarwinds Worldwide, LLC", "Techinline Limited", "ZOHO CORPORATION PRIVATE LIMITED", "Canon Inc.",
+   "Sikka Software Corporation", "TeamViewer Germany GmbH", "Brother Industries, Ltd.", "Pro Softnet Corporation", "Raman Karpuk",
+   "ATEMPO SAS", "TeamViewer", "WireGuard LLC", "MetaQuotes Ltd", "NinjaOne LLC",
    "ForensiT Software Limited", "Opera Norway AS", "Veeam Software Group GmbH", "Copermatica SL", "SimplyCore LLC", "SimplyCore, LLC",
    "") and
    process.code_signature.trusted == true) and

@@ -15,30 +15,30 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.executable : "/etc/update-motd.d/*"
+process where event.type == "start" and event.action == "exec" and process.parent.executable like "/etc/update-motd.d/*"
 and (
   (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
-    (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*"))) or
-  (process.name : ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
-    not process.args : ("-*z*", "-*l*")) or
-  (process.name : "python*" and process.args : "-c" and process.args : (
+    (process.args in ("-i", "-l", "-il", "-li")) or (process.parent.name == "socat" and process.parent.args like~ "*exec*"))) or
+  (process.name in ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
+    not process.args like~ ("-*z*", "-*l*")) or
+  (process.name like "python*" and process.args == "-c" and process.args like~ (
      "*import*pty*spawn*", "*import*subprocess*call*"
   )) or
-  (process.name : "perl*" and process.args : "-e" and process.args : "*socket*" and process.args : (
+  (process.name like "perl*" and process.args == "-e" and process.args like~ "*socket*" and process.args like~ (
      "*exec*", "*system*"
   )) or
-  (process.name : "ruby*" and process.args : ("-e", "-rsocket") and process.args : (
+  (process.name like "ruby*" and process.args in ("-e", "-rsocket") and process.args like~ (
      "*TCPSocket.new*", "*TCPSocket.open*"
   )) or
-  (process.name : "lua*" and process.args : "-e" and process.args : "*socket.tcp*" and process.args : (
+  (process.name like "lua*" and process.args == "-e" and process.args like~ "*socket.tcp*" and process.args like~ (
      "*io.popen*", "*os.execute*"
   )) or
-  (process.name : "php*" and process.args : "-r" and process.args : "*fsockopen*" and process.args : "*/bin/*sh*") or 
-  (process.name : ("awk", "gawk", "mawk", "nawk") and process.args : "*/inet/tcp/*") or 
-  (process.name == "openssl" and process.args : ("*s_server*", "*s_client*") and process.args : (
+  (process.name like "php*" and process.args == "-r" and process.args like~ "*fsockopen*" and process.args like~ "*/bin/*sh*") or 
+  (process.name in ("awk", "gawk", "mawk", "nawk") and process.args like~ "*/inet/tcp/*") or 
+  (process.name == "openssl" and process.args like~ ("*s_server*", "*s_client*") and process.args like~ (
     "*-connect*", "*:*", "*-port*"
   )) or
   (process.name == "telnet")
@@ -51,6 +51,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

@@ -1,21 +1,18 @@
 [rule]
 description = """
-Identifies processes that are capable of downloading files with command line arguments containing URLs to SSH-IT's
-autonomous SSH worm. This worm intercepts outgoing SSH connections every time a user uses ssh.
+Identifies processes that are capable of downloading files with command line arguments containing URLs to
+HackersChoice's tools. These tools are often used by threat actors to gain access to systems.
 """
 id = "cb351778-7329-4de9-82b5-6705f772a3af"
 license = "Elastic License v2"
-name = "Potential SSH-IT SSH Worm Downloaded"
+name = "Potential HackersChoice Tool Downloaded"
 os_list = ["linux"]
-reference = ["https://www.thc.org/ssh-it/"]
-version = "1.0.4"
+reference = ["https://github.com/hackerschoice"]
+version = "1.0.5"
 
 query = '''
-process where event.action == "exec" and event.type == "start" and process.name in ("curl", "wget") and 
-process.args : (
-  "https://thc.org/ssh-it/x", "http://nossl.segfault.net/ssh-it-deploy.sh", "https://gsocket.io/x",
-  "https://thc.org/ssh-it/bs", "http://nossl.segfault.net/bs"
-)
+process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget") and 
+process.command_line like~ ("*github.com/hackerschoice/*", "*thc.org/*", "*nossl.segfault.net/*", "*gsocket.io/*")
 '''
 
 min_endpoint_version = "7.15.0"
@@ -23,6 +20,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

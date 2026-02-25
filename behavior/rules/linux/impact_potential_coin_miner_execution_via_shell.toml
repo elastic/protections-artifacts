@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Coin Miner Execution via Shell"
 os_list = ["linux"]
 reference = ["https://xmrig.com/docs/algorithms"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -24,11 +24,15 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
   ) or process.command_line like ("*stratum+tcp://*", "*stratum2+tcp://*", "*--nicehash*") 
 ) and not (
   process.parent.name like (
-    "find", "python3", "httpd", "sshd", "php*", "sudo", "ruby", "nvim", "vim", "make", "schroot", "vimdiff", "sbuild"
+    "find", "python3", "httpd", "sshd", "php*", "sudo", "ruby", "nvim", "vim", "make", "schroot", "vimdiff", "sbuild", "ninja"
   ) or
-  process.parent.executable in ("/opt/cron/registry-sync/ru/syncRegistryByReport.pl", "/usr/bin/ninja", "/usr/bin/gvimdiff") or
+  process.parent.executable in (
+    "/opt/cron/registry-sync/ru/syncRegistryByReport.pl",  "/usr/bin/gvimdiff", "/usr/bin/ninja-reference",
+    "/usr/bin/sw-engine", "/usr/local/bin/teleport"
+  ) or
+  process.parent.executable like "/tmp/baum/easybuild/*" or
   process.command_line like ("*openssl*", "*--display-charset*", "sh -c aws s3 cp*") or
-  process.parent.args == "/usr/bin/crun"
+  process.parent.args in ("/usr/bin/crun", "/usr/local/bin/claude")
 )
 '''
 

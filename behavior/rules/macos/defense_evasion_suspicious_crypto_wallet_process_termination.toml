@@ -1,0 +1,54 @@
+[rule]
+description = """
+Detects when the Killall or Pkill binary are used to terminate the Ledger Live or Trezor Suite process. The vast
+majority of users will not terminate a process in this way. Threat actors who are attempting to hijack or backdoor an
+existing installation will need to terminate any existing or running processes for the application in order to modify
+its source files.
+"""
+id = "f0b29612-c189-405b-bf73-88bcc4f35bab"
+license = "Elastic License v2"
+name = "Suspicious Crypto Wallet Process Termination"
+os_list = ["macos"]
+reference = [
+    "https://www.jamf.com/blog/jtl-digitstealer-macos-infostealer-analysis/",
+    "https://www.huntress.com/blog/amos-stealer-chatgpt-grok-ai-trust",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name in ("killall", "pkill") and 
+ process.args like ("Ledger Live", "Trezor Suite")
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.11.0"

@@ -11,13 +11,13 @@ os_list = ["linux", "macos"]
 reference = [
     "https://www.trendmicro.com/en_us/research/21/f/bash-ransomware-darkradiation-targets-red-hat--and-debian-based-linux-distributions.html",
 ]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
-process where event.action == "exec" and
- process.name : "xargs" and process.args == "openssl" and process.args == "enc" and
+process where event.type == "start" and event.action == "exec" and
+ process.name == "xargs" and process.args == "openssl" and process.args == "enc" and
  /* radiation unicode symbol used by DARKRADIATION ransomware */
- process.args : "*.☢*"
+ process.command_line like "*.☢*"
 '''
 
 min_endpoint_version = "7.15.0"

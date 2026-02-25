@@ -9,16 +9,17 @@ id = "57ed0e43-643a-47f3-936e-138dc6f480da"
 license = "Elastic License v2"
 name = "Renice or Ulimit Execution from Unusual Parent"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
   process.name in ("ulimit", "renice") or (
-  process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
-  process.args like ("*ulimit*", "*renice*")
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
+    process.command_line like ("*ulimit*", "*renice*")
   )
 ) and process.parent.executable != null and
-(process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") or process.parent.name like ".*") and not (
+(process.parent.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") or process.parent.name like ".*") and
+not (
   process.parent.command_line in ("/bin/sh /usr/bin/byobu-status tmux_right", "runc init") or
   process.parent.executable like (
     "/tmp/newroot/*", "/tmp/vmis.*/vmware-installer/vmis-launcher", "/tmp/baum/easybuild/*", "/tmp/wbrashear/easybuild/*",

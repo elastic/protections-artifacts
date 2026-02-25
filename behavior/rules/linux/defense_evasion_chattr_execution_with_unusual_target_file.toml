@@ -1,6 +1,6 @@
 [rule]
 description = """
-This rule detects the execution of the `chattr` command with an unusual target file. The `chattr` command is used to
+This rule detects the execution of the "chattr" command with an unusual target file. The "chattr" command is used to
 change file attributes, and is often used by attackers to hide files or directories or mark them as immutable and/or
 undeletable.
 """
@@ -11,10 +11,12 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name == "chattr" and process.args : (
+process where event.type == "start" and event.action == "exec" and process.name == "chattr" and 
+process.executable like ("/bin/chattr", "/usr/bin/chattr", "/usr/local/bin/chattr") and
+process.args like (
   "/root/.ssh/*", "/home/*/.ssh/*", "/etc/ld.so.preload", "/dev/shm*", "/tmp*", "/var/spool/cron*", "/etc/cron*",
   "/etc/init.d/*", "/etc/rc.local", "/etc/passwd", "/etc/shadow", "/etc/group", "/etc/sudoers", "/etc/sudoers.d/*",
   "/etc/ssh/*", "/var/tmp*", "/usr/bin/*", "/bin/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*",

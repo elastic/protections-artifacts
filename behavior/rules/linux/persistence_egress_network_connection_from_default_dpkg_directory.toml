@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Default DPKG Directory"
 os_list = ["linux"]
 reference = ["https://www.makeuseof.com/how-deb-packages-are-backdoored-how-to-detect-it/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=3s
@@ -20,10 +20,11 @@ sequence with maxspan=3s
      process.parent.executable == "/var/lib/dpkg/info/falco.postinst" or
      process.parent.executable like (
        "/var/lib/dpkg/info/percona-server-server-*.postinst", "/var/lib/dpkg/info/vivaldi*",
-       "/var/lib/dpkg/info/percona-xtradb-cluster-server*", "/var/lib/dpkg/info/univention-updater*"
+       "/var/lib/dpkg/info/percona-xtradb-cluster-server*", "/var/lib/dpkg/info/univention-updater*",
+       "/var/lib/dpkg/info/microsoft-edge-beta.postinst"
      ) or
      process.parent.name in ("mdatp.postinst", "mdatp.postrm") or
-     process.args like "/var/lib/dpkg/info/percona-xtradb-cluster-server-*.postinst"
+     process.args like ("/var/lib/dpkg/info/percona-xtradb-cluster-server-*.postinst", "/etc/cron.daily/*")
    )
   ] by process.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and not (
@@ -37,7 +38,8 @@ sequence with maxspan=3s
      "FF00::/8", "172.31.0.0/16"
      ) or
      process.executable in (
-       "/usr/bin/apt-get", "/bin/apt-get", "/opt/cisco/amp/etc/ampinsthelper", "/opt/teleport/system/bin/tsh"
+       "/usr/bin/apt-get", "/bin/apt-get", "/opt/cisco/amp/etc/ampinsthelper", "/opt/teleport/system/bin/tsh",
+       "/usr/lib/apt/methods/https"
      )
    )] by process.parent.entity_id
 '''

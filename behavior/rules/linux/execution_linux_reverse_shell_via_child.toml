@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell via Child"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -17,8 +17,10 @@ sequence by process.entity_id with maxspan=5s
    not cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "224.0.0.0/4", "::1")]
   [process where event.type == "start" and event.action == "exec" and 
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
-     (process.args in ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args like "*exec*")
-   )]
+     process.args in ("-i", "-il", "-li") or
+     (process.parent.name == "socat" and process.parent.command_line like~ "*exec*")
+   )
+  ]
 '''
 
 min_endpoint_version = "8.5.0"
@@ -27,6 +29,21 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

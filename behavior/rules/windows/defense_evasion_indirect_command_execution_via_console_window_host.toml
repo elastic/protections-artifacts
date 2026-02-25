@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Indirect Command Execution via Console Window Host"
 os_list = ["windows"]
 reference = ["https://lolbas-project.github.io/lolbas/Binaries/Conhost/"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -22,7 +22,7 @@ process where event.action == "start" and
              "powershell.exe -NoProfile -ExecutionPolicy Bypass -File WAU-Notify.ps1") and
   not process.parent.executable : "\\Device\\Mup\\*\\IBM\\ClientSolutions\\Start_Programs\\Windows*\\acslaunch_win-*.exe" and 
   not process.hash.sha256 : "b37565fabde8680ef7d0de3c808096b7512f42c62071f2fb486da14b773ec04a" and
-  not process.executable : ("C:\\Program Files\\*.exe", "C:\\Program Files (x86)\\*.exe") and
+  not process.executable : ("?:\\Program Files\\*.exe", "?:\\Program Files (x86)\\*.exe") and
   not (process.code_signature.subject_name == "International Business Machines Corporation" and process.code_signature.trusted == true) and
   not (process.name : "powershell.exe" and process.args : "-ExecutionPolicy" and process.args : ("-F", "Stop-Process*")) and
   not (process.args in ("/bin/sh", "bash") and process.parent.args == "--height" and process.parent.args == "24")

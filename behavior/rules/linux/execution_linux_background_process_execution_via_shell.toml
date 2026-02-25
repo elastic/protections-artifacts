@@ -7,16 +7,18 @@ id = "21692d53-d4a5-462c-9ee6-2d8788411996"
 license = "Elastic License v2"
 name = "Linux Background Process Execution via Shell"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
-process where event.action == "exec" and event.type == "start" and
+process where event.type == "start" and event.action == "exec" and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-c" and
-process.args : ("/* &", "/*&") and process.args_count == 3 and
-process.parent.executable : ("/dev/shm/*", "/var/tmp/*", "/tmp/*", "/var/www/*") and not (
-  process.executable : "/tmp/newroot/*" or
+process.args like ("/* &", "/*&") and process.args_count == 3 and
+process.parent.executable like ("/dev/shm/*", "/var/tmp/*", "/tmp/*", "/var/www/*") and
+not (
+  process.executable like "/tmp/newroot/*" or
   process.command_line == "/bin/bash -c /opt/forticlient/fortitray &" or
-  process.parent.executable : ("/var/www/splynx/*", "/tmp/.mount_cursor*")
+  process.parent.executable like ("/var/www/splynx/*", "/tmp/.mount_cursor*", "/tmp/newroot/*") or
+  process.parent.args == "cursor"
 )
 '''
 
@@ -25,6 +27,11 @@ optional_actions = []
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
 state = 0
 
 [[threat]]

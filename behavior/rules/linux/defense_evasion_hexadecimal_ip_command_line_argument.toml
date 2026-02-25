@@ -9,10 +9,13 @@ license = "Elastic License v2"
 name = "Hexadecimal IP Command-Line Argument"
 os_list = ["linux"]
 reference = ["https://asec.ahnlab.com/en/57635/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
+process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
+  process.executable like ("./*", "/boot/*", "/dev/shm/*", "/run/*", "/var/run/*", "/tmp/*", "/var/tmp/*") or
+  process.name like ("curl", "wget", ".*", "python*", "perl*", "ruby*", "php*", "lua*", "node*")
+) and
 process.command_line like~ ("*http://0x*", "*https://0x*")
 '''
 

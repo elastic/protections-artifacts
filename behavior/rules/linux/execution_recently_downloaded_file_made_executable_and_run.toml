@@ -9,7 +9,7 @@ id = "d67ef864-5567-4675-b2eb-7dfd4443e8af"
 license = "Elastic License v2"
 name = "Recently Downloaded File Made Executable and Run"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -31,7 +31,7 @@ sequence by process.parent.entity_id with maxspan=10s
   ) and
   process.args_count >= 2 and
   stringcontains(process.command_line, event0.file.name) and
-  not process.args like~ ("*-h*","*--help*","*-V*","*--version*")]
+  not process.command_line like~ ("*-h*","*--help*","*-V*","*--version*")]
   [process where event.type == "start" and event.action == "exec" and startswith~(process.executable, event0.file.path) and
    not (
      process.parent.executable == "/usr/local/bin/check_idle.sh" or
@@ -39,7 +39,9 @@ sequence by process.parent.entity_id with maxspan=10s
        "/var/lib/docker/*", "/tmp/tmp.*/rustup-init", "/tmp/cis-diagnose-rc-amd64", "/tmp/tmp.*/juliainstaller",
        "/etc/actions-runner-*", "/builds/*/snyk"
      ) or
-     (process.executable like "/tmp/teleport-*/install.sh" and process.args like "/usr/bin/env" and process.working_directory like "/tmp/teleport-*")
+     (process.executable like "/tmp/teleport-*/install.sh" and process.args == "/usr/bin/env" and process.working_directory like "/tmp/teleport-*") or
+     (process.executable == "/tmp/garage" and process.parent.args == "/garage-init") or
+     process.working_directory like "/var/lib/waagent/*"
    )]
 '''
 

@@ -8,12 +8,13 @@ id = "5383342f-7ddd-46c6-90dc-349499df90f1"
 license = "Elastic License v2"
 name = "Suspicious Lua Command Execution"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.name like~ "lua*" and
+process where event.type == "start" and event.action == "exec" and
+process.executable like ("/bin/lua*", "/usr/bin/lua*", "/usr/local/bin/lua*") and
 process.args == "-e" and process.command_line like~ (
-  "*os.execute(*", "*io.popen(*", "*load(*", "*loadstring(*", "*require(*", "*dofile(*",
+  "*os.execute(*", "*io.popen(*", "*load(*", "*loadstring(*", "*dofile(*",
   "*package.loadlib(*", "*base64.decode(*", "*base64.encode(*", "*zlib.inflate(*",
   "*zlib.deflate(*", "*zlib.decompress(*", "*zlib.compress(*", "*socket.bind(*",
   "*socket.connect(*", "*socket.receive(*", "*socket.send(*", "*socket.tcp(*",
@@ -21,7 +22,8 @@ process.args == "-e" and process.command_line like~ (
   "*net.http.get(*", "*net.http.post(*", "*http.request(*", "*http.get(*", "*http.post(*"
 ) and not (
   process.parent.name in ("make", "configure") or
-  process.command_line in ("lua -e require('cjson')", "lua -e require('socket')")
+  process.command_line in ("lua -e require('cjson')", "lua -e require('socket')") or
+  process.command_line like "*no_such_lib*"
 )
 '''
 

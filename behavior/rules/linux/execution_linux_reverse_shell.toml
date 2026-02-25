@@ -8,12 +8,12 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence with maxspan=5s
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and 
+   process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "socat") and 
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
@@ -24,7 +24,7 @@ sequence with maxspan=5s
    )] by process.entity_id
   [process where event.type == "start" and event.action in ("exec", "fork") and 
    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
-     (process.args : ("-i", "-l")) or (process.parent.name == "socat" and process.parent.args : "*exec*")
+     (process.args in ("-i", "-il", "-li")) or (process.parent.name == "socat" and process.parent.command_line like~ "*exec*")
    )] by process.parent.entity_id
 '''
 
@@ -34,6 +34,21 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

@@ -13,12 +13,11 @@ reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
-process.interactive == true and 
-process.executable regex~ """/proc/[a-z0-9]+/fd/[a-z0-9]+""" and
+process.executable like "/proc/*/fd/*" and process.interactive == true and
 not (
   process.command_line in ("runc init", "/var/gdn/assets/linux/bin/runc init", "/usr/sbin/pfman", "lxc-attach -n rdsd.lv") or
   process.args == "datadog-ipc-helper" or

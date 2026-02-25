@@ -8,14 +8,14 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell via netcat"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and 
-   process.name : ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
-   process.parent.name : ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-e" and
-   not process.args : ("-*z*", "-*l*")]
+   process.name in ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
+   process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-e" and
+   not process.args like~ ("-*z*", "-*l*")]
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
    process.name in ("nc", "netcat", "ncat", "nc.openbsd") and 
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
@@ -34,6 +34,21 @@ optional_actions = []
 action = "kill_process"
 field = "process.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

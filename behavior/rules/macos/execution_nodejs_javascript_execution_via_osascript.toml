@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects when Node.js spawns osascript to execute a JavaScript payload. This technique has been seen being used in npm
+typosquatting attacks to deploy credential harvesters that steal sensitive information from user systems. Attackers
+abuse the osascript utility to execute malicious JavaScript code that maintains persistence and executes additional
+malicious payloads.
+"""
+id = "177d5e00-0fb0-4469-9f7d-4f145e31f7cc"
+license = "Elastic License v2"
+name = "Nodejs Javascript Execution via Osascript"
+os_list = ["macos"]
+reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "osascript" and 
+ process.args == "-e" and process.command_line : "*/Users/*.js*" and process.parent.name == "node"
+'''
+
+min_endpoint_version = "8.11.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.11.0"

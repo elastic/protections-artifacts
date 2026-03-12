@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -55,7 +55,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/tmp/newroot/home/*/.local/share/JetBrains/*", "/home/*/.local/share/caa/caa",
     "/home/*/.local/bin/gitsign-credential-cache",
     "/home/*/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea",
-    "/home/*/.local/share/JetBrains/*", "/home/*/.local/opt/activitywatch/*"
+    "/home/*/.local/share/JetBrains/*", "/home/*/.local/opt/activitywatch/*",
+    "/home/*/.local/bin/claude-oauth-proxy"
   ) or
   process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox", "goland") or
   process.working_directory == "/var/lib/rabbitmq"

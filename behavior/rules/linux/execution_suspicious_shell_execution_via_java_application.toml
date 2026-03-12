@@ -12,7 +12,7 @@ reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=1m 
@@ -38,10 +38,10 @@ sequence with maxspan=1m
    ) and
    not (
      process.args like (
-       "for f in*", "id*", "[*", "/usr/bin/mpstat*", "(cp*jenkins-result.txt*", "cat /application/*nohup_*.out*"
+       "for f in*", "id*", "[*", "/usr/bin/mpstat*", "(cp*jenkins-result.txt*", "cat /application/*nohup_*.out*", "test*", "export*"
      ) or
      process.command_line in (
-       "/bin/bash -c echo ping",
+       "/bin/bash -c echo ping", "bash -c echo $$",
        "/bin/sh -c export LC_ALL=en_US.UTF-8;if [ -e /tmp ]; then /usr/bin/echo /tmp ; fi ; ",
        "sh -c stty -echo < /dev/tty",
        "/bin/sh -c which perl",

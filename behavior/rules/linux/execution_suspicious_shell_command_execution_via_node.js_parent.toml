@@ -8,7 +8,7 @@ id = "5f6dbe52-6643-486f-9130-256f58ba9a0c"
 license = "Elastic License v2"
 name = "Suspicious Shell Command Execution via Node.js Parent"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -32,13 +32,16 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
 ) and 
 not (
   process.executable like "/tmp/newroot/*" or
-  process.command_line like ("*169.254.169.254*", "*localhost*", "*127.0.0.1*", "*SNAPSHOT_FILE=*", "*/tmp/claude-shell-snapshot*") or
+  process.command_line like (
+    "*169.254.169.254*", "*localhost*", "*127.0.0.1*", "*SNAPSHOT_FILE=*", "*/tmp/claude-shell-snapshot*",
+    "/home/*/.openclaw/*", "/api.notion.com/*", "/shubble.git/*"
+  ) or
   process.args like ("-l SNAPSHOT_FILE*", "-l source*", "NODE_TLS_REJECT_UNAUTHORIZED=0*", "*.claude/*", "ssh-keyscan*", "supergateway --sse*") or
   (
     process.command_line like "/bin/sh -c rm -rf /dev/shm/streams/*" and
     process.parent.args == "/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js"
   ) or
-  process.parent.args like ("/home/*/.npm-global/lib/node_modules/openclaw/dist/index.js", "openclaw-gateway") or
+  process.parent.args like ("/home/*/.npm-global/lib/node_modules/openclaw/dist/index.js", "openclaw-gateway", "/opt/cursor-agent/node") or
   process.command_line in (
     """/bin/sh -c echo BROWSER=none > .env && echo DEMO=true >> .env && echo PORT=3000 >> .env && printf "PUBLIC_URL=http://$(hostname -I | awk '{print $1}'):3000/\n" >> .env && echo WDS_SOCKET_PORT=3000 >> .env && printf "WDS_SOCKET_HOST=$(hostname -I | awk '{print $1}')\n" >> .env && echo JSX_IMPORT_SOURCE=@ac/library-utils/dist/web-components/wc-jsx >> .env""",
     "/bin/sh -c chmod +x /etc/init.d/pm2-docker-deployer", """/bin/sh -c grep "^#[ ]*Port[ ]*[0-9]*" /etc/ssh/sshd_config 2>/dev/null"""

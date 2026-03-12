@@ -1,18 +1,19 @@
 [rule]
 description = """
-Detects when a code editor (VScode and Intellij Idea for now) spawn a shell to execute a self-signed and untrusted
-binary. This actvity is indicative of a malicious 3rd party plugin or extension.
+Detects when a code editor (VSCode, Cursor, or IntelliJ IDEA) spawns a shell to execute a self-signed and untrusted
+binary. This activity is indicative of a malicious 3rd party plugin or extension.
 """
 id = "9b9776bb-6bf3-4c06-94ff-64159b52a2f3"
 license = "Elastic License v2"
 name = "Code Editor Untrusted or Unsigned Child Process Execution"
 os_list = ["macos"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
  process.Ext.effective_parent.executable in ("/Applications/IntelliJ IDEA.app/Contents/MacOS/idea",
-                                            "/Applications/Visual Studio Code.app/Contents/MacOS/Electron") and 
+                                             "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
+                                             "/Applications/Cursor.app/Contents/MacOS/Cursor") and 
  process.parent.name in ("bash", "sh", "zsh") and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and 
  process.code_signature.signing_id regex~ """[A-Za-z0-9\_\s]{2,}\-[a-z0-9]{40}""" and 
@@ -25,7 +26,7 @@ process where event.type == "start" and event.action == "exec" and
                            "/usr/local/Cellar/*",
                            "/opt/nordic/ncs/toolchains/*/Cellar/*",
                            "/Users/*/homebrew/Cellar/*") and 
- not process.command_line == "bento completion zsh --silent" and
+ not process.command_line like~ ("bento completion zsh --silent", "*http://localhost*") and
  not process.code_signature.signing_id like~ ("python3-*", 
                                               "ruby-*", 
                                               "python-*", 

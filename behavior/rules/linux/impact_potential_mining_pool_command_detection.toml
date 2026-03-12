@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -43,12 +43,14 @@ process.command_line like (
   "*webhop.net*", "*ethpool.org*", "*slushpool.com*", "*antpool.com*", "*nicehash.com*", "*nicehash.net*",
   "*zergpool.com*", "*mining-dutch.nl*", "*blockmasters.co*", "*bsod.pw*", "*fairpool.xyz*", "*miningrigrentals.com*",
   "*hashing24.com*", "*ethermine.org*", "*flexpool.io*", "*hiveon.net*", "*sparkpool.com*", "*2miners.org*",
-  "*poolin.com*", "*viabtc.com*", "*btc.com*", "*f2pool.org*", "*coinhive.com*", "*cryptoloot.pro*", "*webmine.cz*",
+  "*poolin.com*", "*viabtc.com*", "*f2pool.org*", "*coinhive.com*", "*cryptoloot.pro*", "*webmine.cz*",
   "*minero.cc*", "*monerohash.org*", "*monerohash.net*", "*moneropool.ru*", "*moneroocean.stream*", "*rx.unmineable.com*"
 ) and not (
   process.parent.name in ("sendmail", "postfix-local", "check-quota", "zmcontrol", "find", "timeout", "php") or
   process.name in ("timeout", "host", "ptxas") or
-  process.command_line like "*zpool.cache*"
+  process.command_line like "*zpool.cache*" or
+  process.parent.args == "/scripts/run_certbot.sh" or
+  process.parent.command_line == "runc init"
 )
 '''
 

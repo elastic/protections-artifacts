@@ -7,7 +7,7 @@ id = "e9731cea-c3fc-4183-a76c-9a798ae0a2b0"
 license = "Elastic License v2"
 name = "Linux Powershell Suspicious Child Process"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "pwsh" and
@@ -21,7 +21,8 @@ not (
     "/opt/ansible*/Evaluate-STIG/powershell/pwsh", "/evaluate/Evaluate-STIG/powershell/pwsh",
     "/opt/Evaluate-STIG/powershell/pwsh"
   ) or
-  process.working_directory like "/opt/azurevstsagent/agent*"
+  process.working_directory like "/opt/azurevstsagent/agent*" or
+  process.args like "/home/*/.local/bin/az"
 )
 '''
 

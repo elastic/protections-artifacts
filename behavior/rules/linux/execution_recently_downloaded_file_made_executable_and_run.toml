@@ -9,7 +9,7 @@ id = "d67ef864-5567-4675-b2eb-7dfd4443e8af"
 license = "Elastic License v2"
 name = "Recently Downloaded File Made Executable and Run"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -37,7 +37,7 @@ sequence by process.parent.entity_id with maxspan=10s
      process.parent.executable == "/usr/local/bin/check_idle.sh" or
      process.executable like (
        "/var/lib/docker/*", "/tmp/tmp.*/rustup-init", "/tmp/cis-diagnose-rc-amd64", "/tmp/tmp.*/juliainstaller",
-       "/etc/actions-runner-*", "/builds/*/snyk"
+       "/etc/actions-runner-*", "/builds/*/snyk", "/tmp/mpm", "/tmp/coder.*/coder", "/tmp/helm"
      ) or
      (process.executable like "/tmp/teleport-*/install.sh" and process.args == "/usr/bin/env" and process.working_directory like "/tmp/teleport-*") or
      (process.executable == "/tmp/garage" and process.parent.args == "/garage-init") or

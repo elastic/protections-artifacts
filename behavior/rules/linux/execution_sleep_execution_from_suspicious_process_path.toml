@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -21,8 +21,9 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/*/.venv/bin/python", "/tmp/text_templater_*", "/var/tmp/container*/usr/bin/dpkg", "/tmp/container*/usr/bin/dpkg",
       "/run/systemd/mount-rootfs/nix/store/*", "/tmp/xfs-*/yarn", "/tmp/root/spack*", "/tmp/nix-shell-*/node",
       "/tmp/nix-shell-*/yarn", "/var/tmp/portage/*", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/nsjail.1000.root/usr/bin/sleep",
-      "/tmp/usr/bin/*"
+      "/tmp/usr/bin/*", "/tmp/build/.heroku/node/bin/npm", "/tmp/petalinux/*", "/tmp/tailsampling-*"
     ) or
+    process.command_line == "runc init" or
     process.name in ("gcc", "xgcc", "nvim") or
     process.parent.name == "ansible" or
     process.working_directory like (
@@ -33,6 +34,7 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*", "/tmp/newroot/usr/bin/ansible-playbook",
       "/usr/bin/ansible-playbook"
     ) or
+    process.parent.args like "source /home/*/.claude/shell-snapshots/snapshot-bash*" or
     process.parent.command_line like "*github.com/community-scripts/ProxmoxVE/*" or
     process.parent.command_line == "bash -c while true; do sleep 1;head -v -n 8 /proc/meminfo; head -v -n 2 /proc/stat /proc/version /proc/uptime /proc/loadavg /proc/sys/fs/file-nr /proc/sys/kernel/hostname; tail -v -n 32 /proc/net/dev;echo '==> /proc/df <==';df -l;echo '==> /proc/who <==';who;echo '==> /proc/end <==';echo '##Moba##'; done"
   )]

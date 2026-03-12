@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.53"
+version = "1.0.54"
 
 query = '''
 sequence with maxspan=5m
@@ -72,7 +72,8 @@ sequence with maxspan=5m
   not (process.pe.original_file_name in~ ("notification_helper.exe", "cpptools.exe") and process.code_signature.subject_name == "Microsoft Corporation" and
        process.code_signature.trusted == true) and
 
-  not (process.pe.original_file_name : "pmlauncher.exe" and process.code_signature.subject_name in ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
+  not ((process.pe.original_file_name : "pmlauncher.exe" or process.executable : "C:\\Windows\\System32\\pmlauncher.exe") and 
+      process.code_signature.subject_name : ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
        process.code_signature.trusted == true) and
 
   not (process.executable : "*\\Windows\\SystemApps\\Microsoft*.exe" and

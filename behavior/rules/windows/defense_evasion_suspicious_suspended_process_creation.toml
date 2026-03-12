@@ -7,7 +7,7 @@ id = "391f1e23-9ee0-4fa4-82b7-a54bebfa077d"
 license = "Elastic License v2"
 name = "Suspicious Suspended Process Creation"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.action == "start" and
@@ -23,7 +23,7 @@ process where event.action == "start" and
   /* process starts a signed MS binary in suspended state */
   process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation") or
 
-  /* process starts a suspended instacne of itself */
+  /* process starts a suspended instance of itself */
   (startswith~(process.executable, process.parent.executable) and
    (
     (process.Ext.device.product_id : ("Virtual DVD-ROM", "Virtual Disk") and not process.executable : "C:\\*") or
@@ -37,7 +37,8 @@ process where event.action == "start" and
   not process.parent.executable :
               ("?:\\Program Files\\rs2\\rs2Client\\rs2ClientService.exe",
                "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*.exe",
-               "?:\\Program Files (x86)\\MEDITECH\\EIH.Universe\\EIH.LIVEF.Ring\\System\\Magic.exe") and
+               "?:\\Program Files (x86)\\MEDITECH\\EIH.Universe\\EIH.LIVEF.Ring\\System\\Magic.exe",
+               "?:\\SWATCUP-Premium\\SwatCup.exe") and
   not (process.command_line : "rundll32.exe \"C:\\Program Files\\Rapid7\\Insight Agent\\components\\armor\\common\\Armor\\mvarmor32.dll\",#1" and
     process.parent.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|mvarmor64dynamic.dll|kernel32.dll|Unbacked") and
   not process.executable : ("?:\\Program Files (x86)\\Microsoft Visual Studio\\*.exe",

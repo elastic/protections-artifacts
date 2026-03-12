@@ -1,0 +1,65 @@
+[rule]
+description = """
+This rule detects the creation of a reverse shell through the use of named pipes. Attackers may leverage named pipes to
+evade detection and establish persistence onto a target system.
+"""
+id = "40bec6eb-e93b-4d09-8265-66bba186e332"
+license = "Elastic License v2"
+name = "Potential Reverse Shell via Named Pipe"
+os_list = ["linux"]
+version = "1.0.15"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
+  (process.name == "mknod" and process.args like ("/tmp/*", "/var/tmp/*", "/dev/shm/*") and process.args_count <= 5) or
+  (
+    process.name == "mkfifo" and
+    process.parent.args == "-c" and
+    process.parent.command_line like "*rm*" and
+    process.parent.command_line like "*|*" and
+    process.parent.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*"
+  )
+) and
+not (process.name == "mknod" and process.args like ("/var/tmp/dracut*", "/tmp/dracut.*", "/var/tmp/portage/*", "/tmp/dib_build*"))
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

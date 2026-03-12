@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 sequence with maxspan=5m
@@ -53,6 +53,7 @@ sequence with maxspan=5m
     not (process.name : ("rundll32.exe", "regsvr32.exe") and process.args : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*")) and
     not (process.code_signature.trusted == true and process.executable : ("?:\\Users\\*\\AppData\\Roaming\\*", "?:\\ProgramData\\*")) and
     not (process.name : "rundll32.exe" and process.args : "tsworkspace,TaskUpdateWorkspaces") and
+    not (process.name : "rundll32.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and process.command_line : "*pcrpf.dll,NotifyFirmwareUpdateStaged*") and
     not (process.executable : "\\Device\\Mup\\*\\OneDriveSetup.exe" and process.args : "/ALLUSERS") and
     not (process.name : "rundll32.exe" and
          process.command_line : ("*PWMTR32V.dll,InitializeSettingsDuringInstallation*", "*RunDll_EnableBits*")) and

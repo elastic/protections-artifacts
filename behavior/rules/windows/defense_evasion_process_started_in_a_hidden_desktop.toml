@@ -11,10 +11,11 @@ reference = [
     "https://attack.mitre.org/techniques/T1564/003/",
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
-process where event.type == "start" and process.Ext.desktop_name like "WinSta0\\*"
+process where event.type == "start" and process.Ext.desktop_name like "WinSta0\\*" and
+not process.Ext.desktop_name : ("WinSta0\\Winlogon", "WinSta0\\Screen-saver", "WinSta0\\ScreenConnectDesktop", "WinSta0\\InstallerDesktop")
 '''
 
 min_endpoint_version = "9.1.0"

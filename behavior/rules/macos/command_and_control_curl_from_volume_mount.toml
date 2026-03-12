@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Curl from Volume Mount"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -19,7 +19,8 @@ sequence by process.entity_id with maxspan=5s
   process.Ext.effective_parent.executable like "/Volumes/*" and
   process.args_count >= 3 and
   process.args in ("-o", "--output", "-O", "--remote-name", "--download", "-dl", "-dir", "--directory", "-L", "--location") and
-  not process.args : ("--version", "-V", "*elastic.cloud*")]
+  not process.args : ("--version", "-V", "*elastic.cloud*") and
+  not process.parent.command_line in ("/bin/bash -p /opt/homebrew/Library/Homebrew/brew.sh update --auto-update", "/bin/bash -p /usr/local/Homebrew/Library/Homebrew/brew.sh update --auto-update")]
 [network where event.type == "start" and
  not destination.domain like "localhost" and not
  cidrmatch(

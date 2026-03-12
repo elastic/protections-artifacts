@@ -8,7 +8,7 @@ id = "d00bd50b-577e-47a7-9234-b4bfaa599791"
 license = "Elastic License v2"
 name = "Suspicious PHP Command Execution"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -23,10 +23,15 @@ process.args == "-r" and process.command_line like~ (
   "*move_uploaded_file(*"
 ) and not (
   // Exclude web server processes as these are covered by other rules
-  process.working_directory like ("/var/www/*", "/builds/*", "/home/*/jenkins/*", "/home/*/public_html*") or
+  process.working_directory like (
+    "/var/www/*", "/builds/*", "/home/*/jenkins/*", "/home/*/public_html*", "/var/lib/ldap-account-manager/config"
+  ) or
   process.parent.args like ("/var/www/html/*", "source /home/*/.claude/shell*") or
   process.args like "/usr/local/cpanel/*" or
-  process.command_line like "*https://composer.github.io/installer.sig*" or
+  process.command_line like (
+    "*https://composer.github.io/installer.sig*",
+    "*json_decode(file_get_contents('php://stdin')*"
+  ) or
   process.parent.command_line == "runc init"
 )
 '''

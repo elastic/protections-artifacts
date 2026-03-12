@@ -1,0 +1,66 @@
+[rule]
+description = """
+Identifies potential exploitation of a Telnet remote authentication bypass vulnerability (CVE-2026-24061) in GNU
+Inetutils telnetd. The vulnerability allows unauthenticated access by supplying a crafted "-f <username>" value via the
+"USER" environment variable, resulting in a login process spawned with elevated privileges.
+"""
+id = "afb48a5f-f1d5-402c-91f8-53a8c279e1ed"
+license = "Elastic License v2"
+name = "Potential Telnet Authentication Bypass (CVE-2026-24061)"
+os_list = ["linux"]
+reference = [
+    "https://www.safebreach.com/blog/safebreach-labs-root-cause-analysis-and-poc-exploit-for-cve-2026-24061/",
+    "https://security-tracker.debian.org/tracker/CVE-2026-24061",
+    "https://man7.org/linux/man-pages/man1/login.1.html",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.name == "login" and process.args like~ "-*f*" and process.parent.name == "telnetd") or 
+  descendant of [
+    process where event.type == "start" and event.action == "exec" and
+    process.name == "login" and process.args like~ "-*f*" and process.parent.name == "telnetd"
+  ]
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1210"
+name = "Exploitation of Remote Services"
+reference = "https://attack.mitre.org/techniques/T1210/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+
+[internal]
+min_endpoint_version = "7.15.0"

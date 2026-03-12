@@ -2,13 +2,13 @@
 description = """
 Detects process events where the process is Powershell (pwsh) or a shell interpreter (sh, bash, zsh) with the encoded
 command flag set in the process arguments. Powershell usage on macOS is extremely rare but usage of Powershell with the
-encoded command flag, used for executing base64 encoded command strings, is almost always inherently malicous.
+encoded command flag, used for executing base64 encoded command strings, is almost always inherently malicious.
 """
 id = "4abb4f46-2066-4769-b073-dca491067e1b"
 license = "Elastic License v2"
 name = "Powershell Encoded Command"
 os_list = ["macos"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and process.args in~ ("-EncodedCommand", "-enc") and

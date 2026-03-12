@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Hardware Breakpoints Evasion"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 registry where event.action == "modification" and process.executable != null and registry.value == "CachePrefix" and
@@ -17,7 +17,11 @@ registry where event.action == "modification" and process.executable != null and
  not (process.code_signature.trusted == true and
       process.code_signature.subject_name in ("Roblox Corporation", "Kofax, Inc.", "PACE Anti-Piracy, Inc.", "CUMMINS INC.", "Nuance Communications, Inc.")) and
  not (process.executable : "C:\\Program Files (x86)\\Java\\jre*\\bin\\jp2launcher.exe" and
-      process.code_signature.subject_name == "Oracle America, Inc." and process.code_signature.trusted == true)
+      process.code_signature.subject_name == "Oracle America, Inc." and process.code_signature.trusted == true) and 
+ not (process.executable : "C:\\Program Files (x86)\\iLok License Manager\\iLok License Manager.exe" and 
+      process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|wininet.dll|ntdll.dll|kernelbase.dll|wininet.dll|ieframe.dll|windows.storage.dll|ieframe.dll|mshtml.dll|user32.dll|winsparkle.dll|kernel32.dll|ntdll.dll") and 
+ not (process.executable : ("C:\\Program Files (x86)\\Microsoft Office\\Office16\\MSACCESS.EXE", "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OUTLOOK.EXE") and 
+      process.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|wininet.dll|ntdll.dll|kernelbase.dll|wininet.dll|adal.dll|mso30win32client.dll|mso20win32client.dll|kernel32.dll|ntdll.dll")
 '''
 
 min_endpoint_version = "8.11.0"

@@ -7,7 +7,7 @@ id = "49ab63a4-ed52-49ac-855b-c298b38b0cb9"
 license = "Elastic License v2"
 name = "Egress Network Connection from Deleted Executable by Root"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 network where event.type == "start" and event.action == "connection_attempted" and process.executable like "* (deleted)" and 
@@ -24,7 +24,8 @@ not (
     "/usr/bin/*", "/bin/*", "/opt/*", "/home/*", "/usr/share/*", "/usr/lib/*", "/usr/libexec/*", "/run/k3s/*",
     "/var/lib/waagent/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*", "/usr/local/lib/*",
     "/usr/lib64/*", "/var/tmp/go-build*", "/app/extra/slack*", "/projects/hash-manager/dist/*/hash-manager*",
-    "/nextcloud/custom_apps/notify_push/bin/x86_64/notify_push*", "/usr/local/lad/bin/mdsd*"
+    "/nextcloud/custom_apps/notify_push/bin/x86_64/notify_push*", "/usr/local/lad/bin/mdsd*",
+    "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/longhorn*"
   ) or
   process.name in ("dockerd", "teleport", "zed-editor", "datacollector", "exe")
 )

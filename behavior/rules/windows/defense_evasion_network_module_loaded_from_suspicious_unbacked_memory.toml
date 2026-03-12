@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.58"
+version = "1.0.59"
 
 query = '''
 sequence by process.entity_id
@@ -150,7 +150,10 @@ sequence by process.entity_id
 
   not process.executable :
                   ("C:\\Program Files (x86)\\MultiExtractor\\MultiExtractor.exe",
-                   "C:\\Program Files (x86)\\Naverisk\\Agent\\Packages\\SoftwareScanPackage\\SoftwareScanner\\Naverisk.Agent.SoftwareScanner.exe")
+                   "C:\\Program Files (x86)\\Naverisk\\Agent\\Packages\\SoftwareScanPackage\\SoftwareScanner\\Naverisk.Agent.SoftwareScanner.exe") and
+
+  not (process.executable : "?:\\APP\\d3\\nats\\NatsCtl.exe" and process.parent.executable : "?:\\APP\\d3\\procmgr\\dserver.exe" and
+       process.code_signature.trusted == true and process.code_signature.subject_name : "d.velop AG")
   ]
  [library where
   dll.name in~ ("ws2_32.dll", "wininet.dll", "winhttp.dll") and

@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.26"
+version = "1.0.27"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -66,7 +66,9 @@ not (
     "/tmp/go-build*", "/opt/windsurf/windsurf", "/var/lib/docker/overlay2/*/usr/local/bin/node",
     "/usr/lib/x86_64-linux-gnu/lxc/rootfs/usr/lib/openssh/sshd-session", "/cav/gtm/mumps", "/usr/bin/kiro-cli-chat",
     "/bin/rphcp", "/u1/grid/*/perl/bin/perl", "/home/*/.vscode-oss/extensions/openai.chatgp*universal/bin/linux-x86_64/codex",
-    "/opt/teleport/system/bin/teleport", "/opt/claude-code/bin/claude", "/usr/cachesys/bin/cache"
+    "/opt/teleport/system/bin/teleport", "/opt/claude-code/bin/claude", "/usr/cachesys/bin/cache", "/usr/bin/sway", "/usr/bin/runc",
+    "/usr/bin/sw-engine", "/opt/nvidia/sdkmanager/sdkmanager-gui", "/usr/bin/claude-bin", "/home/*/.vscode-server/*/codex",
+    "/usr/bin/mawk", "/mnt/ssd/wda/tools/nuctl/nuctl-*-linux-amd64"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -82,7 +84,7 @@ not (
     "*/opt/oracle/instantclient", "*message*log*rotate*", "*CONTROL_BATTERY_LEVEL_POLLING*",
     "sh -c echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf",
     "sh -c *clsecho*", "/bin/bash -c /usr/local/nagios/libexec/mkls*", "/usr/bin/crun*", "*/usr/bin/ssh-keygen*",
-    "bash -c source /etc/profile.local; echo $REGISTRY_AUTH_FILE",
+    "bash -c source /etc/profile.local; echo $REGISTRY_AUTH_FILE", "*ProxmoxVE*", "*/etc/init.d/acfssihamount*",
     """/bin/sh -c echo -e "\n Hi, before stop today is $(date) \n" >> /tmp/daily_stop_start_tomcat-apnbdwef.log; /etc/init.d/tomcat-apnbdwef stop >> /tmp/daily_stop_start_tomcat-apnbdwef.log; echo -e "\n Hi, before start today is $(date) \n" >> /tmp/daily_stop_start_tomcat-apnbdwef.log; /etc/init.d/tomcat-apnbdwef start >> /tmp/daily_stop_start_tomcat-apnbdwef.log"""
   ) or
   process.command_line == """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env""" or

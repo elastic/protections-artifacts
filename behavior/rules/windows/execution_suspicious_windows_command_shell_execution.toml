@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.55"
+version = "1.0.56"
 
 query = '''
 process where event.action == "start" and
@@ -90,6 +90,7 @@ process where event.action == "start" and
                  "?:\\Program Files (x86)\\jumpcloud-agent-app\\jumpcloud-agent-app.exe",
                  "?:\\Program Files\\PostgreSQL\\*\\bin\\pg_dumpall.exe",
                  "?:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+                 "?:\\Program Files\\Microsoft SQL Server\\*\\DTS\\Binn\\ISServerExec.exe",
                  "?:\\Program Files\\Microsoft SQL Server\\MSSQL*\\MSSQL\\Binn\\sqlservr.exe",
                  "?:\\Program Files (x86)\\Microsoft Visual Studio\\*\\IDE\\devenv.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\Common?\\IDE\\devenv.exe",
@@ -97,7 +98,8 @@ process where event.action == "start" and
                  "C:\\Program Files\\NetBeans-28\\bin\\netbeans64.exe",
                  "C:\\Program Files\\Microsoft Visual Studio\\*\\DtsDebugHost.exe",
                  "C:\\Program Files (x86)\\Microsoft Visual Studio\\*\\DtsDebugHost.exe",
-                 "C:\\Program Files (x86)\\Quest Software\\*\\Toad.exe") and
+                 "C:\\Program Files (x86)\\Quest Software\\*\\Toad.exe",
+                 "?:\\Program Files\\Microsoft SQL Server\\*\\DTS\\Binn\\ISServerExec.exe") and
   not (process.args : "console|findstr" and process.parent.name : "cmd.exe") and
   not process.working_directory : "?:\\Program Files (x86)\\Spiceworks\\" and
   not (process.parent.name : "wscript.exe" and

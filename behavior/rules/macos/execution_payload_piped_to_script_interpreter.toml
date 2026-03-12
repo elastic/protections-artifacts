@@ -9,13 +9,19 @@ license = "Elastic License v2"
 name = "Payload Piped to Script Interpreter"
 os_list = ["macos"]
 reference = ["https://github.com/nnsee/fileless-elf-exec"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
 [process where event.type == "start" and event.action == "exec" and
   process.name like~ ("zsh", "sh", "bash", "python*", "terminal") and
-  process.args == "-c"]
+  process.args == "-c" and
+  (
+    process.command_line : ("*curl*|*", "*nscurl*|*", "*wget*|*", "*osascript*|*",
+                            "*/dev/tcp/*", "*base64*|*", "*openssl*|*", "*nc *|*") or
+    process.command_line : ("*curl*>*", "*wget*>*") or
+    process.command_line : "*http*|*"
+  )]
 [process where event.type == "start" and event.action == "exec" and 
   process.name like~ ("python*", "perl*", "ruby*", "osascript") and
   process.parent.name in ("sh", "bash", "zsh", "osascript") and 

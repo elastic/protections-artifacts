@@ -7,12 +7,12 @@ id = "336ada1c-69f8-46e8-bdd2-790c85429696"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via CURL"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
 
- /* renamed curl or curl running from normal users writable fodlers are very noisy */
+ /* renamed curl or curl running from normal users writable folders are very noisy */
  process.executable : ("?:\\Windows\\System32\\curl.exe", "?:\\Windows\\SysWOW64\\curl.exe") and
 
  (
@@ -42,7 +42,10 @@ process where event.action == "start" and
                       "https://blackhole.blob.core.windows.net/*") and
 
   /* avoid breaking privileged install */
-  not user.id : "S-1-5-18"
+  not user.id : "S-1-5-18" and
+  not (process.parent.name : "cmd.exe" and process.parent.command_line like~ "*oi-vscode-server*run.app*") and
+  not (process.parent.name : "cmd.exe" and process.parent.command_line like~ "*nexuspayables.com*showImage.php*") and
+  not (process.parent.command_line like~ "*VoicemodInstaller*" and process.parent.name like~ "VoicemodInstaller*")
 '''
 
 min_endpoint_version = "7.15.0"

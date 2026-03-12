@@ -7,7 +7,7 @@ id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
 license = "Elastic License v2"
 name = "System Binary Copied or Moved"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
@@ -54,7 +54,7 @@ process.args in (
     "/usr/local/bin/sigostclsh8.6", "/usr/lib/usrmerge/convert-usrmerge", "/usr/sbin/rear", "/usr/bin/byobu-status", "/sbin/rear",
     "/usr/bin/find", "/tmp/newroot/nix/store/*/activate", "/nix/store/*/activate", "/var/lib/containers/storage/overlay/nix/store/*/activate",
     "/var/lib/dpkg/tmp.ci/preinst", "/usr/sbin/nv-update-initrd", "/sbin/dracut", "/opt/SIGOS/*", "/tmp/newroot/usr/lib/dracut/dracut-install",
-    "/usr/libexec/flatpak-session-helper", "/usr/sbin/mkinitramfs", "/var/tmp/portage/*/libtool"
+    "/usr/libexec/flatpak-session-helper", "/usr/sbin/mkinitramfs", "/var/tmp/portage/*/libtool", "/tmp/newroot/usr/bin/make"
   ) or
   process.working_directory like (
     "/etc/localtime/var/lib/rancher", "/run/k3s/containerd/*", "/var/lib/docker/*", "/var/lib/rancher", "/var/tmp/portage/*"
@@ -62,7 +62,7 @@ process.args in (
   process.args like ("/var/tmp/dracut.*/initramfs/*", "/var/tmp/mkinitramfs_*", "/opt/jail/driver-jail/*") or
   process.parent.args like (
     "/var/tmp/rpm-tmp*", "/usr/sbin/rear", "/usr/lib/usrmerge/convert-usrmerge", "/usr/share/initramfs-tools/hooks/zz-busybox",
-    "./libtool", "/var/lib/dpkg/info/dash.postinst"
+    "./libtool", "/var/lib/dpkg/info/dash.postinst", "*./libtool*"
   ) or
   process.command_line in (
     "mv kubectl /usr/bin/kubectl", "mv ./kubectl /usr/bin/kubectl", "cp kubectl /usr/local/bin/kubectl",

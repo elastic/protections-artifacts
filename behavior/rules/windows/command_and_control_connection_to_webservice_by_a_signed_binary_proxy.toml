@@ -11,20 +11,20 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.67"
+version = "1.0.68"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
-  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+  [process where event.action == "start" and user.id like ("S-1-5-21*", "S-1-12-*") and
     (
      process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
                      "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe","RegSvcs.exe",
-                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe", "certutil.exe", "wmic.exe",
-                     "ssh.exe", "scp.exe", "msiexec.exe") or
+                     "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe", "certutil.exe", "ssh.exe",
+                     "scp.exe", "msiexec.exe", "bitsadmin.exe") or
      process.pe.original_file_name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", 
                                       "vbc.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe", "installutil.exe", 
                                       "RegSvcs.exe", "msxsl.exe", "xwizard.exe", "csc.exe", "curl.exe", "net.exe",
-                                      "certutil.exe", "wmic.exe", "msiexec.exe") or
+                                      "certutil.exe", "ssh.exe", "scp.exe", "msiexec.exe", "bitsadmin.exe") or
      process.code_signature.subject_name == "OpenJS Foundation" or
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
@@ -191,7 +191,8 @@ sequence by process.entity_id with maxspan=5m
         "shorturl.at",
         "bitly.cx",
         "*.netlify.app", 
-        "*.supabase.co"
+        "*.supabase.co",
+        "envs.sh"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe", "node.exe", "dfsvc.exe") and

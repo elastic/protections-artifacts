@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.action == "start" and
@@ -71,6 +71,7 @@ process where event.action == "start" and
                              "?:\\Windows\\SysWOW64\\DWWIN.EXE",
                              "?:\\WINDOWS\\system32\\dwwin.exe",
                              "?:\\Windows\\System32\\wermgr.exe",
+                             "?:\\Windows\\SysWOW64\\wermgr.exe",
                              "?:\\Windows\\System32\\taskkill.exe",
                              "?:\\Windows\\System32\\Robocopy.exe",
                              "C:\\Windows\\SysWOW64\\verclsid.exe",

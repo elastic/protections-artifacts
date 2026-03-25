@@ -7,11 +7,11 @@ id = "fb6939a2-1b54-428c-92a2-3a831585af2a"
 license = "Elastic License v2"
 name = "Connection to Dynamic DNS Provider by a Signed Binary Proxy"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
-  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+  [process where event.action == "start" and user.id like ("S-1-5-21*", "S-1-12-*") and
     (
      process.name : ("wscript.exe", "cscript.exe", "regsvr32.exe", "mshta.exe", "rundll32.exe", "vbc.exe",
                      "powershell.exe", "pwsh.exe", "msbuild.exe", "wmic.exe", "cmstp.exe", "RegAsm.exe",

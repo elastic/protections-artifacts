@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -149,7 +149,10 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
           "*DownloadFile*",
           "*DownloadString*",
           "* iex*",
+          "*;iex*",
           "* iwr*",
+          "*;iwr *",
+          "*;saps *",
           "* aQB3AHIAIABpA*",
           "*Reflection.Assembly*",
           "*Assembly.GetType*",
@@ -187,8 +190,16 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
           "*$env:computername*http*",
           "*;InVoKe-ExpRESsIoN $COntent.CONTENt;*",
           "*WebClient*example.com*",
-          "*=iwr $*;iex $*"
+          "*=iwr $*;iex $*",
+          "*gc *:*|sc *",
+          "*gci *-Recurse*start*",
+          "*Invoke-WebRequest*Start-Process*Hidden*",
+          "*Invoke-WebRequest*msiexec*"
         ) or
+
+      (process.command_line regex~ """.*p\"?o\"?w\"?e\"?r\"?s\"?h\"?e\"?l\"?l.*""" and not process.command_line : "*powershell*") or
+
+      (process.args: "bypass" and process.args : "hidden" and process.command_line : "*start-process*appdata*") or
 
       (process.args : "-c" and process.args : "&{'*") or
 
@@ -199,9 +210,9 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
       process.args : "$*$*;set-alias" or
 
       (process.command_line : ("*-encodedCommand*", "*Invoke-webrequest*", "*WebClient*", "*Reflection.Assembly*") and
-       (process.parent.name : ("explorer.exe", "python.exe") or
+       (process.parent.name : ("explorer.exe", "python*.exe") or
         (process.parent.name : "cmd.exe" and
-         descendant of [process where event.action == "start" and process.name : ("explorer.exe", "python.exe")])))
+         descendant of [process where event.action == "start" and process.name : ("explorer.exe", "python*.exe")])))
      )
 '''
 

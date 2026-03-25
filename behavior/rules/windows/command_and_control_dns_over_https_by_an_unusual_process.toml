@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "DNS Over HTTPS by an Unusual Process"
 os_list = ["windows"]
 reference = ["https://www.blackhillsinfosec.com/dns-over-https-for-cobalt-strike/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
-  [process where event.action == "start" and user.id like "S-1-5-21-*" and
+  [process where event.action == "start" and user.id like ("S-1-5-21*", "S-1-12-*") and
    (
     (process.executable : "C:\\Windows\\*.exe" and
      process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation", "Microsoft Windows") and

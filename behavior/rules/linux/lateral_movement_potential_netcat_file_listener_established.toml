@@ -7,7 +7,7 @@ id = "b3ab4040-1289-4a8a-959a-bb71c9b09afe"
 license = "Elastic License v2"
 name = "Potential Netcat File Listener Established"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -16,7 +16,10 @@ sequence by process.entity_id with maxspan=5s
   )]
   [process where event.type == "start" and event.action == "exec" and
    process.name in ("nc","ncat","netcat","netcat.openbsd","netcat.traditional") and
-   not process.command_line like ("*127.0.0.1*", "*localhost*", "-*z*")]
+   not (
+     process.command_line like ("*127.0.0.1*", "*localhost*") or
+     process.args like "-*z*"
+   )]
 '''
 
 min_endpoint_version = "7.15.0"

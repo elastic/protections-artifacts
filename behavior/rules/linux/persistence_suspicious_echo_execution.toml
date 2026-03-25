@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -68,7 +68,11 @@ not (
     "/bin/rphcp", "/u1/grid/*/perl/bin/perl", "/home/*/.vscode-oss/extensions/openai.chatgp*universal/bin/linux-x86_64/codex",
     "/opt/teleport/system/bin/teleport", "/opt/claude-code/bin/claude", "/usr/cachesys/bin/cache", "/usr/bin/sway", "/usr/bin/runc",
     "/usr/bin/sw-engine", "/opt/nvidia/sdkmanager/sdkmanager-gui", "/usr/bin/claude-bin", "/home/*/.vscode-server/*/codex",
-    "/usr/bin/mawk", "/mnt/ssd/wda/tools/nuctl/nuctl-*-linux-amd64"
+    "/usr/bin/mawk", "/mnt/ssd/wda/tools/nuctl/nuctl-*-linux-amd64", "/home/*/.local/share/uv/python/*/bin/python*", "/usr/sbin/qemu-ga",
+    "/usr/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex",
+    "/user/*/.vscode-server/*/claude", "/home/*/.nvm/versions/node/*/codex", "/scratch/user/*/npm-global/lib/node_modules/*/codex",
+    "/snap/docker/*/bin/runc", "/usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex",
+    "/usr/share/windsurf/resources/app/extensions/windsurf/bin/language_server_linux_x64"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -105,7 +109,8 @@ not (
   process.parent.args like (
     "/nix/store/*", "/usr/bin/swatchdog*", "/usr/local/hostguard/data/benchmark/module/SSH/playbook.py",
     "/tmp/kubectl*.yaml", "./mmicro-control.pl", "/usr/local/bin/vncserver", "buildah-chroot-exec", "/usr/libexec/crio/crun",
-    "/usr/bin/crun", "/usr/bin/vncserver", "/tmp/ansible_*/ansible_module_command.py", "/opt/calculus/farmer/app/farmer.py"
+    "/usr/bin/crun", "/usr/bin/vncserver", "/tmp/ansible_*/ansible_module_command.py", "/opt/calculus/farmer/app/farmer.py",
+    "openclaw-gateway", "lxc-attach", "/home/*/.npm-global/lib/node_modules/openclaw/dist/index.js"
   ) or
   process.working_directory like ("/var/local/InterMapper_Settings/Tools", "/usr/local/gateway-*", "/repo/o11y/out/*/.terraform/*") or
   (process.working_directory == "/etc/prometheus" and process.parent.command_line == "tmux -Lwarp -CC") or

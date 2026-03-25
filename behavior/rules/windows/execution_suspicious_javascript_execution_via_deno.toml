@@ -1,0 +1,46 @@
+[rule]
+description = """
+Identifies attempts to execute JavaScript using Deno with suspicious command line value. Adversaries may abuse this
+utility to execute malicious JavaScript.
+"""
+id = "ff18d24b-2ba6-4691-a17f-75c4380d0965"
+license = "Elastic License v2"
+name = "Suspicious JavaScript Execution via Deno"
+os_list = ["windows"]
+reference = ["https://deno.com/"]
+version = "1.0.1"
+
+query = '''
+process where event.action== "start" and
+ (process.name : "deno.exe" or process.pe.original_file_name == "deno.exe" or process.code_signature.subject_name == "Deno Land Inc.") and
+  process.command_line : ("*javascript*base64*", "*eval(*", "*http*", "*javascript*import*")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

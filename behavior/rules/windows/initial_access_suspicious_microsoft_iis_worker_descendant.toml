@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "start" and
@@ -47,13 +47,12 @@ process where event.action == "start" and
 )
 /* False Positives */
 and not (process.name : "cmd.exe" and process.parent.args : "Icims" and process.command_line : "*vault.azure.net*" and process.parent.name : "w3wp.exe") and
-not (process.name : "curl.exe" and process.args : "https://installerapi.lansweeper.com/v1/cloudsyncversions") and
 not (process.name : "powershell.exe" and process.command_line : "\"powershell.exe\" netsh http show servicestate | ?{$_.Tostring().Contains(*") and
 process.hash.sha256 != "fe1d2ad2781879dc05039d87bd12259f3bcf411c66c925d31827d6a757d33ec4" and
-not (process.name == "curl.exe" and process.args == "https://discovery-gateway.lansweeper.com/versions/v1/cloudSyncVersions" and
-     process.parent.name == "w3wp.exe" and process.parent.args : "Lansweeper AppPool") and
 not (process.name : "cmd.exe" and process.parent.name:"w3wp.exe" and
-     process.args:"'HttpsPortDesktopAgent'),"  and process.args : "echo" and process.parent.args : "DefaultAppPool")
+     process.args:"'HttpsPortDesktopAgent'),"  and process.args : "echo" and process.parent.args : "DefaultAppPool") and
+not (process.name == "conhost.exe" and process.parent.name == "cmd.exe") and
+not (process.name : "curl.exe" and process.args : "https*.lansweeper.com" and process.parent.name : "w3wp.exe" and process.parent.args : "Lansweeper AppPool")
 '''
 
 min_endpoint_version = "7.15.0"

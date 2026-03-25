@@ -7,7 +7,7 @@ id = "5c6c166c-a894-4263-918a-c7632014a486"
 license = "Elastic License v2"
 name = "Remote Memory Write to Trusted Target Process"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -56,7 +56,9 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\syswow64\\cwbunpls.dll",
                               "c:\\windows\\system32\\shsvcs.dll",
                               "c:\\windows\\system32\\sxssrv.dll",
-                              "c:\\windows\\syswow64\\pgpce.dll") and
+                              "c:\\windows\\syswow64\\pgpce.dll", 
+                              "c:\\windows\\system32\\hmpalert.dll", 
+                              "c:\\windows\\system32\\cloudap.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("mfehcthe.dll", "system.core.ni.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
   not (process.thread.Ext.call_stack_final_user_module.name == "mscordbi.dll" and
@@ -228,7 +230,9 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "250c5f755d35a56189c7d557f1ea3b2827f26ff83c563df8a6cedb0114777fc0",
                                    "f3553d5c7a36f67eb9934cc372ded8c2d592ae671ebd4297b0fbfd1cedad4205",
                                    "0740759a6e479b0ff718e00c6f2d5f3c67db2ac31c787d2caa7e683588c23a03",
-                                   "4e0421b9849e2f873399832c44c1e858eef3dc37ac2ccd6dcb340ad35dfab63a") and
+                                   "4e0421b9849e2f873399832c44c1e858eef3dc37ac2ccd6dcb340ad35dfab63a", 
+                                   "cb7ab3788d10940df874acd97b1821bbb5ee4a91f3eec11982bb5bf7a3c96443", 
+                                   "5b6929aaaa7bd05bcaa5baa7ce8c4243804d6989f1c97ca44726ed124b49e9bb") and
   not (process.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio*\\bin\\lib.exe" and
        Target.process.executable : "C:\\Program Files (x86)\\Microsoft Visual Studio*.exe" and process.thread.Ext.call_stack_final_user_module.name == "qt5xml.dll")
 '''

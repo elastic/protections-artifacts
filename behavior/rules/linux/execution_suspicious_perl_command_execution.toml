@@ -8,7 +8,7 @@ id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
 license = "Elastic License v2"
 name = "Suspicious Perl Command Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -20,7 +20,10 @@ process.args == "-e" and process.command_line like~ (
   "*Marshal.load(*", "*Fiddle.dlopen(*", "*Fiddle::Function.new(*", "*base64*", "*zlib*", 
   "*net/http*", "*socket.new*", "*open-uri*", "*pack(*"
 ) and not (
-  process.working_directory like~ ("/builds/*", "/root/.perl-cpm/*/MIME-tools-*", "/root/.cpan*", "/scratch/*") or
+  process.working_directory like~ (
+    "/builds/*", "/root/.perl-cpm/*/MIME-tools-*", "/root/.cpan*", "/scratch/*", "/emulator/snmpAgent/net-snmp*",
+    "/data1/Axway/TSIM/is/instances/*", "/build/linux-x86_64/__build__/__vmbuild__"
+  ) or
   process.command_line like (
     "perl -e eval { use MIME::Base64; print 1; }", "/home/*/bin/sendEmail*", "*transfer fish server*",
     """perl -e $|=1; print "### 100 transfer fish server\n"; while(<STDIN>) { last if /^__END__/; $code.=$_; } exit(eval($code))""",

@@ -11,12 +11,12 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
  /* execution of an unsigned PEfollowed by dns request to dynamic dns provider */
-  [process where event.action == "start" and user.id : "S-1-5-21-*" and
+  [process where event.action == "start" and user.id like ("S-1-5-21*", "S-1-12-*") and
    not process.code_signature.trusted == true and
    process.executable : ("?:\\Users\\*", "?:\\ProgramData\\*", "?:\\Windows\\Temp\\*", "?:\\Windows\\Tasks\\*") and 
    not process.hash.sha256 : 

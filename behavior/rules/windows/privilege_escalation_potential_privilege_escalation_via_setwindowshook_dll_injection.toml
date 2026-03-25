@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identifies a potentially untrusted DLL loaded by a privileged account from a suspicious location where the call stack
+indicates a user-mode callback path consistent with SetWindowsHookEx-style window hook execution. Adversaries can abuse
+window hooks to force a privileged process to load attacker-controlled DLLs and elevate privileges.
+"""
+id = "6eec7771-953c-46a0-9765-93000de1c237"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via SetWindowsHook DLL Injection"
+os_list = ["windows"]
+reference = [
+    "https://attack.mitre.org/techniques/T1055/001/",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa",
+]
+version = "1.0.1"
+
+query = '''
+library where
+  user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+  not dll.code_signature.status like ("trusted", "errorCode_endpoint*") and
+  process.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|user32.dll|ntdll.dll" and
+  (dll.Ext.relative_file_creation_time <= 900 or dll.Ext.relative_file_name_modify_time <= 900) and
+  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "?:\\Windows\\System32\\ntdll.dll!KiUserCallbackDispatcher*") and
+  not dll.path : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*", "?:\\Windows\\System32\\*")
+'''
+
+min_endpoint_version = "8.12.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.001"
+name = "Dynamic-link Library Injection"
+reference = "https://attack.mitre.org/techniques/T1055/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.12.0"

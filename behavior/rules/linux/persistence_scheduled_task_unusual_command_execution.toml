@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("systemd", "cron", "crond") and
@@ -49,7 +49,8 @@ not (
     "sudo curl*raw.githubusercontent.com/*/backup-scripts/refs/heads/main/fortigate-backup.sh*",
     "/usr/bin/curl -s -H*zendesk.com/api/v2/ticket_metrics.json*",
     "wget --proxy=off*cat*batch_trigger.log",
-    "export PM2_HOME=*"
+    "export PM2_HOME=*",
+    "/usr/bin/curl*/var/log/checkdiskusage.log", "ps*/opt/fortinet/fortisiem/linux-agent/tmp/*"
   ) or 
   process.working_directory like "/opt/nessus_agent/*"
 )

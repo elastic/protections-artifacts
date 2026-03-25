@@ -7,7 +7,7 @@ id = "40bec6eb-e93b-4d09-8265-66bba186e332"
 license = "Elastic License v2"
 name = "Potential Reverse Shell via Named Pipe"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -21,7 +21,7 @@ process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish
     process.parent.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*"
   )
 ) and
-not (process.name == "mknod" and process.args like ("/var/tmp/dracut*", "/tmp/dracut.*", "/var/tmp/portage/*", "/tmp/dib_build*"))
+not (process.name == "mknod" and process.args like ("/var/tmp/dracut*", "/tmp/dracut.*", "/var/tmp/portage/*", "/tmp/dib_build*", "/tmp/bootstrap-salt.logpipe"))
 '''
 
 min_endpoint_version = "7.15.0"

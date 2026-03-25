@@ -8,7 +8,7 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -20,6 +20,9 @@ process.args == "-c" and process.command_line : "* exec -a *" and not (
     "/usr/NX/bin/nxnode.bin", "/usr/bin/gnome-shell", "/var/lib/dpkg/info/udev.postinst", "/usr/bin/bcompare", 
     "/usr/bin/su"
   ) or
+  process.parent.executable like ("/home/*/.local/share/claude/*", "/home/*/.local/bin/klaude") or
+  process.parent.args == "claude" or
+  process.parent.name == "claude" or
   process.command_line like (
     "*/tmp/fzf-args*", "/opt/sp/serverpilot/*", "*/opt/forticlientems/*", "*WarpTerminal*", "/bin/bash -c exec -a bash*",
     "/bin/bash -c exec -a sp-agent /opt/sp/serverpilot/agent/bin/sp-agent", """bash -c exec -a "$0" "$@" reboot /usr/sbin/reboot.no-molly-guard""",
@@ -31,7 +34,8 @@ process.args == "-c" and process.command_line : "* exec -a *" and not (
     "exec -a sp-monitor /opt/sp/serverpilot/monitor/bin/monitor",
     "exec -a sp-stats /opt/sp/serverpilot/stats/bin/sp-stats",
     "/usr/bin/bcompare", "/usr/lib64/beyondcompare/BCompare"
-  )
+  ) or
+  process.parent.command_line == "runc init"
 )
 '''
 

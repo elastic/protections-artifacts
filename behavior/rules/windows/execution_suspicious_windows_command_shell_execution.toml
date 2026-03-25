@@ -7,7 +7,7 @@ id = "8dd7588d-fc28-40c0-adfb-14789c763984"
 license = "Elastic License v2"
 name = "Suspicious Windows Command Shell Execution"
 os_list = ["windows"]
-version = "1.0.56"
+version = "1.0.57"
 
 query = '''
 process where event.action == "start" and
@@ -20,13 +20,13 @@ process where event.action == "start" and
   "* explorer*%CD%*", "*%cd%\\*.js*", "*attrib*%CD%*", "*/?cMD<*", "*/AutoIt3ExecuteScript*..*", "*&cls&cls&cls&cls&cls&*",
   "*&#*;&#*;&#*;&#*;*", "* &&s^eT*", "*& ChrW(*", "*&explorer /root*", "*start __ & __\\*", "*findstr /V /L *forfiles*",
   "*=wscri& set *", "*http*!COmpUternaME!*", "*start *.pdf * start /min cmd.exe /c *\\\\*", "*pip install*System.Net.WebClient*",
-  "*Invoke-WebReques*Start-Process*", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*",
+  "*Invoke-WebRequest*Start-Process*", "*iwr *saps *", "*-command (Invoke-webrequest*", "*copy /b *\\\\* ping *-n*", "*echo*.ToCharArray*",
   "*curl --ntlm -u*", "*bat'; iwr $*", "*http*.Content;*", "*&(gcm i?x)*", "*!*!*!*!*!*!*", "*&& !*!!*", "*for %? in (?) do @set*",
-  "*QUIT>>?&FTP/s:*", "*iwr -Uri*Start-Process*", "*irm https*| iex*", "*^S^T^a*",  "*javascript:alert*",
+  "*QUIT>>?&FTP/s:*", "*iwr *Start-Process*", "*irm https*| iex*", "*^S^T^a*",  "*javascript:alert*",
   "* /v /c *&&set *&&set *&&set *&&set *&&set*", "*net use *@ssl*rundll32*", "*echo F | xcopy*/h /y &&*",
   "* if /i \"%cd%\"==\"C:\\Windows\\System32\" ( echo *", "* if /i \"%cd%\"==\"C:\\Windows\\System32\" ( msg*",
   "* if /i \"%cd%\"==\"C:\\Windows\\System32\" (mshta *", "*/c*start*.doc&exit*", "*/k*start msedge*http*&*", "*)) | Invoke-Expression\"", 
-  "*/c *.bat&*.pdf*", "*/c *.bat&*.mp4*") or
+  "*/c *.bat&*.pdf*", "*/c *.bat&*.mp4*", "*set \"*& set \"*& set \"* call %*") or
 
   (process.args_count == 3 and process.args : "%*%" and process.args:"/c") or
 

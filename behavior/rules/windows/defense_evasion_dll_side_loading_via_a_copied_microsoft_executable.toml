@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.microsoft.com/en-us/security/blog/2018/03/01/finfisher-exposed-a-researchers-tale-of-defeating-traps-tricks-and-complex-virtual-machines/",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -39,7 +39,7 @@ sequence by user.id with maxspan=5m
  ] by file.path
  [library where
   process.code_signature.subject_name : "Microsoft*" and process.code_signature.trusted == true and
-  not startswith~(dll.name, process.name) and
+  not startswith~(dll.name, process.name) and dll.hash.sha256 != null and 
   (dll.Ext.relative_file_creation_time <= 500 or dll.Ext.relative_file_name_modify_time <= 500) and
   not dll.code_signature.status : "trusted" and
 
@@ -53,7 +53,8 @@ sequence by user.id with maxspan=5m
                "6c48d66731fcf6a60e7aef335c91e55ee27743df9912856c63302f7dfecde906",
                "2e0559d248a68402d209d65e6009c05628fe6c30f892a1047fa3365a89d7d9a6",
                "c7601b2f8b2439211433de59bda62a09347480bfdbbe03b4c560aa350c543e3a",
-               "7e1a25b50775cb246303ae162bba86c9d5fe2bd7fa98044899ffb58919b4ed3a") and
+               "7e1a25b50775cb246303ae162bba86c9d5fe2bd7fa98044899ffb58919b4ed3a", 
+               "44f3a05334de6ca0b43ebd17f6c7f1935630e026f049f28828566e364b7f41aa") and
 
   not (dll.path : "?:\\$WINDOWS.~BT\\Sources\\*.dll" and process.executable : "?:\\$WINDOWS.~BT\\Sources\\SetupHost.exe") and
   not dll.path : "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\*.dll"

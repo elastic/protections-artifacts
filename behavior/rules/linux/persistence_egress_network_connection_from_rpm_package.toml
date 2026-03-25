@@ -7,7 +7,7 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence with maxspan=3s
@@ -24,6 +24,7 @@ sequence with maxspan=3s
        )
      ) or
      (process.name == "curl" and process.args == "sudo" and process.args == "mdatp" and process.args == "--cacert") or
+     process.command_line like "runuser -u mdatp*" or
      process.name == "sudo"
    )
   ] by process.entity_id

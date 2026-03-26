@@ -157,3 +157,31 @@ rule Windows_Trojan_Vidar_4ed00a37 {
         all of them
 }
 
+rule Windows_Trojan_Vidar_540563cf {
+    meta:
+        author = "Elastic Security"
+        id = "540563cf-c0d4-4720-b465-85469366a600"
+        fingerprint = "6a804cc2bf7b71497cd70c653763bd2359d1716921adb2943425f03bd2521da1"
+        creation_date = "2026-01-30"
+        last_modified = "2026-03-17"
+        threat_name = "Windows.Trojan.Vidar"
+        reference_sample = "5293d0caca719e681358502968b75c2209e78d2822975a9ab54cec10f0f4dc57"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 48 8D 15 ?? ?? FF FF 41 B8 00 01 00 00 E8 ?? ?? ?? 00 48 8D 0D }
+        $b = { 48 00 6F 00 73 00 74 00 4E 00 61 00 6D 00 65 00 00 00 55 00 73 00 65 00 72 00 4E 00 61 00 6D 00 65 00 00 00 50 00 61 00 73 00 73 00 77 00 6F 00 72 00 64 00 00 00 50 00 6F 00 72 00 74 00 4E 00 75 00 6D 00 62 00 65 00 72 }
+        $c = { 8D 48 01 0F AF C8 83 E1 01 74 02 EB FE C3 }
+        $d = { 31 C0 41 80 3C 24 31 0F 94 C0 89 86 14 04 00 00 }
+        $e = { 31 C0 41 80 3C 24 31 0F 94 C0 89 86 38 04 00 00 }
+        $f = { 45 31 C0 41 80 3C 24 31 41 0F 94 C0 44 89 86 24 04 00 00 }
+        $g = "File Grabber Rules" fullword
+        $h = "Wallet Rules" fullword
+        $i = "%08lX%04lX%08lX" fullword
+    condition:
+        5 of them
+}
+

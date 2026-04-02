@@ -8,7 +8,7 @@ id = "028d01ae-bfbf-438e-a0d0-23aee55ea5c9"
 license = "Elastic License v2"
 name = "Suspicious Python Command Execution"
 os_list = ["linux"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name like "python*" and
@@ -29,6 +29,12 @@ process.args == "-c" and (
   ) or
   (
     process.command_line like~ ("*base64*", "*binascii*", "*zlib*", "*gzip*", "*bz2*", "*lzma*", "*marshal.loads(*", "*pickle.loads(*") and
+    process.command_line like~ ("*exec(*", "*eval(*")
+  ) or
+  (
+    process.command_line like~ "*import *wave*" and
+    process.command_line like~ "*wave.open*" and 
+    process.command_line like~ "*readframes*" and 
     process.command_line like~ ("*exec(*", "*eval(*")
   )
 ) and process.working_directory like (

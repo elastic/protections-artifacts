@@ -12,12 +12,26 @@ reference = [
     "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
     "https://nodejs.org/api/child_process.html",
 ]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.action == "exec" and
  process.args == "-e" and process.command_line like~ "*require*child_process*" and
  process.command_line like~ "*spawn*" and
+ (
+   /* Spawning shells with inline commands */
+   process.command_line like~ ("*spawn*bash*-c*", "*spawn*sh*-c*", "*spawn*zsh*-c*") or
+   /* Spawning curl/wget for download */
+   process.command_line like~ ("*spawn*curl*", "*spawn*wget*") or
+   /* Spawning osascript */
+   process.command_line like~ "*spawn*osascript*" or
+   /* Spawning python with inline code */
+   process.command_line like~ "*spawn*python*-c*" or
+   /* Base64 decode patterns */
+   process.command_line like~ "*spawn*base64*" or
+   /* Execution from suspicious staging paths */
+   process.command_line like~ ("*spawn*/tmp/*", "*spawn*/Users/Shared/*", "*spawn*/private/tmp/*", "*spawn*/var/tmp/*")
+ ) and
  not process.executable like
              ("/usr/bin/grep",
               "/Applications/Docker.app/Contents/Resources/bin/docker",

@@ -1,0 +1,88 @@
+[rule]
+description = """
+Detects potential stack spoofing via ROP gadget in the context of module load events. Flags library loads where the call
+stack exhibits patterns associated with return-oriented programming used to alter call stack appearance.
+"""
+id = "b4d9f1e8-6c0a-2e5b-d3f7-9a8c4e1b0d2f"
+license = "Elastic License v2"
+name = "Stack Spoofing via ROP Gadget for DLL Load"
+os_list = ["windows"]
+reference = [
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+    "https://attack.mitre.org/techniques/T1036/",
+]
+version = "1.0.1"
+
+query = '''
+library where
+  dll.name in (
+    "ws2_32.dll",
+    "wininet.dll",
+    "winhttp.dll",
+    "system.directoryservices.ni.dll",
+    "system.management.automation.ni.dll",
+    "netapi32.dll", 
+    "dnsapi.dll"
+  ) and
+  process.thread.Ext.call_stack_summary in (
+    "ntdll.dll|kernelbase.dll|dfshim.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|dfshim.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|archiveint.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|archiveint.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|authfwsnapin.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|authfwsnapin.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|fluenceds.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|fluenceds.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|hostnetsvc.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|hostnetsvc.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|bingmaps.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|bingmaps.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|maprouter.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|maprouter.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|mfc140.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|mfc140.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|mshtml.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|mshtml.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|printui.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|printui.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|shell32.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|shell32.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|urlmon.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|urlmon.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|winipcsecproc.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|winipcsecproc.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|kernelbase.dll|windows.networking.backgroundtransfer.contentprefetchtask.dll|kernel32.dll|ntdll.dll",
+    "ntdll.dll|windows.networking.backgroundtransfer.contentprefetchtask.dll|kernel32.dll|ntdll.dll"
+  ) and
+  not (dll.name in ("netapi32.dll", "ws2_32.dll") and process.thread.Ext.call_stack_summary in ("ntdll.dll|kernelbase.dll|printui.dll|kernel32.dll|ntdll.dll", "ntdll.dll|printui.dll|kernel32.dll|ntdll.dll")) and
+  not (dll.name == "wininet.dll" and process.thread.Ext.call_stack_summary == "ntdll.dll|mshtml.dll|kernel32.dll|ntdll.dll")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.10.0"

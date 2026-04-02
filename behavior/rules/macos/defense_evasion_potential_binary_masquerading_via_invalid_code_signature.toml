@@ -1,17 +1,18 @@
 [rule]
 description = """
-Identifies binaries that have been identically named to Apple programs and have invalid or untrusted code signatures.
-Adversaries may attempt to manipulate the name of a process to make it appear legitimate or benign.
+Identifies binaries that have been identically named to Apple or popular third-party programs and have invalid or
+untrusted code signatures. Adversaries may attempt to manipulate the name of a process to make it appear legitimate or
+benign.
 """
 id = "4154c8ce-c718-4641-80db-a6a52276f1a4"
 license = "Elastic License v2"
 name = "Potential Binary Masquerading via Invalid Code Signature"
 os_list = ["macos"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 process where event.action == "exec" and
- process.name like ("com.apple.*", "com.jamf.*", "jamf*") and
+ process.name like ("com.apple.*", "com.jamf.*", "jamf*", "zoom.us") and
  (process.code_signature.trusted == false or process.code_signature.exists == false) and
  not (process.code_signature.subject_name in ("Software Signing", "com.apple.WebKit.Networking", "com.apple.WebKit.WebContent") and
       process.name in
@@ -26,7 +27,8 @@ process where event.action == "exec" and
  not process.Ext.effective_parent.executable in ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
                                                 "/System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd") and
  not (process.Ext.effective_parent.executable == "/Applications/Visual Studio Code.app/Contents/MacOS/Electron" and process.name == "com.apple.WebKit.WebContent.Development") and
- not process.code_signature.signing_id == "com.apple.WebKit.WebContent" and
+ not (process.code_signature.signing_id in ("com.apple.WebKit.WebContent", "us.zoom.xos") and process.code_signature.trusted == true) and
+ not (process.name == "zoom.us" and process.code_signature.subject_name == "Developer ID Application: Zoom Video Communications, Inc. (BJ4HAAB9B3)" and process.code_signature.team_id == "BJ4HAAB9B3") and
  not process.hash.sha256 in ("7519ac10c724566b7a57607cc2fc88a876bdd91a585e690c2480093b582c73e6", "930b075c52f829efcd431cee324403e1e8b03bf2039b1343aae31570034d30e2")
 '''
 

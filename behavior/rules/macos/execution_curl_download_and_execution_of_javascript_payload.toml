@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Curl Download and Execution of JavaScript Payload"
 os_list = ["macos"]
 reference = ["https://github.com/its-a-feature/Mythic"]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=15s
@@ -21,11 +21,13 @@ sequence by process.parent.entity_id with maxspan=15s
     not process.Ext.effective_parent.executable in
                                                   ("/usr/local/jamf/bin/jamf",
                                                    "/Library/Addigy/auditor",
+                                                   "/opt/jc/bin/jumpcloud-agent",
                                                    "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon", 
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon", 
                                                    "/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfManagementService.app/Contents/MacOS/JamfManagementService") and 
     not process.command_line : ("osascript -e display dialog \"Please advise your Support Representative of the following error:\\r\\r• Dialog Team ID verification failed\\r\\r\" with title \"Setup Your Mac: Error\" buttons {\"Close\"} with icon caution", 
-                                "osascript -e display dialog \"Please advise your Support Representative of the following error:\\r\\r• Dialog Team ID verification failed\\r\\r\" with title \"App Auto-Patch: Error\" buttons {\"Close\"} with icon caution")
+                                "osascript -e display dialog \"Please advise your Support Representative of the following error:\\r\\r• Dialog Team ID verification failed\\r\\r\" with title \"App Auto-Patch: Error\" buttons {\"Close\"} with icon caution") and
+    not process.parent.command_line == "/bin/bash /Library/Management/super/super"
     ]
 '''
 

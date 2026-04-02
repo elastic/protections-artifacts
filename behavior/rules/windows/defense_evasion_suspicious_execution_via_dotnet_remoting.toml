@@ -12,7 +12,7 @@ reference = [
     "https://www.tiraniddo.dev/2017/07/dg-on-windows-10-s-executing-arbitrary.html",
     "https://www.netspi.com/blog/technical/adversary-simulation/re-animating-activitysurrogateselector/",
 ]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and process.parent.name : "?*" and
@@ -30,9 +30,15 @@ process where event.action == "start" and process.parent.name : "?*" and
    not process.parent.executable : "?:\\Program Files\\Autodesk\\*.exe" and
 
    not (process.parent.code_signature.subject_name == "Autodesk, Inc." and process.parent.code_signature.trusted == true) and
+
+   not (process.code_signature.trusted == true and process.code_signature.subject_name : ("Autodesk, Inc.", "KAPPA Engineering")) and
    
+   not (process.parent.code_signature.subject_name : "KAPPA Engineering" and process.parent.code_signature.trusted == true) and
+
+    not process.parent.executable : "?:\\Program Files\\KAPPA\\Workstation *\\Launcher\\KAPPA.exe" and
+
    not descendant of [process where event.action == "start" and
-                      process.executable : "?:\\Program Files\\Autodesk\\*.exe"] and
+                      process.executable : ("?:\\Program Files\\KAPPA\\Workstation*\\Launcher\\KAPPA.exe",  "?:\\Program Files\\Autodesk\\*.exe")] and
 
    not (process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\System32\\WerFault.exe") and
         process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework*\\AddInProcess.exe")

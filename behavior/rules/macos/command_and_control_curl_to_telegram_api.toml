@@ -1,20 +1,20 @@
 [rule]
 description = """
-Detects when curl is used to access a Telegram API endpoint. Several malware samples recently have been see utilizing
-Telegram as a C2 and payload delivery channel.
+Detects when curl is used to access a Telegram API or web endpoint. Several malware samples have been observed utilizing
+Telegram as a C2, payload delivery, and domain rotation channel, including via t.me bot URLs.
 """
 id = "479a2a9e-caba-43ea-b28b-88b1b242edd2"
 license = "Elastic License v2"
 name = "Curl to Telegram API"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and 
   process.name in ("curl", "nscurl") and 
   not (process.parent.name == "Telegram" or process.Ext.effective_parent.name == "Telegram")]
-[network where event.type == "start" and process.name in ("curl", "nscurl") and destination.domain in ("api.telegram.org", "api.telegram.org.")]
+[network where event.type == "start" and process.name in ("curl", "nscurl") and destination.domain in ("api.telegram.org", "api.telegram.org.", "t.me", "t.me.")]
 '''
 
 min_endpoint_version = "8.16.0"

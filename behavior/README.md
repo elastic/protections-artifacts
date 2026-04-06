@@ -20,20 +20,15 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.112 | 4eab884619cc9f1cb25b003c97405f504d7cad82205abc31be1d121aff13e127 |
-| production-rules-macos-v1 | 1.0.112 | 887411a92bcb71406278c1150a194a86b98fc95e23e36d7f39a96fcee06647a1 |
-| production-rules-windows-v1 | 1.0.112 | fb8cdff95519f46b7db1454bcc0567847e811daa88155fdf0f890eb3daae4349 |
+| production-rules-linux-v1 | 1.0.113 | 8bdf5d935f6543979795c03949a45165f7a589253b92236e0189cae32ec08232 |
+| production-rules-macos-v1 | 1.0.113 | 0d376ef9df53e154c95ef394a52baa44967fa0692a912180302f5b8eaceac4b6 |
+| production-rules-windows-v1 | 1.0.113 | 99469de01670e7fccc73b9ba55c56d40aa60db0ece882a951d280b063decb400 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.112', '1.0.111') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.113', '1.0.112') by OS/MITRE Tactic.
 
-| Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
-|----------------------|-----------|---------|---------|-------------------|
-| Defense Evasion      |         1 |       0 |       0 |                 1 |
-| Execution            |         1 |       1 |       0 |                 2 |
-| Privilege Escalation |         2 |       0 |       0 |                 2 |
-| Total by OS          |         4 |       1 |       0 |                 5 |
+No 'production' rule updates have been made between versions 1.0.113 and 1.0.112
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 

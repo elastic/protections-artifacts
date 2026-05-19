@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -85,7 +85,10 @@ not (
     "/home/*/.local/share/fnm/node-versions/*/installation/lib/node_modules/opencode-ai/bin/.opencode",
     "/var/lib/docker/overlay2/*/merged/app/node_modules/@anthropic-ai/claude-agent-sdk-linux-x64/claude",
     "/usr/local/share/npm-global/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe", "/home/*/.opencode/bin/opencode",
-    "/mnt/*/user/home/*/.local/share/claude/versions/*"
+    "/mnt/*/user/home/*/.local/share/claude/versions/*", "/usr/local/bin/runc", "/home/*/.npm-global/bin/claude",
+    "/opt/.local/share/claude/versions/*", "/home/*/.npm/_npx/*/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+    "/usr/local/bin/opencode", "/home/linuxbrew/.linuxbrew/Cellar/fd/*/bin/fd",
+    "/scratch/user/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -134,7 +137,8 @@ not (
   (process.parent.name == "node" and process.args == "extglob") or
   (process.parent.name like "python*" and process.args like ("declare -A categories*", "files=*", "set -x*$BACKUP_NAME.tar.gz*", "*while_finding_grubconfigs*")) or
   (process.parent.executable == "/usr/local/bin/php" and process.args like "timeout*/var/www/html/storage/app/ssh/mux/mux*") or
-  (process.parent.executable == "/usr/bin/perl" and process.command_line like "*/tmp/recover_SAP/settings*")
+  (process.parent.executable == "/usr/bin/perl" and process.command_line like "*/tmp/recover_SAP/settings*") or
+  (process.parent.executable == "/bin/coreutils" and process.command_line == "bash -c echo > /dev/tcp/dynamodb-local/8000")
 )
 '''
 

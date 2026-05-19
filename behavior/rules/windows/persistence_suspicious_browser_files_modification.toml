@@ -7,7 +7,7 @@ id = "7df7fca3-8a91-4a54-9799-0478a90ae326"
 license = "Elastic License v2"
 name = "Suspicious Browser Files Modification"
 os_list = ["windows"]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 any where event.category in ("file", "registry") and not event.action in ("deletion", "query") and
@@ -40,8 +40,13 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1176"
-name = "Browser Extensions"
+name = "Software Extensions"
 reference = "https://attack.mitre.org/techniques/T1176/"
+[[threat.technique.subtechnique]]
+id = "T1176.001"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/001/"
+
 
 
 [threat.tactic]

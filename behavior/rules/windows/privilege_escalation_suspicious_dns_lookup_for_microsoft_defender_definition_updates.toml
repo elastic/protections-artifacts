@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies a successful DNS resolution for definitionupdates.microsoft.com from a non-service user context where the
+requesting process is unsigned or untrusted, or is a common living-off-the-land binary (rundll32.exe, regsvr32.exe).
+This matches a behavioral prerequisite described in public research on BlueHammer-style attacks that chain Defender
+update workflows with Volume Shadow Copy and other Windows features to escalate privileges. Legitimate Defender and
+Windows Update components are typically trusted and run in protected contexts; this combination is higher risk and
+warrants review.
+"""
+id = "e3f5a7b9-1c2d-4e6f-8a0b-2c4d6e8f0a1b"
+license = "Elastic License v2"
+name = "Suspicious DNS Lookup for Microsoft Defender Definition Updates"
+os_list = ["windows"]
+reference = [
+    "https://www.cyderes.com/howler-cell/windows-zero-day-bluehammer",
+    "https://github.com/Nightmare-Eclipse/BlueHammer",
+]
+version = "1.0.1"
+
+query = '''
+dns where event.action == "lookup_result" and
+  dns.question.name == "definitionupdates.microsoft.com" and
+  not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+  (
+    process.code_signature.exists == false or
+    process.code_signature.trusted == false or
+    process.name : ("rundll32.exe", "regsvr32.exe")
+  )
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.10.0"

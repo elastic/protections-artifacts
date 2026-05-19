@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Windows Service Execution"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/twice-around-the-dance-floor-with-pipedance"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "start" and
@@ -20,7 +20,7 @@ process where event.action == "start" and
    /* Silver psexec default pattern */
    (process.command_line : "?:\\windows\\Temp\\*.exe \"\"" and process.args_count == 2)
    ) and
-   not process.executable : "\\\\ENT*\\admin$\\smstsvc_passive_*.exe"
+   not process.executable : ("\\\\ENT*\\admin$\\smstsvc_passive_*.exe", "\\Device\\Mup\\*\\c$\\Program Files\\SIXPaymentServicesLtd\\*\\eftdvs.exe")
 '''
 
 min_endpoint_version = "7.15.0"

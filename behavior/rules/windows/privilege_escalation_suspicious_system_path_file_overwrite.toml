@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies attempts to overwrite protected Windows system image (PE header) under System32 or SysWOW64. This pattern may
+indicate exploitation attempting to replace trusted system binaries for privilege escalation.
+"""
+id = "c4e8f2a6-9d1b-4c7e-a3f0-8b2e6d1c5a9f"
+license = "Elastic License v2"
+name = "Suspicious System Path File Overwrite"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+file where event.action == "overwrite" and not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20") and 
+ (file.extension : ("exe", "dll") or file.Ext.header_bytes like "4d5a*") and 
+ process.thread.Ext.call_stack_summary like "ntdll.dll*" and not process.thread.Ext.call_stack_summary like "ntdll.dll*|kernelbase.dll|*" and 
+ file.path : ("C:\\Windows\\System32\\*", 
+              "C:\\Windows\\SysWOW64\\*", 
+              "C:\\Program Files (x86)\\Microsoft\\*", 
+              "C:\\Program Files\\Microsoft\\*", 
+              "C:\\Program Files\\Windows*",  
+              "C:\\Program Files (x86)\\Windows*") and 
+ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "C:\\Windows\\System32\\ntdll.dll!NtCreateFile*") and 
+ not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and 
+ not (process.code_signature.subject_name : ("Zebra Technologies Corporation", "Zebra Technologies Corporation", "Euro Plus d.o.o.", "Amyuni Technologies, Inc.", "Amyuni Technologies, Inc.") and 
+      process.code_signature.trusted == true) and 
+ not file.path : ("C:\\WINDOWS\\system32\\spool\\DRIVERS\\x64\\*", 
+                  "C:\\WINDOWS\\system32\\Drivers\\*",
+                  "C:\\WINDOWS\\SysWOW64\\RongtaUSBMonUI.dll", 
+                  "C:\\WINDOWS\\SysWOW64\\RongtaUSBMon.dll", 
+                  "C:\\WINDOWS\\system32\\RongtaUSBMonUI.dll", 
+                  "C:\\Windows\\SysWOW64\\CyberInstallerUninstallerSystem\\*.dll")
+'''
+
+min_endpoint_version = "8.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.15.0"

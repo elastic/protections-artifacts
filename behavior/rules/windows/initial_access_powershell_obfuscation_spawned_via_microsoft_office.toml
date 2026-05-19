@@ -11,7 +11,7 @@ reference = [
     "https://github.com/danielbohannon/Invoke-Obfuscation",
     "https://www.elastic.co/security-labs/effective-parenting-detecting-lrpc-based-parent-pid-spoofing",
 ]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -75,7 +75,8 @@ process where event.action == "start" and
   not process.command_line : "powershell.exe -NoProfile -NoLogo -InputFormat Text -NoExit -ExecutionPolicy Unrestricted -Command -" and
   not (process.name : "powershell.exe" and process.args : "$ErrorActionPreference='silentlycontinue'; $tmp = (Get-Item -Path $env:PROGRAMFILES\\Google\\Chrome\\Application\\chrome.exe).VersionInfo.FileVersion; if ($tmp) {echo $tmp; Exit;}; $tmp = (Get-Item -Path $env:PROGRAMFILES") and
   not (process.parent.name : "cmd.exe" and process.parent.args : "chcp 65001 & powershell -NonInteractive -WindowStyle Hidden -command &") and
-  not (process.args : "-NoLogo" and process.args : "\\\\*.ps1")
+  not (process.args : "-NoLogo" and process.args : "\\\\*.ps1") and 
+  not process.args : "$bytes=[System.Text.Encoding]::UTF8.GetBytes('*');$hash=[System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes);[BitConverter]::ToString($hash).Replace('-','').ToLower()"
 '''
 
 min_endpoint_version = "7.15.0"

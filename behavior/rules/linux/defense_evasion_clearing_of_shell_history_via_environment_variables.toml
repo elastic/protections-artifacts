@@ -1,0 +1,52 @@
+[rule]
+description = """
+This rule detects the clearing of the shell history via environment variables. Attackers may clear the shell history to
+hide their activities from being tracked. By leveraging environment variables such as HISTSIZE, HISTFILESIZE,
+HISTCONTROL, and HISTFILE, attackers can clear the shell history by setting them to 0, ignoring spaces, or redirecting
+the history to /dev/null, effectively erasing the command history.
+"""
+id = "f66e8880-ecfc-414f-8c1e-6e5892fac7e9"
+license = "Elastic License v2"
+name = "Clearing of Shell History via Environment Variables"
+os_list = ["linux"]
+reference = ["https://www.rapid7.com/blog/post/tr-new-whitepaper-stealthy-bpfdoor-variants/"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.env_vars like~ (
+  "HISTSIZE=0", "HISTFILESIZE=0", "HISTCONTROL=ignorespace", "HISTFILE=/dev/null"
+)
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.003"
+name = "Clear Command History"
+reference = "https://attack.mitre.org/techniques/T1070/003/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

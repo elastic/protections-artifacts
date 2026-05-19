@@ -1,0 +1,99 @@
+[rule]
+description = """
+Identifies when data is encrypted and archived using common compression and encryption tools. This activity can indicate
+an attempt to collect sensitive data and stage it for exfiltration.
+"""
+id = "2454d6fc-1ff8-4a59-8bcf-d6e8c4bb2c09"
+license = "Elastic License v2"
+name = "Data Encrypted and Archived"
+os_list = ["macos"]
+reference = [
+    "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
+    "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
+]
+version = "1.0.3"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action in ("exec", "start") and process.name : ("openssl", "openssl.exe") and
+  process.args : ("enc", "pkeyutl", "cms", "smime")]
+  [process where event.type == "start" and event.action in ("exec", "start") and
+  process.name : (
+    "tar", "zip", "gzip", "xz", "7z", "7za", "7zr", "bzip2", "zstd",
+    "tar.exe", "zip.exe", "gzip.exe", "7z.exe", "7za.exe", "7zr.exe", "bzip2.exe", "zstd.exe", "zstd64.exe"
+  ) and
+  not (
+    process.parent.args in (
+      "/opt/rudder/share/commands/agent-run", "/usr/sbin/backup_orbini", "/usr/local/bin/mariadb-backup.sh",
+      "/usr/local/bin/drupal-per-site-backup.sh"
+    ) or
+    process.parent.args like "mariabackup*db_backup*" or
+    process.parent.command_line like (
+      "*mysqldump*localhost*/storage/backup*", "*/etc/pve*prox_backup*", "*/home/*/.local/bin/authd*"
+    ) or
+    process.parent.executable == "/opt/rudder/bin/rudder" or
+    process.working_directory like "/mnt/vstk/queue/*" or
+    process.args like "/var/rudder/tmp/reports/*" or
+    (process.name == "tar" and process.working_directory like "/u/sysdat/*")
+  )]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.013"
+name = "Encrypted/Encoded File"
+reference = "https://attack.mitre.org/techniques/T1027/013/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1074"
+name = "Data Staged"
+reference = "https://attack.mitre.org/techniques/T1074/"
+[[threat.technique.subtechnique]]
+id = "T1074.001"
+name = "Local Data Staging"
+reference = "https://attack.mitre.org/techniques/T1074/001/"
+
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
+
+[internal]
+min_endpoint_version = "7.15.0"

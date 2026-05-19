@@ -9,14 +9,15 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
   process.name like (
     "telnet.netkit", "ping", "telnet", "xmrig", "dash", "bash", "sh", "zsh", "ash", "fish", "ksh", "tcsh",
     "csh", "nohup", "pgrep", "python*", "perl*", "ruby*", "php*", "lua*", "sed", "pkill", "docker", "dig",
-    "nslookup", "inetutils-telnet", "nc.openbsd", "nc", "netcat", "ncat", "curl", "wget", "sudo", "grep", ".*"
+    "nslookup", "inetutils-telnet", "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd",
+    "nc.traditional", "curl", "wget", "sudo", "grep", ".*"
   ) or
   process.executable like (
     "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/boot/*", "./*", "/sys/*", "/lost+found/*", "/media/*", "/proc/*",
@@ -48,9 +49,10 @@ process.command_line like (
 ) and not (
   process.parent.name in ("sendmail", "postfix-local", "check-quota", "zmcontrol", "find", "timeout", "php") or
   process.name in ("timeout", "host", "ptxas") or
-  process.command_line like "*zpool.cache*" or
+  process.command_line like ("*zpool.cache*", "*app/jobs/ant-sec_observe-income.py*") or
   process.parent.args == "/scripts/run_certbot.sh" or
-  process.parent.command_line == "runc init"
+  process.parent.command_line == "runc init" or
+  (process.parent.command_line == "/bin/bash /usr/local/bin/soc_guard.sh" and process.executable == "/usr/bin/grep") 
 )
 '''
 

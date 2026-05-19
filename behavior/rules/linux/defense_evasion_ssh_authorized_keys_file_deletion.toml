@@ -1,0 +1,89 @@
+[rule]
+description = """
+This rule detects the deletion of the authorized_keys or authorized_keys2 files on Linux systems. These files are used
+to store public keys for SSH authentication. Unauthorized deletion of these files can be an indicator of an attacker
+removing access to the system, and may be a precursor to further malicious activity.
+"""
+id = "9ff78f59-73ed-4b91-834f-0da395581abd"
+license = "Elastic License v2"
+name = "SSH Authorized Keys File Deletion"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and (
+    process.name in (
+      "sudo", "truncate", "unlink", "find", "xargs", "install", "shred", "vi", "vim",
+      "vim.basic", "coreutils", "tar", "gzip", "bzip2", "rmdir", "cp", "ln", "busybox",
+      "bash", "zsh", "sh", "tcsh", "csh", "ksh", "fish"
+    ) or
+    process.name like ".*" or
+    process.executable like (
+      "./*", "/dev/shm/*", "/tmp/*", "/var/tmp/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
+      "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/root/*", "/home/*"
+    ) or
+    /* Don't FP on user home directory deletion */
+    (process.name == "rm" and process.args like "*authorized_keys*")
+  )]
+  [file where event.type == "deletion" and file.path like (
+    "/home/*/.ssh/authorized_keys", "/home/*/.ssh/authorized_keys2",
+    "/root/.ssh/authorized_keys", "/root/.ssh/authorized_keys2"
+  ) and
+  not file.path like "/home/*/*/.ssh/*"]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.004"
+name = "File Deletion"
+reference = "https://attack.mitre.org/techniques/T1070/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1531"
+name = "Account Access Removal"
+reference = "https://attack.mitre.org/techniques/T1531/"
+
+
+[threat.tactic]
+id = "TA0040"
+name = "Impact"
+reference = "https://attack.mitre.org/tactics/TA0040/"
+
+[internal]
+min_endpoint_version = "7.15.0"

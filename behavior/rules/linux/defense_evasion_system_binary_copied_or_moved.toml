@@ -7,7 +7,7 @@ id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
 license = "Elastic License v2"
 name = "System Binary Copied or Moved"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
@@ -21,6 +21,9 @@ process.args in (
     "/bin/netcat", "/usr/bin/netcat", "/usr/local/bin/netcat",
     "/bin/ncat", "/usr/bin/ncat", "/usr/local/bin/ncat",
     "/bin/nc.traditional", "/usr/bin/nc.traditional", "/usr/local/bin/nc.traditional",
+    "/bin/nc.openbsd", "/usr/bin/nc.openbsd", "/usr/local/bin/nc.openbsd",
+    "/bin/netcat.openbsd", "/usr/bin/netcat.openbsd", "/usr/local/bin/netcat.openbsd",
+    "/bin/netcat.traditional", "/usr/bin/netcat.traditional", "/usr/local/bin/netcat.traditional",
     "/bin/socat", "/usr/bin/socat", "/usr/local/bin/socat",
     "/bin/nmap", "/usr/bin/nmap", "/usr/local/bin/nmap",
     "/bin/telnet", "/usr/bin/telnet", "/usr/local/bin/telnet",
@@ -97,7 +100,7 @@ name = "Masquerading"
 reference = "https://attack.mitre.org/techniques/T1036/"
 [[threat.technique.subtechnique]]
 id = "T1036.003"
-name = "Rename System Utilities"
+name = "Rename Legitimate Utilities"
 reference = "https://attack.mitre.org/techniques/T1036/003/"
 
 

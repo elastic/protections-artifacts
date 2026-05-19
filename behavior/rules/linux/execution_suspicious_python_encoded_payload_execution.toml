@@ -1,0 +1,111 @@
+[rule]
+description = """
+Identifies Python interpreters started with -c (inline code) where the command line suggests decoding obfuscated content
+(e.g. base64, binascii, codecs) and then executing it via exec, eval, compile, or dynamic import. Also identifies child
+processes spawned by a parent Python process whose command line matches the same suspicious python -c decode-and-exec
+pattern, when parent telemetry is present.
+"""
+id = "2b5b095c-a432-4ca4-ac73-a245dbac9a95"
+license = "Elastic License v2"
+name = "Suspicious Python Encoded Payload Execution"
+os_list = ["linux"]
+reference = [
+    "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
+    "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
+]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (
+    /* Inline malicious python -c one-liner on this process */
+    process.name like ("python*", "py", "pypy*") and
+    process.args == "-c" and
+    process.command_line like~ (
+      "*base64*", "*b64decode*", "*b32decode*", "*b85decode*", "*a85decode*", "*binascii*", "*codecs.decode*", "*fromhex*",
+      "*zlib.decompress*", "*marshal.loads*", "*pickle.loads*", "*cPickle.loads*"
+    ) and
+    process.command_line like~ (
+      "*exec(*", "*eval(*", "*__import__*", "*compile(*", "*types.FunctionType*", "*runpy*", "*importlib.util*",  "*importlib.import_module*"
+    )
+  ) or
+  /* Child of a parent Python process running the same suspicious -c pattern (parent fields populated) */
+  (
+    process.parent.name like ("python*", "py", "pypy*") and
+    process.parent.command_line != null and
+    process.parent.args == "-c" and
+    process.parent.command_line like~ (
+      "*base64*", "*b64decode*", "*b32decode*", "*b85decode*", "*a85decode*", "*binascii*", "*codecs.decode*", "*fromhex*",
+      "*zlib.decompress*", "*marshal.loads*"
+    ) and
+    process.parent.command_line like~ (
+      "*exec(*", "*eval(*", "*__import__*", "*compile(*", "*types.FunctionType*", "*runpy*",
+      "*importlib.util*",  "*importlib.import_module*"
+    )
+  )
+) and
+not (
+  process.command_line like """*exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTbCTAR1z6GFYD93JMwLXplsVtmRI9pyg6H8fKcVrmhz8IfLxkXwimRlG5yfuggonfObn0bsGAv6aF1v3KkAPzaTegrPs6eHn/tfvJ73d3TPWQscXEWTBNhiZh6l185Qv3kwgPIweXfwbz/7YTH5BdP0cXoVMBHCE5tAMbRD0Iq5RlxXbdM5zo9DGjeVg5wF8jbwraDP5E302VKz+LDp/dCNYgqmU7Yvv4XFPZvD+2sxlJMvrEcNbIYwiryQrHBsYJ76PH+MsrwOHmHshnNiquztk9QKkpAAP0+wtHxlbROahbk/Yf+OGobZtoN6Srnnd134QZ0Ulo4Z7Y4H6RQVRvaSYsTmRkEtlrbNAemL6lXEtme4n712NShIWK2HUQtAXCp9DsJyhPQz1qN8/WHfxF3SASaRakgJUTaTBjE6/Z6Y9ZoVRPCNjVtAbD0nqrCirdECBz4elNpOxL1mx+8A7jalKCjrPQqVduUZXNwCkWQHEiIBz3VcUt/YUSYQhn8eWJkdcxKgLHAm1vJoeOIKxS68O6qDT0OfpI9CjsJ2ykmkwuziVnoYA2UacMhfiLSEy75DLOiHV9n73gwbIdDyh4tCce+zaar255IwD2DiLcs3A8IA96bUvRLNN7MbD4P4C5pEJUv6XuPqutynbV3NxTRxXJmLiJRJzmOppDjrKQoFCptb0c5blb87Ejfq8qbgWuEQ33nhN5MXViDaal0qJxK9I+ii5jMtB04y78Q9tonhI")))""" or
+  process.parent.command_line like """*exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTbCTAR1z6GFYD93JMwLXplsVtmRI9pyg6H8fKcVrmhz8IfLxkXwimRlG5yfuggonfObn0bsGAv6aF1v3KkAPzaTegrPs6eHn/tfvJ73d3TPWQscXEWTBNhiZh6l185Qv3kwgPIweXfwbz/7YTH5BdP0cXoVMBHCE5tAMbRD0Iq5RlxXbdM5zo9DGjeVg5wF8jbwraDP5E302VKz+LDp/dCNYgqmU7Yvv4XFPZvD+2sxlJMvrEcNbIYwiryQrHBsYJ76PH+MsrwOHmHshnNiquztk9QKkpAAP0+wtHxlbROahbk/Yf+OGobZtoN6Srnnd134QZ0Ulo4Z7Y4H6RQVRvaSYsTmRkEtlrbNAemL6lXEtme4n712NShIWK2HUQtAXCp9DsJyhPQz1qN8/WHfxF3SASaRakgJUTaTBjE6/Z6Y9ZoVRPCNjVtAbD0nqrCirdECBz4elNpOxL1mx+8A7jalKCjrPQqVduUZXNwCkWQHEiIBz3VcUt/YUSYQhn8eWJkdcxKgLHAm1vJoeOIKxS68O6qDT0OfpI9CjsJ2ykmkwuziVnoYA2UacMhfiLSEy75DLOiHV9n73gwbIdDyh4tCce+zaar255IwD2DiLcs3A8IA96bUvRLNN7MbD4P4C5pEJUv6XuPqutynbV3NxTRxXJmLiJRJzmOppDjrKQoFCptb0c5blb87Ejfq8qbgWuEQ33nhN5MXViDaal0qJxK9I+ii5jMtB04y78Q9tonhI")))""" or
+  process.parent.executable in ("/usr/sbin/sshd", "/usr/bin/sudo", "/usr/lib/openssh/sshd-session", "/opt/teleport/system/bin/teleport") or
+  process.working_directory like ("/opt/zeek", "/var/lib/docker/overlay2/*/usr/local/zeek") or
+  process.parent.args == "/usr/local/bin/ansible-playbook" or
+  process.parent.command_line like (
+    "*IyBweWxpbnQ6IGRpc2FibGU9cmVzb3VyY2UtbGVha2FnZQoiIiIKVGhpcyBpcyBhIHNoaW0gdGhh*",
+    "/usr/bin/python*-c import zlib,base64; exec(zlib.decompress(base64.b64decode(b*",
+    "*/usr/bin/python*-c import sys;sys.path=[p for p in sys.path if p];import binascii,os,zlib;exec(zlib.decompress(binascii.a2b_base64(*"
+  ) or
+  process.command_line like (
+    "*eNqVkl1PwjAUhu/5Fd61i2Os*",
+    "/usr/bin/python*-c import zlib,base64; exec(zlib.decompress(base64.b64decode(b*",
+    "*/usr/bin/python*-c import sys;sys.path=[p for p in sys.path if p];import binascii,os,zlib;exec(zlib.decompress(binascii.a2b_base64(*"
+  ) or
+  (process.executable like "/mnt/apps/jenkins/.pyenv/versions/*/bin/python*" and process.command_line like "*eNqVkm1*") or
+  (process.parent.executable like "/mnt/apps/jenkins/.pyenv/versions/*/bin/python*" and process.command_line like "*binascii,os,select,zlib;exec(zlib.decompress(binascii.a2b_base64*")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

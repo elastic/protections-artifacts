@@ -1,0 +1,93 @@
+[rule]
+description = """
+This rule monitors for the usage of the "find" command in conjunction with SUID and SGID permission arguments. SUID (Set
+User ID) and SGID (Set Group ID) are special permissions in Linux that allow a program to execute with the privileges of
+the file owner or group, respectively, rather than the privileges of the user running the program. In case an attacker
+is able to enumerate and find a binary that is misconfigured, they might be able to leverage this misconfiguration to
+escalate privileges by exploiting vulnerabilities or built-in features in the privileged program.
+"""
+id = "c7e5dc07-7031-4558-8f3a-12dee523a169"
+license = "Elastic License v2"
+name = "Potential SUID/SGID Files Enumeration"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "find" and user.id != 0 and
+process.args == "-perm" and process.args like (
+  "/6000", "-6000", "/4000", "-4000", "/2000", "-2000", "/u=s", "-u=s", "/g=s", "-g=s", "/u=s,g=s", "/g=s,u=s"
+) and
+not (
+  process.args_count >= 12 or
+  (process.args == "/usr/bin/pkexec" and process.args == "-xdev" and process.args_count == 7) or
+  process.parent.args like ("printf \"command_start_%s*", "/opt/admin/bin/cis_*.bash") or
+  process.parent.command_line like "*/bin/findmnt*" or
+  process.working_directory in (
+    "/opt/CyberCNSAgent", "/opt/nessus_agent/var/nessus/mod/com.tenable.nessus_agent/data", "/home/svc-nlls-tenable", "/var/cache/tripwire/twexec"
+  ) or
+  process.parent.command_line like ("*/usr/local/etc/suid_files*", "*/usr/local/etc/sgid_files*") or
+  (
+    process.command_line == "find / -perm /6000 -type f -exec chmod a-s {} ;" and
+    process.parent.command_line in (
+      """/bin/sh -c find / -perm /6000 -type f -exec chmod a-s {} \; || true""",
+      """/bin/sh -c find / -perm /6000 -type f -exec chmod a-s {} \; 2>/dev/null || true"""
+    )
+  ) or
+  (
+    process.command_line == """find / -perm /6000 -type f -exec chmod g-s {} ;""" and
+    process.parent.command_line == """/bin/sh -c find / -perm /6000 -type f -exec chmod g-s {} \; || true"""
+  )
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.001"
+name = "Setuid and Setgid"
+reference = "https://attack.mitre.org/techniques/T1548/001/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1083"
+name = "File and Directory Discovery"
+reference = "https://attack.mitre.org/techniques/T1083/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "7.15.0"

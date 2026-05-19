@@ -8,7 +8,7 @@ id = "adf59538-f71f-45e2-a3ae-af95b31c41df"
 license = "Elastic License v2"
 name = "Egress Network Connection from Node.js Descendant"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -30,7 +30,8 @@ sequence by process.entity_id with maxspan=1m
       )
     ) and (
     process.name like (
-      "nohup", "setsid", "nc", "netcat", "ncat", "socat", "telnet", "nc.traditional", "nc.openbsd", "busybox", "mkfifo", "xterm"
+      "nohup", "setsid", "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd",
+      "nc.traditional", "socat", "telnet", "busybox", "mkfifo", "xterm"
     ) or
     process.executable like (
       "/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "/lost+found/*",
@@ -74,7 +75,8 @@ sequence by process.entity_id with maxspan=1m
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and (
     process.name like (
-      "nohup", "setsid", "nc", "netcat", "ncat", "socat", "telnet", "nc.traditional", "nc.openbsd", "busybox", "mkfifo", "xterm",
+      "nohup", "setsid", "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd",
+      "nc.traditional", "socat", "telnet", "busybox", "mkfifo", "xterm",
       "curl", "wget", "python*", "perl*", "ruby*", "lua*", "php*", "awk", "gawk", "mawk", "nawk", "rvim", "vim", "vimdiff", "rview",
       "view"
     ) or

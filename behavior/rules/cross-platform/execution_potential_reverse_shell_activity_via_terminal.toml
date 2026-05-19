@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -33,7 +33,8 @@ not (
     "/usr/bin/gnome-shell", "/usr/bin/coreutils", "/home/*/.local/bin/kiro-cli-chat",
     "/opt/Tychon/Endpoint/bin/TychonCoreService", "/usr/local/bin/teleport", "/opt/teleport/system/bin/teleport",
     "/usr/bin/claude-bin", "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode",
-    "/home/*/.local/share/claude/versions/*", "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/codex-x86_64-unknown-linux-musl"
+    "/home/*/.local/share/claude/versions/*", "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/codex-x86_64-unknown-linux-musl",
+    "/opt/homebrew/Cellar/coreutils/*/bin/gtimeout"
   ) or
   (process.parent.name == "sudo" and process.parent.command_line like "*teleport-installer*") or
   (

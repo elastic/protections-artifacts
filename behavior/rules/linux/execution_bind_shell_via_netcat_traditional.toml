@@ -8,11 +8,11 @@ license = "Elastic License v2"
 name = "Bind Shell via Netcat Traditional"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/gtfobins/nc/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
-process.name in ("nc.traditional", "nc", "ncat", "netcat") and
+process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and
 process.args == "-e" and process.args : "-*l*" and process.args : "-*p*" and
 process.args : "*sh*" and process.args_count >= 5
 '''

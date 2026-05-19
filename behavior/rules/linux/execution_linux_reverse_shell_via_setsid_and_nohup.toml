@@ -9,12 +9,15 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell via setsid and nohup"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [network where event.type == "start" and event.action == "connection_attempted" and (
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "nc", "ncat", "netcat", "nc.openbsd") or
+    process.name in (
+      "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "nc", "ncat", "netcat", "netcat.openbsd",
+      "netcat.traditional", "nc.openbsd", "nc.traditional"
+    ) or
     process.name like ("python*", "php*", "perl", "ruby*", "lua*")
   ) and not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
        destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",

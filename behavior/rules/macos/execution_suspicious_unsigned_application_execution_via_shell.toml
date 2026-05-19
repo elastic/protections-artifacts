@@ -8,14 +8,15 @@ id = "e9aa04eb-7d71-4c6e-aa86-f1f7c3003b67"
 license = "Elastic License v2"
 name = "Suspicious Unsigned Application Execution via Shell"
 os_list = ["macos"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
  process.executable like "/Applications/*" and process.code_signature.exists == false and 
  process.args like "/Applications/*" and process.args_count == 1 and 
  process.parent.name in ("bash", "zsh", "sh") and process.parent.args_count == 0 and
- not process.args like~ "/Applications/*.app/*"
+ not process.args like~ "/Applications/*.app/*" and
+ not process.executable == "/Applications/phits/bin/phits334_mac.exe"
 '''
 
 min_endpoint_version = "8.11.0"

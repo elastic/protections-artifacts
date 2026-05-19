@@ -8,7 +8,7 @@ id = "aac41cc3-fc4a-4dea-b8d6-252ded1cb3fc"
 license = "Elastic License v2"
 name = "Payload Downloaded via Curl or Wget by Web Server"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
@@ -92,7 +92,10 @@ process where event.type == "start" and event.action == "exec" and process.paren
     "com.atlassian.jira.startup.Launcher", "*BitbucketServerLauncher*", "com.google.gerrit.pgm.Daemon",
 
     /* Solr */
-    "*-Dsolr.solr.home=*"
+    "*-Dsolr.solr.home=*",
+
+    /* Jenkins */
+    "*jenkins.war*"
     )
   )
 ) and

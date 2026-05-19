@@ -12,12 +12,12 @@ reference = [
     "https://www.wiz.io/blog/ubuntu-overlayfs-vulnerability",
     "https://twitter.com/liadeliyahu/status/1684841527959273472",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
   [process where event.action == "exec" and event.type == "start" and 
-    process.name == "unshare" and process.args in ("-r", "-rm", "m") and process.args : "*cap_setuid*"  and user.id != 0]
+    process.name == "unshare" and process.args in ("-r", "-rm", "-m") and process.args : "*cap_setuid*"  and user.id != 0]
   [process where event.action == "uid_change" and event.type == "change" and user.id == 0]
 '''
 
@@ -25,8 +25,23 @@ min_endpoint_version = "7.15.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
 
 [[threat]]
 framework = "MITRE ATT&CK"

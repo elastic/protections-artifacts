@@ -1,0 +1,67 @@
+[rule]
+description = """
+Identifies high-risk interpreters and LOLBins spawned by ConfigurationRemotingServer.exe, the WinGet Configuration
+remoting worker. Legitimate WinGet configuration may invoke some of these rarely; unexpected children can indicate abuse
+of the WinGet Configuration COM API to run attacker-controlled actions through Microsoft-signed plumbing, as described
+in public research on DSCourier.
+"""
+id = "a3c7e9b1-2d4f-5a6c-8e0b-1f3d5a7c9e0b"
+license = "Elastic License v2"
+name = "Suspicious Child Process from WinGet Configuration Remoting Server"
+os_list = ["windows"]
+reference = ["https://github.com/DylanDavis1/DSCourier"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+  process.parent.name : "ConfigurationRemotingServer.exe" and
+  process.name : ("powershell.exe", "pwsh.exe", "cmd.exe", "wscript.exe", "cscript.exe",
+                  "bash.exe", "wsl.exe", "mshta.exe", "rundll32.exe", "regsvr32.exe", "msiexec.exe",
+                  "msbuild.exe", "installutil.exe", "regasm.exe", "regsvcs.exe", "curl.exe", "openssh.exe")
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.0"

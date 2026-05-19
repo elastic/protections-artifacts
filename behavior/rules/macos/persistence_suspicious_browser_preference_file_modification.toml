@@ -10,7 +10,7 @@ os_list = ["macos"]
 reference = [
     "https://securityscorecard.com/wp-content/uploads/2025/02/Operation-Marstech-Mayhem-Report_021025_03.pdf",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 file where event.action == "modification" and file.path like~ ("/Users/*/Library/Application Support/Google/Chrome/*/Preferences", 
@@ -37,8 +37,13 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1176"
-name = "Browser Extensions"
+name = "Software Extensions"
 reference = "https://attack.mitre.org/techniques/T1176/"
+[[threat.technique.subtechnique]]
+id = "T1176.001"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/001/"
+
 
 
 [threat.tactic]

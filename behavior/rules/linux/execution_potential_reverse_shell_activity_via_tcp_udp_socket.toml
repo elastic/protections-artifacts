@@ -12,7 +12,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -29,8 +29,8 @@ process where event.type == "start" and event.action == "exec" and process.paren
 process.command_line like ("*/dev/tcp/*", "*/dev/udp/*", "*zsh/net/tcp*", "*zsh/net/udp*") and
 process.command_line like ("*&>*", "*<>*", "*>&*", "*<&*") and
 not (
-  process.command_line like ("*/dev/tcp/127.0.0.1/*", "*/dev/tcp/localhost/*", "*/home/*/.claude/shell-snapshots/snapshot*") or
-  process.parent.command_line like ("/usr/bin/runc init", "*/home/*/.claude/shell-snapshots/snapshot*") or
+  process.command_line like ("*/dev/tcp/127.0.0.1/*", "*/dev/tcp/localhost/*", "*/home/*/.claude/shell-snapshots/snapshot*", "*teleport-installer*") or
+  process.parent.command_line like ("/usr/bin/runc init", "*/home/*/.claude/shell-snapshots/snapshot*", "runc init") or
   process.parent.args in ("/usr/bin/testssl.sh", "/usr/local/bin/testssl.sh", "/usr/bin/crun") or
   process.parent.executable like (
     "/usr/share/windsurf/resources/app/extensions/windsurf/bin/language_server_linux_x64", "/home/*/.cursor-server/bin/*/node", "/root/.cursor-server/cli/servers/*/server/node",

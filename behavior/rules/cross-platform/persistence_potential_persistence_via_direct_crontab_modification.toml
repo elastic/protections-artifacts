@@ -8,7 +8,7 @@ id = "b3bcbab6-e216-4d70-bdee-2b69affbb386"
 license = "Elastic License v2"
 name = "Potential Persistence via Direct Crontab Modification"
 os_list = ["linux", "macos"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "crontab" and process.args == "-" and
@@ -29,7 +29,11 @@ process.parent.executable like (
   process.parent.name == "bundle" or
   process.working_directory == "/opt/microsoft/mdatp/conf" or
   process.parent.args like "/var/lib/dpkg/*" or
-  process.env_vars == "LD_LIBRARY_PATH=/opt/bmc/bladelogic/RSCD/lib" 
+  process.env_vars == "LD_LIBRARY_PATH=/opt/bmc/bladelogic/RSCD/lib" or
+  process.parent.executable like (
+    "/home/*/.local/share/uv/python/cpython-*-linux-x86_64-gnu/bin/python*",
+    "/home/*/.rbenv/versions/*/bin/ruby"
+  )
 )
 '''
 

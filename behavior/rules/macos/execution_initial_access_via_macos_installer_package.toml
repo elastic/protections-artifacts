@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Initial Access via macOS Installer Package"
 os_list = ["macos"]
 reference = ["https://redcanary.com/blog/clipping-silver-sparrows-wings/", "https://youtu.be/Eow5uNHtmIg"]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 sequence with maxspan=1m
@@ -187,17 +187,24 @@ reference = "https://attack.mitre.org/techniques/T1543/001/"
 id = "T1547"
 name = "Boot or Logon Autostart Execution"
 reference = "https://attack.mitre.org/techniques/T1547/"
-[[threat.technique.subtechnique]]
-id = "T1547.011"
-name = "Plist Modification"
-reference = "https://attack.mitre.org/techniques/T1547/011/"
-
 
 
 [threat.tactic]
 id = "TA0003"
 name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1647"
+name = "Plist File Modification"
+reference = "https://attack.mitre.org/techniques/T1647/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

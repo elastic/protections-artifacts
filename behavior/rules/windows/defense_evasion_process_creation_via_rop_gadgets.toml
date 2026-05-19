@@ -7,7 +7,7 @@ id = "4cd250a2-82a0-463b-adda-5256cee422ce"
 license = "Elastic License v2"
 name = "Process Creation via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.action == "start" and
@@ -33,10 +33,15 @@ process where event.action == "start" and
                                                                   "*ntdll.dll!*CreateEnclave*", 
                                                                   "*ntdll.dll!ZwCreateTimer*",
                                                                   "*ntdll.dll!ZwCreateKeyedEvent*",
-                                                                  "C:\\Windows\\System32\\ntdll.dll!NtAlpcDeleteSecurityContext+*")) and
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtAlpcDeleteSecurityContext+*", 
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtCreateRegistryTransaction*", 
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtCreatePrivateNamespace*", 
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtDeletePrivateNamespace*")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
- not process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\SysWOW64\\WerFault.exe")
+ not process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and
+ not (process.executable : "?:\\Windows\\System32\\sppsvc.exe" and process.Ext.protection == "PsProtectedSignerWindows" and 
+      process.parent.thread.Ext.call_stack_summary == "ntdll.dll|kernelbase.dll|kernel32.dll|services.exe|rpcrt4.dll|ntdll.dll|kernel32.dll|ntdll.dll")
 '''
 
 min_endpoint_version = "8.8.0"

@@ -7,7 +7,7 @@ id = "318e6a4f-fb72-4010-a625-d41bae9e349a"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via Mail Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -70,7 +70,7 @@ not (
     ) 
   ) or
   (
-    process.name in ("netcat", "nc", "ncat", "nc.traditional", "nc.openbsd") and (
+    process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and (
       process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*" or
       process.command_line like "*http*"
     ) and
@@ -186,11 +186,18 @@ not (
   ) or
   (
     process.parent.executable == "/usr/libexec/postfix/master" and
-    process.command_line in ("/usr/bin/hostname", "ps -eo pid,args", "uname -m")
+    process.command_line like (
+      "/usr/bin/hostname", "ps -eo pid,args", "uname -m", "/usr/bin/perl -w /root/check_megaraid_sas",
+      "gzip /prod/prod/data/prodstage/pos/save/*"
+    )
   ) or
   (
     process.parent.executable == "/usr/sbin/dovecot" and
     process.command_line like "*/usr/local/cpanel/3rdparty/wp-toolkit/plib/vendor/wp-cli/wpt-wp-cli.php*"
+  ) or
+  (
+    process.parent.executable in ("/usr/sbin/sendmail", "/etc/init.d/sendmail") and
+    process.name == "touch"
   )
 )
 '''

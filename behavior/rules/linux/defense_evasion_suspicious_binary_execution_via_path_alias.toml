@@ -13,7 +13,7 @@ reference = [
     "https://awesomeagents.ai/news/claude-code-sandbox-escape-denylist/",
     "https://man7.org/linux/man-pages/man5/proc.5.html",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -21,7 +21,10 @@ process where event.type == "start" and event.action == "exec" and
   process.executable like "/proc/*/root/*" or
   process.args regex """/proc/(self|[0-9]{1,7})/root/[a-z].*"""
 ) and
-not process.args like ("/proc/*/root/etc/*", "/proc/1/root/var/lib/rancher/*", "/proc/1/root/var/lib/cni/*", "cat", "readlink", "ls")
+not (
+  process.args like ("/proc/*/root/etc/*", "/proc/1/root/var/lib/rancher/*", "/proc/1/root/var/lib/cni/*", "cat", "readlink", "ls") or
+  process.executable == "./opt/spire/bin/spire-server"
+)
 '''
 
 min_endpoint_version = "7.15.0"
@@ -44,7 +47,7 @@ name = "Masquerading"
 reference = "https://attack.mitre.org/techniques/T1036/"
 [[threat.technique.subtechnique]]
 id = "T1036.005"
-name = "Match Legitimate Name or Location"
+name = "Match Legitimate Resource Name or Location"
 reference = "https://attack.mitre.org/techniques/T1036/005/"
 
 

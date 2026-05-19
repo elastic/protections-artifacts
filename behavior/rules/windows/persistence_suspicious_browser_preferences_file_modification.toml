@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Browser Preferences File Modification"
 os_list = ["windows"]
 reference = ["https://syntax-err0r.github.io/Silently_Install_Chrome_Extension.html"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.action == "overwrite" and file.name : ("Preferences", "Secure Preferences") and
@@ -56,8 +56,13 @@ state = 0
 framework = "MITRE ATT&CK"
 [[threat.technique]]
 id = "T1176"
-name = "Browser Extensions"
+name = "Software Extensions"
 reference = "https://attack.mitre.org/techniques/T1176/"
+[[threat.technique.subtechnique]]
+id = "T1176.001"
+name = "Browser Extensions"
+reference = "https://attack.mitre.org/techniques/T1176/001/"
+
 
 
 [threat.tactic]

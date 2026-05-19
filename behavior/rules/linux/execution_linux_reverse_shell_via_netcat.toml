@@ -8,16 +8,16 @@ license = "Elastic License v2"
 name = "Linux Reverse Shell via netcat"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/primer-on-persistence-mechanisms"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and 
-   process.name in ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
+   process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and process.args_count >= 3 and 
    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and process.args == "-e" and
    not process.args like~ ("-*z*", "-*l*")]
   [network where event.type == "start" and event.action in ("connection_attempted", "connection_accepted") and 
-   process.name in ("nc", "netcat", "ncat", "nc.openbsd") and 
+   process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and 
    not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",

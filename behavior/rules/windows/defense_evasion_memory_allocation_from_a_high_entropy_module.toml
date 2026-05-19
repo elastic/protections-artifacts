@@ -7,7 +7,7 @@ id = "8f9a6523-fa8f-46d1-b2de-72ef18e85f52"
 license = "Elastic License v2"
 name = "Memory Allocation from a High Entropy Module"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence
@@ -24,7 +24,8 @@ sequence
   process.Ext.api.metadata.target_address_name == "Unbacked" and
   process.Ext.token.integrity_level_name in ("medium", "high") and
   process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and
-  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true) and
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and 
+               not $entry.subject_name : ("College Board", "SEIKO EPSON CORPORATION", "EPADLINK", "Flexera Software, Inc. ", "Acresso Software Inc.", "Realtek Semiconductor Corp")) and
   stringcontains~(process.thread.Ext.call_stack_final_user_module.path, event0.file.path) and
   (
    endswith~(process.thread.Ext.call_stack_summary, concat("ntdll.dll|kernelbase.dll|", event0.file.name)) or
@@ -69,9 +70,9 @@ id = "T1574"
 name = "Hijack Execution Flow"
 reference = "https://attack.mitre.org/techniques/T1574/"
 [[threat.technique.subtechnique]]
-id = "T1574.002"
-name = "DLL Side-Loading"
-reference = "https://attack.mitre.org/techniques/T1574/002/"
+id = "T1574.001"
+name = "DLL"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
 
 
 

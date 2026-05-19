@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where
@@ -53,6 +53,8 @@ api where
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -Execute -ErrorAction Stop}",
                                "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -CommandParamVariation C -Execute -ErrorAction Stop}",
                                "*JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgAK*",
+                               "*dAByAHkAIAB7ACAAWwBDAG8AbgBzAG8AbABlAF0AOgA6AEkAbgBwAHUAdABFAG4AYwBvAGQAaQ*",
+                               "*JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAiAFMAdABvAHAAIgA*",
                                "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe  -executionpolicy unrestricted -noninteractive -nologo -noprofile -command \"& { [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8; Write-Output SNC_PowerShell_PID=$pid*",
                                "*AkAHMAcABsAGkAdABfAHAAYQByAHQAcwAgAD0AIAAkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApACw*",
                                "\"C:\\Windows\\system32\\windowspowershell\\v1.0\\powershell.exe\" -ExecutionPolicy Unrestricted -Command \"& '\"C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\Health Service State\\Monitoring Host Temporary Files *\\LaunchRestartHealthService.ps1*",

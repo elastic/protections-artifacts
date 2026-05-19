@@ -9,14 +9,15 @@ license = "Elastic License v2"
 name = "Potential Coin Miner Execution"
 os_list = ["linux"]
 reference = ["https://xmrig.com/docs/algorithms"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
   process.name like (
     "telnet.netkit", "ping", "telnet", "xmrig", "dash", "bash", "sh", "zsh", "ash", "fish", "ksh", "tcsh",
     "csh", "nohup", "pgrep", "python*", "perl*", "ruby*", "php*", "lua*", "sed", "pkill", "docker", "dig",
-    "nslookup", "inetutils-telnet", "nc.openbsd", "nc", "netcat", "ncat", "curl", "wget", "sudo", "grep", ".*"
+    "nslookup", "inetutils-telnet", "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional",
+    "nc.openbsd", "nc.traditional", "curl", "wget", "sudo", "grep", ".*"
   ) or
   process.executable like (
     "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/boot/*", "./*", "/sys/*", "/lost+found/*", "/media/*", "/proc/*",

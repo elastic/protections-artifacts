@@ -11,11 +11,13 @@ reference = [
     "https://attack.mitre.org/techniques/T1564/003/",
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and process.Ext.desktop_name like "WinSta0\\*" and
-not process.Ext.desktop_name : ("WinSta0\\Winlogon", "WinSta0\\Screen-saver", "WinSta0\\ScreenConnectDesktop", "WinSta0\\InstallerDesktop")
+not process.Ext.desktop_name : ("WinSta0\\Winlogon", "WinSta0\\Screen-saver", "WinSta0\\ScreenConnectDesktop", "WinSta0\\InstallerDesktop") and 
+not (process.parent.executable : "C:\\Program Files (x86)\\SnapComms\\App\\*\\SnapClientHelper.exe" and 
+     process.Ext.desktop_name : ("WinSta0\\DummyDesktopForInstantResume", "WinSta0\\ScreenConnectDesktop", "WinSta0\\Disconnect", "WinSta0\\sbox_alternate_desktop_local_winstation_*"))
 '''
 
 min_endpoint_version = "9.1.0"

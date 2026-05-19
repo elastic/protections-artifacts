@@ -15,14 +15,14 @@ reference = [
     "https://pberba.github.io/security/2022/02/06/linux-threat-hunting-for-persistence-initialization-scripts-and-shell-configuration/#10-boot-or-logon-initialization-scripts-motd",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like "/etc/update-motd.d/*"
 and (
   (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and (
     (process.args in ("-i", "-l", "-il", "-li")) or (process.parent.name == "socat" and process.parent.args like~ "*exec*"))) or
-  (process.name in ("nc", "ncat", "netcat", "nc.openbsd") and process.args_count >= 3 and 
+  (process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and process.args_count >= 3 and 
     not process.args like~ ("-*z*", "-*l*")) or
   (process.name like "python*" and process.args == "-c" and process.args like~ (
      "*import*pty*spawn*", "*import*subprocess*call*"

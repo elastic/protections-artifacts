@@ -7,7 +7,7 @@ id = "d20cd4ba-ff65-4e1c-8012-4241d449b16b"
 license = "Elastic License v2"
 name = "Egress Network Connection from RPM Package"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 sequence with maxspan=3s
@@ -16,7 +16,9 @@ sequence with maxspan=3s
    process.parent.args : "/var/tmp/rpm-tmp.*" and not (
      (process.name == "curl" and process.command_line like ("*.microsoft.com/api/report*", "*check.percona.com*")) or
      process.executable in ("/sbin/runuser", "/usr/sbin/runuser") or
-     process.working_directory like~ ("/builds/packages/naudit-repos", "/disco_flowlytics/docker/overlay2/*") or
+     process.working_directory like~ (
+       "/builds/packages/naudit-repos", "/disco_flowlytics/docker/overlay2/*", "/builddir/build/BUILD/librdkafka-*/mklove/deps/src/libzstd"
+     ) or
      process.args : ("/usr/local/cpanel/3rdparty/wp-toolkit/*", "/usr/bin/rpmkeys") or
      (process.executable == "/bin/sudo" and process.args in (
        "https://global.endpoint.security.micro",

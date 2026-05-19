@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Windows Command Shell Spawned via Microsoft Office"
 os_list = ["windows"]
 reference = ["https://github.com/danielbohannon/Invoke-DOSfuscation"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.action == "start" and
@@ -43,7 +43,8 @@ process where event.action == "start" and
   not process.command_line : 
              ("*:\\Program Files\\Tableau\\*--server*http://tableau*", 
               "*:\\Program Files (x86)\\Tableau\\*--server*http://tableau*", 
-              "\"C:\\Windows\\System32\\cmd.exe\" /c C:\\windows\\System32\\rundll32 advpack.dll,LaunchINFSection \"C:\\Users\\*\\AppData\\Roaming\\McGowan Partners LLC UAT\\setup.inf\", DefaultInstall*")
+              "\"C:\\Windows\\System32\\cmd.exe\" /c C:\\windows\\System32\\rundll32 advpack.dll,LaunchINFSection \"C:\\Users\\*\\AppData\\Roaming\\McGowan Partners LLC UAT\\setup.inf\", DefaultInstall*") and 
+  not process.args : "$bytes=[System.Text.Encoding]::UTF8.GetBytes('*');$hash=[System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes);[BitConverter]::ToString($hash).Replace('-','').ToLower()"
 '''
 
 min_endpoint_version = "7.15.0"

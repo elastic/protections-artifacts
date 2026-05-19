@@ -8,7 +8,7 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -82,7 +82,8 @@ process.args in ("-c", "-cl", "-lc") and (
 not (
   process.command_line like (
     "sh -c node -v || nodejs -v", "*./postinstall*", "*./_postinstall*", "/bin/sh -c lsb_release -sd",
-    "*/etc/freepbx.conf*", "*betterme/image-processing-service-admin-frontend*"
+    "*/etc/freepbx.conf*", "*betterme/image-processing-service-admin-frontend*", "/bin/sh -c exit 0 || node patches/*.js",
+    """/bin/sh -c export LC_ALL=C; netstat -tunap | grep "ESTABLISHED\|SYN_SENT\|SYN_RECV\|FIN_WAIT1\|FIN_WAIT2\|TIME_WAIT\|CLOSE\|CLOSE_WAIT\|LAST_ACK\|LISTEN\|CLOSING\|UNKNOWN"; unset LC_ALL"""
   ) or
   process.parent.args like (
     "/opt/bitdefender/*", "/opt/cursor-agent/*", "/home/*/*", "/root/*", "/var/www/html/ext/.deloreanbuild",

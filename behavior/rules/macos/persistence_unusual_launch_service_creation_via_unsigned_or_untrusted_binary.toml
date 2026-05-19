@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Unusual Launch Service Creation via Unsigned or Untrusted Binary"
 os_list = ["macos"]
 reference = ["https://x.com/moonlock_lab/status/1881669277016793184"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 persistence where event.action == "launch_daemon" and (process.code_signature.trusted == false or process.code_signature.exists == false) and 
@@ -44,17 +44,24 @@ reference = "https://attack.mitre.org/techniques/T1543/004/"
 id = "T1547"
 name = "Boot or Logon Autostart Execution"
 reference = "https://attack.mitre.org/techniques/T1547/"
-[[threat.technique.subtechnique]]
-id = "T1547.011"
-name = "Plist Modification"
-reference = "https://attack.mitre.org/techniques/T1547/011/"
-
 
 
 [threat.tactic]
 id = "TA0003"
 name = "Persistence"
 reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1647"
+name = "Plist File Modification"
+reference = "https://attack.mitre.org/techniques/T1647/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
 min_endpoint_version = "8.11.0"

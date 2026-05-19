@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.50"
+version = "1.0.51"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -83,6 +83,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              "*https://go.microsoft.com/fwlink*",
              "*krsfile:////LOBCS*",
              "*ProgramData\\VinitySoft Data\\MariaDb\\*",
+             "*\\Temp\\claude\\claude-pwd-ps-*",
              "\"C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command \"[reflection.assembly]::loadFrom('.\\RD-PSAPI.dll') | import-module\"",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAfABUAHIAZQBsAGwAaQB4ACIA*",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAIABBAGcAZQBuAHQAIgA=*",
@@ -100,7 +101,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not (process.args : "NT\\CurrentVersion').InstallationType;" and process.args : "[System.Text.Encoding]::UTF8.GetBytes($OutStr);") and
 
- not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/")) and
+ not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.")) and
 
  not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
 
@@ -118,7 +119,8 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                                   "?:\\Users\\*\\AppData\\Local\\Programs\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Python\\bin\\python.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe",
-                                  "?:\\Users\\*\\AppData\\Local\\Python\\pythoncore-*\\python.exe") and
+                                  "?:\\Users\\*\\AppData\\Local\\Python\\pythoncore-*\\python.exe", 
+                                  "D:\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe") and
 
  not process.args :  ("$w=$env:LOCALAPPDATA+'/OPWC/';[Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($w+'OperaSharpDLL.dll'));[OperaSharpDLL.Helper]::Startup()",
                       "IEX (New-Object Net.WebClient).DownloadString('https://install.demo-toolkit.de/dtkupdater.ps1?apikey=*",

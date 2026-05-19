@@ -7,7 +7,7 @@ id = "452d6452-a8ec-4cae-9720-567fb44d93b7"
 license = "Elastic License v2"
 name = "Decoded Payload Piped to Interpreter"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.parent.entity_id, process.working_directory with maxspan=1s
@@ -86,7 +86,16 @@ sequence by process.parent.entity_id, process.working_directory with maxspan=1s
       process.parent.name == "sshd"
     ) or
     process.command_line like "/bin/bash -c base64 -d <<< IwAAACAAAABHAAAAZQAAAHQAAAAgAAAAdAAAAGg*" or
-    (process.working_directory like "/home/u.*" and process.command_line like "bash -lc printf %s*")
+    (
+      process.parent.command_line like (
+        "/bin/bash -c base64 -d <<< IwAAACAAAABHAAAAZQAAAHQAAAAgAAAAdAAAAGg*",
+        "/bin/bash -c base64 -d <<< IwAAACEAAAAvAAAAYgAAAGkAAABuAAAAL*"
+      ) and
+      process.command_line == "base64 -d"
+    ) or
+    (process.working_directory like "/home/u.*" and process.parent.command_line like "bash -lc printf %s*") or 
+
+    (process.working_directory == "/opt/Elastic/Endpoint/state/response_actions" and process.command_line == "base64 -d")
   )]
   [process where event.type == "start" and event.action == "exec" and process.name like (
     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",

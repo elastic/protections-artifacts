@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and 
@@ -47,7 +47,14 @@ not (
     )
   ) or
   (process.working_directory == "/mdm_shared/postgresql/15/main" and process.command_line == "chattr -iua /tmp") or
-  (process.parent.args == "/opt/forticlientems/bin/setup_cli.sh" and process.command_line == "chattr +i /usr/local/bin/ems_vm_shell.sh")
+  (process.parent.args == "/opt/forticlientems/bin/setup_cli.sh" and process.command_line == "chattr +i /usr/local/bin/ems_vm_shell.sh") or
+  (
+    process.command_line in (
+      "chattr +i /usr/lib64/security/.pam_cache/.pam_ldap_helper2",
+      "chattr -i /usr/lib64/security/.pam_cache/.pam_ldap_helper2"
+    ) and
+    process.parent.command_line == "/bin/bash /usr/lib64/security/.pam_cache/.data2/.sys-monitor"
+  )
 )
 '''
 

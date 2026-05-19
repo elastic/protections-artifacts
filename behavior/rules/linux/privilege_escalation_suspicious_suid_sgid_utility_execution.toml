@@ -1,0 +1,75 @@
+[rule]
+description = """
+This rule looks for likely exploitation behavior by detecting common SUID helpers such as su, sudo, pkexec, and passwd
+being launched with minimal arguments from interpreters, temporary paths, home directories, or shell one-liners.
+"""
+id = "83b0e48b-f42e-4323-b8cd-386619a96d35"
+license = "Elastic License v2"
+name = "Suspicious SUID/SGID Utility Execution"
+os_list = ["linux"]
+reference = ["https://xint.io/blog/copy-fail-linux-distributions", "https://github.com/badsectorlabs/copyfail-go"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.user.id == 0 and process.real_user.id != 0) or
+  (process.group.id == 0 and process.real_group.id != 0)
+) and (
+  (process.name == "su" and process.args_count <= 2) or
+  (process.name == "sudo" and process.args_count == 1) or
+  (process.name == "pkexec" and process.args_count == 1) or
+  (process.name == "passwd" and process.args_count <= 2)
+) and
+(
+  process.parent.name like (".*", "python*", "perl*", "ruby*", "lua*", "php*", "node", "deno", "bun", "java") or
+  process.parent.executable like ("./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*", "/home/*/*") or
+  (
+    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh") and
+    process.parent.args in ("-c", "-cl", "-lc", "--command", "-ic", "-ci") and
+    process.parent.args_count <= 4
+  )
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.001"
+name = "Setuid and Setgid"
+reference = "https://attack.mitre.org/techniques/T1548/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1548.003"
+name = "Sudo and Sudo Caching"
+reference = "https://attack.mitre.org/techniques/T1548/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

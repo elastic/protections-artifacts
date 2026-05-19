@@ -14,14 +14,15 @@ reference = [
     "https://pwnshift.github.io/2020/10/01/persistence.html",
     "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and (
    process.name : (
      "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "python*", "php*",
-     "perl", "ruby", "lua*", "openssl", "nc", "netcat", "ncat", "telnet", "awk"
+     "perl", "ruby", "lua*", "openssl", "nc", "ncat", "netcat", "netcat.openbsd",
+     "netcat.traditional", "nc.openbsd", "nc.traditional", "telnet", "awk"
    ) or
    process.executable : (
      "./*", "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/srv/*",

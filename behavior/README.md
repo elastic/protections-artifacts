@@ -64,10 +64,7 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 #### XDR MITRE scorecard (endpoint + endpoint-scoped SIEM)
 
 - Catalog: 61 parent techniques (Win/Linux/macOS under 8 scorecard tactics)
-- Covered (union): 49/61 (80.33%) — production endpoint
-rules plus production SIEM rules with metadata.integration
-including "endpoint" and/or index matching logs-endpoint.
-events*/ logs-endpoint.alerts*
+- Covered (union): 49/61 (80.33%) — production endpoint rules plus production SIEM rules with metadata.integration including "endpoint" and/or index matching logs-endpoint.events*/ logs-endpoint.alerts*
 - Techniques — endpoint-only: 1, SIEM-only: 4, both: 44
 - Rules — production endpoint: 1249, SIEM (in-scope + MITRE): 998
 

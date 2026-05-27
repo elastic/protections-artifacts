@@ -2299,3 +2299,363 @@ rule Windows_Generic_MalCert_148ea98b {
         all of them
 }
 
+rule Windows_Generic_MalCert_370fedab {
+    meta:
+        author = "Elastic Security"
+        id = "370fedab-754d-402f-8b2c-ea9a7c6eeece"
+        fingerprint = "22cb96341d3e326411aa3a265e7eb8ba63f1ec3889830a0f94b6e2d13ed7399c"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "305c28548c02b835872b3784d1b2032ad485736ea570818c248fbfedb7713fb7"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 43 BB 43 7D 60 98 66 28 6D D8 39 E1 D0 03 09 F5 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_2f2eda15 {
+    meta:
+        author = "Elastic Security"
+        id = "2f2eda15-d71e-4b11-a80b-cabf2bf018f0"
+        fingerprint = "a63727e9ff1006559e0f3c22f5d82b399178d2784bc73030faebe7adb7692350"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "67c6a97ccc0519104b33e51a32ae77d57a7c4d689d7723126671ec1ecda76645"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 28 77 79 FB 66 62 61 CB 73 17 47 92 9A 62 17 70 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_188abc68 {
+    meta:
+        author = "Elastic Security"
+        id = "188abc68-05cc-4ebe-9ff1-b77db4511397"
+        fingerprint = "8520425e9a83e2cfaa99d58db11b60b02549ad449f4edd29d47fad7af9b764db"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "b372ada0c63482d34f84f24e969b7d086e6a94b27822ce82745f9f45bb34990d"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 23 B3 32 0A 66 EA 5E BE 1B CC 6B 5A D5 0F 5D F3 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_4851403d {
+    meta:
+        author = "Elastic Security"
+        id = "4851403d-15f2-4ec3-aaf1-24100bf16872"
+        fingerprint = "854313642bf437b244b156c90f98e5ca0327bc143e392a62d505f6ba79c7877f"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "caa1d55670c996d04bca2669243516cf4a09d493a5c703b561525966eb8451c7"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 0C 26 86 B9 98 2E 46 DA 7E 3E 0A 1D 56 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_09063873 {
+    meta:
+        author = "Elastic Security"
+        id = "09063873-d671-44da-b3b8-7cf6d5df43e2"
+        fingerprint = "25f77cc1e83f4f763d8a867760eae11ece5f02352b397a268413aaa19b51276a"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "f512e6f74662489944e3aa87da51293e2b53697d3cf6dc3d152dd184de20ee78"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 51 6C EB 03 F1 7E 10 C2 4B 45 FF B6 33 6E 59 15 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_6d3b51fa {
+    meta:
+        author = "Elastic Security"
+        id = "6d3b51fa-b2b7-44aa-bf19-48a78247a9c3"
+        fingerprint = "eab00add62412568e242b12e484e5e65510445f2ac056df6803c57426db8a286"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "13fce72309dcdbfa01ea77f9a77fc1d5d3e3ff845cd3ecb8e93df25f26f9c634"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 6F AD F9 A2 65 75 FE 86 1D 36 80 B4 E2 6C 3C 41 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_32431998 {
+    meta:
+        author = "Elastic Security"
+        id = "32431998-84a4-4db8-8cb7-df82d08ea568"
+        fingerprint = "508c0a32b581b47760604d51c2ac3bf7807d626459f589535abca78a298abc4d"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "8f7f99691b47846d2b8f3ee0ad9978572e9f8314b438a8a4fc201a8b00e4ac5f"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 0C EA 5C 41 B4 B3 56 60 B8 83 BA 06 DE F5 A0 53 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_e6545d9a {
+    meta:
+        author = "Elastic Security"
+        id = "e6545d9a-b418-45ed-963b-d9ece5a5f113"
+        fingerprint = "e44dc77ae457fe8cc6d0f63a56cb99de9c7ba2df4f36ecd837fe42675d347805"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "ba85aee7c05b6cc867c4c2c8047ebe65e1229725f692f5111670de2dc7873bd2"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 26 29 6B 96 27 C4 13 51 72 33 A4 C3 5A D6 16 60 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_d39a6105 {
+    meta:
+        author = "Elastic Security"
+        id = "d39a6105-d6ae-464b-9076-a28a9d202465"
+        fingerprint = "d9b2a2e9539c9029e4f954073ba41217f5fd7b7b8523ca53c0c36f9877b95ef9"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "0da5b3ac07b09245e2dcfc0f754f394b8a52c0d764311e8e06f1fd8c863adc2e"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 5F 78 14 9E B4 F7 5E B1 74 04 A8 14 3A AE AE D7 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_ea2bea03 {
+    meta:
+        author = "Elastic Security"
+        id = "ea2bea03-840e-4013-befa-dcdad58c3af5"
+        fingerprint = "45ba287ad3f4e63080ef0352640b272e88c2aed1f3791248f4a67d06fec20e36"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "365fda0687e3bd5080cae456212d11d03fb3ffe45b61234cd23def3d90826a60"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 0A 00 5D 2E 2B CD 41 37 16 82 17 D8 C7 27 74 7C }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_46197ec0 {
+    meta:
+        author = "Elastic Security"
+        id = "46197ec0-6233-4a18-8a01-31f0d71cc8d1"
+        fingerprint = "d30c1ae50dafb511f227a15b12274c67c49c5a9245bbd07ddbed269fd9d7bd4c"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "64bf063f6c7e2cbb1adb94de145cfaf47987cafd901c5fa1bda796003a3c8e81"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 36 EA F6 1D C3 95 F6 30 41 F4 24 7D AE 76 AB 7E }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_daa8e4f1 {
+    meta:
+        author = "Elastic Security"
+        id = "daa8e4f1-7ef1-496b-8991-f1469fd4bfc4"
+        fingerprint = "0fb7b91153b5be6f34c6c48071b709e9bea7ce8af553a961b20a815281eb8202"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "decc21cccc5418d9844437079f3039545c2950b14d5fa7a0c8b670bcc2548e8e"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 48 4B 80 A0 E2 6C 94 F7 77 32 38 59 A7 9A DE C5 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_84b6c412 {
+    meta:
+        author = "Elastic Security"
+        id = "84b6c412-fda8-469e-af6a-3c9427e4d2bd"
+        fingerprint = "a627b48f95b612d0130859b37736e73765b4431729e4d7e01b1946ebbd94ad70"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "388884f9c333dec55239cc0a231ed5f84a49e2578cd93954b0babf4b5043f37b"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 44 5C EB 6A A8 B4 33 F7 81 AF 45 0B F3 52 C3 41 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_568023ba {
+    meta:
+        author = "Elastic Security"
+        id = "568023ba-0d26-4de9-9103-51f3178bb790"
+        fingerprint = "7766c6736e845591f97e83d3a194a9576ffb955c11dbd5fa8304e900b4dd0964"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "318604a87c10095fae1deb0e773bde5d74ac8e76ecd97cd40301c7ae47021c3e"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 3F FC EB A8 3F E0 0F EF 97 F6 3C D9 2E 77 EB B9 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_149e4c91 {
+    meta:
+        author = "Elastic Security"
+        id = "149e4c91-84f4-4ce4-8180-4254f363f699"
+        fingerprint = "9c6eb0276421edb89623497ecd2d8d5d9829d99c8f52e39a1cd87fbae089a9c9"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "605c8a53e412e91679bab1a494b34f989e6cf461f69e1891cbe709dd7425c574"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 0C 0E FA 2F AD BB FB AC DC 28 41 94 C3 }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_feb04d8c {
+    meta:
+        author = "Elastic Security"
+        id = "feb04d8c-9ecd-45b2-828d-1fdc19c50242"
+        fingerprint = "b7f31d421646ae137f8538a1a55f48f72acee98b9fbd498b982f87f9e85fe989"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "c727b906a19040f69aab12b74d4a9c82239ce83fe05c1426d81288e1a54b54ae"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 10 20 BE 01 F1 F8 77 ED FF 5F 9C 83 D3 67 28 96 DC }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_c5445230 {
+    meta:
+        author = "Elastic Security"
+        id = "c5445230-dd04-4007-a547-8213b6350150"
+        fingerprint = "e600ad934722b8f75f71e697f493ec747705e3367a2ed7dc2b2ed10524cc9458"
+        creation_date = "2025-04-08"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "9e0b46194dc1c034422700b02c6aca01290d144735e48c4a83eea34773be5f52"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a1 = { 01 02 02 13 33 00 01 1F FA 6A B4 FB 5E 91 C3 0B C5 00 00 00 01 1F FA }
+    condition:
+        all of them
+}
+
+rule Windows_Generic_MalCert_49d826f1 {
+    meta:
+        author = "Elastic Security"
+        id = "49d826f1-98ea-4f98-be2c-289f31a1d72e"
+        fingerprint = "2f51fee65fb37000ed5c638c0c2c3e0f62f58a7ee2fe766c1840e0b24105a317"
+        creation_date = "2025-11-14"
+        last_modified = "2026-05-22"
+        threat_name = "Windows.Generic.MalCert"
+        reference_sample = "f57cdd4806657478e1ead64234c2f6d038893d9be4c513f4d3624963b8a9e24c"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 01 02 02 10 12 26 0D 4C CD 00 95 A2 0C 70 42 FE 01 1E 65 C2 }
+    condition:
+        all of them
+}
+

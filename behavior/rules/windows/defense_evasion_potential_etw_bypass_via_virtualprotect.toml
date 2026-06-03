@@ -1,0 +1,77 @@
+[rule]
+description = """
+Identifies attempts to change the memory page permissions of Event Tracing for Windows (ETW) functions in ntdll.dll to
+make them writable from an unsigned or suspicious module. This is a precursor to patching those functions via a raw
+pointer write, which can disable ETW-based telemetry and evade security tooling that relies on it.
+"""
+id = "a26e8618-136d-4988-a8a7-eb45d5f1d468"
+license = "Elastic License v2"
+name = "Potential ETW Bypass via VirtualProtect"
+os_list = ["windows"]
+reference = [
+    "https://blog.xpnsec.com/hiding-your-dotnet-etw/",
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+]
+version = "1.0.3"
+
+query = '''
+api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
+ process.Ext.api.metadata.target_address_name like ("ntdll.dll!Etw*", "ntdll.dll!NtTrace*") and
+ process.Ext.api.parameters.protection like "?W*" and
+ process.executable != null and
+ process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and 
+ not process.thread.Ext.call_stack_final_user_module.name in ("Unknown", "Undetermined") and
+ not (process.executable : "?:\\Program Files\\Microsoft Visual Studio\\*\\IDE\\devenv.exe" and 
+      process.Ext.api.metadata.target_address_name like ("ntdll.dll!EtwUnregisterTraceGuid*", "ntdll.dll!EtwRegisterTraceGuids*")) and 
+ not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("c:\\windows\\system32\\ntdll.dll!Ldr*", "c:\\program files\\microsoft sql server management studio*\\ide\\ssms.exe!SetOnAssertCallback*")) and 
+ not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and
+                  $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher",
+                                          "Microsoft Windows Software Compatibility Publisher",
+                                          "Palo Alto Networks", "Sentinel Labs, Inc.",
+                                          "Microsoft Corporation", 
+                                          "Check Point Software Technologies Ltd.", 
+                                          "ESET, spol. s r.o.",
+                                          "Promon AS",
+                                          "SAP",
+                                          "NOVASYNC LABS PTE. LTD.",
+                                          "Tonalio GmbH",
+                                          "SentinelOne Inc.",
+                                          "JetBrains s.r.o.",
+                                          "Safetica a.s.",
+                                          "ModuleWorks GmbH",
+                                          "Star Finanz-Software Entwicklung und Vertriebs GmbH", 
+                                          "TRACKER SOFTWARE PRODUCTS (CANADA) LIMITED, TRACKER SOFTWARE PRODUCTS (CANADA) LIMITED")) and 
+  not (process.executable like "C:\\Program Files (x86)\\SFirmV*\\SFEbicsWorker.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance_path == "c:\\windows\\system32\\rundll32.exe") and 
+  not (process.parent.executable like "C:\\Program Files (x86)\\StarMoney*\\app\\StarMoney.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance_path == "c:\\windows\\system32\\rundll32.exe") and 
+  process.thread.Ext.call_stack_final_user_module.protection_provenance_path != "c:\\windows\\syswow64\\icu.dll" and 
+  not (process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\syswow64\\combase.dll" and process.Ext.api.summary == "VirtualProtect( ntdll.dll!EtwEventRegister, 0x5, RWX, R-X )")
+'''
+
+min_endpoint_version = "8.16.3"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.16.3"

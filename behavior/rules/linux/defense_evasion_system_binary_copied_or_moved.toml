@@ -7,7 +7,7 @@ id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
 license = "Elastic License v2"
 name = "System Binary Copied or Moved"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
@@ -65,18 +65,20 @@ process.args in (
   process.args like ("/var/tmp/dracut.*/initramfs/*", "/var/tmp/mkinitramfs_*", "/opt/jail/driver-jail/*") or
   process.parent.args like (
     "/var/tmp/rpm-tmp*", "/usr/sbin/rear", "/usr/lib/usrmerge/convert-usrmerge", "/usr/share/initramfs-tools/hooks/zz-busybox",
-    "./libtool", "/var/lib/dpkg/info/dash.postinst", "*./libtool*", "/usr/bin/mkinitcpio"
+    "./libtool", "/var/lib/dpkg/info/dash.postinst", "*./libtool*", "/usr/bin/mkinitcpio", "/sbin/rear"
   ) or
   process.command_line in (
     "mv kubectl /usr/bin/kubectl", "mv ./kubectl /usr/bin/kubectl", "cp kubectl /usr/local/bin/kubectl",
-    "mv kubectl /usr/local/bin/kubectl", "mv ./kubectl /usr/local/bin/kubectl"
+    "mv kubectl /usr/local/bin/kubectl", "mv ./kubectl /usr/local/bin/kubectl",
+    "/usr/bin/coreutils --coreutils-prog-shebang=cp /usr/bin/cp /usr/bin/sh /tmp"
   ) or
   (process.parent.command_line like "/nix/store/*" and process.command_line == "mv /bin/.sh.tmp /bin/sh") or
   (process.parent.name == "shtool" and process.command_line == "mv /usr/local/bin/#INST@*# /usr/local/bin/php") or
   (
     process.args like "./curl.leap*.x86_64" and
     process.working_directory like "/opt/SIGOS/sitedata/exec/*"
-  )
+  ) or
+  process.parent.command_line == "/usr/bin/runc init"
 )
 '''
 

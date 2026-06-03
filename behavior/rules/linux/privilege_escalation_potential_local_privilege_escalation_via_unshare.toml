@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies an attempt to exploit a local privilege escalation via the unshare command. The unshare command allows a
+process to create a new namespace and set the capabilities of the process. This can be used to escalate privileges to
+root.
+"""
+id = "f483675e-1c8f-4ce4-80b3-34c646911385"
+license = "Elastic License v2"
+name = "Potential Local Privilege Escalation via Unshare"
+os_list = ["linux"]
+version = "1.0.1"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=60s
+  [process where event.action == "exec" and event.type == "start" and 
+  process.name == "unshare" and process.args in ("-r", "-rm", "-m", "-U", "--user") and user.id != 0]
+  [process where event.action == "uid_change" and event.type == "change" and user.id == 0 and process.parent.user.id != 0]
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

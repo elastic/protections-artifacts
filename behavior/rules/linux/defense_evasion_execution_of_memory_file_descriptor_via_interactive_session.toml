@@ -7,17 +7,17 @@ it via command and control.
 """
 id = "fbc224a0-5469-4c0c-953d-fc57e0293197"
 license = "Elastic License v2"
-name = "Execution of In-Memory File via Interactive Session"
+name = "Execution of Memory File Descriptor via Interactive Session"
 os_list = ["linux"]
 reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
-process.executable like "/proc/*/fd/*" and process.interactive == true and
+process.executable regex """/proc/(self|[0-9]{1,7})/fd/[0-9]{1,7}""" and process.interactive == true and
 not (
   process.command_line in ("runc init", "/var/gdn/assets/linux/bin/runc init", "/usr/sbin/pfman", "lxc-attach -n rdsd.lv") or
   process.args == "datadog-ipc-helper" or

@@ -19,7 +19,7 @@ reference = [
     "https://book.hacktricks.xyz/generic-methodologies-and-resources/tunneling-and-port-forwarding",
     "https://github.com/erebe/wstunnel",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -103,8 +103,12 @@ not (
     process.args like "ssh*"
   ) or
   process.parent.args == "/usr/bin/crun" or
-  process.executable in ("/usr/bin/podman", "/usr/bin/crontab", "/usr/bin/rg", "/usr/bin/ssh", "/usr/bin/autossh") or
-  process.parent.command_line == "runc init"
+  process.executable in (
+    "/usr/bin/podman", "/usr/bin/crontab", "/usr/bin/rg", "/usr/bin/ssh", "/usr/bin/autossh", "/usr/local/bin/rtk", "/usr/lib/autossh/autossh"
+  ) or
+  process.executable like "/tmp/.mount_cursor*/ripgrep/bin/rg" or
+  process.parent.command_line == "runc init" or
+  process.args == "/usr/bin/autossh"
 )
 '''
 

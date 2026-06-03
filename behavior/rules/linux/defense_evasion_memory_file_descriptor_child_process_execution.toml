@@ -6,10 +6,10 @@ child process execution is uncommon and may indicate an attempt to evade securit
 """
 id = "edc713a8-f352-4b12-ba50-b24944dfbd2d"
 license = "Elastic License v2"
-name = "In-Memory Child Process Execution"
+name = "Memory File Descriptor Child Process Execution"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like "?memfd:*" and

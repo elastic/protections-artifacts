@@ -7,7 +7,7 @@ id = "47167118-ba42-48e8-8555-dd50d98d21c4"
 license = "Elastic License v2"
 name = "Potential Suspended Process Code Injection"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 api where process.Ext.api.name  == "WriteProcessMemory" and
@@ -17,7 +17,8 @@ api where process.Ext.api.name  == "WriteProcessMemory" and
  Target.process.Ext.created_suspended == true and process.Ext.api.behaviors == "cross-process" and
 
  /* WPM triggers multiple times at process creation */
- not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like ("*\\kernelbase.dll!CreateProcess*", "*\\kernelbase.dll+0x*")) and
+ not _arraysearch(process.thread.Ext.call_stack, $entry, 
+                  $entry.symbol_info like ("*\\kernelbase.dll!CreateProcess*", "*\\kernelbase.dll+0x*", "c:\\windows\\*\\advapi32.dll!CreateProcessAsUser*")) and
  not (process.Ext.api.summary like ("*PEB*", "*PEB32*",  "*ProcessStartupInfo*") and process.thread.Ext.call_stack_summary like "*Unknown*") and
 
  /* unsigned or untrusted code signature */

@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where
@@ -98,16 +98,14 @@ $entry.subject_name in (
 )) and
 not _arraysearch(process.thread.Ext.call_stack, $entry,
                  $entry.symbol_info like
-                                     ("c:\\windows\\sys?????\\ntdll.dll!LdrLoadDll*",
-                                      "c:\\windows\\sys?????\\ntdll.dll!LdrResolveDelayLoadedAPI*",
-                                      "c:\\windows\\sys?????\\ntdll.dll!LdrGetProcedureAddress*",
-                                      "c:\\windows\\sys?????\\ntdll.dll!RtlAllocateHeap*",
+                                     ("c:\\windows\\*\\ntdll.dll!Ldr*",
+                                      "c:\\windows\\*\\ntdll.dll!RtlAllocateHeap*",
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlFreeHeap*",
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlReAllocateHeap*",
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlUnlockHeap*",
-                                      "c:\\windows\\sys?????\\ntdll.dll!LdrInitializeThunk*",
                                       "c:\\windows\\sys?????\\ntdll.dll+0x*")) and
-not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path like "?:\\*\\docker\\*\\windows\\*")
+not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path like "?:\\*\\docker\\*\\windows\\*") and 
+not process.thread.Ext.call_stack_summary like ("ntdll.dll|libpcre*.dll|libgobject-*.dll|ntdll.dll", "ntdll.dll|libffi-*.dll|libpython*.dll|ntdll.dll")
 '''
 
 min_endpoint_version = "8.16.3"

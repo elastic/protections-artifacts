@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Initial Access or Execution via Microsoft Office Application"
 os_list = ["macos"]
 reference = ["https://objective-see.com/blog/blog_0x4B.html"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "exec" and
@@ -74,6 +74,7 @@ process where event.action == "exec" and
           "/usr/sbin/networksetup"
         ) and
    not (process.name == "sh" and process.command_line like~ "*$CFFIXED_USER_HOME/.zoteroIntegrationPipe*") and
+   not (process.name in ("sh", "bash", "curl") and process.command_line like~ "*http://127.0.0.1:6969/binary*ppShuttle_*.bin*") and
    not process.Ext.effective_parent.executable like~ (
         "/Applications/ToDesk.app/Contents/MacOS/ToDesk_Service",
         "/Applications/Docker.app/Contents/MacOS/com.docker.backend",

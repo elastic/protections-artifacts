@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "DNS Request to Dynamic DNS via Suspicious Executable"
 os_list = ["linux"]
 reference = ["https://www.rapid7.com/blog/post/tr-new-whitepaper-stealthy-bpfdoor-variants/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -20,18 +20,20 @@ sequence by process.entity_id with maxspan=10s
       "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
       "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/home/*/*", "/root/*"
     )
-  ) and not (
+  ) and
+  not (
+    (
+      process.parent.name in ("bash", "node") and
       (
-        process.parent.name in ("bash", "node") and
-        (
-          process.working_directory in ("/usr/local/meshcentral", "/opt/meshcentral/meshcentral", "/usr/local/mesh_services/meshagent") or
-          process.parent.args in ("/usr/local/meshcentral/node_modules/meshcentral", "/home/periodic/dyndns-noip.sh")
-        )
-      ) or
+        process.working_directory in ("/usr/local/meshcentral", "/opt/meshcentral/meshcentral", "/usr/local/mesh_services/meshagent") or
+        process.parent.args in ("/usr/local/meshcentral/node_modules/meshcentral", "/home/periodic/dyndns-noip.sh")
+      )
+    ) or
     (
       process.command_line == "python3 -m app.run_scheduled_update" and
       process.parent.args == "./workflow_unified.sh"
-    )
+    ) or
+    process.executable == "/usr/bin/qbittorrent-nox"
   )]
   [dns where event.action == "lookup_result" and dns.question.name like~ (
     "*.no-ip.com", "*.no-ip.org", "*.no-ip.biz", "*.no-ip.info", "*.noip.com", "*.afraid.org", "*.changeip.com",

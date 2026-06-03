@@ -9,14 +9,16 @@ id = "c1556f07-4184-42dc-a55c-866011a63715"
 license = "Elastic License v2"
 name = "Setcap setuid/setgid Capability Set"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 process.name == "setcap" and process.command_line like "*cap_set?id+ep*" and
 not (
   process.parent.name in ("jem", "vzctl") or
-  process.args like "/usr/bin/new?idmap"
+  process.args like "/usr/bin/new?idmap" or
+  process.parent.executable like "/var/lib/dpkg/info/*.postinst" or
+  process.parent.args like "/var/lib/dpkg/info/*.postinst"
 )
 '''
 

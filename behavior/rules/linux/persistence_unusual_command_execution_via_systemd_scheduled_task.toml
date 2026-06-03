@@ -11,7 +11,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "systemd" and 
@@ -70,7 +70,7 @@ not (
     "/bin/sh -c curl -s https://*/retrieve-validca.sh | bash -s /data/certificate > /data/log/valica.log 2>&1 && supervisorctl apache2 reload >>/data/log/valica.log 2>&1",
     "bash -c chmod +x /opt/forticlientems/bin/ubuntu24_upgrade_check.sh && /opt/forticlientems/bin/ubuntu24_upgrade_check.sh", "/bin/sh -c /bin/chmod 777 /upload/cms-embossing/*",
     """/bin/sh -c /usr/bin/timeout 60 /bin/sh -c 'while ! /usr/bin/timeout 1 /usr/bin/host www.*.com >/dev/null 2>&1; do /bin/sleep 0.1; done' && /bin/echo "DNS works!"""",
-    "*.gr/index.php?option=com_acymailing&ctrl=cron*"
+    "*.gr/index.php?option=com_acymailing&ctrl=cron*", "*_sync_last_success_timestamp_seconds*10.10.20.204:9091/metrics*"
   ) or
   process.command_line in (
     "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",
@@ -78,14 +78,17 @@ not (
     "/bin/bash -c curl -fs https://get.upwind.io/sensor.sh | bash -s -- upgrade",
     "/bin/bash -c curl -s https://get.upwind.io/sensor.sh | bash -s -- upgrade",
     "/bin/sh -c /opt/arcsight/backup_local/backup.sh || /opt/arcsight/backup_local/backup_error.sh",
-    """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env"""
+    """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env""",
+    "/bin/bash -c curl -fsSLO https://get.upwind.io/sensor.sh && echo \"$(curl -fsSL https://get.upwind.io/sensor.sh.sha256)  sensor.sh\" | sha256sum -c - && bash sensor.sh upgrade",
+    "/bin/bash -lc timeout 45 /usr/bin/claude --model claude-haiku-4-5 -p \"reply: pong\" > /tmp/claude-quota-refresh.last 2>&1 || true",
+    "/bin/sh -c echo \"$(date) $(whoami)\" >>/tmp/log"
   ) or
   process.args like (
     "[ ! -e *", "ansible *", "php -q /var/www/*php > /tmp/datastore*", "wget --proxy=off*cat*batch_trigger.log",
     "sudo curl*raw.githubusercontent.com/*/backup-scripts/refs/heads/main/fortigate-backup.sh*",
     "/usr/bin/curl -s -H*zendesk.com/api/v2/ticket_metrics.json*", "export PM2_HOME=*",    
     "/usr/bin/curl*/var/log/checkdiskusage.log", "ps*/opt/fortinet/fortisiem/linux-agent/tmp/*",
-    "iostat*/tmp/iostat.cache"
+    "iostat*/tmp/iostat.cache", "/usr/local/psa/admin/sbin/modules/aast-dnssec/event*"
   ) or 
   process.working_directory like "/opt/nessus_agent/*"
 )

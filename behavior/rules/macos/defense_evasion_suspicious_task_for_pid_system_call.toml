@@ -15,7 +15,7 @@ reference = [
     "https://blog.xpnsec.com/macos-injection-via-third-party-frameworks/",
     "https://wojciechregula.blog/post/learn-xpc-exploitation-part-3-code-injections/",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 process where event.action == "process_open" and
@@ -35,7 +35,8 @@ process where event.action == "process_open" and
    startswith~(process.executable, Target.process.executable)) and 
   not process.hash.sha256 : ("d41e02b5366b186a237f33150baa7c5ef4747ba06646a193ab9ba5125fc6ef7a",
                              "bee1a00ffb1c4b7c2c4784a1fdcb849dc7853b9deb5173ff4c5a08209c84bc26",
-                             "6ac6f81d80afff9b6ee9d3608d9964566a39188d0166ae867df97c624e632b98") and 
+                             "6ac6f81d80afff9b6ee9d3608d9964566a39188d0166ae867df97c624e632b98",
+                             "8698f4e54c64667c4a4c7ccde3fbcd7babc6478a5e8e22732732f633cc2fc499") and 
   not (process.executable like "/Users/*/micromamba/envs/grid/bin/python*" and Target.process.executable in ("/bin/bash", "/usr/bin/which", "/usr/bin/uname")) and
   not (process.executable like "/Users/*/.local/share/uv/python/cpython-*-macos-aarch64-none/bin/python*" and Target.process.executable like "/Users/*/Code/eis-ray/.venv/lib/python*/site-packages/ray/core/src/ray/gcs/gcs_server") and 
   not (process.executable like "/Users/*/anaconda?/bin/python*" and Target.process.executable like "/Users/*/anaconda?/envs/python*/bin/python*")

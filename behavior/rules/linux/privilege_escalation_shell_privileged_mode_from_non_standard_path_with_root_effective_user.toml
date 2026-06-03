@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shell Privileged Mode from Non-Standard Path with Root Effective User"
 os_list = ["linux"]
 reference = ["https://gtfobins.github.io/#+suid"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "exec" and user.name == "root" and user.Ext.real.name != "root" and
@@ -17,7 +17,8 @@ process where event.action == "exec" and user.name == "root" and user.Ext.real.n
   process.executable != null and process.parent.executable != null and 
   process.executable like ("/var/tmp/*", "/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*") and 
   not (process.executable like "/tmp/newroot/usr/bin/*" and process.parent.executable like "/tmp/newroot/bin/*") and 
-  not (process.executable like "/run/k3s/containerd/*" and process.parent.executable like "/run/k3s/containerd/*")
+  not (process.executable like "/run/k3s/containerd/*" and process.parent.executable like "/run/k3s/containerd/*") and
+  not process.executable in ("/tmp/newroot/usr/sbin/sudo", "/tmp/newroot/usr/bin/sudo")
 '''
 
 min_endpoint_version = "8.6.0"

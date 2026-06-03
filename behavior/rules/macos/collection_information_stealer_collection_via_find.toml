@@ -11,13 +11,13 @@ license = "Elastic License v2"
 name = "Information Stealer Collection via Find"
 os_list = ["macos"]
 reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
-[process where event.type == "start" and event.action == "exec" and process.name == "find" and 
-  process.args like "/Users/*/Library/Application Support/*" and process.args == "-type" and process.args == "f"]
-[file where file.extension == "txt"]
+  [process where event.type == "start" and event.action == "exec" and process.name == "find" and
+    process.args like "/Users/*/Library/Application Support/*" and process.args == "-type" and process.args == "f"]
+  [file where file.extension == "txt" and Effective_process.executable != "/Library/Elastic/Endpoint/elastic-endpoint.app/Contents/MacOS/elastic-endpoint"]
 '''
 
 min_endpoint_version = "8.16.0"

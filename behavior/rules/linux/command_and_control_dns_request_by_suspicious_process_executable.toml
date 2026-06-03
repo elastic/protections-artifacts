@@ -1,0 +1,97 @@
+[rule]
+description = """
+This rule detects DNS requests initiated by suspicious process executables. Malware authors may use these requests to
+communicate with command and control infrastructure, exfiltrate data from the target system, or to download payloads for
+later execution.
+"""
+id = "503823dd-722f-4f23-84fc-8a6024f505f2"
+license = "Elastic License v2"
+name = "DNS Request by Suspicious Process Executable"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and (
+    process.executable like (
+      "./*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
+      "/lost+found/*", "/var/mail/*"
+    ) or
+    process.name like ".*"
+  ) and
+  not (
+    process.executable like (
+      "./usr/bin/podman", "./", "/dev/.buildkit_qemu_emulator", "/u01/*/webtier/ohs/bin/.apachectl",
+      "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode",
+      "./usr/bin/qemu-aarch64-static"
+    ) or
+    process.parent.executable in ("/usr/bin/skopeo", "/usr/bin/buildah") or
+    process.args == "datadog-ipc-helper"
+  )]
+  [dns where event.action == "lookup_result" and dns.question.name != "localhost" and
+  not (
+    dns.question.name == "pypi.org" or
+    (process.executable like "/home/*/.elastic-ramen" and dns.question.name in ("registry.npmjs.org", "models.dev")) 
+  )
+  ]
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

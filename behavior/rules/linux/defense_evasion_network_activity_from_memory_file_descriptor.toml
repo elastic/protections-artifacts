@@ -6,35 +6,37 @@ and then execute it after which is establishes outbound network connections (C2)
 """
 id = "4c8b9c6f-4d85-4fa9-9104-16f7a99aded6"
 license = "Elastic License v2"
-name = "Network Activity from In-Memory File"
+name = "Network Activity from Memory File Descriptor"
 os_list = ["linux"]
 reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
-[process where event.type == "start" and event.action == "exec" and process.executable like "/proc/*/fd/*" and
- not (
-   process.args like ("/usr/lib/systemd/systemd-executor", "/nix/store/*/systemd-executor*") or
-   process.parent.executable like (
-     "/usr/sbin/runc", "/usr/bin/dockerd", "/lib/systemd/systemd", "/usr/lib/systemd/systemd", "/nix/store/*/systemd",
-     "/opt/sentinelone/bin/addon-host", "/opt/gitlab/embedded/bin/gitlab-kas", "/usr/sbin/nordlayerd", "/sbin/init",
-     "/proc/self/fd/*/*"
-   ) or
-   process.command_line == "runc init"
- )]
-[network where event.type == "start" and event.action == "connection_attempted" and not (
-  cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
-    "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
-    "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
-    "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
-    "FE80::/10", "FF00::/8"
-   ) or
-   process.name == "check-new-release-gtk"
- )]
+  [process where event.type == "start" and event.action == "exec" and
+  process.executable regex """/proc/(self|[0-9]{1,7})/fd/[0-9]{1,7}""" and
+  not (
+    process.args like ("/usr/lib/systemd/systemd-executor", "/nix/store/*/systemd-executor*") or
+    process.parent.executable like (
+      "/usr/sbin/runc", "/usr/bin/dockerd", "/lib/systemd/systemd", "/usr/lib/systemd/systemd", "/nix/store/*/systemd",
+      "/opt/sentinelone/bin/addon-host", "/opt/gitlab/embedded/bin/gitlab-kas", "/usr/sbin/nordlayerd", "/sbin/init",
+      "/proc/self/fd/*/*"
+    ) or
+    process.command_line == "runc init"
+  )]
+  [network where event.type == "start" and event.action == "connection_attempted" and
+  not (
+    cidrmatch(destination.ip, "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+      "192.0.0.0/29", "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32",
+      "192.0.2.0/24", "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4",
+      "100.64.0.0/10", "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1",
+      "FE80::/10", "FF00::/8"
+    ) or
+    process.name == "check-new-release-gtk"
+  )]
 '''
 
 min_endpoint_version = "8.3.0"

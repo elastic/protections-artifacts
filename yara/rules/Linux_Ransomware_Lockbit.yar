@@ -45,3 +45,23 @@ rule Linux_Ransomware_Lockbit_5b30a04b {
         all of them
 }
 
+rule Linux_Ransomware_Lockbit_4a497d53 {
+    meta:
+        author = "Elastic Security"
+        id = "4a497d53-3e96-49b2-abb3-098c4a87267e"
+        fingerprint = "f0f55b9fc3f46724a96d90db45346fb104227480b902ed3054e002f725475d69"
+        creation_date = "2025-01-09"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Ransomware.Lockbit"
+        reference_sample = "a60acd0adeccbe29ff8402db0e974eba25c9acf98a3af98940e518d465fb1bbe"
+        severity = 100
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a = { 24 B3 A0 E1 40 70 8D E5 44 50 8D E5 40 80 89 E2 00 70 A0 E3 50 50 8D E2 0B 00 57 E1 }
+    condition:
+        all of them
+}
+

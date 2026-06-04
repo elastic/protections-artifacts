@@ -1232,3 +1232,203 @@ rule Linux_Generic_Threat_be02b1c9 {
         all of them
 }
 
+rule Linux_Generic_Threat_c19ca8e5 {
+    meta:
+        author = "Elastic Security"
+        id = "c19ca8e5-eed0-4c92-abb3-2ff800e68c99"
+        fingerprint = "1fb27f4b77439494bda58a2d805208f1953ea03aead4aafd04513cf76f490d45"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "e2c06dfd108cd48e6f3a9bd18c0812fa3e7b03fc422a4756a281aeb410116c5d"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 01 60 A0 E1 01 30 D5 E4 09 00 53 E3 20 00 53 13 03 40 A0 E1 FA FF FF 0A 0A 00 53 E3 F8 FF FF 0A 2D 00 53 E3 39 00 00 0A 2B 00 53 E3 01 40 D5 04 02 71 E0 E3 00 A0 A0 E3 07 00 A0 E1 06 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_f0a0ecd5 {
+    meta:
+        author = "Elastic Security"
+        id = "f0a0ecd5-1faf-4a26-8797-dfb78c2169e9"
+        fingerprint = "c9f1e03fe68df3e6919a771f90214e94ddd5b4d4a396ed0f817c1a220d6a00fd"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "8af6520884b12350097cea5e452e0515d5ad83d23d0e4623266afa1f2c0c85cb"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 04 10 8D E2 04 00 00 EB 01 00 70 E2 00 00 A0 33 44 D0 8D E2 04 E0 9D E4 1E FF 2F E1 70 40 2D E9 28 D0 4D E2 04 60 8D E2 01 40 A0 E1 06 20 A0 E1 5C 10 9F E5 62 01 00 EB 00 50 50 E2 10 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_0ea505fa {
+    meta:
+        author = "Elastic Security"
+        id = "0ea505fa-53d3-4c3a-9d24-ef6d9c371aa0"
+        fingerprint = "c986e6284bda5cb30b9b3aba141cee27b735e4831d0b9384daeb4bf542d5ded1"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "2bf1a80e2aab544c3c9df7b36bc9df18371091019804602ded43a0b795d082cb"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 00 30 E0 E3 02 00 00 EB 04 D0 8D E2 04 E0 9D E4 1E FF 2F E1 F0 41 2D E9 00 C0 D1 E5 1C 84 9F E5 72 00 5C E3 08 80 8F E0 10 D0 4D E2 00 70 A0 E1 02 50 A0 E1 03 60 A0 E1 12 00 00 0A 77 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_60848c61 {
+    meta:
+        author = "Elastic Security"
+        id = "60848c61-dd2f-470e-b1e0-3f644c41da40"
+        fingerprint = "c4e40bb31057990d07374803c7a76d437b101d9f48de4e324dd85cd51dc03970"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "1efa902359668980af91dd25fc6c0dedee94758dcdc1ea580dceeb616dafa37f"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 01 00 A0 E3 AD 00 00 EB 04 D0 8D E2 04 E0 9D E4 1E FF 2F E1 04 E0 2D E5 00 10 A0 E1 04 D0 4D E2 06 00 A0 E3 A5 00 00 EB 04 D0 8D E2 04 E0 9D E4 1E FF 2F E1 04 E0 2D E5 01 C0 A0 E1 02 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_af48ca6a {
+    meta:
+        author = "Elastic Security"
+        id = "af48ca6a-f632-4a14-80ee-1b201273653d"
+        fingerprint = "ffd2b7e7d2777ee12f59d6f243e4868bc72b81cc9a05091a91944bfd29a4d636"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "0f25e70efca8d0a5c88b70b19a6eaab0e3edae075130c129c1cb1c1ddeeb87a8"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 01 50 A0 E1 00 40 A0 E1 02 00 00 9A 04 00 51 E3 00 A0 90 E5 01 00 00 1A 1C D0 8D E2 F0 8F BD E8 05 00 51 E3 04 10 D0 E5 08 10 8D E5 F9 FF FF 0A 05 70 D0 E5 00 00 57 E3 F6 FF FF 0A 07 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_80dd1c5b {
+    meta:
+        author = "Elastic Security"
+        id = "80dd1c5b-33a0-4689-aee4-c3e1e40b8826"
+        fingerprint = "bcf593839e8855658f4084f16583f4d5425843b6a170be3b9add94bb54092138"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "97632ef95b4bf4bd4c7e7c7f72e530dccc50f52055fa8cea6deeb489bf55bf09"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 28 00 0B E5 2C 10 0B E5 34 30 0B E5 BE 22 4B E1 2C 30 1B E5 20 30 0B E5 28 30 1B E5 0C 30 93 E5 1C 30 0B E5 28 30 1B E5 10 30 93 E5 18 30 0B E5 00 30 A0 E3 14 30 0B E5 34 30 1B E5 10 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_661c9789 {
+    meta:
+        author = "Elastic Security"
+        id = "661c9789-2509-4cdc-83b5-0fe7795c19f9"
+        fingerprint = "408b14366612e2e765252a0b7b72dffb528f4205dd911b2980393c65e6e04052"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "9beae633892a4072df6c972f02ec50bd75dfa4f266abc768d5b5c6e083a02f43"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 18 00 0B E5 1C 10 0B E5 18 30 1B E5 83 31 A0 E1 03 20 A0 E1 3C 30 9F E5 03 30 82 E0 10 30 0B E5 1C 30 1B E5 00 00 53 E3 04 00 00 0A 10 30 1B E5 B4 30 D3 E1 03 20 A0 E1 1C 30 1B E5 00 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_b222ff86 {
+    meta:
+        author = "Elastic Security"
+        id = "b222ff86-a2d7-408a-bd0c-4115d4b2608f"
+        fingerprint = "59780aa71d89de15d1c8c81711dd1ade24b317ccff1de142cf69612f0813aa69"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "71aca5f24011f9b6cd7d82ce50e47ce99b16cc0c454fbd1e54f6f5739ec43e71"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 01 80 A0 E1 00 10 A0 E3 00 60 A0 E1 01 00 A0 E1 00 30 E0 E3 01 20 A0 E3 30 30 8D E5 F8 22 CD E1 00 40 A0 E3 34 30 8D E5 40 30 8D E5 44 30 8D E5 FB 1F 00 EB 44 5D 9F E5 44 7D 9F E5 14 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_d2f8e898 {
+    meta:
+        author = "Elastic Security"
+        id = "d2f8e898-a128-4733-86d9-ec5470974007"
+        fingerprint = "5d2b7f5c1025f7b3a0bb200ccad4274bfc1f3d99351a0b01fa4793388e70bbad"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "517e06dbc22185b97a345e1298067c40baf8643f4b0e135f9b90e34b55ed25a9"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { D0 4D E2 14 00 0B E5 18 10 0B E5 14 30 1B E5 83 31 A0 E1 03 20 A0 E1 44 30 9F E5 03 30 82 E0 10 30 0B E5 18 30 1B E5 00 00 53 E3 07 00 00 0A 10 30 1B E5 04 30 83 E2 00 20 D3 E5 01 30 D3 E5 03 }
+    condition:
+        all of them
+}
+
+rule Linux_Generic_Threat_12952cf5 {
+    meta:
+        author = "Elastic Security"
+        id = "12952cf5-70f8-4978-bc38-ba9d366930e2"
+        fingerprint = "28656bd69aac25ab024c25b552ac00d0b0f90b7d997b63e0e74128c566447b2e"
+        creation_date = "2025-01-08"
+        last_modified = "2026-05-22"
+        threat_name = "Linux.Generic.Threat"
+        reference_sample = "96b52820b8694c1392025d06f8d4ca2d8dce2370bd13d24691d8d2b143ed6a56"
+        severity = 50
+        arch_context = "x86, arm64"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "linux"
+    strings:
+        $a1 = { 48 81 EC B8 00 00 00 48 89 FE 48 89 E7 64 48 8B 04 25 28 00 00 00 48 89 84 24 A8 00 00 00 31 C0 ?? ?? ?? ?? ?? 85 C0 0F 94 C0 48 8B 94 24 A8 00 00 00 64 48 33 14 25 28 00 00 00 75 08 }
+    condition:
+        all of them
+}
+

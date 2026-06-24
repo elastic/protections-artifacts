@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "DNS Request to Dynamic DNS via Suspicious Executable"
 os_list = ["linux"]
 reference = ["https://www.rapid7.com/blog/post/tr-new-whitepaper-stealthy-bpfdoor-variants/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -33,7 +33,9 @@ sequence by process.entity_id with maxspan=10s
       process.command_line == "python3 -m app.run_scheduled_update" and
       process.parent.args == "./workflow_unified.sh"
     ) or
-    process.executable == "/usr/bin/qbittorrent-nox"
+    process.executable == "/usr/bin/qbittorrent-nox" or
+    process.executable like "/snap/firefox/*/usr/lib/firefox/firefox" or
+    (process.executable like "/usr/bin/php*" and process.args == "/var/tools/koalaping/bin/ping.php")
   )]
   [dns where event.action == "lookup_result" and dns.question.name like~ (
     "*.no-ip.com", "*.no-ip.org", "*.no-ip.biz", "*.no-ip.info", "*.noip.com", "*.afraid.org", "*.changeip.com",

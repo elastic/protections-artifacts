@@ -7,14 +7,14 @@ id = "9c4bd6d6-9e2f-4ce2-8266-923e1799726c"
 license = "Elastic License v2"
 name = "Process Explorer Device Access by Unusual Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where
   process.Ext.api.name == "DeviceIoControl" and process.executable != null and
   process.Ext.api.parameters.device : "\\Device\\PROCEXP*" and
 
-  not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe", "handle.exe") and
+  not (process.thread.Ext.call_stack_final_user_module.name : ("procexp64.exe", "procexp.exe", "handle64.exe", "handle.exe", "procexp64a.exe") and
        _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $caller, $caller.trusted == true and
                      $caller.subject_name : "Microsoft Corporation")) and
   not (process.name : ("procexp64.exe", "procexp.exe", "Handle64.exe", "Handle.exe", "procexp64a.exe") and process.code_signature.subject_name : "Microsoft Corporation" and

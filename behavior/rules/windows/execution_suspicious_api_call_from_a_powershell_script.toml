@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 api where
@@ -103,7 +103,7 @@ not _arraysearch(process.thread.Ext.call_stack, $entry,
                                                       "*488d65e05b5e5f415e5dc35541565756534883ec30c5f877488b692048*",
                                                       "*f8488b5e30488d4f08488bd6*", "488bc8488bd7488b00488b4040ff5030b*",
                                                       "8bf0488b4c2428488bf9488bcf488bf985f67479*")) and
-not (process.Ext.api.name in ("VirtualProtect", "VirtualAlloc") and
+not (process.Ext.api.name in ("VirtualProtect", "VirtualAlloc", "MapViewOfFile", "MapViewOfFile2") and
      _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info like ("c:\\windows\\sy*\\ntdll.dll!Ldr*",
                                            "c:\\windows\\sy*\\kernelbase.dll!PackageSidFromProductId",

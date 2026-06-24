@@ -12,7 +12,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("systemd", "cron", "crond") and
@@ -31,7 +31,8 @@ not (
     """/bin/sh -c curl*http://127.0.0.1:*""",
     "/bin/sh -c curl -sSL https://*/scripts/linux/syslog-archival/report_syslog_v3.sh | bash -x > /var/log/report_syslog_v3.debug.out 2>&1",
     "*cpanel*.zendesk.com/api/v2/ticket_metrics.json*, *fortigate-backup.sh*hc-ping.com*", "/bin/sh -c /usr/bin/curl -s http://scripts.*.lan:8080/*",
-    "*/ec/tr/docflow/logs/tc.session.expire*", "*get.upwind.io/sensor.sh*", "*/usr/contact/ela/bin/ela_lic_prot.py*"
+    "*/ec/tr/docflow/logs/tc.session.expire*", "*get.upwind.io/sensor.sh*", "*/usr/contact/ela/bin/ela_lic_prot.py*",
+    "*litellm_config_sync_last_success_timestamp_seconds*", "*/dev/tcp/127.0.0.1/8080*", "*http://10.10.10.11:8080/update.sh*"
   ) or
   process.command_line in (
   "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",

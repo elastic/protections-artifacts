@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious SUID/SGID Utility Execution"
 os_list = ["linux"]
 reference = ["https://xint.io/blog/copy-fail-linux-distributions", "https://github.com/badsectorlabs/copyfail-go"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -28,7 +28,8 @@ process where event.type == "start" and event.action == "exec" and (
     process.parent.args in ("-c", "-cl", "-lc", "--command", "-ic", "-ci") and
     process.parent.args_count <= 4
   )
-)
+) and
+not (process.name == "passwd" and process.parent.command_line like "*Bastion*")
 '''
 
 min_endpoint_version = "8.2.0"

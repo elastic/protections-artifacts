@@ -7,7 +7,7 @@ id = "057bd963-2dce-4951-87ce-5923803158ff"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via Database Server"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
@@ -180,23 +180,34 @@ not (
   ) or
   (
     process.parent.name == "postgres" and
-    process.command_line in ("ps -p 1", "python2 -c pass")
+    process.command_line in (
+      "ps -p 1", "python2 -c pass", "timeout 5 cat /proc/net/tcp /proc/net/tcp6", "runc init", "env hostname -s",
+      "find . -maxdepth 1 -mindepth 1 -type d"
+    )
   ) or
   (
     process.parent.name in ("postgres", "oracle", "tnslsnr") and
-    process.command_line like ("echo nagios", "gzip -c", "/usr/bin/python3 /root/bin/yaml2json.py", "sh -c /*/scripts/check/libexec/check_df*")
+    process.command_line like (
+      "echo nagios", "gzip -c", "/usr/bin/python3 /root/bin/yaml2json.py", "sh -c /*/scripts/check/libexec/check_df*",
+      "timeout --signal=3 3 telnet*"
+    )
   ) or
   (
     process.parent.name == "tnslsnr" and (
       process.command_line like ("/usr/bin/python3 /root/bin/yaml2json.py", "/bin/echo Filesystem 1024-blocks*") or
-      process.name in ("printenv", "env")
+      process.name in ("printenv", "env", "find", "gzip")
     )
   ) or
   (
     process.parent.name == "postgres" and (
       process.args like "scp*pgsql*" or
-      (process.name == "scp" and process.command_line like "*pgsql*")
+      (process.name == "scp" and process.command_line like "*pgsql*") or
+      process.name == "uname"
     )
+  ) or
+  (
+    process.parent.name == "mysqld" and
+    process.command_line in ("touch /var/log/mysqld.log", "touch /var/lock/subsys/mysql")
   )
 )
 '''

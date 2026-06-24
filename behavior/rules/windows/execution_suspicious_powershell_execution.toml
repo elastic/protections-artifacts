@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -84,6 +84,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              "*krsfile:////LOBCS*",
              "*ProgramData\\VinitySoft Data\\MariaDb\\*",
              "*\\Temp\\claude\\claude-pwd-ps-*",
+             "*https://10.55.138.214:443/downloads/*",
              "\"C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command \"[reflection.assembly]::loadFrom('.\\RD-PSAPI.dll') | import-module\"",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAfABUAHIAZQBsAGwAaQB4ACIA*",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAIABBAGcAZQBuAHQAIgA=*",
@@ -120,7 +121,8 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                                   "?:\\Users\\*\\AppData\\Local\\Python\\bin\\python.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Python\\pythoncore-*\\python.exe", 
-                                  "D:\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe") and
+                                  "D:\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe",  
+                                  "?:\\Users\\*\\.codex\\.sandbox-bin\\codex-command-runner-*.exe") and
 
  not process.args :  ("$w=$env:LOCALAPPDATA+'/OPWC/';[Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($w+'OperaSharpDLL.dll'));[OperaSharpDLL.Helper]::Startup()",
                       "IEX (New-Object Net.WebClient).DownloadString('https://install.demo-toolkit.de/dtkupdater.ps1?apikey=*",
@@ -131,7 +133,12 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                       "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory*") and
 
  not (process.parent.name : "cmd.exe" and
-      process.parent.args : ("D:\\PowerShell\\webclient.cmd",  "C:\\Temp\\FST-Robocopy-wEmailNotif.cmd", "C:\\istip-installation\\install.bat")) and
+      process.parent.args : ("D:\\PowerShell\\webclient.cmd",  
+                             "C:\\Temp\\FST-Robocopy-wEmailNotif.cmd", 
+                             "C:\\istip-installation\\install.bat", 
+                             "'C:\\ProgramData\\PatchBot\\data\\windows-health-after.json';", 
+                             "'C:\\ProgramData\\PatchBot\\data\\windows-updates.json';", 
+                             "'C:\\ProgramData\\PatchBot\\data\\windows-updates.json')")) and
 
  not (process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe" and process.command_line : "*Windows.UI.Notifications*") and
 

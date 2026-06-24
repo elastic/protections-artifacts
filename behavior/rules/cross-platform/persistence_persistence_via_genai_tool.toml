@@ -12,7 +12,7 @@ reference = [
     "https://specterops.io/blog/2025/11/21/an-evening-with-claude-code/",
     "https://www.straiker.ai/blog/nomshub-cursor-remote-tunneling-sandbox-breakout",
 ]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -30,16 +30,6 @@ sequence by process.entity_id with maxspan=1m
 [file where not event.action in ("deletion", "open", "rename") and
   file.path : ("/private/etc/rc.local",
                "/etc/rc.local",
-               "/home/*/.profile",
-               "/home/*/.profile1",
-               "/home/*/.bash_profile",
-               "/home/*/.bash_profile1",
-               "/home/*/.bashrc",
-               "/Users/*/.bash_profile",
-               "/Users/*/.bashrc",
-               "/Users/*/.zshenv",
-               "/Users/*/.zshrc",
-               "/Users/*/.zprofile",
                "/etc/sudoers",
                "/System/Library/LaunchAgents/*.plist",
                "/Library/LaunchAgents/*.plist",
@@ -47,7 +37,9 @@ sequence by process.entity_id with maxspan=1m
                "/System/Library/LaunchDaemons/*.plist",
                "/Library/LaunchDaemons/*.plist",
                "?:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\*",
-               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*")]
+               "?:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\StartUp\\*") and
+  not file.name : "com.github.facebook.watchman.plist" and
+  not process.code_signature.subject_name == "Ollama Inc."]
 '''
 
 min_endpoint_version = "8.10.0"
@@ -64,19 +56,24 @@ id = "T1037"
 name = "Boot or Logon Initialization Scripts"
 reference = "https://attack.mitre.org/techniques/T1037/"
 [[threat.technique.subtechnique]]
-id = "T1037.005"
-name = "Startup Items"
-reference = "https://attack.mitre.org/techniques/T1037/005/"
+id = "T1037.004"
+name = "RC Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/004/"
 
 
 [[threat.technique]]
-id = "T1546"
-name = "Event Triggered Execution"
-reference = "https://attack.mitre.org/techniques/T1546/"
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
 [[threat.technique.subtechnique]]
-id = "T1546.004"
-name = "Unix Shell Configuration Modification"
-reference = "https://attack.mitre.org/techniques/T1546/004/"
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1543.004"
+name = "Launch Daemon"
+reference = "https://attack.mitre.org/techniques/T1543/004/"
 
 
 [[threat.technique]]

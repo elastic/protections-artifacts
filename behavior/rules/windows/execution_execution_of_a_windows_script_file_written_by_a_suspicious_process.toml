@@ -7,7 +7,7 @@ id = "dc9c8c7c-f398-401f-804a-325570a5f167"
 license = "Elastic License v2"
 name = "Execution of a Windows Script File Written by a Suspicious Process"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by user.id with maxspan=5m
@@ -23,7 +23,8 @@ sequence by user.id with maxspan=5m
         process.code_signature.trusted == true) and
    not process.executable :
               ("?:\\ProgramData\\Microsoft\\VisualStudio\\Packages\\*.exe",
-               "?:\\Program Files\\SWSetup\\SP100309\\Lexus FW Upgrade 0007.exe") and
+               "?:\\Program Files\\SWSetup\\SP100309\\Lexus FW Upgrade 0007.exe", 
+               "?:\\Program Files (x86)\\Imprivata\\OneSign Agent\\x64\\ISXAgent.exe") and
 
    not (process.executable : "?:\\Users\\*\\AppData\\Roaming\\zozi-rpa-engine\\openjdk\\bin\\java.exe" and
         file.path : "C:\\Project\\*.vbs") and
@@ -68,7 +69,14 @@ sequence by user.id with maxspan=5m
   not (process.parent.args : "C:\\CSM Infopath Templates\\Register CSM InfoPath Templates.exe" and process.args : "C:\\CSM Infopath Templates\\installAllTemplates.vbs") and
   not (process.parent.name : "cmd.exe" and process.parent.args : "%TEMP%\\Spiceworks\\*") and
   not (process.name : "mshta.exe" and process.parent.name : "mshta.exe"  and process.parent.args : "\\\\*\\netlogon\\ADSelfService_Enroll.hta") and
-  not (process.parent.name : "JustWareSmartClient.exe" and process.executable : "C:\\Windows\\SysWOW64\\wscript.exe")
+  not (process.parent.name : "JustWareSmartClient.exe" and process.executable : "C:\\Windows\\SysWOW64\\wscript.exe") and
+
+  /* FP - contentACCESS (TECH-ARROW) Outlook email archiving add-in */
+  not process.args : "?:\\Users\\*\\AppData\\Local\\Temp\\contentACCESSForm\\RunAction.vbs" and
+
+  /* FP - domain login scripts dropping uacinstall.vbs via netlogon */
+  not (process.parent.name : "cmd.exe" and process.parent.args : "\\\\*\\netlogon\\*" and
+       process.args : "*\\uacinstall.vbs")
   ]
 '''
 

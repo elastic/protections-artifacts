@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -39,13 +39,16 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c /bin/bash $HOME/.backup.sh",
     "/bin/sh -c /bin/mysql_tzinfo_to_sql /usr/share/zoneinfo/| /bin/mysql --defaults-file=/root/.my.cnf mysql",
     "/bin/sh -c /bin/echo -n >/data/EXPORT/.approved",
-    "/bin/sh -c source ~/.bashrc"
+    "/bin/sh -c source ~/.bashrc",
+    "/bin/sh -c /usr/local/bin/getssl -a -q -w /home/acme/.getssl", "/bin/sh -c mysqlcheck --defaults-file=/root/.my.cnf -o misp",
+    "/bin/sh -c /usr/local/bin/getssl -a -q -w /home/acme/.getssl-lets-encrypt"
   ) or
   process.command_line like (
     "*/home/*/.*.*", "*/opt/invgate/insight-agent/*", "*ansible*", "/bin/sh -c /backup/store_Weight_LABEL/.create_site.sh*",
     "/bin/sh -c /backup/mktphotos/.main*.sh", "/bin/bash -c unset*/var/.cagefs'", "/bin/sh -c *autorestic*", "*/opt/export-ecs-ip/ecs-ip.py*", 
     "/bin/sh -c /usr/local/bin/mettle cache -d /var/cache/mettle *", 
-    "/bin/sh -c /opt/tm/mettle/root/mettle cache -d /opt/tm/mettle/root/var/cache/mettle*"
+    "/bin/sh -c /opt/tm/mettle/root/mettle cache -d /opt/tm/mettle/root/var/cache/mettle*",
+    "/bin/sh -c gssh-agent scp -r *:/mnt/*/common/shared/*/skills_repo/skills ~/.agents"
   ) or
   process.args like (
     "/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*", "cd ~/.unison*", "/usr/sbin/logrotate*",
@@ -60,7 +63,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/home/*/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea",
     "/home/*/.local/share/JetBrains/*", "/home/*/.local/opt/activitywatch/*",
     "/home/*/.local/bin/claude-oauth-proxy", "/root/.local/openaev-agent-session/openaev-agent",
-    "/nix/store/*/bin/.blueman-tray-wrapped"
+    "/nix/store/*/bin/.blueman-tray-wrapped", "/var/lib/containers/storage/overlay/nix/store/*/bin/.blueman-tray-wrapped",
+    "/home/*/.config/discord/*/Discord"
   ) or
   process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox", "goland") or
   process.working_directory == "/var/lib/rabbitmq"

@@ -7,7 +7,7 @@ id = "452d6452-a8ec-4cae-9720-567fb44d93b7"
 license = "Elastic License v2"
 name = "Decoded Payload Piped to Interpreter"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.parent.entity_id, process.working_directory with maxspan=1s
@@ -79,11 +79,11 @@ sequence by process.parent.entity_id, process.working_directory with maxspan=1s
       process.name == "base64"
     ) or
     process.working_directory in ("/opt/SolarWinds/Agent/bin/Plugins/ADMProbe", "/root/control-center-packaging") or
-    process.parent.executable in ("/usr/share/windsurf/windsurf", "/usr/share/cursor/cursor") or
+    process.parent.executable in ("/usr/share/windsurf/windsurf", "/usr/share/cursor/cursor", "/usr/share/devin-desktop/devin-desktop") or
     process.parent.command_line like ("claude", "*__CURSOR_SANDBOX_ENV_RESTORE*") or
     (
       process.command_line like~ ("*eval*1337*SendConductor*", "*eval*KITTY_SSH_KITTEN_DATA_DIR*") and
-      process.parent.name == "sshd"
+      process.parent.name in ("sshd", "sshd-session")
     ) or
     process.command_line like "/bin/bash -c base64 -d <<< IwAAACAAAABHAAAAZQAAAHQAAAAgAAAAdAAAAGg*" or
     (

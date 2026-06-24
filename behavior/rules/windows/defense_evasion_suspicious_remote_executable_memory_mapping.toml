@@ -1,0 +1,56 @@
+[rule]
+description = """
+Identifies cross-process MapViewOfFile-family calls that map a full section (zero byte length) with an executable page
+protection and where the thread call stack final user module is not trusted. This can indicate remote mapping of code or
+an image into another process for injection or defense evasion.
+"""
+id = "c4e8a2f1-6b3d-4c9e-a7f2-1e8d0c5b4a3f"
+license = "Elastic License v2"
+name = "Suspicious Remote Executable Memory Mapping"
+os_list = ["windows"]
+reference = [
+    "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile",
+    "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile2",
+    "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffileex",
+    "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
+]
+version = "1.0.1"
+
+query = '''
+api where process.executable != null and
+  process.Ext.api.name in ("MapViewOfFile", "MapViewOfFile2", "MapViewOfFileEx") and
+  process.Ext.api.behaviors == "cross-process" and
+  process.Ext.api.parameters.protection : "*X*" and
+  process.Ext.api.parameters.size == 0 and Target.process.Ext.token.integrity_level_name != "low" and 
+  /* final user module is unsigned or signed with an untrusted code signature */
+  _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.status like "errorCode_endpoint*") and
+  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("Kernel", "Unknown", "Undetermined") and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and 
+  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "ESET, spol. s r.o.")) and 
+  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("d21b7ba659478d1b54d5dc841d0a96ae2de56581af25525011090795512168a0", "dc98b14cbb25ef1937217da4fde5e2cc13f4702b31a6bc481d8de2bd87ac0525") and 
+  not (process.Ext.api.summary == "MapViewOfFile2( firefox.exe, 0x0, R-X )" and process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\spool\\drivers\\x64\\3\\ricoh_drv\\*.dll")
+'''
+
+min_endpoint_version = "8.12.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.12.0"

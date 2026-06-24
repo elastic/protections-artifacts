@@ -1,0 +1,78 @@
+[rule]
+description = """
+Identifies macOS system discovery commands used to collect the computer name and hardware UUID, executed by a child of
+an unsigned or untrusted process running from a user-writable path, followed within a short window by an outbound
+network connection to a named domain.
+"""
+id = "a7c3e891-5f2d-4b8e-9d1a-6e4f8b2c0d1e"
+license = "Elastic License v2"
+name = "System Reconnaissance from Unsigned Parent Followed by Network Connection"
+os_list = ["macos"]
+reference = [
+    "https://www.wiz.io/blog/threat-actors-target-crypto-orgs",
+    "https://attack.mitre.org/techniques/T1082/",
+]
+version = "1.0.1"
+
+query = '''
+sequence with maxspan=1m
+  [process where event.type == "start" and event.action == "exec" and
+   (
+     process.command_line like "*scutil --get ComputerName*" or
+     process.command_line like~ "*ioreg*IOPlatformExpertDevice*IOPlatformUUID*"
+   ) and
+   (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false) and
+   process.parent.executable like ("/Users/*", "/private/tmp/*", "/tmp/*") and
+   not process.parent.executable like~ (
+     "/Users/*/.local/share/uv/python/*/bin/python*",
+     "/Users/*/Desktop/*"
+   ) and
+   not process.parent.code_signature.signing_id like~ ("spawn-helper-*", "herdr-*")] by process.parent.entity_id
+  [network where event.type == "start" and event.action == "connection_attempted" and
+   destination.domain != null] by process.entity_id
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

@@ -1,0 +1,95 @@
+[rule]
+description = """
+This rule detects when a process creates an in-memory file using the memfd_create syscall followed by executing a file
+descriptor in the proc (temporary) file system. This activity indicates an active attempt to execute a fileless payload
+and should be considered highly abnormal or suspicious. This activity can occur when the memfd syscall is utilized to
+create a memory resident file, like a payload, and then uses it to execute a process via a command and control channel
+via a file descriptor in the proc (temporary) file system, resulting in an exec event.
+"""
+id = "03e8852f-d736-42ec-ae61-9e3fb1847d83"
+license = "Elastic License v2"
+name = "Potential Fileless Execution Sequence"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action == "memfd_create" and
+  not (
+    (
+      process.executable like ("/usr/sbin/runc", "/snap/microk8s/*/bin/runc") and
+      process.Ext.memfd.name == "memfd:runc_cloned:/proc/self/exe"
+    ) or
+    (
+     process.executable like "/nix/store/*/bin/buildah" and
+     process.Ext.memfd.name == "memfd:buildah-in-a-user-namespace"
+    ) or
+    process.executable like ("/usr/bin/lxc-attach", "memfd:buildah-chroot-runtime", "./usr/bin/nvidia-cdi-hook") or
+    process.command_line == "buildah-chroot-runtime"
+  )]
+  [process where event.type == "start" and event.action == "exec" and (
+    process.args regex """/proc/(self|[0-9]{1,7})/fd/[0-9]{1,7}""" or
+    process.executable like ("memfd:*", "?memfd:*")
+  ) and not process.executable == "memfd:runc_cloned:/proc/self/exe"]
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

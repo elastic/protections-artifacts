@@ -1,0 +1,85 @@
+[rule]
+description = """
+Identifies an unsigned or untrusted Terraform provider binary launched by Terraform during init or plan from a user
+writable path outside the official registry.terraform.io provider cache, followed by an outbound network connection.
+Attackers may supply malicious provider binaries via typosquatted provider registries to establish access and download
+additional tooling, as observed in the KelpDAO incident.
+"""
+id = "b4e8a1c3-5d6f-4a7b-9e0c-2d3f8a1b6c7e"
+license = "Elastic License v2"
+name = "Suspicious Terraform Provider Execution and Network Connection"
+os_list = ["macos", "windows"]
+reference = [
+    "https://layerzero.network/publications/kelpdao-incident-report.pdf",
+    "https://developer.hashicorp.com/terraform/cli/plugins/about-plugins",
+]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.action == "exec" and
+   process.name like "terraform-provider-*" and process.parent.name in ("terraform", "terraform.exe") and
+   process.executable like ("/Users/*", "/tmp/*", "/private/tmp/*", "?:\\Users\\*", "?:\\Users\\ProgramData\\*") and
+   (process.code_signature.trusted == false or process.code_signature.exists == false) and
+   process.parent.command_line like ("* init*", "*plan*") and
+   not process.command_line like (".terraform/providers/registry.terraform.io/*", ".terraform\\providers\\registry.terraform.io\\*") and
+   not process.executable like ("*/registry.terraform.io/*", 
+                                "*/registry.opentofu.org/*", 
+                                "*.terraform.d/plugins/terraform.local/Mastercard/*",
+                                "*\\registry.terraform.io\\*", 
+                                "*\\registry.opentofu.org\\*", 
+                                "*.terraform.d\\plugins\\terraform.local\\Mastercard\\*")]
+  [any where 
+   
+   (event.category == "network" and event.action == "connection_attempted" and destination.domain != null and
+    not (process.name == "terraform-provider-aws" and destination.domain like "*.amazonaws.com")) or 
+   
+   (event.category == "dns" and dns.question.name != null and 
+    not (process.name == "terraform-provider-aws.exe" and dns.question.name like "*.amazonaws.com")) 
+  ]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.002"
+name = "Compromise Software Supply Chain"
+reference = "https://attack.mitre.org/techniques/T1195/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.001"
+name = "Web Protocols"
+reference = "https://attack.mitre.org/techniques/T1071/001/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

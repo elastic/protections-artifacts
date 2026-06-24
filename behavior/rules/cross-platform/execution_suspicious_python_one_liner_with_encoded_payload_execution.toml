@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious Python One-Liner with Encoded Payload Execution"
 os_list = ["macos", "windows"]
 reference = ["https://attack.mitre.org/techniques/T1059/006/", "https://attack.mitre.org/techniques/T1027/"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action in ("start", "exec")  and
@@ -105,30 +105,15 @@ process where event.type == "start" and event.action in ("start", "exec")  and
          "/usr/local/Cellar/python*/*/bin/python*",
          "/usr/bin/python*"
        )) and
-  not (process.command_line : (
-         "*/.claude/shell-snapshots/*",
-         "*/.codex/shell_snapshots/*",
-         "*__CURSOR_SANDBOX_ENV_RESTORE*"
-       ) and
-       process.Ext.effective_parent.executable like~ (
+  not process.Ext.effective_parent.executable like~ (
          "/Applications/Cursor.app/*",
          "/Users/*/Applications/Cursor.app/*",
          "/Applications/Codex.app/*",
          "/Users/*/Applications/Codex.app/*",
-         "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/*"
-       )) and
-  not (process.parent.command_line : (
-         "*/.claude/shell-snapshots/*",
-         "*/.codex/shell_snapshots/*",
-         "*__CURSOR_SANDBOX_ENV_RESTORE*"
-       ) and
-       process.Ext.effective_parent.executable like~ (
-         "/Applications/Cursor.app/*",
-         "/Users/*/Applications/Cursor.app/*",
-         "/Applications/Codex.app/*",
-         "/Users/*/Applications/Codex.app/*",
-         "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/*"
-       ))
+         "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/*", 
+         "/Applications/Visual Studio Code.app/Contents/MacOS/Code"
+       ) and 
+  not process.parent.command_line like "*/Users/*/shell-snapshots/snapshot-*"
 '''
 
 min_endpoint_version = "8.5.0"

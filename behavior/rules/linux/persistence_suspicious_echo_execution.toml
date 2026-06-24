@@ -9,7 +9,7 @@ id = "a13c8f01-36a5-4ad7-a282-8d297cf62860"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -24,7 +24,7 @@ process.parent.executable != null and
 not (
   process.args like (
     "*/dev/tcp/127.0.0.1/*", "/opt/rapid7/ir_agent/components/insight_agent/common/ir_agent*", "printf*",
-    "*/etc/init.d/XS-Nanny-Watch-Dog*", "LANG=C*", "/usr/bin/rsync*"
+    "*/etc/init.d/XS-Nanny-Watch-Dog*", "LANG=C*", "/usr/bin/rsync*", "/snap/lxd/*/commands/lxc*"
   ) or
   process.parent.name in (
     "make", "code", "terraform", "pyinfra", "fzf", "bwrap", "start_pxcontroller_pxstorage.py", "timeout", "sshd",
@@ -88,7 +88,12 @@ not (
     "/mnt/*/user/home/*/.local/share/claude/versions/*", "/usr/local/bin/runc", "/home/*/.npm-global/bin/claude",
     "/opt/.local/share/claude/versions/*", "/home/*/.npm/_npx/*/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
     "/usr/local/bin/opencode", "/home/linuxbrew/.linuxbrew/Cellar/fd/*/bin/fd",
-    "/scratch/user/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex"
+    "/scratch/user/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex",
+    "/usr/local/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe", "/nethome/*/.warp/tmux/local/bin/tmux", "/usr/sbin/runc",
+    "/opt/rkolvie/.local/share/claude/versions/*", "/usr/bin/buildkit-runc", "/home/*/.devin-server/extensions/anthropic.claude-code-*-linux-x64/resources/native-binary/claude",
+    "/scratch/user/*/.vscode-server/extensions/anthropic.claude-code-*-linux-x64/resources/native-binary/claude",
+    "/home/*/*/claude", "/home/*/*/codex", "/usr/local/lib/node_modules/*/codex",
+    "/run/containerd/io.containerd.runtime.v2.task/moby/*/.local/bin/kiro-cli-chat"
   ) or
   process.parent.command_line in (
     "runc init", "buildkit-runc init", "/usr/local/bin/runc init", "python ./ssh.py --update-fingerprints bi_team",
@@ -111,7 +116,7 @@ not (
   process.command_line == """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env""" or
   process.parent.command_line like (
     "*Rapid7Echo*", "*nessus_su_*", "/usr/bin/python*ansible-tmp-*", "/usr/bin/runc init", "bash -c su -c *",
-    "/usr/bin/python3(mitogen:ansible*"
+    "/usr/bin/python3(mitogen:ansible*", "php /usr/local/bin/inventorio daemon", "*/home/*/.claude/shell-snapshots*"
   ) or
   (process.parent.name == "php" and process.command_line like "*psql*") or
   (process.parent.name == "sudo" and process.parent.args like "*command_start_*") or
@@ -138,7 +143,10 @@ not (
   (process.parent.name like "python*" and process.args like ("declare -A categories*", "files=*", "set -x*$BACKUP_NAME.tar.gz*", "*while_finding_grubconfigs*")) or
   (process.parent.executable == "/usr/local/bin/php" and process.args like "timeout*/var/www/html/storage/app/ssh/mux/mux*") or
   (process.parent.executable == "/usr/bin/perl" and process.command_line like "*/tmp/recover_SAP/settings*") or
-  (process.parent.executable == "/bin/coreutils" and process.command_line == "bash -c echo > /dev/tcp/dynamodb-local/8000")
+  (process.parent.executable == "/bin/coreutils" and process.command_line == "bash -c echo > /dev/tcp/dynamodb-local/8000") or
+  (process.parent.executable like "/usr/bin/python3*" and process.command_line like "*/home/manage/.ssh/authorized_keys*") or
+  (process.parent.executable == "/usr/bin/lua" and process.command_line like "*/sw/eb/mods/*") or
+  (process.working_directory == "/rails" and process.parent.executable like "/ecs-execute-command-*/ssm-session-worker")
 )
 '''
 

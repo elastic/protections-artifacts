@@ -1,0 +1,133 @@
+[rule]
+description = """
+Detects a sequence where the same parent process executes several distinct "systemctl", "service", "chkconfig", "grep",
+"egrep", or "pgrep" commands to check for known security tooling within 3 seconds. Repeated identical command lines are
+de-duplicated, helping identify rapid multi-command security software discovery rather than a single enumeration
+attempt.
+"""
+id = "9de52bd9-0537-4b2c-a3ba-34c3c3ffd855"
+license = "Elastic License v2"
+name = "Security Tooling Enumeration"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=3s
+  [process where event.type == "start" and event.action == "exec" and
+  (
+    process.name in ("service", "chkconfig", "grep", "egrep", "pgrep") or
+    process.name == "systemctl" and process.args in ("is-enabled", "show", "is-active", "status", "list-units")
+  ) and
+  process.args in (
+    "avast", "bdsec", "cylancesvc", "cyoptics", "cbsensor", "cpla", "itsm", "cloudmonitor", "falcon-sensor", "cybereason-sensor",
+    "elastic-agent", "sraagent", "eraagent", "eea", "eea-user-agent", "xagt", "keeperx", "kesl", "klnagent64", "kesl-supervisor",
+    "kics", "kess", "rocketcyber", "limacharlie", "lr-agent.logrhythm", "MFEcma", "mdatp", "osqueryd", "traps_pmd", "ir_agent",
+    "armor", "sophoslinuxsensor", "sophos-spl", "otelcol-sumo", "ds_agent", "titanagent", "taniumclient", "oneavd", "mbdaemon",
+    "wazuh-agent", "emit_scand_service", "f-secure-linuxsecurity-activate"
+  ) and not (
+    process.parent.executable in (
+      "/opt/puppetlabs/puppet/bin/ruby", "/opt/puppetlabs/puppet/bin/puppet", "/opt/sophos-spl/base/bin/SulDownloader",
+      "/usr/local/manageengine/uems_agent/bin/dctaskengine", "/usr/bin/newrelic-infra", "/usr/bin/puppet",
+      "/usr/lib64/nagios/plugins/check_agents", "/opt/chef/bin/chef-client", "/opt/chef/embedded/bin/ruby",
+      "/usr/local/manageengine/uems_agent/bin/dcinventory", "/opt/scripts/puppet/puppetrun"
+    ) or
+    process.parent.executable like (
+      "/opt/sophos-spl/base/bin/SulDownloader.*", "/opt/rapid7/ir_agent/components/bootstrap/*/bootstrap_upgrader",
+      "/usr/local/rapid7/ir_agent/components/bootstrap/*/bootstrap_upgrader", "/tmp/newroot/opt/chef/bin/chef-client",
+      "/usr/lib/venv-salt-minion/bin/python.original", "/etc/checkpoint/common/install_offline.sh"
+    ) or 
+    process.parent.args like (
+      "/usr/lib/nagios/plugins/check_agents", "/usr/bin/puppet", "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_*.py",
+      "/root/.ansible/tmp/ansible-tmp-*/AnsiballZ_*.py", "/var/tmp/rpm-tmp*", "/var/lib/dpkg/info/cybereason-sensor.prerm",
+      "/var/lib/dpkg/info/mdatp.postinst"
+    ) or
+    (process.parent.name like "python*" and process.parent.command_line like "*mitogen*") or
+    (process.parent.executable like "/usr/bin/python*" and process.args == "otelcol-sumo" and process.args == "show") or
+    (
+      (
+        process.working_directory == "/var/ossec" or
+        process.parent.executable in ("/var/lib/dpkg/tmp.ci/preinst", "/var/lib/dpkg/info/wazuh-agent.prerm")
+      ) and
+      process.args == "wazuh-agent"
+    ) and not process.args == "disable"
+  )] as event0
+  [process where event.type == "start" and event.action == "exec" and
+  (
+    process.name in ("service", "chkconfig", "grep", "egrep", "pgrep") or
+    process.name == "systemctl" and process.args in ("is-enabled", "show", "is-active", "status", "list-units")
+  ) and
+  not startswith~(process.command_line, event0.process.command_line) and
+  process.args in (
+    "avast", "bdsec", "cylancesvc", "cyoptics", "cbsensor", "cpla", "itsm", "cloudmonitor", "falcon-sensor", "cybereason-sensor",
+    "elastic-agent", "sraagent", "eraagent", "eea", "eea-user-agent", "xagt", "keeperx", "kesl", "klnagent64", "kesl-supervisor",
+    "kics", "kess", "rocketcyber", "limacharlie", "lr-agent.logrhythm", "MFEcma", "mdatp", "osqueryd", "traps_pmd", "ir_agent",
+    "armor", "sophoslinuxsensor", "sophos-spl", "otelcol-sumo", "ds_agent", "titanagent", "taniumclient", "oneavd", "mbdaemon",
+    "wazuh-agent", "emit_scand_service", "f-secure-linuxsecurity-activate"
+  )] as event1
+  [process where event.type == "start" and event.action == "exec" and
+  (
+    process.name in ("service", "chkconfig", "grep", "egrep", "pgrep") or
+    process.name == "systemctl" and process.args in ("is-enabled", "show", "is-active", "status", "list-units")
+  ) and
+  not (startswith~(process.command_line, event0.process.command_line) or startswith~(process.command_line, event1.process.command_line)) and
+  process.args in (
+    "avast", "bdsec", "cylancesvc", "cyoptics", "cbsensor", "cpla", "itsm", "cloudmonitor", "falcon-sensor", "cybereason-sensor",
+    "elastic-agent", "sraagent", "eraagent", "eea", "eea-user-agent", "xagt", "keeperx", "kesl", "klnagent64", "kesl-supervisor",
+    "kics", "kess", "rocketcyber", "limacharlie", "lr-agent.logrhythm", "MFEcma", "mdatp", "osqueryd", "traps_pmd", "ir_agent",
+    "armor", "sophoslinuxsensor", "sophos-spl", "otelcol-sumo", "ds_agent", "titanagent", "taniumclient", "oneavd", "mbdaemon",
+    "wazuh-agent", "emit_scand_service", "f-secure-linuxsecurity-activate"
+  )]
+'''
+
+min_endpoint_version = "8.4.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 2
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 2
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1518"
+name = "Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/"
+[[threat.technique.subtechnique]]
+id = "T1518.001"
+name = "Security Software Discovery"
+reference = "https://attack.mitre.org/techniques/T1518/001/"
+
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+
+[internal]
+min_endpoint_version = "8.4.0"

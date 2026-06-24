@@ -8,7 +8,7 @@ id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
 license = "Elastic License v2"
 name = "Timestomping Detected via Touch"
 os_list = ["linux"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -25,7 +25,8 @@ process.parent.executable != null and process.args like (
     "/usr/bin/vmtoolsd", "/usr/local/cpanel/bin/restartsrv_base", "/usr/lib/pcp/bin/pmie_check"
   ) or
   process.parent.executable like (
-    "/opt/sw/tomcat/rc_scripts/*", "/tmp/newroot/var/lib/docker/overlay2/*", "/snap/*", "/opt/zeek/*", "/home/*/bin/ndex-rm.sh"
+    "/opt/sw/tomcat/rc_scripts/*", "/tmp/newroot/var/lib/docker/overlay2/*", "/snap/*", "/opt/zeek/*", "/home/*/bin/ndex-rm.sh",
+    "/root/.cache/act/*/staging_dir/host/bin/bash"
   ) or
   process.parent.name in (
     "xargs", "find", "sudo", "make", "pmlogger_check", "pmlogger_daily", "pmlogger_janitor", "autoupdate", "pmlogctl",
@@ -36,18 +37,20 @@ process.parent.executable != null and process.args like (
     "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh",
     "/var/tmp/rpm-tmp.*", "/usr/lib/pcp/bin/pmlogger_janitor", "/usr/libexec/pcp/bin/pmlogger_janitor",
     "/usr/libexec/pcp/bin/pmlogger_daily", "/usr/lib/pcp/bin/pmlogger_daily", "/opt/oracle.ExaWatcher/GetExaWatcherResults.sh",
-    "bazel-out/k8-dbg/bin/external/libzip+/libzip_foreign_cc/build_script.sh"
+    "bazel-out/k8-dbg/bin/external/libzip+/libzip_foreign_cc/build_script.sh", "/builds/*/IP/embedded/platforms/stratawave-yocto/build/*/temp/run.sstate_unpack_package*"
   ) or
   process.args in (
     "/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff", "/etc/aliases.db", "/opt/cursor/cursor"
   ) or
   process.args like (
     "--checkpoint=*", "/root/.config/envman/*", "/var/tmp/dracut*", "/var/tmp/portage*", "/snap/*", "/var/tmp/pmlogger_*/stamp",
-    "/opt/ubki/*.jar", "/root/.cache/bazel/_bazel_root/*"
+    "/opt/ubki/*.jar", "/root/.cache/bazel/_bazel_root/*", "/root/.cache/act/*/hostexecutor/matrix/*/tmp/*.o",
+    "/opt/ubki/*/cassandra-repair-dev-test/*"
   ) or
   process.command_line in ("/bin/touch -a /tmp/au_status", "touch -d 2 seconds ago /etc/postfix/main.cf") or
   process.parent.command_line == "runc init" or
-  process.working_directory in ("/opt/libexec", "/opt/local/src/connectxx/build/src/mdp")
+  process.working_directory in ("/opt/libexec", "/opt/local/src/connectxx/build/src/mdp") or
+  (process.args like "/var/tmp/pmlogger_check.*/_stamp" and process.parent.args == "/usr/libexec/pcp/bin/pmlogger_check" )
 )
 '''
 

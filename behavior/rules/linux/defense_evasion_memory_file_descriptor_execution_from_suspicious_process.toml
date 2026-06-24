@@ -1,0 +1,102 @@
+[rule]
+description = """
+This rule detects when a process creates an in-memory file descriptor (memfd_create) followed by an egress network
+connection from an unusual executable. This sequence of events may indicate malicious activity, such as fileless malware
+execution and command and control communication.
+"""
+id = "387aa854-d2ce-425f-be4a-c17f67bc2e41"
+license = "Elastic License v2"
+name = "Memory File Descriptor Execution from Suspicious Process"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.9"
+
+query = '''
+sequence by process.entity_id with maxspan=30s
+  [process where event.type == "start" and event.action == "memfd_create" and process.parent.executable != null and (
+    process.executable like (
+      "memfd:*", "?memfd:*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/run/user/*", "/var/run/user/*",
+      "/boot/*", "/sys/*", "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/root/*", "/home/*/*"
+    ) or
+     process.name like ".*"
+   ) and
+  not (
+    process.parent.command_line == "buildah-chroot-runtime" or
+    process.command_line == "buildah-chroot-runtime" or
+    process.parent.args == "/usr/bin/crun" or
+    process.parent.executable like (
+      "/usr/bin/nvidia-ctk", "/home/*/.local/share/Steam/*", "./usr/bin/qemu-aarch64", "/dev/.buildkit_qemu_emulator",
+      "/snap/docker/*/usr/bin/nvidia-ctk", "/usr/bin/nvidia-cdi-hook", "./usr/local/nvidia/toolkit/nvidia-cdi-hook.real",
+      "./usr/bin/qemu-s390x", "/usr/bin/cosmic-files", "/nix/store/*-rofi-unwrapped-*/bin/rofi", "/usr/bin/minecraft-launcher",
+      "/usr/local/nvidia/toolkit/nvidia-cdi-hook.real", "/home/*/.steam/*"
+    ) or
+    process.executable like (
+      "./usr/bin/qemu-aarch64", ".", "/home/*/bin/firefox/firefox-bin", "/home/*/bin/firefox/updater",
+      "/home/*/.local/share/torbrowser/tbb/x86_64/tor-browser/Browser/updater", "/home/*/.local/opt/tor-browser/app/Browser/updater",
+      "/home/*/.local/opt/tor-browser/app/Browser/firefox.real", "/home/*/snap/steam/common/.local/share/Steam/steamapps/common/*/bin/pressure-vessel-wrap",
+      "/home/*/.local/share/zen/zen", "/home/*/.local/share/zen/updater", "/home/*/.local/share/umu/steamrt4/pressure-vessel/bin/pressure-vessel-wrap",
+      "/home/*/.local/share/Steam/steamapps/common/*/pressure-vessel-wrap", "/home/*/tor-browser-linux-*/tor-browser/Browser/updater"
+    )
+  )]
+  [process where event.type == "start" and event.action == "exec"]
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

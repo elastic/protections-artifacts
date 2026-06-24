@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -36,6 +36,7 @@ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\ass
                                                                "c:\\windows\\system32\\esensordbi.dll",
                                                                "c:\\windows\\system32\\hmpalert.dll", 
                                                                "?:\\windows\\system32\\spool\\drivers\\x64\\*\\ricoh_*.dll", 
+                                                               "c:\\windows\\systemapps\\shellexperiencehost_*\\dxgi.dll",
                                                                "c:\\windows\\system32\\sophosed\\sophosed.dll") and
 not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files (x86)\\*", "c:\\program files\\*") and
 not (process.executable : "C:\\Windows\\System32\\lsass.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\lsasrv.dll") and
@@ -82,7 +83,12 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  "21eb39285fcd91148385d11b77489aad84e00f15b42bbdd98c6bc2fdaca7b987",
                                  "18bc51c6c267f218e14280d7b21b48ee23968c9ea76bbab945d7456a3da05907", 
                                  "f52cf893bd4b5ed92065197bb1eecb2546cd192b603c831cef0acb2d03ab83a4", 
-                                 "eb5a608211fc88588094ef613b9983f4a7744a90309375096eaf12fe29d506d9") and
+                                 "eb5a608211fc88588094ef613b9983f4a7744a90309375096eaf12fe29d506d9", 
+                                 "cf131738f4b5fe3f42e9108e24595fc3e6573347d78e4e69ec42106c1eebe42c", 
+                                 "097b30f6ef06eb2447f459a20a777190eefda55d148dd109ed3547b2338b540f", 
+                                 "c4bac26cc79788539e98b99989b3d2e9e13b74974b861badc66613a5e661ba90", 
+                                 "b83ca6663e8840c29790c00783bf29c8aa6d8cab6bae5cb9ca8aa7c7901462f4", 
+                                 "705e4e1db0576aa2a6df0ba9ebeda9e647e2ce95d90727d6b95f559a4a95c1fe") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
 ($entry.trusted == true or $entry.status == "errorExpired") and
 $entry.subject_name in (
@@ -103,7 +109,9 @@ not _arraysearch(process.thread.Ext.call_stack, $entry,
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlFreeHeap*",
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlReAllocateHeap*",
                                       "c:\\windows\\sys?????\\ntdll.dll!RtlUnlockHeap*",
-                                      "c:\\windows\\sys?????\\ntdll.dll+0x*")) and
+                                      "c:\\windows\\sys?????\\ntdll.dll+0x*", 
+                                      "c:\\windows\\sys*\\kernelbase.dll!VirtualAlloc*", 
+                                      "c:\\windows\\system32\\kernelbase.dll!HeapCreat*")) and
 not (process.executable : "\\\\?\\Volume{*}\\*.exe" and process.thread.Ext.call_stack_final_user_module.path like "?:\\*\\docker\\*\\windows\\*") and 
 not process.thread.Ext.call_stack_summary like ("ntdll.dll|libpcre*.dll|libgobject-*.dll|ntdll.dll", "ntdll.dll|libffi-*.dll|libpython*.dll|ntdll.dll")
 '''

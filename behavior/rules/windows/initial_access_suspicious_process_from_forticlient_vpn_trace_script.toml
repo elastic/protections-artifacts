@@ -1,0 +1,49 @@
+[rule]
+description = """
+Identifies LOLBAS or download utilities spawned by cmd.exe after execution of a script from the FortiClient VPN trace
+scripts directory. This may indicate CVE-2026-35616 exploitation against FortiClient EMS where adversaries pushed
+malicious on_connect scripts to managed endpoints.
+"""
+id = "1b054bc6-d0e1-40bd-aed8-91c4b455cbc4"
+license = "Elastic License v2"
+name = "Suspicious Process from FortiClient VPN Trace Script"
+os_list = ["windows"]
+reference = [
+    "https://arcticwolf.com/resources/blog/forticlient-ems-exploited-via-cve-2026-35616-to-deliver-ekz-infostealer-disguised-as-a-fortinet-patch/",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "start" and
+  process.parent.name : "cmd.exe" and
+  process.name : (
+    "rundll32.exe", "mshta.exe", "msiexec.exe", "powershell.exe", "bitsadmin.exe", "curl.exe", "regsvr32.exe",
+    "certutil.exe", "msbuild.exe", "certreq.exe", "cmd.exe", "wmic.exe", "schtasks.exe", "sc.exe", "wscript.exe", 
+    "cscript.exe"
+  ) and 
+  process.parent.command_line : "*C:\\Program Files\\Fortinet\\FortiClient\\logs\\Trace\\scripts\\*" and 
+  not process.args :("c:\\Program Files\\Fortinet\\VPNDisconnect.ps1", "c:\\Program Files\\Fortinet\\VPNConnect.ps1", "\\\\*\\NETLOGON\\VPNConnectScript.VBS")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "7.15.0"

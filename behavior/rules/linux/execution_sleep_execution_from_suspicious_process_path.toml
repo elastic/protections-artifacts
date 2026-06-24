@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -24,7 +24,8 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/usr/bin/*", "/tmp/build/.heroku/node/bin/npm", "/tmp/petalinux/*", "/tmp/tailsampling-*", "/tmp/*/.cursor-server/bin/linux-x64/*/node",
       "/tmp/cursor-server-cache/bin/linux-x64/*/node", "/tmp/*/.vscode-server/code-*", "/tmp/*-cursor-server/bin/linux-x64/*/node",
       "/tmp/.mount_Cursor*/usr/share/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rg", "/tmp/install.dir.*/Linux/resource/jre/lib/jspawnhelper",
-      "/tmp/gomod-overlay/merged/golang.org/*/bin/go"
+      "/tmp/gomod-overlay/merged/golang.org/*/bin/go", "/tmp/tmp.*/amfu/bin/cinsh", "/tmp/nagent_install/nagent-ubuntu22_64/InitialValidate",
+      "/tmp/arcane-install*"
     ) or
     process.command_line == "runc init" or
     process.name in ("gcc", "xgcc", "nvim") or
@@ -35,10 +36,11 @@ sequence by process.parent.entity_id with maxspan=5s
     ) or
     process.parent.executable like (
       "/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*", "/tmp/newroot/usr/bin/ansible-playbook",
-      "/usr/bin/ansible-playbook", "/tmp/newroot/*", "/tmp/.mount_cursor*/cursorsandbox", "/usr/local/bin/crush"
+      "/usr/bin/ansible-playbook", "/tmp/newroot/*", "/tmp/.mount_cursor*/cursorsandbox", "/usr/local/bin/crush",
+      "./usr/bin/podman"
     ) or
-    process.parent.args like "source /home/*/.claude/shell-snapshots/snapshot-bash*" or
-    process.parent.command_line like "*github.com/community-scripts/ProxmoxVE/*" or
+    process.parent.args like ("source /home/*/.claude/shell-snapshots/snapshot-bash*", "/var/ossec/bin/wazuh-control") or
+    process.parent.command_line like ("*github.com/community-scripts/ProxmoxVE/*", "*/home/*/.claude/shell-snapshots/snapshot*") or
     process.parent.command_line == "bash -c while true; do sleep 1;head -v -n 8 /proc/meminfo; head -v -n 2 /proc/stat /proc/version /proc/uptime /proc/loadavg /proc/sys/fs/file-nr /proc/sys/kernel/hostname; tail -v -n 32 /proc/net/dev;echo '==> /proc/df <==';df -l;echo '==> /proc/who <==';who;echo '==> /proc/end <==';echo '##Moba##'; done" or
     (process.executable == "/tmp/confluent" and process.parent.args like "./ci/e2e/tests/*")
   )]

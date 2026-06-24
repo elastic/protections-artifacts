@@ -1,0 +1,51 @@
+[rule]
+description = """
+Detects a potential privilege escalation via the busctl system call. This rule checks for a non-root user executing the
+busctl command with the --system and call arguments. This may be a sign of a potential local privilege escalation
+exploit.
+"""
+id = "7df49f49-ca9a-4444-8d54-fe657f013621"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via Busctl System Call"
+os_list = ["linux"]
+reference = ["https://github.com/sgkdev/ptrace_may_dream"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.name == "busctl" and
+process.args == "--system" and process.args == "call" and user.id != 0 and process.parent.user.id != 0 and
+not (process.parent.executable like "/usr/bin/python3.*" and process.parent.args == "/usr/sbin/netplan" and process.parent.args == "status")
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

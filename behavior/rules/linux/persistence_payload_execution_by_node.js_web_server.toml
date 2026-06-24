@@ -8,7 +8,7 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -59,7 +59,7 @@ process.args in ("-c", "-cl", "-lc") and (
     "*client_email*", "*private_key_id*", "*/run/secrets/google/*", "*GOOGLE_APPLICATION_CREDENTIALS*",
 
     /* Misc. Cloud */
-    "*/.docker/config.json*", "*/.npmrc*", "*/secrets/kubernetes.io/serviceaccount/*",
+    "*/.npmrc*", "*/secrets/kubernetes.io/serviceaccount/*",
 
     /* Helpers */
     "*timeout *sh -c *", "*env *sh *-c*", "*exec -a*",
@@ -90,7 +90,7 @@ not (
     "/usr/lib/node_modules/openclaw/dist/index.js", "/opt/yarn*", "*anthropic-ai/claude-code/cli.js*",
     "/usr/bin/docker-builder", "/opt/jenkins/.nvm/versions/node/*/bin/npm", "/usr/local/renovate/node",
     "/opt/buildagent/work/*/node_modules/.bin/cypress", "/var/www/html/ext/node_modules/.bin/webpack",
-    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower"
+    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower", "/usr/local/bin/cursor-agent"
   ) or
   process.args like ("npx *", "node /var/www/html/ext/node_modules/.bin/webpack*", "grep* | awk*") or
   process.parent.executable like (

@@ -1,0 +1,74 @@
+[rule]
+description = """
+Identifies cmd.exe with a command line consistent with downloading content over HTTP(S) using curl and piping the output
+into another interpreter (cmd.exe or node.exe). This pattern is used to fetch and execute remote commands or script
+without staging a file.
+"""
+id = "a8d3e441-2b0c-4e91-bf22-1d9c8f7a6e5d"
+license = "Elastic License v2"
+name = "Curl HTTP Fetch Piped to Cmd or Node via Command Shell"
+os_list = ["windows"]
+reference = [
+    "https://curl.se/docs/manpage.html",
+    "https://attack.mitre.org/techniques/T1105/",
+    "https://attack.mitre.org/techniques/T1059/",
+]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+  process.name : "cmd.exe" and
+  process.command_line : (
+    "*curl*http*| cmd*",
+    "*curl*http*| node*",
+    "*curl*http*|cmd",
+    "*curl*http*|node*"
+  )
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

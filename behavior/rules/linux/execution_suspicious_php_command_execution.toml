@@ -8,7 +8,7 @@ id = "d00bd50b-577e-47a7-9234-b4bfaa599791"
 license = "Elastic License v2"
 name = "Suspicious PHP Command Execution"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -26,11 +26,16 @@ process.args == "-r" and process.command_line like~ (
   process.working_directory like (
     "/var/www/*", "/builds/*", "/home/*/jenkins/*", "/home/*/public_html*", "/var/lib/ldap-account-manager/config"
   ) or
-  process.parent.args like ("/var/www/html/*", "source /home/*/.claude/shell*") or
+  process.parent.args like (
+    "/var/www/html/*", "source /home/*/.claude/shell*", "scripts/ci/render_build_configs.sh", "scripts/ci/build_package_vendor_cache.sh",
+    "../source/scripts/ci/build_package_vendor_cache.sh"
+  ) or
   process.args like "/usr/local/cpanel/*" or
   process.command_line like (
     "*https://composer.github.io/installer.sig*",
-    "*json_decode(file_get_contents('php://stdin')*"
+    "*json_decode(file_get_contents('php://stdin')*",
+    "php -r exit(@fsockopen(getenv('DB_HOST')?:'postgres', (int)(getenv('DB_PORT')?:5432)) ? 0 : 1);",
+    "php -r exit(@fsockopen(\"127.0.0.1\", 9501) ? 0 : 1);"
   ) or
   process.parent.command_line == "runc init" or
   process.parent.executable == "/opt/teleport/system/bin/teleport"

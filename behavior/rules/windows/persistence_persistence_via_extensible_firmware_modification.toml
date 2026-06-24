@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence by process.entity_id
@@ -47,12 +47,14 @@ sequence by process.entity_id
   not process.parent.executable :
            ("?:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
             "?:\\Program Files (x86)\\ISO to USB\\isotousb.exe", 
-            "?:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe") and
+            "?:\\Program Files (x86)\\baramundi\\BMA\\BDSRun.exe", 
+            "?:\\Program Files (x86)\\Dell\\UpdateService\\ServiceShell.exe", 
+            "?:\\Program Files (x86)\\OmniBack\\bin\\vbda.exe") and
   
   not (process.executable : "?:\\Windows\\HP\\Installer.exe" and process.args : "-bestsize" and process.args : "-uefisupport") and 
 
   not (process.code_signature.subject_name :
-           ("Akeo Consulting", "HP Inc.", "Dell Inc", "Dell Technologies Inc.", "Veritas Technologies LLC", "Insyde Software Corp.", "Huawei Technologies Co., Ltd.") and
+           ("Akeo Consulting", "HP Inc.", "Dell Inc", "Dell Technologies Inc.", "Veritas Technologies LLC", "Insyde Software Corp.", "Huawei Technologies Co., Ltd.", "FUJITSU CLIENT COMPUTING LIMITED", "Micro Focus Group Limited", "ESET, spol. s r.o.") and
        process.code_signature.trusted == true) and
 
   not (process.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.args : "BDESVC" and process.parent.name : "services.exe") and
@@ -61,15 +63,13 @@ sequence by process.entity_id
 
   not (process.executable : "?:\\Windows\\System32\\bcdboot.exe" and process.args : "/f" and process.args : "?:\\Windows") and
 
-  not (process.executable : "?:\\Windows\\System32\\taskhostw.exe" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe" and
-       process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Windows" and
-       (process.args : "taskhostw.exe" or process.args : "SBServicing" or process.args : "SYSTEM" or process.args : "ExploitGuardPolicy"))
+  not (process.executable : ("?:\\Windows\\System32\\taskhostw.exe", "?:\\Windows\\System32\\AggregatorHost.exe", "?:\\Windows\\UUS\\amd64\\wuaucltcore.exe") and process.parent.executable : "?:\\Windows\\System32\\svchost.exe")
   ]
  [file where event.action != "deletion" and file.path :"\\Device\\HarddiskVolume*\\EFI\\*" and
 
   file.size > 0 and 
 
-  not (process.name : "PowerShell.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\HP\\DEVFW\\Firmware.BIN") and
+  not (process.name : ("powershell.exe", "wsmprovhost.exe") and file.path : ("\\Device\\HarddiskVolume*\\EFI\\HP\\DEVFW\\*", "\\Device\\HarddiskVolume*\\EFI\\Microsoft\\Boot\\SecConfig.efi")) and
 
   not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\*.log")]
  until [process where event.action == "end"]

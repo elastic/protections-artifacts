@@ -13,7 +13,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1572/",
     "https://www.trendmicro.com/tr_tr/research/26/c/dissecting-a-warlock-attack.html",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -26,10 +26,13 @@ process where event.type == "start" and event.action == "exec" and
 ) and not (
   process.args in ("info", "delete") or
   process.parent.executable in ("/usr/lib/systemd/systemd", "/lib/systemd/systemd", "./runc") or
-  process.parent.executable like "/var/lib/rancher/k3s/data/*/bin/runc" or
+  process.parent.executable like "/var/lib/rancher/*/bin/runc" or
   process.parent.command_line == "runc init" or
   process.parent.args in ("/etc/init.d/cloudflared", "/usr/bin/crun") or
-  process.executable == "/usr/bin/podman"
+  process.executable == "/usr/bin/podman" or
+  (process.parent.executable == "/bin/busybox" and process.parent.args like "/home/*/tunnel-exit-node.sh") or
+  (process.name == "echo" and process.parent.name == "xargs" and process.parent.command_line == "xargs --null") or
+  process.working_directory like "/home/*/Desktop/*"
 )
 '''
 

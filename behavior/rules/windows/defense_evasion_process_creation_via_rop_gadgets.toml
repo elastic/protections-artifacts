@@ -7,7 +7,7 @@ id = "4cd250a2-82a0-463b-adda-5256cee422ce"
 license = "Elastic License v2"
 name = "Process Creation via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.action == "start" and
@@ -36,7 +36,10 @@ process where event.action == "start" and
                                                                   "C:\\Windows\\System32\\ntdll.dll!NtAlpcDeleteSecurityContext+*", 
                                                                   "C:\\Windows\\System32\\ntdll.dll!NtCreateRegistryTransaction*", 
                                                                   "C:\\Windows\\System32\\ntdll.dll!NtCreatePrivateNamespace*", 
-                                                                  "C:\\Windows\\System32\\ntdll.dll!NtDeletePrivateNamespace*")) and
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtDeletePrivateNamespace*", 
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtSetInformationDebugObject*", 
+                                                                  "C:\\Windows\\System32\\ntdll.dll!NtQueryAttributesFile*", 
+                                                                  "C:\\Windows\\System32\\kernel32.dll!LoadLibraryExW*")) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
  not process.executable : ("?:\\Windows\\System32\\conhost.exe", "?:\\Windows\\SysWOW64\\WerFault.exe") and

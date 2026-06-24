@@ -8,11 +8,11 @@ id = "116d477e-8dd3-4de6-bbfd-9c19ca37fb8b"
 license = "Elastic License v2"
 name = "Attempt to Clear Kernel Ring Buffer via Dmesg"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
-process.name == "dmesg" and process.args in ("-c", "--clear") and
+process.name == "dmesg" and process.args in ("-c", "-C", "--clear", "--read-clear") and
 not process.parent.executable == "/tmp/newroot/usr/bin/sudo"
 '''
 

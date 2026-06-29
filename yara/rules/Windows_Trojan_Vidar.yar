@@ -232,3 +232,26 @@ rule Windows_Trojan_Vidar_0f323538 {
         all of them
 }
 
+rule Windows_Trojan_Vidar_57ae970e {
+    meta:
+        author = "Elastic Security"
+        id = "57ae970e-f21a-4196-84eb-d96cc8750b56"
+        fingerprint = "d9b837b08d5f7225eda4490629da6aa7b2eaffe399f198992ee7ffbf4dbceb8f"
+        creation_date = "2026-06-11"
+        last_modified = "2026-06-26"
+        threat_name = "Windows.Trojan.Vidar"
+        reference_sample = "e534bc9475e0ecf50e529aeebd06488ed95b2b88de446690d4360ba7d0049735"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { C6 00 20 49 03 C5 C6 00 5B 49 03 C5 C6 00 7E 49 03 C5 C6 00 5D 49 03 C5 C6 00 20 }
+        $b = { C6 00 20 4C 8B C6 49 03 C5 C6 00 5B 49 03 C5 C6 00 2A 49 03 C5 C6 00 5D 49 03 C5 C6 00 20 }
+        $c = { 8B 02 4D 8D 40 04 8B 4A FC 48 8D 52 04 }
+        $d = { 0F BE 02 48 FF C2 46 8D 14 50 8B 84 24 00 01 00 00 0F B6 02 }
+    condition:
+        3 of them
+}
+

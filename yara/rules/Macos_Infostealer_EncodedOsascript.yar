@@ -2,7 +2,7 @@ rule Macos_Infostealer_EncodedOsascript_eeb54a7e {
     meta:
         author = "Elastic Security"
         id = "eeb54a7e-ebb3-4bf9-8538-2dbad9e514b9"
-        fingerprint = "7b9d3cc64f3cfbdf1f9938ab923ff06eb6aef78fce633af891f5dd6a6b38dd2d"
+        fingerprint = "db8d78a931b64c2658f9b908e73e412a173a11f37b4f6f62becfde2e1f1bc394"
         creation_date = "2024-08-19"
         last_modified = "2024-08-26"
         threat_name = "Macos.Infostealer.EncodedOsascript"

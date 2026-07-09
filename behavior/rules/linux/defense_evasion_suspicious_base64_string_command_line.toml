@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Suspicious Base64 String Command-line"
 os_list = ["linux"]
 reference = ["https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1140/T1140.yaml"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -53,7 +53,8 @@ process.parent.executable != null and process.command_line like (
   "*f0VMRg*"
 ) and not (
   process.parent.name in ("fzf", "nvim") or
-  process.command_line like~ "sh -c *data *"
+  process.command_line like~ "sh -c *data *" or
+  process.parent.executable like ("/home/*/.cursor-server/bin/linux-x64/*/node", "/tmp/.mount_*/usr/share/cursor/cursor")
 )
 '''
 

@@ -8,7 +8,7 @@ id = "0c393c67-6eb3-4936-ab44-b807ef8af0f7"
 license = "Elastic License v2"
 name = "DNS Request by Recently Created Executable"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -28,6 +28,10 @@ sequence by process.parent.entity_id with maxspan=10s
     (
       process.executable like "/home/*/go/pkg/mod/golang.org/*/pkg/tool/linux_amd64/link" and
       file.path like "/tmp/go-*/exe/vuln-stats"
+    ) or
+    process.executable like (
+      "/home/*/.local/share/claude/versions/*", "/home/*/.vscode-server/cli/servers/Stable-*/server/node",
+      "/tmp/*/.vscode-server/.vscode-server/cli/servers/Stable-*/server/node", "/home/*/.vscode-server/bin/*/node"
     )
   )] as event0
   [dns where event.action == "lookup_result" and startswith~(process.executable, event0.file.path) and

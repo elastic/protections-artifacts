@@ -1,0 +1,264 @@
+[rule]
+description = """
+This rule detects the execution of the echo command to write data to potential persistence files, decode base64/32/16
+and hex content or establish connections to a potential C2. The echo command is used to display a line of text or write
+data to a file. Threat actors may abuse the echo command to write data to files or file descriptors that are executed
+(by other processes or services) to establish persistence or escalate privileges.
+"""
+id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
+license = "Elastic License v2"
+name = "Suspicious Echo Execution"
+os_list = ["linux"]
+version = "1.0.8"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox", "pwsh") and
+process.args in ("-c", "--command", "-lc", "-cl") and process.args like "echo *" and (
+  process.parent.name in (
+    "bash", "dash", "zsh", "sh", "ksh", "tcsh", "fish", "mksh", "busybox", "logger", "pkexec", "watch", "pwsh",
+    "awk", "nawk", "mawk", "gawk", "tmux", "env", "coreutils", "dnf", "yum", "apt", "dpkg", "splunkd",
+    "agent_caldera", "vi", "vim", "nvim", "podman-compose", "nsenter"
+  ) or
+  process.parent.name like (".*", "*.sh", "*.py", "*.lua", "*.pl", "*.rb", "*.bin") or
+  process.parent.executable like (
+    ".", "/etc/profile.d/*",
+    "/tmp/*", "/var/tmp/*", "/home/*/*", "/root/*",
+    "/www/*", "/var/www/*", "/var/lib/docker/overlay2/*",
+    "/run/user/*", "/var/run/user/*", "/dev/shm/*"
+  ) or
+  (process.parent.name == "timeout" and not process.command_line like (
+    "*>*/tmp/*", "*/usr/bin/env*processor*cpuinfo*physical*", "*/usr/sbin/ssh_alert_interm.sh*"
+  )) or
+  (process.parent.name == "php" and not process.command_line like (
+    "*/tmp/cacti/net-snmp-devio*", "*/centreon/cron/centAcl.php*", "*localhost*", "sh -c echo -n > /var/www/html/cacti/log/cacti.log",
+    "*/opt/naoned/inao/current/system/tools/cron.d/crontab_install.php*", "*nohup*"
+  )) or
+  (process.parent.name like "ruby*" and not process.command_line like "*/usr/bin/env*processor*cpuinfo*physical*") or
+  (process.parent.name like "perl*" and not process.command_line like ("*echo*>*/var/tmp/mail*", "*echo*>*/tmp/db2_tmp.cmd")) or
+  (process.parent.name like "python*" and not (
+    process.command_line like (
+      "*/var/consul-conf*", "*BACKUP_PATH*", "*archive.ubuntu.com*", "*haproxy/haproxy.sock*", "*XDG_RUNTIME_DIR*", "*/var/log/nginx*"
+    ) or
+    process.args like ("declare*", "files=*", "entries=*", "required_cmds=*", "suid_max=*")
+  )) or
+  (process.parent.name == "java" and not process.command_line like "*/var/log/jobprocessor/audit.log*") or
+  (process.parent.name == "dash" and not process.args like ("/srv/tools/managed/update.sh", "exp=$*"))
+) and process.command_line like (
+
+  /* Encoding, Decoding & Piping */
+  "*|sh", "*| sh *", "*| sh ", "*|bash*", "*| bash*", "*|zsh*",  "*| zsh*", "*|dash*",  "*| dash*",
+  "*|python*", "*| python*", "*|php*", "*| php*", "*|perl*", "*| perl*", "*|ruby*", "*| ruby*",
+  "*|node*", "*| node*", "*|lua*",  "*| lua*", "*|busybox*", "*| busybox*", "*|*base64 -d*", "*|*base64 --decode*",
+  "*|*base64 --decode*", "*|*openssl base64 -d*", "*xxd *", "*| openssl*enc * -d *", "*b64decode -r*",
+
+  /* File Manipulation */
+  "*> /tmp/*", "*>> /tmp/*", "*>/tmp/*", "*>>/tmp/*",
+  "*> /var/tmp/*", "*>> /var/tmp/*", "*>/var/tmp/*", "*>>/var/tmp/*",
+  "*> /dev/shm/*", "*>> /dev/shm/*", "*>/dev/shm/*", "*>>/dev/shm/*",
+  "*> /run/*", "*>> /run/*", "*>/run/*", "*>>/run/*",
+  "*> /var/run/*", "*>> /var/run/*", "*>/var/run/*", "*>>/var/run/*",
+  "*> /var/www/*", "*>> /var/www/*", "*>/var/www/*", "*>>/var/www/*",
+
+  /* Persistence */
+  "*>*/etc/cron*", "*crontab*", "*>*/home/*/.ssh/*", "*>*/root/.ssh*", "*>*~/.ssh/*", "*>*/etc/shadow*", "*>*/etc/passwd*",
+  "*>*/etc/master.passwd*", "*chpasswd*", "*NOPASSWD:ALL*>*sudoers.d*", "*>*/etc/systemd/system/*[Unit]*ExecStart*",
+  "*| crontab -*",
+
+  /* Decompression */
+  "*gzip -*d *", "*bzip2 -*d *", "*xz -*d *", "*tar -*x*",
+
+  /* Miscellaneous */
+  "* setsid *", "*timeout *sh -c *", "*disown*",  "*chattr *", "busybox *", "*#!/*", "*chmod +x *", "*chmod 777*",
+  "*<?php*?>*", "*kworker*", "*stty*raw*-echo*", "*mkfifo /tmp/*"
+) and
+not (
+  process.parent.executable like (
+    "/usr/share/cursor/cursor", "/opt/teleport/system/bin/teleport", "/root/.cursor-server/*", "/home/*/.cursor-server/*",
+    "/usr/sbin/qemu-ga", "/usr/bin/node", "/usr/share/windsurf/resources/app/extensions/windsurf/bin/language_server_linux_x64",
+    "./runc", "/home/*/.conda/envs/fmf_server_agent/bin/python*", "/home/*/*claude*", "/home/*/.nvm/*", "/tmp/newroot/usr/bin/node",
+    "/tmp/newroot/home/*/*claude*", "/tmp/.mount_Curso*/cursor", "/tmp/newroot/newroot/newroot/opt/omnissa/ws1-hub/bin/ws1HubAgent",
+    "/tmp/newroot/opt/omnissa/ws1-hub/bin/ws1HubAgent", "/tmp/newroot/usr/bin/sudo", "/tmp/newroot/newroot/usr/bin/sudo",
+    "/var/lib/docker/overlay2/*cron", "/home/*/.vscode-server/*/codex", "/home/*/pnpm/*", "/root/.nvm/*", "./buildkit-runc",
+    "/opt/Tanium/TaniumClient/extensions/comply/jre/bin/java", "/root/*/claude*", "/var/lib/docker/overlay2/*executor",
+    "/tmp/.mount_arduin*/arduino-cli", "/home/*/.vscode/*/codex", "/tmp/petalinux*/make", "/tmp/newroot/*/codex",
+    "/home/*/.local/bin/kiro-cli-chat", "/tmp/newroot/usr/bin/claude-bin", "/tmp/newroot/usr/bin/make", "/home/*/usr/bin/make",
+    "/tmp/newroot/newroot/home/*/.local/bin/kiro-cli-chat", "/home/*/crux/bin/nexus_exec", "/tmp/CVU_19_resource_*/exectask",
+    "/var/lib/docker/overlay2/*/rc.init", "/var/lib/docker/overlay2/*/usr/bin/make", "/home/*/.local/*python*",
+    "/tmp/CVU_*_resource/exectask", "/root/please/plz-out/bin/package/please", "/tmp/newroot/*", "/var/lib/docker/overlay2/*/longhorn",
+    "/home/*/.local/share/fnm/node-versions/*/installation/lib/node_modules/opencode-ai/bin/.opencode",
+    "/root/.vscode-server/extensions/openai.chatgpt-*-linux-x64/bin/linux-x86_64/codex", "/home/*/.elixir-install/installs/*/bin/erl_child_setup",
+    "/var/lib/docker/overlay2/*/usr/sbin/sshd", "/home/*/please/please/plz-out/bin/package/please",
+    "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode", "/home/*/couscous/ci-bin/kuttl", "/home/kali/.opencode/bin/opencode",
+    "/tmp/pytorch_build/pytorch-build-venv/bin/ninja", "/home/*/.opencode/bin/opencode", "/home/*/.local/share/JetBrains/Toolbox/apps/*/bin/rustrover",
+    "/home/*/kubernetes/terraform/harvester/.terraform/providers/registry.terraform.io/hashicorp/external/*", "/home/linuxbrew/.linuxbrew/Cellar/fzf/*/bin/fzf",
+    "/home/*/Documents/please/plz-out/bin/package/please", "/home/*/.npm-global/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex",
+    "/home/*/.aimee-code/bin/opencode", "/home/linuxbrew/.linuxbrew/Cellar/tilt/*/bin/tilt", "/opt/Elastic/Endpoint/elastic-endpoint",
+    "/home/*/.local/bin/droid", "/opt/saltstack/salt/bin/python3.*", "/home/*/please/plz-out/bin/package/please", "/home/*/.fzf/bin/fzf",
+    "/home/*/spack/opt/spack/linux-cascadelake/*/bin/make", "/home/*/.local/share/fnm/node-versions/*/bin/node", "/home/coder/omni", "/home/*/toolchain/bin/make",
+    "/tmp/coder.*/coder"
+  ) or
+  (process.parent.name in ("vim", "vi", "nvim") and process.parent.command_line like ("*/usr/share/vim/vimfiles/doc*", "*vimglob*")) or
+  process.parent.name like "php-fpm*" or
+  process.parent.command_line in ("openclaw-gateway", "runc init", "/usr/bin/perl -w /usr/bin/collectl -D", "/usr/bin/runc init") or
+  process.parent.command_line like "*/home/*/.claude/shell-snapshots/*" or
+  process.command_line in (
+    "bash -c echo \"#!/bin/bash\" > /usr/sbin/ssh_alert_interm.sh",
+    "/bin/sh -c timeout 20 bash -c 'set -o pipefail; which openssl &>/dev/null; echo $?'",
+    """/bin/sh -c timeout 20 bash -c 'set -o pipefail; uid=$(id -u); if [ -d /sys/fs/cgroup/memory/ysql ]; then cat /sys/fs/cgroup/memory/ysql/memory.limit_in_bytes; elif [ -d /sys/fs/cgroup/user.slice/user-${uid}.slice/user\@${uid}.service/ysql ]; then cat /sys/fs/cgroup/user.slice/user-${uid}.slice/user\@${uid}.service/ysql/memory.max; else echo 0; fi'""",
+    """/bin/sh -c timeout 20 bash -c 'set -o pipefail; uid=$(id -u); if [ -d /sys/fs/cgroup/memory/ysql ]; then cat /sys/fs/cgroup/memory/ysql/memory.usage_in_bytes; elif [ -d /sys/fs/cgroup/user.slice/user-${uid}.slice/user\@${uid}.service/ysql ]; then cat /sys/fs/cgroup/user.slice/user-${uid}.slice/user\@${uid}.service/ysql/memory.current; else echo 0; fi'""",
+    "/bin/sh -c echo $(date) > /tmp/salt_keepalive_ping", "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci --production;"
+  ) or
+  process.command_line like (
+    "*timeout*/usr/local/logicmonitor/agent/bin/logicmonitor-agent.java.pid*", "*timeout*/.claude/shell-snapshots/snapshot*",
+    "*/root/.claude/shell-snapshots/*", "*raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh*",
+    "*srv/tools/managed/update.sh*", "*home/*/.claude/shell-snapshots/*", "sh -c echo 'WrLNwLrcrxM=' | base64 -d > /home/*/.vnc/passwd",
+    "/bin/sh -c echo $(date) > /tmp/salt_keepalive_ping", "sh -c echo $SSH_PRIVATE_KEY | base64 -di | ssh-add - ; npm ci;",
+    "*echo blkid: > /tmp/vmware-*/blkid.txt;/sbin/blkid*", "*/dev/tcp/traefik-gate.service.consul/10041*"
+  ) or
+  process.working_directory like (
+    "/root/.cache/act/*/hostexecutor", "/home/*/KSPL/COZY_RUN", "/home/jenkins/agent/workspace/*", "/opt/beginfinite/reload/lib/code",
+    "/tmp/plz_sandbox"
+  ) or
+  process.args like ("snap=$(*", "if [ -x *", "/u01/*/grid/bin/clsecho*", "php artisan reverb:start*") or
+  process.parent.args like ("/var/tmp/ansible-tmp-*/AnsiballZ_command.py", "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_command.py") or
+  (process.parent.command_line == "bash /entrypoint.sh" and process.command_line like "*/usr/local/logicmonitor/agent/bin/logicmonitor-watchdog.java.pid*") or
+  (process.parent.executable == "/usr/bin/perl" and process.parent.args like "/home/*/scripts/daily.pl") or
+  (process.working_directory == "/var/opt/OV/installation/standalone" and process.parent.executable in ("/usr/bin/awk", "/usr/bin/gawk")) or
+  (process.working_directory == "/home/deploy" and process.parent.executable like "/usr/bin/python3.*" and process.command_line like "*/home/manage/.ssh/authorized_keys*") or
+  (process.working_directory like "/var/tmp/glibc-*/glibc-*" and process.parent.executable == "/tmp/homebrew/bin/make") or
+  (process.working_directory like "/tmp/MLNX_OFED_LINUX*" and process.parent.executable == "/usr/bin/perl") or
+  (process.parent.executable == "/usr/local/admin/bin/mailman_bsc_listadd_v2.py" and process.command_line like "*/tmp/mailmanListMembers.txt") or
+  (process.parent.executable like "/home/*/.local/opt/node-*-linux-x64/bin/node" and process.command_line like "*extglob*") or
+  (process.working_directory == "/home/navi" and process.command_line like "sh -c echo*| base64 -d | sudo -n tee \"/etc/hosts\" > /dev/null") or
+  (
+    process.parent.executable == "/usr/bin/perl" and
+    process.parent.args in (
+      "/opt/scom/bin/misc-plugins/check_nfs_client.pl", "/apps/sapinst/script/sapservices_maintainer.pl", "/special/common/bin/chp.pl"
+    )
+  ) or
+  (process.parent.executable like "/tmp/portable_install_*/bomc.bin" and process.command_line like "*/tmp/healer/log/Lenovo_Support/bomc_*") or
+  (process.command_line like "*/home/ec2-user/.ssh/authorized_keys*" and process.parent.name like "python*" and process.parent.args == "/opt/aws/bin/cfn-init")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.004"
+name = "Unix Shell Configuration Modification"
+reference = "https://attack.mitre.org/techniques/T1546/004/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

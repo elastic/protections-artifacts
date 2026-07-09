@@ -9,7 +9,7 @@ id = "76fac24d-7736-4aed-bcd0-feed2286385d"
 license = "Elastic License v2"
 name = "Loadable Kernel Module Load via Forked Memory File Descriptor"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=5s
@@ -30,7 +30,8 @@ sequence with maxspan=5s
       process.executable like "/usr/libexec/platform-python3*" and
       process.parent.executable == "/usr/lib/systemd/systemd" and
       process.Ext.memfd.name == "memfd:libffi"
-    )
+    ) or
+    (process.parent.executable like "/snap/lxd/*/sbin/lxd" and process.command_line == "/sbin/modprobe -b zfs")
   )] by process.entity_id
   [process where event.action == "load_module"] by process.parent.entity_id
 '''

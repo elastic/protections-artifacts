@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Memory File Descriptor Execution from Suspicious Process"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -35,7 +35,9 @@ sequence by process.entity_id with maxspan=30s
       "/home/*/.local/share/torbrowser/tbb/x86_64/tor-browser/Browser/updater", "/home/*/.local/opt/tor-browser/app/Browser/updater",
       "/home/*/.local/opt/tor-browser/app/Browser/firefox.real", "/home/*/snap/steam/common/.local/share/Steam/steamapps/common/*/bin/pressure-vessel-wrap",
       "/home/*/.local/share/zen/zen", "/home/*/.local/share/zen/updater", "/home/*/.local/share/umu/steamrt4/pressure-vessel/bin/pressure-vessel-wrap",
-      "/home/*/.local/share/Steam/steamapps/common/*/pressure-vessel-wrap", "/home/*/tor-browser-linux-*/tor-browser/Browser/updater"
+      "/home/*/.local/share/Steam/steamapps/common/*/pressure-vessel-wrap", "/home/*/tor-browser-linux-*/tor-browser/Browser/updater",
+      "/home/*/.local/share/claude/versions/*", "/home/*/Downloads/*/firefox/*", "/home/*/.local/share/umu/steamrt3/pressure-vessel/bin/steam-runtime-launch-client",
+      "/home/*/Desktop/crun/crun-src/crun/crun"
     )
   )]
   [process where event.type == "start" and event.action == "exec"]

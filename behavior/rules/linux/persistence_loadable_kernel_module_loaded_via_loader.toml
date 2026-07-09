@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Loadable Kernel Module Loaded via Loader"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/continuation-on-persistence-mechanisms"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "load_module" and (
@@ -22,7 +22,14 @@ process where event.type == "start" and event.action == "load_module" and (
     "/srv/*", "/etc/*"
   )
 ) and
-not process.executable like ("/tmp/newroot/*", "/run/systemd/mount-rootfs/sbin/*")
+not (
+  process.executable like ("/tmp/newroot/*", "/run/systemd/mount-rootfs/sbin/*") or
+  (
+    process.parent.command_line == "bash /var/lib/guardicore/bin/gc-enforcement-wrapper start-agent" and
+    process.command_line == "bash /var/lib/guardicore/bin/gc-enforcement-wrapper start-agent" and
+    process.working_directory == "/var/lib/guardicore"
+  )
+)
 '''
 
 min_endpoint_version = "9.1.4"

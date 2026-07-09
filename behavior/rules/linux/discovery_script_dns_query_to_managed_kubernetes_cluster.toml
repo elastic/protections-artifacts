@@ -1,0 +1,81 @@
+[rule]
+description = """
+Identifies a scripting interpreter or download utility followed within one minute by a DNS lookup of a managed
+Kubernetes cluster API hostname (AWS EKS, Azure AKS, Google GKE, or Vultr Kubernetes). Adversaries and post-exploitation
+tooling may use shells, download utilities, or language runtimes to reach cluster control planes after harvesting
+kubeconfig credentials or service account tokens.
+"""
+id = "37249ca9-0e71-413f-899b-ae60b1599e34"
+license = "Elastic License v2"
+name = "Script DNS Query to Managed Kubernetes Cluster"
+os_list = ["linux"]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.type == "start" and event.action == "exec" and (
+    process.name in (
+      "fish", "zsh", "bash", "dash", "sh", "tcsh", "csh", "ksh", "curl", "wget", "node", "bun", "deno", "pwsh",
+      "busybox", "timeout", "env", "java"
+    ) or
+    process.name like ("python*", "perl*", "php*", "ruby*", "lua*")
+  )
+  and not (process.name in ("fish", "zsh", "bash", "dash", "sh", "tcsh", "csh", "ksh") and process.args like ("*kubectl*", "*/shims/k9s"))
+  ]
+  [dns where dns.question.name like~ ("*eks.amazonaws.com", "*.azmk8s.io", "*.gke.goog", "*.vultr-k8s.com")]
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1613"
+name = "Container and Resource Discovery"
+reference = "https://attack.mitre.org/techniques/T1613/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

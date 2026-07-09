@@ -1,0 +1,295 @@
+[rule]
+description = """
+This rule detects when a web server spawns a suspicious child process. Attackers may exploit RCE or file upload
+vulnerabilities to spawn suspicious child processes on web servers to gain/maintain access and to establish a command
+and control channel.
+"""
+id = "b4fff9bb-6095-4282-9084-217fced11ce7"
+license = "Elastic License v2"
+name = "Suspicious Web Server Child Process"
+os_list = ["linux"]
+version = "1.0.7"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  process.parent.name in (
+    "nginx", "apache2", "httpd", "caddy", "mongrel_rails", "uwsgi", "daphne", "httpd.worker", "flask",
+    "php-cgi", "php-fcgi", "php-cgi.cagefs", "lswsctrl", "varnishd", "uvicorn", "waitress-serve", "starman",
+    "frankenphp", "asterisk", "sw-engine-fpm"
+  ) or
+  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi") or
+  (process.parent.name like "ruby*" and process.parent.command_line like~ ("*puma*", "*rails*", "*passenger*")) or
+  (process.parent.name like "python*" and process.parent.command_line like~ (
+    "*hypercorn*", "*flask*", "*uvicorn*", "*django*", "*app.py*", "*server.py*", "*wsgi.py*", "*asgi.py*"
+  )) or
+  (process.parent.name like "perl*" and process.parent.command_line like~ "*plackup*") or
+  (process.parent.name == "node" and process.parent.command_line like~ (
+    "*next start*", "*--port*", "*PORT=*", "*HOST=*", "*0.0.0.0*", "*/dist/*.js*", "*/build/*.js*", "*/server/*.js*",
+    "*/app/*.js*", "*/apps/*/*.js*", "*/index.js*", "*/main.js*", "*/srv/*", "*/opt/*", "*/var/www/*", "*n8n*"
+    ) and
+    not process.parent.args like (
+      "/opt/cursor-agent/*", "/home/*/*", "/root/*", "/opt/vscode-server/*", "/usr/lib/node_modules/openclaw/dist/index.js",
+      "/opt/yarn-*/bin/yarn.js"
+    ) 
+  ) or
+  (process.parent.name == "java" and process.parent.args like~ (
+    /* Tomcat */
+    "org.apache.catalina.startup.Bootstrap", "-Dcatalina.base=*",
+
+    /* Jetty */
+    "org.eclipse.jetty.start.Main", "-Djetty.home=*",
+
+    /* WildFly / JBoss */
+    "org.jboss.modules.Main", "-Djboss.home.dir=*",
+
+    /* WebLogic */
+    "weblogic.Server", "-Dweblogic.Name=*", "*weblogic-launcher.jar*",
+
+    /* WebSphere traditional + Liberty */
+    "com.ibm.ws.runtime.WsServer", "com.ibm.ws.kernel.boot.cmdline.Bootstrap",
+
+    /* GlassFish */
+    "com.sun.enterprise.glassfish.bootstrap.ASMain",
+
+    /* Resin */
+    "com.caucho.server.resin.Resin",
+
+    /* Spring Boot */
+    "org.springframework.boot.loader.*",
+
+    /* Quarkus */
+    "*quarkus-run.jar*", "io.quarkus.runner.GeneratedMain",
+
+    /* Micronaut */
+    "io.micronaut.runtime.Micronaut",
+
+    /* Dropwizard */
+    "io.dropwizard.cli.ServerCommand",
+
+    /* Play */
+    "play.core.server.ProdServerStart",
+
+    /* Helidon */
+    "io.helidon.microprofile.server.Main", "io.helidon.webserver*",
+
+    /* Vert.x */
+    "io.vertx.core.Launcher",
+
+    /* Keycloak */
+    "org.keycloak*",
+
+    /* Apereo CAS */
+    "org.apereo.cas*",
+
+    /* Elasticsearch */
+    "org.elasticsearch.bootstrap.Elasticsearch",
+
+    /* Atlassian / Gerrit */
+    "com.atlassian.jira.startup.Launcher", "*BitbucketServerLauncher*", "com.google.gerrit.pgm.Daemon",
+
+    /* Solr */
+    "*-Dsolr.solr.home=*",
+
+    /* Jenkins */
+    "*jenkins.war*"
+    )
+  )
+) and (
+  (
+    process.name like ("*.sh", "*.py", "*.lua", "*.pl", "*.rb", "*.bin") and
+    process.executable like ("/dev/shm/*", "/tmp/*", "/var/tmp/*")
+  ) or
+  process.executable like ("/dev/shm/*", "/tmp/*", "/var/tmp/*", "./*") or
+  process.name like (".*", "chpasswd") or
+  (
+    process.name in ("whoami", "id", "hostname", "uname", "ps", "netstat", "ss", "ip", "ifconfig") and
+    process.interactive == true and process.parent.interactive == false
+  ) or
+  (
+    process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and (
+      process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*" or
+      process.command_line like "*http*"
+    ) and
+    not process.args in ("localhost", "127.0.0.1", "-z", "-zv", "-vz") 
+  ) or
+  (
+    process.name == "socat" and
+    process.command_line like~ ("*exec*", "*tty*", "*fork*", "*file*", "*open*") and
+    process.command_line like~ ("*tcp*", "*udp*", "*openssl*")
+  ) or
+  (
+    process.name == "openssl" and (
+      process.command_line like ("*s_server*", "*s_client*") or
+      (process.args == "enc" and process.args in ("-d", "-base64", "-a", "-A"))
+    )
+  ) or
+  (
+    process.name in ("wget", "curl") and
+    (
+      process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(:[0-9]{1,5})?/.*" or
+      process.command_line like ("*http*", "*ftp*")
+    ) and
+    (
+      process.command_line regex~ """.*curl.* \-[a-zA-Z]*[oO]( .+|\-.*)?""" or
+      process.command_line like~ ("*curl* --output*", "*curl* --remote-name*") or
+      process.command_line regex~ """.*wget.* \-[a-zA-Z]*O.*""" or
+      process.command_line like~ "*wget* --output-document*" or
+      process.command_line like ("*|*sh*", "*|*python*", "*|*php*", "*|*perl*", "*|*ruby*", "*|*node*", "*|*lua*", "*|*busybox*") or
+      process.command_line like ("*curl *>> /*", "*curl *>>/*", "*curl *> /*", "*curl *>/*", "*wget *>> /*", "*wget *>>/*", "*wget *> /*", "*wget *>/*")
+    ) and
+    not process.args == "/dev/null"
+  ) or
+  (
+    process.name in ("base64", "basez", "base64plain", "base64url", "base64mime", "base64pem", "basenc", "base32", "base16") and
+    process.args like~ "-*d*"
+  ) or
+  (
+    process.name == "xxd" and process.args like~ ("-*r*", "-*p*")
+  ) or
+  (process.name == "sudo" and process.args == "-l") or
+  (
+    process.executable like ("/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod") and
+    process.args like ("+x", "a+x", "0777", "755", "777", "0755", "700", "0700", "+s", "u+s", "g+s") and (
+      process.args like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "/var/www/*", "~/*", "/home/*", "/run/*", "/var/run/*") or
+      stringcontains(process.args, process.working_directory)
+    )
+  ) or
+  (
+    process.executable like ("/bin/cat", "/usr/bin/cat", "/usr/local/bin/cat") and (
+      process.args like (
+        "/etc/passwd", "/etc/shadow", "/etc/hostname", "/etc/hosts", "*ssh*", "/proc/self/environ",
+        "*.env*", "*../../../*", "*/secrets/kubernetes.io/serviceaccount/*", "*/.docker/config.json*",
+        "*/.npmrc*", "*.aws/credentials*", "*/.aws/config*"
+      )
+    )
+  )
+)
+and not (
+  stringcontains(process.parent.executable, process.executable) or
+  stringcontains(process.parent.args, process.executable) or
+  (process.name == "echo" and process.parent.args in ("/usr/share/passenger/helper-scripts/rack-preloader.rb", "/etc/init.d/apache2")) or
+  (process.parent.name == "ruby" and process.executable == "/etc/puppet/node.rb") or
+  process.args like "/tmp/yarn*" or
+  (process.name == "node" and process.parent.name == "ruby" and process.args like "/tmp/execjs*") or
+  (process.parent.name == "httpd" and process.name == "perl" and process.args in ("/var/www/cgi-bin/metrics.cgi", "edittag.cgi", "plans.cgi")) or
+  (process.parent.name == "apache2" and process.name == "perl" and process.args in ("/usr/lib/cgi-bin/LeaderBoardExtra.pl", "/usr/lib/cgi-bin/bibl/index_s.pl")) or
+  (process.parent.name == "apache2" and process.name like "python*" and process.args in ("/opt/omnimesh/apache/cgi-bin/all-events-api-adaptor.cgi", "/usr/lib/cgi-bin/render/user-data.py")) or
+  process.executable like ("/opt/iParapheur/common/bin/.convert.bin", "/tmp/.*/.vscode-server/bin/*/node_modules/@vscode/vsce-sign/bin/vsce-sign") or
+  process.command_line in ("runc init", "ps h -eo pid,args") or
+  (
+    process.parent.name == "node" and 
+    process.executable like ("./bin/dhcpd-pools", "/tmp/*/smoke-module/node_modules/@esbuild/linux-x64/bin/esbuild", "/tmp/.*/.cursor-server/*", "/var/tmp/buildah*")
+  ) or
+  (process.parent.executable == "/etc/zabbix/script/php-fpm/php-fpm-check.sh" and process.command_line like "*127.0.0.1:10061/php-fpm_status*") or
+  process.executable like (
+    "/tmp/plz_sandbox/*", "/tmp/exiftool*", "/tmp/renovate/*", "/tmp/xfs*/yarn", "/tmp/newroot/usr/bin/ansible",
+    "/tmp/chromedriver/*/chromedriver-linux64/chromedriver", "/tmp/temporal-sdk-typescript-*", "/tmp/newroot/var/snap/docker/common/var-lib-docker/rootfs/overlayfs/*/usr/local/bin/npm",
+    "/tmp/newroot/*", "/tmp/temporal-test-server-sdk-typescript-*", "/tmp/.*/.vscode-server/cli/servers/Stable-*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign",
+    "/tmp/compiler-explorer-compiler*/output.s", "./Merge_DAT_files.sh", "./bin/pg_isready", "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode",
+    "/tmp/.npm-cache/_npx/*/node_modules/@esbuild/linux-x64/bin/esbuild", "/tmp/async-profiler/bin/asprof", "/tmp/snap.rootfs*", "/nix/store/*/bin/.wine",
+    "/tmp/par-*/cache-exiftool-*/exiftool-*", "/tmp/vscode-komo/Stable-*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign"
+  ) or
+  (
+    process.parent.executable like ("/usr/local/openresty/nginx/sbin/nginx", "/u02/informatica/powercenter/*/java/bin/java") and
+    process.name == "chmod" and
+    process.args == "777"
+  ) or
+  (
+    process.parent.executable like "/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and
+    process.args like (
+      "/sasconfig/Lev1/Web/SASEnvironmentManager/server-*/hq-engine/hq-server/temp/pdknull/work/lib/sas-gridsgmg/*.jar",
+      "/sasconfig/Lev1/Web/SASEnvironmentManager/server-*/hq-engine/hq-server/temp/pdknull/work/lib/*.jar"
+    )
+  ) or
+  (
+    process.parent.executable like ("/usr/lib/jvm/java-*-openjdk-amd64/bin/java", "/dm/sebsw/Java/jdk-*/bin/java", "/dm/sebsw/jdk*/bin/java") and
+    process.args like ("http://*:48080/*/getfile/cy/out/*.gz", "https://ebookstore.*/getfile/cy/out/*.gz", "https://ebookstore.*/getfile/cy/out/*.uni")
+  ) or
+  (process.parent.name == "httpd" and process.command_line == "/bin/sh .php-fcgi-starter") or
+  (process.parent.executable == "/usr/lib/jvm/default-java/bin/java" and process.command_line like "chmod 755 /tmp/tomcat8-tomcat8-tmp/sqlite-*-libsqlitejdbc.so") or
+  (process.parent.executable like "/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.name == "chmod" and process.args like "/sasconfig/Lev1/Web/SASEnvironmentManager/*") or
+  (process.parent.executable like "/data/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.args like "/data/sasconfig/Lev1/Web/SASEnvironmentManager/*/hq-engine/hq-server/temp/pdknull/work/lib/*.jar") or
+  (process.parent.name == "node" and process.command_line == "sudo dpkg -l gzvaupdater")
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1210"
+name = "Exploitation of Remote Services"
+reference = "https://attack.mitre.org/techniques/T1210/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.2.0"

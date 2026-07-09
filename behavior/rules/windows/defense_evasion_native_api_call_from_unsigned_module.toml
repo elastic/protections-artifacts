@@ -7,13 +7,12 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where
 process.Ext.api.behaviors == "native_api" and process.Ext.api.behaviors != "hidden_code" and
-process.Ext.api.name in ("VirtualAlloc", "VirtualProtect", "WriteProcessMemory","VirtualProtectEx", "VirtualAllocEx") and
-process.Ext.api.metadata.target_address_name == "Unbacked" and
+process.Ext.api.metadata.target_address_name in ("Unbacked", "Unknown") and
 process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "MapViewOfFile", "MapViewOfFile2", "VirtualAllocEx", "VirtualAlloc", "SetThreadContext") and
 process.thread.Ext.call_stack_final_user_module.name != "Unbacked" and process.thread.Ext.call_stack_final_user_module.name != null and
 _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
@@ -88,7 +87,10 @@ not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                  "097b30f6ef06eb2447f459a20a777190eefda55d148dd109ed3547b2338b540f", 
                                  "c4bac26cc79788539e98b99989b3d2e9e13b74974b861badc66613a5e661ba90", 
                                  "b83ca6663e8840c29790c00783bf29c8aa6d8cab6bae5cb9ca8aa7c7901462f4", 
-                                 "705e4e1db0576aa2a6df0ba9ebeda9e647e2ce95d90727d6b95f559a4a95c1fe") and
+                                 "705e4e1db0576aa2a6df0ba9ebeda9e647e2ce95d90727d6b95f559a4a95c1fe",
+                                 "c70c8840b2d56de13c20fd2144784bfb955b847c83b45673352375802d14b3d5",
+                                 "394ba9db0f6d26ec083decceee35ef7973a41681c522b9d400cf46fc5709015f",
+                                 "28304f6396076ca10babe682950eaa06574a291e5fbee5aaeec8ac69f1dc46b3") and
 not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
 ($entry.trusted == true or $entry.status == "errorExpired") and
 $entry.subject_name in (

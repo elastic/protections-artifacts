@@ -8,7 +8,7 @@ id = "8012a863-8c0c-4461-bb88-b0193dfb9f38"
 license = "Elastic License v2"
 name = "Timestomping Detected via Touch"
 os_list = ["linux"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "touch" and
@@ -37,7 +37,8 @@ process.parent.executable != null and process.args like (
     "bazel-out/k8-dbg/bin/dependencies/thirdparty/libjansson_foreign_cc/build_script.sh", "/usr/lib/portage/python*/ebuild.sh",
     "/var/tmp/rpm-tmp.*", "/usr/lib/pcp/bin/pmlogger_janitor", "/usr/libexec/pcp/bin/pmlogger_janitor",
     "/usr/libexec/pcp/bin/pmlogger_daily", "/usr/lib/pcp/bin/pmlogger_daily", "/opt/oracle.ExaWatcher/GetExaWatcherResults.sh",
-    "bazel-out/k8-dbg/bin/external/libzip+/libzip_foreign_cc/build_script.sh", "/builds/*/IP/embedded/platforms/stratawave-yocto/build/*/temp/run.sstate_unpack_package*"
+    "bazel-out/k8-dbg/bin/external/libzip+/libzip_foreign_cc/build_script.sh", "/builds/*/IP/embedded/platforms/stratawave-yocto/build/*/temp/run.sstate_unpack_package*",
+    "/usr/local/bin/manage_omnimesh_logs"
   ) or
   process.args in (
     "/usr/bin/coreutils", "--no-create", "/etc/opt/lumu/lumud.conf", "/opt/vuso*", "/opt/diff", "/etc/aliases.db", "/opt/cursor/cursor"
@@ -47,7 +48,10 @@ process.parent.executable != null and process.args like (
     "/opt/ubki/*.jar", "/root/.cache/bazel/_bazel_root/*", "/root/.cache/act/*/hostexecutor/matrix/*/tmp/*.o",
     "/opt/ubki/*/cassandra-repair-dev-test/*"
   ) or
-  process.command_line in ("/bin/touch -a /tmp/au_status", "touch -d 2 seconds ago /etc/postfix/main.cf") or
+  process.command_line in (
+    "/bin/touch -a /tmp/au_status", "touch -d 2 seconds ago /etc/postfix/main.cf", "touch -a /etc/apt/client.key /etc/apt/client.crt",
+    "touch -r /etc/aliases.lmdb /var/lib/misc/postfix.aliasesdb-stamp"
+  ) or
   process.parent.command_line == "runc init" or
   process.working_directory in ("/opt/libexec", "/opt/local/src/connectxx/build/src/mdp") or
   (process.args like "/var/tmp/pmlogger_check.*/_stamp" and process.parent.args == "/usr/libexec/pcp/bin/pmlogger_check" )

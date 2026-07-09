@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.59"
+version = "1.0.60"
 
 query = '''
 sequence by process.entity_id
@@ -45,6 +45,9 @@ sequence by process.entity_id
   not (process.name : "rundll32.exe" and
        process.command_line : "*zzzzInvokeManagedCustomActionOutOfProc*" and
        process.parent.executable : "?:\\Windows\\sys*\\msiexec.exe") and
+
+  not (process.name : "rundll32.exe" and process.command_line : "*PcaSvc.dll,PcaPatchSdbTask*" and
+       user.id == "S-1-5-18" and process.parent.executable : "?:\\Windows\\System32\\svchost.exe") and
 
   not (process.code_signature.subject_name :
                     ("Mozilla Corporation", "Commvault Systems, Inc.", "Google LLC", "YANDEX LLC", "ConnectWise, Inc.",
@@ -283,7 +286,8 @@ sequence by process.entity_id
                           "c22800cccccccccccc8b4424148b5424108b0d08a92d05508b442410528b542410508b44241081c1ac080000528b11508b4224ffd0ffd0c21400cccccccccccc",
                           "488944242848837c242800750bff9424ae03000089442430eb27488d8c2460010000ff9424be030000488944242848837c242800750bff9424ae030000894424",
                           "a36c3e*85c00f84f9000000568b3548*",
-                          "488905fc764c00483bc30f84a5010000488d1504803d00488bc8ff1593253b00488b0ddc764c00488d15d57f3d00488905de764c00ff1578253b00488b0dc176"))]
+                          "488905fc764c00483bc30f84a5010000488d1504803d00488bc8ff1593253b00488b0ddc764c00488d15d57f3d00488905de764c00ff1578253b00488b0dc176", 
+                          "898307100000c78303100000010000006a0056ff9313280000ff930728000050ff930f280000cc8b1c24c38da424000000008da424000000008da42400000000"))]
   until [process where event.action == "end"]
 '''
 

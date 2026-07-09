@@ -1,0 +1,115 @@
+[rule]
+description = """
+Detects a potential privilege escalation sequence via a parent process relationship. This rule checks for non-root
+execution of a process executable in a user or world-writeable directory followed by a UID change event to 0 (root).
+This sequence is indicative of a potential local privilege escalation exploit.
+"""
+id = "727c9703-6879-45d1-80ad-7729ff244964"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via a Parent Process Sequence"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=15s
+  [process where event.type == "start" and event.action == "exec" and
+  user.id != 0 and process.parent.user.id != 0 and process.parent.group.id != 0 and
+  process.interactive == true and
+  (
+    process.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/run/user/*", "/var/run/user/*") or
+    (process.executable like "/home/*/*" and process.args like ".*") or
+    process.parent.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/run/user/*", "/var/run/user/*") or
+    (process.parent.executable like "/home/*/*" and process.parent.args like ".*")
+  ) and
+  not (
+    process.executable like (
+      "/home/*/.local/share/mise/installs/*", "/home/*/.toolbox/cache", "/home/*/.local/share/pipx/*",
+      "/home/*/google-cloud-sdk/platform/*", "/home/*/.cargo/bin/rustup", "/home/*/.toolbox/test-results",
+      "/home/*/.local/share/claude/versions/*", "/tmp/newroot/*", "/run/user/1000/.bubblewrap/newroot/*",
+      "/home/*/.atuin/bin/atuin", "/home/*/.toolbox/artifact", "/usr/bin/ldconfig", "/home/*/.rustup/toolchains/*",
+      "/home/*/r2-cli/dist/r2", "/home/*/venv/bin/pip", "/home/linuxbrew/.linuxbrew/Cellar/*",
+      "/usr/bin/date", "/usr/bin/docker", "/usr/bin/getconf", "/usr/bin/getent", "/usr/bin/getsubids", "/usr/bin/git",
+      "/usr/bin/id", "/usr/bin/lscpu", "/usr/bin/tar", "/usr/bin/tee", "/usr/bin/uname", "/usr/bin/which", "/usr/bin/apt-cache",
+      "/usr/bin/virsh", "/usr/libexec/vte-urlencode-cwd", "/usr/lib/postgresql/*/bin/psql", "./push.sh", "./bin/console",
+      "./tmp/recover-rmanyari-host.sh", "./shutdown_NorenDB.sh", "/home/*/.local/bin/oh-my-posh", "/home/*/.local/bin/uv",
+      "/home/*/.hermes/bin/uv", "/home/*/.hermes/bin/tirith", "/home/*/.local/bin/mise", "/home/*/.local/bin/aws",
+      "/home/*/.local/bin/asdf", "/home/*/bin/asdf", "/home/*/.local/bin/direnv", "/home/*/.local/bin/starship",
+      "/home/*/.local/bin/claude", "/home/*/.local/bin/zoxide", "/home/*/.fzf/bin/fzf", "/home/*/.cargo/bin/starship",
+      "/home/*/.cargo/bin/cargo", "/home/*/.cargo/bin/fnm", "/home/*/.cargo/bin/ghidra", "/home/*/.binenv/shim",
+      "/home/*/.pyenv/libexec/pyenv-rehash", "/home/*/.pyenv/libexec/pyenv-version-name", "/home/*/.pyenv/libexec/pyenv-exec",
+      "/home/*/.nvm/versions/node/v*/bin/node", "/home/*/.nvm/versions/node/v*/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+      "/home/*/.local/share/fnm/fnm", "/home/*/.local/node-v*/bin/node", "/home/*/node_modules/.bin/nodemon",
+      "/home/*/.local/share/uv/python/cpython-*/bin/python*", "/home/*/anaconda3/envs/*/bin/python*", "/home/*/.conda/envs/*/bin/kinit",
+      "/home/*/anaconda3/bin/conda", "/home/*/repos/gocryptfs/fortanix-dsm-fseagent", "/home/*/devel/rak-ps/bas", "/home/*/bin/crc",
+      "/home/*/.crc/bin/crc-admin-helper-linux-amd64", "/home/*/xen-mig-storage.sh", "/home/*/bin/gem_db_status",
+      "/home/*/admin/simbuka-loan-application/loan-analytics-api/run.sh", "/home/*/repo/gcc-monitor/gcc-monitor", "/home/*/repo/*/build/uuu",
+      "/home/*/Workspace/*/target/debug/*", "/home/*/experiments/fortanix-tdx-measure/cli/target/release/tdx-measure",
+      "/home/*/research/tools/go/pkg/tool/linux_amd64/link", "/home/*/Downloads/nvim-linux-x86_64/bin/nvim", "/home/*/mc",
+      "/home/linuxbrew/.linuxbrew/bin/brew", "/home/linuxbrew/.linuxbrew/bin/getopt", "/run/user/*/.bubblewrap/snap/snapd/current/usr/bin/snap",
+      "/home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/shims/shared/git", "/opt/cubecoders/amp/ampinstmgr",  "/tmp/.mount_*/bin/bambu-studio",
+      "/tmp/snap.rootfs_*/snap/gnome-calculator/*/usr/bin/gnome-calculator", "/tmp/snap.rootfs_*/snap/gnome-calculator/*/snap/command-chain/desktop-launch",
+      "/tmp/tmp.*/ijent", "/tmp/go-build*/b001/*.test", "/tmp/usr/bin/cat", "/tmp/bin/sh", "/tmp/var/lib/awx/venv/awx/bin/python3",
+      "./merged/home/*/.local/share/containers/storage/overlay/*/merged/usr/bin/basename", "/home/*/.local/share/containers/storage/overlay/*/diff/usr/local/apache2/bin/suexec",
+      "/u01/app/oracle/*/bin/emctl", "/home/*/devel/rak-ps/*", "/run/user/*/.bubblewrap/*", "/home/*/work/check-hardware/coco-detect/target/debug/coco-detect",
+      "/tmp/snap.rootfs_*/snap/*", "/usr/share/clearpass-onguard/via-cli", "/home/*/elastic-agent-*/elastic-agent", "/home/*/Downloads/isaac-sim/kit/kit",
+      "/home/*/.conda/envs/*/bin/python", "/home/*/go/src/*/odinq"
+    ) or
+    process.parent.executable like (
+      "/home/*/.conda/envs/fmf_server_agent/bin/python*", "/home/*/.local/share/mise/installs/node/*/bin/node",
+      "/tmp/go-build*/*/sso.test", "/usr/bin/make", "/usr/bin/update-notifier", "/home/*/.hermes/node/bin/node",
+      "/home/*/.hermes/venvs/*/lib/python*/site-packages/playwright/driver/node",
+      "/home/*/.local/share/fnm/node-versions/v*/installation/bin/node", "/home/*/.vscode-server/cli/servers/Stable-*/server/node",
+      "/home/*/.bun/bin/bun", "/home/*/.nvm/versions/node/v*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/*/bin/codex",
+      "/home/*/.npm-global/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/*/bin/codex", "/home/*/anaconda3/envs/*/bin/python*",
+      "/home/*/.venv/lib/python*/site-packages/playwright/driver/node", "/home/*/cricket/cricket/util/cenic/*.pl", "/home/*/.local/bin/agy",
+      "/home/*/.local/bin/copilot", "/home/*/Programy/DCC_harris_release/dcc", "./merged/home/*/.local/share/containers/storage/overlay/*/merged/bin/bash",
+      "/home/*/.local/share/containers/storage/overlay/*", "/usr/sbin/httpd", "./merged/var/lib/containers/storage/overlay/*", "/cav/gtm/mumps"
+    ) or
+    (
+      process.parent.name like "python*" and
+      process.parent.args == "terraform.kafka_runner.run-test"
+    ) or
+    process.command_line == "/bin/sh ./catalina.sh stop"
+  )]
+  [process where event.type == "change" and event.action == "uid_change" and
+  user.id == 0 and process.parent.user.id != 0 and process.parent.group.id != 0 and
+  process.executable != "/usr/bin/sudo"]
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

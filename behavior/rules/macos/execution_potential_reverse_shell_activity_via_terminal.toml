@@ -3,13 +3,13 @@ description = "Identifies the execution of a shell process with suspicious argum
 id = "d0e45f6c-1f83-4d97-a8d9-c8f9eb61c15c"
 license = "Elastic License v2"
 name = "Potential Reverse Shell Activity via Terminal"
-os_list = ["linux", "macos"]
+os_list = ["macos"]
 reference = [
     "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md",
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -22,7 +22,8 @@ not (
     "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/::1/*", "*/dev/tcp/livelog.default.svc.cluster.local*",
     "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*",
     "*/dev/tcp/splunk*telconet.net/*",
-    "bash -c timeout 2 bash -c 'echo > /dev/tcp/kafka*' 2>/dev/null && echo 'Connected' || echo 'Failed'"
+    "bash -c timeout 2 bash -c 'echo > /dev/tcp/kafka*' 2>/dev/null && echo 'Connected' || echo 'Failed'", 
+    "*/dev/tcp/*echo*", "*.claude/shell-snapshots/*echo*"
   ) or
   process.parent.command_line in ("runc init", "/usr/bin/python /opt/oracle/dcs/exacd_netchk/exacd_netchk.py") or
   process.parent.args in ("/usr/local/bin/runc", "/opt/bitnami/scripts/keycloak/setup.sh", "/usr/bin/testssl.sh") or

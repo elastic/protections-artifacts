@@ -7,21 +7,23 @@ id = "54aabfc3-7a78-4241-b0b2-e0de46d8e7b7"
 license = "Elastic License v2"
 name = "Attempt to Disable SELinux"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 process.name == "setenforce" and process.args == "0" and
 not (
   process.parent.args like (
-    "/tmp/ansible-tmp-*/AnsiballZ_command.py", "/tmp/chef-script*", "/root/fapolicyd_rebuild.sh"
+    "/tmp/ansible-tmp-*/AnsiballZ_command.py", "/tmp/chef-script*", "/root/fapolicyd_rebuild.sh",
+    "/opt/Tanium/TaniumClient/Tools/TCMClientUpgrade/ClientManagementUpgrade-upgrade.sh"
   ) or
   process.parent.executable in (
     "/opt/Tanium/TaniumClient/Tools/TCMClientUpgrade/ClientManagementUpgrade-upgrade.sh", "/usr/libexec/platform-python",
     "/usr/share/centrifydc/libexec/dzdo", "/opt/puppetlabs/puppet/bin/ruby"
   ) or
   (process.parent.name in ("taskrun", "perl") and process.parent.args == "/usr/local/cpanel/bin/taskrun") or
-  process.parent.executable like "/usr/libexec/platform-python*"
+  process.parent.executable like "/usr/libexec/platform-python*" or
+  process.working_directory like "/opt/symantec/install/*"
 )
 '''
 

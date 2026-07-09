@@ -1,0 +1,131 @@
+[rule]
+description = """
+This rule detects the creation and activation of a service by a system process. Threat actors may abuse this to
+establish persistence or escalate privileges.
+"""
+id = "bada19f8-3ca7-4b44-812b-788e4f4f1342"
+license = "Elastic License v2"
+name = "Service Created by Suspicious Process and Activated"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=30s
+  [file where event.action == "creation" and file.extension == "service" and file.path like (
+    "/etc/systemd/system/*", "/etc/systemd/user/*", "/usr/local/lib/systemd/system/*",
+    "/lib/systemd/system/*", "/usr/lib/systemd/system/*", "/usr/lib/systemd/user/*",
+    "/home/*/.config/systemd/user/*", "/home/*/.local/share/systemd/user/*",
+    "/root/.config/systemd/user/*", "/root/.local/share/systemd/user/*"
+  ) and (
+    process.executable like (
+      "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*", "/home/*/*", "/root/*", "/boot/*", "./*"
+    ) or
+    process.name in ("curl", "wget")
+  ) and
+  not process.executable like (
+    "/tmp/tmp.*/nix-installer", "/tmp/octofence-agent-installer_*", "/tmp/selfgz*/install.sh",
+    "/home/*/elastic-agent/.claude/*/elastic-agent", "/tmp/TestHeartbeatHTTPMonitor*/*/elastic-agent",
+    "/home/*/Downloads/*/elastic-agent", "/home/*/duoauthproxy-build/usr/local/bin/python3", "./elastic-agent"
+  )] as event0
+  [process where event.type == "start" and event.action == "exec" and process.name == "systemctl" and
+  process.args in ("enable", "start") and stringcontains(process.command_line, event0.file.name)]
+'''
+
+min_endpoint_version = "8.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1569"
+name = "System Services"
+reference = "https://attack.mitre.org/techniques/T1569/"
+[[threat.technique.subtechnique]]
+id = "T1569.002"
+name = "Service Execution"
+reference = "https://attack.mitre.org/techniques/T1569/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.002"
+name = "Systemd Service"
+reference = "https://attack.mitre.org/techniques/T1543/002/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.5.0"

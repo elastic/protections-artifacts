@@ -9,14 +9,26 @@ license = "Elastic License v2"
 name = "Hexadecimal IP Command-Line Argument"
 os_list = ["linux"]
 reference = ["https://asec.ahnlab.com/en/57635/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
   process.executable like ("./*", "/boot/*", "/dev/shm/*", "/run/*", "/var/run/*", "/tmp/*", "/var/tmp/*") or
   process.name like ("curl", "wget", ".*", "python*", "perl*", "ruby*", "php*", "lua*", "node*")
 ) and
-process.command_line like~ ("*http://0x*", "*https://0x*")
+process.command_line like~ ("*http://0x*", "*https://0x*") and
+not (
+  (
+    process.executable like "/usr/bin/php*" and
+    process.parent.executable == "/usr/bin/timeout" and
+    process.args == "/var/tools/koalaping/bin/ping.php"
+  ) or
+  (
+    process.executable == "/usr/local/bin/php" and
+    process.parent.executable == "/usr/bin/bash" and
+    process.args == "/usr/local/bin/wp"
+  )
+)
 '''
 
 min_endpoint_version = "7.15.0"

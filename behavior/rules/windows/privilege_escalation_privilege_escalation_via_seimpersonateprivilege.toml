@@ -8,7 +8,7 @@ reference = [
     "https://decoder.cloud/2019/12/06/we-thought-they-were-potatoes-but-they-were-beans/",
     "https://github.com/hackvens/CoercedPotato",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 sequence with maxspan=3m
@@ -22,6 +22,7 @@ sequence with maxspan=3m
                  "C:\\Windows\\System32\\taskhost.exe",
                  "?:\\Windows\\system32\\printfilterpipelinesvc.exe", 
                  "?:\\Windows\\syswow64\\printfilterpipelinesvc.exe",
+                 "?:\\Windows\\System32\\appidcertstorecheck.exe",
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\printfilterpipelinesvc.exe", 
                  "\\Device\\HarddiskVolume*\\Windows\\System32\\wbem\\wmiprvse.exe",
                  "C:\\Windows\\System32\\Speech_OneCore\\Common\\SpeechModelDownload.exe") and
@@ -30,7 +31,9 @@ sequence with maxspan=3m
        process.parent.executable : ("C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MpCmdRun.exe",
                                     "C:\\Program Files\\Windows Defender\\mpcmdrun.exe")) and
   not (process.parent.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\MsSense.exe" and
-       process.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\Classification\\SenseCE.exe")
+       process.executable : "C:\\Program Files\\Windows Defender Advanced Threat Protection\\Classification\\SenseCE.exe") and 
+  not (process.parent.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\platform\\*\\MsMpEng.exe" and 
+       process.executable : "?:\\ProgramData\\Microsoft\\Windows Defender\\platform\\*\\MpCmdRun.exe")
   ] by process.entity_id
  [process where event.action == "start" and user.id : "S-1-5-18" and 
   (
@@ -62,6 +65,7 @@ sequence with maxspan=3m
 
     not (process.executable : ("C:\\Windows\\Microsoft.NET\\Framework\\*\\csc.exe", "C:\\Windows\\SysWOW64\\cmd.exe") and
          process.parent.executable : "C:\\Program Files (x86)\\Tanium\\Tanium Client\\TaniumClient.exe") and
+    not (process.executable : "?:\\Windows\\SysWOW64\\bitsadmin.exe" and process.parent.executable : "?:\\Windows\\SysWOW64\\cmd.exe") and
     not process.executable :
                      ("C:\\Program Files\\HP\\hpssacli\\bin\\hpssacli.exe",
                       "C:\\Program Files (x86)\\ManageSoft\\Uploader\\ndupload.exe",
@@ -69,13 +73,17 @@ sequence with maxspan=3m
                       "C:\\Program Files\\Npcap\\NPFInstall.exe",
                       "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\bin\\metroapps.exe",
                       "C:\\Program Files (x86)\\Google\\Update\\GoogleUpdate.exe",
-                      "C:\\Program Files (x86)\\SolarWinds\\Agent\\Plugins\\ADMProbe\\nping.exe") and
+                      "C:\\Program Files (x86)\\SolarWinds\\Agent\\Plugins\\ADMProbe\\nping.exe",
+                      "C:\\Program Files (x86)\\ManageEngine\\UEMS_Agent\\DeviceControl\\bin\\devctrlaction64.exe") and
     process.hash.sha256 != "8ba8760bcb924e1e7943c3008a80006b29737808cc41a93cabcfeaaec9785276" and
     not process.parent.executable :
                         ("C:\\Program Files (x86)\\MspPlatform\\PME\\Installers\\RequestHandlerAgentSetup.exe",
                          "C:\\Program Files\\LANDESK\\Shavlik Protect Agent\\STAgentUpdater.exe",
                          "C:\\Program Files\\AzureConnectedMachineAgent\\GCArcService\\GC\\gc_worker.exe",
-                         "C:\\Windows\\CCM\\Ccm32BitLauncher.exe") and
+                         "C:\\Windows\\CCM\\Ccm32BitLauncher.exe",
+                         "C:\\Program Files (x86)\\Common Files\\Pulse Secure\\JUNS\\PulseSecureService.exe",
+                         "C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseNdr.exe",
+                         "C:\\Program Files (x86)\\Lenovo\\VantageService\\*\\ScheduleEventAction.exe") and
     not (process.code_signature.subject_name in ("Sophos Ltd", "Entrust Datacard Corporation", "Com4Cure GmbH", "Martin Prikryl", "Stellar Cyber Inc", "Nmap Software LLC", "SimpleHelp Ltd") and
          process.code_signature.trusted == true) and
     not (process.executable : "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe" and

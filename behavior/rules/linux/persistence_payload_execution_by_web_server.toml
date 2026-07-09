@@ -1,0 +1,366 @@
+[rule]
+description = """
+This rule detects when a web server executes a payload. Attackers may exploit RCE or file upload vulnerabilities to
+execute malicious payloads on web servers to gain/maintain access and to establish a command and control channel.
+"""
+id = "7d4b0dfc-d305-4761-94f4-ab2ed221b3ee"
+license = "Elastic License v2"
+name = "Payload Execution by Web Server"
+os_list = ["linux"]
+version = "1.0.10"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
+  process.parent.name in (
+    "nginx", "apache2", "httpd", "caddy", "mongrel_rails", "uwsgi", "daphne", "httpd.worker", "flask",
+    "php-cgi", "php-fcgi", "php-cgi.cagefs", "lswsctrl", "varnishd", "uvicorn", "waitress-serve", "starman",
+    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm"
+  ) or
+  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi") or
+  (
+    process.parent.name like "ruby*" and
+    process.parent.command_line like~ ("*puma*", "*rails*", "*passenger*") and
+    not process.parent.command_line == "sh -c /usr/bin/lsb_release -cidvr 2>/dev/null"
+  ) or
+  (
+    process.parent.name like "python*" and
+    process.parent.command_line like~ (
+      "*hypercorn*", "*flask*", "*uvicorn*", "*django*", "*app.py*", "*server.py*", "*wsgi.py*", "*asgi.py*"
+    )
+  ) or
+  (process.parent.name like "perl*" and process.parent.command_line like~ "*plackup*") or
+  (process.parent.name == "java" and process.parent.args like~ (
+    /* Tomcat */
+    "org.apache.catalina.startup.Bootstrap", "-Dcatalina.base=*",
+
+    /* Jetty */
+    "org.eclipse.jetty.start.Main", "-Djetty.home=*",
+
+    /* WildFly / JBoss */
+    "org.jboss.modules.Main", "-Djboss.home.dir=*",
+
+    /* WebLogic */
+    "weblogic.Server", "-Dweblogic.Name=*", "*weblogic-launcher.jar*",
+
+    /* WebSphere traditional + Liberty */
+    "com.ibm.ws.runtime.WsServer", "com.ibm.ws.kernel.boot.cmdline.Bootstrap",
+
+    /* GlassFish */
+    "com.sun.enterprise.glassfish.bootstrap.ASMain",
+
+    /* Resin */
+    "com.caucho.server.resin.Resin",
+
+    /* Spring Boot */
+    "org.springframework.boot.loader.*",
+
+    /* Quarkus */
+    "*quarkus-run.jar*", "io.quarkus.runner.GeneratedMain",
+
+    /* Micronaut */
+    "io.micronaut.runtime.Micronaut",
+
+    /* Dropwizard */
+    "io.dropwizard.cli.ServerCommand",
+
+    /* Play */
+    "play.core.server.ProdServerStart",
+
+    /* Helidon */
+    "io.helidon.microprofile.server.Main", "io.helidon.webserver*",
+
+    /* Vert.x */
+    "io.vertx.core.Launcher",
+
+    /* Keycloak */
+    "org.keycloak*",
+
+    /* Apereo CAS */
+    "org.apereo.cas*",
+
+    /* Elasticsearch */
+    "org.elasticsearch.bootstrap.Elasticsearch",
+
+    /* Atlassian / Gerrit */
+    "com.atlassian.jira.startup.Launcher", "*BitbucketServerLauncher*", "com.google.gerrit.pgm.Daemon",
+
+    /* Solr */
+    "*-Dsolr.solr.home=*",
+
+    /* Jenkins */
+    "*jenkins.war*"
+    )
+  )
+) and
+process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
+process.args in ("-c", "-cl", "-lc") and (
+  process.command_line like~ (
+
+    /* Suspicious Paths */
+    "* /tmp/* ", "* /var/tmp/* ", "* /dev/shm/*", "* /run/*", "* /var/run/*",
+
+    /* Encoding, Decoding & Piping */
+    "*|sh", "*| sh *", "*| sh ", "*|bash*", "*| bash*", "*|zsh*",  "*| zsh*", "*|dash*",  "*| dash*",
+    "*|python*", "*| python*", "*|php*", "*| php*", "*|perl*", "*| perl*", "*|ruby*", "*| ruby*",
+    "*|node*", "*| node*", "*|lua*",  "*| lua*", "*|busybox*", "*| busybox*", "*|*base64 -d*", "*|*base64 --decode*",
+    "*|*base64 --decode*", "*|*openssl base64 -d*", "*xxd *", "*| openssl*enc * -d *", "*b64decode -r*",
+
+    /* Interpreter Execution */
+    "*python -c*", "*python3 -c*", "*php -r*", "*perl -e*", "*ruby -e*", "*lua -e*", "*node -e *",
+
+    /* Reverse Shells */
+    "*netcat *", "* nc *", "*ncat *", "*/dev/tcp*", "*/dev/udp/*", "*socat *", "*openssl*s_client *", "*stty*raw*-echo*",
+    "*mkfifo /tmp/*", 
+
+    /* File Access */
+    "*>*/etc/cron*", "*crontab*", "*/etc/ssh*", "*/home/*/.ssh/*", "*/root/.ssh*", "*~/.ssh/*", "*/etc/shadow*",
+    "*/etc/passwd*", "*/etc/master.passwd*",
+
+    /* Enumeration & Discovery */
+    "*/etc/hosts*", "*/etc/resolv.conf*", "*/etc/hostname*", "*/etc/issue*", "*/etc/os-release*", "*lsb_release*",
+    "*/proc/*/environ*", "*sudo -l*", "*/proc/*/cgroup*", "*dockerenv*", "*/proc/*/mountinfo*", "*printenv*",
+    "*cat*.env *", "*getcap*", "*capsh*", "*find / *", "*netstat *",
+
+    /* AWS Credentials */
+    "*aws_access_key_id*", "*aws_secret_access_key*", "*aws_session_token*", "*accesskeyid*", "*secretaccesskey*",
+    "*.aws/credentials*", "*/.aws/config*",
+
+    /* Azure Credentials */
+    "*AZURE_CLIENT_ID*", "*AZURE_TENANT_ID*", "*AZURE_CLIENT_SECRET*", "*AZURE_FEDERATED_TOKEN_FILE*",
+    "*IDENTITY_ENDPOINT*", "*IDENTITY_HEADER*", "*MSI_ENDPOINT*", "*MSI_SECRET*", "*/.azure/*",
+    "*/run/secrets/azure/*",
+
+    /* GCP Credentials */
+    "*/.config/gcloud/*", "*application_default_credentials.json*", "*type: service_account*",
+    "*client_email*", "*private_key_id*", "*/run/secrets/google/*", "*GOOGLE_APPLICATION_CREDENTIALS*",
+
+    /* Misc. Cloud */
+    "*/.docker/config.json*", "*/.npmrc*", "*/secrets/kubernetes.io/serviceaccount/*",
+
+    /* Helpers */
+    "*timeout *sh -c *", "*env *sh *-c*", "*exec -a*",
+
+    /* Miscellaneous */
+    "*chattr *", "*busybox *",  "*#!*", "*chmod +x *", "*chmod 777*", "*chpasswd*",
+    "*<?php*?>*", "*kworker*",
+    
+    /* Decompression */
+    "*gzip -*d *", "*bzip2 -*d *", "*xz -*d *", "*tar -*x*",
+    
+    /* Path Traversal */
+    "*../../../*etc/*", "*/.../*", "*../../../*home/*/*", "*../../../*root/*",
+
+    /* File Upload/Download */
+    "*pastebin.com*", "*transfer.sh*", "*bashupload.com*"
+  ) or
+  process.args in ("id", "whoami", "hostname")
+) and
+not (
+  (
+    process.parent.name == "nginx" and
+    (
+      process.args like ("chmod 777 /etc/resty-*", "resty*") or
+      process.command_line like ("sh -c*/tmp/lua_* 2> /tmp/lua_*", "sh -c gcc -print-multiarch 2>/dev/null > /tmp/lua_*")
+    )
+  ) or
+  (
+    process.parent.name == "apache2" and (
+      process.command_line in (
+        "sh -c /usr/local/bin/php -r 'echo phpversion();'", "sh -c -- /usr/local/bin/php -r 'echo phpversion();'",
+        "sh -c /usr/bin/php -r 'echo phpversion();'",
+        "sh -c /usr/bin/lsb_release -a 2>/dev/null",
+        "sh -c /usr/bin/crontab -l;",
+        "sh -c -- whoami",
+        "sh -c /usr/bin/crontab  -l 2>/dev/null",
+        "sh -c /usr/bin/crontab  -",
+        "sh -c lsb_release --all </dev/null 2>/dev/null",
+        "sh -c /usr/bin/lsb_release -ds | cut -d= -f2 | tr -d '\"'"
+      ) or
+      process.args like (
+        """bash -c "( /home/*/apps/richdocumentscode/collabora/Collabora_Online.AppImage*""",
+        "chmod 777 /etc/cobra/uploads/mysql*", "stat*"
+      ) or
+      process.command_line like (
+        "*/usr/bin/crontab*phpupdatecrontab.txt", "*mysqldump*/var/www/html/*/writable/uploads/backup/mysql*",
+        "sh -c chmod 777 -R /opt/data/www/php_upload/*/temp", "sh -c chmod 777 -R /opt/data/www/php_upload/*/sync/*"
+      )
+    )
+  ) or
+  (
+    process.parent.name like "php-fpm*" and (
+      process.command_line in (
+        "sh -c /usr/bin/php -r 'echo phpversion();'", "sh -c -- /usr/bin/php -r 'echo phpversion();'",
+        "sh -c php -r 'print_r(phpversion());'", "sh -c chattr -i -a /usr/local/virtualizor/license2.php",
+        "sh -c -- netstat -ie 2>&1",
+        "sh -c hostname",
+        "sh -c source /etc/os-release 2>/dev/null && echo $ID $ID_LIKE",
+        "sh -c netstat -ie 2>&1",
+        "sh -c php -r \"echo date('T');\"",
+        "sh -c php -r \"echo PHP_VERSION;\"",
+        "sh -c -- php -r \"echo (int)function_exists('pcntl_signal');\"",
+        "sh -c -- php -r \"echo PHP_VERSION;\"",
+        "sh -c -- php -r \"echo date('T');\"",
+        "sh -c /usr/bin/lsb_release -a 2>/dev/null"
+      ) or
+      process.command_line like (
+        "*var_export*extension_loaded*", "*/tmp/tmp_resize*", "*/v1/objects/hosts/*_Infoterminal*", "*python -m json.tool*",
+        "sh -c timeout 3600 ssh -o ControlMaster=auto -o ControlPath=/var/www/html/storage/app/ssh/mux/*",
+        "sh -c -- chmod 777 *.XML", "sh -c /usr/bin/lsb_release -a 2>/dev/null"
+      ) or
+      process.args like ("ps*|*grep*", "ffmpeg*", "chmod*777*.xml")
+    )
+  ) or
+  (
+    process.parent.name == "php-cgi" and (
+      process.command_line like (
+        "sh -c nohup php /home/*/public_html/lockindex.php index.php >/dev/null 2>&1 &",
+        "sh -c nohup php /home/*/public_html/wp-content/* >> /dev/null 2>&1 &",
+        "sh -c nohup php /home/*/public_html/wp-includes/* >> /dev/null 2>&1 &",
+        "sh -c nohup php /home/*/public_html/*/wp-content/* >> /dev/null 2>&1 &",
+        "*-ef|grep*",
+        "sh -c /usr/bin/php -r 'echo phpversion();'"
+      ) or
+      process.args like "ps*| grep*"
+    )
+  ) or
+  (
+    process.parent.name == "java" and process.command_line == "/usr/bin/env sh -c ldd /usr/bin/env | grep -q musl"
+  ) or
+  (
+    process.command_line == "/bin/sh -c echo | openssl s_client -connect localhost:61617 2>/dev/null | openssl x509 -noout -enddate" and
+    process.parent.name == "gunicorn"
+  ) or
+  (
+    process.parent.executable == "/usr/local/bin/gunicorn" and
+    process.command_line == "/bin/sh -c echo 'Q' | openssl s_client -connect localhost:61617 2>/dev/null | openssl x509 -noout -enddate"
+  ) or
+   (
+    process.parent.executable like "/home/rails/.rbenv/versions/*/bin/ruby" and
+    process.command_line == "sh -c crontab -l 2> /dev/null"
+  ) or
+  (
+   process.parent.executable == "/opt/bitnami/apache/bin/httpd" and
+   process.command_line == "sh -c /opt/bitnami/php/bin/php -r 'echo phpversion();'"
+  ) or
+  (
+    process.parent.executable like "/var/lib/containers/storage/overlay/*/merged/usr/local/sbin/php-fpm" and
+    process.command_line == "sh -c /usr/local/bin/php -r 'echo phpversion();'"
+  ) or
+  (
+    process.parent.executable like "/var/lib/docker/overlay2/*/merged/usr/sbin/uwsgi" and
+    process.command_line == "/bin/sh -c { touch /run/uwsgi-logrotate  }"
+  ) or
+  (process.parent.executable == "/var/www/cgi-bin/vtsystem.cgi" and process.command_line == "sh -c hostname") or
+  (process.parent.name like "python*" and process.parent.command_line like "*hive_server.py*") or
+  (process.parent.name == "sw-engine-fpm" and process.command_line like ("*/opt/psa/admin/bin/*", "*/usr/local/psa/admin/*")) or
+  (
+    process.parent.name == "httpd" and
+    process.command_line like (
+      "*/datastore/htdocs/control-states/compass*", "*/dev/shm/netmon-log*", "sh -c /usr/bin/crontab  -l 2>/dev/null",
+      "sh -c /usr/bin/crontab  -"
+    )
+  ) or
+  (process.parent.name == "asterisk" and process.args like "/bin/chmod 777 */gravacoes/*.WAV") or
+  (process.parent.name == "varnishd" and process.args like "exec gcc*") or
+  (process.parent.name in ("apache2", "php-cgi") and process.command_line in ("sh -c crontab -l", "sh -c -- crontab -l")) or
+  (process.parent.name in ("php-fpm", "httpd") and process.command_line in (
+    "sh -c whoami", "sh -c /usr/bin/php -r 'echo phpversion();'",
+    "sh -c TERM=dumb cat /var/run/elasticsearch/elasticsearch.pid", "sh -c TERM=dumb cat /var/run/logstash/logstash.pid"
+  )) or
+  (process.parent.name == "zabbix_server" and process.command_line like "*/usr/sbin/sendmail*") or
+  (process.parent.executable == "/opt/morpheus/embedded/java/jre/bin/java" and process.command_line like "*morpheus-local*") or
+  (
+    process.parent.name == "ruby" and
+    process.command_line in (
+      "sh -c cat /etc/hostname 2>/dev/null",
+      "sh -c echo \"^d\" | openssl s_client -connect 127.0.0.1:443 2>&1",
+      "sh -c cat /etc/hosts.allow 2>/dev/null"
+    )
+  ) or
+  (process.parent.name == "java" and process.args like "chmod 777 *.csv") or
+  process.command_line == "sh -c node -v || nodejs -v" or
+  process.working_directory == "/var/lib/puppet/rack/puppetmasterd" or
+  (process.working_directory == "/olympe" and process.parent.executable == "/usr/local/bin/ruby" and process.command_line == "sh -c ssh-keygen -f ~/.ssh/id_ed25519 -y")
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1505"
+name = "Server Software Component"
+reference = "https://attack.mitre.org/techniques/T1505/"
+[[threat.technique.subtechnique]]
+id = "T1505.003"
+name = "Web Shell"
+reference = "https://attack.mitre.org/techniques/T1505/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1210"
+name = "Exploitation of Remote Services"
+reference = "https://attack.mitre.org/techniques/T1210/"
+
+
+[threat.tactic]
+id = "TA0008"
+name = "Lateral Movement"
+reference = "https://attack.mitre.org/tactics/TA0008/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.2.0"

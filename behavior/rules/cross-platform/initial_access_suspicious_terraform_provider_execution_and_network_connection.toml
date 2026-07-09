@@ -13,7 +13,7 @@ reference = [
     "https://layerzero.network/publications/kelpdao-incident-report.pdf",
     "https://developer.hashicorp.com/terraform/cli/plugins/about-plugins",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -32,10 +32,12 @@ sequence by process.entity_id with maxspan=1m
   [any where 
    
    (event.category == "network" and event.action == "connection_attempted" and destination.domain != null and
-    not (process.name == "terraform-provider-aws" and destination.domain like "*.amazonaws.com")) or 
+    not (process.name == "terraform-provider-aws" and destination.domain like "*.amazonaws.com") and 
+    not (process.name == "terraform-provider-elasticstate" and destination.domain like "*.elastic.cloud")) or 
    
    (event.category == "dns" and dns.question.name != null and 
-    not (process.name == "terraform-provider-aws.exe" and dns.question.name like "*.amazonaws.com")) 
+    not (process.name == "terraform-provider-aws.exe" and dns.question.name like "*.amazonaws.com") and 
+    not (process.name == "terraform-provider-elasticstate.exe" and dns.question.name like "*.elastic.cloud")) 
   ]
 '''
 

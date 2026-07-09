@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.69"
+version = "1.0.70"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -29,6 +29,9 @@ sequence by process.entity_id with maxspan=5m
      process.executable : ("?:\\Program Files\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Program Files (x86)\\Java\\jre*\\bin\\javaw.exe",
                            "?:\\Users\\*\\AppData\\*\\jre\\bin\\javaw.exe",
+                           "?:\\ProgramData\\*\\javaw.exe",
+                           "?:\\ProgramData\\javaw.exe",
+                           "?:\\Users\\Public\\*\\javaw.exe",
                            "?:\\Windows\\Microsoft.NET\\*.exe") or
      ((process.name : "powershell.exe" or process.pe.original_file_name == "PowerShell.EXE") and process.args_count >= 2)
      ) and
@@ -96,6 +99,7 @@ sequence by process.entity_id with maxspan=5m
         "*.onedrive.org",
         "onedrive.live.com",
         "storage.googleapis.com",
+        "www.googleapis.com",
         "filebin.net",
         "*.ngrok.io",
         "ngrok.com",
@@ -198,7 +202,7 @@ sequence by process.entity_id with maxspan=5m
          dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
                               "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
-    not (process.name : "powershell.exe" and dns.question.name == "gps-prod-api.azurewebsites.net") and
+    not (process.name : "powershell.exe" and dns.question.name like "*.azurewebsites.net") and
     not (process.name == "dfsvc.exe" and dns.question.name in ("innateclient.azurewebsites.net", "hybridconfigwizard.azurewebsites.net", "tmtdist.azurewebsites.net")) and
     not (process.executable : ("?:\\Program Files\\Git\\mingw64\\bin\\curl.exe", "C:\\Users\\*\\.babun\\cygwin\\bin\\curl.exe", "C:\\Users\\*\\Git\\mingw64\\bin\\curl.exe", "C:\\curl\\bin\\curl.exe") and
          dns.question.name in ("api.github.com", "raw.githubusercontent.com", "graph.microsoft.com"))

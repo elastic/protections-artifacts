@@ -1,0 +1,72 @@
+[rule]
+description = """
+This rule monitors for the execution of the xdg-open process via a common parent process. xdg-open is a command-line
+utility that opens documents and URLs in the user's preferred desktop application. Attackers may use this command to
+open malicious documents or URLs to gain access to the target system.
+"""
+id = "8a8833d1-1003-4269-978a-c9535dc63d0d"
+license = "Elastic License v2"
+name = "Suspicious xdg-open Command Execution"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  process.name == "xdg-open" or
+  process.args in ("/bin/xdg-open", "/usr/bin/xdg-open", "/usr/local/bin/xdg-open", "xdg-open")
+) and
+process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(:[0-9]{1,5})?/.+" and
+not (
+  process.executable in ("/bin/chmod", "/usr/bin/chmod", "/usr/local/bin/chmod") or
+  process.args like (
+    "http://10.*", "https://10.*", "http://192.168.*", "https://192.168.*", "http://172.16.*",
+    "https://172.16.*", "http://172.17.*", "https://172.17.*", "http://172.31.*", "https://172.31.*"
+  ) or
+  process.command_line like "*127.0.0.1*" or
+  process.parent.executable in ("/usr/bin/make", "/opt/forticlient/gui/FortiClient-linux-x64/FortiClient") or
+  (process.parent.executable == "/usr/share/code/code" and process.args like "http://*:8080/swagger/index.html")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+[[threat.technique.subtechnique]]
+id = "T1204.004"
+name = "Malicious Copy and Paste"
+reference = "https://attack.mitre.org/techniques/T1204/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "7.15.0"

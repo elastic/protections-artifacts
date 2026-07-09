@@ -8,7 +8,7 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -90,7 +90,8 @@ not (
     "/usr/lib/node_modules/openclaw/dist/index.js", "/opt/yarn*", "*anthropic-ai/claude-code/cli.js*",
     "/usr/bin/docker-builder", "/opt/jenkins/.nvm/versions/node/*/bin/npm", "/usr/local/renovate/node",
     "/opt/buildagent/work/*/node_modules/.bin/cypress", "/var/www/html/ext/node_modules/.bin/webpack",
-    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower", "/usr/local/bin/cursor-agent"
+    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower", "/usr/local/bin/cursor-agent",
+    "/mnt/*/.cursor-server/bin/linux-x64/*/node", "/scratch/*/home/.cursor-server/bin/linux-x64/*/node"
   ) or
   process.args like ("npx *", "node /var/www/html/ext/node_modules/.bin/webpack*", "grep* | awk*") or
   process.parent.executable like (
@@ -99,7 +100,19 @@ not (
     "/scratch/user/*/.cursor-server/bin/linux-x64/*/node"
   ) or
   process.working_directory == "/runner/_work/personify/personify/node_modules/snyk" or
-  (process.command_line like "*REPO_NAME*" and process.parent.args == "/usr/bin/n8n")
+  (process.command_line like "*REPO_NAME*" and process.parent.command_line like "node /usr/bin/n8n*") or
+  (process.parent.command_line == "node /var/www/html/fs-ws-api/controller/cronJob.js" and process.command_line like "/bin/sh -c nc -zv 10.*") or
+  (
+    process.parent.executable == "/opt/liongard/node/bin/node" and
+    process.command_line in (
+     "/bin/sh -c cut -d: -f1 /etc/passwd", "/bin/sh -c hostname", "/bin/sh -c sudo cat /etc/ssh/sshd_config", "/bin/sh -c whoami"
+    )
+  ) or
+  (
+    process.executable like "/opt/node-*-linux-x64/bin/node" and
+    process.working_directory == "/aplicaciones/backend/label-printing" and
+    process.command_line like "/bin/sh -c python3 ./socket/main.py*"
+  )
 )
 '''
 

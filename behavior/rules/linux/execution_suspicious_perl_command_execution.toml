@@ -8,7 +8,7 @@ id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
 license = "Elastic License v2"
 name = "Suspicious Perl Command Execution"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -36,7 +36,7 @@ process.args == "-e" and process.command_line like~ (
     "/usr/bin/gxargs", "/home/*/.vscode-server/*/codex", "/home/*/.npm-global/*/codex",
     "/usr/local/lib/node_modules/*/codex"
   ) or
-  process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*", "/usr/bin/perl t/utf8.t") or
+  process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*", "/usr/bin/perl t/utf8.t", "*/usr/sap/.call/_call.localhost.*") or
   process.parent.args in ("/usr/bin/parallel", "/usr/sbin/debootstrap") or
   (process.working_directory like "/hana/shared/VN3/*" and process.command_line like "perl -e use MIME::Base64; print decode_base64($ARGV[0]*")
 )

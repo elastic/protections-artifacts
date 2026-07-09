@@ -1,0 +1,144 @@
+[rule]
+description = """
+This rule detects DNS queries to crypto/DHT services via living-off-the-land executables or executables in
+world/user-writable directories. Malware authors may use these services to communicate with command and control
+infrastructure or to exfiltrate data from the target system.
+"""
+id = "fd00d51f-9a22-45e2-9247-69dd34187815"
+license = "Elastic License v2"
+name = "DNS Request to Crypto/DHT Services"
+os_list = ["linux"]
+reference = ["https://www.aikido.dev/blog/glassworm-chrome-extension-rat"]
+version = "1.0.4"
+
+query = '''
+sequence by process.entity_id with maxspan=1m
+  [process where event.type == "start" and event.action == "exec" and (
+    process.name in (
+      "curl", "wget", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox",
+      "timeout", "env", "node", "deno", "nodejs"
+    ) or
+    process.name like ".*" or
+    process.executable like (
+      "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
+      "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/home/*/*", "/root/*",
+      /* Enforce Python, Perl, PHP, Ruby, Lua, Node.js paths */
+      "/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*",
+      "/bin/perl*", "/usr/bin/perl*", "/usr/local/bin/perl*",
+      "/bin/php*", "/usr/bin/php*", "/usr/local/bin/php*",
+      "/bin/ruby*", "/usr/bin/ruby*", "/usr/local/bin/ruby*",
+      "/bin/lua*", "/usr/bin/lua*", "/usr/local/bin/lua*",
+      "/bin/node", "/usr/bin/node", "/usr/local/bin/node"
+    )
+  ) and
+  not (
+    process.parent.command_line like "*home/*/.claude/shell-snapshots/*" or
+    (process.executable like "/usr/bin/python3*" and process.args == "replenisher.py") or
+    (process.parent.command_line == "s6-supervise svc-qbittorrent" and process.args == "svc-qbittorrent") or
+    process.executable like ("/home/*/Games/WarThunder/launcher", "/home/*/.rbenv/versions/*/bin/ruby", "/home/*/.pyenv/versions/*/bin/python3*") or
+    process.parent.executable like ("/usr/lib/systemd/systemd", "/home/*/.local/bin/rtk", "/usr/bin/gnome-shell", "/package/admin/s6-*/command/s6-supervise") or
+    (process.name == "curl" and process.parent.args like "read -r RPC;*") or
+    (process.executable like "/usr/bin/php*" and process.args in ("/var/tools/koalaping/bin/ping.php", "/var/tools/lean/bin/Lean.php")) or
+    (process.executable like "/home/*/.local/share/uv/python/*/bin/python3*" and process.working_directory like "/home/*/shard_campaign_data_collection") or
+    (process.executable == "/usr/bin/dash" and process.args == "/usr/bin/firefox")
+  )]
+  [dns where event.action == "lookup_result" and dns.question.name like~ (
+    /* Solana */
+    "api.mainnet-beta.solana.com", "solana-mainnet.gateway.tatum.io", "go.getblock.us", "solana-rpc.publicnode.com",
+    "api.blockeden.xyz", "solana.drpc.org", "solana.leorpc.com", "solana.api.onfinality.io", "solana.api.pocket.network",
+
+    /* Ethereum */
+    "*ethereum.org", "*infura.io", "*alchemy.com", "*alchemyapi.io", "*ankr.com", "*quiknode.pro", "*tatum.io",
+    "*thirdweb.com", "*tenderly.co", "*flashbots.net", "*mevblocker.io", "*drpc.org", "*blockpi.network",
+    "*llamarpc.com", "*1rpc.io", "*0xrpc.io", "*nodies.app", "*blastapi.io", "*nownodes.io", "*pokt.network",
+    "*merkle.io", "*blinklabs.xyz", "*leorpc.com", "*publicnode.com", "*cloudflare-eth.com", "*payload.de",
+    "*etherscan.io", "*ethplorer.io", "*blockchair.com", "*pokt.io", "*getblock.io", "*chainstack.com",
+    "*moralis.io", "*quicknode.com", "*quiknode.com", "*figment.io", "*nodesmith.io", "*blockdaemon.com",
+    "*onfinality.io", "*ankr-rpc.com", "*hardhat.org", "*foundry.paradigm.xyz", "*paradigm.xyz",
+    "*ethrpc.com", "*web3api.com", "*.icp0.io",
+
+    /* BNB Smart Chain (UNC5342 (DPRK) reads JADESNOW payloads via Binplorer); */
+    "*binplorer.com", "*bscscan.com", "*bnbchain.org",
+
+    /* Polygon (DeadLock ransomware proxy address storage (Group-IB, Jan 2026) */
+    "polygon-rpc.com", "*polygonscan.com",
+
+    /* Bitcoin (Glupteba OP_RETURN dead-drop, Akamai cryptominer botnet C2 backup) */
+    "*blockchain.info", "*blockchain.com", "*blockstream.info", "*mempool.space", "*blockcypher.com",
+
+    /* Tron (heavy abuse for laundering, dusting attacks, emerging C2) */
+    "*trongrid.io", "*tronscan.org",
+
+    /* Crypto */
+    "*binance.org", "*ninicoin.io", "*defibit.io",
+
+    /* DHT lookup domains */
+    "dht.libtorrent.org", "router.bittorrent.com", "router.utorrent.com"
+  ) and
+  not dns.question.name == "www.alchemy.com"]
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

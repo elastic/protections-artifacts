@@ -7,7 +7,7 @@ id = "49ab63a4-ed52-49ac-855b-c298b38b0cb9"
 license = "Elastic License v2"
 name = "Egress Network Connection from Deleted Executable by Root"
 os_list = ["linux"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 network where event.type == "start" and event.action == "connection_attempted" and process.executable like "* (deleted)" and 
@@ -26,7 +26,8 @@ not (
     "/usr/lib64/*", "/var/tmp/go-build*", "/app/extra/slack*", "/projects/hash-manager/dist/*/hash-manager*",
     "/nextcloud/custom_apps/notify_push/bin/x86_64/notify_push*", "/usr/local/lad/bin/mdsd*",
     "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/longhorn*", "/tmp/*/bin/kilo*",
-    "/root/.antigravity-server/bin/*/extensions/antigravity/bin/language_server_linux_x64*"
+    "/root/.antigravity-server/bin/*/extensions/antigravity/bin/language_server_linux_x64*",
+    "/root/.vscode-server/code-*"
   ) or
   process.name in ("dockerd", "teleport", "zed-editor", "datacollector", "exe")
 )

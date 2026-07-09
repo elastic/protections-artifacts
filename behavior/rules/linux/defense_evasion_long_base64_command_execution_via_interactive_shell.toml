@@ -1,0 +1,164 @@
+[rule]
+description = """
+Identifies attempts to execute commands with long base64 encoded command lines via an interactive shell. Adversaries may
+abuse this technique to execute malicious commands.
+"""
+id = "e7b95c3e-9640-4836-85f9-2aaf6c14cebc"
+license = "Elastic License v2"
+name = "Long Base64 Command Execution via Interactive Shell"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.parent.interactive == true and process.interactive == true and
+(
+  (
+    process.name like~ "python*" and
+    (
+      process.command_line like~ "*b64decode*" or
+      (
+        process.command_line like "*-c *" and
+        process.command_line like~ "*base64*"
+      )
+    )
+  ) or
+  (
+    process.name like~ ("powershell*", "pwsh*") and
+    process.command_line like~ (
+      "* -e *", "* -en *", "* -enc *", "* -enco *", "* -encod *", "* -encode *", "* -encoded *",
+      "* -encodedcommand *", "*frombase64string*"
+    )
+  ) or
+  (
+    process.name like~ ("node*", "deno*") and
+    (
+      process.command_line like~ ("*atob(*", "*eval(*") or
+      (
+        process.command_line like~ "*buffer.from*" and
+        process.command_line like~ "*base64*"
+      )
+    )
+  ) or
+  (
+    process.name like~ "php*" and
+    process.command_line like~ ("*base64_decode(*", "*convert.base64-decode*")
+  ) or
+  (
+    process.name like~ "perl*" and
+    process.command_line like~ ("*MIME::Base64*", "*decode_base64(*")
+  ) or
+  (
+    process.name like~ "ruby*" and
+    process.command_line like~ ("*require*base64*", "*Base64.decode64(*")
+  ) or
+  (
+    process.name like~ "java*" and
+    process.command_line like~ "*base64*decode(*"
+  ) or
+  (
+    process.name like~ "lua*" and
+    process.command_line like~ ("*mime.decode(*base64*", "*mime.unb64(*")
+  ) or
+  (
+    process.name like~ "openssl*" and
+    process.command_line like~ ("*base64 -d*", "*-base64*")
+  ) or
+  (
+    process.name in ("base64", "basez", "base64plain", "base64url", "base64mime", "base64pem", "basenc", "base32", "base16") and
+    process.command_line like~ ("* -d*", "* --decode*")
+  ) or
+  (
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox") and
+    process.command_line like~ ("*base64 -d*", "*base64 --decode*")
+  )
+) and length(process.command_line) >= 4000 and
+not (
+  process.parent.executable like (
+  "/usr/bin/claude-bin", "/home/*/.local/share/claude/versions/*", "/opt/tm/gemini/node/bin/node",
+  "/home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor/portable-ruby/*/bin/ruby",
+  "/usr/bin/sudo", "/usr/local/xars/standalone-tools/claude/*", "/usr/bin/su", "/mnt/fast/nobackup/users/*",
+  "/opt/local/share/claude/versions/*", "/home/*/.nvm/versions/node/*", "/usr/share/devin-desktop/devin-desktop",
+  "/opt/linuxbrew/.linuxbrew/Homebrew/*", "/usr/bin/bwrap", "/root/.local/share/claude/versions/*",
+  "/tmp/.mount_*/usr/share/cursor/cursor", "/home/*/.local/share/cursor-agent/versions/*/node",
+  "/usr/local/lib/claude-code/claude-bin", "/opt/local/*/dotfolders/.local/share/claude/versions/*"
+  ) or
+  process.parent.name in ("claude", "claude.exe", "cursor") or
+  process.parent.args like (
+    "/root/.ansible/tmp/ansible-tmp-*/AnsiballZ_command.py", "source /home/*/.claude/shell-snapshots/snapshot-*", "claude",
+    "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_command.py", "/tmp/cmdickens/tmp/eb-*", "/tmp/thangha/tmp/eb-*"
+  ) or
+  process.parent.command_line like "*mitogen:ansible*" or
+  (process.parent.executable == "/usr/bin/timeout" and process.working_directory == "/workspace")
+)
+'''
+
+min_endpoint_version = "8.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.011"
+name = "Lua"
+reference = "https://attack.mitre.org/techniques/T1059/011/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.3.0"

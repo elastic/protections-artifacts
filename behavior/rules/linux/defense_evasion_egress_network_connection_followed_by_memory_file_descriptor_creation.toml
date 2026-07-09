@@ -1,0 +1,141 @@
+[rule]
+description = """
+This rule detects when a process establishes an outbound network connection followed by creating an in-memory file using
+the memfd_create syscall. This activity indicates an active attempt to execute a fileless payload and should be
+considered highly abnormal or suspicious. This activity can occur when the memfd syscall is utilized to create a memory
+resident file, like a payload, and then uses it to execute a process via a command and control channel, resulting in an
+exec event.
+"""
+id = "360f8271-2c39-4b7c-87b8-87ef328ddac7"
+license = "Elastic License v2"
+name = "Egress Network Connection Followed by Memory File Descriptor Creation"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=10s
+  [network where event.type == "start" and event.action == "connection_attempted" and (
+    process.name in (
+      "bash", "dash", "sh", "tcsh", "tclsh", "wish", "csh", "zsh", "ksh", "fish", "mksh",
+      "busybox", "pwsh", "deno", "bun", "base64", "rscript", "escript", "java", "javaw",
+      "r", "julia", "mono", "dotnet-ef", "groovy", "kotlin", "scala", "erlang",
+      "ocaml", "ocamlopt", "ld.so", "ld-linux-x86-64.so.2", "awk", "gawk", "mawk", "nawk",
+      "env", "timeout", "nice", "stdbuf", "setsid", "setarch", "unshare", "nsenter", "flock",
+      "nohup", "runuser", "sudo", "snap", "snap-confine", "snap-exec", "erlexec", "beam.smp"
+    ) or
+    process.name like ("perl*", "php*", "lua*") or
+    process.executable like (
+      "memfd:*", "?memfd:*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*",
+      "/boot/*", "/sys/*", "/lost+found/*", "/proc/*", "/var/mail/*"
+    )
+  ) and
+  not (
+    destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+      destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+      "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+      "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+      "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+      "FF00::/8"
+    ) or
+    process.executable like (
+      "/usr/local/sbin/php-fpm", "/usr/local/cpanel/3rdparty/perl/*/bin/perl", "/snap/android-studio/*/jbr/bin/java",
+      "/tmp/.mount_*", "/tmp/.tmp*/node", "/usr/sbin/php-fpm*", "/tmp/vscode-komo/*/server/node"
+    )
+  )] by process.entity_id
+  [process where event.type == "start" and event.action == "memfd_create" and
+  not (
+    (
+      process.executable like (
+        "/home/runner/actions-runner-*/Runner.Listener", "/home/runner/actions-runner-*/Runner.Worker",
+        "/home/runner/bin/Runner.Listener"
+      ) and
+      process.Ext.memfd.name == "memfd:doublemapper"
+    ) or
+    (
+      process.name like "php*" and
+      process.Ext.memfd.name in ("memfd:opcache_lock", "memfd:sd-executor-state")
+    ) or
+    (
+      process.executable like "/home/*/.cache/camoufox/camoufox-bin" and
+      process.Ext.memfd.name in ("memfd:mozilla-ipc", "memfd:mozilla-ipc-test")
+    ) or
+    (
+      process.name == "praxis_node" and
+      process.Ext.memfd.name in (
+        "memfd:doublemapper", "memfd:sd-executor-state", "memfd:allocation fd", "memfd:spawn_stdio_stdin",
+        "doublemapper", "memfd:/.glXXXXXX", "memfd:pulseaudio"
+      )
+    ) or
+    (
+      process.executable in ("./usr/bin/qemu-s390x", "./usr/bin/qemu-s390x-static") and
+      process.Ext.memfd.name == "memfd:qemu-open"
+    ) or
+    (
+      process.name like "php*" and
+      process.working_directory like ("/var/www/*", "/builds/php/*")
+    ) or
+    (
+      process.name like "php*" and
+      process.args in ("/usr/bin/composer", "/bin/composer")
+    ) or
+    process.executable like (
+      "/tmp/.mount_remp*/zen", "/usr/lib/systemd/systemd", "/usr/libexec/nordlayer/nordlayer-resolvconf",
+      "/home/*/.vscode-server/*/bin/vsce-sign", "/sbin/apk"
+    ) or
+    (
+      process.executable like "/usr/bin/php*" and
+      process.Ext.memfd.name == "anon_hugepage"
+    )
+  )] by process.parent.entity_id
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

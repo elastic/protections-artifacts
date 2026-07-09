@@ -7,7 +7,7 @@ id = "68cf34b4-0751-457a-b8fd-55208cdb42fe"
 license = "Elastic License v2"
 name = "UID Change to 0 from Unusual Process Executable"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -21,7 +21,7 @@ not (
     "/tmp/tmp.*/nix-installer", "/var/tmp/buildah*"
     ) or
   process.working_directory like ("/var/lib/rundeck", "/usr/sap/tmp", "/oracle/*/jobscheduler_agent", "/var/tmp/one/im/kvm-probes.d") or
-  process.parent.executable like ("/tmp/newroot/*", "/usr/lib/systemd/systemd", "/tmp/.criu.mntns*")
+  process.parent.executable like ("/tmp/newroot/*", "/usr/lib/systemd/systemd", "/tmp/.criu.mntns*", "/usr/libexec/gnome-session-service")
 )]
 '''
 

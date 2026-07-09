@@ -1,0 +1,138 @@
+[rule]
+description = """
+This rule detects when a suspicious file is downloaded via curl or wget, and piped to an interpreter. Attackers may use
+this technique to download and execute payloads for various malicious purposes, such as establishing persistence or
+exfiltrating data.
+"""
+id = "7bc702f7-1f1a-49d1-ad8d-c0fa1f4fe324"
+license = "Elastic License v2"
+name = "Suspicious File Downloaded by Curl/Wget and Piped to Interpreter"
+os_list = ["linux"]
+version = "1.0.10"
+
+query = '''
+sequence by process.parent.entity_id, process.working_directory with maxspan=1s
+  [process where event.type == "start" and event.action == "exec" and process.name in ("curl", "wget") and
+  (
+    /* IP address and path */
+    process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(:[0-9]{1,5})?\\/[^ ]+.*" or
+    /* URL and path */
+    process.command_line regex ".*(http|ftp|ftps)\\://[A-Za-z0-9][A-Za-z0-9\\-]*(\\.[A-Za-z0-9][A-Za-z0-9\\-]*)+(:[0-9]{1,5})?\\/[^ ]+.*"
+  ) and
+  process.args_count <= 3 and (
+    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox", "node", "deno") or
+    process.parent.name like (".*", "python*", "perl*", "ruby*", "lua*", "php*") or
+    process.parent.executable like (
+      "/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "/lost+found/*",
+      "/proc/*", "/var/mail/*", "/var/www/*"
+    )
+  ) and
+  not (
+    process.args in ("-h", "--help", "-V", "--version", "--output", "-O") or
+    process.args like (
+      "--output*", "-o*", "--remote-name*", "https://*:10257/metrics", "http://*:8000/api/job_status/*",
+      "http://*:9200/_cluster/health?pretty*", "http://*:8985/solr/mysg_collection/schema/fields",
+      "http://*:8985/solr/mysg_collection/schema/fieldtypes", "http://169.254.169.254/latest/meta-data/instance-id",
+      "http://*:9010/metrics", "http://*/api/v1/account", "http://*:6820/slurmdb/*", "http://*:8001/api/health_check",
+      "http://*:8080/ws/allocationLevelMatchingConfig/update/counterpartyFlowId/*/maxWaitTimeMinutes/*",
+      "http://192.168.*", "http://10.*", "http://172.16.*", "http://192.168.*.*", "http://172.16.*.*", "http://*/",
+      "http://docker-registry.connect-*.5000*", "http://169.254.169.254/*", "http://*.com:8083/api", "http://*.local*/api/v1/*",
+      "http://*.local:9100/metrics", "http://*/oe-ui-logintest", "http://ftp.de.debian.org/debian/pool/main/*",
+      "http://*.local*/ws/EoD/createToken/all", "http://*.local*/portfolio", "http://*/DmMethods/servlet/DoMethod"
+    ) or
+    process.working_directory like (
+      "/builds/*", "/var/lib/amagent/*", "/etc/amagent/*", "/jenkins/workspace/*", "/var/lib/docker/overlay2/*",
+      "/opt/fwiebe/workspace", "/opt/rchopra/*", "/opt/code/*", "/usr/scratch/tibor/src/systems-lib"
+    ) or
+    process.parent.executable like "/tmp/newroot/*" or
+    process.command_line like (
+      "*dl.cloudsmith.io*", "*127.0.0.1*", "*localhost*", "*nginx.org/download/nginx*", "*geoip.elastic.dev*",
+      "*artifacts.elastic.co*", "*ela.st*", "*elastic.co*", "*192.168.*.*:*", "*172.16.*", "*conda-condaforge-remote*",
+      "*downloads.mariadb.com*", "*pkg.cloudflare.com*", "*packages.microsoft.com*"
+    ) or
+    process.parent.command_line == "bash --login"
+  )]
+  [process where event.type == "end" and event.action == "end" and
+   process.name like (
+     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+     "python*", "perl*", "ruby*", "lua*", "php*", "node"
+   ) and process.args_count == 1 and
+   process.args like (
+    "-bash", "-dash", "-sh", "-tcsh", "-csh", "-zsh", "-ksh", "-fish",
+    "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+    "/bin/bash", "/bin/dash", "/bin/sh", "/bin/tcsh", "/bin/csh",
+    "/bin/zsh", "/bin/ksh", "/bin/fish",
+    "/usr/bin/bash", "/usr/bin/dash", "/usr/bin/sh", "/usr/bin/tcsh",
+    "/usr/bin/csh", "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish",
+    "python*", "/bin/python*", "/usr/bin/python*", "/usr/local/bin/python*",
+    "perl*", "/bin/perl*", "/usr/bin/perl*", "/usr/local/bin/perl*",
+    "ruby*", "/bin/ruby*", "/usr/bin/ruby*", "/usr/local/bin/ruby*",
+    "lua*", "/bin/lua*", "/usr/bin/lua*", "/usr/local/bin/lua*",
+    "php*", "/bin/php*", "/usr/bin/php*", "/usr/local/bin/php*",
+    "node", "/bin/node", "/usr/bin/node", "/usr/local/bin/node",
+    "/dev/fd/*"
+  )
+  ]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

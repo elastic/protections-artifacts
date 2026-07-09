@@ -1,0 +1,54 @@
+[rule]
+description = """
+This rule detects the execution of a backdoor script or command via the less pipe. Less is a utility that is used to
+view text files. By creating a malicious less configuration file, threat actors can execute a backdoor script or command
+on the target system upon file viewing.
+"""
+id = "9cbbcea4-7a2c-49f9-8537-20a495fd03c5"
+license = "Elastic License v2"
+name = "Less Pipe Backdoor Execution"
+os_list = ["linux"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  process.name in ("setsid", "nohup", "disown") or
+  (process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox") and process.args == "-c") or
+  process.name like (".*", "python*", "perl*", "php*", "ruby*", "lua*", "node") or
+  process.executable like (
+    "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
+    "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/root/*"
+  )
+) and
+process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox") and
+process.parent.command_line like "*lesspipe*" and not process.parent.args == "-c" and
+not process.executable like "/nix/store/*"
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

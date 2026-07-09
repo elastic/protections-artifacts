@@ -1,0 +1,103 @@
+[rule]
+description = """
+This rule detects DNS queries to IP lookup services via living-off-the-land executables or executables in
+world/user-writable directories. Malware authors may use these services to determine the external IP address of the
+target system.
+"""
+id = "8c369444-97f3-4624-a772-d1091e14a809"
+license = "Elastic License v2"
+name = "DNS Request to IP Lookup Service from Suspicious Working Directory"
+os_list = ["linux"]
+version = "1.0.5"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and (
+    (
+      (
+        process.name in ("curl", "wget", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox", "timeout", "env") or
+        process.name like (".*", "python*", "perl*", "php*", "ruby*", "lua*", "node", "deno")
+      ) and
+      process.working_directory like (
+        "/tmp*", "/var/tmp*", "/dev/shm*", "/run*", "/var/run*", "/boot*", "/sys*", "/lost+found*",
+        "/proc*", "/var/mail*"
+      )
+    ) or
+    process.executable like (
+      "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*",
+      "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/home/*/*", "/root/*"
+    ) 
+  ) and
+  not (
+    process.executable like (
+      "/root/.cache/ms-playwright/*/chrome-linux64/chrome", "/root/.cache/ms-playwright/*/chrome-headless-shell-linux64/chrome-headless-shell",
+      "/home/*/.local/share/Steam/*/wine64-preloader", "/home/*/Downloads/firefox-*/firefox/firefox-bin",
+      "/home/*/.local/share/uv/python/*/bin/python*", "/home/*/.local/bin/uv", "/home/*/.cache/rod/browser/chromium-*/chrome",
+      "/home/*/bin/firefox/firefox-bin", "/home/*/.cache/ms-playwright/chromium-*/chrome-linux64/chrome",
+      "/opt/plesk/php/*/bin/php"
+    ) or
+    process.parent.executable like ("/usr/bin/runc", "/home/*/.vscode-server/cli/servers/Stable-*/server/node", "/usr/local/go/bin/go") or
+    (process.parent.name == "timeout" and process.name == "php") or
+    process.parent.args == "/var/scripts/setup_secure_permissions_nextcloud.sh" or
+    process.args like "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_get_url.py"
+  )]
+  [dns where event.action == "lookup_result" and dns.question.name like~ (
+    "*.geojs.io", "*api.2ip.ua", "*api.db-ip.com", "*api.ip.sb", "*api.ipify.org", "*api.myip.com",
+    "*api.npoint.io", "*api64.ipify.org", "*bot.whatismyipaddress.com", "*checkip.amazonaws.com",
+    "*checkip.dyndns.org", "*curlmyip.com", "*eth0.me", "*freegeoip.app", "*freegeoip.net",
+    "*freeipapi.com", "*geoiptool.com", "*geolocation-db.com", "*httpbin.org",
+    "*icanhazip.com", "*ident.me", "*ifcfg.me", "*ifconfig.me", "*inet-ip.info", "*ip-api.com",
+    "*ip.appspot.com", "*ip.tyk.nu", "*ip4.seeip.org", "*ipecho.net", "*ipinfo.io", "*iplogger.*",
+    "*ipof.in", "*ipwho.is", "*ipwhois.app", "*ipv4.icanhazip.com", "*ipv6.icanhazip.com",
+    "*myip.dnsomatic.com", "*myip.ipip.net", "*myip.opendns.com", "*portmap.io", "*wgetip.com",
+    "*whatismyip.akamai.com", "*wtfismyip.com"
+  )]
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+[[threat.technique.subtechnique]]
+id = "T1071.004"
+name = "DNS"
+reference = "https://attack.mitre.org/techniques/T1071/004/"
+
+
+[[threat.technique]]
+id = "T1102"
+name = "Web Service"
+reference = "https://attack.mitre.org/techniques/T1102/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

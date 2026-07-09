@@ -14,7 +14,7 @@ reference = [
     "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffileex",
     "https://www.elastic.co/security-labs/doubling-down-etw-callstacks",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.executable != null and
@@ -29,7 +29,8 @@ api where process.executable != null and
   not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown") and 
   not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == true and $entry.subject_name in ("Microsoft Windows Hardware Compatibility Publisher", "ESET, spol. s r.o.")) and 
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in ("d21b7ba659478d1b54d5dc841d0a96ae2de56581af25525011090795512168a0", "dc98b14cbb25ef1937217da4fde5e2cc13f4702b31a6bc481d8de2bd87ac0525") and 
-  not (process.Ext.api.summary == "MapViewOfFile2( firefox.exe, 0x0, R-X )" and process.thread.Ext.call_stack_final_user_module.path like "c:\\windows\\system32\\spool\\drivers\\x64\\3\\ricoh_drv\\*.dll")
+  not (process.Ext.api.summary == "MapViewOfFile2( firefox.exe, 0x0, R-X )" and 
+       process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\system32\\spool\\drivers\\x64\\3\\ricoh_drv\\*.dll", "c:\\program files (x86)\\mozilla firefox\\mozglue.dll", "c:\\program files\\mozilla firefox\\mozglue.dll"))
 '''
 
 min_endpoint_version = "8.12.0"

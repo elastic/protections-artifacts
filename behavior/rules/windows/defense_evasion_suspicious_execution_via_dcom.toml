@@ -11,7 +11,7 @@ reference = [
     "https://www.cybereason.com/blog/dcom-lateral-movement-techniques",
     "https://codewhitesec.blogspot.com/2018/07/lethalhta.html",
 ]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence with maxspan=1m
@@ -126,7 +126,7 @@ sequence with maxspan=1m
    not (process.name : "regsvr32.exe" and process.parent.name : "dllhost.exe" and
         process.parent.args : "/Processid:{AA0B85DA-FDDF-4272-8D1D-FF9B966D75B0}") and
 
-   not process.hash.sha256 :
+   not process.hash.sha256 in
                ("4a06605651958c56e89a468f600c3322e3fdc97c8143bcfd1d8d1ebadb0920fb",
                 "b04266ca05e8125a1544e68c8852f7d44dde9c7e4f3b08a0383c0bf4ab6cfd2d",
                 "ef7d80e4cc017ba0b8ca0cef2956ed762f4a3e8053d2569785bfaf735e9aecb9",
@@ -139,7 +139,9 @@ sequence with maxspan=1m
                 "e600ebf1bdada253a31f59a9870b8aa18d9a985c390510bfe9219acb44da406d", 
                 "d539b4957d8c03b6503357df836f1ed92fa37d73e19e0962d83b3dcba507f4bf",
                 "91c176db26a66a0ef8249a43d5ff9ccf76571cd965070baf8e72f96559f28289",
-                "2ec75fa569c0fa92add37c7221d700acd4bd70f5438154695ecccc4fd30b5e60") and
+                "2ec75fa569c0fa92add37c7221d700acd4bd70f5438154695ecccc4fd30b5e60", 
+                "065b386addf06337ad1d40f7b05cbb137c6c4ee7589c1ea22e4e18c0cefe850c", 
+                "3c387b216fe27eaadf788598e8071fdaad5cfa02419f7e068dcfaac0e78276b7") and
 
    not (process.pe.original_file_name == "Teams.exe" and
         process.code_signature.trusted == true and process.code_signature.subject_name : "Microsoft Corporation") and

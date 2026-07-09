@@ -11,7 +11,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.25"
+version = "1.0.26"
 
 query = '''
 sequence with maxspan=5m
@@ -22,12 +22,13 @@ sequence with maxspan=5m
                ("ntdll.dll|kernelbase.dll|Unbacked",
                 "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked",
                 "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|Unbacked|kernel32.dll|ntdll.dll") and
-  not (user.id : "S-1-5-18" and
+  not (user.id == "S-1-5-18" and
        process.parent.executable :
                      ("?:\\ProgramData\\*.exe",
                       "?:\\Program Files\\*.exe",
                       "?:\\Program Files (x86)\\*.exe",
                       "?:\\Windows\\LTSvc\\LTSVC.exe",
+                      "?:\\Windows\\System32\\msiexec.exe",
                       "C:\\Windows\\_ScriptingFramework\\Modul\\Engine.exe",
                       "C:\\Windows\\_ScriptingFramework\\Modul\\ScriptingFrameworkEngine.exe",
                       "C:\\Windows\\SysWOW64\\SmartDeploy\\ClientService.exe",

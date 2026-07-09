@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Potential Fileless Execution Sequence"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -31,7 +31,8 @@ sequence by process.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and (
     process.args regex """/proc/(self|[0-9]{1,7})/fd/[0-9]{1,7}""" or
     process.executable like ("memfd:*", "?memfd:*")
-  ) and not process.executable == "memfd:runc_cloned:/proc/self/exe"]
+  ) and
+  not process.executable in ("memfd:runc_cloned:/proc/self/exe", "/usr/bin/nvidia-ctk")]
 '''
 
 min_endpoint_version = "9.1.4"

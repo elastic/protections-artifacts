@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -25,7 +25,8 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/cursor-server-cache/bin/linux-x64/*/node", "/tmp/*/.vscode-server/code-*", "/tmp/*-cursor-server/bin/linux-x64/*/node",
       "/tmp/.mount_Cursor*/usr/share/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rg", "/tmp/install.dir.*/Linux/resource/jre/lib/jspawnhelper",
       "/tmp/gomod-overlay/merged/golang.org/*/bin/go", "/tmp/tmp.*/amfu/bin/cinsh", "/tmp/nagent_install/nagent-ubuntu22_64/InitialValidate",
-      "/tmp/arcane-install*"
+      "/tmp/arcane-install*", "/tmp/p11_keepalive.*/p11_signer", "/tmp/iperf3-extract/usr/bin/iperf3", "/tmp/ventoy-install.*/tool/x86_64/vtoycli",
+      "/tmp/odindash-build"
     ) or
     process.command_line == "runc init" or
     process.name in ("gcc", "xgcc", "nvim") or

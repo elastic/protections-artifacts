@@ -1,0 +1,88 @@
+[rule]
+description = """
+Detects a potential local privilege escalation from a suspicious descendant process. This rule checks for an exec event
+as uid=0 (root), as a descendant of a suspicious process execution by a non-root user from a user- or world-writeable
+directory. This may indicate the execution of a potential local privilege escalation exploit.
+"""
+id = "2d5d9b4b-01ac-41c4-b5c2-6a9d1fe93aae"
+license = "Elastic License v2"
+name = "Potential Local Privilege Escalation via a Suspicious Descendant Process"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.interactive == true and
+user.id == 0 and (
+  process.parent.user.id >= 1000 or
+  process.parent.user.name in (
+    "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+  )
+) and (
+  process.parent.group.id >= 1000 or
+  process.parent.group.name in (
+    "apache", "www-data", "httpd", "nginx", "lighttpd", "tomcat", "tomcat8", "tomcat9", "ftp", "ftpuser", "ftpd"
+  )
+) and
+not process.executable in ("/usr/bin/sudo", "/bin/sudo", "/tmp/newroot/newroot/newroot/usr/bin/sudo", "/tmp/newroot/usr/bin/sudo") and
+(
+  descendant of [
+    process where event.type == "start" and event.action == "exec" and user.id != 0 and
+    process.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/home/*/*", "/run/user/*", "/var/run/user/*")
+  ] or
+  process.parent.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/home/*/*", "/run/user/*", "/var/run/user/*") or
+  process.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/home/*/*", "/run/user/*", "/var/run/user/*")
+) and
+not (
+  process.parent.executable like (
+    "/home/*/.conda/envs/fmf_server_agent/bin/python*", "/home/*/.local/share/uv/python/cpython-*-linux-x86_64-gnu/bin/python*",
+    "/home/*/.local/share/mise/installs/node/*/bin/node", "/usr/local/bin/tm_sandbox", "./merged/var/lib/containers/storage/overlay/*",
+    "/home/*/.local/share/containers/storage/overlay/*", "/home/*/Downloads/*/balena-etcher", "/opt/brave.com/brave/brave", "/var/lib/snapd/snap/node/*/bin/node",
+    "/home/linuxbrew/.linuxbrew/Cellar/*", "/home/*/.npm-global/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe"
+  ) or
+  process.executable like (
+    "/usr/bin/mount", "/usr/bin/fusermount3", "/tmp/newroot/usr/bin/sudo", "/usr/bin/nvidia-modprobe", "/usr/bin/fusermount",
+    "/snap/core/*/usr/lib/snapd/snap-confine", "/usr/bin/newuidmap", "/usr/bin/newgidmap", "/opt/google/chrome-beta/chrome-sandbox",
+    "/usr/libexec/singularity/bin/starter-suid", "/usr/lib/cargo/bin/sudo", "/run/user/*/.bubblewrap/*", "/tmp/newroot/newroot/usr/bin/sudo",
+    "/tmp/newroot/usr/bin/su", "/tmp/newroot/usr/bin/fusermount3", "/tmp/newroot/usr/bin/fusermount", "/usr/bin/vmware-user-suid-wrapper",
+    "/tmp/newroot/usr/lib/polkit-1/polkit-agent-helper-1", "/usr/bin/ping", "/bin/crontab", "/usr/bin/tcpdump", "/tmp/newroot/usr/sbin/grub2-set-bootflag",
+    "/tmp/newroot/newroot/newroot/usr/lib/xorg/Xorg.wrap", "/home/*/chrome-sandbox", "/usr/lib/polkit-1/polkit-agent-helper-1", "/home/*/sqllib/adm/db2syscr",
+    "/home/*/sqllib/adm/db2stop", "/home/*/sqllib/adm/db2start", "/usr/lib/xorg/Xorg.wrap", "/usr/local/sbin/uid_gid_mapping",
+    "/home/*/.crc/bin/crc-admin-helper-linux-amd64", "/usr/bin/sg", "/usr/bin/crontab", "/sas/*/bin/elssrv", "/usr/lpp/mmfs/bin/tslsquota",
+    "/usr/lib/snapd/snap-confine", "/u01/*/client/scheduler/execution_agent/bin/jssu", "./merged/home/*/.local/share/containers/storage/overlay/*",
+    "/tmp/newroot/usr/share/antigravity/chrome-sandbox", "/usr/lib/x86_64-linux-gnu/singularity/bin/starter-suid", "/home/*/cdunix/ndm/bin/ndmumgr",
+    "/tmp/newroot/usr/lib/xorg/Xorg.wrap", "/usr/bin/apt-get"
+  ) or
+  process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
+  process.command_line == "newgrp docker" or
+  process.parent.args like "/home/*/.vscode-server/cli/servers/Stable-*" or
+  (process.name == "pkexec" and process.args in ("apt-get", "/usr/bin/rpm"))
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

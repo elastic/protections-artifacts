@@ -1,0 +1,160 @@
+[rule]
+description = """
+Detects when an interpreter process creates a memory file descriptor and executes a command in the proc file system.
+This activity indicates an active attempt to execute a fileless payload and should be considered highly abnormal or
+suspicious. This activity can occur when the memfd syscall is utilized to create a memory resident file, like a payload,
+and then uses it to execute a process via a command and control channel.
+"""
+id = "87d16b52-e0be-4dd2-b6a8-056f188be018"
+license = "Elastic License v2"
+name = "Potential Fileless Execution via Memory File Descriptor from Interpreter"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "memfd_create" and (
+  (process.name like "python*" and process.args == "-c") or
+  (process.name like ("perl*", "ruby*", "lua*", "node", "nodejs") and process.args like "-e*") or
+  (process.name like "php*" and process.args like "-r*") or
+  process.name like ("*.py", "*.pyc", "*.lua", "*.pl", "*.rb", "*.bin", "*.php", "*.js", "*.mjs") or
+  (
+    process.name like ("python*", "perl*", "php*", "ruby*", "lua*", "node", "java", "javaw") and
+    (
+      process.args like (
+        "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*", "/root/*",
+        "/boot/*", "/sys/*", "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*"
+      ) and process.args_count <= 2
+    ) 
+  )
+) and not (
+  process.executable like (
+    "/usr/lib/libreoffice/program/soffice.bin", "/app/bin/evolution.bin", "/opt/cpanel/ea-php83/root/usr/bin/php-cgi",
+    "/snap/libreoffice/*/lib/libreoffice/program/soffice.bin", "/usr/NX/bin/nxrunner.bin",
+    "/usr/lib64/libreoffice/program/soffice.bin", "/opt/libreoffice*/program/soffice.bin", "/opt/hrt/hrtpylon-*/bin/python3*",
+    "/usr/NX/bin/nxplayer.bin", "/usr/bin/qgis.bin", "/opt/gitlab/embedded/bin/ruby", "/app/libreoffice/program/soffice.bin"
+  ) or
+  process.parent.command_line == "/bin/sh -e /usr/lib/php/sessionclean" or
+  (
+    process.name like "php*" and (
+      process.Ext.memfd.name in ("memfd:opcache_lock", "anon_hugepage", "opcache_lock", "memfd:anon-handle") or
+      process.command_line == "php public/index.php"
+    )
+  ) or
+  (
+    process.name like "python*" and
+    process.Ext.memfd.name like (
+      "wayland-shm", "memfd:pulseaudio", "memfd:dd_inject_info", "memfd:dd_language_detected", "wayland-cursor",
+      "pulseaudio", "datadog-tracer-info*", "memfd:datadog-tracer-info-*", "memfd:libffi", "libffi", "memfd:xshmfence",
+      "xshmfence", "JITCode*", "unknown-usage*", "JSVMStack*", "JSGCHeap*"
+    )
+  ) or
+  process.parent.executable like (
+    "/opt/saltstack/salt/bin/python3*", "/usr/lib/systemd/systemd", "/usr/bin/gnome-shell", "/usr/NX/bin/nxexec",
+    "/usr/bin/sddm", "/usr/bin/bwrap", "/usr/bin/rofi", "/usr/bin/dbus-daemon", "/tmp/.mount_*/lm-studio",
+    "/usr/libexec/gnome-session-binary", "/usr/local/aegis/AliSecCheckTmp/AliSecCheck",
+    "/snap/claude-ai-desktop/*/app/claude-desktop.bin", "/home/*/Programy/WBEST-MNT/WBEST-MNTv1_0_Linux",
+    "/opt/LM-Studio/lm-studio"
+  ) or
+  process.parent.command_line in ("/bin/sh /usr/local/bin/docker-php-ext-enable xdebug", "/usr/bin/python3 /usr/bin/nobara-updater --all") or
+  process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
+  (
+    process.command_line == "buildah-chroot-runtime" and
+    process.Ext.memfd.name == "memfd:buildah-chroot-runtime"
+  ) or
+  (
+    process.name like "ruby*" and
+    process.args == "-e" and
+    process.args == "sandbox"
+  ) or
+  (
+    process.name like "ruby*" and
+    process.Ext.memfd.name like "memfd:datadog-tracer-info-*"
+  ) or
+  (
+    process.executable == "/usr/bin/perl" and
+    process.Ext.memfd.name in ("memfd:dd_inject_info", "memfd:dd_language_detected")
+  )
+)
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.011"
+name = "Lua"
+reference = "https://attack.mitre.org/techniques/T1059/011/"
+
+
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.1.4"

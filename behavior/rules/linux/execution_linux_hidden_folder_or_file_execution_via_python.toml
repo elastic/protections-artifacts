@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Linux Hidden Folder or File Execution via Python"
 os_list = ["linux"]
 reference = ["https://github.com/rapid7/metasploit-framework"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -18,15 +18,16 @@ not (
   process.parent.name in ("browser_tests", "unit_tests", "arduino-cli", "node", "python.original") or
   process.args like (
     "/tmp/.build/*", "/tmp/.sentrycli*", "/var/tmp/.mount_GIMP*", "/tmp/.mount_GIMP*", "/tmp/*/ansible-tmp-*/AnsiballZ*.py",
-    "/tmp/selfgz*.py"
+    "/tmp/selfgz*.py", "/home/*/git/roche/product-packages/common/hearst/test-submit-enclave-measurements.py"
   ) or
- (
-   process.parent.executable like "/home/*/node_modules/@openai/codex/bin/codex-x86_64-unknown-linux-musl" and
-   process.command_line like "python3 /tmp/.tmp*"
- ) or
- (process.args in ("/usr/bin/ukify", "/bin/ukify") and process.args == "build") or 
-
- (process.args == "--include-private-keys" and process.parent.args like "/home/*/.ansible/tmp/ansible-tmp-*/ir_scan.sh")
+  process.parent.args like "/home/*/git/roche/product-packages/common/hearst/test-submit-enclave-measurements.py" or
+  (
+    process.parent.executable like "/home/*/node_modules/@openai/codex/bin/codex-x86_64-unknown-linux-musl" and
+    process.command_line like "python3 /tmp/.tmp*"
+  ) or
+  (process.args in ("/usr/bin/ukify", "/bin/ukify") and process.args == "build") or 
+  (process.args == "--include-private-keys" and process.parent.args like "/home/*/.ansible/tmp/ansible-tmp-*/ir_scan.sh") or
+  (process.parent.executable == "./runc" and process.parent.command_line == "runc init")
 )
 '''
 

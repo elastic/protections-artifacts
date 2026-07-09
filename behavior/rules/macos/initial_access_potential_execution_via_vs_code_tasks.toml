@@ -1,0 +1,99 @@
+[rule]
+description = """
+Identifies creation or modification of a .vscode/tasks.json file followed by opening the current project in a short
+time. Threat actors distribute malicious repositories that embed autorun task configurations to phish for credentials or
+execute payloads when a developer opens the project in Visual Studio Code.
+"""
+id = "ad058e28-8504-4bfe-9b91-22d24d903ede"
+license = "Elastic License v2"
+name = "Potential Execution via VS Code Tasks"
+os_list = ["macos"]
+reference = [
+    "https://www.jamf.com/blog/threat-actors-expand-abuse-of-visual-studio-code/",
+    "https://about.gitlab.com/blog/how-to-detect-and-prevent-contagious-interview-ide-attacks/",
+    "https://kl4r10n.tech/blog/dprk-new-malware",
+]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=30s
+  [file where event.action in ("creation", "modification") and file.name == "tasks.json" and
+   process.name in (
+     // Windows browsers
+     "chrome.exe", "msedge.exe", "firefox.exe", "brave.exe", "opera.exe", "vivaldi.exe",
+     // macOS browsers (bundle exec names)
+     "Google Chrome", "Google Chrome Helper", "Chromium", "Chromium Helper",
+     "firefox", "Firefox", "Safari", "SafariTP",
+     "Brave Browser", "Opera", "Vivaldi", "Arc",
+     // Linux browsers
+     "google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
+     "firefox", "firefox-esr", "brave-browser", "opera", "vivaldi-bin",
+     // Windows archivers
+     "7z.exe", "7zFM.exe", "7zG.exe", "winrar.exe", "tar",  "unzip.exe", "winscp.exe",
+     // macOS/Linux archivers and fetch tools
+     "unzip", "tar", "bsdtar", "curl", "wget",
+     // Version control / package managers
+     "git", "git.exe", "gh", "gh.exe", "npm", "npm.exe", "node", "node.exe",
+     "pip", "pip3", "python", "python3", "python.exe",
+     // Shells / script runners
+     "powershell.exe", "pwsh.exe", "cmd.exe", "wscript.exe", "cscript.exe",
+     "bash", "zsh", "sh", "fish", "dash"
+   ) and
+   file.path : ("?:\\*\\.vscode\\tasks.json", "/*/.vscode/tasks.json")]
+  [process where event.type == "start" and event.action in ("start", "exec") and
+   process.name in ("code", "cursor", "Code.exe", "Cursor.exe", "codium", "VSCodium.exe", "windsurf", "Windsurf.exe") and
+   process.args == "."]
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.001"
+name = "Compromise Software Dependencies and Development Tools"
+reference = "https://attack.mitre.org/techniques/T1195/001/"
+
+
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+
+[internal]
+min_endpoint_version = "8.16.0"

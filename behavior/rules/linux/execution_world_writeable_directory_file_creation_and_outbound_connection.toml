@@ -7,7 +7,7 @@ id = "c194da29-0aa4-463b-8c87-3094bc7ecd6d"
 license = "Elastic License v2"
 name = "World Writeable Directory File Creation and Outbound Connection"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=3s
@@ -24,7 +24,7 @@ sequence by process.parent.entity_id with maxspan=3s
      process.executable like~ (
        "/tmp/go-build*", "/tmp/regctl", "/tmp/token_handler", "/tmp/tmp.*/rustup-init", "/tmp/tmp.*/juliainstaller",
        "/tmp/nix-shell-*/go-build*/gobld", "/var/tmp/go-build*", "/opt/ruby/*", "/tmp/oryx/platforms/ruby/*/bin/gem",
-       "/tmp/level-linux-amd64"
+       "/tmp/level-linux-amd64", "/tmp/*/.vscode-server/.vscode-server/cli/servers/*/server/node"
      )
    )]
 '''

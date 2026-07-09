@@ -13,7 +13,7 @@ reference = [
     "https://attack.mitre.org/techniques/T1572/",
     "https://www.trendmicro.com/tr_tr/research/26/c/dissecting-a-warlock-attack.html",
 ]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -32,7 +32,15 @@ process where event.type == "start" and event.action == "exec" and
   process.executable == "/usr/bin/podman" or
   (process.parent.executable == "/bin/busybox" and process.parent.args like "/home/*/tunnel-exit-node.sh") or
   (process.name == "echo" and process.parent.name == "xargs" and process.parent.command_line == "xargs --null") or
-  process.working_directory like "/home/*/Desktop/*"
+  process.working_directory like "/home/*/Desktop/*" or
+  (
+    process.executable == "/builds/qa/ai-test-runner/helpers/modules/cloudflared-linux-amd64" and
+    process.working_directory == "/builds/qa/ai-test-runner"
+  ) or
+  (
+    process.executable == "/app/ai-test-generation/helpers/modules/cloudflared-linux-amd64" and
+    process.working_directory == "/app/ai-test-generation"
+  )
 )
 '''
 

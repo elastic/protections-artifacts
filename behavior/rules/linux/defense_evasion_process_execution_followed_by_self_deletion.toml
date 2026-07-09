@@ -1,0 +1,71 @@
+[rule]
+description = """
+Detects a process execution followed by immediate self-deletion, a common technique used by adversaries to remove traces
+of their activity on the system. This pattern is often observed in malware and APT campaigns.
+"""
+id = "530ad3d7-7360-4467-83d3-f49d705535ba"
+license = "Elastic License v2"
+name = "Process Execution Followed by Self-Deletion"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=15s
+  [process where event.type == "start" and event.action == "exec" and 
+  process.executable like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*") and
+  not (
+    process.parent.executable like ("/usr/openv/netbackup/bin/bpcd", "/usr/bin/x-terminal-emulator") or
+    process.executable like (
+      "/tmp/VeeamAgent*", "/tmp/VeeamApp_*", "/tmp/par-*", "/tmp/newroot/home/*/.local/bin/kiro-cli",
+      "/tmp/.dropbox-dist-new-*/dropbox", "/tmp/builds/*/node_modules/.bin/rimraf", "/var/tmp/*/conftest",
+      "/tmp/cmdickens/*", "/tmp/newroot/home/*/studio3t/jre/bin/java",
+      "/tmp/newroot/opt/docker/buildkit/executor/*/rootfs/usr/bin/dpkg", "/tmp/newroot/opt/orbit/bin/orbit/orbit",
+      "/tmp/*/conftest", "/tmp/thangha/easybuild/netCDF/*", "/tmp/baum/easybuild/LLVM/*"
+    ) or
+    process.parent.args like ("/usr/sbin/weak-modules", "apt-get", "/tmp/thangha/easybuild/*")
+  )] as event0
+  [file where event.action == "deletion" and startswith~(file.path, event0.process.executable)]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1070"
+name = "Indicator Removal"
+reference = "https://attack.mitre.org/techniques/T1070/"
+[[threat.technique.subtechnique]]
+id = "T1070.004"
+name = "File Deletion"
+reference = "https://attack.mitre.org/techniques/T1070/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.6.0"

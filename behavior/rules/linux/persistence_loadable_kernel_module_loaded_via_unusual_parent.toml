@@ -1,0 +1,111 @@
+[rule]
+description = """
+This rule monitors for the loading of kernel modules by unusual parent processes. Loadable kernel modules (LKMs) are
+pieces of code that can be loaded into the kernel at runtime to extend its functionality. These are commonly abused by
+rootkits or other malicious software to hide their presence or to gain elevated privileges. These LKMs are commonly
+loaded through expected parent processes.
+"""
+id = "7365ad8d-5aad-4720-a262-16367be025c0"
+license = "Elastic License v2"
+name = "Loadable Kernel Module Loaded via Unusual Parent"
+os_list = ["linux"]
+reference = ["https://www.elastic.co/security-labs/continuation-on-persistence-mechanisms"]
+version = "1.0.10"
+
+query = '''
+process where event.type == "start" and event.action == "load_module" and (
+  process.parent.executable like (
+    "/tmp/*", "/var/tmp/*", "/dev/shm/*", "./*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "/lost+found/*",
+    "/proc/*", "/var/mail/*", "/var/www/*", "/home/*", "/root/*" 
+  ) or
+  process.parent.name like~ (
+    // Hidden processes
+    ".*",
+    // Suspicious file formats
+    "*.elf", "*.sh", "*.py", "*.rb", "*.pl", "*.lua*", "*.php*", "*.js",
+    // Scheduled tasks
+    "cron", "crond"
+  ) or
+  (
+    process.parent.name like ("python*", "perl*", "ruby*", "lua*", "php*", "node", "java") and
+    not (
+      (
+        process.executable == "/usr/bin/kmod" and
+        process.args in ("/sbin/modprobe", "modprobe", "/usr/bin/modprobe", "/usr/sbin/modprobe") and
+        process.args_count <= 2
+      ) or
+      process.executable == "/sbin/iscsiadm"
+    )
+  )
+) and
+not (
+  process.parent.command_line in (
+    "/usr/bin/python3 -m kcarectl.__main__ --smart-update",
+    "/usr/bin/python3 -m kcarectl.__main__ -q --auto-update",
+    "/usr/bin/perl /usr/sbin/csf -r",
+    "pvestatd",
+    "/usr/bin/python3 -sP /usr/bin/firewalld --nofork --nopid",
+    "/usr/bin/python3 -s /usr/sbin/firewalld --nofork --nopid",
+    "/usr/bin/python3 -sP /usr/sbin/firewalld --nofork --nopid",
+    "/usr/bin/python3 -m kcarectl.__main__ --unload",
+    "python2 /usr/bin/kcarectl -q --auto-update"
+  ) or
+  process.parent.args in ("/usr/share/ksplice/ksplice-apply", "/usr/bin/waydroid", "/usr/sbin/blksnap-loader") or
+  process.parent.args like "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_command.py" or
+  process.args == "ip6_tables" or
+  (process.name == "systemd" and process.parent.name == "runc" and process.parent.command_line == "runc init") or
+  (
+    process.parent.executable like "/usr/bin/python*" and
+    process.command_line in ("/usr/sbin/modprobe br_netfilter", "/usr/sbin/modprobe overlay")
+  ) or
+  process.parent.executable like (
+    "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "./runc", "/opt/puppetlabs/puppet/bin/ruby",
+    "/home/*/work/check-hardware/coco-detect/target/debug/coco-detect"
+  )
+)
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.006"
+name = "Kernel Modules and Extensions"
+reference = "https://attack.mitre.org/techniques/T1547/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1014"
+name = "Rootkit"
+reference = "https://attack.mitre.org/techniques/T1014/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

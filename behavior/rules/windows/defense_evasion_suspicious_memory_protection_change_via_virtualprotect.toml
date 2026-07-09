@@ -7,7 +7,7 @@ id = "8fcf2b81-8322-423b-a1b4-6bba722f599a"
 license = "Elastic License v2"
 name = "Suspicious Memory Protection Change via VirtualProtect"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
@@ -123,7 +123,8 @@ api where process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx") and
                      "e08569d34baf5c546c9a19c5e6d0b5993f196f41e5eaebb10e54c71b591092bc",
                      "39985fd1f06f7d4f0aba0c7d524fd4d53de03794a3bc916fd229d7a979027406",
                      "834b0fce44e8db2367967f8d5262a0dafe45e7c5bd69c98f1a9eeec2136dcbc1",
-                     "9bd1df47bf2036f85677bb974709e939fdb7f8c832c73c01a965fcc7b69288ba") and
+                     "9bd1df47bf2036f85677bb974709e939fdb7f8c832c73c01a965fcc7b69288ba",
+                     "81b2de53b31f5848410a94ca09fee9729b2ccbb852c6546edf52606efc523823") and
  not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, 
                   $entry.trusted == true and $entry.subject_name in ("Carbon Black, Inc.", "MUSARUBRA US LLC", "Microsoft Windows Hardware Compatibility Publisher", "Kaspersky Lab JSC"))
 '''

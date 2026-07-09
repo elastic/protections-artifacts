@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Kill Command Executed from Binary in Unusual Location"
 os_list = ["linux", "macos"]
 reference = ["https://blog.xlab.qianxin.com/8220-k4spreader-new-tool-en/"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("kill", "pkill", "killall") and
@@ -19,7 +19,7 @@ process where event.type == "start" and event.action == "exec" and process.name 
     "/tmp/home-manager-build*/generation/activate", "/tmp/wpsupgrade.prerm", "/tmp/.mount_Cursor*", "/var/tmp/buildah*",
     "/tmp/JackettUpdate*/Jackett/JackettUpdater", "/tmp/.*.ansible/ansible-tmp-*", "/tmp/user/*/ubuntu-release-upgrader-*/noble",
     "/tmp/snap.rootfs_*/snap/zoom-client/*/zoom/zoom", "/tmp/B1ServerTools.*/opt/sap/SAPBusinessOne/Common/*/bin/java",
-    "/nix/store/*"
+    "/nix/store/*", "/var/lib/containers/storage/overlay/nix/store/*/bin/.hyprshot-wrapped"
   ) or
   process.executable like "./merged/*" or
   process.parent.name like ("check_openvpnauthentication", "python*", "vmis-launcher", "nessuscli", "AppRun", ".", ".azotebg") or

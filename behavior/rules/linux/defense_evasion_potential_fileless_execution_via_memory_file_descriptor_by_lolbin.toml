@@ -1,0 +1,107 @@
+[rule]
+description = """
+This rule detects when a process executes a file descriptor in the proc (temporary) file system via a LoLBin. This
+activity indicates an active attempt to execute a fileless payload and should be considered highly abnormal or
+suspicious. This activity can occur when the memfd syscall is utilized to create a memory resident file, like a payload,
+and then uses it to execute a process via a command and control channel via a LoLBin, resulting in an exec event.
+"""
+id = "af4a2ea7-391f-4fc2-8ccf-946f412c023b"
+license = "Elastic License v2"
+name = "Potential Fileless Execution via Memory File Descriptor by LoLBin"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.interactive == true and (
+  process.name in (
+    "bash", "dash", "sh", "tcsh", "tclsh", "wish", "csh", "zsh", "ksh", "fish", "mksh",
+    "busybox", "pwsh", "node", "nodejs", "deno", "bun", "base64", "rscript", "escript",
+    "r", "julia", "mono", "dotnet", "dotnet-ef", "groovy", "kotlin", "scala", "erlang",
+    "ocaml", "ocamlopt", "ld.so", "ld-linux-x86-64.so.2", "awk", "gawk", "mawk", "nawk",
+    "env", "timeout", "nice", "stdbuf", "setsid", "setarch", "unshare", "nsenter", "flock",
+    "nohup", "runuser", "sudo", "snap", "snap-confine", "snap-exec", "erlexec", "beam.smp",
+    "java", "javaw"
+  ) or
+  process.name like ("python*", "perl*", "ruby*", "lua*", "php*", "qemu-*-static")
+) and
+process.args regex """/proc/(self|[0-9]{1,7})/fd/[0-9]{1,7}""" and
+not (
+  process.command_line in ("ln -f -s /proc/1/fd/2 /docker.stderr", "ln -f -s /proc/1/fd/1 /docker.stdout") or
+  process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
+  process.parent.executable like (
+    "/opt/omni/bin/drim/linux-amd64/coolie", "/bin/k3s", "/sbin/upstart", "/opt/hrt/hrtpylon-*/bin/python3.*",
+    "/data/k3s/*/bin/k3s", "/var/lib/docker/overlay2/*/bin/k3s", "/var/lib/rancher/k3s/*/bin/k3s",
+    "/usr/libexec/apptainer/bin/starter"
+  ) or
+  process.executable like "/home/*/core3/plz-out/bin/third_party/python3/cpython/usr/python3*/bin/python3.*" or
+  (
+    process.parent.executable == "/sbin/apk" and
+    process.parent.args in ("add", "del", "upgrade")
+  ) or
+  (
+    process.parent.executable == "/sbin/init" and
+    process.name == "sh" and
+    process.args == "-e"
+  ) or
+  (
+    process.name == "busybox" and
+    process.command_line == "tee -a /proc/1/fd/1"
+  ) or
+  (
+    process.executable == "/bin/busybox" and
+    process.args == "sh" and
+    process.args in ("/usr/bin", "/usr/sbin")
+  ) 
+)
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

@@ -7,14 +7,17 @@ id = "050a7053-a119-43fc-ad14-9a0c4944a9b8"
 license = "Elastic License v2"
 name = "Suspicious Binary Execution via SSH"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
 [process where event.type == "start" and event.action == "exec" and process.parent.name in ("ssh", "sshd", "sshd-session") and
  (process.name like~ ("osascript", "curl", "nscurl", "wget", "perl", "node") or (process.code_signature.exists == false or
   process.code_signature.trusted == false)) and
- not process.executable like~ ("/opt/homebrew/Cellar/*", "/usr/local/Cellar/*", "/Users/*/homebrew/Cellar/*", "/usr/local/libexec/ssh-sk-helper")]
+ not process.executable like~ ("/opt/homebrew/Cellar/*", "/usr/local/Cellar/*", "/Users/*/homebrew/Cellar/*", "/usr/local/libexec/ssh-sk-helper") and 
+ not process.Ext.effective_parent.executable in ("/Applications/Codex.app/Contents/MacOS/Codex", "/Applications/Cursor.app/Contents/MacOS/Cursor") and 
+ process.hash.sha256 != "cc2b7231c9f1696e24c0c05cbc93ec88172ba6fa102b0fbbdc8ed95ee564b4d6"
+ ]
  [network where event.type == "start" and
    not cidrmatch(destination.ip, 
        "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 

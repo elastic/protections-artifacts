@@ -1,0 +1,119 @@
+[rule]
+description = """
+Identifies attempts to execute commands with long base64 encoded command lines. Adversaries may abuse this technique to
+execute malicious commands.
+"""
+id = "389cd325-5e24-4188-8dd3-f9b0ee637ce9"
+license = "Elastic License v2"
+name = "Long Base64 Encoded Interpreter Command Line"
+os_list = ["windows"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and
+(
+  (
+    process.name like~ "python*" and
+    (
+      process.command_line like~ "*b64decode*" or
+      (
+        process.command_line like "*-c *" and
+        process.command_line like~ "*base64*"
+      )
+    )
+  ) or
+  (
+    process.name like~ ("node*", "deno*") and
+    (
+      process.command_line like~ ("*atob(*", "*eval(*") or
+      (
+        process.command_line like~ "*buffer.from*" and
+        process.command_line like~ "*base64*"
+      )
+    )
+  ) or
+  (
+    process.name like~ "php*" and
+    process.command_line like~ ("*base64_decode(*", "*convert.base64-decode*")
+  ) or
+  (
+    process.name like~ "java*" and
+    process.command_line like~ "*base64*decode(*"
+  ) or
+  (
+    process.name like~ "lua*" and
+    process.command_line like~ ("*mime.decode(*base64*", "*mime.unb64(*")
+  ) or
+  (
+    process.name like~ "openssl*" and
+    process.command_line like~ ("*base64 -d*", "*-base64*")
+  )
+) and length(process.command_line) >= 4000 and 
+not process.parent.executable : ("C:\\Users\\*\\git\\usr\\bin\\bash.exe", "C:\\Program Files\\Git\\usr\\bin\\bash.exe", "C:\\Program Files\\Git\\usr\\bin\\sh.exe")
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.011"
+name = "Lua"
+reference = "https://attack.mitre.org/techniques/T1059/011/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+[[threat.technique]]
+id = "T1140"
+name = "Deobfuscate/Decode Files or Information"
+reference = "https://attack.mitre.org/techniques/T1140/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

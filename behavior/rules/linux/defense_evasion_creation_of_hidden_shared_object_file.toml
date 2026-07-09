@@ -8,7 +8,7 @@ id = "61b20f0f-d342-4b32-bc77-195037b0dc82"
 license = "Elastic License v2"
 name = "Creation of Hidden Shared Object File"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 file where event.type == "creation" and file.name like~ ".*.so" and (
@@ -26,7 +26,7 @@ not (
   process.executable like (
     "/home/*/.opencode/bin/opencode", "/home/*/.nvm/*/bin/kilo", "/home/*/.vscode-server/*/server/node",
     "/home/*/.local/share/containers/storage/overlay/*/opencode", "./usr/bin/podman",
-    "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode"
+    "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode", "/home/*/.aimee-code/bin/opencode"
   ) or
   file.name like ("._*", ".*-00000000.so") or
   file.path like ("/home/*/.local/share/containers/storage/overlay/*", "/scratch/user/*/ZEBULON/CODE/.files-libLocal.so")

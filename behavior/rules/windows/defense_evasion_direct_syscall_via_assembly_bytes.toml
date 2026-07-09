@@ -7,13 +7,14 @@ id = "e0abc200-a578-4e3a-bd1a-eded0c32a245"
 license = "Elastic License v2"
 name = "Direct Syscall via Assembly Bytes"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 any where process.executable != null and
 (
 (event.category in ("registry", "file") and
  process.thread.Ext.call_stack_summary like "?*" and not process.thread.Ext.call_stack_summary like "ntdll.dll*" and
+ not process.thread.Ext.call_stack_summary in ("Unknown", "Unknown|Unbacked") and 
  /* mov r10,rcx, mov eax,ssn, syscall */
  _arraysearch(process.thread.Ext.call_stack, $entry,
                $entry.callsite_leading_bytes like ("*4c8bd1b8??????000f05", "*4989cab8??????000f05", "*4c8bd10f05", "*4989ca0f05"))) or

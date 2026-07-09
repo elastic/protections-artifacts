@@ -9,11 +9,11 @@ id = "9de52bd9-0537-4b2c-a3ba-34c3c3ffd855"
 license = "Elastic License v2"
 name = "Security Tooling Enumeration"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=3s
-  [process where event.type == "start" and event.action == "exec" and
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
   (
     process.name in ("service", "chkconfig", "grep", "egrep", "pgrep") or
     process.name == "systemctl" and process.args in ("is-enabled", "show", "is-active", "status", "list-units")
@@ -29,7 +29,7 @@ sequence by process.parent.entity_id with maxspan=3s
       "/opt/puppetlabs/puppet/bin/ruby", "/opt/puppetlabs/puppet/bin/puppet", "/opt/sophos-spl/base/bin/SulDownloader",
       "/usr/local/manageengine/uems_agent/bin/dctaskengine", "/usr/bin/newrelic-infra", "/usr/bin/puppet",
       "/usr/lib64/nagios/plugins/check_agents", "/opt/chef/bin/chef-client", "/opt/chef/embedded/bin/ruby",
-      "/usr/local/manageengine/uems_agent/bin/dcinventory", "/opt/scripts/puppet/puppetrun"
+      "/usr/local/manageengine/uems_agent/bin/dcinventory", "/opt/scripts/puppet/puppetrun", "/usr/bin/chef-client"
     ) or
     process.parent.executable like (
       "/opt/sophos-spl/base/bin/SulDownloader.*", "/opt/rapid7/ir_agent/components/bootstrap/*/bootstrap_upgrader",

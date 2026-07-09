@@ -11,7 +11,7 @@ reference = [
     "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
     "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -34,7 +34,11 @@ sequence by process.parent.entity_id with maxspan=10s
     process.parent.executable == "/opt/rudder/bin/rudder" or
     process.working_directory like "/mnt/vstk/queue/*" or
     process.args like "/var/rudder/tmp/reports/*" or
-    (process.name == "tar" and process.working_directory like "/u/sysdat/*")
+    (process.name == "tar" and process.working_directory like "/u/sysdat/*") or
+    (
+      (process.parent.executable == "/home/backup/backup.sh" or process.parent.args == "/backup/backup_temp") and
+      process.working_directory like "/storage/*"
+    )
   )]
 '''
 

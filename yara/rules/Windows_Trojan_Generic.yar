@@ -410,3 +410,22 @@ rule Windows_Trojan_Generic_4a773368 {
         $pdb or 3 of ($str*)
 }
 
+rule Windows_Trojan_Generic_69cc22ec {
+    meta:
+        author = "Elastic Security"
+        id = "69cc22ec-43f9-489c-ba78-178227621454"
+        fingerprint = "3178e69c6777a6a80dd804dd60abf718d794683234434353c90d4de75cb5f87a"
+        creation_date = "2026-06-30"
+        last_modified = "2026-07-20"
+        threat_name = "Windows.Trojan.Generic"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 56 48 89 E6 48 83 E4 F0 48 83 EC 20 E8 ?? ?? ?? ?? 48 89 F4 5E C3 E8 01 00 00 00 C3 48 8B 04 24 48 83 E8 1B C3 }
+    condition:
+        all of them
+}
+

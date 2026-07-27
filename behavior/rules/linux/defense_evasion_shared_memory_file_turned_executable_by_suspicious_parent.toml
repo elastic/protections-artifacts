@@ -8,7 +8,7 @@ id = "742037b3-3ef6-4a33-84ed-b26fc6ae322c"
 license = "Elastic License v2"
 name = "Shared Memory File Turned Executable by Suspicious Parent"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chmod" and
@@ -20,7 +20,12 @@ not (
     process.args in ("/dev/shm/tmp", "/dev/shm/var", "/dev/shm/checkresults")
   ) or
   process.parent.executable == "./install-attachment-registration-manager.sh" or
-  process.parent.command_line == "runc init"
+  process.parent.command_line == "runc init" or
+  (
+    process.working_directory like "/tmp/selfgz*" and
+    process.parent.args ==  "./install-attachment-registration-manager.sh" and
+    process.command_line == "chmod 777 /dev/shm/check-point"
+  )
 )
 '''
 

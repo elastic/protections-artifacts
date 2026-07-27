@@ -16,7 +16,7 @@ reference = [
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
     "https://www.elastic.co/blog/process-ghosting-a-new-executable-image-tampering-attack",
 ]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 sequence by process.entity_id
@@ -33,6 +33,7 @@ sequence by process.entity_id
                   "Veeam Software Group GmbH",
                   "Trend Micro, Inc.",
                   "Sophos Ltd",
+                  "Sophos Limited",
                   "DeviceLock, Inc",
                   "Cynet Security LTD")) and
   not process.executable : "?:\\Program Files (x86)\\Common Files\\BattlEye\\BEService.exe" and
@@ -78,7 +79,19 @@ sequence by process.entity_id
                "8f033c102beb8ce272fa0d9c41fe1d80e650c32dfd04e0508d738756ad97d3d0",
                "f38aea6d696424dd2c59b5293f1dc4ee21f074482e4ee25bd73148c5573a9b4b",
                "e87fde91e0250e88127b38cb70d927c38726403e082b53bb62051c6c82c4fe62",
-               "ece86e8a88de3a06ebda73d8945dda04df9a94a0c8f949c9c3e1c3d2355ca526")
+               "ece86e8a88de3a06ebda73d8945dda04df9a94a0c8f949c9c3e1c3d2355ca526",
+               /* DeviceLock BackupClient - DLDrvUserMode64.dll (unsigned) */
+               "671126f4ac6fa36a9f0101d8fd798595dff0357132e29da6448333678acc34a6",
+               /* SecureWorks TaegisInj.x64.dll (new hash) */
+               "390b87da25c2b894adab6b8de4756ae5c5c8c3438d00681b138c2bcf812807f2",
+               /* tumldr.dll - LLP Gamma Technologies */
+               "46f3db2d2f869c9c4273176ca9b14249b0cd7c15c6dbcfc6e09dc5498030ffa9",
+               /* SophosAmsiProvider.dll */
+               "a0ccfd904b6d082c77a879ba76e504c6001887ceea215962a2e8a4075a7ff444",
+               /* UniAccessLite.MozartBreathManifest2.dll - LeagSoft */
+               "b676ccc54357b5f7689c7420de1633962b128ac29f4b9ac2e7186aef81b517cd",
+               /* mfc100.dll - Microsoft Corporation */
+               "ef2e0df287af95855b6b13173259df847a2cb8a1872ba3d4573e82abd4fb9699")
   ]
   until [process where event.action == "end"]
 '''

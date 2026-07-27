@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Nohup Execution followed by Outbound Network Connection"
 os_list = ["macos"]
 reference = ["https://objective-see.org/blog/blog_0x71.html"]
-version = "1.0.24"
+version = "1.0.26"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -27,7 +27,19 @@ sequence by process.parent.entity_id with maxspan=30s
                                 "*/Applications/*")) or
    (process.args like~ "npm" and process.args like~ "install")) and
   process.parent.name like~ ("bash", "sh", "zsh", "tclsh*", "terminal", "python*", "osascript") and
-  not process.Ext.effective_parent.executable == "/Applications/SteelSeries GG/SteelSeries GG.app/Contents/MacOS/SteelSeries GG"]
+  not process.Ext.effective_parent.executable == "/Applications/SteelSeries GG/SteelSeries GG.app/Contents/MacOS/SteelSeries GG" and
+  not (process.parent.name in ("zsh", "bash", "sh") and process.parent.command_line : (
+    "*/.claude/shell-snapshots/*",
+    "*/.claude-personal/shell-snapshots/*",
+    "*/.codex/shell_snapshots/*",
+    "*/.cursor/shell-snapshots/*",
+    "*__CURSOR_SANDBOX_ENV_RESTORE*")) and
+  not process.command_line : (
+    "*/tmp/claude/*",
+    "*/private/tmp/claude/*",
+    "*/private/tmp/claude-*/*",
+    "*/Library/Application Support/Claude/local-agent-mode-sessions/*",
+    "*/Library/Android/sdk/emulator/*")]
 [network where event.type == "start" and
    not cidrmatch(destination.ip, 
        "240.0.0.0/4", "233.252.0.0/24", "224.0.0.0/4", "198.19.0.0/16", "192.18.0.0/15", 

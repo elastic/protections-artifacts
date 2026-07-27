@@ -8,7 +8,7 @@ id = "727c9703-6879-45d1-80ad-7729ff244964"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Parent Process Sequence"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=15s
@@ -63,13 +63,15 @@ sequence by process.parent.entity_id with maxspan=15s
       "/home/*/.npm-global/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/*/bin/codex", "/home/*/anaconda3/envs/*/bin/python*",
       "/home/*/.venv/lib/python*/site-packages/playwright/driver/node", "/home/*/cricket/cricket/util/cenic/*.pl", "/home/*/.local/bin/agy",
       "/home/*/.local/bin/copilot", "/home/*/Programy/DCC_harris_release/dcc", "./merged/home/*/.local/share/containers/storage/overlay/*/merged/bin/bash",
-      "/home/*/.local/share/containers/storage/overlay/*", "/usr/sbin/httpd", "./merged/var/lib/containers/storage/overlay/*", "/cav/gtm/mumps"
+      "/home/*/.local/share/containers/storage/overlay/*", "/usr/sbin/httpd", "./merged/var/lib/containers/storage/overlay/*", "/cav/gtm/mumps",
+      "/home/*/Downloads/Antigravity-arm64/antigravity","/usr/bin/gnome-shell", "/home/oracle/bin/request-daily.sh",
+      "/tmp/newroot/usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
     ) or
     (
       process.parent.name like "python*" and
       process.parent.args == "terraform.kafka_runner.run-test"
     ) or
-    process.command_line == "/bin/sh ./catalina.sh stop"
+    process.command_line in ("/bin/sh ./catalina.sh stop", "/bin/bash --login", "bash scripts/build_nvxsw_ssh.sh", "subscription-manager identity")
   )]
   [process where event.type == "change" and event.action == "uid_change" and
   user.id == 0 and process.parent.user.id != 0 and process.parent.group.id != 0 and

@@ -8,7 +8,7 @@ id = "2d5d9b4b-01ac-41c4-b5c2-6a9d1fe93aae"
 license = "Elastic License v2"
 name = "Potential Local Privilege Escalation via a Suspicious Descendant Process"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.interactive == true and
@@ -37,7 +37,9 @@ not (
     "/home/*/.conda/envs/fmf_server_agent/bin/python*", "/home/*/.local/share/uv/python/cpython-*-linux-x86_64-gnu/bin/python*",
     "/home/*/.local/share/mise/installs/node/*/bin/node", "/usr/local/bin/tm_sandbox", "./merged/var/lib/containers/storage/overlay/*",
     "/home/*/.local/share/containers/storage/overlay/*", "/home/*/Downloads/*/balena-etcher", "/opt/brave.com/brave/brave", "/var/lib/snapd/snap/node/*/bin/node",
-    "/home/linuxbrew/.linuxbrew/Cellar/*", "/home/*/.npm-global/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe"
+    "/home/linuxbrew/.linuxbrew/Cellar/*", "/home/*/.npm-global/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+    "/oracle/KG2/*/bin/oracle", "/home/*/.codex/*/bin/codex", "/home/*/.please/*/please", "/opt/microsoft/msedge/msedge",
+    "/usr/local/bin/obsidian", "/home/*/.opencode/bin/opencode"
   ) or
   process.executable like (
     "/usr/bin/mount", "/usr/bin/fusermount3", "/tmp/newroot/usr/bin/sudo", "/usr/bin/nvidia-modprobe", "/usr/bin/fusermount",
@@ -50,12 +52,19 @@ not (
     "/home/*/.crc/bin/crc-admin-helper-linux-amd64", "/usr/bin/sg", "/usr/bin/crontab", "/sas/*/bin/elssrv", "/usr/lpp/mmfs/bin/tslsquota",
     "/usr/lib/snapd/snap-confine", "/u01/*/client/scheduler/execution_agent/bin/jssu", "./merged/home/*/.local/share/containers/storage/overlay/*",
     "/tmp/newroot/usr/share/antigravity/chrome-sandbox", "/usr/lib/x86_64-linux-gnu/singularity/bin/starter-suid", "/home/*/cdunix/ndm/bin/ndmumgr",
-    "/tmp/newroot/usr/lib/xorg/Xorg.wrap", "/usr/bin/apt-get"
+    "/tmp/newroot/usr/lib/xorg/Xorg.wrap", "/usr/bin/apt-get", "/usr/bin/install", "/usr/bin/pkexec", "/usr/bin/containerlab", "/usr/bin/kmod"
   ) or
   process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
   process.command_line == "newgrp docker" or
-  process.parent.args like "/home/*/.vscode-server/cli/servers/Stable-*" or
-  (process.name == "pkexec" and process.args in ("apt-get", "/usr/bin/rpm"))
+  process.parent.args like ("/home/*/.vscode-server/cli/servers/Stable-*", "/home/*/.cursor-server/bin/*", "pkexec*") or
+  (process.name == "pkexec" and process.args in ("apt-get", "/usr/bin/rpm")) or
+  (process.parent.executable like "/home/*/bin/san" and process.executable == "/bin/mount") or
+  (process.parent.executable like "/tmp/newroot/*" and process.executable like "/tmp/newroot/*") or
+  (process.parent.executable == "/usr/bin/i3lock" and process.executable == "/usr/bin/unix_chkpwd") or
+  (
+    process.executable == "/bin/fusermount" and
+    process.parent.executable like ("/home/*/.local/bin/nvim", "/home/*/bin/Obsidian-*.AppImage")
+  )
 )
 '''
 

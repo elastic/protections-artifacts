@@ -8,13 +8,13 @@ id = "9ff78f59-73ed-4b91-834f-0da395581abd"
 license = "Elastic License v2"
 name = "SSH Authorized Keys File Deletion"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=3s
   [process where event.type == "start" and event.action == "exec" and (
     process.name in (
-      "sudo", "truncate", "unlink", "find", "xargs", "install", "shred", "vi", "vim",
+      "sudo", "truncate", "unlink", "find", "xargs", "shred", "vi", "vim",
       "vim.basic", "coreutils", "tar", "gzip", "bzip2", "rmdir", "cp", "ln", "busybox",
       "bash", "zsh", "sh", "tcsh", "csh", "ksh", "fish"
     ) or
@@ -25,7 +25,9 @@ sequence by process.entity_id with maxspan=3s
     ) or
     /* Don't FP on user home directory deletion */
     (process.name == "rm" and process.args like "*authorized_keys*")
-  )]
+  ) and
+  /* Exclude install utility (atomic file replacement, not deletion) via busybox/coreutils multi-call */
+  not (process.name in ("busybox", "coreutils") and process.args == "install")]
   [file where event.type == "deletion" and file.path like (
     "/home/*/.ssh/authorized_keys", "/home/*/.ssh/authorized_keys2",
     "/root/.ssh/authorized_keys", "/root/.ssh/authorized_keys2"

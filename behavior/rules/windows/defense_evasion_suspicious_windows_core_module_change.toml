@@ -4,7 +4,7 @@ id = "e6b77636-53e6-416f-81bb-863b74a896e8"
 license = "Elastic License v2"
 name = "Suspicious Windows Core Module Change"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -84,7 +84,9 @@ api where process.Ext.api.name == "VirtualProtect" and
                                           "Duncan Ogilvie",
                                           "combit Software GmbH",
                                           "Cisco Systems, Inc.",
-                                          "MetaQuotes Ltd")) and
+                                          "MetaQuotes Ltd",
+                                          "Solarwinds Worldwide, LLC",
+                                          "Symantec Corporation")) and
  not (process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\assembly\\nativeimages_*.ni.dll" and
       process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\ntdll.dll")
 '''

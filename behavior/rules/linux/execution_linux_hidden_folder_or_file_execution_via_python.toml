@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Linux Hidden Folder or File Execution via Python"
 os_list = ["linux"]
 reference = ["https://github.com/rapid7/metasploit-framework"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -18,7 +18,12 @@ not (
   process.parent.name in ("browser_tests", "unit_tests", "arduino-cli", "node", "python.original") or
   process.args like (
     "/tmp/.build/*", "/tmp/.sentrycli*", "/var/tmp/.mount_GIMP*", "/tmp/.mount_GIMP*", "/tmp/*/ansible-tmp-*/AnsiballZ*.py",
-    "/tmp/selfgz*.py", "/home/*/git/roche/product-packages/common/hearst/test-submit-enclave-measurements.py"
+    "/tmp/selfgz*.py", "/home/*/git/roche/product-packages/common/hearst/test-submit-enclave-measurements.py",
+    "/tmp/.ctx-mode-*", "/tmp/.tmp*/drivers/fake.*/run.py"
+  ) or
+  process.args in (
+    "/opt/sev-snp-measure/measure.py", "/tmp/.__preview_vite_base_fixer.py", "/tmp/.soc_models_helper.py",
+    "/opt/fortanix/enclave-os/blobs/kernel_enabled_gpu/bzImage"
   ) or
   process.parent.args like "/home/*/git/roche/product-packages/common/hearst/test-submit-enclave-measurements.py" or
   (
@@ -27,7 +32,8 @@ not (
   ) or
   (process.args in ("/usr/bin/ukify", "/bin/ukify") and process.args == "build") or 
   (process.args == "--include-private-keys" and process.parent.args like "/home/*/.ansible/tmp/ansible-tmp-*/ir_scan.sh") or
-  (process.parent.executable == "./runc" and process.parent.command_line == "runc init")
+  (process.parent.executable == "./runc" and process.parent.command_line == "runc init") or
+  (process.parent.executable like "/home/gitlab-runner/builds/*/bach" and process.args like "/tmp/.tmp*/*/run.py")
 )
 '''
 

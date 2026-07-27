@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection Followed by Memory File Descriptor Creation"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=10s
@@ -48,7 +48,7 @@ sequence with maxspan=10s
     (
       process.executable like (
         "/home/runner/actions-runner-*/Runner.Listener", "/home/runner/actions-runner-*/Runner.Worker",
-        "/home/runner/bin/Runner.Listener"
+        "/home/runner/bin/Runner.Listener", "/home/runner/bin/Runner.Worker"
       ) and
       process.Ext.memfd.name == "memfd:doublemapper"
     ) or
@@ -81,11 +81,16 @@ sequence with maxspan=10s
     ) or
     process.executable like (
       "/tmp/.mount_remp*/zen", "/usr/lib/systemd/systemd", "/usr/libexec/nordlayer/nordlayer-resolvconf",
-      "/home/*/.vscode-server/*/bin/vsce-sign", "/sbin/apk"
+      "/home/*/.vscode-server/*/bin/vsce-sign", "/sbin/apk", "/usr/bin/lxc-info", "/home/*/.local/share/claude/versions/*",
+      "/tmp/*/.vscode-server/bin/*/node_modules/@vscode/vsce-sign/bin/vsce-sign"
     ) or
     (
       process.executable like "/usr/bin/php*" and
       process.Ext.memfd.name == "anon_hugepage"
+    ) or
+    (
+     process.executable like "/opt/erlang/lib/erlang/erts-*/bin/beam.smp" and
+     process.args like ("/opt/rabbitmq/escript/rabbitmq-diagnostics", "/opt/erlang/lib/erlang/erts-*/bin/beam.smp")
     )
   )] by process.parent.entity_id
 '''

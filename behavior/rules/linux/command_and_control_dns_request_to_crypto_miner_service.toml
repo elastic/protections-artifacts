@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "DNS Request to Crypto Miner Service"
 os_list = ["linux"]
 reference = ["https://xmrig.com/docs/algorithms"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -26,7 +26,8 @@ sequence by process.entity_id with maxspan=1m
       "/tmp*", "/var/tmp*", "/dev/shm*", "/run*", "/var/run*", "/boot*", "/sys*", "/lost+found*",
       "/proc*", "/var/mail*", "/var/www*", "/home/*/*", "/root/*"
     )
-  )]
+  ) and
+  not (process.name like "php*" and process.args in ("/var/tools/koalaping/bin/ping.php", "/var/tools/lean/bin/Lean.php"))]
   [dns where event.action == "lookup_result" and dns.question.name like~ (
     "*cnpool.cc", "*lindon-pool.win", "*supportxmr.com", "*comgandalph3000.com", "*minergate.com",
     "*fjhan.club", "*emercoin.com", "*poolto.be", "*520fjh.org", "*xmrpool.xyz", "*simka.pw", "*noobxmr.com",

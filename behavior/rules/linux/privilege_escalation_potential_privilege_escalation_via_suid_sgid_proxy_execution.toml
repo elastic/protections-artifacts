@@ -14,7 +14,7 @@ reference = [
     "https://gtfobins.github.io/#+suid",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -36,7 +36,8 @@ process.args in (
   "/usr/bin/pkexec", "/usr/libexec/pkexec", "/usr/lib/polkit-1/pkexec",
   "/usr/lib/snapd/snap-confine"
 ) and
-process.args_count <= 2
+process.args_count <= 2 and
+not process.parent.executable in ("/usr/bin/update-notifier", "/usr/lib/update-notifier/system-crash-notification")
 /*
 Need to exclude this in the future.
 Leaving this in now because of the current CopyFail CVE-2026-24061, but it does not detect what this rule is supposed to detect.

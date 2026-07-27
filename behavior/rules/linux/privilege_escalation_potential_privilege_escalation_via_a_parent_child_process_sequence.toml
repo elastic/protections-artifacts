@@ -9,7 +9,7 @@ id = "ee4a9893-2c55-4268-9292-d4efb15e8195"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Parent/Child Process Sequence"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=30s 
@@ -49,7 +49,7 @@ sequence with maxspan=30s
       "/home/*/h/*/anaconda3/envs/gd/bin/python3.*", "/tmp/.tmp*/.vscode-server/cli/servers/Stable-*/server/node",
       "/home/*/my-tools/kitty.app/bin/kitty", "/home/*/bin/ext/gocryptfs*", "/home/*/.local/bin/micromamba",
       "/tmp/.mount_Cursor*/usr/share/cursor/cursor", "/home/*/sp/bin/goofys", "/usr/bin/cmake", "/tmp/vscode-komo/*/server/node",
-      "/home/*/sysadmin/linuxCommands/OnGuard/clearpass-onguard-installer*"
+      "/home/*/sysadmin/linuxCommands/OnGuard/clearpass-onguard-installer*", "/home/*/Downloads/Antigravity-arm64/antigravity"
     ) or
     process.executable like (
       "./sh/relaunch.sh", "./install-components.sh", "./clean-docker.sh", "./docker-deploy.sh", "./bin/deploy-nautilus", "./get_helm.sh",
@@ -63,9 +63,11 @@ sequence with maxspan=30s
       "/tmp/newroot/usr/bin/flatpak", "/tmp/newroot/usr/bin/sh", "/cav/gtm/lke", "/home/*/cricket/util/cenic/*.pl", "/home/*/restart_starman.sh",
       "/home/*/Programy/DCC_harris_release/dcc", "/tmp/newroot/var/lib/awx/venv/awx/bin/python3", "/tmp/var/lib/awx/venv/awx/bin/python3",
       "/home/oracle/bin/request-daily.sh", "./merged/var/lib/containers/storage/overlay/*", "/usr/bin/podman", "/home/*/.conda/envs/*/bin/python",
-      "/home/*/go/src/*/odinq"
+      "/home/*/go/src/*/odinq", "/tmp/newroot/usr/bin/sudo", "/usr/bin/consolehelper", "/home/*/llama.cpp/build/bin/llama-server"
     ) or
-    process.command_line in ("/usr/bin/env bash ./run_docker.sh", "/usr/bin/env bash ./run_docker_prod.sh")
+    process.command_line in ("/usr/bin/env bash ./run_docker.sh", "/usr/bin/env bash ./run_docker_prod.sh") or 
+    (process.parent.executable == "/tmp/newroot/var/lib/awx/venv/awx/bin/python3" and process.executable == "/tmp/newroot/var/lib/awx/venv/awx/bin/python3") or
+    (process.parent.executable == "/tmp/newroot/etc/profiles/per-user/tilupe/bin/starship" and process.executable == "/tmp/newroot/etc/profiles/per-user/tilupe/bin/starship")
   )] by process.entity_id
   [process where event.type == "change" and event.action == "uid_change" and
   user.id == 0 and process.parent.user.id != 0 and process.parent.group.id != 0 and

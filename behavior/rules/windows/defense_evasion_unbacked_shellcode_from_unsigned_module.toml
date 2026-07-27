@@ -8,7 +8,7 @@ reference = [
     "https://www.elastic.co/security-labs/pikabot-i-choose-you",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -105,7 +105,12 @@ api where
                                   "f939f09133e4a6a050e085adcdebadc92a45bd8696d75895ea520cfbd0167ebe",
                                   "9d0a822bf161b9b2daf06d515ec1bb202150e87f6d938510d2f4bfcf9d06e14f",
                                   "aa0e85beff0697474d0419349e9c1afb3bf711ffcd26a696dd2a1d192a90da36",
-                                  "d2cd65a4e6eb99acaf2f168bd650e6b3c91144d08f01b0b772de13dce28c7ce9") and
+                                  "d2cd65a4e6eb99acaf2f168bd650e6b3c91144d08f01b0b772de13dce28c7ce9",
+                                  /* Benign self-modifying commercial software (self-provenance, telemetry FP triage) */
+                                  "996129f8229e532dcbb93fcd5a704b707e97796fd55ad6382306ee03f58c8f95",
+                                  "6f2ee6f8f3240112ff6a861657228ba29144be11a281ad0517eab0f2a421eeb3",
+                                  "4a632d7a938585502452bc3afd328a7d598934bd56dcb13042ecd76f10743510",
+                                  "04f967d77dba69d8369218a2ae316c210749f0b1279ac563d8d281dea7b8c6e4") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance in ("isrt.dll", "issetup.dll", "dbexpida.dll", "cyinjct.dll", "_isres.dll", "bass.dll") and
  not (process.executable : "C:\\Windows\\SysWOW64\\msiexec.exe" and process.thread.Ext.call_stack_final_user_module.protection_provenance like ("msi*.tmp", "_isres.dll", "itcombo6.ocx")) and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like

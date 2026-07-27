@@ -1,0 +1,69 @@
+[rule]
+description = """
+This rule detects the usage of netcat to connect to a remote host. This behavior may be indicative of a reverse shell
+connection being established.
+"""
+id = "a60859af-bd25-449d-bdb3-e71cb1725f58"
+license = "Elastic License v2"
+name = "Suspicious Netcat Execution"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and
+process.name in ("nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional") and
+process.args regex "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}" and
+process.args_count >= 3 and
+not (
+  process.args like ("127.0.0.1", "127.0.0.01", "0.0.0.0", "::1", "-*z*", "--help", "8.8.8.8") or
+  process.args regex """10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}""" or
+  process.args regex """192\.168\.[0-9]{1,3}\.[0-9]{1,3}""" or
+  process.args regex """172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]{1,3}\.[0-9]{1,3}""" or
+  (process.parent.executable == "/usr/sbin/sshd" and process.args == "22")
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.15.0"

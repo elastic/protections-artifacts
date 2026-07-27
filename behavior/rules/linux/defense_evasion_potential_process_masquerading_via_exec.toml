@@ -8,7 +8,7 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -25,7 +25,8 @@ process.args == "-c" and process.command_line : "* exec -a *" and not (
     "/home/*/.claude/remote/ccd-cli/*", "/home/*/.claude/remote/ccd-cli", "/claude-cli/versions/*",
     "/usr/scratch/*/git/*/atl/src/aitools/claude/claude-bin", "/opt/forticlient/epctrl",
     "/root/.claude/remote/ccd-cli/*", "/root/.local/share/claude/versions/*", "/mnt/fast/*/.local/share/claude/versions/*",
-    "/opt/warpdotdev/warp-terminal/warp (deleted)", "/opt/local/share/claude/versions/*"
+    "/opt/warpdotdev/warp-terminal/warp (deleted)", "/opt/local/share/claude/versions/*",
+    "/usr/share/cursor/cursor", "/home/*/.grok/downloads/grok*linux-x86_64", "/home/*/.codex/*/bin/codex"
   ) or
   process.parent.args == "claude" or
   process.parent.name == "claude" or

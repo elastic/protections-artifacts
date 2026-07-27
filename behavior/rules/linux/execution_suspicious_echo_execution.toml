@@ -9,7 +9,7 @@ id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -96,12 +96,15 @@ not (
     "/home/*/.aimee-code/bin/opencode", "/home/linuxbrew/.linuxbrew/Cellar/tilt/*/bin/tilt", "/opt/Elastic/Endpoint/elastic-endpoint",
     "/home/*/.local/bin/droid", "/opt/saltstack/salt/bin/python3.*", "/home/*/please/plz-out/bin/package/please", "/home/*/.fzf/bin/fzf",
     "/home/*/spack/opt/spack/linux-cascadelake/*/bin/make", "/home/*/.local/share/fnm/node-versions/*/bin/node", "/home/coder/omni", "/home/*/toolchain/bin/make",
-    "/tmp/coder.*/coder"
+    "/tmp/coder.*/coder", "/home/*/.vscode-server/extensions/kilocode.*/bin/kilo", "/opt/zimbra/libexec/zmsetup.pl", "/ztank/sw/eb/sw/Perl/*/bin/perl"
   ) or
   (process.parent.name in ("vim", "vi", "nvim") and process.parent.command_line like ("*/usr/share/vim/vimfiles/doc*", "*vimglob*")) or
   process.parent.name like "php-fpm*" or
-  process.parent.command_line in ("openclaw-gateway", "runc init", "/usr/bin/perl -w /usr/bin/collectl -D", "/usr/bin/runc init") or
-  process.parent.command_line like "*/home/*/.claude/shell-snapshots/*" or
+  process.parent.command_line in (
+    "openclaw-gateway", "runc init", "/usr/bin/perl -w /usr/bin/collectl -D", "/usr/bin/runc init",
+    "sh -c /usr/bin/php -q /usr/share/cacti/script_server.php cmd", "ruby /root/./vpentest.rb first-connect"
+  ) or
+  process.parent.command_line like ("*/home/*/.claude/shell-snapshots/*", "/usr/local/cpanel/3rdparty/perl/*/bin/perl -w t/tools-validate_spec.t") or
   process.command_line in (
     "bash -c echo \"#!/bin/bash\" > /usr/sbin/ssh_alert_interm.sh",
     "/bin/sh -c timeout 20 bash -c 'set -o pipefail; which openssl &>/dev/null; echo $?'",
@@ -138,7 +141,10 @@ not (
     )
   ) or
   (process.parent.executable like "/tmp/portable_install_*/bomc.bin" and process.command_line like "*/tmp/healer/log/Lenovo_Support/bomc_*") or
-  (process.command_line like "*/home/ec2-user/.ssh/authorized_keys*" and process.parent.name like "python*" and process.parent.args == "/opt/aws/bin/cfn-init")
+  (process.command_line like "*/home/ec2-user/.ssh/authorized_keys*" and process.parent.name like "python*" and process.parent.args == "/opt/aws/bin/cfn-init") or
+  (process.parent.name == "python2" and process.parent.args == "/tmp/WSGUPInstall/setup/unified-installer.py") or
+  (process.working_directory == "/home/svc-ansible" and process.parent.name like "python3*") or
+  (process.parent.name like "python3*" and process.parent.command_line like "*mitogen*")
 )
 '''
 

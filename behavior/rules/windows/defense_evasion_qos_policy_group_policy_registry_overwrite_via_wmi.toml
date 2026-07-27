@@ -1,0 +1,55 @@
+[rule]
+description = """
+Identifies the overwrite of the machine Group Policy registry file Registry.pol by WmiPrvSE.exe with a call stack
+indicating QoS WMI policy configuration through gpedit.dll and qoswmi.dll. Tools such as EDRChoker abuse Policy-based
+Quality of Service to throttle Endpoint Detection and Response agents by persisting bandwidth caps in Group Policy,
+causing telemetry uploads to time out.
+"""
+id = "0c206fcc-ad17-4aee-84df-767ab74c28a1"
+license = "Elastic License v2"
+name = "QoS Policy Group Policy Registry Overwrite via WMI"
+os_list = ["windows"]
+reference = ["https://github.com/TwoSevenOneT/EDRChoker"]
+version = "1.0.1"
+
+query = '''
+file where event.action == "overwrite" and
+  file.path : "?:\\Windows\\System32\\GroupPolicy\\Machine\\Registry.pol" and
+  process.name : "WmiPrvSE.exe" and
+  Effective_process.name != null and
+  process.thread.Ext.call_stack_summary like "ntdll.dll*|kernelbase.dll|gpedit.dll|qoswmi.dll|*" and 
+  not (user.id == "S-1-5-18" and Effective_process.name : "powershell.exe")
+'''
+
+min_endpoint_version = "8.7.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "Effective_process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "8.7.0"

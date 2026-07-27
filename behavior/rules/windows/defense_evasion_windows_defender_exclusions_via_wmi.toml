@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 api where
@@ -19,13 +19,18 @@ api where
 
   not (user.id == "S-1-5-18" and process.executable : "C:\\Windows\\Sys?????\\WindowsPowerShell\\v*\\powershell.exe") and
   not (process.executable == "C:\\Windows\\System32\\svchost.exe" and process.parent.executable == "C:\\Windows\\System32\\services.exe") and
-  not (
-        process.parent.executable : (
-          "C:\\Program Files\\JetBrains\\JetBrains Rider *\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe",
-          "C:\\Users\\*\\AppData\\Local\\Programs\\Rider\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe"
+  not process.parent.executable : (
+          "?:\\Program Files\\JetBrains\\*\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe",
+          "?:\\Users\\*\\AppData\\Local\\Programs\\*\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe", 
+          "?:\\Program Files\\JetBrains\\*\\bin\\elevator.exe",
+          "?:\\Users\\*\\AppData\\Local\\Programs\\*\\bin\\elevator.exe", 
+          "?:\\Users\\*\\AppData\\Local\\Temp\\dbeaver-ce-*", 
+          "?:\\Users\\*\\AppData\\Local\\Temp\\*\\dbeaver-ce-*", 
+          "?:\\Users\\*\\Downloads\\dbeaver-ce-*", 
+          "?:\\Users\\*\\Downloads\\dbeaver-ee-*", 
+          "?:\\ProgramData\\chocolatey\\lib\\dbeaver\\tools\\dbeaver-ce-*", 
+          "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\DCHUService.exe"
         ) and
-        process.command_line : "*-ExclusionPath \"'C:\\Program Files\\JetBrains\\Rider\\r2r\"'"
-  ) and
   not (process.code_signature.subject_name in ("Censornet Limited") and process.code_signature.trusted == true) and
   not (process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and process.name : "powershell.exe" and
        process.command_line : "powerShell  Add-MpPreference -ControlledFolderAccessAllowedApplications*") and
@@ -36,7 +41,8 @@ api where
   not (process.name : "powershell.exe" and
        process.command_line : ("*JABlAHgAYwBsAHUAcwBpAG8AbgBzAD0AQAAoACIAQwA6AFwAUAByAG8AZwByAGEAbQAgAEYAaQBsAGUAcwBcAEQAQgBlAGEAdgBlAHIAXABkAGIAZQBhAHYAZQByAC4AZQB4AGUAI*",
                                "*AkAHMAcABsAGkAdABfAHAAYQByAHQAcwAgAD0AIAAkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApACwAIAAyACwA*",
-                               "*WwBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBHAGUAbgBlAHIAaQBjAC4ASABhAHMAaABTAGUAdABbAFMAdAByAGkAbgBnAF0AXQAoAEcAZQB0AC0A*"))
+                               "*WwBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBHAGUAbgBlAHIAaQBjAC4ASABhAHMAaABTAGUAdABbAFMAdAByAGkAbgBnAF0AXQAoAEcAZQB0AC0A*")) and
+  not (process.parent.executable : "C:\\Windows\\System32\\cmd.exe" and process.command_line : "*\\EC2Launch*\\UserScript.ps1*")
 '''
 
 min_endpoint_version = "8.15.0"

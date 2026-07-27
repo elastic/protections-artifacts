@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 api where
@@ -16,7 +16,7 @@ api where
   process.Ext.api.parameters.operation : "*Win32_Process::Create*" and
 
   not (process.code_signature.trusted == true and
-       process.code_signature.subject_name in ("TENABLE, INC.", "Autodesk, Inc.", "Archer Technologies﻿ LLC", "Opera Norway AS", 
+       process.code_signature.subject_name in ("TENABLE, INC.", "Autodesk, Inc.", "Archer Technologies LLC", "Opera Norway AS", 
       "Beijing Qihu Technology Co., Ltd.", "ACD Systems International Inc.", "CS.NIWC-ATLANTIC.001", "Check Point Software Technologies Ltd.",
       "VMware, Inc.", "Dell Technologies Inc.", "Atlassian Pty Ltd", "Recast Software, Inc.", "Specops Software Inc.", "Omnissa, LLC")) and
   not process.executable :
@@ -57,7 +57,20 @@ api where
                                "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe  -executionpolicy unrestricted -noninteractive -nologo -noprofile -command \"& { [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8; Write-Output SNC_PowerShell_PID=$pid*",
                                "*AkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACg*",
                                "\"C:\\Windows\\system32\\windowspowershell\\v1.0\\powershell.exe\" -ExecutionPolicy Unrestricted -Command \"& '\"C:\\Program Files\\Microsoft Monitoring Agent\\Agent\\Health Service State\\Monitoring Host Temporary Files *\\LaunchRestartHealthService.ps1*",
-                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -UseEncodedArguments -EncodedArgumentsParamVariation EncodedArguments -Execute -ErrorAction Stop}"))
+                               "\"powershell.exe\" & {Out-ATHPowerShellCommandLineParameter -CommandLineSwitchType Hyphen -EncodedCommandParamVariation E -UseEncodedArguments -EncodedArgumentsParamVariation EncodedArguments -Execute -ErrorAction Stop}")) and
+  not (process.name : "powershell.exe" and
+       process.parent.executable : ("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                                    "C:\\Windows\\System32\\wsmprovhost.exe",
+                                    "?:\\Program Files\\PowerShell\\*\\pwsh.exe")) and
+  not (process.name : "powershell.exe" and
+       process.parent.executable : ("?:\\Users\\*\\.local\\bin\\claude.exe",
+                                    "?:\\Users\\*\\@anthropic-ai\\claude-code\\bin\\claude.exe")) and
+  not (process.executable : ("C:\\Windows\\SysWOW64\\msiexec.exe", "C:\\Windows\\System32\\msiexec.exe") and
+       process.parent.executable : ("C:\\Windows\\System32\\msiexec.exe", "C:\\Windows\\SysWOW64\\msiexec.exe") and
+       process.code_signature.subject_name == "Microsoft Windows" and
+       process.code_signature.trusted == true) and
+  not (process.executable : ("C:\\Windows\\System32\\wscript.exe", "C:\\Windows\\SysWOW64\\wscript.exe") and
+       process.parent.executable : "C:\\Windows\\System32\\svchost.exe")
 '''
 
 min_endpoint_version = "8.15.0"

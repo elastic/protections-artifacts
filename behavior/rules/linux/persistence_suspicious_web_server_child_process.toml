@@ -8,7 +8,7 @@ id = "b4fff9bb-6095-4282-9084-217fced11ce7"
 license = "Elastic License v2"
 name = "Suspicious Web Server Child Process"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -165,6 +165,7 @@ process where event.type == "start" and event.action == "exec" and (
   )
 )
 and not (
+  process.parent.executable like "/tmp/*/.vscode-server/bin/*/node" or
   stringcontains(process.parent.executable, process.executable) or
   stringcontains(process.parent.args, process.executable) or
   (process.name == "echo" and process.parent.args in ("/usr/share/passenger/helper-scripts/rack-preloader.rb", "/etc/init.d/apache2")) or
@@ -180,7 +181,7 @@ and not (
     process.parent.name == "node" and 
     process.executable like ("./bin/dhcpd-pools", "/tmp/*/smoke-module/node_modules/@esbuild/linux-x64/bin/esbuild", "/tmp/.*/.cursor-server/*", "/var/tmp/buildah*")
   ) or
-  (process.parent.executable == "/etc/zabbix/script/php-fpm/php-fpm-check.sh" and process.command_line like "*127.0.0.1:10061/php-fpm_status*") or
+  (process.parent.executable == "/etc/zabbix/script/php-fpm/php-fpm-check.sh" and process.command_line like "*127.0.0.1:10061/php-fpm_status*") or 
   process.executable like (
     "/tmp/plz_sandbox/*", "/tmp/exiftool*", "/tmp/renovate/*", "/tmp/xfs*/yarn", "/tmp/newroot/usr/bin/ansible",
     "/tmp/chromedriver/*/chromedriver-linux64/chromedriver", "/tmp/temporal-sdk-typescript-*", "/tmp/newroot/var/snap/docker/common/var-lib-docker/rootfs/overlayfs/*/usr/local/bin/npm",
@@ -209,7 +210,11 @@ and not (
   (process.parent.executable == "/usr/lib/jvm/default-java/bin/java" and process.command_line like "chmod 755 /tmp/tomcat8-tomcat8-tmp/sqlite-*-libsqlitejdbc.so") or
   (process.parent.executable like "/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.name == "chmod" and process.args like "/sasconfig/Lev1/Web/SASEnvironmentManager/*") or
   (process.parent.executable like "/data/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.args like "/data/sasconfig/Lev1/Web/SASEnvironmentManager/*/hq-engine/hq-server/temp/pdknull/work/lib/*.jar") or
-  (process.parent.name == "node" and process.command_line == "sudo dpkg -l gzvaupdater")
+  (process.parent.name == "node" and process.command_line == "sudo dpkg -l gzvaupdater") or
+  (process.name == "chmod" and process.args like ("/opt/sas/config/*", "/data/sasconfig/*") and process.parent.name == "java") or 
+  (process.parent.name == "node" and process.name == "chmod" and process.args like "/tmp/github-runner*") or
+  (process.executable like "/tmp/passenger-install.*/PassengerAgent" and process.parent.name like "ruby*") or
+  (process.parent.args == "/venv/bin/gunicorn" and process.executable like "./merged/var/lib/containers/storage/overlay/*/merged/*")
 )
 '''
 

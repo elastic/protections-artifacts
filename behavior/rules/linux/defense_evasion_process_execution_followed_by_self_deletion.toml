@@ -7,7 +7,7 @@ id = "530ad3d7-7360-4467-83d3-f49d705535ba"
 license = "Elastic License v2"
 name = "Process Execution Followed by Self-Deletion"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -20,9 +20,12 @@ sequence by process.entity_id with maxspan=15s
       "/tmp/.dropbox-dist-new-*/dropbox", "/tmp/builds/*/node_modules/.bin/rimraf", "/var/tmp/*/conftest",
       "/tmp/cmdickens/*", "/tmp/newroot/home/*/studio3t/jre/bin/java",
       "/tmp/newroot/opt/docker/buildkit/executor/*/rootfs/usr/bin/dpkg", "/tmp/newroot/opt/orbit/bin/orbit/orbit",
-      "/tmp/*/conftest", "/tmp/thangha/easybuild/netCDF/*", "/tmp/baum/easybuild/LLVM/*"
+      "/tmp/*/conftest", "/tmp/thangha/easybuild/netCDF/*", "/tmp/baum/easybuild/LLVM/*", "/tmp/*/easybuild/*",
+      "/tmp/root/spack-stage/*", "/tmp/plz_sandbox/test", "/tmp/par_tmp.*", "/tmp/github-runner-*/_actions/*/apt_query-x86",
+      "/tmp/.dropbox-dist-new-*/.dropbox-dist/dropbox-*/dropboxd", "/tmp/deinstall*/perl/bin/perl"
     ) or
-    process.parent.args like ("/usr/sbin/weak-modules", "apt-get", "/tmp/thangha/easybuild/*")
+    process.parent.args like ("/usr/sbin/weak-modules", "apt-get", "/tmp/thangha/easybuild/*") or
+    process.parent.command_line == "/opt/Elastic/Agent/elastic-agent"
   )] as event0
   [file where event.action == "deletion" and startswith~(file.path, event0.process.executable)]
 '''

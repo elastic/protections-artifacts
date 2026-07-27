@@ -7,7 +7,7 @@ id = "bada19f8-3ca7-4b44-812b-788e4f4f1342"
 license = "Elastic License v2"
 name = "Service Created by Suspicious Process and Activated"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence with maxspan=30s
@@ -25,7 +25,9 @@ sequence with maxspan=30s
   not process.executable like (
     "/tmp/tmp.*/nix-installer", "/tmp/octofence-agent-installer_*", "/tmp/selfgz*/install.sh",
     "/home/*/elastic-agent/.claude/*/elastic-agent", "/tmp/TestHeartbeatHTTPMonitor*/*/elastic-agent",
-    "/home/*/Downloads/*/elastic-agent", "/home/*/duoauthproxy-build/usr/local/bin/python3", "./elastic-agent"
+    "/home/*/Downloads/*/elastic-agent", "/home/*/duoauthproxy-build/usr/local/bin/python3", "./elastic-agent",
+    "/root/elastic-agent-*/elastic-agent", "/home/*/elastic-agent-*/data/elastic-agent-*/elastic-agent",
+    "/tmp/elastic-agent-*/elastic-agent", "/tmp/cybercnsagent_linux", "/root/.cursor-server/bin/linux-x64/*/node"
   )] as event0
   [process where event.type == "start" and event.action == "exec" and process.name == "systemctl" and
   process.args in ("enable", "start") and stringcontains(process.command_line, event0.file.name)]

@@ -8,7 +8,7 @@ id = "8a8833d1-1003-4269-978a-c9535dc63d0d"
 license = "Elastic License v2"
 name = "Suspicious xdg-open Command Execution"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -22,7 +22,7 @@ not (
     "http://10.*", "https://10.*", "http://192.168.*", "https://192.168.*", "http://172.16.*",
     "https://172.16.*", "http://172.17.*", "https://172.17.*", "http://172.31.*", "https://172.31.*"
   ) or
-  process.command_line like "*127.0.0.1*" or
+  process.command_line like ("*127.0.0.1*", "*0.0.0.0*") or
   process.parent.executable in ("/usr/bin/make", "/opt/forticlient/gui/FortiClient-linux-x64/FortiClient") or
   (process.parent.executable == "/usr/share/code/code" and process.args like "http://*:8080/swagger/index.html")
 )

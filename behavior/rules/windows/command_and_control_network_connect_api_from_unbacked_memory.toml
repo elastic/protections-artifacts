@@ -7,7 +7,7 @@ id = "720e0265-03bc-4cb7-9116-7fad5ea9cdfc"
 license = "Elastic License v2"
 name = "Network Connect API from Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*" and
@@ -89,7 +89,24 @@ api where process.Ext.api.name == "connect" and process.Ext.api.summary: "*ipv4*
                                    "7c71327ab87990b1ac0446813f2f1e69c33cc634afab5857cfa9fca17d0cc37e",
                                    "ecbd9f72fe48043302f547643b26e2da9c12c4d8030d28e53f1651fb0e06a2ca",
                                    "c11d8f8d419aee8d67166ae9eeed3999364fa41a7d701ede076f2d2ad8acb8be",
-                                   "ad71a3681f0fa629133a67f04d64c626d995da07d04322238aa4997a2671735a") and
+                                   "ad71a3681f0fa629133a67f04d64c626d995da07d04322238aa4997a2671735a",
+                                   /* Benign .NET / line-of-business self-JIT connect FPs (final user module == app's own image) */
+                                   "69ace587844c0aa44ea1dee8940511551e87e8fbb3a932849edce65fd50847d9",
+                                   "ed31c93ea887979c30f1f1cce1cc89511d43ba8ee1a773e3222e715983de21b3",
+                                   "7b0574df592f2f9bd4aa48c2cd539c2b9de446ad35ccf251febb600c0d60504d",
+                                   "b1e85acdf8534d1e212eb718bc4c9a8f4a6f43946ef5848033e760a80b32498d",
+                                   "99def4498e85e1d743de4617cbd92f466a4e44cd63bd1903f8dc9188383d510f",
+                                   "3a93f916e0d1ace1bb58ca3f43f795a810b63e612c0111a3f6ba89f9200f6a6f",
+                                   "05ef99be431f5c9b358d441c16e768935d1985575b17da389e16c86846abf2d3",
+                                   "70b2465ae7ea0e4c1305444461d7e288408672dbb7c89dd1fdfb15811f4cf301",
+                                   "fef5877c154ea2c659b208c18858f41a02645afd76cd4c4b8c78743c448d2ea0",
+                                   "fb281ac7ace96aa7c861c50817129be075ebf324f75ae80325cad09ff7c93fc7",
+                                   "7034ceeb12f7424cd823613644f75b4730fd01de2acd34f21eaec5a1b5bf477f",
+                                   "bbb81a7eca67cb4c0ea4ca96bcecd6cf6e0ccab0900836fd412ea932056d45c6",
+                                   "2b578ecba28f0170ce30d54b394069da0994ff21411567dc30a45b8a480fe00d",
+                                   "c779c56ed1a67711518bd6216e0966bc0ec1ab8d7a236645d5861d9d55bb6278",
+                                   "920ef6ece9c965246e8386fd45dd85aa799a572d810a03fdac711b0eea6640d9",
+                                   "13090ed9a4bbdb2bb1a23f5b21d89d71bbabe474b9556ba62f517e010ed700f7") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "Unbacked*" and
                   $entry.callsite_trailing_bytes :

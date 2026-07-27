@@ -1,0 +1,99 @@
+[rule]
+description = """
+This rule detects potential privilege escalation under the root effective user when the real user and parent user are
+not root, indicative of the execution of binaries with SUID or SGID bits set. Attackers may abuse SUID/SGID binaries to
+escalate their privileges to root, using exploits or misconfigurations.
+"""
+id = "6ac2717b-a63d-4697-b01e-918388bdc762"
+license = "Elastic License v2"
+name = "Potential Privilege Escalation via a SUID/SGID Binary"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and (
+  (process.user.id == 0 and process.real_user.id != 0 and process.parent.user.id != 0) or
+  (process.group.id == 0 and process.real_group.id != 0 and process.parent.group.id != 0)
+) and
+(
+  stringcontains(process.executable, process.command_line) or
+  stringcontains(process.name, process.command_line)
+) and
+(
+  process.parent.name like (".*", "python*", "perl*", "ruby*", "lua*", "php*", "node", "deno", "bun", "java") or
+  process.parent.executable like ("./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*", "/home/*/*") or
+  (
+    process.parent.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh") and
+    process.parent.args in ("-c", "-cl", "-lc", "--command", "-ic", "-ci", "-bash", "-sh", "-zsh", "-dash", "-fish", "-ksh", "-mksh") and
+    process.parent.args_count <= 4
+  )
+) and
+not (
+  /* Covered by b1d415dc-796a-48f1-944f-4bb6037b2450 */
+  process.name in (
+    "unix_chkpwd", "fusermount", "fusermount3", "umount", "newgrp", "chsh", "sudoedit", "gpasswd", "chfn", "polkit-agent-helper-1",
+    "dbus-daemon-launch-helper", "ssh-keysign", "pam_extrausers_chkpwd", "expiry", "chage", "wall", "bsd-write", "ssh-agent",
+    "ping6", "traceroute", "mtr", "ntfs-3g", "Xorg.wrap", "chrome-sandbox", "bwrap", "hostname", "sudo"
+  ) or
+  (
+    /* Covered by 83b0e48b-f42e-4323-b8cd-386619a96d35 */
+    (process.name == "su" and process.args_count <= 2) or
+    (process.name == "pkexec" and process.args_count == 1) or
+    (process.name == "passwd" and process.args_count <= 2)
+  ) or
+  (process.name == "mount" and process.args_count <= 2) or
+  process.parent.executable like "/u0*/*" or
+  process.name like "python*" or
+  process.executable like (
+    "/opt/psa/admin/bin/*", "/usr/lib/landscape/apt-update", "/usr/sbin/login_duo", "/usr/bin/nvidia-modprobe", "/usr/bin/proxmox-mail-forward",
+    "/opt/andrisoft/bin/WANmaintenance", "/ora/SW/em_agent/*", "/opt/OracleHomes/agent_home/*", "/opt/rsa/am/utils/lib/linux-x86_64/*",
+    "/usr/libexec/spice-client-glib-usb-acl-helper", "/tmp/newroot/usr/bin/vmware-user-suid-wrapper", "/home/*/sqllib/adm/db2start",
+    "/home/*/sqllib/adm/db2stop", "/*/app/oracle/product/*/sbin/nmo", "/opt/data/db2inst1/sqllib/adm/db2stop", "/opt/data/db2inst1/sqllib/adm/db2start",
+    "/usr/local/sbin/uid_gid_mapping", "/usr/bin/crontab", "/home/db2inst1/sqllib/adm/db2chparm"
+  ) or
+  process.command_line in ("/usr/bin/nvidia-modprobe", "/usr/sbin/login_duo")
+)
+'''
+
+min_endpoint_version = "8.2.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.001"
+name = "Setuid and Setgid"
+reference = "https://attack.mitre.org/techniques/T1548/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1548.003"
+name = "Sudo and Sudo Caching"
+reference = "https://attack.mitre.org/techniques/T1548/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+
+[internal]
+min_endpoint_version = "8.2.0"

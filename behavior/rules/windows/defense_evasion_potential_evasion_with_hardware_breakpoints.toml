@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Evasion with Hardware Breakpoints"
 os_list = ["windows"]
 reference = ["https://github.com/rad9800/hwbp4mw"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 library where process.thread.Ext.hardware_breakpoint_set == true and process.executable != null and
@@ -26,12 +26,15 @@ library where process.thread.Ext.hardware_breakpoint_set == true and process.exe
                  "PROMICRA, s.r.o.", "Avid Technology, Inc.", "Avid Technology, Inc", "Krzysztof Kowalczyk",
                  "Yummy Interactive Inc", "Caliper Corporation", "Tencent Technology (Shenzhen) Company Limited",
                  "Big Fish Games, Inc.", "Big Fish Games", "GdP Software", "Tonec Inc.", "Active Database Software LLC",
-                 "URSoft, Inc.")) and
+                 "URSoft, Inc.", "Respondus, Inc.", "Meta Enterprises LLC", "Epic Games Inc.", "Valve Corp.",
+                 "Medical Information Technology, Inc.")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                   $entry.symbol_info : ("?:\\Windows\\apppatch\\AppPatch64\\exploitblocker.dll!*",
                                         "?:\\Windows\\apppatch\\exploitblocker.dll*",
                                         "?:\\Windows\\AppPatch\\emet.dll!*",
-                                        "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*")) and
+                                        "?:\\Windows\\AppPatch\\apppatch64\\emet.dll!*",
+                                        "?:\\Windows\\AppPatch\\emet64.dll!*",
+                                        "?:\\Windows\\AppPatch\\apppatch64\\emet64.dll!*")) and
  not process.executable : ("C:\\Program Files (x86)\\Cambridge\\CEPD - 17th Edition\\cepd17.exe",
                            "C:\\Program Files (x86)\\SCRABBLE\\GHScrabble.exe",
                            "C:\\Program Files (x86)\\Kofax\\Power PDF 31\\NPDFLM.exe",

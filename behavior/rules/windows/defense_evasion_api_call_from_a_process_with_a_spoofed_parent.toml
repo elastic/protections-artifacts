@@ -7,7 +7,7 @@ id = "e62f022c-88e2-403f-9f83-f76a91dd2203"
 license = "Elastic License v2"
 name = "API Call from a Process with a Spoofed Parent"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id
@@ -26,7 +26,7 @@ sequence by process.entity_id
  [api where process.Ext.api.name : ("WriteProcessMemory", "VirtualProtect*", "VirtualAlloc*", "MapViewOfFile*") and
   _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Kernel|*") and
-  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "Unknown") and
+  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined", "sophosed.dll", "hmpalert.dll") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                          ("d1e1d111eff2d7d3e60e5ed47d1919a43fe5a44e45f75d4a33f7a6cbc39a4aac",
                                           "3afe14049a0baabf0519d5502d465abc6050d5a0f4a4fdb3bca22ab419c33f2a",
@@ -34,7 +34,11 @@ sequence by process.entity_id
                                           "eb278baed0f9c422e9abb6bd947d7934086ea73080575ecb2ef4a7306ca5b037",
                                           "d807a7b13f948f60bc9c299f2b6976bf3988532adc02df5ed4f44538f13f4275",
                                           "8c5350999da9836037c67fd08bfb4e261d6e288a79c6b4fc3c8e3bd3d1f4171e",
-                                         "108bddeccbd09a4621d7702e53442c236a2623cb03b653ed89a1fa26007388ca")]
+                                          "108bddeccbd09a4621d7702e53442c236a2623cb03b653ed89a1fa26007388ca",
+                                          "2319da9f696d1589aa7f7a0d9b8d9e87d103f13a86817b275789d3787f2cbf77",
+                                          "b4e1daaee72eb9ea621918eaa4293a50bcf9c4d71fb545325b7dcd8b0e858f34",
+                                          "38011e713b4be8577576062754cad03e9899859488932ae4c9c83e5fbb5cb7d2",
+                                          "4328398412fdc6eadf57c4e659a45a34716cbccea0f4c025ef7fcd6e27d8ca48")]
  until [process where event.action:"end"]
 '''
 

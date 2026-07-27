@@ -13,7 +13,7 @@ reference = [
     "https://posts.specterops.io/revisiting-ttps-timestomper-622d4c28a655",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 sequence with maxspan=5m
@@ -38,7 +38,9 @@ sequence with maxspan=5m
 
   not (process.code_signature.subject_name : ("Mozilla Corporation", "Google LLC", "JACK HENRY & ASSOCIATES, INC.") and 
        process.code_signature.trusted == true) and
-  not file.path : "?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll" and
+  not file.path : ("?:\\ProgramData\\chocolatey\\tools\\detector\\*.dll",
+                    "?:\\ProgramData\\chocolatey\\tools\\*.dll",
+                    "?:\\ProgramData\\chocolatey\\lib\\*") and
   not (process.name : "xcopy.exe" and file.extension == "pyd")
   ] by file.path as event0
  [library where
@@ -77,10 +79,36 @@ sequence with maxspan=5m
               "a11c83a10cdcfec7eea0a81ebbcb057513549897c1bdf559dcfb108ace06277f",
               "cd125611cdb5f3a74ee952951a692ee598daa5a7491e87676a4f68930117bb2a",
               "f9032348386637e55788348dc8ed5879daee978be8ab77cd42b0316427d6fbc8",
-              "1a45f5985273d2372a352c07db6a15382780d6fce47d36195c6d1c5822c169b7") and
+              "1a45f5985273d2372a352c07db6a15382780d6fce47d36195c6d1c5822c169b7",
+              "53b7f8c0e4cb7bc41535985b114a04e7ad95c272a89e193119606e6160974ad5",
+              "81c3bfbac5b40c20b4f6408de6b4afc5559517f100d8cb01f9a8f6805026ecf0",
+              "e0d2c341e9c16d31e60ffdcbb5f84d49212f5fe695b41c9982eee3e9be5d07d8",
+              "19112c6eef7ffc162245d7e19c8601fa49ccd239076ac32d3fe0ad9d0afb3e0b",
+              "3430b3680415b494ba7eb41f7bc83933da68d364a94287b9c07384b2fe3dcb54",
+              "aa106076e82a3acc62184d51817ae6619da0772cc964530fd843302d29ffb97d",
+              "3016d572ea5e695b52b1759432dd30b7a9cbc2b53ac42e8c7735854b464e7d34",
+              "b49f071ff276262190c6cc86dceab4936a4786428a834151a17b6845911748e8",
+              "4a8fac0d6b09cc3fb57fd063af8b1a332080df5b0e2ff3710a82c109a4eee07c",
+              "1ec927f25e4fcd1b5863fe3a0a60c2e8800467d5ed5148a917503b9cb6e9acf8",
+              "9a75fd5816a220ab15248f0f337dfe5385fd053617c17742005cb63f126a11b0",
+              "51075af59f6696d5dc5446ba39fabfd0022628cdcfa41c80e7cb66e3bf4ee55d",
+              "585e2e465bf77e3daa25de7dcba5fac0606ae4a0e029903158d85ae0b1805f34",
+              "a575175338706d1473e2bebe1cd811283c63c697a17c0865de85ede345898af6",
+              "8dd93adc6e06cb7a404d259e59b644ad49b69a5d4215de607baf659fabfb2c4c") and
   not (process.code_signature.subject_name : ("Epicor Software Corporation", "KONICA MINOLTA, INC.", "3CX Ltd",
-                                              "WZT", "Tendyron Corporation","INTUIT INC.",
-                                              "MEDENT (Community Computer Service Inc.)", "Pitney Bowes Inc.") and
+                                              "WZT", "Tendyron Corporation", "INTUIT INC.",
+                                              "MEDENT (Community Computer Service Inc.)", "Pitney Bowes Inc.",
+                                              "Bedford, Freeman & Worth Publishing Group, LLC",
+                                              "PFU Limited",
+                                              "Watchdata Technologies Pte. Ltd.",
+                                              "WINMAN SOFTWARE INDIA LLP",
+                                              "Voicebrook Inc",
+                                              "CHENGDU YIWO Tech Development Co., Ltd.",
+                                              "Benner Sistemas S/A",
+                                              "Daybreak Game Company LLC",
+                                              "CANON INC.",
+                                              "Halliburton Company",
+                                              "Mozilla Corporation") and
        process.code_signature.trusted == true) and
   not (dll.code_signature.subject_name : ("Mozilla Corporation", "Google LLC") and dll.code_signature.trusted == true) and
   not process.executable : "?:\\Windows\\SysWOW64\\regsvr32.exe"

@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.54"
+version = "1.0.56"
 
 query = '''
 sequence with maxspan=5m
@@ -98,7 +98,7 @@ sequence with maxspan=5m
 
   not (process.name : "cpptools.exe" and process.parent.executable : "?:\\Program Files\\Microsoft VS Code\\Code.exe") and
 
-  not (process.code_signature.trusted == true and process.code_signature.subject_name == "Michael Maltsev") and 
+  not (process.code_signature.trusted == true and process.code_signature.subject_name like "*Michael Maltsev*") and 
 
   not (process.executable : "?:\\WINDOWS\\Microsoft.NET\\Framework\\*\\RegAsm.exe" and 
        process.args : "?:\\ProgramData\\PlatformInstall\\GideCode\\rtcresofz_Mecrrcpl.dll" and 
@@ -106,7 +106,21 @@ sequence with maxspan=5m
 
   not (user.id == "S-1-5-18" and process.executable : "C:\\Windows\\System32\\msiexec.exe" and process.parent.executable : "C:\\Windows\\System32\\msiexec.exe") and
        
-  not (process.executable : ("C:\\Windows\\System32\\sihost.exe", "C:\\Windows\\System32\\ShellHost.exe") and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
+  not (process.executable : ("C:\\Windows\\System32\\sihost.exe", "C:\\Windows\\System32\\ShellHost.exe") and process.parent.executable : "C:\\Windows\\System32\\sihost.exe") and
+
+  /* FP - Windows Update MpSigStub spawning children with spoofed PPID */
+  not (process.pe.original_file_name == "MpSigStub.exe" and
+       process.code_signature.subject_name == "Microsoft Corporation" and
+       process.code_signature.trusted == true) and
+
+  /* FP - Modrinth App (Rinth, Inc.) game mod launcher */
+  not (process.code_signature.subject_name == "Rinth, Inc." and
+       process.code_signature.trusted == true) and
+
+  /* FP - uberAgent SetACL (vast limits GmbH) - mirrored from seq 2 */
+  not (process.pe.original_file_name == "SetACL.exe" and
+       process.code_signature.subject_name == "vast limits GmbH" and
+       process.code_signature.trusted == true)
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
   /* FP Issue #488 - Auth Host Broker for WindowsApps */
@@ -160,7 +174,16 @@ sequence with maxspan=5m
   not process.executable : ("\\Device\\HarddiskVolume?\\Windows\\System32\\*.exe", "\\Device\\HarddiskVolume?\\Windows\\SysWOW64\\*.exe") and
 
   not (process.parent.executable : "C:\\Windows\\explorer.exe" and process.parent.thread.Ext.call_stack_summary == "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|nsis_tauri_utils.dll") and
-  not (process.executable like "C:\\Program Files\\WindowsApps\\*.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe")
+  not (process.executable like "C:\\Program Files\\WindowsApps\\*.exe" and process.parent.executable : "C:\\Windows\\System32\\sihost.exe") and
+
+  /* FP - PowerToys KeyboardManager engine (Microsoft signed) */
+  not (process.pe.original_file_name == "PowerToys.KeyboardManagerEngine.exe" and
+       process.code_signature.subject_name like "Microsoft*" and
+       process.code_signature.trusted == true) and
+
+  /* FP - Modrinth App (Rinth, Inc.) Minecraft mod launcher */
+  not (process.code_signature.subject_name == "Rinth, Inc." and
+       process.code_signature.trusted == true)
   ] by process.parent.Ext.real.entity_id
 '''
 

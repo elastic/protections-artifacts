@@ -7,7 +7,7 @@ id = "613da93c-226e-4150-9125-3b476103c0b9"
 license = "Elastic License v2"
 name = "Socat Reverse Shell or Listener Activity"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "socat" and
@@ -24,7 +24,7 @@ not (
   process.parent.command_line like "*/var/tmp/claude-*" or
   process.parent.name in ("kube-apiserver", "apiserver_entrypoint.sh", "start-proxy") or
   (process.working_directory == "/usr/share/epoptes-client" and process.parent.command_line == "epoptes-client") or
-  process.parent.args in ("/usr/bin/wsrep_sst_xtrabackup-v2", "/usr/local/share/npm-global/bin/claude") or
+  process.parent.args in ("/usr/bin/wsrep_sst_xtrabackup-v2", "/usr/local/share/npm-global/bin/claude", "/root/.acme.sh/acme.sh", "/usr/local/bin/acme.sh") or
   process.args like ("UNIX-CONNECT:/tmp/claude-*.sock", "TCP:*.devops.maintenance.abovecloud.io:443") or
   process.command_line == "socat TCP-LISTEN:8081,reuseaddr,fork UNIX-CLIENT:/tmp/spire-agent/public/api.sock"
 )

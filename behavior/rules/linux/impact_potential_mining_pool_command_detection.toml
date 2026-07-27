@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -52,7 +52,8 @@ process.command_line like (
   process.command_line like ("*zpool.cache*", "*app/jobs/ant-sec_observe-income.py*") or
   process.parent.args == "/scripts/run_certbot.sh" or
   process.parent.command_line == "runc init" or
-  (process.parent.command_line == "/bin/bash /usr/local/bin/soc_guard.sh" and process.executable == "/usr/bin/grep") 
+  (process.parent.command_line == "/bin/bash /usr/local/bin/soc_guard.sh" and process.executable == "/usr/bin/grep") or
+  (process.parent.name like "php*" and process.command_line like "*/var/tools/koalaping/bin/ping.php*")
 )
 '''
 

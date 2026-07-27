@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "DNS Request to Suspicious File Upload/Download Service"
 os_list = ["linux"]
 reference = ["https://lolexfil.github.io/"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -21,6 +21,7 @@ sequence by process.entity_id with maxspan=10s
       "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/home/*/*", "/root/*"
     )
   ) and not (
+    (process.name like "php*" and process.parent.name == "timeout" and process.args == "/var/tools/koalaping/bin/ping.php") or
     process.executable like "/home/*/OtherApps/firefox/firefox-bin" or
     process.working_directory like "/srv/sao/Processing/Workdir/*" or
     (

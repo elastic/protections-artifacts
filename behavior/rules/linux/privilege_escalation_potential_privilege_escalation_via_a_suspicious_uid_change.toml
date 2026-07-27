@@ -8,7 +8,7 @@ id = "8a744999-9b0b-4674-b621-e1fc0fc3718e"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Suspicious UID Change"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -25,7 +25,7 @@ sequence by process.entity_id with maxspan=30s
       "/usr/libexec/gnome-session-binary", "/home/*/.local/bin/codex", "/home/*/.bun/bin/bun", "/home/*/.local/bin/agy",
       "/home/*/.nvm/versions/node/*/bin/codex*", "/home/*/.npm-global/*/bin/codex", "/home/*/.local/bin/copilot",
       "/home/*/.local/share/uv/python/cpython-*-linux-x86_64-gnu/bin/python3*", "/home/linuxbrew/.linuxbrew/Caskroom/*",
-      "/home/*/.local/share/kiro-cli/*"
+      "/home/*/.local/share/kiro-cli/*", "/home/*/.codex/packages/standalone/releases/*/bin/codex", "/home/*/.opencode/bin/opencode"
     ) or
     process.executable like ("/run/user/*/.bubblewrap/*", "/tmp/newroot/usr/bin/sudo") or
     (

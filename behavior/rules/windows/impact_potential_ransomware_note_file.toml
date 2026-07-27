@@ -8,7 +8,7 @@ id = "5dba1130-72df-46f1-b581-18d9c866cb23"
 license = "Elastic License v2"
 name = "Potential Ransomware Note File"
 os_list = ["windows"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence with maxspan=60s
@@ -64,7 +64,9 @@ sequence with maxspan=60s
                "?:\\Program Files (x86)\\Kaseya\\*\\KaUsrTsk.exe",
                "?:\\Program Files (x86)\\Kaseya\\*\\AgentMon.exe",
                "?:\\Program Files (x86)\\Egnyte\\Egnyte WebEdit\\client.exe") and
-  not file.path : ("?:\\Program Files (x86)\\Titus\\BACKUP\\readme.txt", "D:\\DATALOSS_WARNING_README.txt")
+  not file.path : "?:\\Program Files (x86)\\Titus\\BACKUP\\readme.txt" and 
+  not (process.executable : "C:\\WindowsAzure\\GuestAgent_*\\WaAppAgent.exe" and file.path : "C:\\WINDOW~1\\GUESTA~*\\FindVolume\\DATALOSS_WARNING_README.txt") and 
+  not (process.executable : "C:\\ProWin22\\32bit\\ProSeriesBackgroundUpdater.exe" and file.path : "C:\\ProWin22\\bgupdate\\working\\32bit\\taxdataconversion\\README.txt")
   ]
 '''
 

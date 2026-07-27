@@ -7,7 +7,7 @@ id = "b1d415dc-796a-48f1-944f-4bb6037b2450"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Known SUID/SGID Binary"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -45,7 +45,8 @@ not (
     )
   ) or
   (process.name == "traceroute" and process.args_count == 2) or
-  process.executable like ("/tmp/newroot/*/chrome-sandbox", "/home/*/chrome-sandbox", "/tmp/newroot/usr/lib/polkit-1/polkit-agent-helper-1")
+  (process.executable == "/usr/bin/umount" and process.command_line == "umount") or
+  process.executable like ("/tmp/newroot/*/chrome-sandbox", "/home/*/chrome-sandbox", "/tmp/newroot/usr/lib/polkit-1/polkit-agent-helper-1", "/opt/brave.com/brave/chrome-sandbox")
 )
 '''
 

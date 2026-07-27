@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Execution of Memory File Descriptor via Suspicious Process"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -31,14 +31,17 @@ not (
     "/usr/bin/nvidia-ctk", "/sbin/apk", "/tmp/newroot/usr/bin/podman", "/usr/libexec/nordlayer/nordlayer-resolvconf",
     "/usr/sbin/docker-runc", "/usr/bin/runc", "/opt/teleport/system/bin/teleport", "/usr/local/bin/teleport",
     "/opt/sophos-spl/plugins/runtimedetections/bin/runtimedetections*", "/opt/fireeye/bin/rte-sensor", "/usr/local/sbin/thor-cloud-*",
-    "/tmp/newroot/run/media/mm1/RIG_Drive_2/SteamLibrary/steamapps/common/SteamLinuxRuntime_4/pressure-vessel/bin/pressure-vessel-wrap"
+    "/tmp/newroot/run/media/mm1/RIG_Drive_2/SteamLibrary/steamapps/common/SteamLinuxRuntime_4/pressure-vessel/bin/pressure-vessel-wrap",
+    "/tmp/newroot/bin/sh"
   ) or
   process.executable like (
-    "./home/*/.local/share/claude/versions/*", "/tmp/newroot/usr/bin/ls", "/tmp/newroot/var/lib/docker/rootfs/overlayfs/*/usr/bin/chown"
+    "./home/*/.local/share/claude/versions/*", "/tmp/newroot/usr/bin/ls", "/tmp/newroot/var/lib/docker/rootfs/overlayfs/*/usr/bin/chown",
+    "/tmp/newroot/*"
   ) or
   process.command_line like (
     "runc init", "/usr/local/bin/runc init", "*/home/*/.claude/shell-snapshots/snapshot*",
-    "/proc/self/fd/? -config /etc/nordlayer/config.hcl", "storage-untar / /proc/self/fd/*"
+    "/proc/self/fd/? -config /etc/nordlayer/config.hcl", "storage-untar / /proc/self/fd/*",
+    "/proc/self/exe init"
   ) or
   process.parent.command_line == "/opt/teleport/system/bin/teleport exec" or
   (
@@ -76,6 +79,10 @@ not (
   (
     process.working_directory like "/var/lib/docker/overlay2/*/merged" and
     process.command_line == "/proc/self/exe init"
+  ) or
+  (
+    process.executable == "memfd:spawn_worker_trampoline" and
+    process.args == "datadog-ipc-helper"
   )
 )
 '''

@@ -11,7 +11,7 @@ reference = [
     "https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh127454(v=vs.85)",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 sequence  with maxspan = 5s
@@ -24,9 +24,17 @@ sequence  with maxspan = 5s
            "?:\\Program Files (x86)\\*",
            "?:\\Windows\\System32\\*",
            "?:\\Windows\\SysWOW64\\*",
-           "?:\\Windows\\assembly\\*") and
+           "?:\\Windows\\assembly\\*",
+           "?:\\Windows\\WinSxS\\*",
+           "?:\\Windows\\Microsoft.NET\\assembly\\*",
+           "?:\\ProgramData\\RICOH_DRV\\*",
+           "?:\\ProgramData\\EPSON\\*",
+           "?:\\ProgramData\\Seagull\\Drivers\\*") and
    not dll.hash.sha256 : "35fb376fac5bbd83843958df8c3bf941681db116f1f500396ce813efd13d76b0" and
-   not (dll.pe.imphash : "d41d8cd98f00b204e9800998ecf8427e" and dll.path : "?:\\ProgramData\\Seagull\\Drivers\\Temp\\*.tmp")
+   not (dll.pe.imphash : "d41d8cd98f00b204e9800998ecf8427e" and
+         dll.path : ("?:\\ProgramData\\Seagull\\Drivers\\Temp\\*.tmp",
+                     "?:\\Users\\*\\AppData\\Local\\Temp\\ptx*.tmp",
+                     "?:\\Users\\*\\Temp\\ptx*.tmp"))
    ] by process.entity_id
 
  [process where event.action == "start" and process.parent.name : "explorer.exe" and

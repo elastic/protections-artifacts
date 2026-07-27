@@ -7,7 +7,7 @@ id = "057bd963-2dce-4951-87ce-5923803158ff"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via Database Server"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
@@ -189,12 +189,15 @@ not (
     process.parent.name in ("postgres", "oracle", "tnslsnr") and
     process.command_line like (
       "echo nagios", "gzip -c", "/usr/bin/python3 /root/bin/yaml2json.py", "sh -c /*/scripts/check/libexec/check_df*",
-      "timeout --signal=3 3 telnet*", "sh -c scp*pg_wal/RECOVERYHISTORY*", "sh -c scp*pg_wal/RECOVERYXLOG*"
+      "timeout --signal=3 3 telnet*", "sh -c scp*pg_wal/RECOVERYHISTORY*", "sh -c scp*pg_wal/RECOVERYXLOG*",
+      "env LC_ALL=C /bin/bash -c [ -f /sbin/ifconfig ] && echo 1 || echo 0"
     )
   ) or
   (
     process.parent.name == "tnslsnr" and (
-      process.command_line like ("/usr/bin/python3 /root/bin/yaml2json.py", "/bin/echo Filesystem 1024-blocks*") or
+      process.command_line like (
+        "/usr/bin/python3 /root/bin/yaml2json.py", "/bin/echo Filesystem 1024-blocks*", "timeout 60 ls", "timeout 10 lsblk -lbSo SIZE,TYPE"
+      ) or
       process.name in ("printenv", "env", "find", "gzip")
     )
   ) or

@@ -9,7 +9,7 @@ id = "87d16b52-e0be-4dd2-b6a8-056f188be018"
 license = "Elastic License v2"
 name = "Potential Fileless Execution via Memory File Descriptor from Interpreter"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "memfd_create" and (
@@ -53,7 +53,8 @@ process where event.type == "start" and event.action == "memfd_create" and (
     "/usr/bin/sddm", "/usr/bin/bwrap", "/usr/bin/rofi", "/usr/bin/dbus-daemon", "/tmp/.mount_*/lm-studio",
     "/usr/libexec/gnome-session-binary", "/usr/local/aegis/AliSecCheckTmp/AliSecCheck",
     "/snap/claude-ai-desktop/*/app/claude-desktop.bin", "/home/*/Programy/WBEST-MNT/WBEST-MNTv1_0_Linux",
-    "/opt/LM-Studio/lm-studio"
+    "/opt/LM-Studio/lm-studio", "/var/lib/rancher/rke2/data/*/bin/runc", "/var/lib/rancher/rke2/data/*/bin/containerd-shim-runc-v2",
+    "/usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
   ) or
   process.parent.command_line in ("/bin/sh /usr/local/bin/docker-php-ext-enable xdebug", "/usr/bin/python3 /usr/bin/nobara-updater --all") or
   process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
@@ -73,7 +74,8 @@ process where event.type == "start" and event.action == "memfd_create" and (
   (
     process.executable == "/usr/bin/perl" and
     process.Ext.memfd.name in ("memfd:dd_inject_info", "memfd:dd_language_detected")
-  )
+  ) or
+  (process.name like "python3*" and process.args == "/usr/bin/supervisord")
 )
 '''
 

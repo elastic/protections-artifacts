@@ -1,20 +1,20 @@
 [rule]
 description = """
-This rule detects the execution of suspicious commands and executables by systemd scheduled tasks. Threat actors may
-abuse these scheduled tasks to execute malicious commands or scripts to maintain persistence or escalate privileges.
+This rule detects the execution of suspicious commands and executables by cron. Threat actors may abuse cron to execute
+malicious commands or scripts to maintain persistence or escalate privileges.
 """
-id = "3ac60981-20ef-4dac-b7e4-aad2ac56a93e"
+id = "9f587c35-8c2b-4410-b419-2eff4e0607cc"
 license = "Elastic License v2"
-name = "Unusual Command Execution via Systemd Scheduled Task"
+name = "Unusual Command Execution via Cron"
 os_list = ["linux"]
 reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.5"
+version = "1.0.7"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and process.parent.name == "systemd" and 
+process where event.type == "start" and event.action == "exec" and process.parent.name in ("cron", "crond") and 
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "busybox", "pwsh", "mksh") and
 process.args in ("-c", "--command", "-lc", "-cl") and (
   process.command_line like~ (
@@ -29,24 +29,19 @@ process.args in ("-c", "--command", "-lc", "-cl") and (
     "*/dev/tcp*", "*/dev/udp/*", "*import*pty*spawn*", "*import*subprocess*call*", "*TCPSocket.new*", "*TCPSocket.open*",
     "*io.popen*", "*os.execute*", "*fsockopen*", "*socat*exec:*", "*socat*tcp-connect*",
 
-    /* File Manipulation */
-    "*/dev/shm/*",
-    "*> /tmp/*", "*>> /tmp/*", "*>/tmp/*", "*>>/tmp/*",  
-    "*> /var/tmp/*", "*>> /var/tmp/*", "*>/var/tmp/*", "*>>/var/tmp/*",
-    "*> /run/user/*", "*>> /run/user/*", "*>/run/user/*", "*>>/run/user/*",
-    "*> /var/run/user/*", "*>> /var/run/user/*", "*>/var/run/user/*", "*>>/var/run/user/*",
-
     /* Persistence */
-    "*>*/etc/cron*", "*>*/home/*/.ssh/*", "*>*/root/.ssh*", "*>*~/.ssh/*", "*>*/etc/shadow*", "*>*/etc/passwd*",
+    "*>*/home/*/.ssh/*", "*>*/root/.ssh*", "*>*~/.ssh/*", "*>*/etc/shadow*", "*>*/etc/passwd*",
     "*>*/etc/master.passwd*", "*chpasswd*", "*NOPASSWD:ALL*>*sudoers.d*", "*>*/etc/systemd/system/*[Unit]*ExecStart*",
     "*| crontab -*",
 
     /* Miscellaneous */
-    "* setsid *", "*timeout *sh -c *", "*disown*",  "*chattr *", "busybox *", "*chmod +x *", "*chmod 777*", 
-    "*<?php*?>*", "*kworker*", "*stty*raw*-echo*", "*mkfifo /tmp/*"
+    "* setsid *", "*timeout *sh -c *", "*disown*",  "*chattr *", "busybox *", "*chmod +x *", 
+    "*<?php*?>*", "*kworker*", "*stty*raw*-echo*", "*mkfifo /tmp/*", "*/dev/shm/*"
   ) or
   (
-    process.command_line like ("*curl *", "*wget *") and (
+    process.command_line like ("*curl *", "*wget *") and
+    not process.command_line like ("*> /dev/null*", "*>/dev/null*", "* -O /dev/null*") and
+    (
       process.command_line regex~ """.*curl.* \-[a-zA-Z]*[oO]( .+|\-.*)?""" or
       process.command_line like~ ("*curl* --output*", "*curl* --remote-name*") or
       process.command_line regex~ """.*wget.* \-[a-zA-Z]*O.*""" or
@@ -54,6 +49,14 @@ process.args in ("-c", "--command", "-lc", "-cl") and (
       process.command_line like ("*|*sh*", "*|*python*", "*|*php*", "*|*perl*", "*|*ruby*", "*|*node*", "*|*lua*", "*|*busybox*") or
       process.command_line like ("*curl *>> /*", "*curl *>>/*", "*curl *> /*", "*curl *>/*", "*wget *>> /*", "*wget *>>/*", "*wget *> /*", "*wget *>/*") or
       process.command_line regex ".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(:[0-9]{1,5})?/.*"
+    ) and
+    not process.command_line like (
+      "*var/log/check_zhyldyz.log*", "*intranet-app.*.com.*/system/scheduler/scheduler.php*", "*smartcrm.*/cron/index*", "*helpdesk_mailer/get_mail*",
+      "*download.cdn.*.com/resources/dns-utils/*", "*api.*.cloud/unsecure/runCronManagement*", "*index.php/ecosport/Member/Generateandupdatemember*",
+      "*var/www/html/anywhere/dictionary/sip-blacklist-ips*", "*10.5.0.3:6106/api/2/*", "*etc/ssh/revoked_keys*", "*var/log/crons.log*",
+      "*nl/software/*/appserver_updates.sh*", "*var/cache/bind/zones/db.rpz.urlhaus*", "*srv/www/htdocs/seasonalhurricanepredictions/misc/new-web/php/globalstats.txt*",
+      "*api.*/api/actualizaguiaTransportadoraManual*", "*10.*.36/api/v0/ports/?device_id=*", "*165.*/jai_mobileapp_services/cron_*.php*", "*10.*/feeds/fetchFromAllFeeds*",
+      "*64.*/jai_erp_chatbot/impex/cron_*sync.php*"
     )
   )
 ) and 
@@ -68,10 +71,20 @@ not (
     "sh -c ldd /var/tmp/dracut*/initramfs/usr/bin/mkfifo*", "*cpanel*.zendesk.com/api/v2/ticket_metrics.json*, *fortigate-backup.sh*hc-ping.com*",
     "/bin/sh -c curl -sSL https://*/scripts/linux/syslog-archival/report_syslog_v3.sh | bash -x > /var/log/report_syslog_v3.debug.out 2>&1",
     "/bin/sh -c curl -s https://*/retrieve-validca.sh | bash -s /data/certificate > /data/log/valica.log 2>&1 && supervisorctl apache2 reload >>/data/log/valica.log 2>&1",
-    "bash -c chmod +x /opt/forticlientems/bin/ubuntu24_upgrade_check.sh && /opt/forticlientems/bin/ubuntu24_upgrade_check.sh", "/bin/sh -c /bin/chmod 777 /upload/cms-embossing/*",
-    """/bin/sh -c /usr/bin/timeout 60 /bin/sh -c 'while ! /usr/bin/timeout 1 /usr/bin/host www.*.com >/dev/null 2>&1; do /bin/sleep 0.1; done' && /bin/echo "DNS works!"""",
-    "*.gr/index.php?option=com_acymailing&ctrl=cron*", "*_sync_last_success_timestamp_seconds*10.10.20.204:9091/metrics*", "*get.upwind.io/sensor.sh*",
-    "*/opt/traps/download/contents/*/km_extractor*", "/bin/sh -c /usr/bin/wget -O - -q -t 1 http://*.ultimatebeautywisdom.com/?wlmcron=1"
+    "/bin/sh -c echo $(date) >> /var/log/pay/epgw_log.txt;/usr/bin/curl*", "/bin/sh -c wget -q -O - https://*.com/wp-cron.php?doing_wp_cron",
+    """/bin/sh -c wget -q -O /dev/null "https://*/v2/index.php?route=cron/recurring&platform_id=1"""", "/bin/sh -c docker exec*/bin/bash -c '/bin/rm /opt/flink/core.*' 2>/dev/null", 
+    """/bin/sh -c /home/cronjob/proses_sap_mm_einvoice.sh || bash /var/cartenz/send_notify.sh "$(/home/cronjob/proses_sap_mm_einvoice.sh 2>&1)"""",
+    "/bin/sh -c /usr/bin/wget https://www.*/modules/mod_fewo_uploader/mod_fewo_uploader_cronjob.php >/private-backup/scripte/logs/mod_fewo_uploader_cronjob.log 2>&1",
+    "*ec/tr/docflow/logs/tc.session.expire*", "*scripts/redeploy_disconnected_worker_autostore.log*", "*https://10.*.36/api/v0/devices/*",
+    "*https://*/index.php/ccm/system/jobs/run_single?auth=*", "*var/www/html/ess/cronjob/notifikasi.sh*", "*http://*/software/*/appserver_updates.sh*",
+    "*home/*/wnt/backups/postgres_dump*.sql*", "/bin/sh -c /usr/bin/curl -s https://automailer.bgss.in/sendMail >> /var/log/automailer.log 2>&1",
+    "/bin/sh -c /usr/bin/curl -s https://compliancehub.bgss.in/fetch >> /var/log/compliancehub.log 2>&1", "*var/www/html/ess/cronjob/*",
+    "*https://10.*.33:5665/v1/*", "*https://10.*", "*http://10.*", "*var/cartenz/send_notify.sh*", "*http://*.com/?wlmcron=*", "*https://*/webstat/data/send_excel_lab.php*",
+    "*/var/spool/threat-feed/threatfox_ip_port.csv*", "/bin/sh -c curl https://*.go.id/batch/fastBatch 2>&1 | timestamp.sh >> backup.log",
+    "/bin/sh -c curl https://*.go.id/batch/fastbatch 2>&1 | timestamp.sh >> backup.log", "/bin/sh -c curl https://*.go.id/batch/updateIkrap 2>&1 | timestamp.sh >> backup.log",
+    "/bin/sh -c curl https://*.go.id/batch/daily 2>&1 | timestamp.sh >> backup.log", "*https://api.*.kz/v3/kaseOrders/*", "*https://api.*.kz/v3/sendAmlRequest*",
+    "*/var/log/mco_push_log.log*", "*./luigi_start_job.sh*", "*go.id/batch/closingExam*", "*/var/www/html/*/wp-content/heatrisk/heatrisk.xml*",
+    "*/var/log1/cron_*.log*", "*/var/www/log/cron_xml.log*", "*https://qrcode.*.com/system/cron*", "*w=app/akasha/configuration/ExportDocumentsAsXml*"
   ) or
   process.command_line in (
     "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",
@@ -80,18 +93,15 @@ not (
     "/bin/bash -c curl -s https://get.upwind.io/sensor.sh | bash -s -- upgrade",
     "/bin/sh -c /opt/arcsight/backup_local/backup.sh || /opt/arcsight/backup_local/backup_error.sh",
     """/usr/bin/sh -c echo date=$(date +"%Y%m%d") > /dev/shm/mag/sptwweb.env""",
-    "/bin/bash -c curl -fsSLO https://get.upwind.io/sensor.sh && echo \"$(curl -fsSL https://get.upwind.io/sensor.sh.sha256)  sensor.sh\" | sha256sum -c - && bash sensor.sh upgrade",
-    "/bin/bash -lc timeout 45 /usr/bin/claude --model claude-haiku-4-5 -p \"reply: pong\" > /tmp/claude-quota-refresh.last 2>&1 || true",
-    "/bin/sh -c echo \"$(date) $(whoami)\" >>/tmp/log"
+    "/bin/sh -c /usr/bin/find /dev/shm/munin/mtsms/http -type f -mmin +15 -delete",
+    "/bin/sh -c echo 'LW_APP_CRONTAB' | php /itops/nginx/html/lwjk_app/bin/manager process-console/listen 2>&1"
   ) or
   process.args like (
     "[ ! -e *", "ansible *", "php -q /var/www/*php > /tmp/datastore*", "wget --proxy=off*cat*batch_trigger.log",
     "sudo curl*raw.githubusercontent.com/*/backup-scripts/refs/heads/main/fortigate-backup.sh*",
     "/usr/bin/curl -s -H*zendesk.com/api/v2/ticket_metrics.json*", "export PM2_HOME=*",    
     "/usr/bin/curl*/var/log/checkdiskusage.log", "ps*/opt/fortinet/fortisiem/linux-agent/tmp/*",
-    "iostat*/tmp/iostat.cache", "/usr/local/psa/admin/sbin/modules/aast-dnssec/event*",
-    "export PATH=/opt/imunify360/venv/bin*alt-php-els/install-els-alt-php-deb-repo.sh*",
-    "echo BAS_SERVICE_MARKER > /tmp/bas_service_exec_marker.txt"
+    "flock*/tmp/edl.lock*"
   ) or 
   process.working_directory like "/opt/nessus_agent/*"
 )
@@ -127,15 +137,10 @@ framework = "MITRE ATT&CK"
 id = "T1053"
 name = "Scheduled Task/Job"
 reference = "https://attack.mitre.org/techniques/T1053/"
-
-[[threat.technique]]
-id = "T1543"
-name = "Create or Modify System Process"
-reference = "https://attack.mitre.org/techniques/T1543/"
 [[threat.technique.subtechnique]]
-id = "T1543.002"
-name = "Systemd Service"
-reference = "https://attack.mitre.org/techniques/T1543/002/"
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
 
 
 
@@ -149,16 +154,16 @@ framework = "MITRE ATT&CK"
 id = "T1053"
 name = "Scheduled Task/Job"
 reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
 
 [[threat.technique]]
 id = "T1543"
 name = "Create or Modify System Process"
 reference = "https://attack.mitre.org/techniques/T1543/"
-[[threat.technique.subtechnique]]
-id = "T1543.002"
-name = "Systemd Service"
-reference = "https://attack.mitre.org/techniques/T1543/002/"
-
 
 
 [threat.tactic]

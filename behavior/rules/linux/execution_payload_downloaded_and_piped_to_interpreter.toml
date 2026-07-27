@@ -1,0 +1,127 @@
+[rule]
+description = """
+This rule detects when a payload is downloaded by an interpreter, and piped to an interpreter. Attackers may use this
+technique to download and execute payloads for various malicious purposes, such as establishing persistence or
+exfiltrating data.
+"""
+id = "0369a845-9383-4be6-8102-5e5688b8253b"
+license = "Elastic License v2"
+name = "Payload Downloaded and Piped to Interpreter"
+os_list = ["linux"]
+version = "1.0.4"
+
+query = '''
+sequence by process.parent.entity_id with maxspan=1s
+  [network where event.type == "start" and event.action == "connection_attempted" and (
+    process.name like (
+      "bash", "dash", "sh", "tcsh", "tclsh", "wish", "csh", "zsh", "ksh", "fish",
+      "mksh", "busybox", "rscript", "r", "julia", "mono", "dotnet", "groovy", "kotlin",
+      "scala", "erlang", "escript", "ocaml", "ocamlopt", "ld.so", "ld-linux-x86-64.so.2",
+      "ld-musl-x86_64.so.1", "awk", "gawk", "mawk", "nawk", "node", "nodejs", "deno",
+      "env", "timeout", "nice", "stdbuf", "setsid", "setarch", "unshare", "nsenter", "flock",
+      "runuser", "sudo", "snap"
+    ) or
+    process.name like ("python*", "perl*", "ruby*", "lua*", "php*", "qemu-*-static")
+  ) and 
+   not (destination.ip == null or destination.ip == "0.0.0.0" or cidrmatch(
+     destination.ip, "10.0.0.0/8", "127.0.0.0/8", "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.0.0/29",
+     "192.0.0.8/32", "192.0.0.9/32", "192.0.0.10/32", "192.0.0.170/32", "192.0.0.171/32", "192.0.2.0/24",
+     "192.31.196.0/24", "192.52.193.0/24", "192.168.0.0/16", "192.88.99.0/24", "224.0.0.0/4", "100.64.0.0/10",
+     "192.175.48.0/24","198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "240.0.0.0/4", "::1", "FE80::/10",
+     "FF00::/8"
+     )
+   )]
+  [process where event.type == "start" and event.action == "exec" and process.interactive == true and (
+    process.name like (
+      "bash", "dash", "sh", "tcsh", "tclsh", "wish", "csh", "zsh", "ksh", "fish",
+      "mksh", "busybox", "rscript", "r", "julia", "mono", "dotnet", "groovy", "kotlin",
+      "scala", "erlang", "escript", "ocaml", "ocamlopt", "ld.so", "ld-linux-x86-64.so.2",
+      "ld-musl-x86_64.so.1", "awk", "gawk", "mawk", "nawk", "node", "nodejs", "deno"
+    ) or
+    process.name like ("python*", "perl*", "ruby*", "lua*", "php*")
+  ) and (
+    stringcontains(process.executable, process.command_line) or
+    stringcontains(process.name, process.command_line)
+  ) and
+  process.args_count == 1 and
+  /* Prevent FPs from long single argument strings due to parsing */
+  length(process.command_line) < 50 and
+  not (
+    process.parent.executable like (
+      "/usr/sbin/univention-directory-listener", "/home/*/.local/zed.app/libexec/zed-editor",
+      "/home/*/nvim-linux-x86_64/bin/nvim"
+    ) or
+    process.executable like (
+      "/usr/local/php*/bin/php-cgi", "/opt/plesk/php/*/bin/php-cgi", "/opt/cpanel/ea-php*/root/usr/bin/php-cgi", "/usr/bin/php-cgi",
+      "/opt/universal/python/bin/python3*", "/opt/remi/php*/root/usr/bin/php-cgi", "/oracle/app/oracle/*/perl/bin/perl",
+      "/mnt/Xilinx/PetaLinux/*/usr/bin/python3.*.real", "/usr/bin/php-cgi*", "/oracle_agent/*/agent/*/perl/bin/perl",
+      "/home/*/anaconda3/envs/pnid_env/bin/python*", "/tmp/newroot/home/*/.nvm/versions/node/*/bin/node"
+    ) or
+    (
+      process.name like "python*" and
+      process.args in ("/usr/bin/pip", "/usr/local/bin/pip")
+    )
+  )]
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1071"
+name = "Application Layer Protocol"
+reference = "https://attack.mitre.org/techniques/T1071/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.6.0"

@@ -11,7 +11,7 @@ reference = [
     "https://posts.specterops.io/automating-dll-hijack-discovery-81c4295904b0",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -28,7 +28,8 @@ sequence by process.entity_id with maxspan=1m
 
     not process.code_signature.subject_name :
               ("IFS World Operations AB", "TEAMDEV LTD.", "philandro Software GmbH", "Autodesk, Inc.", "Loom, Inc.",
-               "SystemServer", "Kramer Electronics LTD.", "WILLIAM HENSHAW (Affiliate)", "Oracle America, Inc.")
+               "SystemServer", "Kramer Electronics LTD.", "WILLIAM HENSHAW (Affiliate)", "Oracle America, Inc.",
+               "Voicebrook Inc")
     ]
 
    [library where

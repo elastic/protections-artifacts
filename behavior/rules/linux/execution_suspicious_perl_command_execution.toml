@@ -8,7 +8,7 @@ id = "13c404cb-7631-4a33-8b59-5545e9a8a598"
 license = "Elastic License v2"
 name = "Suspicious Perl Command Execution"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -33,8 +33,8 @@ process.args == "-e" and process.command_line like~ (
   process.parent.executable like (
     "/var/lib/docker/overlay2/*", "/usr/local/lp/apps/sonarpush-helpers/spectre-meltdown-checker.sh",
     "/usr/sbin/debootstrap", "/usr/bin/xterm", "/usr/bin/xargs", "/var/lib/dpkg/info/sudo.postinst", "/usr/bin/gmake",
-    "/usr/bin/gxargs", "/home/*/.vscode-server/*/codex", "/home/*/.npm-global/*/codex",
-    "/usr/local/lib/node_modules/*/codex"
+    "/usr/bin/gxargs", "/home/*/.vscode-server/*/codex", "/home/*/.npm-global/*/codex", "/usr/local/lib/node_modules/*/codex", "/usr/bin/runc", 
+    "/home/*/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
   ) or
   process.parent.command_line like~ ("*testfun()*", "sh -c bash -c testfun*", "/usr/bin/perl t/utf8.t", "*/usr/sap/.call/_call.localhost.*") or
   process.parent.args in ("/usr/bin/parallel", "/usr/sbin/debootstrap") or

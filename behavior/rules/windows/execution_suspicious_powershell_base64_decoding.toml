@@ -7,7 +7,7 @@ id = "08fa5da1-81af-413d-a960-f7e489c75cfb"
 license = "Elastic License v2"
 name = "Suspicious PowerShell Base64 Decoding"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and process.parent.executable != null and
@@ -45,7 +45,9 @@ api where process.Ext.api.name == "AmsiScanBuffer" and process.parent.executable
                     "C:\\Windows\\IMECache\\*\\intune-install.ps1",
                     "C:\\*\\IntuneManagement*\\Extensions\\IntuneAppManagement.psm1",
                     "C:\\SCS\\*\\Scripts\\Get-SCCMInventoryData.ps1",
-                    "C:\\ProgramData\\NinjaRMMAgent\\scripting\\customscript_gen*.ps1") and
+                    "C:\\ProgramData\\NinjaRMMAgent\\scripting\\customscript_gen*.ps1",
+                    "C:\\Tenable\\Tenable.ad\\Tools\\Run_RelayUpdater.ps1",
+                    "C:\\Hexnode\\Resources\\*.ps1") and
   not process.parent.executable :
                    ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
                     "C:\\Program Files\\Octopus Deploy\\Tentacle\\Tentacle.exe",

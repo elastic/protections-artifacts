@@ -8,7 +8,7 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -97,7 +97,7 @@ not (
   process.parent.executable like (
     "/user/*/.vscode-server/cli/servers/*/server/node", "/scratch/*/.vscode-server/cli/servers/*/server/node",
     "/users/*/.vscode-server/*/node", "/opt/code-server/*/lib/node", "/opt/jenkins/workspace/*/bin/node",
-    "/scratch/user/*/.cursor-server/bin/linux-x64/*/node"
+    "/scratch/user/*/.cursor-server/bin/linux-x64/*/node", "/*/.vscode-server/.cursor-server/bin/linux-x64/*/node"
   ) or
   process.working_directory == "/runner/_work/personify/personify/node_modules/snyk" or
   (process.command_line like "*REPO_NAME*" and process.parent.command_line like "node /usr/bin/n8n*") or
@@ -112,7 +112,15 @@ not (
     process.executable like "/opt/node-*-linux-x64/bin/node" and
     process.working_directory == "/aplicaciones/backend/label-printing" and
     process.command_line like "/bin/sh -c python3 ./socket/main.py*"
-  )
+  ) or
+  (process.parent.executable like "/opt/actions-runner/_work/_tool/node/*/x64/bin/node" and process.command_line == "/bin/sh -c cat /etc/os-release") or
+  (process.parent.executable == "/opt/node/bin/node" and process.parent.command_line == "node /opt/node/bin/npm ci") or
+  (
+    process.parent.executable like "/opt/hostedtoolcache/node/*/x64/bin/node" and
+    process.parent.args in ("install", "ci") and
+    process.parent.args like "/opt/hostedtoolcache/node/*"
+  ) or
+  (process.parent.executable like "/opt/plesk/node/*/bin/node" and process.parent.args in ("install", "ci"))
 )
 '''
 

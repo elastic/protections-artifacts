@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.31"
+version = "1.0.32"
 
 query = '''
 library where process.pid != 4 and
@@ -39,15 +39,21 @@ library where process.pid != 4 and
                                       "*ntdll.dll!NtReplyPort*", "*ntdll.dll!ZwCallbackReturn*", "*ntdll.dll!NtCreateWnfStateName*",
                                       "C:\\Windows\\System32\\ntdll.dll!NtRequestWaitReplyPort*", "C:\\Windows\\System32\\ntdll.dll!NtAlpcImpersonateClientOfPort*",
                                       "C:\\Windows\\System32\\ntdll.dll!RtlInsertElementGenericTableFullAvl*", "C:\\Windows\\System32\\ntdll.dll!RtlLookupElementGenericTableAvl*",
-                                      "C:\\Windows\\System32\\ntdll.dll!RtlCloneUserProcess*", "*ntdll.dll!RtlSetThreadSubProcessTag*")) and
+                                      "C:\\Windows\\System32\\ntdll.dll!RtlCloneUserProcess*", "*ntdll.dll!RtlSetThreadSubProcessTag*",
+                                      /* Win11 24H2/25H2 (builds 26100/26200) moved ntdll loader internals away from their classic exports,
+                                         nearest-export symbolication resolves Ldrp* frames to these unrelated exports */
+                                      "*ntdll.dll!RtlGetSuiteMask+*", "*ntdll.dll!RtlLocateExtendedFeature+*", "*ntdll.dll!NtInitiatePowerAction+*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
+ /* trusted-signed process whose stack resolves back into its own main image contradicts the hidden-caller
+    premise; covers Go runtimes (e.g. Elastic Agent) whose symbol-less binaries cannot rescue attribution */
+ not (process.code_signature.trusted == true and stringcontains~(process.thread.Ext.call_stack_summary, process.name)) and
  not process.thread.Ext.call_stack_summary like ("ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|wbemdisp.dll|oleaut32.dll|wbemdisp.dll|oleaut32.dll|rpcrt4.dll|combase.dll|oleaut32.dll|combase.dll|user32.dll") and
  not (process.executable : "C:\\Program Files\\Tenable\\Nessus Agent\\nessus*.exe" and process.code_signature.subject_name == "TENABLE, INC." and process.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -68,4 +74,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "8.8.0"
+min_endpoint_version = "8.10.0"

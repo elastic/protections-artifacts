@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 api where
@@ -20,6 +20,7 @@ not process.thread.Ext.call_stack_final_user_module.protection_provenance like "
 not (process.executable : "C:\\Windows\\explorer.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\dxgi.dll") and
 process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and 
 not process.thread.Ext.call_stack_summary like "ntdll.dll|*|Unknown" and 
+not (process.Ext.api.name == "MapViewOfFile" and process.thread.Ext.call_stack_final_user_module.name in ("cygwin1.dll", "msys-2.0.dll")) and 
 not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\assembly\\nativeimages_*.ni.dll",
                                                                "c:\\windows\\microsoft.net\\framework*.dll",
                                                                "?:\\program files (x86)\\*",
@@ -36,7 +37,10 @@ not process.thread.Ext.call_stack_final_user_module.path like ("c:\\windows\\ass
                                                                "c:\\windows\\system32\\hmpalert.dll", 
                                                                "?:\\windows\\system32\\spool\\drivers\\x64\\*\\ricoh_*.dll", 
                                                                "c:\\windows\\systemapps\\shellexperiencehost_*\\dxgi.dll",
-                                                               "c:\\windows\\system32\\sophosed\\sophosed.dll") and
+                                                               "c:\\windows\\system32\\sophosed\\sophosed.dll",
+                                                               "c:\\windows\\system32\\xtajit64.dll",
+                                                               "c:\\windows\\system32\\microsoftaccounttokenprovider.dll", 
+                                                               "c:\\windows\\system32\\appxsip.dll") and
 not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("c:\\program files (x86)\\*", "c:\\program files\\*") and
 not (process.executable : "C:\\Windows\\System32\\lsass.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\lsasrv.dll") and
 not (process.executable : "C:\\Windows\\System32\\csrss.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\system32\\sxssrv.dll") and

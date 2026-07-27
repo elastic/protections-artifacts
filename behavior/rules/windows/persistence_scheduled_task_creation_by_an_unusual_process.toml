@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/dipping-into-danger",
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
 ]
-version = "1.0.43"
+version = "1.0.44"
 
 query = '''
 sequence with maxspan=5m
@@ -131,7 +131,7 @@ sequence with maxspan=5m
                         "C:\\Program Files (x86)\\*\\unins*.exe") and
     not (process.name : "powershell.exe" and process.args : "RemoteSigned") and
     not (process.name : "cscript.exe" and process.parent.executable : ("?:\\Program Files (x86)\\*", "?:\\Program Files\\*", "C:\\Users\\*\\AppData\\Local\\Temp\\is-*.tmp\\*.tmp")) and
-    not (process.name : "powershell.exe" and process.parent.code_signature.subject_name == "Patch My PC, LLC" and process.parent.code_signature.trusted == true)
+    not (process.name : "powershell.exe" and process.parent.code_signature.subject_name in ("Patch My PC, LLC", "Grammarly, Inc.", "FastTrack Software ApS") and process.parent.code_signature.trusted == true)
    ] by process.entity_id
    [file where event.action : "creation" and process.name : "svchost.exe" and
     file.path : ("?:\\Windows\\Tasks\\*", "?:\\Windows\\System32\\Tasks\\*") and

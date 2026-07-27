@@ -7,9 +7,9 @@ include debugging and performance monitoring.
 """
 id = "7a9c2b27-7693-4cc8-882e-eb4f0f9bfc4f"
 license = "Elastic License v2"
-name = "Suspicious Reading of /proc/[pid]/maps"
+name = "Suspicious Reading of procfs Maps File"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and
@@ -19,14 +19,16 @@ process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
     "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/bin/sqlservr", "/opt/mssql/bin/sqlservr", "/usr/lib/ocf/resource.d/heartbeat/Filesystem"
   ) or
   process.parent.args in (
-    "/sbin/chkrootkit", "/usr/sbin/chkrootkit", "/opt/mssql/bin/handle-crash.sh", "/var/lib/dpkg/tmp.ci/preinst", "/usr/bin/checkservices"
+    "/sbin/chkrootkit", "/usr/sbin/chkrootkit", "/opt/mssql/bin/handle-crash.sh", "/var/lib/dpkg/tmp.ci/preinst", "/usr/bin/checkservices",
+    "/usr/lib/ocf/resource.d/heartbeat/Filesystem"
   ) or
   process.parent.args like "/psoft/*/bin/psprocinfo" or
   process.working_directory like (
     "/opt/secl/linux-ir-scripts-v3", "/etc/audit/rules.d", "/opt/Tanium/TaniumClient/*", "/var/opt/mssql/log", "/opt/oracle.ahf/*",
     "/opt/sentinelone/addons/data/SentinelRSO/uac.zip-*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*/mssql/log",
-    "/opt/traps/download/upgrades", "/var/lib/3cxpbx"
+    "/opt/traps/download/upgrades", "/var/lib/3cxpbx", "/opt/xdragent/traps/rpm-installer", "/opt/traps/rpm-installer"
   ) or
+  process.args like "EXT$HRLINK_CEN_CURRENT_MEGA" or
   process.parent.command_line == "/usr/bin/bash --init-file /usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" or
   (process.parent.args == "--deb" and process.args == "--upgrade") or
   (process.parent.args == "ir_triage" and process.parent.args == "./uac") or

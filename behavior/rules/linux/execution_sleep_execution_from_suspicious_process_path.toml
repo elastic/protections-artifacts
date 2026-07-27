@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -38,7 +38,7 @@ sequence by process.parent.entity_id with maxspan=5s
     process.parent.executable like (
       "/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*", "/tmp/newroot/usr/bin/ansible-playbook",
       "/usr/bin/ansible-playbook", "/tmp/newroot/*", "/tmp/.mount_cursor*/cursorsandbox", "/usr/local/bin/crush",
-      "./usr/bin/podman"
+      "./usr/bin/podman", "/usr/bin/podman", "/tmp/*/.vscode-server/extensions/openai.chatgpt-*/bin/*/codex-resources/*"
     ) or
     process.parent.args like ("source /home/*/.claude/shell-snapshots/snapshot-bash*", "/var/ossec/bin/wazuh-control") or
     process.parent.command_line like ("*github.com/community-scripts/ProxmoxVE/*", "*/home/*/.claude/shell-snapshots/snapshot*") or

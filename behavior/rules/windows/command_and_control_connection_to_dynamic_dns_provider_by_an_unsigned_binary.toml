@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/dissecting-remcos-rat-part-four",
 ]
-version = "1.0.37"
+version = "1.0.38"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -31,7 +31,14 @@ sequence by process.entity_id with maxspan=1m
                "65ae476e29863e8009897686b24618c972461459e09db7a453e1bdf2bd8747a7",
                "18df70114ee93d482b38a420254859326b2d176b87559574202172f6559c3a24",
                "2fcfb8ee597c419c09bd44ac14d7240247f627eb3eca7c7bac2c72142a3a9a53",
-               "1618d40484e1ae2c25bbe0dc62e0b09f9213696cd148c622ee22fc3d6e15b6b1") and
+               "1618d40484e1ae2c25bbe0dc62e0b09f9213696cd148c622ee22fc3d6e15b6b1",
+               "04ae8047e8b63e4ab09446a6a9b5aca49924af06e6ccd7012a3e12c90d5d615a",
+               "d9639f20ab1499f38e74b34845db52b9a6afd223ed92936dbe23bffa9c362251",
+               "1a840293a0647f5b600fce82e2aca744ee1cc3c362feb4b2703a9088379b420a",
+               "495cbe2043fba338beae6da108c132dbfcaad6442c684380ed1397ef353ff58f",
+               "88bbc206daf3de3089814da2f3a892ba0332e799be6bdc3349c35bb8b4e125e1",
+               "8351ac57bca5f27998283fcc00c670fa9c9f08395cae5231d150630fa24fca1a",
+               "7cd7fab80383e59a328e855b63e23c850eee78300b5f726db38ea0745be0bc5f") and
    not (process.code_signature.subject_name == "MarWinCliente" and process.parent.name == "dfsvc.exe" and
         process.code_signature.status == "errorUntrustedRoot") and
    not process.parent.executable : "C:\\Program Files\\Microsoft Visual Studio\\*.exe" and

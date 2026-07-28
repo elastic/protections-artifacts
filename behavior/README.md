@@ -20,26 +20,21 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.120 | d6b221f18f376f000e1e378dc828cfbf81f79f2b29e5196199da17a54e4b34de |
-| production-rules-macos-v1 | 1.0.120 | ee9f7ab9cf4d96d675ef89db6e1ab2a95fabe6908e003e174b82a6d3fcd895ce |
-| production-rules-windows-v1 | 1.0.120 | 5dd6c5ccc0326f0ddeae9bf0caa57736628ee7386c5789a4fe587d73124a54e9 |
+| production-rules-linux-v1 | 1.0.121 | 89c9146562df915256b54b6aa20ab4919efb01de3d03576b4298c4170260148b |
+| production-rules-macos-v1 | 1.0.121 | 209cbebefdd84f25e657d935c7735de3e67a4320803b397f452f25a51d87fd6a |
+| production-rules-windows-v1 | 1.0.121 | 0c4d914245406717926128b801df3b5a6a6e091d722442d4217fea30c4584a68 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.120', '1.0.119') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.121', '1.0.120') by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
-| Collection           |         0 |       1 |       0 |                 1 |
-| Command and Control  |         0 |       2 |       0 |                 2 |
-| Credential Access    |         0 |       2 |       0 |                 2 |
-| Defense Evasion      |         1 |       8 |       0 |                 9 |
-| Discovery            |         0 |       1 |       0 |                 1 |
-| Execution            |         0 |       3 |       0 |                 3 |
-| Initial Access       |         1 |       1 |       2 |                 4 |
-| Persistence          |         0 |       5 |       0 |                 5 |
-| Privilege Escalation |         0 |       5 |       0 |                 5 |
-| Total by OS          |         2 |      28 |       2 |                32 |
+| Defense Evasion      |         2 |       2 |       1 |                 5 |
+| Execution            |         1 |       2 |       0 |                 3 |
+| Persistence          |         0 |       1 |       0 |                 1 |
+| Privilege Escalation |         0 |       1 |       0 |                 1 |
+| Total by OS          |         3 |       6 |       1 |                10 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
@@ -48,16 +43,16 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Collection           |        13 |       4 |      10 |                27 |
 | Command and Control  |        40 |      22 |      41 |               103 |
 | Credential Access    |        53 |      12 |      36 |               101 |
-| Defense Evasion      |       326 |      71 |      62 |               459 |
+| Defense Evasion      |       328 |      73 |      63 |               464 |
 | Discovery            |        20 |       5 |       3 |                28 |
-| Execution            |        98 |      66 |     106 |               270 |
+| Execution            |        99 |      68 |     106 |               273 |
 | Exfiltration         |         0 |       1 |       2 |                 3 |
 | Impact               |        19 |       6 |       2 |                27 |
 | Initial Access       |        65 |       4 |       5 |                74 |
 | Lateral Movement     |        10 |       2 |       1 |                13 |
 | Persistence          |        61 |      28 |      21 |               110 |
-| Privilege Escalation |        76 |      25 |       9 |               110 |
-| Total by OS          |       781 |     246 |     298 |              1325 |
+| Privilege Escalation |        76 |      26 |       9 |               111 |
+| Total by OS          |       784 |     251 |     299 |              1334 |
 
 ### MITRE ATT&CK Coverage
 
@@ -66,7 +61,7 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 - Catalog: 61 parent techniques (Win/Linux/macOS under 8 scorecard tactics)
 - Covered (union): 49/61 (80.33%) — production endpoint rules plus production SIEM rules with metadata.integration including "endpoint" and/or index matching logs-endpoint.events*/ logs-endpoint.alerts*
 - Techniques — endpoint-only: 1, SIEM-only: 4, both: 44
-- Rules — production endpoint: 1293, SIEM (in-scope + MITRE): 1081
+- Rules — production endpoint: 1300, SIEM (in-scope + MITRE): 1022
 
 #### Uncovered scorecard techniques (12 distinct parents; listed under each tactic where ATT&CK places them)
 

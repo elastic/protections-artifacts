@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Mining Pool Command Detection"
 os_list = ["linux"]
 reference = ["https://falco.org/blog/falco-detect-cryptomining/"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -53,7 +53,11 @@ process.command_line like (
   process.parent.args == "/scripts/run_certbot.sh" or
   process.parent.command_line == "runc init" or
   (process.parent.command_line == "/bin/bash /usr/local/bin/soc_guard.sh" and process.executable == "/usr/bin/grep") or
-  (process.parent.name like "php*" and process.command_line like "*/var/tools/koalaping/bin/ping.php*")
+  (process.parent.name like "php*" and process.command_line like "*/var/tools/koalaping/bin/ping.php*") or
+  (
+    process.parent.command_line == "/bin/bash /root/nicehash/nicehash_api.sh /main/api/v2/mining/algo/stats" and
+    process.command_line like "python3 /root/nicehash/nicehash.py -b https://api2.nicehash.com -o * -m GET -p /main/api/v2/mining/algo/stats"
+  )
 )
 '''
 

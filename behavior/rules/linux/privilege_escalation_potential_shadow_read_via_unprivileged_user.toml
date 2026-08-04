@@ -1,0 +1,73 @@
+[rule]
+description = """
+This rule detects instances where an unprivileged user changes to the shadow group, via a world-/user-writeable process,
+potentially indicating the execution of an exploit to read the shadow file.
+"""
+id = "1d796727-35a3-4d2c-93f0-2a745554b252"
+license = "Elastic License v2"
+name = "Potential Shadow Read via Unprivileged User"
+os_list = ["linux"]
+reference = ["https://github.com/0xdeadbeefnetwork/ssh-keysign-pwn"]
+version = "1.0.1"
+
+query = '''
+process where event.type == "change" and event.action == "gid_change" and
+group.name == "shadow" and user.id >= 1000 and process.parent.user.id >= 1000 and process.parent.group.id >= 1000 and
+(
+  process.parent.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/home/*/*", "/run/user/*", "/var/run/user/*") or
+  process.executable like (".*", "/tmp/*", "/dev/shm/*", "/var/tmp/*", "/home/*/*", "/run/user/*", "/var/run/user/*")
+) and
+not (
+  process.group_leader.executable in (
+    "/usr/sbin/lightdm", "/usr/bin/xfce4-session", "/usr/bin/ksmserver", "/tmp/newroot/usr/bin/xfce4-session"
+  ) or
+  process.executable in (
+    "/tmp/newroot/usr/bin/i3lock", "/tmp/newroot/newroot/newroot/usr/bin/i3lock", "/tmp/newroot/bin/bash"
+  )
+)
+'''
+
+min_endpoint_version = "8.6.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1068"
+name = "Exploitation for Privilege Escalation"
+reference = "https://attack.mitre.org/techniques/T1068/"
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1003"
+name = "OS Credential Dumping"
+reference = "https://attack.mitre.org/techniques/T1003/"
+[[threat.technique.subtechnique]]
+id = "T1003.008"
+name = "/etc/passwd and /etc/shadow"
+reference = "https://attack.mitre.org/techniques/T1003/008/"
+
+
+
+[threat.tactic]
+id = "TA0006"
+name = "Credential Access"
+reference = "https://attack.mitre.org/tactics/TA0006/"
+
+[internal]
+min_endpoint_version = "8.6.0"

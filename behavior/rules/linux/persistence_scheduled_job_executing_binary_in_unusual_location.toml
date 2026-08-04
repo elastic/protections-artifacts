@@ -12,40 +12,27 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
   (process.parent.name == "systemd" and process.args like~ (
-    "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
+    "/boot/*", "/dev/shm/*", "/etc/cron.*/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
   ) and process.args_count == 1) or
   (process.parent.name in ("cron", "crond") and process.name in (
     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish"
     ) and process.args == "-c" and process.args like~ (
-    "/boot/*", "/dev/shm/*", "/etc/init.d/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
+    "/boot/*", "/dev/shm/*", "/etc/update-motd.d/*", "/run/*", "/var/tmp/*"
     )
   )
 ) and not (
   process.command_line in (
-    "/bin/sh -c /etc/init.d/ntp ntptimeset &>/dev/null",
     "sh -c /usr/lib/rsyslog/rsyslog-rotate logrotate_script /var/log/syslog",
-    "/bin/sh -c /etc/init.d/snortd log-rotate > /dev/null 2>&1",
-    "/bin/sh -c /var/tmp/dionk/tftpboot_cleanup",
-    "/bin/sh -c /etc/init.d/rpmconfigcheck > /dev/null 2>&1",
-    "/bin/sh -c /etc/init.d/httpd graceful",
-    "/bin/bash -c /etc/init.d/DL-Sync >/dev/null 2>&1",
-    "/bin/bash -c /etc/init.d/DL-Sync   >/dev/null 2>&1",
-    "/bin/bash -c /etc/init.d/warn-users",
-    "/bin/sh -c /etc/init.d/rpmconfigcheck > /dev/null 2>&1",
-    "/bin/sh -c /etc/init.d/dwopen check >/dev/null 2>&1",
-    "/bin/sh -c /etc/init.d/SapphireIMSAgent keep_alive>/dev/null 2>&1",
-    "/bin/sh -c /etc/init.d/clean-docker.sh",
-    "/bin/sh -c /etc/init.d/accm checkhealth"
+    "/bin/sh -c /var/tmp/dionk/tftpboot_cleanup"
   ) or
-  process.command_line like~ ("*/etc/init.d/*start*", "*/etc/init.d/*reload*", "*/etc/init.d/*stop*", "*/etc/cron.daily/*") or
+  process.command_line like~ "*/etc/cron.daily/*" or
   process.args like~ "/run/jaws-ansible-processors/pcaps/pcap_processor.sh*" or
-  process.executable like "/nix/store/*/bin/.Hyprland-wrapped" or
-  process.args == "/etc/init.d/inotify-monitor report"
+  process.executable like "/nix/store/*/bin/.Hyprland-wrapped"
 )
 '''
 

@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 library where process.pid != 4 and
@@ -48,6 +48,19 @@ library where process.pid != 4 and
  /* trusted-signed process whose stack resolves back into its own main image contradicts the hidden-caller
     premise; covers Go runtimes (e.g. Elastic Agent) whose symbol-less binaries cannot rescue attribution */
  not (process.code_signature.trusted == true and stringcontains~(process.thread.Ext.call_stack_summary, process.name)) and
+ /* fully module-backed stack in a trusted-signed process contradicts the hidden-caller premise: ROP payloads live in
+    unbacked memory, which surfaces as Unbacked/Unknown segments in the stack summary. Each monthly 26100/26200 build
+    reshuffles the nearest-export misattributions (26200.8457 resolves loader internals to RtlGetSuiteMask and
+    RtlLocateExtendedFeature, 26200.8875 to RtlDecodeSystemPointer, wcsnlen and TpCaptureCaller), so symbol
+    allowlisting alone cannot keep up */
+ not (process.code_signature.trusted == true and
+      not stringcontains~(process.thread.Ext.call_stack_summary, "unbacked") and
+      not stringcontains~(process.thread.Ext.call_stack_summary, "unknown")) and
+ /* CLR frame in a trusted-signed process identifies the caller as the .NET runtime (P/Invoke or runtime-internal
+    LoadLibrary), contradicting the hidden-caller premise; covers JIT-compiled callers whose stacks do contain
+    unbacked regions but cannot rescue attribution when nearest-export drift hides the Ldrp and LoadLibrary frames */
+ not (process.code_signature.trusted == true and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\clr.dll*", "*\\coreclr.dll*"))) and
  not process.thread.Ext.call_stack_summary like ("ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|wbemdisp.dll|oleaut32.dll|wbemdisp.dll|oleaut32.dll|rpcrt4.dll|combase.dll|oleaut32.dll|combase.dll|user32.dll") and
  not (process.executable : "C:\\Program Files\\Tenable\\Nessus Agent\\nessus*.exe" and process.code_signature.subject_name == "TENABLE, INC." and process.code_signature.trusted == true)

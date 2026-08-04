@@ -9,7 +9,7 @@ id = "7a9c2b27-7693-4cc8-882e-eb4f0f9bfc4f"
 license = "Elastic License v2"
 name = "Suspicious Reading of procfs Maps File"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and
@@ -29,7 +29,10 @@ process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
     "/opt/traps/download/upgrades", "/var/lib/3cxpbx", "/opt/xdragent/traps/rpm-installer", "/opt/traps/rpm-installer"
   ) or
   process.args like "EXT$HRLINK_CEN_CURRENT_MEGA" or
-  process.parent.command_line == "/usr/bin/bash --init-file /usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh" or
+  process.parent.command_line in (
+    "/usr/bin/bash --init-file /usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh",
+    """xargs -I{} grep -l libcrypto\.so /proc/{}/maps"""
+  ) or
   (process.parent.args == "--deb" and process.args == "--upgrade") or
   (process.parent.args == "ir_triage" and process.parent.args == "./uac") or
   (process.parent.args == "./setup.sh" and process.parent.args == "--deb") or
@@ -41,11 +44,12 @@ process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
   process.parent.command_line like "*/.claude/shell-snapshots*" or
   (process.parent.executable == "/tmp/RunLinux/rasoat_new.sh" and process.parent.command_line == "/bin/bash ./rasoat_new.sh") or
   (process.parent.command_line in ("/bin/bash --norc --noprofile -m -i", "rasoat_new.sh") and process.args == "-H" and process.args == "memfd") or
-  process.command_line == "grep -Eow /.*ld-.*.so /proc/self/maps" 
+  process.command_line == "grep -Eow /.*ld-.*.so /proc/self/maps" or
+  process.group_leader.executable in ("/usr/local/qualys/cloud-agent/bin/qualys-cloud-agent", "/opt/traps/bin/cytool")
 )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -71,4 +75,4 @@ name = "Discovery"
 reference = "https://attack.mitre.org/tactics/TA0007/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"

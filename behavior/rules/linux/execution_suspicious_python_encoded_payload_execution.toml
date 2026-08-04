@@ -13,7 +13,7 @@ reference = [
     "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
     "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -52,7 +52,7 @@ not (
     "/usr/libexec/openssh/sshd-session", "/usr/bin/ansible-playbook", "/usr/bin/sort", "/usr/bin/du",
     "/usr/sbin/ldconfig.real", "/usr/sbin/runuser"
   ) or
-  process.working_directory like ("/opt/zeek", "/var/lib/docker/overlay2/*/usr/local/zeek") or
+  process.working_directory like ("/opt/zeek", "/var/lib/docker/overlay2/*/usr/local/zeek", "/usr/share/ansible") or
   process.parent.args == "/usr/local/bin/ansible-playbook" or
   process.parent.command_line like (
     "*IyBweWxpbnQ6IGRpc2FibGU9cmVzb3VyY2UtbGVha2FnZQoiIiIKVGhpcyBpcyBhIHNoaW0gdGhh*",

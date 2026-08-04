@@ -11,7 +11,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("cron", "crond") and 
@@ -84,7 +84,8 @@ not (
     "/bin/sh -c curl https://*.go.id/batch/fastbatch 2>&1 | timestamp.sh >> backup.log", "/bin/sh -c curl https://*.go.id/batch/updateIkrap 2>&1 | timestamp.sh >> backup.log",
     "/bin/sh -c curl https://*.go.id/batch/daily 2>&1 | timestamp.sh >> backup.log", "*https://api.*.kz/v3/kaseOrders/*", "*https://api.*.kz/v3/sendAmlRequest*",
     "*/var/log/mco_push_log.log*", "*./luigi_start_job.sh*", "*go.id/batch/closingExam*", "*/var/www/html/*/wp-content/heatrisk/heatrisk.xml*",
-    "*/var/log1/cron_*.log*", "*/var/www/log/cron_xml.log*", "*https://qrcode.*.com/system/cron*", "*w=app/akasha/configuration/ExportDocumentsAsXml*"
+    "*/var/log1/cron_*.log*", "*/var/www/log/cron_xml.log*", "*https://qrcode.*.com/system/cron*", "*w=app/akasha/configuration/ExportDocumentsAsXml*",
+    "/bin/sh -c wget -O - -t 1 https://*/custom-api-server/hubspot/oauth/callback*", "*/var/log/*.log*", "*/var/log1/*.log*", "*wget*akasha*"
   ) or
   process.command_line in (
     "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",

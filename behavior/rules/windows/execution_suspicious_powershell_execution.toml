@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.52"
+version = "1.0.53"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -90,7 +90,11 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAIABBAGcAZQBuAHQAIgA=*",
              "*JABjAGwAcwA9ACcATQBvAHUAcwBlACcAOwAKACAAIABHAGUAdAAtAEMAaQBtAEkAbgBzAHQAYQBuAGMAZQAgAFcAaQBuADMAMgBfAFAAbgBQAEUAbgB0AGkAdAB5ACAALQBGAGkAb*",
              "*JABjAGwAcwA9ACcASwBlAHkAYgBvAGEAcgBkACcAOwAKACAAIABHAGUAdAAtAEMAaQBtAEkAbgBzAHQAYQBuAGMAZQAgAFcAaQBuADMAMgBfAFAAbgBQAEUAbgB0AGkAdAB5ACAALQBGAGkAb*",
-             "*JABjAHYAIAA9ACAARwBlAHQALQBJAHQAZQBtAFAAcgBvAHAAZQByAHQAeQAgACcASABLAEwATQA6AFwAUwBPAEYAVABXAEEAUgBFAFwATQBpAGMAcgBvAHMAbwBmAHQAXABXAGkAbgBkAG8AdwBzACAATgBUAFwAQwB1AHIAcgBlAG4AdABWAGUAcgBzAGkAbwBuACcACgAiACQAKAAkAGMAdgAuAFAAcgBvAGQAdQBjAHQATgBhAG0AZQApAHwAJAAoACQAYwB2AC4ARABpAHMAcABsAGEAeQBWAGUAcgBzAGkAbwBuACkAf*") and
+             "*JABjAHYAIAA9ACAARwBlAHQALQBJAHQAZQBtAFAAcgBvAHAAZQByAHQAeQAgACcASABLAEwATQA6AFwAUwBPAEYAVABXAEEAUgBFAFwATQBpAGMAcgBvAHMAbwBmAHQAXABXAGkAbgBkAG8AdwBzACAATgBUAFwAQwB1AHIAcgBlAG4AdABWAGUAcgBzAGkAbwBuACcACgAiACQAKAAkAGMAdgAuAFAAcgBvAGQAdQBjAHQATgBhAG0AZQApAHwAJAAoACQAYwB2AC4ARABpAHMAcABsAGEAeQBWAGUAcgBzAGkAbwBuACkAf*",
+             /* inventory tooling checking the installed Chrome version: $ErrorActionPreference='silentlycontinue'; $tmp = (Get-Item -Path "$env:PROGRAMFILES\Google\Chrome\Application\chrome.exe") */
+             "*JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAcwBpAGwAZQBuAHQAbAB5AGMAbwBuAHQAaQBuAHUAZQAnADsAIAAkAHQAbQBwACAAPQAgACgARwBlAHQALQBJAHQAZQBtACAALQBQAGEAdABoACAAIgAkAGUAbgB2ADoAUABSAE8ARwBSAEEATQBGAEkATABFAFMAXABHAG8AbwBnAGwAZQBcAEMAaAByAG8AbQBlAFwA*",
+             /* base64 alignment variant of the Az.Accounts minimum version check already excluded above: \n$ErrorActionPreference = 'Stop'\n[version]$minimumVersion = '2.2.0' */
+             "*CgAkAEUAcgByAG8AcgBBAGMAdABpAG8AbgBQAHIAZQBmAGUAcgBlAG4AYwBlACAAPQAgACcAUwB0AG8AcAAnAAoAWwB2AGUAcgBzAGkAbwBuAF0AJABtAGkAbgBpAG0AdQBtAFYAZQByAHMAaQBvAG4A*") and
  not process.parent.args : "([Datetime]::ParseExact($_.InstalledOn," and
  not process.command_line : ("PowerShell*hkguTzSCb75g7sJ9ChMcmAOPpeBL9ZJy/tejnoCjT+E=*", "*.LastWriteTime.ToFileTime*", "*New-Object*Net.Mail.SmtpClien*") and
  not (process.parent.name : "cmd.exe" and
@@ -102,7 +106,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not (process.args : "NT\\CurrentVersion').InstallationType;" and process.args : "[System.Text.Encoding]::UTF8.GetBytes($OutStr);") and
 
- not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.")) and
+ not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.", "Denver Technologies, Inc. dba Warp")) and
 
  not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
 

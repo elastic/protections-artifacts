@@ -12,7 +12,7 @@ reference = [
     "https://specterops.io/blog/2025/11/21/an-evening-with-claude-code/",
     "https://www.straiker.ai/blog/nomshub-cursor-remote-tunneling-sandbox-breakout",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -26,7 +26,13 @@ sequence by process.entity_id with maxspan=1m
                  process.parent.name in ("claude", "claude.exe", "cursor.exe", "cursor", "codex", "codex.exe", "sandbox-exec",
                  "openai", "openai.exe", "ollama.exe", "ollama", "textgen.exe", "textgen", "lmstudio.exe", "lmstudio", "copilot.exe",
                  "copilot", "gemini-cli.exe", "llm", "windsurf", "windsurf.exe", "Windsurf.exe", "Windsurf Helper", "Windsurf Helper (Plugin)", "Windsurf Helper (Renderer)", "Windsurf Helper (GPU)")]
- )]
+ ) and
+ not process.Ext.effective_parent.executable == "/opt/jc/bin/jumpcloud-agent" and
+ not (process.executable like ("/opt/homebrew/Library/Homebrew/vendor/portable-ruby/*/bin/ruby",
+                               "/usr/local/Homebrew/Library/Homebrew/vendor/portable-ruby/*/bin/ruby") and
+      process.args in ("/opt/homebrew/Library/Homebrew/brew.rb",
+                       "/usr/local/Homebrew/Library/Homebrew/brew.rb") and
+      process.args == "services")]
 [file where not event.action in ("deletion", "open", "rename") and
   file.path : ("/private/etc/rc.local",
                "/etc/rc.local",

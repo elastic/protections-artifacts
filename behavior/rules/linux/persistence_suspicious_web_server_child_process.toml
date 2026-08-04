@@ -8,7 +8,7 @@ id = "b4fff9bb-6095-4282-9084-217fced11ce7"
 license = "Elastic License v2"
 name = "Suspicious Web Server Child Process"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -188,7 +188,9 @@ and not (
     "/tmp/newroot/*", "/tmp/temporal-test-server-sdk-typescript-*", "/tmp/.*/.vscode-server/cli/servers/Stable-*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign",
     "/tmp/compiler-explorer-compiler*/output.s", "./Merge_DAT_files.sh", "./bin/pg_isready", "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode",
     "/tmp/.npm-cache/_npx/*/node_modules/@esbuild/linux-x64/bin/esbuild", "/tmp/async-profiler/bin/asprof", "/tmp/snap.rootfs*", "/nix/store/*/bin/.wine",
-    "/tmp/par-*/cache-exiftool-*/exiftool-*", "/tmp/vscode-komo/Stable-*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign"
+    "/tmp/par-*/cache-exiftool-*/exiftool-*", "/tmp/vscode-komo/Stable-*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign",
+    "/tmp/*/node_modules/.pnpm/@esbuild*/node_modules/@esbuild/linux-x64/bin/esbuild",
+    "/tmp/*/.pixi/envs/*/bin/*"
   ) or
   (
     process.parent.executable like ("/usr/local/openresty/nginx/sbin/nginx", "/u02/informatica/powercenter/*/java/bin/java") and
@@ -206,15 +208,16 @@ and not (
     process.parent.executable like ("/usr/lib/jvm/java-*-openjdk-amd64/bin/java", "/dm/sebsw/Java/jdk-*/bin/java", "/dm/sebsw/jdk*/bin/java") and
     process.args like ("http://*:48080/*/getfile/cy/out/*.gz", "https://ebookstore.*/getfile/cy/out/*.gz", "https://ebookstore.*/getfile/cy/out/*.uni")
   ) or
-  (process.parent.name == "httpd" and process.command_line == "/bin/sh .php-fcgi-starter") or
+  (process.parent.name in ("httpd", "apache2") and process.command_line == "/bin/sh .php-fcgi-starter") or
   (process.parent.executable == "/usr/lib/jvm/default-java/bin/java" and process.command_line like "chmod 755 /tmp/tomcat8-tomcat8-tmp/sqlite-*-libsqlitejdbc.so") or
   (process.parent.executable like "/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.name == "chmod" and process.args like "/sasconfig/Lev1/Web/SASEnvironmentManager/*") or
   (process.parent.executable like "/data/sashome/SASPrivateJavaRuntimeEnvironment/*/jre/bin/java" and process.args like "/data/sasconfig/Lev1/Web/SASEnvironmentManager/*/hq-engine/hq-server/temp/pdknull/work/lib/*.jar") or
   (process.parent.name == "node" and process.command_line == "sudo dpkg -l gzvaupdater") or
-  (process.name == "chmod" and process.args like ("/opt/sas/config/*", "/data/sasconfig/*") and process.parent.name == "java") or 
+  (process.name == "chmod" and process.args like ("/opt/sas/config/*", "/data/sasconfig/*", "/usd/sas/soft/sas/config/*") and process.parent.name == "java") or 
   (process.parent.name == "node" and process.name == "chmod" and process.args like "/tmp/github-runner*") or
   (process.executable like "/tmp/passenger-install.*/PassengerAgent" and process.parent.name like "ruby*") or
-  (process.parent.args == "/venv/bin/gunicorn" and process.executable like "./merged/var/lib/containers/storage/overlay/*/merged/*")
+  (process.parent.args == "/venv/bin/gunicorn" and process.executable like "./merged/var/lib/containers/storage/overlay/*/merged/*") or
+  (process.parent.executable like "/usr/lib/jvm/java-*-temurin-jdk/bin/java" and process.name == "chmod" and process.args like "/data/tomcat*/webapps/GeneiousServer/*")
 )
 '''
 

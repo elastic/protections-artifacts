@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Suspicious PowerShell Execution via Windows Scripts"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 process where event.action == "start" and
@@ -92,10 +92,22 @@ process where event.action == "start" and
         process.parent.args : ("C:\\Users\\*\\AppData\\Local\\Temp\\DONDA-NetworkInfo-*.bat ",
                                "C:\\ProgramData\\Hays\\WallpaperRefresh\\SilentExecute.bat ",
                                "Files\\Tyco\\SiteServer\\TSP.ISS.WindowsServices.Host\\Command\\ComputerNameScripts\\toolbar.cmd ",
-                               "Files\\Tyco\\SiteServer\\TSP.ISS.WindowsServices.Host\\Command\\ComputerNameScripts\\start.cmd "))
+                               "Files\\Tyco\\SiteServer\\TSP.ISS.WindowsServices.Host\\Command\\ComputerNameScripts\\start.cmd ")) and
+
+   /* developer and AI coding tools spawning PowerShell for system queries */
+   not (
+      (
+        (process.parent.name : "node.exe" and
+         process.parent.code_signature.subject_name : "OpenJS Foundation") or
+         (process.parent.name : "claude.exe" and
+          process.parent.code_signature.subject_name : "Anthropic, PBC") or
+         (process.parent.name : "codex.exe" and
+          process.parent.code_signature.subject_name : "OpenAI OpCo, LLC")
+       ) and
+        process.parent.code_signature.trusted == true)
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.8.0"
 [[actions]]
 action = "kill_process"
 field = "process.entity_id"
@@ -141,4 +153,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.8.0"

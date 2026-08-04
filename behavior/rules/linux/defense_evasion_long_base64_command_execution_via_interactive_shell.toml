@@ -7,7 +7,7 @@ id = "e7b95c3e-9640-4836-85f9-2aaf6c14cebc"
 license = "Elastic License v2"
 name = "Long Base64 Command Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -81,7 +81,9 @@ not (
   "/opt/local/share/claude/versions/*", "/home/*/.nvm/versions/node/*", "/usr/share/devin-desktop/devin-desktop",
   "/opt/linuxbrew/.linuxbrew/Homebrew/*", "/usr/bin/bwrap", "/root/.local/share/claude/versions/*",
   "/tmp/.mount_*/usr/share/cursor/cursor", "/home/*/.local/share/cursor-agent/versions/*/node",
-  "/usr/local/lib/claude-code/claude-bin", "/opt/local/*/dotfolders/.local/share/claude/versions/*"
+  "/usr/local/lib/claude-code/claude-bin", "/opt/local/*/dotfolders/.local/share/claude/versions/*",
+  "/scratch/user/*/.local/bin/claude-science", "/usr/bin/make", "/home/*/.cache/JetBrains/*/dist-package/node",
+  "/home/*/.aimee-code/bin/*", "/opt/*/.local/share/claude/versions/*"
   ) or
   process.parent.name in ("claude", "claude.exe", "cursor") or
   process.parent.args like (
@@ -89,7 +91,8 @@ not (
     "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_command.py", "/tmp/cmdickens/tmp/eb-*", "/tmp/thangha/tmp/eb-*"
   ) or
   process.parent.command_line like "*mitogen:ansible*" or
-  (process.parent.executable == "/usr/bin/timeout" and process.working_directory == "/workspace")
+  (process.parent.executable == "/usr/bin/timeout" and process.working_directory == "/workspace") or
+  process.working_directory in ("/workspace/race/codex", "/workspace/race/claude")
 )
 '''
 

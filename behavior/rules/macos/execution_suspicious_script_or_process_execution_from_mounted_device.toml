@@ -7,13 +7,13 @@ id = "c6ee0cc0-efc4-4353-bbfc-da16ebc4e1a5"
 license = "Elastic License v2"
 name = "Suspicious Script or Process Execution from Mounted Device"
 os_list = ["macos"]
-version = "1.0.44"
+version = "1.0.45"
 
 query = '''
 sequence with maxspan=30s
  [file where event.action == "mount" and
   not (process.executable like "/usr/libexec/lsd" and file.path like~ "/private/var/folders/*/AppTranslocation/*") and
-  not file.path like~ "/Volumes/*/Contents/MacOS/*"] as event0
+  not file.path like~ ("/Volumes/*/Contents/MacOS/*", "/Library/Developer/CoreSimulator/Volumes/*")] as event0
  [process where event.action == "exec" and 
   (stringcontains~(process.executable, event0.file.path) or 
    stringcontains~(process.parent.executable, event0.file.path)) and

@@ -4,7 +4,7 @@ id = "8749c08b-58f5-4e7c-ab15-3551b7541f7a"
 license = "Elastic License v2"
 name = "Suspicious Security Product Enumeration"
 os_list = ["windows"]
-version = "1.0.17"
+version = "1.0.18"
 
 query = '''
 api where
@@ -141,7 +141,13 @@ api where
 
      (process.name : "powershell.exe" and 
       process.parent.executable : ("C:\\Program Files\\Windows Defender Advanced Threat Protection\\SenseIR.exe",
-                                   "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe"))
+                                   "C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe")) or
+
+    (process.executable : "?:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" and
+     process.command_line : "*\\CommandCenterAgent\\agent.ps1*") or
+
+    (process.parent.executable : "?:\\Windows\\System32\\wscript.exe" and
+     process.command_line : "*\\CommandCenterAgent\\*")
   )
 '''
 

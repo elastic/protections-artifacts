@@ -47,3 +47,27 @@ rule Windows_VulnDriver_WRkrn_2e366a1b {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_WRkrn_7c4f3009 {
+    meta:
+        author = "Elastic Security"
+        id = "7c4f3009-364a-4edc-84ec-8ebc4731cacc"
+        fingerprint = "170d52fe1ccf65f3d7cbcdf53996ff138ae5ccf03ce9cf574518322c4b534477"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Name: WRkrn.sys, Version: <= 9.0.27.44"
+        threat_name = "Windows.VulnDriver.WRkrn"
+        reference_sample = "88a9cfdee7c836de1fdd93c3efa45b8ff02230651342f976f832b8555492f558"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 57 00 52 00 6B 00 72 00 6E 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x08][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x09-\x09][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x1a][\x00-\x00]|[\x00-\x00][\x00-\x00][\x09-\x09][\x00-\x00][\x00-\x2b][\x00-\x00][\x1b-\x1b][\x00-\x00]|[\x00-\x00][\x00-\x00][\x09-\x09][\x00-\x00][\x2c-\x2c][\x00-\x00][\x1b-\x1b][\x00-\x00])/
+        $str1 = "WRKrn.pdb"
+        $str2 = "Webroot SecureAnywhere" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $original_file_name and $version and $str1 and $str2
+}
+

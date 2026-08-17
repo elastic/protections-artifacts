@@ -23,3 +23,28 @@ rule Windows_VulnDriver_Adrmdrvsys_788229d1 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_Adrmdrvsys_f9c9ec66 {
+    meta:
+        author = "Elastic Security"
+        id = "f9c9ec66-378a-4219-b872-7c6b4bba725b"
+        fingerprint = "305a433e1a5ad70f521803456a04554d468d65352070e4643d789a88e5752c3f"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Subject: ADLINK TECHNOLOGY INC, Version: <= 1.14.709.2025"
+        threat_name = "Windows.VulnDriver.Adrmdrvsys"
+        reference_sample = "0083e0e95bd2960f983516c0aac7cb8878c6906fc6a1ed1a751bc2ce12f79b3b"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 41 44 4C 49 4E 4B 20 54 45 43 48 4E 4F 4C 4F 47 59 20 49 4E 43 }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 41 00 44 00 52 00 4D 00 44 00 52 00 56 00 53 00 59 00 53 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x0d][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x0e-\x0e][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x01]|[\x00-\xc4][\x02-\x02])|[\x0e-\x0e][\x00-\x00][\x01-\x01][\x00-\x00]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x06]|[\x00-\xe8][\x07-\x07])[\xc5-\xc5][\x02-\x02]|[\x0e-\x0e][\x00-\x00][\x01-\x01][\x00-\x00][\xe9-\xe9][\x07-\x07][\xc5-\xc5][\x02-\x02])/
+        $str1 = "ADRMDRVSYS.pdb"
+        $str2 = "ADLINK Resource Manager Kenerl Service." wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name and $original_file_name and $version and $str1 and $str2
+}
+

@@ -160,3 +160,50 @@ rule Windows_VulnDriver_WinIo_7f97fe77 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3 and $str4 and $str5
 }
 
+rule Windows_VulnDriver_WinIo_837e6da3 {
+    meta:
+        author = "Elastic Security"
+        id = "837e6da3-0b81-4ee5-800c-76f048cf7bc6"
+        fingerprint = "64ed3e8b27470e40f42ddec58b48e5ec63c01ec1583dc12eadaeb7998b6793d0"
+        creation_date = "2026-07-21"
+        last_modified = "2026-08-11"
+        description = "Subject: WDKTestCert heavenluo,131620253795976757"
+        threat_name = "Windows.VulnDriver.WinIo"
+        reference_sample = "eaaed21c1788baca09ee16b06e1a231cb11c8417b3949d7d90596d50305dc604"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 57 44 4B 54 65 73 74 43 65 72 74 20 68 65 61 76 65 6E 6C 75 6F 2C 31 33 31 36 32 30 32 35 33 37 39 35 39 37 36 37 35 37 }
+        $str1 = "D:\\Users\\heavenluo\\Documents\\Visual Studio 2017\\Projects\\WinIo\\x64\\Release\\WinIo64.pdb"
+        $seq1 = { 48 8D 05 99 02 00 00 48 89 87 E0 00 00 00 48 8D 15 F3 08 00 00 48 89 87 80 00 00 00 48 8D 4C 24 50 48 89 47 70 }
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1 and $seq1
+}
+
+rule Windows_VulnDriver_WinIo_7ef85f75 {
+    meta:
+        author = "Elastic Security"
+        id = "7ef85f75-d2a0-4c09-8e25-d87d8bbae345"
+        fingerprint = "4eb85afd6021849db9784adc495aaebe2039af1958f7170fc1d321335fde945d"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Subject: 珠海恒宇新科技有限公司"
+        threat_name = "Windows.VulnDriver.WinIo"
+        reference_sample = "db4a5b87db97167c70e98014a12ac324866cf643cee65d3b3cda0b33add34d2f"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] E7 8F A0 E6 B5 B7 E6 81 92 E5 AE 87 E6 96 B0 E7 A7 91 E6 8A 80 E6 9C 89 E9 99 90 E5 85 AC E5 8F B8 }
+        $str1 = "WinIo.pdb"
+        $str2 = "IOCTL_WINIO_UNMAPPHYSADDR"
+        $str3 = "IOCTL_WINIO_MAPPHYSTOLIN"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1 and $str2 and $str3
+}
+

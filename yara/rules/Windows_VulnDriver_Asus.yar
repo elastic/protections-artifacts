@@ -543,3 +543,25 @@ rule Windows_VulnDriver_Asus_1d4d083e {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_Asus_8f771a35 {
+    meta:
+        author = "Elastic Security"
+        id = "8f771a35-02e3-44bc-a2b5-95508154277b"
+        fingerprint = "e12c7e7bb1d3fbfbb6a2f9515b89667034c3ad6c6a833da71df08ff9d26a54cd"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Subject: ASUSTeK COMPUTER INC."
+        threat_name = "Windows.VulnDriver.Asus"
+        reference_sample = "94534bc7fc4a46d0c3c6edd7bf193cc4a47ef799d4b0ea56f3d895e6af7d5674"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 41 53 55 53 54 65 4B 20 43 4F 4D 50 55 54 45 52 20 49 4E 43 2E }
+        $str1 = "D:\\BIOS\\Projects\\AsusBiosTools\\Driver\\AsusBiosIo\\x64\\Release\\AsusBiosIoDrv.pdb"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
+}
+

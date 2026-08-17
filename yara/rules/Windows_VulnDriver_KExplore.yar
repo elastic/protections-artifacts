@@ -64,3 +64,25 @@ rule Windows_VulnDriver_KExplore_3fb07df2 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
 }
 
+rule Windows_VulnDriver_KExplore_c14d7a55 {
+    meta:
+        author = "Elastic Security"
+        id = "c14d7a55-9e27-4d82-a133-859f3eb1aa76"
+        fingerprint = "a08c423c50b19862551bb1c7d2d892349949b252940aee4ce214a1a79c1ecade"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Subject: WDKTestCert Pavel,132096310518400599"
+        threat_name = "KExplore"
+        reference_sample = "d93d045bb73620055ad4158dbc2e1d3d4c7bfcefbbc90fdc6dfa3663c6cbdac1"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 57 44 4B 54 65 73 74 43 65 72 74 20 50 61 76 65 6C 2C 31 33 32 30 39 36 33 31 30 35 31 38 34 30 30 35 39 39 }
+        $str1 = "KObjExp.pdb"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
+}
+

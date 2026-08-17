@@ -75,3 +75,28 @@ rule Windows_VulnDriver_K7RKScan_4515e9a4 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3
 }
 
+rule Windows_VulnDriver_K7RKScan_cfc26cbc {
+    meta:
+        author = "Elastic Security"
+        id = "cfc26cbc-3641-44ef-8988-231b5906c0ef"
+        fingerprint = "ec9a7ee2217e867ddf63b42553d2287a255cf50a0ecf8bb6f9cfb7a02607b203"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Name: K7RKScan, Version: <= 23.0.0.10"
+        threat_name = "Windows.VulnDriver.K7RKScan"
+        reference_sample = "54c7aa7b1a14b6a1fca5209fff5f30ef0005ecf8d8012df81300f9f8aa35f914"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 4B 00 37 00 52 00 4B 00 53 00 63 00 61 00 6E 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x16][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x17-\x17][\x00-\x00][\x00-\x09][\x00-\x00][\x00-\x00][\x00-\x00]|[\x00-\x00][\x00-\x00][\x17-\x17][\x00-\x00][\x0a-\x0a][\x00-\x00][\x00-\x00][\x00-\x00])/
+        $str1 = "K7RKScan.pdb"
+        $str2 = "K7RKScan" wide
+        $str3 = "K7RKScan Kernel Module" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $original_file_name and $version and $str1 and $str2 and $str3
+}
+

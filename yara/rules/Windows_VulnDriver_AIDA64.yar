@@ -20,3 +20,26 @@ rule Windows_VulnDriver_AIDA64_9ea4f9f2 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
 }
 
+rule Windows_VulnDriver_AIDA64_85f0aea6 {
+    meta:
+        author = "Elastic Security"
+        id = "85f0aea6-4709-4d70-b1a5-c7844ecf8bf4"
+        fingerprint = "da7a8c318cf06eab653e89e794f0eabdd95b30f5b103e6c0f15bec343cde0885"
+        creation_date = "2026-07-22"
+        last_modified = "2026-08-11"
+        description = "Subject: FinalWire"
+        threat_name = "Windows.VulnDriver.AIDA64"
+        reference_sample = "7790ab2136def33afc6c86d64da81c2e1bc25d34e33282c987961cdaa87e4330"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 46 69 6E 61 6C 57 69 72 65 }
+        $str1 = "e:\\work\\visualc\\llkd\\driver.nt\\amd64\\LLKD.pdb"
+        $str2 = "\\DosDevices\\AIDA64Driver" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1 and $str2
+}
+

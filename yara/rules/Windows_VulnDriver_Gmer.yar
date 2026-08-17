@@ -47,3 +47,27 @@ rule Windows_VulnDriver_Gmer_6c0971b9 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_Gmer_3f4f9c1a {
+    meta:
+        author = "Elastic Security"
+        id = "3f4f9c1a-ff4f-4424-85f5-362272fa8289"
+        fingerprint = "85c8b6bbb11a69975a366e0f3f75b69ddc04ea3df4d71b1594054fed60cb57ba"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Name: gmer.sys, Version: <= 1.0.15.4918"
+        threat_name = "Windows.VulnDriver.Gmer"
+        reference_sample = "49c9df7fb2200e3e20aedb8f8a69aa28bf858adfbc3ae286957d2479832abb8b"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 67 00 6D 00 65 00 72 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x0e][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x12]|[\x00-\x35][\x13-\x13])[\x0f-\x0f][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x36-\x36][\x13-\x13][\x0f-\x0f][\x00-\x00])/
+        $str1 = "gmer.pdb"
+        $str2 = "GMER Driver http://www.gmer.net" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $original_file_name and $version and $str1 and $str2
+}
+

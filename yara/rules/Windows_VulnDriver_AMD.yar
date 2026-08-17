@@ -93,3 +93,28 @@ rule Windows_VulnDriver_AMD_a1044971 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1
 }
 
+rule Windows_VulnDriver_AMD_56ed3bd0 {
+    meta:
+        author = "Elastic Security"
+        id = "56ed3bd0-35ff-43d0-bf02-1d020cfdf91e"
+        fingerprint = "170345fcf9f34d7430cbbcabb453e28c576acd530d46122251bfb6a7d694d048"
+        creation_date = "2026-07-22"
+        last_modified = "2026-08-11"
+        description = "Subject: Advanced Micro Devices Inc., Version: <= 1.1.3.0"
+        threat_name = "Windows.VulnDriver.AMD"
+        reference_sample = "177227f68cc28ee7726381b95f7d2215da35be3750157ebcb7e113201059026c"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 41 64 76 61 6E 63 65 64 20 4D 69 63 72 6F 20 44 65 76 69 63 65 73 20 49 6E 63 2E }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x01-\x01][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x02][\x00-\x00]|[\x01-\x01][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\x00][\x00-\x00][\x03-\x03][\x00-\x00])/
+        $str1 = "BiosToolCommonDriver.pdb"
+        $str2 = "AMD Field Fusing" wide
+        $str3 = "the AMD driver to access CPU registers" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $version and $str1 and $str2 and $str3
+}
+

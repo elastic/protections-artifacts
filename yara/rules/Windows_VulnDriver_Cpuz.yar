@@ -951,3 +951,28 @@ rule Windows_VulnDriver_Cpuz_146d4870 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3
 }
 
+rule Windows_VulnDriver_Cpuz_7f19df7b {
+    meta:
+        author = "Elastic Security"
+        id = "7f19df7b-7e8a-4e2b-bf2c-9c055558bc19"
+        fingerprint = "a46d0c379cdfa5b8f6ee1b5bd969aa7a58ad0937195c48bc657525c383757f62"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Name: DTL, Version: <= 1.0.3.5"
+        threat_name = "Windows.VulnDriver.Cpuz"
+        reference_sample = "dce105e10237a36c3a2737dc6370d37b0718449802f269545a98ed03af349470"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 44 00 54 00 4C 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x02][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\x04][\x00-\x00][\x03-\x03][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x05-\x05][\x00-\x00][\x03-\x03][\x00-\x00])/
+        $str1 = "DTL134_x64.pdb"
+        $str2 = "DTL service" wide
+        $str3 = "DTL Driver" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $original_file_name and $version and $str1 and $str2 and $str3
+}
+

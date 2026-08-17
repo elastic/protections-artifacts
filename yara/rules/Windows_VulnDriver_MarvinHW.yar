@@ -93,3 +93,27 @@ rule Windows_VulnDriver_MarvinHW_64388663 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_MarvinHW_c433d2ed {
+    meta:
+        author = "Elastic Security"
+        id = "c433d2ed-e031-4fe5-8201-7a10082079bb"
+        fingerprint = "b98d4176be38132165d93d8ad46384cc8cdf0815ac7debadfa93b06e7c867e36"
+        creation_date = "2026-07-26"
+        last_modified = "2026-08-11"
+        description = "Subject: Geotest - Marvin Test Systems, Inc., Version: <= 4.8.0.0"
+        threat_name = "Windows.VulnDriver.MarvinHW"
+        reference_sample = "acf707caa1ebdeba534d758503605959382e2b6f6db63aca21906a8f5a59e3b1"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 47 65 6F 74 65 73 74 20 2D 20 4D 61 72 76 69 6E 20 54 65 73 74 20 53 79 73 74 65 6D 73 2C 20 49 6E 63 2E }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 48 00 57 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x03][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x07][\x00-\x00][\x04-\x04][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x08-\x08][\x00-\x00][\x04-\x04][\x00-\x00][\x00-\x00][\x00-\x00][\x00-\x00][\x00-\x00])/
+        $str1 = "HW - Windows NT-8 (32/64 bit) kernel mode driver for PC ports/memory/PCI access" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1
+}
+

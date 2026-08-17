@@ -563,3 +563,51 @@ rule Windows_VulnDriver_Intel_c7f862f6 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3
 }
 
+rule Windows_VulnDriver_Intel_944c2a6d {
+    meta:
+        author = "Elastic Security"
+        id = "944c2a6d-bc05-4d5e-b272-c10f0580946d"
+        fingerprint = "d029784fa750e213535f213604bd1510617f3be5be23f417c73df57c80a10f16"
+        creation_date = "2026-07-20"
+        last_modified = "2026-08-11"
+        description = "Subject: Intel(R) Embedded Subsystems and IP Blocks Group, Version: <= 1.0.0.1003"
+        threat_name = "Windows.VulnDriver.Intel"
+        reference_sample = "b1a8ee1222eea5f199028d90b9b77c2acf46d6d84a9e125403b2888c6f681c72"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 49 6E 74 65 6C 28 52 29 20 45 6D 62 65 64 64 65 64 20 53 75 62 73 79 73 74 65 6D 73 20 61 6E 64 20 49 50 20 42 6C 6F 63 6B 73 20 47 72 6F 75 70 }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 70 00 6D 00 78 00 64 00 72 00 76 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x02]|[\x00-\xea][\x03-\x03])[\x00-\x00][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\xeb-\xeb][\x03-\x03][\x00-\x00][\x00-\x00])/
+        $str1 = "pmxdrv.pdb"
+        $str2 = "Intel(R) Management Engine Tools Driver" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2
+}
+
+rule Windows_VulnDriver_Intel_7d47fd3f {
+    meta:
+        author = "Elastic Security"
+        id = "7d47fd3f-971c-45de-8ef0-bd822a71b9c0"
+        fingerprint = "096ccab67e11b09824ee59a63b84fcf46da671024e12c8a1c7a2826fa3a71802"
+        creation_date = "2026-07-22"
+        last_modified = "2026-08-11"
+        description = "Subject: Microsoft Windows Hardware Compatibility Publisher"
+        threat_name = "Windows.VulnDriver.Intel"
+        reference_sample = "6665b05e6fd430b729326a0b125cfcb70c387dbee46ef3f768f7dbdf0e0a6bab"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4D 69 63 72 6F 73 6F 66 74 20 57 69 6E 64 6F 77 73 20 48 61 72 64 77 61 72 65 20 43 6F 6D 70 61 74 69 62 69 6C 69 74 79 20 50 75 62 6C 69 73 68 65 72 }
+        $str1 = "E:\\Intel-Power-Gadget\\EnergyDriver\\x64\\Release\\EnergyDriver.pdb"
+        $serial = { 33 00 00 00 18 A7 C6 4E DA 38 3A 9F 79 00 00 00 00 00 18 }
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1 and $serial
+}
+

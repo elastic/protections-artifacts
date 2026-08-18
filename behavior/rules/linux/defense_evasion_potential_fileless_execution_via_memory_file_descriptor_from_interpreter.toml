@@ -9,7 +9,7 @@ id = "87d16b52-e0be-4dd2-b6a8-056f188be018"
 license = "Elastic License v2"
 name = "Potential Fileless Execution via Memory File Descriptor from Interpreter"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "memfd_create" and (
@@ -32,12 +32,16 @@ process where event.type == "start" and event.action == "memfd_create" and (
     "/snap/libreoffice/*/lib/libreoffice/program/soffice.bin", "/usr/NX/bin/nxrunner.bin",
     "/usr/lib64/libreoffice/program/soffice.bin", "/opt/libreoffice*/program/soffice.bin", "/opt/hrt/hrtpylon-*/bin/python3*",
     "/usr/NX/bin/nxplayer.bin", "/usr/bin/qgis.bin", "/opt/gitlab/embedded/bin/ruby", "/app/libreoffice/program/soffice.bin",
-    "/ztank/sw/eb/sw/Python/*/bin/python*", "/opt/micromamba/bin/python*", "/opt/balenaEtcher/balena-etcher.bin"
+    "/ztank/sw/eb/sw/Python/*/bin/python*", "/sw/eb/sw/Python/*/bin/python*",
+    "/opt/micromamba/bin/python*", "/opt/balenaEtcher/balena-etcher.bin"
   ) or
   process.parent.command_line == "/bin/sh -e /usr/lib/php/sessionclean" or
   (
     process.name like "php*" and (
-      process.Ext.memfd.name in ("memfd:opcache_lock", "anon_hugepage", "opcache_lock", "memfd:anon-handle") or
+      process.Ext.memfd.name in (
+        "memfd:opcache_lock", "anon_hugepage", "opcache_lock", "memfd:anon-handle",
+        "memfd:anon-shm-handle", "memfd:trampoline_dependencies.so", "memfd:spawn_worker_trampoline"
+      ) or
       process.command_line == "php public/index.php"
     )
   ) or
@@ -45,9 +49,22 @@ process where event.type == "start" and event.action == "memfd_create" and (
     process.name like "python*" and
     process.Ext.memfd.name like (
       "wayland-shm", "memfd:pulseaudio", "memfd:dd_inject_info", "memfd:dd_language_detected", "wayland-cursor",
-      "pulseaudio", "datadog-tracer-info*", "memfd:datadog-tracer-info-*", "memfd:libffi", "libffi", "memfd:xshmfence",
-      "xshmfence", "JITCode*", "unknown-usage*", "JSVMStack*", "JSGCHeap*"
+      "memfd:wayland-cursor", "pulseaudio", "datadog-tracer-info*", "memfd:datadog-tracer-info-*", "memfd:libffi",
+      "libffi", "memfd:xshmfence", "xshmfence", "JITCode*", "unknown-usage*", "JSVMStack*", "JSGCHeap*",
+      "OTEL_CTX", "memfd:OTEL_CTX"
     )
+  ) or
+  (
+    process.name like ("ruby*", "node", "nodejs") and
+    process.Ext.memfd.name like ("OTEL_CTX", "memfd:OTEL_CTX")
+  ) or
+  (
+    process.name like "ruby*" and
+    process.Ext.memfd.name like ("memfd:libffi", "libffi")
+  ) or
+  (
+    process.name like ("node", "nodejs") and
+    process.Ext.memfd.name like ("datadog-tracer-info*", "memfd:datadog-tracer-info-*")
   ) or
   process.parent.executable like (
     "/opt/saltstack/salt/bin/python3*", "/usr/lib/systemd/systemd", "/usr/bin/gnome-shell", "/usr/NX/bin/nxexec",

@@ -1,0 +1,93 @@
+[rule]
+description = """
+Detects a ClickFix-style attack where a user pastes a malicious PowerShell command into Windows Terminal after being
+tricked by a fake human verification, reCAPTCHA, CAPTCHA, or Turnstile confirmation prompt. Adversaries increasingly
+abuse Windows Terminal as an alternative to the Windows Run dialog to evade registry-based detections, often spoofing
+Cloudflare or Google verification pages and using Terminal customization to make the lure appear legitimate.
+"""
+id = "c3884320-f423-4d44-aa55-08bd99237ce4"
+license = "Elastic License v2"
+name = "Potential ClickFix Attack via Windows Terminal"
+os_list = ["windows"]
+reference = [
+    "https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/",
+    "https://detect.fyi/hunting-clickfix-win-x-variants-ff06e4c62bd9",
+    "https://www.securityweek.com/clickfix-attack-uses-windows-terminal-to-evade-detection/",
+]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+  process.name == "powershell.exe" and
+  process.parent.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_*\\WindowsTerminal.exe" and
+  process.Ext.api.parameters.buffer : (
+    "*not a robot*",
+    "*<#Verification ID*",
+    "*<#Verification UID*",
+    "*<#Verification Code*",
+    "*Verify*Human*",
+    "*Microsoft Defender Services Secure Access*",
+    "*Enter to verify*",
+    "*challenge.cloudflare.com*",
+    "*confirmChallenge*",
+    "*Human verif*",
+    "*Checking your browser*",
+    "*Just a moment*"
+  )
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+
+[internal]
+min_endpoint_version = "8.16.0"

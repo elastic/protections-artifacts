@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Suspicious Privileged Docker Execution"
 os_list = ["linux", "macos"]
 reference = ["https://www.wiz.io/blog/shai-hulud-2-0-ongoing-supply-chain-attack"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "docker" and
@@ -18,6 +18,7 @@ not (
   process.args like ("docker.elastic.co/beats/elastic-agent*", "/usr/bin/ceph-osd") or
   (process.args == "prepare" and process.args in ("/:/hostfs", "/:/hostfs/")) or
   (process.args == "aktosecurity/mirror-api-logging:k8s_ebpf" and process.args == "akto-api-security-traffic-collector") or
+  (process.args == "--name=c3-progenitor" and process.args == "localhost/c3:latest") or
   (process.args == "/usr/sbin/ceph-volume" and process.args == "--group-add=disk" and process.args == "--stop-signal=SIGTERM") or
   (process.args like "eu.gcr.io/revolut-labs/cardfinder*" and process.parent.args == "/srv/cardfinder/cardfinder.sh") or
   process.parent.args == "/usr/local/pf/sbin/netdata-docker-wrapper"

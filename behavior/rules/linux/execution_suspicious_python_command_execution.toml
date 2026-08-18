@@ -8,7 +8,7 @@ id = "028d01ae-bfbf-438e-a0d0-23aee55ea5c9"
 license = "Elastic License v2"
 name = "Suspicious Python Command Execution"
 os_list = ["linux"]
-version = "1.0.19"
+version = "1.0.20"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name like "python*" and
@@ -56,6 +56,7 @@ process.args == "-c" and (
     "python3 -c import socket; s=socket.socket(); s.bind(('0.0.0.0', 0)); print(s.getsockname()[1]); s.close()",
     "python3 -c import socket; s=socket.socket(); s.bind(('localhost', 0)); print(s.getsockname()[1]); s.close()",
     "import sys;sys.path=[p for p in sys.path if p];import binascii,os,zlib;exec(zlib.decompress(binascii.a2b_base64(*",
+    "import sys;sys.path=[p for p in sys.path if p];import binascii,os,select,zlib;exec(zlib.decompress(binascii.a2b_base64(*",
     "*Thomas Nagy*", "*/tmp/claude-*",
     "/usr/bin/python* -c import sys;sys.path=[p for p in sys.path if p];import binascii,os,zlib;exec(zlib.decompress(binascii.a2b_base64(*"
   ) or
@@ -63,7 +64,7 @@ process.args == "-c" and (
     "/var/lib/amazon/ssm/*", "/var/anaconda3/envs/*", "/tmp/plz_sandbox/test", "/usr/bin/cockpit-bridge",
     "/pro/bin/sys/dbutils/dbaValidateOsUserCredentials.sh", "/usr/sbin/lxc", "/sbin/lxc", "/data/flash/Linux_for_Tegra/flash.sh",
     "/usr/bin/ansible-playbook", "/usr/local/bin/teleport", "/usr/local/bin/odoo-helper", "/home/*/bin/join-zoom.sh",
-    "/usr/lib/openssh/sshd-session", "/usr/sbin/lxd", "/usr/sbin/tailscaled", "/home/*/.local/bin/kiro-cli-chat"
+    "/usr/lib/openssh/sshd-session", "/usr/libexec/openssh/sshd-session", "/usr/sbin/lxd", "/usr/sbin/tailscaled", "/home/*/.local/bin/kiro-cli-chat"
   ) or
   process.args like~ """import zlib,base64; exec(zlib.decompress(base64.b64decode(b"eJxlU01v2zAMPUe/QvClEqYZTb*""" or
   process.working_directory like~ (
@@ -80,6 +81,10 @@ process.args == "-c" and (
   process.parent.command_line in ("/bin/bash /docker-entrypoint.sh worker", "/bin/bash /docker-entrypoint.sh") or
   (process.parent.args == "/usr/sbin/lxc" and process.parent.args in ("list", "info", "version")) or
   (process.working_directory like "/tmp/tmp.*" and process.command_line == "python3 -c import socket; s = socket.socket(); s.bind(('', 0)); print(s.getsockname()[1]); s.close()") or
+  (
+    process.parent.executable == "/usr/libexec/openssh/sshd-session" and
+    process.command_line like "/usr/bin/python* -c import sys;sys.path=[p for p in sys.path if p];import binascii,os,select,zlib;exec(zlib.decompress(binascii.a2b_base64(*"
+  ) or
   (
     process.executable in ("/bin/python2", "/usr/bin/python2") and
     process.command_line like (

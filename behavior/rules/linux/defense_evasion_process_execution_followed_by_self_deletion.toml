@@ -7,7 +7,7 @@ id = "530ad3d7-7360-4467-83d3-f49d705535ba"
 license = "Elastic License v2"
 name = "Process Execution Followed by Self-Deletion"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -25,7 +25,11 @@ sequence by process.entity_id with maxspan=15s
       "/tmp/.dropbox-dist-new-*/.dropbox-dist/dropbox-*/dropboxd", "/tmp/deinstall*/perl/bin/perl"
     ) or
     process.parent.args like ("/usr/sbin/weak-modules", "apt-get", "/tmp/thangha/easybuild/*") or
-    process.parent.command_line == "/opt/Elastic/Agent/elastic-agent"
+    process.parent.command_line == "/opt/Elastic/Agent/elastic-agent" or
+    (
+      process.executable like "/run/user/*/.bubblewrap/newroot/opt/Elastic/Agent/elastic-agent" and
+      process.parent.executable == "/usr/lib/systemd/systemd"
+    )
   )] as event0
   [file where event.action == "deletion" and startswith~(file.path, event0.process.executable)]
 '''

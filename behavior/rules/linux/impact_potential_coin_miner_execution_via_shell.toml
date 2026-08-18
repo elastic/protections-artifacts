@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Coin Miner Execution via Shell"
 os_list = ["linux"]
 reference = ["https://xmrig.com/docs/algorithms"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -32,7 +32,11 @@ process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish") and 
   ) or
   process.parent.executable like ("/tmp/baum/easybuild/*", "/home/*/.vscode-server/extensions/*/resources/native-binary/claude") or
   process.command_line like ("*openssl*", "*--display-charset*", "sh -c aws s3 cp*") or
-  process.parent.args in ("/usr/bin/crun", "/usr/local/bin/claude")
+  process.parent.args in ("/usr/bin/crun", "/usr/local/bin/claude") or
+  (
+    process.parent.executable like "/home/*/.local/share/claude/versions/*" and
+    process.command_line like "/bin/bash -c source /home/*/.claude/shell-snapshots/snapshot-*"
+  )
 )
 '''
 

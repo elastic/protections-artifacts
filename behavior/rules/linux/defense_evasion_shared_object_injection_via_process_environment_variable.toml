@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.48"
+version = "1.0.49"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -68,7 +68,11 @@ process where event.type == "start" and event.action == "exec" and process.env_v
     "/opt/tm/toolchains/*", "/bin/sudoedit"
   ) or
   process.executable == "/usr/bin/adb" or
-  process.executable like "/tmp/newroot/*"
+  process.executable like "/tmp/newroot/*" or
+  (
+    process.env_vars like "LD_PRELOAD=/tmp/pytest-of-*/*/.runtime/qgc/libqgc_timer_guard.so" and
+    process.parent.executable == "/usr/bin/bash"
+  )
 )
 '''
 

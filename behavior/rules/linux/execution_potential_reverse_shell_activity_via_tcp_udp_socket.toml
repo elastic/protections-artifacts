@@ -12,7 +12,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -32,12 +32,22 @@ not (
   process.command_line like ("*/dev/tcp/127.0.0.1/*", "*/dev/tcp/localhost/*", "*/home/*/.claude/shell-snapshots/snapshot*", "*teleport-installer*") or
   process.parent.command_line like ("/usr/bin/runc init", "*/home/*/.claude/shell-snapshots/snapshot*", "runc init") or
   process.parent.args in ("/usr/bin/testssl.sh", "/usr/local/bin/testssl.sh", "/usr/bin/crun") or
+  process.working_directory like ("/home/*/workspace/graphwise.ai/*") or
+  (
+    process.parent.executable in ("/usr/bin/timeout", "/bin/timeout") and
+    process.command_line like ("bash -c exec *<>/dev/tcp/*", "sh -c exec *<>/dev/tcp/*", "bash -lc exec *<>/dev/tcp/*")
+  ) or
+  (
+    process.executable in ("/usr/bin/timeout", "/bin/timeout") and
+    process.command_line like "timeout * exec *<>/dev/tcp/*"
+  ) or
   process.parent.executable like (
     "/usr/share/windsurf/resources/app/extensions/windsurf/bin/language_server_linux_x64", "/home/*/.cursor-server/bin/*/node", "/root/.cursor-server/cli/servers/*/server/node",
     "/usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex", "/opt/teleport/system/bin/teleport",
     "/home/*/.local/bin/claude", "/usr/bin/claude-bin", "/home/*/.config/Claude/claude-code-vm/*/claude", "/usr/share/cursor/cursor", "/usr/local/bin/teleport",
     "/home/*/.local/share/claude/versions/*", "/home/*/.local/bin/kiro-cli-chat", "./runc", "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/codex-x86_64-unknown-linux-musl",
-    "/home/*/.opencode/bin/opencode", "/home/*/.aimee-code/bin/*", "/usr/bin/make", "/home/*/.local/share/cursor-agent/*", "/home/*/.grok/downloads/*"
+    "/home/*/.opencode/bin/opencode", "/home/*/.aimee-code/bin/*", "/usr/bin/make", "/home/*/.local/share/cursor-agent/*", "/home/*/.grok/downloads/*",
+    "*/site-packages/claude_agent_sdk/_bundled/claude", "/home/*/.codex/packages/standalone/*/bin/codex", "/scratch/*/.cursor-server/*/node"
   )
 )
 '''

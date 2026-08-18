@@ -13,7 +13,7 @@ reference = [
     "https://github.com/MythicAgents/merlin/blob/main/Payload_Type/merlin/container/commands/memfd.go",
     "https://x-c3ll.github.io/posts/fileless-memfd_create/",
 ]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -29,7 +29,8 @@ not (
   ) or
   process.parent.executable like (
     "/proc/self/fd/*/*", "/home/*/.local/share/JetBrains/Toolbox/apps/rider/bin/rider", "/usr/bin/tini",
-    "/home/*/.codex/*/codex-linux-sandbox"
+    "/home/*/.codex/*/codex-linux-sandbox", "/tmp/newroot/home/*/.codex/*/codex-linux-sandbox",
+    "/tmp/home/*/.codex/*/codex-linux-sandbox", "/home/*/.npm-global/lib/node_modules/@openai/codex/node_modules/@openai/*/bin/codex"
   ) or
   (process.parent.name == "init" and process.args == "/usr/lib/systemd/systemd-executor") or
   (process.parent.name like "python*" and process.args == "-m" and process.args == "test.regrtest" and process.args == "--pgo")

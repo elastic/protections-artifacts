@@ -10,7 +10,7 @@ id = "c7e5dc07-7031-4558-8f3a-12dee523a169"
 license = "Elastic License v2"
 name = "Potential SUID/SGID Files Enumeration"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "find" and user.id != 0 and
@@ -21,7 +21,7 @@ not (
   process.args_count >= 12 or
   (process.args == "/usr/bin/pkexec" and process.args == "-xdev" and process.args_count == 7) or
   process.parent.args like ("printf \"command_start_%s*", "/opt/admin/bin/cis_*.bash") or
-  process.parent.command_line like "*/bin/findmnt*" or
+  process.parent.command_line like ("*/bin/findmnt*", "*for PARTITION in $(findmnt*") or
   process.working_directory in (
     "/opt/CyberCNSAgent", "/opt/nessus_agent/var/nessus/mod/com.tenable.nessus_agent/data", "/home/svc-nlls-tenable", "/var/cache/tripwire/twexec"
   ) or

@@ -8,7 +8,7 @@ id = "94f548c8-cad2-4bc5-bf61-c0e42558ef65"
 license = "Elastic License v2"
 name = "Unusual SSH Parent/Child Execution"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 sequence with maxspan=3s
@@ -33,7 +33,11 @@ sequence with maxspan=3s
         "sh -c /usr/local/bin/sshd-with-logs"
       ) or
       process.parent.name == "jem" or
-      process.name == "sestatus"
+      process.name == "sestatus" or
+      (
+        process.parent.command_line == "sudo true" and
+        process.command_line == "true"
+      )
     )
   ] by process.parent.entity_id
 '''

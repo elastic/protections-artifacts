@@ -19,7 +19,7 @@ reference = [
     "https://book.hacktricks.xyz/generic-methodologies-and-resources/tunneling-and-port-forwarding",
     "https://github.com/erebe/wstunnel",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -113,7 +113,11 @@ not (
   process.parent.executable like "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/codex-x86_64-unknown-linux-musl" or
   process.executable like ("/tmp/.mount_cursor*/ripgrep/bin/rg", "/home/*/.local/bin/code", "/home/*/.local/bin/rtk", "/home/*/.cursor-server/bin/linux-x64/*") or
   process.parent.command_line == "runc init" or
-  process.args == "/usr/bin/autossh"
+  process.args == "/usr/bin/autossh" or
+  (
+    process.parent.executable == "/opt/rancher-desktop/resources/resources/linux/lima/bin/limactl" and
+    process.executable == "/usr/bin/qemu-system-x86_64"
+  )
 )
 '''
 

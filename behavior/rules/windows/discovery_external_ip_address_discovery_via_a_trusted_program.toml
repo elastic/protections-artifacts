@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -27,7 +27,9 @@ sequence by process.entity_id with maxspan=5m
      ) and
      not (process.name : "powershell.exe" and process.working_directory : "\\\\VMHOST\\Users\\*\\Downloads\\" and
           process.parent.executable : "\\Device\\Mup\\VMHOST\\*") and
-     not process.command_line :  "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\""
+     not process.command_line :  "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\"" and
+     not (process.name : "curl.exe" and process.command_line : "curl  -s ipinfo.io/*" and 
+          process.parent.name == "cmd.exe" and process.parent.command_line == "\"C:\\Windows\\system32\\cmd.exe\" ")
    ]
   [dns where
     dns.question.name :

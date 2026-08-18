@@ -1,0 +1,99 @@
+[rule]
+description = """
+Detects ClickFix-style PowerShell one-liners pasted into Windows Terminal that use IEX to fetch and execute remote
+content over HTTP or HTTPS. Parent process is constrained to Windows Terminal to reduce false positives from scripted
+administration workflows.
+"""
+id = "ba92d8ed-2d9a-405e-ab96-0e523d8b6cd2"
+license = "Elastic License v2"
+name = "Suspicious PowerShell Download and Execution via Windows Terminal"
+os_list = ["windows"]
+reference = [
+    "https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/",
+    "https://detect.fyi/hunting-clickfix-win-x-variants-ff06e4c62bd9",
+    "https://www.securityweek.com/clickfix-attack-uses-windows-terminal-to-evade-detection/",
+]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+  process.name == "powershell.exe" and
+  process.parent.executable : "?:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminal_*\\WindowsTerminal.exe" and
+  process.Ext.api.parameters.buffer : ("*iex (*", "*iex(*", "*| IEX;*", "*|IEX;*") and
+  process.Ext.api.parameters.buffer : "*http*" and
+  not process.Ext.api.parameters.buffer : (
+    "*chocolatey.org/install.ps1*",
+    "*go.microsoft.com/fwlink*",
+    "*invoke-atomicredteam*", 
+    "*hermes-agent.nousresearch.com/install.ps*", 
+    "*github.com/microsoft/vcpkg-tool/releases/download/*"
+  )
+'''
+
+min_endpoint_version = "8.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1566"
+name = "Phishing"
+reference = "https://attack.mitre.org/techniques/T1566/"
+[[threat.technique.subtechnique]]
+id = "T1566.002"
+name = "Spearphishing Link"
+reference = "https://attack.mitre.org/techniques/T1566/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.001"
+name = "Malicious Link"
+reference = "https://attack.mitre.org/techniques/T1204/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

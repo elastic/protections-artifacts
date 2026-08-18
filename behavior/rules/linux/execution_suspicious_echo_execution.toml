@@ -9,7 +9,7 @@ id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -137,14 +137,19 @@ not (
   (
     process.parent.executable == "/usr/bin/perl" and
     process.parent.args in (
-      "/opt/scom/bin/misc-plugins/check_nfs_client.pl", "/apps/sapinst/script/sapservices_maintainer.pl", "/special/common/bin/chp.pl"
+      "/opt/scom/bin/misc-plugins/check_nfs_client.pl", "/apps/sapinst/script/sapservices_maintainer.pl",
+      "/special/common/bin/chp.pl", "/ass/chp.pl", "/usr/local/bin/auto_snap.pl"
     )
   ) or
   (process.parent.executable like "/tmp/portable_install_*/bomc.bin" and process.command_line like "*/tmp/healer/log/Lenovo_Support/bomc_*") or
   (process.command_line like "*/home/ec2-user/.ssh/authorized_keys*" and process.parent.name like "python*" and process.parent.args == "/opt/aws/bin/cfn-init") or
   (process.parent.name == "python2" and process.parent.args == "/tmp/WSGUPInstall/setup/unified-installer.py") or
   (process.working_directory == "/home/svc-ansible" and process.parent.name like "python3*") or
-  (process.parent.name like "python3*" and process.parent.command_line like "*mitogen*")
+  (process.parent.name like "python3*" and process.parent.command_line like "*mitogen*") or
+  (
+    process.parent.command_line like "/usr/bin/crun *" and
+    process.command_line like "/bin/sh -c echo *devcontainer-features.builtin.env*"
+  )
 )
 '''
 

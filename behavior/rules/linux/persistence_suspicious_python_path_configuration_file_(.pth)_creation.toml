@@ -15,7 +15,7 @@ reference = [
     "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
     "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 file where event.type in ("change", "creation") and file.extension like "pth" and (
@@ -24,6 +24,13 @@ file where event.type in ("change", "creation") and file.extension like "pth" an
     file.path like "*site-packages*" and
     (file.size >= 30000 or file.Ext.entropy >= 5.5)
   )
+) and
+not (
+  file.path like (
+    "*/site-packages/torchmetrics/functional/image/lpips_models/*.pth",
+    "*/site-packages/lpips/weights/*/*.pth"
+  ) and
+  file.Ext.header_bytes like "80028a0a6cfc9c46f9206aa850192e80"
 )
 '''
 

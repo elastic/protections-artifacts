@@ -8,7 +8,7 @@ id = "d00bd50b-577e-47a7-9234-b4bfaa599791"
 license = "Elastic License v2"
 name = "Suspicious PHP Command Execution"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -25,7 +25,7 @@ process.args == "-r" and process.command_line like~ (
   // Exclude web server processes as these are covered by other rules
   process.working_directory like (
     "/var/www/*", "/builds/*", "/home/*/jenkins/*", "/home/*/public_html*", "/var/lib/ldap-account-manager/config",
-    "/workspace/*", "/mnt/*"
+    "/workspace/*", "/mnt/*", "/srv/www/*"
   ) or
   process.parent.args like (
     "/var/www/html/*", "source /home/*/.claude/shell*", "scripts/ci/render_build_configs.sh", "scripts/ci/build_package_vendor_cache.sh",
@@ -38,10 +38,11 @@ process.args == "-r" and process.command_line like~ (
     "*json_decode(file_get_contents('php://stdin')*",
     "php -r exit(@fsockopen(getenv('DB_HOST')?:'postgres', (int)(getenv('DB_PORT')?:5432)) ? 0 : 1);",
     "php -r exit(@fsockopen(\"127.0.0.1\", 9501) ? 0 : 1);",
-    "php -r echo urldecode(stream_get_contents(STDIN));"
+    "php -r echo urldecode(stream_get_contents(STDIN));",
+    "*include(\"/var/www/nextcloud/config/config.php\")*"
   ) or
-  process.parent.command_line == "runc init" or
-  process.parent.executable in ("/opt/teleport/system/bin/teleport", "/usr/sbin/sshd")
+process.parent.command_line == "runc init" or
+process.parent.executable in ("/opt/teleport/system/bin/teleport", "/user/sbin/sshd")
 )
 '''
 

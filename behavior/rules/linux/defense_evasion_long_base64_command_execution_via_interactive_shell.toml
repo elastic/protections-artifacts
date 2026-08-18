@@ -7,7 +7,7 @@ id = "e7b95c3e-9640-4836-85f9-2aaf6c14cebc"
 license = "Elastic License v2"
 name = "Long Base64 Command Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -92,6 +92,10 @@ not (
   ) or
   process.parent.command_line like "*mitogen:ansible*" or
   (process.parent.executable == "/usr/bin/timeout" and process.working_directory == "/workspace") or
+  (
+    process.parent.executable like "/tools/eb/build/*/bazel-root/install/*/process-wrapper" and
+    process.executable like "/cvmfs/*/software/Python/*/bin/python3*"
+  ) or
   process.working_directory in ("/workspace/race/codex", "/workspace/race/claude")
 )
 '''

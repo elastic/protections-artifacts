@@ -9,7 +9,7 @@ id = "9de52bd9-0537-4b2c-a3ba-34c3c3ffd855"
 license = "Elastic License v2"
 name = "Security Tooling Enumeration"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=3s
@@ -34,7 +34,10 @@ sequence by process.parent.entity_id with maxspan=3s
     process.parent.executable like (
       "/opt/sophos-spl/base/bin/SulDownloader.*", "/opt/rapid7/ir_agent/components/bootstrap/*/bootstrap_upgrader",
       "/usr/local/rapid7/ir_agent/components/bootstrap/*/bootstrap_upgrader", "/tmp/newroot/opt/chef/bin/chef-client",
-      "/usr/lib/venv-salt-minion/bin/python.original", "/etc/checkpoint/common/install_offline.sh"
+      "/usr/lib/venv-salt-minion/bin/python.original", "/etc/checkpoint/common/install_offline.sh",
+      "/tmp/newroot/usr/local/manageengine/uems_agent/bin/dctaskengine",
+      "/proc/self/fd/*/usr/local/manageengine/uems_agent/bin/dctaskengine",
+      "/host/opt/puppetlabs/puppet/bin/ruby"
     ) or 
     process.parent.args like (
       "/usr/lib/nagios/plugins/check_agents", "/usr/bin/puppet", "/home/*/.ansible/tmp/ansible-tmp-*/AnsiballZ_*.py",

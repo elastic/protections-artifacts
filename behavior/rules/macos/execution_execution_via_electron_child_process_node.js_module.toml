@@ -12,7 +12,7 @@ reference = [
     "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
     "https://nodejs.org/api/child_process.html",
 ]
-version = "1.0.35"
+version = "1.0.36"
 
 query = '''
 process where event.action == "exec" and
@@ -35,7 +35,10 @@ process where event.action == "exec" and
  not process.executable like
              ("/usr/bin/grep",
               "/Applications/Docker.app/Contents/Resources/bin/docker",
-              "/Applications/Docker.app/Contents/Resources/bin/com.docker.cli")
+              "/Applications/Docker.app/Contents/Resources/bin/com.docker.cli") and
+ not process.Ext.effective_parent.executable like 
+    ("/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude",
+      "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT")
 '''
 
 min_endpoint_version = "8.10.2"

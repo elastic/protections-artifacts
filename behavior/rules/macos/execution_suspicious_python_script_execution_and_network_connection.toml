@@ -8,7 +8,7 @@ id = "cad8906b-156b-48c0-bda9-785ef3561442"
 license = "Elastic License v2"
 name = "Suspicious Python Script Execution and Network Connection"
 os_list = ["macos"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=15s
@@ -18,6 +18,20 @@ sequence by process.entity_id with maxspan=15s
         process.parent.command_line in ("-bash", "-zsh", "-sh", "-fish", "-tcsh") and
         process.parent.executable : ("/bin/zsh", "/bin/bash", "/bin/sh", "/opt/homebrew/*", "/usr/local/*") and
         process.code_signature.trusted == true) and
+  not process.Ext.effective_parent.executable like (
+        "/Applications/Visual Studio Code.app/*",
+        "/Applications/Cursor.app/*",
+        "/Applications/PyCharm.app/*",
+        "/Applications/PyCharm CE.app/*",
+        "/Applications/Windsurf.app/*",
+        "/Applications/Codex.app/*",
+        "/Applications/Emacs.app/*",
+        "/Applications/IntelliJ IDEA.app/*",
+        "/Users/*/Applications/IntelliJ IDEA.app/*",
+        "/Applications/Android Studio.app/*",
+        "/Applications/cmux.app/*",
+        "/Applications/ChatGPT.app/*",
+        "/Users/*/Library/Application Support/Claude/*") and
   not (process.parent.name in ("zsh", "bash", "sh") and process.parent.command_line : (
     "*/.claude/shell-snapshots/*",
     "*/.codex/shell_snapshots/*",

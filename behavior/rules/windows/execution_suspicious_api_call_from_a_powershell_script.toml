@@ -4,7 +4,7 @@ id = "6ad0c702-ddf0-4631-ac43-37eeea444ee6"
 license = "Elastic License v2"
 name = "Suspicious API Call from a PowerShell Script"
 os_list = ["windows"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 api where
@@ -55,7 +55,10 @@ not process.parent.executable :
                   "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\AgentExecutor.exe",
                   "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer.*\\setup.exe",
                   "C:\\Windows\\CCM\\CcmExec.exe",
-                  "C:\\Windows\\System32\\gpscript.exe") and
+                  "C:\\Windows\\System32\\gpscript.exe",
+                  "C:\\ProgramData\\NinjaRMMAgent\\*\\NinjaOrbit.exe",
+                  "C:\\Program Files (x86)\\NinjaRMMAgent\\NinjaRMMAgent.exe",
+                  "C:\\Program Files (x86)\\NinjaOne\\NinjaRMMAgent.exe") and
 
 /* module listing */
 not (process.Ext.api.name in ("EnumProcessModules", "GetModuleInformation", "K32GetModuleBaseNameW", "K32GetModuleFileNameExW") and

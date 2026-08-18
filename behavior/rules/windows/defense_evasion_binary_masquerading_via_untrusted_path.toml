@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/invisible-miners-unveiling-ghostengine",
     "https://www.elastic.co/security-labs/siestagraph-new-implant-uncovered-in-asean-member-foreign-ministry",
 ]
-version = "1.0.55"
+version = "1.0.56"
 
 query = '''
 process where event.action == "start" and
@@ -182,7 +182,9 @@ process where event.action == "start" and
                    "c7b895a4a21b597a5a7dc3c1a2d4c5e9823649688da9b57dd0c1bcea28c739ba",
                    "186546f3a23be3069550c185363034e686e87a3eccc9f5c7f3a5a92f15a0b1cb") and
   not (process.parent.code_signature.subject_name == "Data Spotlite Inc." and process.parent.code_signature.trusted == true and
-       process.executable : "C:\\CYRISMA_Agent\\App\\powershell.exe")
+       process.executable : "C:\\CYRISMA_Agent\\App\\powershell.exe") and 
+  not (process.executable : "?:\\CYRISMA_Agent\\App\\powershell.exe" and process.pe.original_file_name == "PowerShell.EXE" and 
+       process.command_line == ".\\App\\powershell.exe  -NonInteractive -NoProfile -ExecutionPolicy Bypass -File -")
 '''
 
 min_endpoint_version = "8.10.0"

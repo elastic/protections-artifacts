@@ -8,7 +8,7 @@ id = "6ac2717b-a63d-4697-b01e-918388bdc762"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a SUID/SGID Binary"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -47,7 +47,8 @@ not (
   process.executable like (
     "/opt/psa/admin/bin/*", "/usr/lib/landscape/apt-update", "/usr/sbin/login_duo", "/usr/bin/nvidia-modprobe", "/usr/bin/proxmox-mail-forward",
     "/opt/andrisoft/bin/WANmaintenance", "/ora/SW/em_agent/*", "/opt/OracleHomes/agent_home/*", "/opt/rsa/am/utils/lib/linux-x86_64/*",
-    "/usr/libexec/spice-client-glib-usb-acl-helper", "/tmp/newroot/usr/bin/vmware-user-suid-wrapper", "/home/*/sqllib/adm/db2start",
+    "/usr/libexec/spice-client-glib-usb-acl-helper", "/tmp/newroot/usr/bin/vmware-user-suid-wrapper",
+    "/tmp/newroot/usr/lib/landscape/apt-update", "/home/*/sqllib/adm/db2start",
     "/home/*/sqllib/adm/db2stop", "/*/app/oracle/product/*/sbin/nmo", "/opt/data/db2inst1/sqllib/adm/db2stop", "/opt/data/db2inst1/sqllib/adm/db2start",
     "/usr/local/sbin/uid_gid_mapping", "/usr/bin/crontab", "/home/db2inst1/sqllib/adm/db2chparm", "/vz/root/*/opt/psa/admin/bin/osdetect",
     "/data/app/oracle/agent/*", "/usr/lib/plesk-*/msmtp-pwdeval", "/usr/sbin/mount.nfs"

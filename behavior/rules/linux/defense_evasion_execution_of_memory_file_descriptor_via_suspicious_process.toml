@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Execution of Memory File Descriptor via Suspicious Process"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -44,6 +44,14 @@ not (
     "/proc/self/exe init"
   ) or
   process.parent.command_line == "/opt/teleport/system/bin/teleport exec" or
+  (
+    process.parent.command_line == "/usr/local/bin/teleport exec" and
+    process.command_line == "/memfd:teleport-sessionhelper checkhomedir"
+  ) or
+  (
+    process.command_line like "/usr/lib/podman/netavark --config /run/containers/networks --rootless=false --aardvark-binary=/usr/lib/podman/aardvark-dns *" and
+    process.args == "/usr/lib/podman/netavark"
+  ) or
   (
     process.args == "lxc-attach" and
     process.args == "-n"

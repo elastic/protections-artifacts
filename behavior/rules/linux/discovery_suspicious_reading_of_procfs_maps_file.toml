@@ -9,7 +9,7 @@ id = "7a9c2b27-7693-4cc8-882e-eb4f0f9bfc4f"
 license = "Elastic License v2"
 name = "Suspicious Reading of procfs Maps File"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cat", "grep", "tail", "less", "more", "egrep", "fgrep") and
@@ -42,7 +42,7 @@ process.args like ("/proc/*/maps", "[stack]", "[vdso]", "[heap]") and not (
   (process.name == "grep" and process.args == "-qiE" and process.args like "libsdmp*libserviceDiscovery*so") or
   (process.parent.executable == "/usr/lib/systemd/systemd" and process.parent.command_line == "/sbin/init") or
   process.parent.command_line like "*/.claude/shell-snapshots*" or
-  (process.parent.executable == "/tmp/RunLinux/rasoat_new.sh" and process.parent.command_line == "/bin/bash ./rasoat_new.sh") or
+  (process.parent.executable like "/tmp/*/rasoat_new.sh" and process.parent.command_line like "/bin/bash ./rasoat_new.sh*") or
   (process.parent.command_line in ("/bin/bash --norc --noprofile -m -i", "rasoat_new.sh") and process.args == "-H" and process.args == "memfd") or
   process.command_line == "grep -Eow /.*ld-.*.so /proc/self/maps" or
   process.group_leader.executable in ("/usr/local/qualys/cloud-agent/bin/qualys-cloud-agent", "/opt/traps/bin/cytool")

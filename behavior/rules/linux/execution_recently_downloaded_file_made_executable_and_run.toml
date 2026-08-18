@@ -9,7 +9,7 @@ id = "d67ef864-5567-4675-b2eb-7dfd4443e8af"
 license = "Elastic License v2"
 name = "Recently Downloaded File Made Executable and Run"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -41,7 +41,13 @@ sequence by process.parent.entity_id with maxspan=10s
      ) or
      (process.executable like "/tmp/teleport-*/install.sh" and process.args == "/usr/bin/env" and process.working_directory like "/tmp/teleport-*") or
      (process.executable == "/tmp/garage" and process.parent.args == "/garage-init") or
-     process.working_directory like "/var/lib/waagent/*"
+     process.working_directory like "/var/lib/waagent/*" or
+     process.entry_leader.executable : ("/usr/lib/venv-salt-minion/bin/python.original", "/var/ossec/bin/wazuh-modulesd") or
+     (
+       process.parent.executable == "/tmp/sca_security.sh" and
+       process.executable like "/tmp/*_security_check.sh" and
+       process.working_directory == "/var/ossec"
+     )
    )]
 '''
 

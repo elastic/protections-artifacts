@@ -7,7 +7,7 @@ id = "452d6452-a8ec-4cae-9720-567fb44d93b7"
 license = "Elastic License v2"
 name = "Decoded Payload Piped to Interpreter"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.parent.entity_id, process.working_directory with maxspan=1s
@@ -95,7 +95,8 @@ sequence by process.parent.entity_id, process.working_directory with maxspan=1s
     ) or
     (process.working_directory like "/home/u.*" and process.parent.command_line like "bash -lc printf %s*") or 
     (process.working_directory == "/opt/Elastic/Endpoint/state/response_actions" and process.command_line == "base64 -d") or
-    (process.working_directory == "/home/deploy" and user.name == "deploy" and process.parent.args == "bash")
+    (process.working_directory == "/home/deploy" and user.name == "deploy" and process.parent.args == "bash") or
+    process.entry_leader.executable == "/usr/sbin/qemu-ga"
   )]
   [process where event.type == "start" and event.action == "exec" and process.name like (
     "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
@@ -130,7 +131,7 @@ sequence by process.parent.entity_id, process.working_directory with maxspan=1s
   )]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -198,4 +199,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"

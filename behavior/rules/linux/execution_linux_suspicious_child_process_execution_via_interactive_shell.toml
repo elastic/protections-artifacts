@@ -8,7 +8,7 @@ id = "aa02591f-c9e6-4317-841e-0b075b9515ff"
 license = "Elastic License v2"
 name = "Linux Suspicious Child Process Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.args in ("-i", "-il", "-li") and process.args_count <= 2 and
@@ -41,7 +41,11 @@ process.parent.name like (
     "/home/*/.antigravity-server/bin/*/node", "/user/*/.trae-server/bin/*/node", "/var/lib/docker/overlay2/*/merged/vscode/vscode-server/bin/linux-x64/*/node",
     "/home/*/miniforge3/envs/*/bin/python*", "/home/*/.cursor-server/bin/linux-x64/*/node", "/home/*/.vscode-server-insiders/bin/*/node"
   ) or
-  (process.parent.command_line like ("*pipenv*", "*poetry*") and process.parent.args:"shell")
+  (process.parent.command_line like ("*pipenv*", "*poetry*") and process.parent.args:"shell") or
+  (
+    process.parent.command_line like "/bin/sh -c cat << 'EOF' | chroot /host*k8s-puppet-runner*" and
+    process.executable in ("/usr/bin/bash", "/bin/bash")
+  )
 )
 '''
 

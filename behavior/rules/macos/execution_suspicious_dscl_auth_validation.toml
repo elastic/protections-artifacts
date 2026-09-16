@@ -9,7 +9,7 @@ id = "4c0a820c-fe42-400b-8b20-57bc7d256f36"
 license = "Elastic License v2"
 name = "Suspicious Dscl Auth Validation"
 os_list = ["macos"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "dscl" and 
@@ -23,7 +23,8 @@ process where event.type == "start" and event.action == "exec" and process.name 
                                                  "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon",
                                                  "/Applications/Splashtop Streamer.app/Contents/MacOS/SRStreamerDaemon",
                                                  "/opt/jc/bin/jumpcloud-agent",
-                                                 "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM")
+                                                 "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM",
+                                                 "/Library/Iru/Iru Agent.app/Contents/Helpers/Iru Library Manager.app/Contents/MacOS/kandji-library-manager")
 '''
 
 min_endpoint_version = "8.11.0"

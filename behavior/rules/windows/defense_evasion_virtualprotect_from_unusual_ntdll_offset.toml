@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "VirtualProtect from Unusual NTDLL Offset"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 api where
@@ -33,6 +33,12 @@ api where
                                          ("c:\\windows\\assembly\\nativeimages_*\\system.ni.dll",
                                           "c:\\program files (x86)\\common files\\kaspersky lab\\*\\klhkum.*.dll",
                                           "c:\\program files (x86)\\checkpoint\\endpoint security\\*\\klhkum.*.dll") and
+ /* Kaspersky usermode hook (klhkum/ushata) is loaded into third-party processes from multiple install roots
+    (Kaspersky VPN, versioned product dirs, Check Point bundling the Kaspersky engine); its signature array mixes
+    trusted and unchainable entries, so anchor on the verified Kaspersky signature instead of install paths */
+ not (process.thread.Ext.call_stack_final_user_module.name like~ "klhkum.*" and
+      _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                   $entry.trusted == true and $entry.subject_name in ("Kaspersky Lab JSC", "AO Kaspersky Lab", "Kaspersky Lab"))) and
  process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and 
  not process.thread.Ext.call_stack_final_user_module.hash.sha256 in
                                              ("0c3b7b36302a1971e87f443e7c32a17facd3581457fd5087ee745806bf630516",

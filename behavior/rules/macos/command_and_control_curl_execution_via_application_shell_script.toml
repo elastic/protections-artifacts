@@ -14,7 +14,7 @@ reference = [
     "https://www.sentinelone.com/blog/from-the-front-lines-new-macos-covid-malware-masquerades-as-apple-wears-face-of-apt/",
     "https://github.com/D00MFist/Mystikal/blob/main/Modules/DMG.py",
 ]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=30s
@@ -30,10 +30,11 @@ sequence by process.parent.entity_id with maxspan=30s
                "https://download.elastic.co/cloud/elastic-cloud-enterprise.sh") and
   not process.args == "-X" and
   not process.args == "-H" and
-  not process.args == "-d"]
+  not process.args == "-d" and
+  not Effective_process.executable like "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude"]
 '''
 
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.11.1"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -59,4 +60,4 @@ name = "Command and Control"
 reference = "https://attack.mitre.org/tactics/TA0011/"
 
 [internal]
-min_endpoint_version = "8.7.0"
+min_endpoint_version = "8.11.1"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Process Creation from an Unusual WMI Client"
 os_list = ["windows"]
 reference = ["https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/create-method-in-class-win32-process"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 api where
@@ -64,7 +64,9 @@ api where
                                     "?:\\Program Files\\PowerShell\\*\\pwsh.exe")) and
   not (process.name : "powershell.exe" and
        process.parent.executable : ("?:\\Users\\*\\.local\\bin\\claude.exe",
-                                    "?:\\Users\\*\\@anthropic-ai\\claude-code\\bin\\claude.exe")) and
+                                    "?:\\Users\\*\\@anthropic-ai\\claude-code\\bin\\claude.exe",
+                                    "?:\\Users\\*\\AppData\\Local\\Packages\\Claude_*\\LocalCache\\Roaming\\Claude\\claude-code\\*\\claude.exe",
+                                    "?:\\*\\node_modules\\@anthropic-ai\\claude-code\\*\\claude.exe")) and
   not (process.executable : ("C:\\Windows\\SysWOW64\\msiexec.exe", "C:\\Windows\\System32\\msiexec.exe") and
        process.parent.executable : ("C:\\Windows\\System32\\msiexec.exe", "C:\\Windows\\SysWOW64\\msiexec.exe") and
        process.code_signature.subject_name == "Microsoft Windows" and

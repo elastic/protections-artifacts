@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.53"
+version = "1.0.54"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -116,17 +116,25 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not process.working_directory : "C:\\ProgramData\\VinitySoft Data\\MariaDb\\" and
 
- not process.parent.executable : ("C:\\Users\\*\node_modules\\@openai\\codex\\bin\\codex-x86_64-pc-windows-msvc.exe",
+ not process.parent.executable : ("C:\\Users\\*\\node_modules\\@openai\\codex\\bin\\codex-x86_64-pc-windows-msvc.exe",
                                   "C:\\Users\\*\\extensions\\openai.chatgpt-*\\bin\\windows-x86_64\\codex.exe",
                                   "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
                                   "C:\\Users\\*\\@openai\\*\\x86_64-pc-windows-msvc\\codex\\codex.exe",
                                   "C:\\Python312\\python.exe",
-                                  "?:\\Users\\*\\AppData\\Local\\Programs\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\Programs\\Antigravity*\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\Programs\\Antigravity*\\resources\\bin\\language_server.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Python\\bin\\python.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Programs\\Python\\Python*\\python.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Python\\pythoncore-*\\python.exe", 
                                   "D:\\Antigravity\\resources\\app\\extensions\\antigravity\\bin\\language_server_windows_x64.exe",  
-                                  "?:\\Users\\*\\.codex\\.sandbox-bin\\codex-command-runner-*.exe") and
+                                  "?:\\Users\\*\\.codex\\.sandbox-bin\\codex-command-runner-*.exe",
+                                  "?:\\Users\\*\\*\\node_modules\\@openai\\codex*\\*\\codex.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\JetBrains\\*\\acp-agents\\codex*\\*\\codex.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\OpenAI\\Codex\\*\\codex.exe",
+                                  "?:\\Users\\*\\.codex\\plugins\\*\\codex.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\Programs\\Devin\\*\\devin.exe",
+                                  "?:\\Users\\*\\*\\node_modules\\@github\\copilot*\\*\\copilot.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\github-copilot-sdk\\*\\copilot.exe") and
 
  not process.args :  ("$w=$env:LOCALAPPDATA+'/OPWC/';[Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($w+'OperaSharpDLL.dll'));[OperaSharpDLL.Helper]::Startup()",
                       "IEX (New-Object Net.WebClient).DownloadString('https://install.demo-toolkit.de/dtkupdater.ps1?apikey=*",

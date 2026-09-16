@@ -1,0 +1,71 @@
+[rule]
+description = """
+This rule detects when an ELF file with a high entropy is created. Attackers may obfuscate or pack their malware to
+evade detection, resulting in a high entropy ELF file.
+"""
+id = "d65a5e74-2708-47ca-bbdd-b17353f0b465"
+license = "Elastic License v2"
+name = "High Entropy ELF File Creation"
+os_list = ["linux"]
+version = "1.0.3"
+
+query = '''
+file where event.type != "deletion" and file.Ext.header_bytes like "7f454c46*" and file.Ext.entropy >= 7.0 and
+not (
+  process.executable like (
+    "/usr/share/cursor/cursor", "/usr/lib/go/bin/go", "/usr/bin/ld", "/usr/bin/x86_64-linux-gnu-as",
+    "/usr/bin/dpkg", "/usr/bin/install", "/usr/bin/tar", "/opt/veeam/transport/veeamagent",
+    "/usr/libexec/platform-python*", "/usr/bin/containerd", "/opt/bitdefender-security-tools/bin/bdsecd",
+    "/usr/bin/dockerd", "/var/lib/rancher/*/bin/containerd", "/usr/bin/clamscan", "/nix/store/*/bin/nix",
+    "/opt/msp-agent/msp-agent-core", "/usr/bin/cpio", "/usr/bin/rsync", "/snap/microk8s/*/bin/containerd",
+    "/opt/dotnet/dotnet", "/usr/lib/jvm/java-*/lib/jspawnhelper", "/usr/lib/jvm/java-*/bin/java", "/usr/sbin/dockerd"
+  ) or
+  (process.name == "cp" and file.path like ("/tmp_restore/rear.*", "/var/tmp/mkinitramfs*", "/var/tmp/rear.*")) or
+  (process.executable in ("/usr/bin/ld.bfd", "/usr/bin/objcopy") and file.path like "/var/lib/dkms/nvidia*") or
+  (process.name like "python*" and file.path like ("/usr/lib/modules/*", "/usr/lib/firmware/nvidia/*")) or
+  (process.name == "mv" and file.path == "/tmp/cis-diagnose-rc-amd64") or
+  file.path like "/srv/teamcity/TeamCity/buildAgent/*/lib/OdfConverter/*/OdfConverter" or
+  (process.name in ("clang", "as", "x86_64-linux-gnu-ld.bfd", "x86_64-linux-gnu-objcopy") and file.extension == "o") or
+  (process.executable like "/opt/coe/cadence/*/runtime/LNX86/bin/java" and file.path like "/opt/coe/cadence/*.so") or
+  (process.executable == "/usr/bin/git" and file.path like "/mnt/*/jenkins/workspace/*/OdfConverter") or
+  (process.executable like "/home/*/.local/bin/uv" and file.path like "/tmp/.tmp*/data/lib/libccl.so")
+)
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.002"
+name = "Software Packing"
+reference = "https://attack.mitre.org/techniques/T1027/002/"
+
+[[threat.technique.subtechnique]]
+id = "T1027.013"
+name = "Encrypted/Encoded File"
+reference = "https://attack.mitre.org/techniques/T1027/013/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.3.0"

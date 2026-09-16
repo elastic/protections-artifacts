@@ -8,16 +8,19 @@ id = "b4fff9bb-6095-4282-9084-217fced11ce7"
 license = "Elastic License v2"
 name = "Suspicious Web Server Child Process"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
   process.parent.name in (
     "nginx", "apache2", "httpd", "caddy", "mongrel_rails", "uwsgi", "daphne", "httpd.worker", "flask",
     "php-cgi", "php-fcgi", "php-cgi.cagefs", "lswsctrl", "varnishd", "uvicorn", "waitress-serve", "starman",
-    "frankenphp", "asterisk", "sw-engine-fpm"
+    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm", "lighttpd", "httpd-worker",
+    "httpd-prefork", "lshttpd", "litespeed", "openlitespeed", "fcgiwrap", "hypercorn", "granian", "puma",
+    "unicorn", "unicorn_rails", "thin", "rackup", "plackup", "twiggy", "hypnotoad", "starlet", "unitd",
+    "unitd-debug", "gitea"
   ) or
-  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi") or
+  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi", "lsphp*") or
   (process.parent.name like "ruby*" and process.parent.command_line like~ ("*puma*", "*rails*", "*passenger*")) or
   (process.parent.name like "python*" and process.parent.command_line like~ (
     "*hypercorn*", "*flask*", "*uvicorn*", "*django*", "*app.py*", "*server.py*", "*wsgi.py*", "*asgi.py*"
@@ -32,12 +35,15 @@ process where event.type == "start" and event.action == "exec" and (
       "/opt/yarn-*/bin/yarn.js"
     ) 
   ) or
-  (process.parent.name == "java" and process.parent.args like~ (
+  (process.parent.name == "beam.smp" and process.parent.executable like "*/couchdb/*") or
+  (process.parent.name in ("java", "jsvc", "jstart") and process.parent.args like~ (
     /* Tomcat */
     "org.apache.catalina.startup.Bootstrap", "-Dcatalina.base=*",
 
     /* Jetty */
     "org.eclipse.jetty.start.Main", "-Djetty.home=*",
+    "*start.jar*",
+    "-Djetty.base=*",
 
     /* WildFly / JBoss */
     "org.jboss.modules.Main", "-Djboss.home.dir=*",
@@ -50,6 +56,7 @@ process where event.type == "start" and event.action == "exec" and (
 
     /* GlassFish */
     "com.sun.enterprise.glassfish.bootstrap.ASMain",
+    "com.sun.enterprise.glassfish.bootstrap.GlassFishMain",
 
     /* Resin */
     "com.caucho.server.resin.Resin",
@@ -71,12 +78,18 @@ process where event.type == "start" and event.action == "exec" and (
 
     /* Helidon */
     "io.helidon.microprofile.server.Main", "io.helidon.webserver*",
+    "io.helidon.Main",
+    "io.helidon.microprofile.cdi.Main",
 
     /* Vert.x */
     "io.vertx.core.Launcher",
+    "io.vertx.launcher.application.VertxApplication",
 
     /* Keycloak */
     "org.keycloak*",
+    "io.quarkus.bootstrap.runner.QuarkusEntryPoint",
+    "-Dkc.home.dir=*",
+    "-Dkc.script.pid=*",
 
     /* Apereo CAS */
     "org.apereo.cas*",
@@ -91,7 +104,46 @@ process where event.type == "start" and event.action == "exec" and (
     "*-Dsolr.solr.home=*",
 
     /* Jenkins */
-    "*jenkins.war*"
+    "*jenkins.war*",
+
+    /* Ktor */
+    "io.ktor.server.netty.EngineMain",
+    "io.ktor.server.cio.EngineMain",
+    "io.ktor.server.jetty.jakarta.EngineMain",
+    "io.ktor.server.tomcat.jakarta.EngineMain",
+  
+
+    /* Payara Micro */
+    "*payara-micro*.jar*",
+
+    /* Karaf */
+    "org.apache.karaf.main.Main",
+    "-Dkaraf.home=*",
+    "-Dkaraf.base=*",
+
+    /* WSO2 */
+    "org.wso2.carbon.bootstrap.Bootstrap",
+
+    /* OpenSearch */
+    "org.opensearch.bootstrap.OpenSearch",
+    "-Dopensearch.path.home=*",
+
+    /* Sling / AEM */
+    "*org.apache.sling*.jar*",
+    "*aem-author*.jar*",
+    "*aem-publish*.jar*",
+    "*aem-quickstart*.jar*",
+    "*cq-quickstart*.jar*",
+
+    /* CAS */
+    "*cas.war*",
+
+    /* Legacy JBoss */
+    "org.jboss.Main",
+
+    /* SonarQube / Nexus */
+    "org.sonar.server.app.WebServer",
+    "org.sonatype.nexus.karaf.NexusMain"
     )
   )
 ) and (
@@ -165,7 +217,7 @@ process where event.type == "start" and event.action == "exec" and (
   )
 )
 and not (
-  process.parent.executable like "/tmp/*/.vscode-server/bin/*/node" or
+  process.parent.executable like ("/tmp/*/.vscode-server/bin/*/node", "/tmp/*/.vscode-server/*/server/node") or
   stringcontains(process.parent.executable, process.executable) or
   stringcontains(process.parent.args, process.executable) or
   (process.name == "echo" and process.parent.args in ("/usr/share/passenger/helper-scripts/rack-preloader.rb", "/etc/init.d/apache2")) or
@@ -225,7 +277,38 @@ and not (
   (
     process.parent.executable like "*/.vscode-server/bin/*/node" and
     process.executable like "*/.vscode-server/bin/*/node_modules/@vscode/vsce-sign/bin/vsce-sign"
-  )
+  ) or
+  (
+    process.parent.executable in ("/usr/sbin/fcgiwrap", "/usr/sbin/lighttpd", "/usr/bin/fcgiwrap", "/usr/sbin/httpd-prefork") and
+    process.name == "perl" and process.args like ("*.cgi", "*.pl")
+  ) or
+  (
+    process.parent.executable == "/usr/sbin/httpd-prefork" and
+    process.executable like "/home/*/common/bin/itgeis"
+  ) or
+  (
+    process.parent.name == "java" and
+    process.args like "/usr/bin/convert-im*"
+  ) or
+  (
+    process.parent.name == "fcgiwrap" and
+    process.name in ("perl", "env") and process.args like ("*.pl", "*.py")
+  ) or
+  (
+    process.executable == "./runc" and process.command_line == "runc init"
+  ) or
+  (
+    process.parent.name == "java" and
+    process.parent.args in ("org.apache.karaf.wrapper.internal.service.Main", "org.apache.karaf.main.Main") and
+    (
+      (process.name == "perl" and process.args == "-e") or
+      (process.name == "bash" and process.args like "cd*")
+    )
+  ) or
+  (process.parent.executable like "/opt/cali-demo/runtime/releases/node-*/bin/node" and process.name == "curl") or
+  (process.parent.executable == "/home/uniagent/jre/bin/java" and process.name == "sudo") or
+  (process.name == "curl" and process.parent.args like "/home/*/.local/share/uv/tools/udocker/bin/python" and process.working_directory like "/home/*/Harbor-tmp") or
+  (process.parent.executable like "/home/*/.nvm/versions/node/*/bin/node" and process.executable == "./node_modules/.bin/vite")
 )
 '''
 

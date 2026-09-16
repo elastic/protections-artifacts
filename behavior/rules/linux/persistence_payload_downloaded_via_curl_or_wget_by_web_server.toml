@@ -8,16 +8,19 @@ id = "aac41cc3-fc4a-4dea-b8d6-252ded1cb3fc"
 license = "Elastic License v2"
 name = "Payload Downloaded via Curl or Wget by Web Server"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
   process.parent.name in (
     "nginx", "apache2", "httpd", "caddy", "mongrel_rails", "uwsgi", "daphne", "httpd.worker", "flask",
     "php-cgi", "php-fcgi", "php-cgi.cagefs", "lswsctrl", "varnishd", "uvicorn", "waitress-serve", "starman",
-    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm"
+    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm", "lighttpd", "httpd-worker",
+    "httpd-prefork", "lshttpd", "litespeed", "openlitespeed", "fcgiwrap", "hypercorn", "granian", "puma",
+    "unicorn", "unicorn_rails", "thin", "rackup", "plackup", "twiggy", "hypnotoad", "starlet", "unitd",
+    "unitd-debug", "gitea"
   ) or
-  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi") or
+  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi", "lsphp*") or
   (
     process.parent.name like "ruby*" and
     process.parent.command_line like~ ("*puma*", "*rails*", "*passenger*") and
@@ -39,12 +42,15 @@ process where event.type == "start" and event.action == "exec" and process.paren
       process.parent.executable like "/*/.cursor-server/bin/linux-x64/*/node"
     )
   ) or
-  (process.parent.name == "java" and process.parent.args like~ (
+  (process.parent.name == "beam.smp" and process.parent.executable like "*/couchdb/*") or
+  (process.parent.name in ("java", "jsvc", "jstart") and process.parent.args like~ (
     /* Tomcat */
     "org.apache.catalina.startup.Bootstrap", "-Dcatalina.base=*",
 
     /* Jetty */
     "org.eclipse.jetty.start.Main", "-Djetty.home=*",
+    "*start.jar*",
+    "-Djetty.base=*",
 
     /* WildFly / JBoss */
     "org.jboss.modules.Main", "-Djboss.home.dir=*",
@@ -57,6 +63,7 @@ process where event.type == "start" and event.action == "exec" and process.paren
 
     /* GlassFish */
     "com.sun.enterprise.glassfish.bootstrap.ASMain",
+    "com.sun.enterprise.glassfish.bootstrap.GlassFishMain",
 
     /* Resin */
     "com.caucho.server.resin.Resin",
@@ -78,12 +85,18 @@ process where event.type == "start" and event.action == "exec" and process.paren
 
     /* Helidon */
     "io.helidon.microprofile.server.Main", "io.helidon.webserver*",
+    "io.helidon.Main",
+    "io.helidon.microprofile.cdi.Main",
 
     /* Vert.x */
     "io.vertx.core.Launcher",
+    "io.vertx.launcher.application.VertxApplication",
 
     /* Keycloak */
     "org.keycloak*",
+    "io.quarkus.bootstrap.runner.QuarkusEntryPoint",
+    "-Dkc.home.dir=*",
+    "-Dkc.script.pid=*",
 
     /* Apereo CAS */
     "org.apereo.cas*",
@@ -98,7 +111,46 @@ process where event.type == "start" and event.action == "exec" and process.paren
     "*-Dsolr.solr.home=*",
 
     /* Jenkins */
-    "*jenkins.war*"
+    "*jenkins.war*",
+
+    /* Ktor */
+    "io.ktor.server.netty.EngineMain",
+    "io.ktor.server.cio.EngineMain",
+    "io.ktor.server.jetty.jakarta.EngineMain",
+    "io.ktor.server.tomcat.jakarta.EngineMain",
+  
+
+    /* Payara Micro */
+    "*payara-micro*.jar*",
+
+    /* Karaf */
+    "org.apache.karaf.main.Main",
+    "-Dkaraf.home=*",
+    "-Dkaraf.base=*",
+
+    /* WSO2 */
+    "org.wso2.carbon.bootstrap.Bootstrap",
+
+    /* OpenSearch */
+    "org.opensearch.bootstrap.OpenSearch",
+    "-Dopensearch.path.home=*",
+
+    /* Sling / AEM */
+    "*org.apache.sling*.jar*",
+    "*aem-author*.jar*",
+    "*aem-publish*.jar*",
+    "*aem-quickstart*.jar*",
+    "*cq-quickstart*.jar*",
+
+    /* CAS */
+    "*cas.war*",
+
+    /* Legacy JBoss */
+    "org.jboss.Main",
+
+    /* SonarQube / Nexus */
+    "org.sonar.server.app.WebServer",
+    "org.sonatype.nexus.karaf.NexusMain"
     )
   )
 ) and

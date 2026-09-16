@@ -8,7 +8,7 @@ id = "8a744999-9b0b-4674-b621-e1fc0fc3718e"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Suspicious UID Change"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -29,6 +29,11 @@ sequence by process.entity_id with maxspan=30s
       "*/extensions/openai.chatgpt-*/bin/*/codex", "*/node_modules/@openai/codex-linux-x64/vendor/*/bin/codex"
     ) or
     process.executable like ("/run/user/*/.bubblewrap/*", "/tmp/newroot/usr/bin/sudo") or
+    (
+      process.executable == "/home/uniagent/jre/lib/jspawnhelper" and
+      process.parent.executable == "/home/uniagent/jre/bin/java" and
+      process.parent.args == "com.huawei.itpaas.paasagent.launcher.Main"
+    ) or
     (
       process.parent.name like "python*" and
       process.parent.args in ("muckrake_runner.run_tests", "terraform.kafka_runner.run-test")

@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.27"
+version = "1.0.28"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -64,7 +64,8 @@ process where event.type == "start" and event.action == "exec" and (
     "/home/*/.local/share/JetBrains/*", "/home/*/.local/opt/activitywatch/*",
     "/home/*/.local/bin/claude-oauth-proxy", "/root/.local/openaev-agent-session/openaev-agent",
     "/nix/store/*/bin/.blueman-tray-wrapped", "/var/lib/containers/storage/overlay/nix/store/*/bin/.blueman-tray-wrapped",
-    "/home/*/.config/discord/*/Discord"
+    "/home/*/.config/discord/*/Discord", "/root/.local/share/netservice/bin/netservice", "/opt/apps/verodin/node/node/scripts/.verodin_pull_service/verodin_pull_service",
+    "/opt/apps/verodin/node/node/scripts/.verodin_network_monitor/verodin_network_monitor", "/opt/apps/verodin/node/node/web/.verodin_standalone_server/verodin_standalone_server"
   ) or
   process.name in ("riptide-agent", "zellij", "gitsign-credential-cache", "jetbrains-toolbox", "goland") or
   process.working_directory == "/var/lib/rabbitmq" or

@@ -1,13 +1,13 @@
 [rule]
 description = """
-Adversaries may attempt to clear or disable the Bash command-line history in an attempt to evade detection or forensic
-investigations.
+Adversaries may attempt to delete or truncate the Bash command-line history file in an attempt to evade detection or
+forensic investigations.
 """
 id = "31da6564-b3d3-4fc8-9a96-75ad0b364363"
 license = "Elastic License v2"
 name = "Tampering of Bash Command-Line History"
 os_list = ["linux", "macos"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -29,10 +29,12 @@ process where event.type == "start" and event.action == "exec" and (
     )
   ) or
   (
-    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "sudo", "logger") and (
-      (process.args == "export" and process.args : ("HISTFILE=/dev/null", "HISTFILESIZE=0")) or
-      (process.args == "unset" and process.args : "HISTFILE") or
-      (process.args == "set" and process.args == "history" and process.args == "+o")
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "sudo", "logger") and
+    process.args == "-c" and
+    (
+      (process.args : "* export *" and process.args : ("*HISTFILE=/dev/null*", "*HISTFILESIZE=0*")) or
+      (process.args : "* unset *" and process.args : "*HISTFILE*") or
+      (process.args : "* set " and process.args : "*history*" and process.args : "*+o*")
    )
   ) or
   (process.name == "history" and process.args == "-c")

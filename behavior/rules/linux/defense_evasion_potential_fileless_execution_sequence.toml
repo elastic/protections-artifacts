@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Potential Fileless Execution Sequence"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -25,7 +25,11 @@ sequence by process.entity_id with maxspan=5s
      process.executable like "/nix/store/*/bin/buildah" and
      process.Ext.memfd.name == "memfd:buildah-in-a-user-namespace"
     ) or
-    process.executable like ("/usr/bin/lxc-attach", "memfd:buildah-chroot-runtime", "./usr/bin/nvidia-cdi-hook") or
+    process.executable like (
+      "/usr/bin/lxc-attach", "memfd:buildah-chroot-runtime", "./usr/bin/nvidia-cdi-hook",
+      "memfd:runc_cloned:/run/nvidia-ctk-hook/*/ldconfig", "memfd:runc_cloned:/sbin/ldconfig.real",
+      "memfd:buildah-in-a-user-namespace"
+    ) or
     process.command_line == "buildah-chroot-runtime"
   )]
   [process where event.type == "start" and event.action == "exec" and (

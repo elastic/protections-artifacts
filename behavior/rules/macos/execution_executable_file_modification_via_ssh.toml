@@ -7,13 +7,13 @@ id = "47205a9a-836c-4bed-b068-575eed26478d"
 license = "Elastic License v2"
 name = "Executable File Modification via SSH"
 os_list = ["macos"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 file where event.action == "modification" and file.Ext.header_bytes like~ ("cffaedfe*", "cafebabe*") and
  file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*", "/var/tmp/*", "/private/var/tmp/*") and 
  (process.name in ("ssh", "sshd", "sshd-session") or Effective_process.name in ("ssh", "sshd", "sshd-session")) and
- not process.code_signature.subject_name like "Software Signing"
+ not process.code_signature.subject_name in ("Software Signing", "macOS Software Signing")
 '''
 
 min_endpoint_version = "8.16.0"

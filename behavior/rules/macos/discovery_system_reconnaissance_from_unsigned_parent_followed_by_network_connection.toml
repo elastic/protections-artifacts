@@ -12,14 +12,15 @@ reference = [
     "https://www.wiz.io/blog/threat-actors-target-crypto-orgs",
     "https://attack.mitre.org/techniques/T1082/",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence with maxspan=1m
   [process where event.type == "start" and event.action == "exec" and
    (
      process.command_line like "*scutil --get ComputerName*" or
-     process.command_line like~ "*ioreg*IOPlatformExpertDevice*IOPlatformUUID*"
+     process.command_line like~ "*ioreg*IOPlatformExpertDevice*IOPlatformUUID*" or 
+     process.command_line like~ "*ioreg*-rd1*IOPlatformExpertDevice*"
    ) and
    (process.parent.code_signature.trusted == false or process.parent.code_signature.exists == false) and
    process.parent.executable like ("/Users/*", "/private/tmp/*", "/tmp/*") and

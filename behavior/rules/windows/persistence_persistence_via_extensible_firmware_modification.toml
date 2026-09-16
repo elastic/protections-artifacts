@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.32"
+version = "1.0.33"
 
 query = '''
 sequence by process.entity_id
@@ -57,7 +57,7 @@ sequence by process.entity_id
            ("Akeo Consulting", "HP Inc.", "Dell Inc", "Dell Technologies Inc.", "Veritas Technologies LLC", "Insyde Software Corp.", "Huawei Technologies Co., Ltd.", "FUJITSU CLIENT COMPUTING LIMITED", "Micro Focus Group Limited", "ESET, spol. s r.o.") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "?:\\WINDOWS\\System32\\svchost.exe" and process.args : "BDESVC" and process.parent.name : "services.exe") and
+  not (process.executable : "?:\\Windows\\System32\\svchost.exe" and process.args : "-k" and process.args : ("BDESVC", "GPSvcGroup") and process.parent.name : "services.exe" and process.code_signature.trusted == true and process.code_signature.subject_name in ("Microsoft Windows Publisher", "Microsoft Corporation", "Microsoft Windows")) and
 
   not (process.executable : "?:\\Windows\\System32\\bcdboot.exe" and process.args : "/sysrepair" and process.parent.name : "svchost.exe") and
 

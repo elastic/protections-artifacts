@@ -11,7 +11,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name in ("cron", "crond") and 
@@ -85,7 +85,9 @@ not (
     "/bin/sh -c curl https://*.go.id/batch/daily 2>&1 | timestamp.sh >> backup.log", "*https://api.*.kz/v3/kaseOrders/*", "*https://api.*.kz/v3/sendAmlRequest*",
     "*/var/log/mco_push_log.log*", "*./luigi_start_job.sh*", "*go.id/batch/closingExam*", "*/var/www/html/*/wp-content/heatrisk/heatrisk.xml*",
     "*/var/log1/cron_*.log*", "*/var/www/log/cron_xml.log*", "*https://qrcode.*.com/system/cron*", "*w=app/akasha/configuration/ExportDocumentsAsXml*",
-    "/bin/sh -c wget -O - -t 1 https://*/custom-api-server/hubspot/oauth/callback*", "*/var/log/*.log*", "*/var/log1/*.log*", "*wget*akasha*"
+    "/bin/sh -c wget -O - -t 1 https://*/custom-api-server/hubspot/oauth/callback*", "*/var/log/*.log*", "*/var/log1/*.log*", "*wget*akasha*",
+    "*${RANDOM*};*${RANDOM*}*", "*https://i-*.com/cs/v1/inquiryBatch/*", "*https://i-*.com/cs/v1/evaluationBatch/*", "*https://linuxrepo.*.com/heimdal-self-update.sh*",
+    "*app\\akasha\\support\\SendAcademyDocuments*"
   ) or
   process.command_line in (
     "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",
@@ -104,7 +106,8 @@ not (
     "/usr/bin/curl*/var/log/checkdiskusage.log", "ps*/opt/fortinet/fortisiem/linux-agent/tmp/*",
     "flock*/tmp/edl.lock*"
   ) or 
-  process.working_directory like "/opt/nessus_agent/*"
+  process.working_directory like "/opt/nessus_agent/*" or
+  (process.args like "gssh-agent*" and process.command_line like "*/mnt/common/shared/xion/xion-map/setup.sh*")
 )
 '''
 

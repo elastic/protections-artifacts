@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "DNS Request to Crypto/DHT Services"
 os_list = ["linux"]
 reference = ["https://www.aikido.dev/blog/glassworm-chrome-extension-rat"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -40,7 +40,8 @@ sequence by process.entity_id with maxspan=1m
     (process.name == "curl" and process.parent.args like "read -r RPC;*") or
     (process.executable like "/usr/bin/php*" and process.args in ("/var/tools/koalaping/bin/ping.php", "/var/tools/lean/bin/Lean.php")) or
     (process.executable like "/home/*/.local/share/uv/python/*/bin/python3*" and process.working_directory like "/home/*/shard_campaign_data_collection") or
-    (process.executable == "/usr/bin/dash" and process.args == "/usr/bin/firefox")
+    (process.executable == "/usr/bin/dash" and process.args == "/usr/bin/firefox") or
+    (process.executable like "/home/*/.nvm/versions/node/*/bin/node" and process.working_directory like "/home/*/fapi")
   )]
   [dns where event.action == "lookup_result" and dns.question.name like~ (
     /* Solana */

@@ -8,7 +8,7 @@ id = "8c2977dd-07ce-4a8e-8ccd-5e4183138675"
 license = "Elastic License v2"
 name = "Egress Network Connection Followed by Command Execution"
 os_list = ["linux"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 sequence with maxspan=5s
@@ -42,7 +42,11 @@ sequence with maxspan=5s
      process.parent.name in ("nseserv", "nexserv", "pycharm") or
      process.parent.command_line == "/usr/bin/php ./boot-watcher.php" or
      process.working_directory == "/usr/lib/adlumin" or
-     process.parent.executable like ("/run/k3s/containerd/*", "/run/user/*/.bubblewrap/opt/chef/bin/chef-client", "/run/containerd/*") or
+     process.parent.executable like (
+       "/run/k3s/containerd/*", "/run/user/*/.bubblewrap/opt/chef/bin/chef-client", "/run/containerd/*",
+       "/var/tmp/.mount_Cursor*/usr/bin/cursor", "/var/run/docker/containerd/daemon/io.containerd.runtime.v2.task/moby/opt/docker/overlay2/*/merged/usr/sbin/httpd",
+       "/run/systemd/mount-rootfs/usr/sbin/php-fpm*"
+     ) or
      (
        process.command_line == "sh -c -- hostname -I 2>/dev/null | awk '{print $1}'" and
        process.parent.command_line like "/usr/sbin/php-fpm* --nodaemonize --fpm-config /etc/php/*/fpm/php-fpm.conf"

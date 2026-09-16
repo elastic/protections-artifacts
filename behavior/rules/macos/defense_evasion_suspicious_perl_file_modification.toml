@@ -10,11 +10,12 @@ license = "Elastic License v2"
 name = "Suspicious Perl File Modification"
 os_list = ["macos"]
 reference = ["https://socket.dev/blog/10-npm-typosquatted-packages-deploy-credential-harvester"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 file where process.name == "perl" and file.extension in ("pl", "applescript", "scpt", "py", "sh") and 
- (file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*", "/private/var/tmp/*") or file.name : ".*")
+  (file.path like ("/private/tmp/*", "/tmp/*", "/var/tmp/*", "/private/var/tmp/*") or file.name : ".*") and
+  not file.path like "/private/tmp/claude-*"
 '''
 
 min_endpoint_version = "8.16.0"

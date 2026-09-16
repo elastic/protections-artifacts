@@ -7,16 +7,19 @@ id = "7d4b0dfc-d305-4761-94f4-ab2ed221b3ee"
 license = "Elastic License v2"
 name = "Payload Execution by Web Server"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
   process.parent.name in (
     "nginx", "apache2", "httpd", "caddy", "mongrel_rails", "uwsgi", "daphne", "httpd.worker", "flask",
     "php-cgi", "php-fcgi", "php-cgi.cagefs", "lswsctrl", "varnishd", "uvicorn", "waitress-serve", "starman",
-    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm"
+    "frankenphp", "zabbix_server", "asterisk", "sw-engine-fpm", "lighttpd", "httpd-worker",
+    "httpd-prefork", "lshttpd", "litespeed", "openlitespeed", "fcgiwrap", "hypercorn", "granian", "puma",
+    "unicorn", "unicorn_rails", "thin", "rackup", "plackup", "twiggy", "hypnotoad", "starlet", "unitd",
+    "unitd-debug", "gitea"
   ) or
-  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi") or
+  process.parent.name like ("php-fpm*", "gunicorn*", "*.cgi", "*.fcgi", "lsphp*") or
   (
     process.parent.name like "ruby*" and
     process.parent.command_line like~ ("*puma*", "*rails*", "*passenger*") and
@@ -29,12 +32,15 @@ process where event.type == "start" and event.action == "exec" and process.paren
     )
   ) or
   (process.parent.name like "perl*" and process.parent.command_line like~ "*plackup*") or
-  (process.parent.name == "java" and process.parent.args like~ (
+  (process.parent.name == "beam.smp" and process.parent.executable like "*/couchdb/*") or
+  (process.parent.name in ("java", "jsvc", "jstart") and process.parent.args like~ (
     /* Tomcat */
     "org.apache.catalina.startup.Bootstrap", "-Dcatalina.base=*",
 
     /* Jetty */
     "org.eclipse.jetty.start.Main", "-Djetty.home=*",
+    "*start.jar*",
+    "-Djetty.base=*",
 
     /* WildFly / JBoss */
     "org.jboss.modules.Main", "-Djboss.home.dir=*",
@@ -47,6 +53,7 @@ process where event.type == "start" and event.action == "exec" and process.paren
 
     /* GlassFish */
     "com.sun.enterprise.glassfish.bootstrap.ASMain",
+    "com.sun.enterprise.glassfish.bootstrap.GlassFishMain",
 
     /* Resin */
     "com.caucho.server.resin.Resin",
@@ -68,12 +75,18 @@ process where event.type == "start" and event.action == "exec" and process.paren
 
     /* Helidon */
     "io.helidon.microprofile.server.Main", "io.helidon.webserver*",
+    "io.helidon.Main",
+    "io.helidon.microprofile.cdi.Main",
 
     /* Vert.x */
     "io.vertx.core.Launcher",
+    "io.vertx.launcher.application.VertxApplication",
 
     /* Keycloak */
     "org.keycloak*",
+    "io.quarkus.bootstrap.runner.QuarkusEntryPoint",
+    "-Dkc.home.dir=*",
+    "-Dkc.script.pid=*",
 
     /* Apereo CAS */
     "org.apereo.cas*",
@@ -88,7 +101,46 @@ process where event.type == "start" and event.action == "exec" and process.paren
     "*-Dsolr.solr.home=*",
 
     /* Jenkins */
-    "*jenkins.war*"
+    "*jenkins.war*",
+
+    /* Ktor */
+    "io.ktor.server.netty.EngineMain",
+    "io.ktor.server.cio.EngineMain",
+    "io.ktor.server.jetty.jakarta.EngineMain",
+    "io.ktor.server.tomcat.jakarta.EngineMain",
+  
+
+    /* Payara Micro */
+    "*payara-micro*.jar*",
+
+    /* Karaf */
+    "org.apache.karaf.main.Main",
+    "-Dkaraf.home=*",
+    "-Dkaraf.base=*",
+
+    /* WSO2 */
+    "org.wso2.carbon.bootstrap.Bootstrap",
+
+    /* OpenSearch */
+    "org.opensearch.bootstrap.OpenSearch",
+    "-Dopensearch.path.home=*",
+
+    /* Sling / AEM */
+    "*org.apache.sling*.jar*",
+    "*aem-author*.jar*",
+    "*aem-publish*.jar*",
+    "*aem-quickstart*.jar*",
+    "*cq-quickstart*.jar*",
+
+    /* CAS */
+    "*cas.war*",
+
+    /* Legacy JBoss */
+    "org.jboss.Main",
+
+    /* SonarQube / Nexus */
+    "org.sonar.server.app.WebServer",
+    "org.sonatype.nexus.karaf.NexusMain"
     )
   )
 ) and
@@ -251,13 +303,13 @@ not (
     process.command_line == "/bin/sh -c { touch /run/uwsgi-logrotate  }"
   ) or
   (process.parent.executable == "/var/www/cgi-bin/vtsystem.cgi" and process.command_line == "sh -c hostname") or
-  (process.parent.name like "python*" and process.parent.command_line like "*hive_server.py*") or
+  (process.parent.name like "python*" and process.parent.command_line like ("*hive_server.py*", "*/home/*/workspace/claudopus/server/server.py*")) or
   (process.parent.name == "sw-engine-fpm" and process.command_line like ("*/opt/psa/admin/bin/*", "*/usr/local/psa/admin/*")) or
   (
     process.parent.name == "httpd" and
     process.command_line like (
       "*/datastore/htdocs/control-states/compass*", "*/dev/shm/netmon-log*", "sh -c /usr/bin/crontab  -l 2>/dev/null",
-      "sh -c /usr/bin/crontab  -"
+      "sh -c /usr/bin/crontab  -", "*/etc/ffmpeg/ffmpeg*"
     )
   ) or
   (process.parent.name == "asterisk" and process.args like "/bin/chmod 777 */gravacoes/*.WAV") or
@@ -265,7 +317,8 @@ not (
   (process.parent.name in ("apache2", "php-cgi") and process.command_line in ("sh -c crontab -l", "sh -c -- crontab -l")) or
   (process.parent.name in ("php-fpm", "httpd") and process.command_line in (
     "sh -c whoami", "sh -c /usr/bin/php -r 'echo phpversion();'",
-    "sh -c TERM=dumb cat /var/run/elasticsearch/elasticsearch.pid", "sh -c TERM=dumb cat /var/run/logstash/logstash.pid"
+    "sh -c TERM=dumb cat /var/run/elasticsearch/elasticsearch.pid", "sh -c TERM=dumb cat /var/run/logstash/logstash.pid",
+    "sh -c TERM=dumb cat /var/run/opensearch/opensearch.pid"
   )) or
   (process.parent.name == "zabbix_server" and process.command_line like "*/usr/sbin/sendmail*") or
   (process.parent.executable == "/opt/morpheus/embedded/java/jre/bin/java" and process.command_line like "*morpheus-local*") or
@@ -282,7 +335,14 @@ not (
   process.working_directory == "/var/lib/puppet/rack/puppetmasterd" or
   (process.working_directory == "/olympe" and process.parent.executable == "/usr/local/bin/ruby" and process.command_line == "sh -c ssh-keygen -f ~/.ssh/id_ed25519 -y") or
   (process.parent.name like "python*" and process.parent.args == "/root/.local/share/uv/tools/mini-swe-agent/bin/python") or
-  (process.parent.executable == "/usr/sbin/zabbix_server" and process.command_line like "*/usr/lib/zabbix/alertscripts/sms_gw*")
+  (process.parent.name == "zabbix_server" and process.command_line like "*/usr/lib/zabbix/alertscripts/*") or
+  (
+    process.parent.name == "java" and
+    process.parent.args in ("org.apache.karaf.wrapper.internal.service.Main", "org.apache.karaf.main.Main") and
+    process.name == "bash" and process.args like "cd*"
+  ) or
+  process.parent.executable like ("/opt/uniagent/jre/bin/java", "/cvmfs/*/tools/eb/x86_64/generic/software/Python/*/bin/python*") or
+  (process.parent.name == "java" and process.command_line == "/bin/sh -c lsb_release -a | grep \"Description\"")
 )
 '''
 

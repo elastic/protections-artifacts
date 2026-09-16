@@ -8,7 +8,7 @@ id = "72f9191c-f099-4349-8c73-794b4ee8c4ea"
 license = "Elastic License v2"
 name = "Suspicious Powershell Child Process"
 os_list = ["macos"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 process where event.type == "start" and 
@@ -17,7 +17,7 @@ process where event.type == "start" and
  not process.args like~ "http://localhost*" and
  not (
     process.parent.code_signature.team_id == "UBF8T346G9" and process.parent.code_signature.trusted == true and
-    process.args == "--aws-sigv4" and process.args like~ "aws:amz:*:monitoring" and process.args == "--config"
+    process.args == "--aws-sigv4" and process.args like~ ("aws:amz:*:monitoring", "aws:amz:*:aps")
 )
 '''
 

@@ -14,7 +14,7 @@ reference = [
     "https://detect.fyi/hunting-clickfix-win-x-variants-ff06e4c62bd9",
     "https://www.securityweek.com/clickfix-attack-uses-windows-terminal-to-evade-detection/",
 ]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -32,8 +32,10 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
     "*confirmChallenge*",
     "*Human verif*",
     "*Checking your browser*",
-    "*Just a moment*"
-  )
+    "*Just a moment*",
+    "*Cloudflare verification*",
+    "*Cloudflare ID: *"
+  ) and not process.Ext.api.parameters.content_name : "?*"
 '''
 
 min_endpoint_version = "8.16.0"

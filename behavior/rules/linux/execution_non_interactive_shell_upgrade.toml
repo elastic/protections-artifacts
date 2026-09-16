@@ -8,7 +8,7 @@ id = "f1e932e5-41c5-465f-823b-83fc6f379bb4"
 license = "Elastic License v2"
 name = "Non-interactive Shell Upgrade"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -27,10 +27,15 @@ process where event.type == "start" and event.action == "exec" and (
 ) and
 not (
   process.parent.command_line like ("linode-longview", "*bootstrap*", "*homebrew*", "*/home/*/.claude/shell-snapshots/snapshot*") or
-  process.parent.executable in ("/usr/bin/expect", "/usr/bin/nsh-single-command", "/usr/bin/runc") or
+  process.parent.executable in ("/usr/bin/expect", "/usr/bin/nsh-single-command", "/usr/bin/runc", "/tmp/newroot/home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor/portable-ruby/current/bin/ruby") or
+  process.parent.executable like "/home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor/portable-ruby/*/bin/ruby" or
   process.command_line == "stty -echo raw min 0 time 2" or
   process.args like ("/dev/tty*", "/dev/serial/*") or
-  process.parent.args == "/usr/share/emacs/site-lisp/emacspeak/servers/dtk-exp"
+  process.parent.args == "/usr/share/emacs/site-lisp/emacspeak/servers/dtk-exp" or
+  process.working_directory like (
+    "/tmp/sandbox-api-integration/crates/sandbox-api", "/home/*/Developer/rust-sandboxing/aimee-code-linux*", "/tmp/sandbox-api-integration",
+    "/scratch/user/*/slide_method_workspace"
+  )
 )
 '''
 

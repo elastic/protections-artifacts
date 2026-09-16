@@ -1,0 +1,100 @@
+[rule]
+description = """
+Identifies creation of a :changelist NTFS alternate data stream or a Windows service Args registry value pointing to a
+:changelist path. Microsoft Defender's Boot-Time Removal (BTR.sys) driver reads an encrypted transaction blob from a
+driver ADS named :changelist, referenced by the service Args value under SYSTEM ControlSet Services. Adversaries can
+reproduce this staging outside Defender to abuse BTR.sys as a signed kernel primitive for arbitrary file and registry
+operations.
+"""
+id = "6d841ea3-7036-42bb-a59a-45e5bda9a9e4"
+license = "Elastic License v2"
+name = "Potential Evasion via Microsoft Boot Time Removal Driver"
+os_list = ["windows"]
+reference = [
+    "https://research.checkpoint.com/2026/btr-reforged-weaponizing-defenders-remediation-driver-as-a-kernel-operation-primitive/",
+    "https://github.com/Dump-GUY/BTR_CLI",
+]
+version = "1.0.1"
+
+query = '''
+any where process.pid != 4 and
+ not (
+   user.id == "S-1-5-18" and
+   process.executable : ("?:\\Windows\\System32\\MRT.exe", 
+                         "?:\\Windows\\System32\\svchost.exe", 
+                         "?:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\*\\MsMpEng.exe") and
+   process.code_signature.trusted == true and
+   process.code_signature.subject_name : ("Microsoft Windows", "Microsoft Corporation", "Microsoft Windows Publisher")
+ ) and
+ (
+   (event.category == "file" and event.action == "creation" and file.name : "*:changelist") or
+   (event.category == "registry" and event.action == "modification" and
+    registry.path : "HKLM\\SYSTEM\\*ControlSet*\\Services\\*\\Args" and
+    registry.data.strings : "*:changelist")
+ )
+'''
+
+min_endpoint_version = "7.15.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
+[[threat.technique.subtechnique]]
+id = "T1543.003"
+name = "Windows Service"
+reference = "https://attack.mitre.org/techniques/T1543/003/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1112"
+name = "Modify Registry"
+reference = "https://attack.mitre.org/techniques/T1112/"
+
+[[threat.technique]]
+id = "T1562"
+name = "Impair Defenses"
+reference = "https://attack.mitre.org/techniques/T1562/"
+[[threat.technique.subtechnique]]
+id = "T1562.001"
+name = "Disable or Modify Tools"
+reference = "https://attack.mitre.org/techniques/T1562/001/"
+
+
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.004"
+name = "NTFS File Attributes"
+reference = "https://attack.mitre.org/techniques/T1564/004/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

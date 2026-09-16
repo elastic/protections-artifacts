@@ -7,7 +7,7 @@ id = "c5473399-8d0b-4cf2-a1a2-0c856649396a"
 license = "Elastic License v2"
 name = "PowerShell Engine Loaded via Injection"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -30,9 +30,12 @@ sequence by process.entity_id with maxspan=1m
        process.code_signature.subject_name : 
             ("Citrix Systems, Inc.", "Veeam Software Group GmbH", "ScriptRunner Software GmbH", "Microsoft 3rd Party Application Component", 
              "Atera Networks Ltd", "Chocolatey Software, Inc.", "Chocolatey Software, Inc", "Datto Inc", "Datto, LLC", "Dell Technologies Inc.",
-             "Syxsense Inc.")) and
+             "Syxsense Inc.", "UiPath, Inc.")) and
   not (process.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\mscorsvw.exe" and
        process.parent.executable : "?:\\Windows\\Microsoft.NET\\Framework64\\*\\ngen.exe") and
+  not (process.parent.code_signature.status : "trusted" and
+       process.parent.code_signature.subject_name : "Datto, LLC" and
+       process.executable : "?:\\ProgramData\\CentraStage\\AEMAgent\\*") and
   process.parent.thread.Ext.call_stack_summary : 
                     ("ntdll.dll|Unbacked", 
                      "ntdll.dll|kernelbase.dll|Unbacked",

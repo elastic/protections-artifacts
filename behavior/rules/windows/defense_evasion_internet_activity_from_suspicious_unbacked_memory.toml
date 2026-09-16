@@ -7,7 +7,7 @@ id = "7dca0e22-0e3f-4ed0-ad28-eff5617adf75"
 license = "Elastic License v2"
 name = "Internet Activity from Suspicious Unbacked Memory"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 registry where process.executable : ("C:\\*", "D:\\*") and
@@ -67,7 +67,8 @@ registry where process.executable : ("C:\\*", "D:\\*") and
                                              "Zoom Video Communications, Inc.", "Vertafore, Inc.", "Anatomage, Inc.", "Articulate Global, Inc.", 
                                              "Lenovo", "Mozilla Corporation", "TurbolabData_ABSKey.pfx", "eVision Holdings, LLC", "Zscaler, Inc.", 
                                              "March Networks Corporation", "EZLinks Golf LLC", "Prop Modest", "Audit Detective, LLC",
-                                             "Shanghai Microvirt Software Technology CO., LTD.", "Laserfiche", "MAGNET FORENSICS INC.") and
+                                             "Shanghai Microvirt Software Technology CO., LTD.", "Laserfiche", "MAGNET FORENSICS INC.",
+                                             "Finastra Global Limited") and
       process.code_signature.trusted == true) and
  not (process.code_signature.subject_name : "Internet Testing Systems, LLC" and process.code_signature.trusted == true and
           process.name : ("PCSecureBrowser*.exe", "ETS Online Testing Browser.exe", "sb.exe")) and

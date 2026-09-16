@@ -12,7 +12,7 @@ reference = [
     "https://man7.org/linux/man-pages/man2/ptrace.2.html",
     "https://www.akamai.com/blog/security-research/the-definitive-guide-to-linux-process-injection",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=3s
@@ -20,8 +20,12 @@ sequence with maxspan=3s
     process.Ext.ptrace.request in (4, 5, 13, 16901) or
     (process.Ext.ptrace.request == 6 and process.Ext.ptrace.addr in (48, 60, 128, 152))
   ) and process.executable != null and
-  not process.executable like (
-    "/opt/dynatrace/oneagent/agent/lib64/oneagenthelper", "/opt/scorec/toolworks/totalview.*/bin/tvdengine"
+  not (
+    process.executable like (
+      "/opt/dynatrace/oneagent/agent/lib64/oneagenthelper", "/opt/scorec/toolworks/totalview.*/bin/tvdengine",
+      "/tmp/kalibr-official-runtime/proot-bin/usr/bin/proot"
+    ) or
+    process.working_directory like "/home/*/Harbor-tmp*"
   )] by process.Ext.ptrace.child_pid
   [process where event.type == "start" and event.action == "exec"] by process.pid
 '''

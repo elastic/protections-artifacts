@@ -7,7 +7,7 @@ id = "eb04896b-935f-4d12-b2ad-579db82e1f42"
 license = "Elastic License v2"
 name = "Suspicious Windows Schedule Child Process"
 os_list = ["windows"]
-version = "1.0.40"
+version = "1.0.41"
 
 query = '''
 process where event.action == "start" and
@@ -103,7 +103,11 @@ process where event.action == "start" and
   not (process.name : "mshta.exe" and
        process.args : ("*\\Support\\AzureVirtualDesktop\\ImageSources\\DisableTeamsAutoStart.ps1*",
                        "*\\Program Files (x86)\\combit\\*\\ServicePackNotification.ps1*")) and 
-  not (process.name : "powershell.exe" and user.id == "S-1-5-18" and process.command_line : "*\\ProgramData\\ServiceNow\\agent-client-collector\\config\\acc.yml*")
+  not (process.name : "powershell.exe" and user.id == "S-1-5-18" and process.command_line : "*\\ProgramData\\ServiceNow\\agent-client-collector\\config\\acc.yml*") and
+
+  /* WorldSynergy Command Center RMM agent — unsigned, rotating hashes, vendor-specific path */
+  not (process.pe.original_file_name == "CommandCenterLauncher.exe" and
+       process.executable : "?:\\ProgramData\\CommandCenterAgent\\CommandCenterLauncher.exe")
 '''
 
 min_endpoint_version = "8.4.0"

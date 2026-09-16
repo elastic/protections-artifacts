@@ -7,7 +7,7 @@ id = "e7b95c3e-9640-4836-85f9-2aaf6c14cebc"
 license = "Elastic License v2"
 name = "Long Base64 Command Execution via Interactive Shell"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -85,7 +85,7 @@ not (
   "/scratch/user/*/.local/bin/claude-science", "/usr/bin/make", "/home/*/.cache/JetBrains/*/dist-package/node",
   "/home/*/.aimee-code/bin/*", "/opt/*/.local/share/claude/versions/*", "*/.codex/packages/standalone/releases/*/bin/codex",
   "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/bin/codex", "*/node_modules/@openai/codex-linux-x64/vendor/*/bin/codex",
-  "*/.local/share/claude/versions/*"
+  "*/.local/share/claude/versions/*", "/home/*/.local/bin/claude-science", "/root/.vscode-server-insiders/extensions/openai.chatgpt-*/codex"
   ) or
   process.parent.name in ("claude", "claude.exe", "cursor") or
   process.parent.args like (

@@ -11,7 +11,7 @@ reference = [
     "https://pberba.github.io/security/2022/01/30/linux-threat-hunting-for-persistence-systemd-timers-cron/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "systemd" and 
@@ -74,7 +74,8 @@ not (
     "*/opt/traps/download/contents/*/km_extractor*", "/bin/sh -c /usr/bin/wget -O - -q -t 1 http://*.ultimatebeautywisdom.com/?wlmcron=1",
     "/bin/bash -c wget -O /dev/null https://*/api/cronjob_late_fee_fine >/dev/null 2>&1",
     "/bin/bash -c wget -O /dev/null https://*/system_admin/c_cron/school_package_subscription_cron >/dev/null 2>&1",
-    "/bin/bash -c wget -O /dev/null https://*/system_admin/c_cron/db_backup >/dev/null 2>&1"
+    "/bin/bash -c wget -O /dev/null https://*/system_admin/c_cron/db_backup >/dev/null 2>&1",
+    """/bin/bash -c /usr/bin/curl -k --location --request PUT "https://172.*/federatedtokenmanager/token" >> /var/logs/federated_token_manager/curl.log 2>&1"""
   ) or
   process.command_line in (
     "/bin/sh -c /usr/bin/flock -n /dev/shm/loadwatch.lock -c /usr/local/lp/bin/loadwatch &> /dev/null",

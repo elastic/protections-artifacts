@@ -565,3 +565,53 @@ rule Windows_VulnDriver_Asus_8f771a35 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
 }
 
+rule Windows_VulnDriver_Asus_d949aa4d {
+    meta:
+        author = "Elastic Security"
+        id = "d949aa4d-6226-4b35-896d-a05170f127de"
+        fingerprint = "47721bde3f89fbbc4e554d5ec55ba9102cf63728ec93e6d57428f6e77107309d"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: ASUSTek Computer Inc., Version: <= 1.0.1.0"
+        threat_name = "Windows.VulnDriver.Asus"
+        reference_sample = "2d1c04a9ee1664c25574048363620800482a89e1c99f4338dc252038aa949419"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 41 53 55 53 54 65 6B 20 43 6F 6D 70 75 74 65 72 20 49 6E 63 2E }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 41 00 53 00 55 00 53 00 53 00 41 00 49 00 4F 00 28 00 61 00 73 00 75 00 73 00 31 00 30 00 30 00 30 00 29 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00])/
+        $str1 = "ASUSSAIO.pdb"
+        $str2 = "ASUSSAIO(asus1000)" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2
+}
+
+rule Windows_VulnDriver_Asus_42e355ef {
+    meta:
+        author = "Elastic Security"
+        id = "42e355ef-71fe-4a67-9a1e-0d0db41168b1"
+        fingerprint = "1ee946b9ecedc1ff2524a77bbf8ce878c7f466b9bf6ec6ab953cc62efbf79be4"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: ASUSTeK COMPUTER INC., Version: <= 3.2.12.0"
+        threat_name = "Windows.VulnDriver.Asus"
+        reference_sample = "c82377f2c1b75afd1503bb494e1b23fc45a4a6b81c7678e4e6cf391ce023ccbb"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 41 53 55 53 54 65 4B 20 43 4F 4D 50 55 54 45 52 20 49 4E 43 2E }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 41 00 73 00 75 00 73 00 42 00 53 00 49 00 74 00 66 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x02][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x01][\x00-\x00][\x03-\x03][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x02-\x02][\x00-\x00][\x03-\x03][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\x0b][\x00-\x00]|[\x02-\x02][\x00-\x00][\x03-\x03][\x00-\x00][\x00-\x00][\x00-\x00][\x0c-\x0c][\x00-\x00])/
+        $str1 = "AsusBSItf.pdb"
+        $str2 = "ASUS BIOS Flash Driver" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2
+}
+

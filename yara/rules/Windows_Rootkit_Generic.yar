@@ -821,3 +821,71 @@ rule Windows_Rootkit_Generic_23507a9c {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
 }
 
+rule Windows_Rootkit_Generic_dc6bcaa0 {
+    meta:
+        author = "Elastic Security"
+        id = "dc6bcaa0-8ba7-4caa-959b-e6a056fe9dfa"
+        fingerprint = "ad8e49cc3bfab16d31841c6c11aa4a70733bdcf3adb7d8d4936ce501696ac1a3"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: Microsoft Windows Hardware Compatibility Publisher, Version: <= 1.5026.1000.127"
+        threat_name = "Windows.Rootkit.Generic"
+        reference_sample = "962fb670510807fd5cab3a6e6f886aeb2b925c42054c29fa02f67011be935954"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4D 69 63 72 6F 73 6F 66 74 20 57 69 6E 64 6F 77 73 20 48 61 72 64 77 61 72 65 20 43 6F 6D 70 61 74 69 62 69 6C 69 74 79 20 50 75 62 6C 69 73 68 65 72 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x12]|[\x00-\xa1][\x13-\x13])[\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\xa2-\xa2][\x13-\x13][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x02]|[\x00-\xe7][\x03-\x03])|[\xa2-\xa2][\x13-\x13][\x01-\x01][\x00-\x00][\x00-\x7e][\x00-\x00][\xe8-\xe8][\x03-\x03]|[\xa2-\xa2][\x13-\x13][\x01-\x01][\x00-\x00][\x7f-\x7f][\x00-\x00][\xe8-\xe8][\x03-\x03])/
+        $str1 = "kernel_utility_driver_mt32.pdb"
+        $str2 = "kernel_utility_driver_mt64.pdb"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name and $version and ($str1 or $str2)
+}
+
+rule Windows_Rootkit_Generic_ab0bf259 {
+    meta:
+        author = "Elastic Security"
+        id = "ab0bf259-f1bb-40ba-9899-633f369871ca"
+        fingerprint = "48e5d1c90ec943d587883c4f1b131135dec4a20dd9798b6fa0e2d94dabc79e63"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: Microsoft Windows Hardware Compatibility Publisher"
+        threat_name = "Windows.Rootkit.Generic"
+        reference_sample = "00833dd6f61e768ec3cfdf2bdc5ef074df07f2df8921558e4c5e5a32e97b4080"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4D 69 63 72 6F 73 6F 66 74 20 57 69 6E 64 6F 77 73 20 48 61 72 64 77 61 72 65 20 43 6F 6D 70 61 74 69 62 69 6C 69 74 79 20 50 75 62 6C 69 73 68 65 72 }
+        $str1 = "MsLoad.pdb"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
+}
+
+rule Windows_Rootkit_Generic_a603e6d2 {
+    meta:
+        author = "Elastic Security"
+        id = "a603e6d2-bde1-408c-997e-d915a54cd0eb"
+        fingerprint = "e2d4c8dcfbaadebb3d015aa6fb749693c4770775bc8a4315454ba3f3c5149766"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: Microsoft Windows Hardware Compatibility Publisher"
+        threat_name = "Windows.Rootkit.Generic"
+        reference_sample = "72bd55f4459c992b9caa1a33cb6862f1f3085ca35839c58dee8b75db22ca605f"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4D 69 63 72 6F 73 6F 66 74 20 57 69 6E 64 6F 77 73 20 48 61 72 64 77 61 72 65 20 43 6F 6D 70 61 74 69 62 69 6C 69 74 79 20 50 75 62 6C 69 73 68 65 72 }
+        $str1 = "ioctl-km.pdb"
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $str1
+}
+

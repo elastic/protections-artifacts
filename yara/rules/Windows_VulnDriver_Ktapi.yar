@@ -50,3 +50,28 @@ rule Windows_VulnDriver_Ktapi_dbca1325 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3
 }
 
+rule Windows_VulnDriver_Ktapi_e1ed9748 {
+    meta:
+        author = "Elastic Security"
+        id = "e1ed9748-69b2-47a2-93ba-626a752ad21f"
+        fingerprint = "31146801373cb9b4ec5666de0f4a5c03e2266381dd8b036cb0bd8bc86efceafb"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Name: ktapi.sys, Version: <= 1.0.1899.0"
+        threat_name = "Windows.VulnDriver.Ktapi"
+        reference_sample = "5e55d3f204844c2e991263e6fc7d87bd6920dbcdb8f5df68fa79694c1e76045c"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 6B 00 74 00 61 00 70 00 69 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff]([\x00-\xff][\x00-\x00]|[\x00-\xff][\x01-\x06]|[\x00-\x6a][\x07-\x07])|[\x00-\x00][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\x00][\x00-\x00][\x6b-\x6b][\x07-\x07])/
+        $str1 = "ktapi.pdb"
+        $str2 = "KTAPI System Driver" wide
+        $str3 = "Kontron Technology Application Programming Interface" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $original_file_name and $version and $str1 and $str2 and $str3
+}
+

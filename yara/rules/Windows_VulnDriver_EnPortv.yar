@@ -72,3 +72,29 @@ rule Windows_VulnDriver_EnPortv_ae757d45 {
         int16(uint32(0x3C) + 0x5c) == 0x0001 and $original_file_name and $version and $str1 and $str2
 }
 
+rule Windows_VulnDriver_EnPortv_ed8dacce {
+    meta:
+        author = "Elastic Security"
+        id = "ed8dacce-351d-4f3e-8b34-18369a64720b"
+        fingerprint = "454bb4753f10ec03e6942fdad2534c57ef29d76740a3d5764496bb0f426ecc27"
+        creation_date = "2026-09-09"
+        last_modified = "2026-09-25"
+        description = "Subject: Opentext Corporation, Version: <= 1.60.0.0"
+        threat_name = "Windows.VulnDriver.EnPortv"
+        reference_sample = "fb0174356f4155e3348199dac7532c5e4b72bf70bbf9853c75c86795d699d5ed"
+        severity = 50
+        arch_context = "x86"
+        scan_context = "file"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $subject_name = { 06 03 55 04 03 [2] 4F 70 65 6E 74 65 78 74 20 43 6F 72 70 6F 72 61 74 69 6F 6E }
+        $original_file_name = { 4F 00 72 00 69 00 67 00 69 00 6E 00 61 00 6C 00 46 00 69 00 6C 00 65 00 6E 00 61 00 6D 00 65 00 00 00 45 00 6E 00 50 00 6F 00 72 00 74 00 76 00 2E 00 73 00 79 00 73 00 00 00 }
+        $version = /V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00{0,4}\xbd\x04\xef\xfe[\x00-\xff]{4}([\x00-\xff][\x00-\xff][\x00-\x00][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x00-\x3b][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\xff][\x00-\xff][\x00-\xff][\x00-\xff]|[\x3c-\x3c][\x00-\x00][\x01-\x01][\x00-\x00][\x00-\x00][\x00-\x00][\x00-\x00][\x00-\x00])/
+        $str1 = "enport.pdb"
+        $str2 = "EnCase Driver" wide
+        $str3 = "EnCase Driver for DDK_TARGET_OS 64 bit Svn Rev:SVN_REV_INFO with EnCase 21.1.0.22" wide
+    condition:
+        int16(uint32(0x3C) + 0x5c) == 0x0001 and int16(uint32(0x3C) + 0x18) == 0x020b and $subject_name and $original_file_name and $version and $str1 and $str2 and $str3
+}
+

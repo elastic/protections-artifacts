@@ -89,3 +89,25 @@ rule Windows_Trojan_RevStealer_295fca7e {
         any of them
 }
 
+rule Windows_Trojan_RevStealer_bbf066be {
+    meta:
+        author = "Elastic Security"
+        id = "bbf066be-39a7-4a2f-bc79-fab728c66052"
+        fingerprint = "c7a6a9c9c9bf4881e214b9e3d86785b8ce66efd8fa78d1716c745226f55a05bb"
+        creation_date = "2026-09-08"
+        last_modified = "2026-09-25"
+        description = "Identifies LockAppHost module"
+        threat_name = "Windows.Trojan.RevStealer"
+        reference_sample = "10d2e914f92729f8f12bf871a2e238aecd28e57dc8be60a2aa58f3aad464b675"
+        severity = 100
+        arch_context = "x86"
+        scan_context = "file, memory"
+        license = "Elastic License v2"
+        os = "windows"
+    strings:
+        $a = { 41 FE C1 45 0F B6 C1 42 8A 14 04 44 02 D2 41 0F B6 CA 8A 04 0C 42 88 04 04 88 14 0C 49 83 EB 01 }
+        $b = { 48 FF C0 48 89 44 24 ?? ?? ?? FF FF FF 33 C0 48 8B 4C 24 40 48 8B 54 24 48 66 89 44 51 FE 48 83 C4 38 C3 }
+    condition:
+        all of them
+}
+

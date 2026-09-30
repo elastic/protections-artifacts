@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.54"
+version = "1.0.55"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -37,13 +37,14 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                "?:\\Windows\\cybercnsagent\\cybercnsagent.exe",
                "?:\\Windows\\SysWOW64\\WindowsPowerShell\\*\\powershell_ise.exe",
                "?:\\Windows\\System32\\WindowsPowerShell\\*\\powershell_ise.exe",
-               "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe") and not process.parent.name : "java.exe") and
+               "?:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Platform\\*\\SenseIR.exe") and 
+        not process.parent.name : ("java.exe", "WindowsTerminal.exe")) and
 
  not process.parent.name : ("wscript.exe", "cscript.exe") and
 
  not (process.args:"-NonInteractive" and process.args :"-InputFormat") and
  not (process.args : ("RemoteSigned", "-ExecutionPolicy", "write-host") and
-      not process.parent.name : ("explorer.exe", "python.exe", "cmd.exe")) and
+      not process.parent.name : ("explorer.exe", "python.exe", "cmd.exe", "WindowsTerminal.exe", "sihost.exe")) and
  not process.args : "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('cGFzc3dvcmQ='))" and
  not (process.command_line : "*echo ~/.ansible/tmp/ansible-tmp*" and process.parent.executable : "C:\\Windows\\System32\\OpenSSH\\sshd.exe") and
  not (process.args : "$OutputEncoding = [System.Text.Encoding]::UTF8; $b64='eyJjb252ZXJzYXRpb25faWQiOiJ*" and process.parent.name : "Cursor.exe") and 
@@ -229,7 +230,10 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
           "*gc *:*|sc *",
           "*gci *-Recurse*start*",
           "*Invoke-WebRequest*Start-Process*Hidden*",
-          "*Invoke-WebRequest*msiexec*"
+          "*Invoke-WebRequest*msiexec*", 
+          "* mi -ep B*irm *", 
+          "* -w h -nop -c*;Invoke-Expression $*",
+          "*ExecutionContext.InvokeCommand*"
         ) or
 
       (process.command_line regex~ """.*p\"?o\"?w\"?e\"?r\"?s\"?h\"?e\"?l\"?l.*""" and not process.command_line : "*powershell*") or

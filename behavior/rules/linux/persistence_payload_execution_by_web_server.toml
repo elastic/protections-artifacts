@@ -7,7 +7,7 @@ id = "7d4b0dfc-d305-4761-94f4-ab2ed221b3ee"
 license = "Elastic License v2"
 name = "Payload Execution by Web Server"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
@@ -314,7 +314,11 @@ not (
   ) or
   (process.parent.name == "asterisk" and process.args like "/bin/chmod 777 */gravacoes/*.WAV") or
   (process.parent.name == "varnishd" and process.args like "exec gcc*") or
-  (process.parent.name in ("apache2", "php-cgi") and process.command_line in ("sh -c crontab -l", "sh -c -- crontab -l")) or
+  (process.parent.name in ("apache2", "php-cgi", "lsphp") and process.command_line in ("sh -c crontab -l", "sh -c -- crontab -l")) or
+  (
+    process.parent.name == "lsphp" and
+    process.command_line like ("sh -c crontab -l *", "sh -c crontab /home/*/boldgrid_backup/*", "sh -c crontab /tmp/cg*")
+  ) or
   (process.parent.name in ("php-fpm", "httpd") and process.command_line in (
     "sh -c whoami", "sh -c /usr/bin/php -r 'echo phpversion();'",
     "sh -c TERM=dumb cat /var/run/elasticsearch/elasticsearch.pid", "sh -c TERM=dumb cat /var/run/logstash/logstash.pid",

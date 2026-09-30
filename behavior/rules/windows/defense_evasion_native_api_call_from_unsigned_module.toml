@@ -7,7 +7,7 @@ id = "27202cd8-c5a6-4b82-9bb8-f3da69a4d5d3"
 license = "Elastic License v2"
 name = "Native API Call from Unsigned Module"
 os_list = ["windows"]
-version = "1.0.15"
+version = "1.0.16"
 
 query = '''
 api where
@@ -16,6 +16,8 @@ process.Ext.api.metadata.target_address_name in ("Unbacked", "Unknown") and
 process.Ext.api.name in ("VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "MapViewOfFile", "MapViewOfFile2", "VirtualAllocEx", "VirtualAlloc", "SetThreadContext") and
 process.thread.Ext.call_stack_final_user_module.name != "Unbacked" and process.thread.Ext.call_stack_final_user_module.name != null and
 _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry, $entry.trusted == false or $entry.exists == false) and
+not _arraysearch(process.thread.Ext.call_stack_final_user_module.code_signature, $entry,
+                 $entry.status like "errorCode_endpoint*") and
 not process.thread.Ext.call_stack_final_user_module.protection_provenance like "Kernel*" and
 not (process.executable : "C:\\Windows\\explorer.exe" and process.thread.Ext.call_stack_final_user_module.path == "c:\\windows\\dxgi.dll") and
 process.thread.Ext.call_stack_final_user_module.hash.sha256 != null and 

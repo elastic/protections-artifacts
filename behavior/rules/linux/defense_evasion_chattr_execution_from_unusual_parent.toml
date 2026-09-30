@@ -11,7 +11,7 @@ os_list = ["linux"]
 reference = [
     "https://www.trendmicro.com/en_nl/research/22/i/how-malicious-actors-abuse-native-linux-tools-in-their-attacks.html",
 ]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "chattr" and 
@@ -21,7 +21,8 @@ process.args like~ ("-*i*", "+*i*", "+*u*", "-*u*") and not (
   process.parent.name == "." or
   process.parent.executable like (
     "./scannerYaraALFA*", "/tmp/newroot/lib/systemd/systemd", "./ldap2sshkeys", "/tmp/newroot/var/lib/docker/rootfs/overlayfs/*/entrypoint.sh",
-    "/tmp/newroot/opt/omnissa/*/bin/ws1HubUtil"
+    "/tmp/newroot/opt/omnissa/*/bin/ws1HubUtil", 
+    "/tmp/newroot/usr/local/manageengine/*/updates/dclinuxupgrader"
   ) or
   process.parent.executable in ("/tmp/newroot/usr/bin/sudo", "/tmp/newroot/usr/bin/zsh") or
   process.parent.args like "/root/.ansible/tmp/ansible-tmp-*/AnsiballZ_file.py"

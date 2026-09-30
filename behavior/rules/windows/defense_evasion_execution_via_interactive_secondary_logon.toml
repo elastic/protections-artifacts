@@ -8,7 +8,7 @@ reference = [
     "https://splintercod3.blogspot.com/p/the-hidden-side-of-seclogon-part-2.html",
     "https://github.com/CarlosG13/SecLogon-RPC",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 sequence with maxspan=1m
@@ -26,7 +26,9 @@ sequence with maxspan=1m
                                                "CAS Software AG", "N-ABLE TECHNOLOGIES LTD", "Bomgar Corporation", "Splashtop Inc.",
                                                "GoTo Technologies USA, LLC", "BeyondTrust Corporation", "AnyDesk Software GmbH",
                                                "SCHNEIDER ELECTRIC USA, INC.", "PURSLANE")) and
-  not (process.parent.code_signature.subject_name == "Oliver Hessing" and process.parent.code_signature.trusted == true)
+  not (process.parent.code_signature.subject_name == "Oliver Hessing" and process.parent.code_signature.trusted == true) and
+  /* OpenAI Codex Windows sandbox launches its command runner as a dedicated low-privilege account via CreateProcessWithLogonW */
+  not (process.code_signature.subject_name == "OpenAI OpCo, LLC" and process.code_signature.trusted == true)
   ] by process.Ext.authentication_id, user.id, process.parent.Ext.real.entity_id
 '''
 

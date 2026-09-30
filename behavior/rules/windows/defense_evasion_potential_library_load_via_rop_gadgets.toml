@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 library where process.pid != 4 and
@@ -60,7 +60,12 @@ library where process.pid != 4 and
     LoadLibrary), contradicting the hidden-caller premise; covers JIT-compiled callers whose stacks do contain
     unbacked regions but cannot rescue attribution when nearest-export drift hides the Ldrp and LoadLibrary frames */
  not (process.code_signature.trusted == true and
-      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : ("*\\clr.dll*", "*\\coreclr.dll*"))) and
+      _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("*\\clr.dll*", "*\\coreclr.dll*",
+                                         "?:\\Windows\\assembly\\NativeImages_*\\*.ni.dll+0x*",
+                                         "?:\\Program Files*\\dotnet\\*\\System.Net.*.dll+0x*",
+                                         "?:\\Program Files*\\dotnet\\*\\System.Private.CoreLib.dll+0x*",
+                                         "?:\\Program Files*\\*\\System.Net.NameResolution.dll+0x*"))) and
  not process.thread.Ext.call_stack_summary like ("ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|*",
                                                  "ntdll.dll|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|kernelbase.dll|fastprox.dll|combase.dll|rpcrt4.dll|combase.dll|wbemprox.dll|wbemdisp.dll|oleaut32.dll|wbemdisp.dll|oleaut32.dll|rpcrt4.dll|combase.dll|oleaut32.dll|combase.dll|user32.dll") and
  not (process.executable : "C:\\Program Files\\Tenable\\Nessus Agent\\nessus*.exe" and process.code_signature.subject_name == "TENABLE, INC." and process.code_signature.trusted == true)

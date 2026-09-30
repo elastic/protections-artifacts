@@ -12,14 +12,15 @@ reference = [
     "https://unit42.paloaltonetworks.com/slow-pisces-new-custom-malware/",
     "https://slowmist.medium.com/cryptocurrency-apt-intelligence-unveiling-lazarus-groups-intrusion-techniques-a1a6efda7d34",
 ]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "fork" and process.executable like "/Users/*" and 
  (process.code_signature.trusted == false or process.code_signature.exists == false) and 
  process.args_count == 2 and process.args like "/Users/*" and process.args like "/Users/*" and 
  process.parent.name like~ "python*"  and
- not startswith~(process.executable, process.parent.executable)
+ not startswith~(process.executable, process.parent.executable) and 
+ not process.hash.sha256 == "295b2fd03b2b05f12b6f4887d70dbf43e5358173f8eec0909c121c9bdec2756f"
 '''
 
 min_endpoint_version = "8.16.0"

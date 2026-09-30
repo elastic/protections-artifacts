@@ -1,0 +1,124 @@
+[rule]
+description = """
+Detects creation of a file whose leading bytes match the common javascript-obfuscator fingerprint and whose content
+entropy is elevated, when written by JavaScript runtimes, shells, download or archive utilities, living-off-the-land
+binaries, Git, or developer IDEs. Recent npm supply chain campaigns (including Mini Shai-Hulud / Team PCP style attacks)
+drop heavily obfuscated second-stage payloads during package install hooks, often via node or a downloaded Bun runtime,
+and may also stage those payloads through curl, archive extraction, shell/cmd/PowerShell wrappers, certutil, Git
+checkout/clone activity, or editors such as VS Code and Cursor.
+"""
+id = "8282aa02-caa3-4d5e-aab7-76416c3252b2"
+license = "Elastic License v2"
+name = "Potential Obfuscated JavaScript File Creation"
+os_list = ["linux", "windows"]
+reference = [
+    "https://www.elastic.co/security-labs/shai-hulud-chaindrop-npm-supply-chain",
+    "https://www.stepsecurity.io/blog/a-mini-shai-hulud-has-appeared",
+]
+version = "1.0.1"
+
+query = '''
+file where event.type == "creation" and file.extension : ("js", "mjs", "cjs") and 
+  process.name : (
+    "node", "nodejs", "node.exe",
+    "bun", "bun.exe",
+    "curl", "curl.exe",
+    "wget", "wget.exe",
+    "unzip", "unzip.exe",
+    "tar", "tar.exe",
+    "powershell.exe", "pwsh.exe",
+    "cmd.exe",
+    "certutil.exe",
+    "bash", "sh", "zsh", "dash", "busybox", "ash", "mksh", "fish", "tcsh", 
+    "Code.exe", "code",
+    "Cursor.exe", "cursor",
+    "git", "git.exe"
+  ) and
+  file.Ext.header_bytes : ("636f6e7374205f3078*", "766172205f3078*", "6c6574205f3078*", "7472797b6576616c*") and
+  file.Ext.entropy >= 4.9 and 
+  not (process.name == "node" and file.path like "/home/*/daego_web/frontend/dist/assets/*.js")
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.002"
+name = "Compromise Software Supply Chain"
+reference = "https://attack.mitre.org/techniques/T1195/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.007"
+name = "JavaScript"
+reference = "https://attack.mitre.org/techniques/T1059/007/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

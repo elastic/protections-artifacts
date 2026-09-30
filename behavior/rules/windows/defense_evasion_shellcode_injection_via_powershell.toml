@@ -7,7 +7,7 @@ id = "98fffa16-53e1-4db9-9126-2d0441cac417"
 license = "Elastic License v2"
 name = "Shellcode Injection via PowerShell"
 os_list = ["windows"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "VirtualProtectEx", "WriteProcessMemory", "connect") and
@@ -33,7 +33,8 @@ api where process.Ext.api.name in ("VirtualAlloc", "VirtualAllocEx", "VirtualPro
     not process.thread.Ext.call_stack_summary like ("Unbacked", "*Unknown*") and
     not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.protection_provenance like ("Kernel", "clr.dll", "coreclr.dll", "fships.dll*", "Kernel|*", "tmmon.dll",
-                                                     "mfehcthe.dll", "mfehcs.exe|mfehcs.exe", "conemuhk64.dll", "tmmon64.dll", "dwadv.dll", "bdhkm32.dll")) and
+                                                     "mfehcthe.dll", "mfehcs.exe|mfehcs.exe", "conemuhk64.dll", "tmmon64.dll", "dwadv.dll", "bdhkm32.dll",
+                                                     "epmpthe.dll")) and
     not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("?:\\Program Files\\*.dll*",
                                            "?:\\Program Files (x86)\\*.dll*",

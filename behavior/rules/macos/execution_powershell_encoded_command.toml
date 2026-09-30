@@ -8,7 +8,7 @@ id = "4abb4f46-2066-4769-b073-dca491067e1b"
 license = "Elastic License v2"
 name = "Powershell Encoded Command"
 os_list = ["macos"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 process where event.type == "start" and process.args in~ ("-EncodedCommand", "-enc") and
@@ -24,7 +24,8 @@ process where event.type == "start" and process.args in~ ("-EncodedCommand", "-e
  not process.Ext.effective_parent.name == "electron" and
  not ((process.name == "zsh" and process.parent.name == "zsh") or
       (process.name == "pwsh" and process.parent.name == "pwsh") or
-      (process.name == "pwsh" and process.parent.name == "Code Helper"))
+      (process.name == "pwsh" and process.parent.name == "Code Helper")) and
+ not process.command_line like~ "*pdftotext*-enc*"
 '''
 
 min_endpoint_version = "8.11.0"

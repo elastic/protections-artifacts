@@ -8,7 +8,7 @@ id = "5f6dbe52-6643-486f-9130-256f58ba9a0c"
 license = "Elastic License v2"
 name = "Suspicious Shell Command Execution via Node.js Parent"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -47,7 +47,13 @@ not (
     """/bin/sh -c echo BROWSER=none > .env && echo DEMO=true >> .env && echo PORT=3000 >> .env && printf "PUBLIC_URL=http://$(hostname -I | awk '{print $1}'):3000/\n" >> .env && echo WDS_SOCKET_PORT=3000 >> .env && printf "WDS_SOCKET_HOST=$(hostname -I | awk '{print $1}')\n" >> .env && echo JSX_IMPORT_SOURCE=@ac/library-utils/dist/web-components/wc-jsx >> .env""",
     "/bin/sh -c chmod +x /etc/init.d/pm2-docker-deployer", """/bin/sh -c grep "^#[ ]*Port[ ]*[0-9]*" /etc/ssh/sshd_config 2>/dev/null"""
   ) or
-  (process.command_line like "*shubblecompose-app*" and process.parent.command_line == "node -r dotenv/config dist/server.mjs")
+  (process.command_line like "*shubblecompose-app*" and process.parent.command_line == "node -r dotenv/config dist/server.mjs") or 
+  
+  process.parent.args in ("supergateway", "/usr/local/bin/ccstatusline", "http://172.17.0.1:7790/sherlock/mcp") or 
+
+  process.args ==  "../../node_modules/.bin/psdev tms run-all || echo ''" or 
+  
+  process.command_line like ("*http://10.0.*", "*http://0.0.0.0:*")
 )
 '''
 

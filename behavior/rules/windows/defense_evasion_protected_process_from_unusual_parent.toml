@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Protected Process from Unusual Parent"
 os_list = ["windows"]
 reference = ["https://www.zerosalarium.com/2025/08/countering-edrs-with-backing-of-ppl-protection.html"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.action == "start" and process.Ext.protection like "PsProtectedSigner*" and
@@ -16,7 +16,8 @@ process where event.action == "start" and process.Ext.protection like "PsProtect
   process.parent.code_signature.exists == false or
   process.parent.code_signature.trusted == false or
   process.parent.name : ("rundll32.exe", "regsvr32.exe", "explorer.exe", "powershell.exe", "msbuild.exe")
-  )
+  ) and
+ not (process.parent.name : ("explorer.exe", "powershell.exe") and process.name : "services.exe")
 '''
 
 min_endpoint_version = "8.10.0"

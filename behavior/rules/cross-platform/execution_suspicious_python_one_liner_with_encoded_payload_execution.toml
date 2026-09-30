@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious Python One-Liner with Encoded Payload Execution"
 os_list = ["macos", "windows"]
 reference = ["https://attack.mitre.org/techniques/T1059/006/", "https://attack.mitre.org/techniques/T1027/"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action in ("start", "exec")  and
@@ -110,8 +110,12 @@ process where event.type == "start" and event.action in ("start", "exec")  and
          "/Users/*/Applications/Cursor.app/*",
          "/Applications/Codex.app/*",
          "/Users/*/Applications/Codex.app/*",
-         "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/*", 
-         "/Applications/Visual Studio Code.app/Contents/MacOS/Code"
+         "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/*",
+         "/Applications/Visual Studio Code.app/Contents/MacOS/Code",
+         "/Applications/Antigravity.app/*",
+         "/Users/*/Applications/Antigravity.app/*",
+         "/Applications/ChatGPT.app/*",
+         "/Users/*/Applications/ChatGPT.app/*"
        ) and 
   not process.parent.command_line like "*/Users/*/shell-snapshots/snapshot-*" and
   not process.hash.sha256 == "7c72112b685250b1aec69081696d8fc04040ccefc34505ca56ac48ace7da8d5b"

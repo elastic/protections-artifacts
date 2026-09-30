@@ -1,0 +1,54 @@
+[rule]
+description = """
+Identifies a web browser downloading a ScreenConnect ClientSetup installer from a URL that is not associated with
+official ScreenConnect or ConnectWise hosted infrastructure, and does not match the typical ScreenConnect instance
+download pattern. Adversaries may distribute ScreenConnect installers from phishing pages or attacker-controlled sites
+to gain remote access.
+"""
+id = "0807172b-3c6b-495c-a10c-d1396b53088c"
+license = "Elastic License v2"
+name = "Download of ScreenConnect RMM Installer from Suspicious URL"
+os_list = ["windows"]
+version = "1.0.0"
+
+query = '''
+file where event.action == "creation" and
+ process.name : ("chrome.exe", "msedge.exe", "firefox.exe", "iexplore.exe", "opera.exe", "brave.exe",
+                 "vivaldi.exe", "whale.exe", "dragon.exe", "browser.exe", "CefSharp.BrowserSubprocess.exe") and
+ file.name : "ScreenConnect.ClientSetup*" and
+ file.origin_url : "http*" and
+ not file.origin_url : ("*.screenconnect.com/*", "*hostedrmm.com/*") and
+ not (file.origin_url : ("*.exe?h=*", "*.msi?h=*") and file.origin_referrer_url : ("*/Host", "*.com/"))
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+[[threat.technique]]
+id = "T1219"
+name = "Remote Access Tools"
+reference = "https://attack.mitre.org/techniques/T1219/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

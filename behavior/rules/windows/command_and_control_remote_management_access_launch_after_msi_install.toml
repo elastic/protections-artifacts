@@ -1,0 +1,60 @@
+[rule]
+description = """
+Identifies an MSI installer execution followed by commonly abused pre-configured Remote Management software. This may
+indicate abuse where an attacker triggers an MSI install then connects via a guest link with a known session key.
+"""
+id = "1b5e9d4a-7c2f-4e8b-a3d6-0f9c8e2b1a4d"
+license = "Elastic License v2"
+name = "Remote Management Access Launch After MSI Install"
+os_list = ["windows"]
+reference = ["https://attack.mitre.org/techniques/T1219/"]
+version = "1.0.3"
+
+query = '''
+sequence with maxspan=1m
+ [process where event.action == "start" and process.name : "msiexec.exe" and process.args : ("/i*", "-i*") and 
+  process.parent.executable != null and 
+  process.command_line : ("*\\Users\\*\\Downloads\\*", "*\\SystemTemp\\ScreenConnect*") and 
+  not process.args : ("C:\\Program Files (x86)\\*.msi", "C:\\Program Files\\*.msi") and 
+  not (process.parent.name : ("cmd.exe", "powershell.exe") and user.id == "S-1-5-18" and 
+       process.parent.args :  ("C:\\Program Files (x86)\\ITSPlatform\\*.bat", "C:\\Windows\\LTSvc\\*", "\\\\*")) and 
+  not process.parent.executable : ("C:\\Windows\\SystemTemp\\ScreenConnect\\*\\ScreenConnect.ClientSetup.exe", 
+                                   "C:\\Windows\\System32\\MDMAppInstaller.exe", 
+                                   "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe")]
+ [process where event.action == "start" and process.Ext.relative_file_name_modify_time <= 100 and 
+  (
+    (process.name : "ScreenConnect.ClientService.exe" and process.command_line : "*?e=Access&y=Guest&h*&k=*" and 
+     not process.command_line like "*-relay.screenconnect.com&p=443*&c=&c=&c=&c=&c=&c=&c=&c=\"") or 
+     
+    (process.name : "Syncro.Installer.exe" and process.args : "--config-json" and process.args : "--key")
+  )]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1219"
+name = "Remote Access Tools"
+reference = "https://attack.mitre.org/techniques/T1219/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

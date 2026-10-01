@@ -20,37 +20,38 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.125 | ecbdb3f1b339a61afa0d5eb47bab19f6b69a409796f9688fa16ee72a6890b98c |
-| production-rules-macos-v1 | 1.0.125 | d3e2e87d35924abd7c0a1c238b82790e126d9a435cc203e3b083fb7eb0a934d2 |
-| production-rules-windows-v1 | 1.0.125 | dc2fe58209e9054060c492c4c02ba4ddb96f208eefb8aa40a0c9932f99785327 |
+| production-rules-linux-v1 | 1.0.126 | ca39229a9907c4506b2348829cb59086f8c929c0e638d139ab1f80e26bceca4d |
+| production-rules-macos-v1 | 1.0.126 | bceda456c95c59ec5bc8f5d333d49e09ce763868693ca60d617bc16b3e6f69e7 |
+| production-rules-windows-v1 | 1.0.126 | 942e5a5115e491d2128c1a0e78089d5d7c69ae97bf614bbaaf5d88cf777a452c |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.125', '1.0.124') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.126', '1.0.125') by OS/MITRE Tactic.
 
-| Tactic            |   Windows |   Linux |   macOS |   Total by Tactic |
-|-------------------|-----------|---------|---------|-------------------|
-| Credential Access |         1 |       0 |       0 |                 1 |
-| Defense Evasion   |         1 |       1 |       0 |                 2 |
-| Total by OS       |         2 |       1 |       0 |                 3 |
+| Tactic              |   Windows |   Linux |   macOS |   Total by Tactic |
+|---------------------|-----------|---------|---------|-------------------|
+| Command and Control |         2 |       0 |       0 |                 2 |
+| Defense Evasion     |         2 |       1 |       0 |                 3 |
+| Initial Access      |         1 |       1 |       1 |                 3 |
+| Total by OS         |         5 |       2 |       1 |                 8 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
 | Tactic               |   Windows |   Linux |   macOS |   Total by Tactic |
 |----------------------|-----------|---------|---------|-------------------|
 | Collection           |        13 |       4 |      10 |                27 |
-| Command and Control  |        40 |      22 |      41 |               103 |
+| Command and Control  |        42 |      22 |      41 |               105 |
 | Credential Access    |        56 |      16 |      38 |               110 |
-| Defense Evasion      |       329 |      84 |      63 |               476 |
+| Defense Evasion      |       331 |      84 |      63 |               478 |
 | Discovery            |        20 |       5 |       3 |                28 |
 | Execution            |       101 |      68 |     106 |               275 |
 | Exfiltration         |         0 |       1 |       2 |                 3 |
 | Impact               |        19 |       6 |       2 |                27 |
-| Initial Access       |        66 |       4 |       5 |                75 |
+| Initial Access       |        67 |       5 |       6 |                78 |
 | Lateral Movement     |        10 |       2 |       1 |                13 |
 | Persistence          |        61 |      28 |      21 |               110 |
 | Privilege Escalation |        76 |      28 |       9 |               113 |
-| Total by OS          |       791 |     268 |     301 |              1360 |
+| Total by OS          |       796 |     269 |     302 |              1367 |
 
 ### MITRE ATT&CK Coverage
 
@@ -59,7 +60,7 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 - Catalog: 61 parent techniques (Win/Linux/macOS under 8 scorecard tactics)
 - Covered (union): 49/61 (80.33%) — production endpoint rules plus production SIEM rules with metadata.integration including "endpoint" and/or index matching logs-endpoint.events*/ logs-endpoint.alerts*
 - Techniques — endpoint-only: 1, SIEM-only: 4, both: 44
-- Rules — production endpoint: 1322, SIEM (in-scope + MITRE): 1038
+- Rules — production endpoint: 1326, SIEM (in-scope + MITRE): 1052
 
 #### Uncovered scorecard techniques (12 distinct parents; listed under each tactic where ATT&CK places them)
 

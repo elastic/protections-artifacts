@@ -7,7 +7,7 @@ id = "613da93c-226e-4150-9125-3b476103c0b9"
 license = "Elastic License v2"
 name = "Socat Reverse Shell or Listener Activity"
 os_list = ["linux"]
-version = "1.0.18"
+version = "1.0.19"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "socat" and
@@ -30,7 +30,7 @@ not (
     process.args like "UNIX-CONNECT:/home/*/claude-*.sock"
   ) or
   process.command_line == "socat TCP-LISTEN:8081,reuseaddr,fork UNIX-CLIENT:/tmp/spire-agent/public/api.sock" or
-  process.parent.executable like ("/var/lib/docker/*", "*/.aimee-code/bin/*", "*/.claude/worktrees/*/bin/python*") or
+  process.parent.executable like ("/var/lib/docker/*", "*/.*-code/bin/*", "*/.claude/worktrees/*/bin/python*") or
   process.parent.command_line like "*/.claude/shell-snapshots/snapshot-*"
 )
 '''

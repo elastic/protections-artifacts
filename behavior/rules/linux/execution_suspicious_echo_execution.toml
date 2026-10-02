@@ -9,7 +9,7 @@ id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -159,7 +159,7 @@ not (
     process.parent.command_line == "/usr/bin/perl /opt/qradar/bin/erule_update.pl"
   ) or
   process.parent.executable like (
-    "/home/*/.aimee-code/bin/*",
+    "/home/*/.*-code/bin/*",
     "*/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/*",
     "*/.local/share/kiro-cli/node",
     "/tmp/.mount_curso*/usr/share/cursor/cursor"

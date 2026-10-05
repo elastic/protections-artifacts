@@ -8,7 +8,7 @@ id = "7bc702f7-1f1a-49d1-ad8d-c0fa1f4fe324"
 license = "Elastic License v2"
 name = "Suspicious File Downloaded by Curl/Wget and Piped to Interpreter"
 os_list = ["linux"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.parent.entity_id, process.working_directory with maxspan=1s
@@ -46,7 +46,7 @@ sequence by process.parent.entity_id, process.working_directory with maxspan=1s
     ) or
     process.parent.executable like "/tmp/newroot/*" or
     process.command_line like (
-      "*dl.cloudsmith.io*", "*127.0.0.1*", "*localhost*", "*nginx.org/download/nginx*", "*geoip.elastic.dev*",
+      "*dl.cloudsmith.io*", "*127.0.0.1*", "*localhost*", "*nginx.org/download/nginx*", "*geoip.elastic.*",
       "*artifacts.elastic.co*", "*ela.st*", "*elastic.co*", "*192.168.*.*:*", "*172.16.*", "*conda-condaforge-remote*",
       "*downloads.mariadb.com*", "*pkg.cloudflare.com*", "*packages.microsoft.com*"
     ) or

@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.55"
+version = "1.0.56"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -85,7 +85,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              "*krsfile:////LOBCS*",
              "*ProgramData\\VinitySoft Data\\MariaDb\\*",
              "*\\Temp\\claude\\claude-pwd-ps-*",
-             "*https://10.55.138.214:443/downloads/*",
+             "*https://10.*:443/downloads/*",
              "\"C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command \"[reflection.assembly]::loadFrom('.\\RD-PSAPI.dll') | import-module\"",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAfABUAHIAZQBsAGwAaQB4ACIA*",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAIABBAGcAZQBuAHQAIgA=*",

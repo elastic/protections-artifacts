@@ -7,7 +7,7 @@ id = "cf54b4c2-5618-4515-9250-26542dd4aa5f"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via URL Encoded Payload"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -21,8 +21,8 @@ process.command_line regex~ ".*(%[0-9a-f]{2}.*){4,}.*" and process.command_line 
 ) and
 not (
   process.parent.executable like (
-    "/mnt/Xilinx/PetaLinux/*/python*", "/tmp/petalinux*/python*", "/home/*/.local/share/claude/versions/*", "/home/*/.*-code/bin/claude",
-    "/usr/lib/chatgpt/resources/codex", "/home/*/.local/bin/claude", "/home/*/.*-code/bin/*-code",
+    "/mnt/Xilinx/PetaLinux/*/python*", "/tmp/petalinux*/python*", "/home/*/.local/share/claude/versions/*", "/home/*/.aimee-code/bin/claude",
+    "/usr/lib/chatgpt/resources/codex", "/home/*/.local/bin/claude", "/home/*/.aimee-code/bin/aimee-code",
     "/home/*/.cursor-server/*/claude", "/root/.local/share/claude/versions/*"
   ) or
   process.executable like "/tmp/petalinux*/usr/bin/*" or

@@ -10,7 +10,7 @@ id = "c7e5dc07-7031-4558-8f3a-12dee523a169"
 license = "Elastic License v2"
 name = "Potential SUID/SGID Files Enumeration"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "find" and user.id != 0 and
@@ -23,9 +23,8 @@ not (
   process.parent.args like ("printf \"command_start_%s*", "/opt/admin/bin/cis_*.bash") or
   process.parent.command_line like ("*/bin/findmnt*", "*for PARTITION in $(findmnt*") or
   process.working_directory in (
-    "/opt/CyberCNSAgent", "/opt/nessus_agent/var/nessus/mod/com.tenable.nessus_agent/data", "/var/cache/tripwire/twexec"
+    "/opt/CyberCNSAgent", "/opt/nessus_agent/var/nessus/mod/com.tenable.nessus_agent/data", "/home/svc-nlls-tenable", "/var/cache/tripwire/twexec"
   ) or
-  process.working_directory like "/home/*tenable*" or
   process.parent.command_line like ("*/usr/local/etc/suid_files*", "*/usr/local/etc/sgid_files*") or
   (
     process.command_line == "find / -perm /6000 -type f -exec chmod a-s {} ;" and

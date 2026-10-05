@@ -7,7 +7,7 @@ id = "336ada1c-69f8-46e8-bdd2-790c85429696"
 license = "Elastic License v2"
 name = "Ingress Tool Transfer via CURL"
 os_list = ["windows"]
-version = "1.0.36"
+version = "1.0.35"
 
 query = '''
 process where event.action == "start" and
@@ -38,7 +38,7 @@ process where event.action == "start" and
   not process.command_line : ("*curl -o \\\\.\\nul -v -I -L -s --connect-timeout*", "*http://127.0.0.1:*", "*http://localhost:*") and
   not process.args : ("https://mirror.init7.net/ctan/systems*", "http://localhost:*",
                       "https://*.ctan.org*", "texlive/curl", "http*.local/*",
-                      "http://*/api/build/*zip",
+                      "http://control.firstvoucher.com/api/build/*zip",
                       "https://blackhole.blob.core.windows.net/*",
                       "https://*.cw-onlineupdate.de/*",
                       "https://gitea.*.prod/*",
@@ -50,7 +50,7 @@ process where event.action == "start" and
   /* avoid breaking privileged install */
   not user.id : "S-1-5-18" and
   not (process.parent.name : "cmd.exe" and process.parent.command_line like~ "*oi-vscode-server*run.app*") and
-  not (process.parent.name : "cmd.exe" and process.parent.command_line like~ "*showImage.php*") and
+  not (process.parent.name : "cmd.exe" and process.parent.command_line like~ "*nexuspayables.com*showImage.php*") and
   not (process.parent.command_line like~ "*VoicemodInstaller*" and process.parent.name like~ "VoicemodInstaller*") and
 
   /* curl outputting to NUL means no file is saved to disk - not an ingress tool transfer */

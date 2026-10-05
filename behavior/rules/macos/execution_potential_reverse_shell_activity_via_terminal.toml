@@ -9,7 +9,7 @@ reference = [
     "https://github.com/WangYihang/Reverse-Shell-Manager",
     "https://www.netsparker.com/blog/web-security/understanding-reverse-shells/",
 ]
-version = "1.0.47"
+version = "1.0.48"
 
 query = '''
 process where event.action == "exec" and process.name in ("sh", "bash", "zsh", "dash", "zmodload") and
@@ -21,7 +21,7 @@ not (
     "*/dev/tcp/sirh_db/*", "*/dev/tcp/itom-vault/8200*", "*/dev/tcp/remoteiot.com/*", "*dev/tcp/elk.stag.one/*",
     "*dev/tcp/kafka/*", "*/dev/tcp/$0/$1*", "*/dev/tcp/::1/*", "*/dev/tcp/livelog.default.svc.cluster.local*",
     "*/dev/tcp/db.default.svc.cluster.local*", "*/dev/tcp/127.*", "*/dev/udp/127.*", "*/dev/tcp/localhost/*",
-    "*/dev/tcp/splunk*telconet.net/*",
+    "*/dev/tcp/splunk*/*",
     "bash -c timeout 2 bash -c 'echo > /dev/tcp/kafka*' 2>/dev/null && echo 'Connected' || echo 'Failed'", 
     "*/dev/tcp/*echo*", "*.claude/shell-snapshots/*echo*"
   ) or

@@ -8,7 +8,7 @@ id = "0c393c67-6eb3-4936-ab44-b807ef8af0f7"
 license = "Elastic License v2"
 name = "DNS Request by Recently Created Executable"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=10s
@@ -23,7 +23,7 @@ sequence by process.parent.entity_id with maxspan=10s
   file.path like ("/tmp/*", "/var/tmp/*", "/dev/shm/*", "/home/*/*", "/root/*", "/var/www/*") and
   not (
     file.path like (
-      "/home/*/.claude/downloads/claude-*-linux-x64", "/home/*/.aimee-code/bin/aimee-code"
+      "/home/*/.claude/downloads/claude-*-linux-x64", "/home/*/.*-code/bin/*-code"
     ) or
     (
       process.executable like "/home/*/go/pkg/mod/golang.org/*/pkg/tool/linux_amd64/link" and
@@ -32,7 +32,7 @@ sequence by process.parent.entity_id with maxspan=10s
     process.executable like (
       "/home/*/.local/share/claude/versions/*", "/home/*/.vscode-server/cli/servers/Stable-*/server/node",
       "/tmp/*/.vscode-server/.vscode-server/cli/servers/Stable-*/server/node", "/home/*/.vscode-server/bin/*/node",
-      "*/.opencode/bin/opencode*", "*/.claude/remote/ccd-cli/*", "*/.claude/downloads/claude-*", "*/.aimee-code/bin/*"
+      "*/.opencode/bin/opencode*", "*/.claude/remote/ccd-cli/*", "*/.claude/downloads/claude-*", "*/.*-code/bin/*"
     )
   )] as event0
   [dns where event.action == "lookup_result" and startswith~(process.executable, event0.file.path) and

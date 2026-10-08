@@ -12,7 +12,7 @@ reference = [
     "https://www.wiz.io/blog/threat-actors-target-crypto-orgs",
     "https://attack.mitre.org/techniques/T1082/",
 ]
-version = "1.0.4"
+version = "1.0.3"
 
 query = '''
 sequence with maxspan=1m
@@ -31,11 +31,10 @@ sequence with maxspan=1m
    not process.parent.code_signature.signing_id like~ ("spawn-helper-*", "herdr-*")] by process.parent.entity_id
   [network where event.type == "start" and event.action == "connection_attempted" and
    destination.domain != null and 
-   not destination.domain in ("login.microsoftonline.com",
+   not destination.domain in ("login.microsoftonline.com", "ch-buildstorage.corp.acronis.com",
                               "storage.googleapis.com", "test.salesforce.com", "api.github.com",
                               "graph.microsoft.com", "cloud.tilt.dev", "api.anthropic.com",
-                              "platform.claude.com") and
-   not destination.domain like "*.acronis.com"] by process.entity_id
+                              "platform.claude.com")] by process.entity_id
 '''
 
 min_endpoint_version = "8.16.0"

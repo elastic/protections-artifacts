@@ -9,7 +9,7 @@ id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -128,12 +128,12 @@ not (
   (process.parent.command_line == "bash /entrypoint.sh" and process.command_line like "*/usr/local/logicmonitor/agent/bin/logicmonitor-watchdog.java.pid*") or
   (process.parent.executable == "/usr/bin/perl" and process.parent.args like "/home/*/scripts/daily.pl") or
   (process.working_directory == "/var/opt/OV/installation/standalone" and process.parent.executable in ("/usr/bin/awk", "/usr/bin/gawk")) or
-  (process.working_directory == "/home/deploy" and process.parent.executable like "/usr/bin/python3.*" and process.command_line like "*/home/manage/.ssh/authorized_keys*") or
+  (process.working_directory == "/home/deploy" and process.parent.executable like "/usr/bin/python3.*" and process.command_line like "*/home/*/.ssh/authorized_keys*") or
   (process.working_directory like "/var/tmp/glibc-*/glibc-*" and process.parent.executable == "/tmp/homebrew/bin/make") or
   (process.working_directory like "/tmp/MLNX_OFED_LINUX*" and process.parent.executable == "/usr/bin/perl") or
   (process.parent.executable == "/usr/local/admin/bin/mailman_bsc_listadd_v2.py" and process.command_line like "*/tmp/mailmanListMembers.txt") or
   (process.parent.executable like "/home/*/.local/opt/node-*-linux-x64/bin/node" and process.command_line like "*extglob*") or
-  (process.working_directory == "/home/navi" and process.command_line like "sh -c echo*| base64 -d | sudo -n tee \"/etc/hosts\" > /dev/null") or
+  (process.working_directory like "/home/*" and process.command_line like "sh -c echo*| base64 -d | sudo -n tee \"/etc/hosts\" > /dev/null") or
   (
     process.parent.executable == "/usr/bin/perl" and
     process.parent.args in (
@@ -159,7 +159,7 @@ not (
     process.parent.command_line == "/usr/bin/perl /opt/qradar/bin/erule_update.pl"
   ) or
   process.parent.executable like (
-    "/home/*/.aimee-code/bin/*",
+    "/home/*/.*-code/bin/*",
     "*/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/*",
     "*/.local/share/kiro-cli/node",
     "/tmp/.mount_curso*/usr/share/cursor/cursor"

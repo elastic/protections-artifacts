@@ -7,7 +7,7 @@ id = "ef47dbfc-5e0b-4e97-83f6-d40026634999"
 license = "Elastic License v2"
 name = "VirtualProtect API via Stack Truncation"
 os_list = ["windows"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 api where process.Ext.api.name == "VirtualProtect" and
@@ -29,12 +29,20 @@ _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "c:\\wi
 ) and
 /* Dr.Web Shellguard anti-exploit module */
 not (process.thread.Ext.call_stack_summary == "ntdll.dll|Unknown" and
-     process.executable : ("C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
-                           "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
-                           "C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE") and
-     process.parent.executable : ("C:\\Windows\\System32\\svchost.exe",
-                                  "C:\\Windows\\explorer.exe",
-                                  "C:\\Windows\\System32\\OpenWith.exe"))
+     process.code_signature.subject_name in ("Microsoft Corporation", "Mozilla Corporation", "Google LLC") and
+     process.code_signature.trusted == true and
+     process.executable : ("?:\\Program Files\\Microsoft Office\\*\\WINWORD.EXE",
+                           "?:\\Program Files\\Microsoft Office\\*\\EXCEL.EXE",
+                           "?:\\Program Files\\Microsoft Office\\*\\POWERPNT.EXE",
+                           "?:\\Program Files\\Microsoft Office\\*\\OUTLOOK.EXE",
+                           "?:\\Program Files (x86)\\Microsoft Office\\*\\WINWORD.EXE",
+                           "?:\\Program Files (x86)\\Microsoft Office\\*\\EXCEL.EXE",
+                           "?:\\Program Files (x86)\\Microsoft Office\\*\\POWERPNT.EXE",
+                           "?:\\Program Files (x86)\\Microsoft Office\\*\\OUTLOOK.EXE",
+                           "?:\\Program Files\\Mozilla Firefox\\firefox.exe",
+                           "?:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                           "?:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                           "?:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"))
 '''
 
 min_endpoint_version = "8.14.0"

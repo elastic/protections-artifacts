@@ -8,7 +8,7 @@ id = "4abdbb10-6653-4a3b-8e7a-9c4f9382f03b"
 license = "Elastic License v2"
 name = "Suspicious Unload of Elastic Agent via Launchctl"
 os_list = ["macos"]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 process where event.type == "start" and 
@@ -45,7 +45,8 @@ process.Ext.effective_parent.executable like~ ("/System/Applications/Utilities/T
                                                "/Library/Intune/Microsoft Intune Agent.app/Contents/MacOS/IntuneMdmDaemon",
                                                "/Library/Endgame/esensor",
                                                "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM",
-                                               "/Applications/iTerm.app/Contents/MacOS/iTerm2")
+                                               "/Applications/iTerm.app/Contents/MacOS/iTerm2") and not
+process.parent.command_line like~ "/Library/Application Support/Mosyle/MosyleMDM.app/Contents/MacOS/MosyleMDM*"
 '''
 
 min_endpoint_version = "8.11.0"

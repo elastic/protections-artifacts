@@ -8,7 +8,7 @@ id = "f1e932e5-41c5-465f-823b-83fc6f379bb4"
 license = "Elastic License v2"
 name = "Non-interactive Shell Upgrade"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -31,11 +31,7 @@ not (
   process.parent.executable like "/home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor/portable-ruby/*/bin/ruby" or
   process.command_line == "stty -echo raw min 0 time 2" or
   process.args like ("/dev/tty*", "/dev/serial/*") or
-  process.parent.args == "/usr/share/emacs/site-lisp/emacspeak/servers/dtk-exp" or
-  process.working_directory like (
-    "/tmp/sandbox-api-integration/crates/sandbox-api", "/home/*/Developer/rust-sandboxing/aimee-code-linux*", "/tmp/sandbox-api-integration",
-    "/scratch/user/*/slide_method_workspace"
-  )
+  process.parent.args == "/usr/share/emacs/site-lisp/emacspeak/servers/dtk-exp" 
 )
 '''
 

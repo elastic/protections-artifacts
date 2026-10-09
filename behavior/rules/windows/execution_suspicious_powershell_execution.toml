@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.55"
+version = "1.0.56"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -85,7 +85,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              "*krsfile:////LOBCS*",
              "*ProgramData\\VinitySoft Data\\MariaDb\\*",
              "*\\Temp\\claude\\claude-pwd-ps-*",
-             "*https://10.55.138.214:443/downloads/*",
+             "*https://10.*:443/downloads/*",
              "\"C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe\" -noexit -command \"[reflection.assembly]::loadFrom('.\\RD-PSAPI.dll') | import-module\"",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAfABUAHIAZQBsAGwAaQB4ACIA*",
              "*-noni -nop -w 1 -enc *AEUAbABhAHMAdABpAGMAIABBAGcAZQBuAHQAIgA=*",
@@ -95,7 +95,10 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
              /* inventory tooling checking the installed Chrome version: $ErrorActionPreference='silentlycontinue'; $tmp = (Get-Item -Path "$env:PROGRAMFILES\Google\Chrome\Application\chrome.exe") */
              "*JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAcwBpAGwAZQBuAHQAbAB5AGMAbwBuAHQAaQBuAHUAZQAnADsAIAAkAHQAbQBwACAAPQAgACgARwBlAHQALQBJAHQAZQBtACAALQBQAGEAdABoACAAIgAkAGUAbgB2ADoAUABSAE8ARwBSAEEATQBGAEkATABFAFMAXABHAG8AbwBnAGwAZQBcAEMAaAByAG8AbQBlAFwA*",
              /* base64 alignment variant of the Az.Accounts minimum version check already excluded above: \n$ErrorActionPreference = 'Stop'\n[version]$minimumVersion = '2.2.0' */
-             "*CgAkAEUAcgByAG8AcgBBAGMAdABpAG8AbgBQAHIAZQBmAGUAcgBlAG4AYwBlACAAPQAgACcAUwB0AG8AcAAnAAoAWwB2AGUAcgBzAGkAbwBuAF0AJABtAGkAbgBpAG0AdQBtAFYAZQByAHMAaQBvAG4A*") and
+             "*CgAkAEUAcgByAG8AcgBBAGMAdABpAG8AbgBQAHIAZQBmAGUAcgBlAG4AYwBlACAAPQAgACcAUwB0AG8AcAAnAAoAWwB2AGUAcgBzAGkAbwBuAF0AJABtAGkAbgBpAG0AdQBtAFYAZQByAHMAaQBvAG4A*", 
+             "powershell  -noprofile \"$_PSCommandPath = [Environment]::GetEnvironmentVariable('script_path', 'Process'); iex ((Get-Content -LiteralPath $_PSCommandPath) | out-string)\"", 
+             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -Command \"Add-Type -AssemblyName System.Security;$i=[Console]::In.ReadToEnd();[Convert]::ToBase64String([Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($i),$null,'CurrentUser'))\"", 
+            "get-childitem *.xml' | foreach { rename-item $_ $_.Name.Replace(' ', '_') }") and
  not process.parent.args : "([Datetime]::ParseExact($_.InstalledOn," and
  not process.command_line : ("PowerShell*hkguTzSCb75g7sJ9ChMcmAOPpeBL9ZJy/tejnoCjT+E=*", "*.LastWriteTime.ToFileTime*", "*New-Object*Net.Mail.SmtpClien*") and
  not (process.parent.name : "cmd.exe" and
@@ -113,7 +116,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not (process.parent.name : "Cursor.exe" and process.command_line : "* dotnet csharpier format*") and 
 
- not (process.parent.name : "codex*.exe" and process.args : "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;*") and 
+ not (process.parent.name : "codex*.exe" and process.command_line : "*[Console]::OutputEncoding=[System.Text.Encoding]::UTF8*") and 
 
  not process.working_directory : "C:\\ProgramData\\VinitySoft Data\\MariaDb\\" and
 
@@ -151,7 +154,8 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                              "C:\\istip-installation\\install.bat", 
                              "'C:\\ProgramData\\PatchBot\\data\\windows-health-after.json';", 
                              "'C:\\ProgramData\\PatchBot\\data\\windows-updates.json';", 
-                             "'C:\\ProgramData\\PatchBot\\data\\windows-updates.json')")) and
+                             "'C:\\ProgramData\\PatchBot\\data\\windows-updates.json')", 
+                             "\\\\*\\*.bat")) and
 
  not (process.parent.executable : "C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe" and process.command_line : "*Windows.UI.Notifications*") and
 

@@ -7,7 +7,7 @@ id = "415c647f-ebb1-474d-b621-192d6f64c01d"
 license = "Elastic License v2"
 name = "Potential Library Load via ROP Gadgets"
 os_list = ["windows"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 library where process.pid != 4 and
@@ -42,7 +42,8 @@ library where process.pid != 4 and
                                       "C:\\Windows\\System32\\ntdll.dll!RtlCloneUserProcess*", "*ntdll.dll!RtlSetThreadSubProcessTag*",
                                       /* Win11 24H2/25H2 (builds 26100/26200) moved ntdll loader internals away from their classic exports,
                                          nearest-export symbolication resolves Ldrp* frames to these unrelated exports */
-                                      "*ntdll.dll!RtlGetSuiteMask+*", "*ntdll.dll!RtlLocateExtendedFeature+*", "*ntdll.dll!NtInitiatePowerAction+*")) and
+                                      "*ntdll.dll!RtlGetSuiteMask+*", "*ntdll.dll!RtlLocateExtendedFeature+*", "*ntdll.dll!NtInitiatePowerAction+*", 
+                                      "?:\\Windows\\System32\\ntdll.dll!DbgBreakPoint*", "?:\\Windows\\System32\\ntdll.dll!DbgUserBreakPoint*")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll*" and $entry.allocation_private_bytes > 0) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "*ntdll.dll+0x*") and
  /* trusted-signed process whose stack resolves back into its own main image contradicts the hidden-caller

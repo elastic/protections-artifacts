@@ -9,16 +9,21 @@ id = "0807172b-3c6b-495c-a10c-d1396b53088c"
 license = "Elastic License v2"
 name = "Download of ScreenConnect RMM Installer from Suspicious URL"
 os_list = ["windows"]
-version = "1.0.0"
+version = "1.0.1"
 
 query = '''
 file where event.action == "creation" and
  process.name : ("chrome.exe", "msedge.exe", "firefox.exe", "iexplore.exe", "opera.exe", "brave.exe",
                  "vivaldi.exe", "whale.exe", "dragon.exe", "browser.exe", "CefSharp.BrowserSubprocess.exe") and
  file.name : "ScreenConnect.ClientSetup*" and
- file.origin_url : "http*" and
- not file.origin_url : ("*.screenconnect.com/*", "*hostedrmm.com/*") and
- not (file.origin_url : ("*.exe?h=*", "*.msi?h=*") and file.origin_referrer_url : ("*/Host", "*.com/"))
+ (
+   (file.origin_url : "http*" and 
+    not file.origin_url : ("*.screenconnect.com/*", "*hostedrmm.com/*") and 
+    not (file.origin_url : ("*.exe?h=*", "*.msi?h=*") and file.origin_referrer_url : ("*/Host", "*.com/"))) or 
+
+   (file.origin_url like "*.screenconnect.com/*e=Access&y=Guest*" and 
+    file.origin_referrer_url like "http*" and not file.origin_referrer_url : ("*.screenconnect.com/*", "*hostedrmm.com/*"))
+  )
 '''
 
 min_endpoint_version = "8.16.0"

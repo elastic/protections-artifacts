@@ -5,13 +5,14 @@ license = "Elastic License v2"
 name = "Arbitrary Python Code Execution via Nodejs"
 os_list = ["macos"]
 reference = ["https://jp.security.ntt/tech_blog/contagious-interview-ottercookie"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name like~ "python*" and process.args == "-c" and 
  (process.parent.name == "node" or process.Ext.effective_parent.name == "node") and
  process.command_line : ("*os.system*", "*subprocess.run*", "*subprocess.Popen*", "*exec(*", "*eval(*") and
- not (process.command_line like~ "*subprocess.run*" and process.command_line like~ """*/bin/ps",*""")
+ not (process.command_line like~ "*subprocess.run*" and process.command_line like~ """*/bin/ps",*""") and
+ not process.command_line like~ "*-c import sys;exec(eval(sys.stdin.readline()))"
 '''
 
 min_endpoint_version = "8.10.2"

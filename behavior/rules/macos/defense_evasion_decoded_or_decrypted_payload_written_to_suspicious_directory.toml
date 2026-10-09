@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Decoded or Decrypted Payload Written to Suspicious Directory"
 os_list = ["macos"]
 reference = ["https://attack.mitre.org/software/S0482/"]
-version = "1.0.30"
+version = "1.0.31"
 
 query = '''
 process where event.action == "exec" and
@@ -28,7 +28,8 @@ process where event.action == "exec" and
                         "/var/root/*", 
                         "/var/lib/*",
                         "/Library/WebServer/*",
-                        "/Library/Fonts/*")) or 
+                        "/Library/Fonts/*") and
+    not process.parent.command_line like~ "*/.claude/shell-snapshots/snapshot-*") or 
    (process.name == "base64" and process.args == "-d" and 
     process.args like~ ("/tmp/*", 
                         "*/.*",
@@ -43,7 +44,8 @@ process where event.action == "exec" and
                         "/var/root/*", 
                         "/var/lib/*",
                         "/Library/WebServer/*",
-                        "/Library/Fonts/*")))
+                        "/Library/Fonts/*") and 
+    not process.parent.command_line like~ "*/.claude/shell-snapshots/snapshot-*"))
 '''
 
 min_endpoint_version = "8.10.2"

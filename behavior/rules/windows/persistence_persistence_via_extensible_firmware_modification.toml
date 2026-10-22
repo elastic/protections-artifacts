@@ -11,7 +11,7 @@ reference = [
     "https://github.com/Cr4sh/s6_pcie_microblaze/blob/master/python/payloads/DmaBackdoorHv/bootkit_installer.ps1",
     "https://securelist.com/finspy-unseen-findings/104322/",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 sequence by process.entity_id
@@ -71,7 +71,12 @@ sequence by process.entity_id
 
   not (process.name : ("powershell.exe", "wsmprovhost.exe") and file.path : ("\\Device\\HarddiskVolume*\\EFI\\HP\\DEVFW\\*", "\\Device\\HarddiskVolume*\\EFI\\Microsoft\\Boot\\SecConfig.efi")) and
 
-  not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\*.log")]
+  not (process.executable : "?:\\Windows\\System32\\wbem\\WmiPrvSE.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\*.log") and 
+
+  not (process.executable : "?:\\Windows\\System32\\ReAgentc.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\Microsoft\\Recovery\\BCD.LOG") and 
+
+  not (process.executable : "C:\\Windows\\UUS\\Packages\\Preview\\amd64\\wuaucltcore.exe" and file.path : "\\Device\\HarddiskVolume*\\EFI\\Microsoft\\Recovery\\BCD.LOG")
+  ]
  until [process where event.action == "end"]
 '''
 

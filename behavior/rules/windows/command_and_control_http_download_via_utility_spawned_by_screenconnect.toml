@@ -1,0 +1,52 @@
+[rule]
+description = """
+Identifies cmd, PowerShell, curl, or msiexec launched by a ScreenConnect process with an HTTP(S) URL in the command
+line. Threat actors have used an existing ScreenConnect session to retrieve additional payloads, including a second
+ScreenConnect client for redundant persistence or attacker-controlled C2.
+"""
+id = "82735b58-456f-4509-ae7a-fd995ca6856f"
+license = "Elastic License v2"
+name = "HTTP Download via Utility Spawned by ScreenConnect"
+os_list = ["windows"]
+reference = ["https://www.huntress.com/blog/phishing-bitb-rmm-attacks"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ process.parent.name : ("ScreenConnect.WindowsClient.exe", "ScreenConnect.Service.exe") and
+ process.name : ("cmd.exe", "powershell.exe", "pwsh.exe", "curl.exe", "msiexec.exe", "certutil.exe", "certreq.exe", "bitsadmin.exe") and
+ process.command_line : "*http*"
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+[[threat.technique]]
+id = "T1219"
+name = "Remote Access Tools"
+reference = "https://attack.mitre.org/techniques/T1219/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

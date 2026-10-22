@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Potential Fileless Execution Sequence"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -27,8 +27,9 @@ sequence by process.entity_id with maxspan=5s
     ) or
     process.executable like (
       "/usr/bin/lxc-attach", "memfd:buildah-chroot-runtime", "./usr/bin/nvidia-cdi-hook",
+      "./usr/local/nvidia/toolkit/nvidia-cdi-hook.real", "/usr/local/nvidia/toolkit/nvidia-ctk.real",
       "memfd:runc_cloned:/run/nvidia-ctk-hook/*/ldconfig", "memfd:runc_cloned:/sbin/ldconfig.real",
-      "memfd:buildah-in-a-user-namespace"
+      "memfd:buildah-in-a-user-namespace", "/nix/store/*/bin/nvidia-cdi-hook"
     ) or
     process.command_line == "buildah-chroot-runtime"
   )]
@@ -37,9 +38,14 @@ sequence by process.entity_id with maxspan=5s
     process.executable like ("memfd:*", "?memfd:*")
   ) and
   not (
-    process.executable in ("memfd:runc_cloned:/proc/self/exe", "/usr/bin/nvidia-ctk") or
+    process.executable in ("memfd:runc_cloned:/proc/self/exe", "/usr/bin/nvidia-ctk", "memfd:runc_cloned:/sbin/ldconfig.real") or
+    process.executable like "memfd:runc_cloned:/run/nvidia-ctk-hook/*/ldconfig" or
     (
       process.parent.executable == "/usr/bin/nvidia-ctk" and
+      process.command_line like "ldconfig*"
+    ) or
+    (
+      process.parent.executable like ("/usr/local/nvidia/toolkit/nvidia-cdi-hook.real", "/nix/store/*/bin/nvidia-cdi-hook") and
       process.command_line like "ldconfig*"
     )
   )]

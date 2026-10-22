@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Browser Information Discovery"
 os_list = ["windows"]
 reference = ["https://attack.mitre.org/techniques/T1217/"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 file where event.action == "open" and 
@@ -33,7 +33,7 @@ process.executable != null and not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20
                  "?:\\ProgramData\\*",
                  "?:\\Windows\\Microsoft.NET\\*")
  ) and
- not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "BrowserWorks Ltd", "SAP SE", "Time Doctor LLC", "Emsisoft Ltd", "PIRIFORM SOFTWARE LIMITED") and
+ not (process.code_signature.subject_name : ("Google LLC", "Mozilla Corporation", "BrowserWorks Ltd", "SAP SE", "Time Doctor LLC", "TimeDoctor (Mystaff.com LLC)", "Emsisoft Ltd", "PIRIFORM SOFTWARE LIMITED") and
       process.code_signature.trusted == true) and
  not (process.code_signature.subject_name : "Shift Technologies Inc." and process.code_signature.status : "errorUntrustedRoot") and 
  not process.executable :
@@ -50,6 +50,8 @@ process.executable != null and not user.id in ("S-1-5-18", "S-1-5-19", "S-1-5-20
       process.thread.Ext.call_stack_summary == "ntdll.dll|sophosed.dll|apphelp.dll|kernelbase.dll|migcore.dll|migstore.dll|migcore.dll|scanstate.exe|kernel32.dll|ntdll.dll") and
  not (process.executable : "C:\\Windows\\explorer.exe" and
       process.thread.Ext.call_stack_summary : "ntdll.dll|kernelbase.dll|hostshellextension.dll|Unbacked") and
+ not (process.code_signature.subject_name like "Microsoft*" and process.code_signature.trusted == true and
+      process.thread.Ext.call_stack_summary like ("ntdll.dll|bdhkm64.dll|Unbacked|*", "ntdll.dll|mssense.dll|kernel32.dll|ntdll.dll")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
                      $entry.symbol_info : ("*\\chrome.dll!GetHandleVerifier*",
                                            "*\\chrome.dll!ChromeMain*",

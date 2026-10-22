@@ -7,7 +7,7 @@ id = "fa2e2435-d285-485e-9890-dff92cb78ab7"
 license = "Elastic License v2"
 name = "Process Memory Write to a Non Child Process"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where process.Ext.api.name == "WriteProcessMemory" and
@@ -49,10 +49,13 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                               "c:\\windows\\system32\\ctiuser.dll",
                               "c:\\windows\\syswow64\\ctiuser.dll",
                               "c:\\windows\\system32\\hpzipm12.dll",
+                              "c:\\windows\\system32\\hpzinw12.dll",
                               "c:\\windows\\system32\\lsasrv.dll",
                               "c:\\windows\\syswow64\\cwbunpls.dll",
                               "c:\\windows\\system32\\shsvcs.dll",
-                              "c:\\windows\\system32\\sxssrv.dll") and
+                              "c:\\windows\\system32\\sxssrv.dll",
+                              "c:\\windows\\system32\\sophosed\\sophosed.dll",
+                              "*\\windowsfilter\\*\\files\\windows\\system32\\lsasrv.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance : ("mfehcthe.dll", "system.core.ni.dll") and
   not process.thread.Ext.call_stack_final_user_module.protection_provenance_path : ("?:\\program files\\*", "?:\\program files (x86)\\*", "c:\\windows\\assembly\\nativeimages_*") and
   not process.thread.Ext.call_stack_final_user_module.hash.sha256 :
@@ -182,7 +185,11 @@ not (process.name : "rundll32.exe" and process.Ext.api.parameters.size <= 140 an
                                    "32144dbc32aef6b1eab071968c2c2ee6eaf477dcb4a8eb7b8967824f48db17b7",
                                    "11d87cac25f6d438db6c6dfec631f97fa5f6ad98e7d99fa50ac1479706efb3b5",
                                    "c729c4b5a6ad8d247acd4b0d32d5a5999647461ee5f565c618b26d339caebbca",
-                                   "0537c3dd2378218508ebe3cc416d72a99ee2d24ae1c5525e23458f32544ef861")
+                                   "0537c3dd2378218508ebe3cc416d72a99ee2d24ae1c5525e23458f32544ef861",
+                                   "ac040523899af3a90f40d537348e88e528caad4e160a91b1b66113adbc23b657",
+                                   "8c9ac918b90ab93408d39460edcd6752f29a045de8ae6a2029142d0bd5e9663f",
+                                   "796b6f120e504c20419a12e0f877dc97a4cd0a5f31ee97fcf9a5f4267596a88f",
+                                   "832f4ec1586c9669f2d54ab3b212943e43b87a33b24dcc8cdad6a0264291ee2f")
 '''
 
 min_endpoint_version = "8.14.2"

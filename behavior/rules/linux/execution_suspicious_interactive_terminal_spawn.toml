@@ -7,10 +7,11 @@ id = "442f824f-a2bb-4052-83d0-4c9514d31214"
 license = "Elastic License v2"
 name = "Suspicious Interactive Terminal Spawn"
 os_list = ["linux"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
-process where event.type == "start" and event.action == "exec" and (
+process where event.type == "start" and event.action == "exec" and
+(
   (
     process.name == "perl" and process.args like "-e*" and process.command_line like "*exec*" and
     process.command_line like ("*\"*sh\";*", "*'*sh';*")
@@ -18,27 +19,8 @@ process where event.type == "start" and event.action == "exec" and (
   (
     process.parent.name like "python*" and
     process.name in ("bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox") and
-    (
-      (
-        process.parent.args_count >= 3 and
-        process.parent.args like~ "*pty.spawn*" and
-        process.parent.args == "-c"
-      ) or
-      (
-        process.args in (
-          "bash", "dash", "ash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox",
-          "/bin/bash", "/bin/dash", "/bin/ash", "/bin/sh", "/bin/tcsh", "/bin/csh",
-          "/bin/zsh", "/bin/ksh", "/bin/fish", "/bin/mksh", "/bin/busybox",
-          "/usr/bin/bash", "/usr/bin/dash", "/usr/bin/ash", "/usr/bin/sh", "/usr/bin/tcsh", "/usr/bin/csh",
-          "/usr/bin/zsh", "/usr/bin/ksh", "/usr/bin/fish", "/usr/bin/mksh", "/usr/bin/busybox",
-          "/usr/local/bin/bash", "/usr/local/bin/dash", "/usr/local/bin/ash", "/usr/local/bin/sh",
-          "/usr/local/bin/tcsh", "/usr/local/bin/csh", "/usr/local/bin/zsh", "/usr/local/bin/ksh",
-          "/usr/local/bin/fish", "/usr/local/bin/mksh", "/usr/local/bin/busybox"
-        ) and
-        process.args_count == 1 and
-        process.parent.args_count == 1
-      )
-    )
+    process.parent.args_count >= 3 and
+    process.parent.command_line like~ "*pty.spawn*"
   )
 )
 '''

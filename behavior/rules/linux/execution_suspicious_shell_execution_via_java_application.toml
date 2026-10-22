@@ -12,7 +12,7 @@ reference = [
     "https://www.oracle.com/security-alerts/alert-cve-2025-61882.html",
     "https://www.crowdstrike.com/en-us/blog/crowdstrike-identifies-campaign-targeting-oracle-e-business-suite-zero-day-CVE-2025-61882/",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 sequence with maxspan=1m 
@@ -47,7 +47,7 @@ sequence with maxspan=1m
        "/bin/sh -c which perl",
        """/bin/sh -c if (which rpm >/dev/null 2>&1 && rpm -qa | grep 'gtk3' >/dev/null 2>&1) || (which dpkg >/dev/null 2>&1 && dpkg -l | grep 'libgtk-3' >/dev/null 2>&1); then echo "true";else echo "false";fi"""
      ) or
-     process.command_line like "*executeXauthorityCommandWithTimeoutIfPossible*" or
+     process.command_line like ("*executeXauthorityCommandWithTimeoutIfPossible*", "*which rpm >/dev/null 2>&1 && rpm -qa*") or
      process.working_directory like ("/var/opt/oracle/dbaastools_base/pilot*", "/opt/wn/service/agents/esfclient") or
      process.parent.executable like (
        "/opt/pycharm*/bin/java", "/tdst/java/*/bin/java", "/crm/java/*/bin/java", "/*/java/jdk1.8.0_151/bin/java",

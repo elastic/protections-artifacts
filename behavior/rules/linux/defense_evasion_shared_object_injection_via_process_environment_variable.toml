@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Shared Object Injection via Process Environment Variable"
 os_list = ["linux"]
 reference = ["https://attack.mitre.org/techniques/T1574/006/"]
-version = "1.0.50"
+version = "1.0.51"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.env_vars like "LD_PRELOAD=?*" and 
@@ -59,7 +59,8 @@ process where event.type == "start" and event.action == "exec" and process.env_v
     "LD_PRELOAD=/tmp/*/openwrt-imagebuilder*/runas.so", "LD_PRELOAD=/tmp/pressure-vessel-libs-*/libMangoHud_shim.so",
     "LD_PRELOAD=/home/libjemalloc.so.2", "LD_PRELOAD=/tmp/libredirectnull.so", "LD_PRELOAD=/tmp/libcuda_trace.so",
     "LD_PRELOAD=:/usr/lib/libjemalloc.so", "LD_PRELOAD=/lib/libSegFault.so", "LD_PRELOAD=/tmp/baum/easybuild/*",
-    "LD_PRELOAD=/home/*/.local/share/WebexLauncher/*/bin/../lib/libCefMallinfoShim.so"
+    "LD_PRELOAD=/home/*/.local/share/WebexLauncher/*/bin/../lib/libCefMallinfoShim.so",
+    "LD_PRELOAD=/tmp/nss_wrapper/libnss_wrapper.so"
   ) or
   (process.env_vars == "LD_PRELOAD=./getrandom.so" and process.parent.command_line == "/opt/perlbrew/perls/perl-5.40.3/bin/perl t/getrandom.t") or
   process.parent.command_line == "runc init" or
@@ -73,7 +74,7 @@ process where event.type == "start" and event.action == "exec" and process.env_v
     process.env_vars like "LD_PRELOAD=/tmp/pytest-of-*/*/.runtime/qgc/libqgc_timer_guard.so" and
     process.parent.executable == "/usr/bin/bash"
   ) or
-  process.parent.command_line like "*/.codex/worktrees/*"
+  process.parent.command_line like "*/.codex/*"
 )
 '''
 

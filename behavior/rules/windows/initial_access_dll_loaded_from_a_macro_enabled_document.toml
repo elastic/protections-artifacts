@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.24"
+version = "1.0.25"
 
 query = '''
 library where
@@ -61,7 +61,11 @@ library where
                   "d661f1a025d99a98ebc6e42b3e69ae89379773821b2471ae138c4e55a5b63aa7",
                   "75e06078dd24506ffea81cf1615f5f9d9057abe2caf0067c396f20f3bea8b817",
                   "44185134b1f8c503c78e9dbc36891ba3fa109237c3dc79399955bf29e75921d4",
-                  "9c2f359207114f5de82f080b08cbcfe723153b3f9c002c3f672a60e88c0d71b6")
+                  "9c2f359207114f5de82f080b08cbcfe723153b3f9c002c3f672a60e88c0d71b6", 
+                  "6cf22fe3e53c897cda529dec73f4208a299dda5adf8c554bd4f51b7a1ff65315", 
+                  "dccf8bdba0dcdca050d39ff28a502faceeaea180a763cae7471166ff0c860288", 
+                  "bbf338382358160b1dca65046f2c2869b8128c6b996bcd0ea5478b2d501faedc") and 
+    not process.thread.Ext.call_stack_summary in ("ntdll.dll|kernelbase.dll|pcmsrv64.dll|Unbacked", "ntdll.dll|kernelbase.dll|Unbacked", "ntdll.dll|kernelbase.dll|odbc32.dll|excel.exe|Unbacked")
 '''
 
 min_endpoint_version = "8.10.0"

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Loadable Kernel Module Loaded via Unusual Parent"
 os_list = ["linux"]
 reference = ["https://www.elastic.co/security-labs/continuation-on-persistence-mechanisms"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "load_module" and (
@@ -61,7 +61,8 @@ not (
   process.parent.executable like (
     "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*", "./runc", "/opt/puppetlabs/puppet/bin/ruby",
     "/home/*/work/check-hardware/coco-detect/target/debug/coco-detect"
-  )
+  ) or
+  (process.parent.executable == "/usr/bin/perl" and process.parent.args == "/usr/lib/uptrack/ksplice-apply")
 )
 '''
 

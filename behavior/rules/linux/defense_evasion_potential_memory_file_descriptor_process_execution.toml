@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Memory File Descriptor Process Execution"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -19,9 +19,14 @@ process where event.type == "start" and event.action == "exec" and (
 not (
   process.executable in (
     "/usr/bin/fusermount", "/usr/bin/fusermount3",  "memfd:runc_cloned:/proc/self/exe",
-    "memfd:buildah-chroot-runtime", "memfd:buildah-chroot-exec", "memfd:lxc-attach", "/usr/sbin/logrotate"
+    "memfd:buildah-chroot-runtime", "memfd:buildah-chroot-exec", "memfd:lxc-attach", "/usr/sbin/logrotate",
+    "memfd:spawn_worker_trampoline", "memfd:/sbin/ldconfig.real", "memfd:runc_cloned:ldconfig",
+    "memfd:runc_cloned:/sbin/ldconfig"
   ) or
-  process.executable like "memfd:runc_cloned:/run/nvidia-ctk-hook/*" or
+  process.executable like (
+    "memfd:runc_cloned:/run/nvidia-ctk-hook/*", "/opt/datadog-packages/datadog-apm-inject/*/inject/process",
+    "memfd:/sophos-subprocess-*-exec1"
+  ) or
   process.parent.executable like (
     "/usr/libexec/nordlayer/nordlayer-resolvconf", "/nix/store/*/bin/buildah",
     "/opt/teleport/system/bin/teleport", "memfd:teleport-sessionhelper",

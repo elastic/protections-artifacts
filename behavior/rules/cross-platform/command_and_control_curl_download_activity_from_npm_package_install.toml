@@ -1,0 +1,87 @@
+[rule]
+description = """
+Detects curl downloading over HTTP(S) with a short argument list, writing output to a file or launched via a shell, as a
+descendant of Node.js executing an npm package (`npx-cli.js` or the npx cache). Malicious npm packages and supply-chain
+compromises commonly fetch a second stage from install or postinstall scripts.
+"""
+id = "0d41865d-6161-41c9-aed3-b5afc1267be5"
+license = "Elastic License v2"
+name = "Curl Download Activity from npm Package Install"
+os_list = ["linux", "macos"]
+reference = ["https://www.elastic.co/blog/shai-hulud-worm-npm-supply-chain-compromise"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "exec" and
+ process.name == "curl" and
+ process.command_line : "*http*" and
+ process.args_count <= 5 and
+ (
+   process.args in ("-o", "--output") or
+   process.parent.command_line : ("*zsh", "*sh", "*bash", "*dash")
+ ) and
+ not process.command_line : ("*169.254.169.254*", "*localhost*", "*127.0.0.1*") and
+ descendant of
+   [process where event.action == "exec" and
+    process.name == "node" and
+    process.command_line : ("*npx-cli.js*", "*npm-cli.js*", "*/.npm/_npx/*",  "*/npm-cache/*")] and
+ not process.args like ("https://packages.microsoft.com/keys/microsoft.asc", "https://github.com/PHPCSStandards/PHP_CodeSniffer/releases/*",
+                        "https://github.com/dash0hq/*", "https://www.youtube.com/api/timedtext*", "https://raw.githubusercontent.com/laravel/pint/*")
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1195"
+name = "Supply Chain Compromise"
+reference = "https://attack.mitre.org/techniques/T1195/"
+[[threat.technique.subtechnique]]
+id = "T1195.002"
+name = "Compromise Software Supply Chain"
+reference = "https://attack.mitre.org/techniques/T1195/002/"
+
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

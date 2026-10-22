@@ -1,0 +1,57 @@
+[rule]
+description = """
+Identifies an existing ScreenConnect client installing another ScreenConnect ClientSetup package, either via the
+ScreenConnect RunFile action or msiexec spawned from a ScreenConnect process. Threat actors have used one ScreenConnect
+session to deploy a second client for redundant persistence, or to pivot from a legitimate trial instance to a second
+client with attacker-controlled C2.
+"""
+id = "b887d476-3373-4eed-ac03-23ca994805b6"
+license = "Elastic License v2"
+name = "ScreenConnect Client Installed from an Existing ScreenConnect Session"
+os_list = ["windows"]
+reference = ["https://www.huntress.com/blog/phishing-bitb-rmm-attacks"]
+version = "1.0.1"
+
+query = '''
+process where event.action == "start" and
+ (
+  (process.name : "ScreenConnect.WindowsClient.exe" and process.args : "RunFile" and process.command_line : "*ScreenConnect.ClientSetup.msi*") or
+  
+  (process.name : "msiexec.exe" and process.args : ("/i*", "-i*") and process.command_line : "*ScreenConnect.ClientSetup.msi*" and 
+   process.parent.name : ("ScreenConnect.WindowsClient.exe", "ScreenConnect.WindowsFileManager.exe"))
+ )
+'''
+
+min_endpoint_version = "8.10.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1219"
+name = "Remote Access Tools"
+reference = "https://attack.mitre.org/techniques/T1219/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

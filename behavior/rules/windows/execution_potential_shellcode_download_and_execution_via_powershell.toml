@@ -1,0 +1,80 @@
+[rule]
+description = """
+Identifies PowerShell AMSI scans of scripts that combine Add-Type, VirtualAlloc, memory copy, and a thread or APC
+execution primitive with a URL and download or execution primitive. This pattern is commonly used to fetch shellcode and
+execute it in memory.
+"""
+id = "7158afc1-7415-4318-b080-71edc18068f5"
+license = "Elastic License v2"
+name = "Potential Shellcode Download and Execution via PowerShell"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+api where process.Ext.api.name == "AmsiScanBuffer" and
+ (process.name in~ ("powershell.exe", "pwsh.exe") or process.Ext.api.parameters.app_name == "PowerShell") and
+ process.Ext.api.parameters.buffer : "*Add-Type*" and
+ process.Ext.api.parameters.buffer : "*VirtualAlloc*" and
+  process.Ext.api.parameters.buffer : "*Marshal*Copy*" and
+ process.Ext.api.parameters.buffer : ("*CreateThread*", "*NtCreateThreadEx*", "*RtlCreateUserThread*", "*QueueUserAPC*") and
+ process.Ext.api.parameters.buffer : ("*https://*", "*http://*") and
+ process.Ext.api.parameters.buffer : ("*Invoke-WebRequest*", "*WebClient*", "*DownloadData*", "*DownloadString*",
+                                      "*Net.Http*", "*IEX *", "*iex(*", "* irm *", "* iwr *", "*irm(*", "*iwr(*", "*Invoke-Expression*", "*Invoke-RestMethod*")
+'''
+
+min_endpoint_version = "8.16.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.16.0"

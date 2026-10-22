@@ -7,7 +7,7 @@ id = "318e6a4f-fb72-4010-a625-d41bae9e349a"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via Mail Server"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -200,7 +200,8 @@ not (
     process.name == "touch"
   ) or
   process.entry_leader.executable == "/usr/local/qualys/cloud-agent/bin/qualys-cloud-agent" or
-  (process.parent.executable == "/tmp/usr/sbin/sendmail" and process.executable like ("/tmp/usr/bin/*", "/tmp/bin/*"))
+  (process.parent.executable == "/tmp/usr/sbin/sendmail" and process.executable like ("/tmp/usr/bin/*", "/tmp/bin/*")) or
+  (process.parent.executable == "/usr/share/sendmail/sendmail" and process.name == "touch")
 )
 '''
 

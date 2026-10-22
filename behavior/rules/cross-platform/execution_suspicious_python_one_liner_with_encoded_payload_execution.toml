@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Suspicious Python One-Liner with Encoded Payload Execution"
 os_list = ["macos", "windows"]
 reference = ["https://attack.mitre.org/techniques/T1059/006/", "https://attack.mitre.org/techniques/T1027/"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action in ("start", "exec")  and
@@ -79,6 +79,14 @@ process where event.type == "start" and event.action in ("start", "exec")  and
     "*/opencode-linux-*/bin/opencode"
   ) and
   not process.parent.executable like~ "/Applications/Alfred*.app/*" and
+  not process.parent.executable like~ (
+    "?:\\Users\\*\\AppData\\Local\\hermes\\tools\\python-*\\python.exe",
+    "*/hermes/tools/python-*/bin/python*"
+  ) and
+  not process.executable like~ (
+    "?:\\Users\\*\\AppData\\Local\\hermes\\tools\\python-*\\python.exe",
+    "*/hermes/tools/python-*/bin/python*"
+  ) and
   not (process.command_line : (
          "*runpy.run_module(\"pip\"*",
          "*runpy.run_module('pip'*",

@@ -7,10 +7,10 @@ id = "c194da29-0aa4-463b-8c87-3094bc7ecd6d"
 license = "Elastic License v2"
 name = "World Writeable Directory File Creation and Outbound Connection"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
-sequence by process.parent.entity_id with maxspan=3s
+sequence by process.parent.entity_id with maxspan=15s
   [file where event.type == "creation" and file.path like ("/tmp/*", "/var/tmp/*", "/dev/shm/*")] as event0
   [network where event.type == "start" and event.action == "connection_attempted" and
    startswith~(process.executable, event0.file.path) and

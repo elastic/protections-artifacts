@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus",
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
 ]
-version = "1.0.63"
+version = "1.0.64"
 
 query = '''
 sequence by process.entity_id
@@ -193,7 +193,7 @@ sequence by process.entity_id
                           "80000000c7858c00000001000000488b4d50488b4920488b01488b8d800000004533db488b555048895528488d150e00000048895540488b5560c6420c00ffd0")) and
   /* Island DLP Agent */
   not _arraysearch(process.thread.Ext.call_stack, $entry,
-                   $entry.callsite_trailing_bytes : ("4885c074??48894340488bc8488d9348040000ff9370040000*", "4885c074??488bcbe9????????41bd05000000eb??41bd06000000eb??ff93a0040000488bcb*")) and
+                   $entry.callsite_trailing_bytes : ("4885c074*488d9348040000ff9370040000*", "4885c074*41bd05000000eb*")) and
   /* Managed Code, Cynet MemScanner, xSecuritas */
   not _arraysearch(process.thread.Ext.call_stack, $entry,
                    $entry.callsite_trailing_bytes :

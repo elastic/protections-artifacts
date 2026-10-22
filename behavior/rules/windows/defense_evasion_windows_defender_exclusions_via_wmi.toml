@@ -10,7 +10,7 @@ os_list = ["windows"]
 reference = [
     "https://docs.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2019-ps",
 ]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 api where
@@ -21,17 +21,22 @@ api where
   not (process.executable == "C:\\Windows\\System32\\svchost.exe" and process.parent.executable == "C:\\Windows\\System32\\services.exe") and
   not process.parent.executable : (
           "?:\\Program Files\\JetBrains\\*\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe",
-          "?:\\Users\\*\\AppData\\Local\\Programs\\*\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe", 
+          "?:\\Users\\*\\AppData\\Local\\Programs\\*\\lib\\ReSharperHost\\JetBrains.Rider.AfterInstall.exe",
           "?:\\Program Files\\JetBrains\\*\\bin\\elevator.exe",
+          "?:\\Users\\*\\AppData\\Local\\Programs\\*\\bin\\elevator.exe",
+          "?:\\Users\\*\\AppData\\Local\\JetBrains\\*\\bin\\elevator.exe",
+          "?:\\Program Files\\Android\\Android Studio\\bin\\elevator.exe",
+          "?:\\Users\\*\\Downloads\\dbeaver-*",
+          "?:\\ProgramData\\chocolatey\\lib\\dbeaver\\tools\\dbeaver-ce-*",
+          "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\DCHUService.exe",
           "?:\\Users\\*\\AppData\\Local\\Programs\\*\\bin\\elevator.exe", 
-          "?:\\Users\\*\\AppData\\Local\\Temp\\dbeaver-ce-*", 
-          "?:\\Users\\*\\AppData\\Local\\Temp\\*\\dbeaver-ce-*", 
-          "?:\\Users\\*\\Downloads\\dbeaver-ce-*", 
-          "?:\\Users\\*\\Downloads\\dbeaver-ee-*", 
+          "?:\\Users\\*\\AppData\\Local\\*\\dbeaver-ce-*", 
           "?:\\ProgramData\\chocolatey\\lib\\dbeaver\\tools\\dbeaver-ce-*", 
-          "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\DCHUService.exe"
+          "?:\\Windows\\System32\\DriverStore\\FileRepository\\*\\DCHUService.exe", 
+          "?:\\Program Files (x86)\\XOS Technologies\\Thunder\\ThunderPowerUserSetupUtility.exe",
+          "?:\\Program Files (x86)\\RXM\\Player\\bin\\26.4.28.4537\\RXMusic.Helper.App.exe"
         ) and
-  not (process.code_signature.subject_name in ("Censornet Limited") and process.code_signature.trusted == true) and
+  not (process.code_signature.subject_name in ("Censornet Limited",  "JetBrains s.r.o.") and process.code_signature.trusted == true) and
   not (process.executable : "?:\\Program Files\\AppsAnywhere\\AppsAnywhere\\AppsAnywhereUpdaterService.exe" and
        process.parent.executable : "?:\\Windows\\System32\\services.exe" and user.id == "S-1-5-18" and
        process.code_signature.subject_name in ("AppsAnywhere Limited", "AppsAnywhere Ltd") and
@@ -40,6 +45,9 @@ api where
        process.parent.executable : "?:\\Windows\\System32\\services.exe" and user.id == "S-1-5-18" and
        process.Ext.protection == "PsProtectedSignerAntimalware-Light" and
        process.code_signature.subject_name == "HarfangLab SAS" and process.code_signature.trusted == true) and
+  not (process.executable : "?:\\Program Files\\USSAgent\\USSAgent\\USSService.exe" and
+       process.parent.executable : "?:\\Windows\\System32\\services.exe" and user.id == "S-1-5-18" and
+       process.code_signature.subject_name == "TrustLayer Limited" and process.code_signature.trusted == true) and
   not (process.parent.executable : "C:\\Windows\\SysWOW64\\cmd.exe" and process.name : "powershell.exe" and
        process.command_line : "powerShell  Add-MpPreference -ControlledFolderAccessAllowedApplications*") and
   not (process.name : "wmic.exe" and
@@ -50,7 +58,8 @@ api where
        process.command_line : ("*JABlAHgAYwBsAHUAcwBpAG8AbgBzAD0AQAAoACIAQwA6AFwAUAByAG8AZwByAGEAbQAgAEYAaQBsAGUAcwBcAEQAQgBlAGEAdgBlAHIAXABkAGIAZQBhAHYAZQByAC4AZQB4AGUAI*",
                                "*AkAHMAcABsAGkAdABfAHAAYQByAHQAcwAgAD0AIAAkAGUAeABlAGMAXwB3AHIAYQBwAHAAZQByAF8AcwB0AHIALgBTAHAAbABpAHQAKABAACgAIgBgADAAYAAwAGAAMABgADAAIgApACwAIAAyACwA*",
                                "*WwBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBHAGUAbgBlAHIAaQBjAC4ASABhAHMAaABTAGUAdABbAFMAdAByAGkAbgBnAF0AXQAoAEcAZQB0AC0A*")) and
-  not (process.parent.executable : "C:\\Windows\\System32\\cmd.exe" and process.command_line : "*\\EC2Launch*\\UserScript.ps1*")
+  not (process.parent.executable : "C:\\Windows\\System32\\cmd.exe" and process.command_line : "*\\EC2Launch*\\UserScript.ps1*") and 
+  not (process.executable : "C:\\Program Files\\USSAgent\\USSAgent\\USSService.exe" and process.code_signature.subject_name : "TrustLayer Limited" and process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.15.0"

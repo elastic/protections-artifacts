@@ -8,7 +8,7 @@ id = "2d5d9b4b-01ac-41c4-b5c2-6a9d1fe93aae"
 license = "Elastic License v2"
 name = "Potential Local Privilege Escalation via a Suspicious Descendant Process"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.interactive == true and
@@ -40,7 +40,7 @@ not (
     "/home/linuxbrew/.linuxbrew/Cellar/*", "/home/*/.npm-global/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
     "/oracle/KG2/*/bin/oracle", "/home/*/.codex/*/bin/codex", "/home/*/.please/*/please", "/opt/microsoft/msedge/msedge",
     "/usr/local/bin/obsidian", "/home/*/.opencode/bin/opencode", "/usr/local/bin/cursor", "/usr/share/code/code", "/usr/share/codium/codium",
-    "/home/*/.cursor/extensions/openai.chatgpt-*/bin/linux-x86_64/codex"
+    "/home/*/.cursor/extensions/openai.chatgpt-*/bin/linux-x86_64/codex", "/opt/tivoli/tsm/server/bin/servermon/servermon"
   ) or
   process.executable like (
     "/usr/bin/mount", "/usr/bin/fusermount3", "/tmp/newroot/usr/bin/sudo", "/usr/bin/nvidia-modprobe", "/usr/bin/fusermount",
@@ -57,7 +57,8 @@ not (
     "/usr/bin/newgrp", "/usr/lib/virtualbox/VBoxHeadless", "/bin/fusermount", "/usr/lib/virtualbox/VBoxNetAdpCtl", "/home/db2inst2/sqllib/adm/db2chparm",
     "/home/db2inst1/sqllib/adm/db2chparm", "/usr/bin/netstat", "/usr/lib/authbind/helper", "/usr/lib/vmware/bin/vmware-vmx", "/usr/libexec/Xorg.wrap",
     "/home/db2inst2/sqllib/adm/db2pd", "/usr/lib/chromium/chrome-sandbox", "/usr/lib/virtualbox/VBoxVolInfo", "/usr/lib/virtualbox/VBoxNetDHCP",
-    "/usr/lib/virtualbox/VirtualBoxVM"
+    "/usr/lib/virtualbox/VirtualBoxVM", "/usr/share/code/chrome-sandbox", "/opt/google/chrome/chrome-sandbox", "/usr/local/sbin/chrome-devel-sandbox",
+    "/opt/BlinkBlink/chrome-sandbox", "/opt/DataBackup/ProtectClient/ProtectClient-E/sbin/rootexec"
   ) or
   process.parent.command_line like "*/home/*/.claude/shell-snapshots/snapshot-*" or
   process.command_line == "newgrp docker" or

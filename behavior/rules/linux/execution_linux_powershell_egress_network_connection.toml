@@ -7,7 +7,7 @@ id = "1471cf36-7e5c-47cc-bf39-2234df0e676a"
 license = "Elastic License v2"
 name = "Linux Powershell Egress Network Connection"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -15,14 +15,15 @@ sequence by process.entity_id with maxspan=5s
     process.name in ("kubectl", "helm", "pwsh", "yum", "dnf", "dotnet", "ansible-lint") or
     process.executable like (
       "/run/containerd/*python3", "/jenkins-data/docker/*python3", "/tmp/Download-References/DepotDownloader/DepotDownloader",
-      "/home/*/.local/bin/az", "/usr/libexec/platform-python*"
+      "/home/*/.local/bin/az", "/usr/libexec/platform-python*", "/tmp/*/terraform"
     ) or
     process.parent.executable like ("/jenkins-data/docker*", "/var/run/docker/*", "/run/containerd/*") or
     process.command_line == "/usr/bin/gh auth status" or
     (process.name like "python*" and process.args == "azure.cli") or
     process.working_directory like "/opt/azurevstsagent/agent*" or
     process.args == "/bin/dnf" or
-    process.args like "/home/*/.local/bin/az"
+    process.args like "/home/*/.local/bin/az" or
+    (process.name like "python*" and process.args in ("/usr/bin/az", "/opt/venv/bin/nvsec", "pip"))
   )
   ]
   [network where event.type == "start" and event.action == "connection_attempted" and not (

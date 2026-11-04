@@ -1,0 +1,67 @@
+[rule]
+description = """
+This rule identifies fileless ELF execution via anonymous temporary files created with O_TMPFILE and executed using
+execveat with AT_EMPTY_PATH. This technique can be used to execute a malicious ELF file without leaving a trace on the
+filesystem.
+"""
+id = "2121ae9d-6bc1-45ab-b271-cc143963ec9e"
+license = "Elastic License v2"
+name = "Potential Fileless Execution via O_TMPFILE"
+os_list = ["linux"]
+reference = ["https://github.com/MatheuZSecurity/Dntry"]
+version = "1.0.2"
+
+query = '''
+process where event.type == "start" and event.action == "exec" and process.executable regex """.*/\#[0-9]+.*""" and
+not process.parent.executable like (
+ "/usr/bin/podman", "/usr/bin/runc", "/usr/bin/conmon", "/usr/bin/crio", "/usr/sbin/runc", "/usr/libexec/crio/conmon",
+ "/var/lib/rancher/k3s/data/*/bin/runc"
+)
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+tree = true
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+tree = true
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Resource Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "7.15.0"

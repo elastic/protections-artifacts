@@ -14,7 +14,7 @@ reference = [
     "https://detect.fyi/hunting-clickfix-win-x-variants-ff06e4c62bd9",
     "https://www.securityweek.com/clickfix-attack-uses-windows-terminal-to-evade-detection/",
 ]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 api where process.Ext.api.name == "AmsiScanBuffer" and
@@ -40,7 +40,9 @@ api where process.Ext.api.name == "AmsiScanBuffer" and
     "iex(irm*",
     "(irm *",
     "*-UserAgent*|iex"
-  ) and not process.Ext.api.parameters.content_name : "?*"
+  ) and
+  not process.Ext.api.parameters.buffer : "*claude.ai/install.ps1*" and
+  not process.Ext.api.parameters.content_name : "?*"
 '''
 
 min_endpoint_version = "8.16.0"

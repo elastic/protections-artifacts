@@ -7,7 +7,7 @@ id = "1370f164-1809-4668-ad6c-dbf5bd278120"
 license = "Elastic License v2"
 name = "Potential Shellcode Injection via CLR"
 os_list = ["windows"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 api where
@@ -91,7 +91,9 @@ api where
                                                       "488b4d50458bc433d2e82019000041807d00007429488d46ff4883f8fd771fff97b8000000488b5550488bc8ff9750020000488b4df8ff97f8000000eb0f488b",
                                                       "0fb747064503f44883c628443bf00f826bffffff448badb80000004533c033d24883c9ffff55084439bfd400000074248b87d0000000488b741818eb0f4533c0",
                                                       "85c074*33270000747*89c76a02e8*ff83c40484c074*",
-                                                      "85c074508b45146a0168001000000500f0ffff680010000003c650ffd785c08b4510741c8b4dfc050010000003c65056e8e8e6ffff5f5eb0015b8be55dc21000")) and
+                                                      "85c074508b45146a0168001000000500f0ffff680010000003c650ffd785c08b4510741c8b4dfc050010000003c65056e8e8e6ffff5f5eb0015b8be55dc21000",
+                                                      "85c07469ff15*3d33270000*488b*98000000*488b01488b4010*",
+                                                      "41c647040183*007406ff15*488bd8*488bc3488b4d98*")) and
     not (process.thread.Ext.call_stack_final_user_module.protection_provenance in ("tiptsf.dll", "mscms.dll") and 
          process.thread.Ext.call_stack_final_user_module.protection_provenance_path like "c:\\windows\\microsoft.net\\framework*\\mscorwks.dll") and 
     not process.thread.Ext.call_stack_final_user_module.protection_provenance_path like 
@@ -119,7 +121,7 @@ api where
                               "C:\\Program Files (x86)\\SolarWinds\\Orion\\WebsiteMaintenance.exe",
                               "C:\\Program Files (x86)\\QSR Automations\\ConnectSmart\\KitchenReportViewer\\Bin\\ReportViewer.exe") and
     not (process.code_signature.trusted == true and 
-         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc", "FUJIFILM Healthcare Americas Corporation", "Anego Studios SIA")) and
+         process.code_signature.subject_name in ("Ro-ot Service AG", "Connectwise, LLC", "SQUARE ENIX CO., LTD.", "Bluebeam, Inc.", "ANSYS Inc.", "Trimble Solutions Corporation", "Environmental Systems Research Institute, Inc.", "Acuant, Inc", "GB Group plc", "FUJIFILM Healthcare Americas Corporation", "Anego Studios SIA", "Autodesk, Inc.")) and
     not (process.parent.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and process.executable : "C:\\Windows\\SysWOW64\\rundll32.exe" and
          process.command_line : "* --enable-speech-input *")
 '''

@@ -10,7 +10,7 @@ license = "Elastic License v2"
 name = "Curl Local File Read or Write via Osascript"
 os_list = ["macos"]
 reference = ["https://x.com/MsftSecIntel/status/1891410993265123662"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("curl", "nscurl") and 
@@ -24,6 +24,35 @@ action = "kill_process"
 field = "process.parent.entity_id"
 state = 0
 
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1005"
+name = "Data from Local System"
+reference = "https://attack.mitre.org/techniques/T1005/"
+
+
+[threat.tactic]
+id = "TA0009"
+name = "Collection"
+reference = "https://attack.mitre.org/tactics/TA0009/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

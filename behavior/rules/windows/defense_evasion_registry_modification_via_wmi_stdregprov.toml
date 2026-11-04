@@ -7,7 +7,7 @@ id = "325933f6-e0b9-4cd2-bc4f-a91d78f97f1d"
 license = "Elastic License v2"
 name = "Registry Modification via WMI StdRegProv"
 os_list = ["windows"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 api where
@@ -35,7 +35,19 @@ api where
                              "C:\\Program Files (x86)\\Sage\\*.exe") and
    not process.parent.executable : ("C:\\Program Files (x86)\\PCMatic\\PCPitstopScheduleService.exe",
                                     "C:\\Program Files (x86)\\Sage\\Sage 100\\9.0\\Shared\\OLStart.exe",
-                                    "E:\\BELOFF_2O2O.O3L\\wpi\\WPI.exe")
+                                    "E:\\BELOFF_2O2O.O3L\\wpi\\WPI.exe") and
+
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name == "Microsoft Windows" and
+        process.executable : ("C:\\Windows\\SysWOW64\\mshta.exe", "C:\\Windows\\System32\\mshta.exe") and
+        process.command_line : "*\\ProgramData\\ComCept\\*") and
+
+   not (process.code_signature.trusted == true and
+        process.code_signature.subject_name == "Microsoft Corporation" and
+        process.executable : ("C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe",
+                              "C:\\Program Files\\Internet Explorer\\iexplore.exe") and
+        process.parent.executable : ("C:\\Program Files\\Internet Explorer\\iexplore.exe",
+                                     "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe"))
 '''
 
 min_endpoint_version = "8.15.0"

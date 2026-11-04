@@ -13,7 +13,7 @@ reference = [
     "https://futuresearch.ai/blog/litellm-pypi-supply-chain-attack/",
     "https://www.virustotal.com/gui/file/71e35aef03099cd1f2d6446734273025a163597de93912df321ef118bf135238",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -75,7 +75,9 @@ not (
     "*/usr/bin/python*-c import sys;sys.path=[p for p in sys.path if p];import binascii,os,zlib;exec(zlib.decompress(binascii.a2b_base64(*"
   ) or
   (process.executable like "/mnt/apps/jenkins/.pyenv/versions/*/bin/python*" and process.command_line like "*eNqVkm1*") or
-  (process.parent.executable like "/mnt/apps/jenkins/.pyenv/versions/*/bin/python*" and process.command_line like "*binascii,os,select,zlib;exec(zlib.decompress(binascii.a2b_base64*")
+  (process.parent.executable like "/mnt/apps/jenkins/.pyenv/versions/*/bin/python*" and process.command_line like "*binascii,os,select,zlib;exec(zlib.decompress(binascii.a2b_base64*") or 
+  (process.name like "python*" and process.args == "/usr/bin/gssh-agent") or
+  (process.parent.name like "python*" and process.parent.args == "/usr/bin/gssh-agent") 
 )
 '''
 

@@ -8,7 +8,7 @@ id = "503823dd-722f-4f23-84fc-8a6024f505f2"
 license = "Elastic License v2"
 name = "DNS Request by Suspicious Process Executable"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -22,9 +22,9 @@ sequence by process.entity_id with maxspan=10s
   not (
     process.executable like (
       "./usr/bin/podman", "./", "/dev/.buildkit_qemu_emulator", "/u01/*/webtier/ohs/bin/.apachectl",
-      "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode",
-      "./usr/bin/qemu-aarch64-static", "/nix/store/*/bin/.opencode-wrapped", "/home/agent/.local/share/coursier/bin/.bloop.aux",
-      "/var/tmp/pamac-build-richard/*/bin/node", "/nix/store/*/bin/.rclone-wrapped", "/nix/store/*/bin/.glab-wrapped"
+      "/usr/local/share/npm-global/lib/node_modules/opencode-ai/bin/.opencode", "/usr/bin/squeue", "/usr/bin/scontrol",
+      "./usr/bin/qemu-aarch64-static", "/nix/store/*", "/home/agent/.local/share/coursier/bin/.bloop.aux",
+      "/var/tmp/pamac-build-richard/*/bin/node", "/usr/bin/scancel", "/usr/bin/sbatch", "/usr/bin/sacct"
     ) or
     (
       process.executable like "/nix/store/*/bin/.gh-wrapped" and

@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Base64 Shebang Payload Decoded via Built-in Utility"
 os_list = ["linux"]
 reference = ["https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1140/T1140.yaml"]
-version = "1.0.3"
+version = "1.0.4"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -30,6 +30,11 @@ process where event.type == "start" and event.action == "exec" and process.paren
   "*IyEvdXNyL2Jpbi96c2g*", "*IyEvYmluL3pzaA*", "IyEvdXNyL2Jpbi9maXNo*", "*IyEvYmluL2Zpc2g*",
   // sh
   "*IyEvdXNyL2Jpbi9zaA*", "*IyEvYmluL3No*"
+) and
+not (
+  (process.name:"python*" and process.args == "/usr/bin/gssh-agent") or
+  process.executable like "/usr/libexec/platform-python*" or
+  process.parent.executable in ("/opt/teleport/system/bin/teleport", "/usr/sbin/sshd")
 )
 '''
 

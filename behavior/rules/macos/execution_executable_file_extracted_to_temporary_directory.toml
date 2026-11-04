@@ -11,7 +11,7 @@ os_list = ["macos"]
 reference = [
     "https://www.jamf.com/blog/cryptojacking-macos-malware-discovered-by-jamf-threat-labs/?utm_source=twitter&utm_medium=social&utm_campaign=blog-promo&utm_content=2023-02-23_shared_",
 ]
-version = "1.0.38"
+version = "1.0.39"
 
 query = '''
 file where event.action != "deletion" and 
@@ -56,11 +56,38 @@ name = "Unix Shell"
 reference = "https://attack.mitre.org/techniques/T1059/004/"
 
 
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
 
 [threat.tactic]
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1027"
+name = "Obfuscated Files or Information"
+reference = "https://attack.mitre.org/techniques/T1027/"
+[[threat.technique.subtechnique]]
+id = "T1027.015"
+name = "Compression"
+reference = "https://attack.mitre.org/techniques/T1027/015/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
 min_endpoint_version = "8.10.2"

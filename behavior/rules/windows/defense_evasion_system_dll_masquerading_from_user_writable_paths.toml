@@ -1,0 +1,129 @@
+[rule]
+description = """
+Identifies the load of a non-Microsoft DLL that shares its name with a known Windows system DLL (e.g. from System32 or
+SysWOW64) but is loaded from an unexpected directory. Adversaries stage a malicious DLL alongside a legitimate program
+to hijack the DLL search order and proxy execution of their code. This rule relies on the Endpoint DLL hijack
+masquerading enrichment (dll.Ext.defense_evasions) and restricts to untrusted or unsigned DLLs.
+"""
+id = "3498de3a-dbf6-4678-be96-588711a5febd"
+license = "Elastic License v2"
+name = "System DLL Masquerading from User Writable Paths"
+os_list = ["windows"]
+version = "1.0.1"
+
+query = '''
+library where
+  event.action == "load" and
+  dll.Ext.defense_evasions == "DLL Hijack: Masquerading" and 
+  dll.Ext.relative_file_creation_time <= 900 and dll.Ext.relative_file_creation_time >= 1 and 
+  dll.name != null and
+  dll.hash.sha256 != null and
+  process.pid != 4 and
+  dll.path : ("C:\\Users\\*", "C:\\ProgramData\\*", "C:\\Windows\\*") and 
+  not dll.code_signature.status like ("trusted", "errorCode_endpoint*") and
+   (
+    dll.path : (
+      "C:\\Users*",
+      "C:\\ProgramData*"
+    ) or
+    process.code_signature.subject_name : (
+      "Microsoft Corporation",
+      "Microsoft Windows"
+    )
+  ) and
+
+  not (
+    process.executable : "C:\\$WINDOWS.~BT\\*.exe" and
+    process.code_signature.subject_name : "Microsoft Windows" and
+    process.code_signature.trusted == true and
+    dll.path : "C:\\$WINDOWS.~BT\\*"
+  ) and
+
+  not dll.name : (
+    "vulkan-1.dll",
+    "lib*.dll",
+    "Quartz.dll",
+    "MSVCP*.DLL",
+    "onnxruntime.dll",
+    "MSVCR*.dll",
+    "IssProc.dll",
+    "AmDriver.dll",
+    "icu*.dll",
+    "Security.dll",
+    "msvbvm*.dll",
+    "ftd2xx.dll",
+    "mi.dll",
+    "miutils.dll",
+    "Microsoft.Management.Infrastructure.Native.Unmanaged.dll",
+    "sppc.dll",
+    "Class*.DLL",
+    "Newtonsoft.Json.dll",
+    "SmartComm2.dll",
+    "UpdateAgent.dll",
+    "MOVEitCrypto.dll",
+    "TypeLib.dll",
+    "textshaping.dll",
+    "UtilDll.dll"
+  ) and
+
+  not dll.hash.sha256 in (
+    "c8d641a41b885ebb74dabfcf2bedcb681c5f1b43dac5e2bc7b6057fae354e3cf",
+    "cf2647be9233f4a7248514cbd2541d5f7bebd61005bde1dca79c8e4234f53794",
+    "f089f6b1aa2a324603728c0453568201cb0ab6b8d3e8d6dcc2b000ad5cdfaba4",
+    "11cd91171765cd65f1c3362e3df67e5f5a618a6b88c8cdec899b802eaf1c7b0d",
+    "858c5660f1ef50e8b81116d71015ba3b27dbea0733c09f4c836fbcb619ed99cb",
+    "40b6f7a67f90e5d9948385418bd22bbd29de86a151b35d1001081a61ca5fc612",
+    "d72bb8e672834c9d00914383a94656c69bcd483b293fae2f49a35fc4f319a568",
+    "483b7348ee123b246e74acfb6633c7899d2b55e95bd0340a25737b2ce11d27f2",
+    "c0cd4443d0b13907b243c343d563134f77cf29d9c268717dbca028fdf1f406c3",
+    "7d86de8659d728d0cc22615ea37248ca83b24af64a9fc19ecc4548105308ee0a",
+    "62744bd954744e66f13a435682a6d8aa2a2672dace511556066c3fbdc01d0640",
+    "9825a94130dea65a260b2a33193506fbc16626bc23c6757ba683e037e9a4a546",
+    "d2e2921382a1e36df0cbd2bfd58dce50f8a03ba3b4b5e254f46e064d8ae7998b",
+    "b179d569a50ed7b1212121cb95d85925802855dcdf870fe73283fbc3efe87ac9",
+    "9a05b139ff9dbf513ff4c3d7a8f7e428db0763effb1e1bd7c1e192d7e8ce4e58",
+    "68c70c1394dec83f1c470387153a50bcb192c5fa872103a4b4dbe30d3d88cad8", 
+    "e7ce434769d2fd1460c3918f117b21aef9a9ed685608440011a3ed730ea1bafe",
+    "83889bc2f40576db6ab94edffeff9d1ecec0e51c257faeb23aa9c63bdfaab8b3",
+    "c879eeb1bb4251452882ed248e77602fcce4bf304135081cbca4ba17380c1791",
+    "bd534ffe2d6e97bc9b1c4189d8bd72ce1eab81bcd99f4723db2fed5e4dc559c3",
+    "22698d1470183348e8a63e4faa466eec54fccf140c189eb4a82e6da4d54e03dc"
+  )
+'''
+
+min_endpoint_version = "9.4.0"
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[optional_actions]]
+action = "rollback"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+
+[[threat.technique]]
+id = "T1574"
+name = "Hijack Execution Flow"
+reference = "https://attack.mitre.org/techniques/T1574/"
+[[threat.technique.subtechnique]]
+id = "T1574.001"
+name = "DLL"
+reference = "https://attack.mitre.org/techniques/T1574/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.4.0"

@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/globally-distributed-stealers",
 ]
-version = "1.0.71"
+version = "1.0.72"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -195,12 +195,15 @@ sequence by process.entity_id with maxspan=5m
         "bitly.cx",
         "*.netlify.app", 
         "*.supabase.co",
-        "envs.sh"
+        "envs.sh",
+        "*.wuaze.com",
+        "*.kesug.com"
     ) and
     /* common to use powershell script by Microsoft Cloud sysadmins */
     not (process.name : ("powershell.exe", "pwsh.exe", "javaw.exe", "node.exe", "dfsvc.exe", "rundll32.exe") and
          dns.question.name : ("graph.microsoft.com", "*.sharepoint.com", "login.microsoftonline.com", "login.live.com",
-                              "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com")) and
+                              "raw.githubusercontent.com", "api.github.com", "storage.googleapis.com",
+                              "www.googleapis.com", "*.azurewebsites.net", "*.supabase.co")) and
     not (dns.question.name : "rev-resolve.azurewebsites.net" and process.name : "wscript.exe") and
     not (process.name : "powershell.exe" and dns.question.name like "*.azurewebsites.net") and
     not (process.name == "dfsvc.exe" and dns.question.name like "*.azurewebsites.net") and

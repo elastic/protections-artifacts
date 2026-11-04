@@ -1,0 +1,113 @@
+[rule]
+description = """
+This rule detects when a process executes a file followed by creating an in-memory file using the memfd_create syscall.
+This activity indicates an active attempt to execute a fileless payload and should be considered highly abnormal or
+suspicious. This activity can occur when the memfd syscall is utilized to create a memory resident file, like a payload,
+and then uses it to execute a process via a command and control channel, resulting in an exec event.
+"""
+id = "8f563c66-4488-4f12-85ea-fb22ac367c05"
+license = "Elastic License v2"
+name = "Potential Fileless Execution via Exec Followed by Memory File Descriptor"
+os_list = ["linux"]
+reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
+version = "1.0.9"
+
+query = '''
+sequence by process.entity_id with maxspan=5s
+  [process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
+  process.interactive == true and process.executable like (
+    "memfd:*", "?memfd:*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/user/*", "/var/run/user/*", "/boot/*",
+    "/sys/*", "/lost+found/*", "/proc/*", "/var/mail/*", "*(deleted)*"
+  ) and
+  not (
+    process.parent.command_line like ("buildah-chroot-runtime", "*/home/*/.claude/shell-snapshots/snapshot-*") or
+    process.command_line == "buildah-chroot-runtime" or
+    process.args == "/usr/bin/crun" or
+    process.executable like (
+      "/tmp/.*/.vscode-server/cli/servers/*/server/node_modules/@vscode/vsce-sign/bin/vsce-sign", "/tmp/.mount_*", "/tmp/go-build*",
+      "/tmp/.tmp*/.vscode-server/bin/*/node_modules/@vscode/vsce-sign/bin/vsce-sign", "/var/tmp/portage/*",
+      "/tmp/.cache/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell",
+      "/tmp/appimage_extracted_*/usr/bin/PDW_GCS", "/tmp/radarr_update/Radarr.Update", "/tmp/prowlarr_update/Prowlarr.Update",
+      "/tmp/buildpacks/*_buildpack-nodejs/lib/vendor/yq-*-linux", "memfd:lxc-attach", "/tmp/claude-*/*",
+      "/tmp/*-vscode/.vscode-server/bin/*/node_modules/@vscode/vsce-sign/bin/vsce-sign", "/tmp/clearpass-onguard-*", 
+      "/tmp/*/vibex", "/tmp/dotnet-sdk/dotnet", "/tmp/dotnet-tools/sqlpackage", "/tmp/pub-plain/LabPlatform.Api", 
+      "/tmp/j9/bin/Release/*/j9", "/tmp/clean-head/q/bin/*/q", "/tmp/tools/ilspycmd", "/tmp/ilspy/ilspycmd"
+    ) or
+    process.parent.executable in (
+      "/usr/libexec/nordlayer/nordlayer-resolvconf", "/usr/bin/gnome-shell", "./runc", "/usr/bin/make", "/usr/bin/sudo",
+      "/usr/bin/timeout", "/usr/local/bin/ctest", "/usr/lib64/dotnet/dotnet", "/tmp/dotnet-sdk/dotnet"
+    ) or
+    process.parent.executable like (
+      "/tmp/.tmp*/.vscode-server/bin/*/node", "/usr/bin/nordlayer", "/root/.vscode-server/cli/servers/*/server/node",
+      "/vscode/vscode-server/bin/*/node", "/tmp/vscode-*/server/node", "/root/.npm/_npx/*/node_modules/bun/bin/bun.exe",
+      "/home/*/.dotnet/dotnet", "/home/*/.*-code/bin/codex", "/home/*/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+      "/opt/micromamba/bin/python*", "/root/.vscode/cli/servers/*/node", "/root/actions-runner/externals.*/bin/node", "/tmp/*.AppImage",
+      "/home/*/.codex/packages/standalone/releases/*/bin/codex"
+    ) or
+    (
+      process.executable == "memfd:lxc-attach" and
+      process.parent.executable == "/usr/lib/openssh/sshd-session"
+    )
+  )]
+  [process where event.type == "start" and event.action == "memfd_create"]
+'''
+
+min_endpoint_version = "9.1.4"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1106"
+name = "Native API"
+reference = "https://attack.mitre.org/techniques/T1106/"
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1055"
+name = "Process Injection"
+reference = "https://attack.mitre.org/techniques/T1055/"
+[[threat.technique.subtechnique]]
+id = "T1055.009"
+name = "Proc Memory"
+reference = "https://attack.mitre.org/techniques/T1055/009/"
+
+
+[[threat.technique]]
+id = "T1620"
+name = "Reflective Code Loading"
+reference = "https://attack.mitre.org/techniques/T1620/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.1.4"

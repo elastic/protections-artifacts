@@ -9,10 +9,10 @@ id = "d67ef864-5567-4675-b2eb-7dfd4443e8af"
 license = "Elastic License v2"
 name = "Recently Downloaded File Made Executable and Run"
 os_list = ["linux"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
-sequence by process.parent.entity_id with maxspan=10s
+sequence with maxspan=10s
   [file where event.type == "creation" and process.name in ("wget", "curl") and
    file.path like ("/tmp/*", "/var/tmp/*", "/dev/shm/*")] as event0
   [process where event.type == "start" and event.action == "exec" and process.name == "chmod" and

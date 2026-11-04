@@ -1,0 +1,125 @@
+[rule]
+description = """
+This rule detects the creation of files that are commonly used for persistence mechanisms, through a process executable
+located in a suspicious location. This could be indicative of a persistence mechanism being established on the system.
+"""
+id = "ae832227-7c00-4c08-a3ed-6ac9c0b003ff"
+license = "Elastic License v2"
+name = "Persistence File Creation Through Unusual Executable"
+os_list = ["linux"]
+reference = [
+    "https://www.elastic.co/security-labs/threat-command/primer-on-persistence-mechanisms",
+    "https://www.elastic.co/security-labs/sequel-on-persistence-mechanisms",
+    "https://www.elastic.co/security-labs/threat-command/continuation-on-persistence-mechanisms",
+    "https://www.elastic.co/security-labs/threat-command/approaching-the-summit-on-persistence",
+    "https://www.elastic.co/security-labs/threat-command/the-grand-finale-on-linux-persistence",
+]
+version = "1.0.1"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and
+   process.executable like (
+     "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "*/www/html/*",
+     "/lost+found/*", "/var/mail/*", "/var/www/*", "/mnt/*", "/media/*", "/proc/*/fd/*", "?memfd:*", "memfd:*",
+     "*/wp-content/*", "*/wp-includes/*", "*/wp-admin/*"
+   )]
+  [file where event.type == "creation" and
+   file.path like (
+     "/etc/cron.allow", "/etc/cron.deny", "/etc/cron.d/*", "/etc/cron.hourly/*", "/etc/cron.daily/*",
+     "/etc/cron.weekly/*", "/etc/cron.monthly/*", "/etc/crontab", "/var/spool/cron/*",
+     "/var/spool/anacron/*", "/var/spool/atjobs/*",
+     "/etc/rc.local", "/etc/rc.common", "/etc/init.d/*", "/etc/update-motd.d/*", "/etc/profile", "/etc/profile.d/*",
+     "/etc/systemd/user/*", "/usr/lib/systemd/user/*", "/home/*/.config/systemd/user/*", "/home/*/.local/share/systemd/user/*", 
+     "/root/.config/systemd/user/*", "/root/.local/share/systemd/user/*",
+     "/lib/udev/*", "/etc/udev/rules.d/*", "/usr/lib/udev/rules.d/*", "/run/udev/rules.d/*", "/usr/local/lib/udev/rules.d/*",
+     "/etc/xdg/autostart/*", "/usr/share/autostart/*", "/home/*/.config/autostart/*", "/root/.config/autostart/*",
+     "/home/*/.local/share/autostart/*", "/root/.local/share/autostart/*", "/home/*/.config/autostart-scripts/*", "/root/.config/autostart-scripts/*"
+   ) and
+   not (
+     process.executable like (
+       "/run/k3s/containerd/io.containerd.runtime.v2.task/k8s.io/*", "/run/containerd/io.containerd.runtime.v2.task/k8s.io/*"
+     ) or
+     (process.executable like "/tmp/VeeamApp_*" and file.path like "/etc/init.d/veeamagent") or
+     (process.executable like "/tmp/vmis.*/install/vmware-installer/vmis-launcher" and file.path like "/etc/init.d/vmware*") or
+     (process.executable like "/tmp/newroot/usr/sbin/anacron" and file.path like "/var/spool/anacron/*") or
+     (process.executable like "/tmp/buildah*" and file.path like "/etc/cron.d/php.dpkg-new") or
+     (process.executable like "/tmp/tmp.*/nix-installer" and file.path like "/etc/profile.d/nix-installer-tmp.*") or
+     (process.executable like "/tmp/octofence-agent-installer_*" and file.path like "/etc/init.d/octofence-agent") or
+     (process.executable like "/tmp/vmware-tools-distrib/vmware-install.pl" and file.path like "/etc/init.d/vmware-tools") or
+     (process.executable like "/tmp/ubuntu-release-upgrader-*" and file.path == "/usr/lib/systemd/user/upgrade-restore-font.service")
+   )]
+'''
+
+min_endpoint_version = "7.15.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1037"
+name = "Boot or Logon Initialization Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/"
+[[threat.technique.subtechnique]]
+id = "T1037.004"
+name = "RC Scripts"
+reference = "https://attack.mitre.org/techniques/T1037/004/"
+
+
+[[threat.technique]]
+id = "T1053"
+name = "Scheduled Task/Job"
+reference = "https://attack.mitre.org/techniques/T1053/"
+[[threat.technique.subtechnique]]
+id = "T1053.003"
+name = "Cron"
+reference = "https://attack.mitre.org/techniques/T1053/003/"
+
+
+[[threat.technique]]
+id = "T1546"
+name = "Event Triggered Execution"
+reference = "https://attack.mitre.org/techniques/T1546/"
+[[threat.technique.subtechnique]]
+id = "T1546.017"
+name = "Udev Rules"
+reference = "https://attack.mitre.org/techniques/T1546/017/"
+
+
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.013"
+name = "XDG Autostart Entries"
+reference = "https://attack.mitre.org/techniques/T1547/013/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+
+[internal]
+min_endpoint_version = "7.15.0"

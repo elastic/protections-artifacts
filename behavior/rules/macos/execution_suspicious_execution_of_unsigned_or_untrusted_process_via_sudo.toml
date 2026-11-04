@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Suspicious Execution of Unsigned or Untrusted Process via Sudo"
 os_list = ["macos"]
 reference = ["https://x.com/moonlock_lab/status/1815640547551306015"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence with maxspan=5s
@@ -50,6 +50,23 @@ reference = "https://attack.mitre.org/techniques/T1059/004/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.003"
+name = "Sudo and Sudo Caching"
+reference = "https://attack.mitre.org/techniques/T1548/003/"
+
+
+
+[threat.tactic]
+id = "TA0004"
+name = "Privilege Escalation"
+reference = "https://attack.mitre.org/tactics/TA0004/"
 
 [internal]
 min_endpoint_version = "8.11.0"

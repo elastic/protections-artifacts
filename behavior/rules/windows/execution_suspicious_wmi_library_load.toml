@@ -4,7 +4,7 @@ id = "3cd302aa-098b-4da6-bf20-8d37efe5f861"
 license = "Elastic License v2"
 name = "Suspicious WMI Library Load"
 os_list = ["windows"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 library where dll.name : ("wbemprox.dll", "WMINet_Utils.dll") and
@@ -15,7 +15,12 @@ library where dll.name : ("wbemprox.dll", "WMINet_Utils.dll") and
       "Essential Objects, Inc.", "EasyAntiCheat Oy") and process.code_signature.status == "trusted") and
  not process.executable : ("?:\\Program Files\\*", "?:\\Program Files (x86)\\*") and
  not _arraysearch(process.thread.Ext.call_stack, $entry,
-                  $entry.callsite_trailing_bytes : "6a00504883ec300f11442420488d0d3effffff488d542438ff1523ffffff488d0524ffffff488b00f048ff084883c4300f104424f058c34883c4600f105c24c0")
+                  $entry.callsite_trailing_bytes : ("6a00504883ec300f11442420488d0d3effffff488d542438ff1523ffffff488d0524ffffff488b00f048ff084883c4300f104424f058c34883c4600f105c24c0", 
+                                                    "85c00f886101000048c744246000000000490fbe46174885c07907498b46084d8b364c8b7c24684c8974244848894424504885c00f883b0100000f94c04d85f6", 
+                                                    "85c00f88430100004531e44c896424684c8b7c2470490fbe46174885c07907498b46084d8b36488d5424504c8932488942084c8d7424604c89f1e85986000049",
+                                                    "8bf085c00f8883000000488b0f483b0d*",
+                                                    "*8bc641c6470c01488b559049895710488d65c85b5e5f415c415d415e415f5dc31910090010*", 
+                                                    "c5f87741c787d404000005000000f0834424c000493b6f280f874d0000004183bfd0040000000f853f00000041c787d4040000080000004183bf50050000020f"))
 '''
 
 min_endpoint_version = "8.8.0"

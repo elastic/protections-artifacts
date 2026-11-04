@@ -9,7 +9,7 @@ id = "bc8a7958-dabb-42e5-b23c-6e3472cf395d"
 license = "Elastic License v2"
 name = "Suspicious Echo Execution"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -86,7 +86,7 @@ not (
     "/tmp/newroot/newroot/home/*/.local/bin/kiro-cli-chat", "/home/*/crux/bin/nexus_exec", "/tmp/CVU_19_resource_*/exectask",
     "/var/lib/docker/overlay2/*/rc.init", "/var/lib/docker/overlay2/*/usr/bin/make", "/home/*/.local/*python*",
     "/tmp/CVU_*_resource/exectask", "/root/please/plz-out/bin/package/please", "/tmp/newroot/*", "/var/lib/docker/overlay2/*/longhorn",
-    "*/node_modules/opencode-ai/bin/.opencode",
+    "*/node_modules/opencode-ai/bin/.opencode", "*/.local/share/kiro-cli/node", "/tmp/.mount_cursor*/usr/share/cursor/cursor",
     "*/.vscode-server/extensions/openai.chatgpt-*-linux-x64/bin/linux-x86_64/codex", "/home/*/.elixir-install/installs/*/bin/erl_child_setup",
     "/var/lib/docker/overlay2/*/usr/sbin/sshd", "/home/*/please/please/plz-out/bin/package/please",
     "/home/*/couscous/ci-bin/kuttl",
@@ -96,7 +96,8 @@ not (
     "/home/linuxbrew/.linuxbrew/Cellar/tilt/*/bin/tilt", "/opt/Elastic/Endpoint/elastic-endpoint",
     "/home/*/.local/bin/droid", "/opt/saltstack/salt/bin/python3.*", "/home/*/please/plz-out/bin/package/please", "/home/*/.fzf/bin/fzf",
     "/home/*/spack/opt/spack/linux-cascadelake/*/bin/make", "/home/*/.local/share/fnm/node-versions/*/bin/node", "/home/coder/omni", "/home/*/toolchain/bin/make",
-    "/tmp/coder.*/coder", "/home/*/.vscode-server/extensions/kilocode.*/bin/kilo", "/opt/zimbra/libexec/zmsetup.pl", "/ztank/sw/eb/sw/Perl/*/bin/perl"
+    "/tmp/coder.*/coder", "/home/*/.vscode-server/extensions/kilocode.*/bin/kilo", "/opt/zimbra/libexec/zmsetup.pl", "/ztank/sw/eb/sw/Perl/*/bin/perl",
+    "/home/*/bin/claude*", "*/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/*"
   ) or
   (process.parent.name in ("vim", "vi", "nvim") and process.parent.command_line like ("*/usr/share/vim/vimfiles/doc*", "*vimglob*")) or
   process.parent.name like "php-fpm*" or
@@ -157,12 +158,6 @@ not (
   (
     process.parent.executable == "/usr/bin/perl" and
     process.parent.command_line == "/usr/bin/perl /opt/qradar/bin/erule_update.pl"
-  ) or
-  process.parent.executable like (
-    "/home/*/.*-code/bin/*",
-    "*/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/*",
-    "*/.local/share/kiro-cli/node",
-    "/tmp/.mount_curso*/usr/share/cursor/cursor"
   )
 )
 '''

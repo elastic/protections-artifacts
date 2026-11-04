@@ -10,7 +10,7 @@ id = "74d77df0-c4ef-41d8-a07a-c37ef2ea91ad"
 license = "Elastic License v2"
 name = "Untrusted or Unsigned Binary Executed via Launch Service"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=30s
@@ -38,13 +38,18 @@ state = 1
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]
-id = "T1546"
-name = "Event Triggered Execution"
-reference = "https://attack.mitre.org/techniques/T1546/"
+id = "T1543"
+name = "Create or Modify System Process"
+reference = "https://attack.mitre.org/techniques/T1543/"
 [[threat.technique.subtechnique]]
-id = "T1546.016"
-name = "Installer Packages"
-reference = "https://attack.mitre.org/techniques/T1546/016/"
+id = "T1543.001"
+name = "Launch Agent"
+reference = "https://attack.mitre.org/techniques/T1543/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1543.004"
+name = "Launch Daemon"
+reference = "https://attack.mitre.org/techniques/T1543/004/"
 
 
 

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "VirtualProtect from Unusual NTDLL Offset"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/doubling-down-etw-callstacks"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 api where
@@ -24,14 +24,18 @@ api where
                                        "?:\\windows\\syswow64\\kernelbase.dll!VirtualProtect*",
                                        "?:\\windows\\system32\\kernelbase.dll!VirtualProtect*",
                                        "?:\\windows\\system32\\ntdll.dll+0x*",
-                                       "?:\\windows\\syswow64\\ntdll.dll+0x*")) and
+                                       "?:\\windows\\syswow64\\ntdll.dll+0x*",
+                                       "?:\\program files (x86)\\common files\\kaspersky lab\\*\\klhk\\klhk_x64\\klhkum.*.dll!KlhkumFastEntry+*")) and
  _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info: "?:\\windows\\sys?????\\ntdll.dll!*+0x14") and
  not process.thread.Ext.call_stack_final_user_module.protection_provenance like ("Kernel", "Unknown", "Undetermined", "Kernel|*") and
  not process.thread.Ext.call_stack_final_user_module.name in ("Kernel", "Unknown", "Undetermined") and
- not process.thread.Ext.call_stack_summary like "ntdll.dll|Unknown|wow64.dll|Unknown|wow64.dll|ntdll.dll|*" and
+ not process.thread.Ext.call_stack_summary like ("ntdll.dll|Unknown|wow64.dll|Unknown|wow64.dll|ntdll.dll|*",
+                                                 "ntdll.dll|Unknown|wow64.dll|wow64cpu.dll|wow64.dll|ntdll.dll|*",
+                                                 "ntdll.dll|Unknown|wow64.dll|Unknown|wow64.dll|wow64win.dll|ntdll.dll|*") and
  not process.thread.Ext.call_stack_final_user_module.path like
                                          ("c:\\windows\\assembly\\nativeimages_*\\system.ni.dll",
                                           "c:\\program files (x86)\\common files\\kaspersky lab\\*\\klhkum.*.dll",
+                                          "?:\\program files (x86)\\kaspersky lab\\*\\com_antivirus.dll",
                                           "c:\\program files (x86)\\checkpoint\\endpoint security\\*\\klhkum.*.dll") and
  /* Kaspersky usermode hook (klhkum/ushata) is loaded into third-party processes from multiple install roots
     (Kaspersky VPN, versioned product dirs, Check Point bundling the Kaspersky engine); its signature array mixes

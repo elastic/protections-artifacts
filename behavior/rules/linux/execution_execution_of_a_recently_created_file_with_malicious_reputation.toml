@@ -1,0 +1,116 @@
+[rule]
+description = """
+Identifies the execution of a recently created file with malicious public reputation. Candidate files include those
+created in commonly abused filesystem locations or written by living-off-the-land utilities, interpreters, or processes
+executing from suspicious paths. Adversaries may use these methods to stage and execute payloads while blending with
+legitimate system activity.
+"""
+id = "26fd1c0c-3ae5-4e4b-8775-6c90b2f62a46"
+license = "Elastic License v2"
+name = "Execution of a Recently Created File with Malicious Reputation"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence with maxspan=1m
+  [file where event.type == "creation" and
+   (
+     file.path like (
+       "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "*/www/html/*",
+       "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/mnt/*", "/media/*", "/home/*/*", "/root/*",
+       "/bin/*", "/usr/bin/*", "/usr/local/bin/*", "/sbin/*", "/usr/sbin/*", "/usr/local/sbin/*", "/etc/*",
+       "/lib/*", "/lib32/*", "/lib64/*", "/libx32/*", "/usr/lib/*", "/usr/lib32/*", "/usr/lib64/*",
+       "/usr/libx32/*", "/usr/local/lib/*", "/usr/local/lib32/*", "/usr/local/lib64/*", "/usr/local/libx32/*",
+       "/libexec/*", "/usr/libexec/*", "/usr/local/libexec/*", "/var/lib/*", "*/wp-content/*", "*/wp-includes/*",
+       "*/wp-admin/*"
+     ) or
+     file.name like ".*" or
+     process.name in (
+       "curl", "wget", "ftp", "tftp", "scp", "rsync", "bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish",
+       "busybox", "timeout", "env", "cp", "mv", "install", "dd", "tee", "touch", "tar", "gzip", "gunzip", "bzip2",
+       "bunzip2", "xz", "unxz", "zip", "unzip", "7z", "bun"
+     ) or
+     process.name like (".*", "python*", "perl*", "php*", "ruby*", "lua*", "node*", "deno*") or
+     process.executable like (
+       "./*", "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "*/www/html/*",
+       "/lost+found/*", "/proc/*", "/var/mail/*", "/var/www/*", "/mnt/*", "/media/*", "/home/*/*", "/root/*",
+       "*/wp-content/*", "*/wp-includes/*", "*/wp-admin/*", "?memfd:*", "memfd:*"
+     )
+   )
+  ] as event0
+  [process where event.type == "start" and event.action == "exec" and process.hash.sha256 != null and
+   stringcontains~(process.executable, event0.file.path)]
+'''
+
+min_endpoint_version = "8.10.0"
+optional_actions = []
+reputation = true
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1564"
+name = "Hide Artifacts"
+reference = "https://attack.mitre.org/techniques/T1564/"
+[[threat.technique.subtechnique]]
+id = "T1564.001"
+name = "Hidden Files and Directories"
+reference = "https://attack.mitre.org/techniques/T1564/001/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "8.10.0"

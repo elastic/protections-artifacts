@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/elastic-security-labs-discovers-lobshot-malware",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.45"
+version = "1.0.46"
 
 query = '''
 process where event.action == "start" and
@@ -34,7 +34,7 @@ process where event.action == "start" and
    (process.name : "smss.exe" and not process.parent.name : ("System", "smss.exe", "sihost.exe")) or
    (process.name : "wininit.exe" and not process.parent.name : "smss.exe") or
    (process.name : ("lsass.exe", "LsaIso.exe") and not process.parent.name : ("wininit.exe", "lsass.exe", "services.exe")) or
-   (process.name : "services.exe" and not process.parent.name : "wininit.exe") or
+   (process.name : "services.exe" and not process.parent.name : ("wininit.exe", "explorer.exe")) or
    (process.name : "spoolsv.exe" and not process.parent.name : ("services.exe", "spoolsv.exe")) or
    (process.name : "taskhost.exe" and not process.parent.name : ("services.exe", "svchost.exe")) or
    (process.name : "taskhostw.exe" and not process.parent.name : ("services.exe", "svchost.exe", "taskhostw.exe")) or

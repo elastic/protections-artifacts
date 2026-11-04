@@ -10,7 +10,7 @@ os_list = ["macos"]
 reference = [
     "https://www.sentinelone.com/blog/session-cookies-keychains-ssh-keys-and-more-7-kinds-of-data-malware-steals-from-macos-users/",
 ]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 file where event.action == "open" and process.executable != null and 
@@ -41,6 +41,23 @@ reference = "https://attack.mitre.org/techniques/T1106/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1548"
+name = "Abuse Elevation Control Mechanism"
+reference = "https://attack.mitre.org/techniques/T1548/"
+[[threat.technique.subtechnique]]
+id = "T1548.006"
+name = "TCC Manipulation"
+reference = "https://attack.mitre.org/techniques/T1548/006/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]

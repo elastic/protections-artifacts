@@ -9,7 +9,7 @@ id = "87d16b52-e0be-4dd2-b6a8-056f188be018"
 license = "Elastic License v2"
 name = "Potential Fileless Execution via Memory File Descriptor from Interpreter"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "memfd_create" and (
@@ -26,7 +26,8 @@ process where event.type == "start" and event.action == "memfd_create" and (
       ) and process.args_count <= 2
     ) 
   )
-) and not (
+) and process.Ext.memfd.name != null and
+not (
   process.executable like (
     "/usr/lib/libreoffice/program/soffice.bin", "/app/bin/evolution.bin", "/opt/cpanel/ea-php83/root/usr/bin/php-cgi",
     "/snap/libreoffice/*/lib/libreoffice/program/soffice.bin", "/usr/NX/bin/nxrunner.bin",
@@ -96,7 +97,9 @@ process where event.type == "start" and event.action == "memfd_create" and (
   (process.name like "python3*" and process.args == "/usr/bin/supervisord") or
   (process.name == "node" and process.args == "appCron.js") or
   process.parent.executable like "*/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex" or
-  (process.name like "python*" and process.args == "/etc/supervisor/supervisord.conf")
+  (process.name like "python*" and process.args == "/etc/supervisor/supervisord.conf") or
+  (process.executable == "/usr/local/bin/php" and process.Ext.memfd.name == "memfd:OTEL_CTX") or
+  (process.executable like "/opt/beyondtrust/*" and process.Ext.memfd.name in ("memfd:xshmfence", "memfd:pulseaudio"))
 )
 '''
 

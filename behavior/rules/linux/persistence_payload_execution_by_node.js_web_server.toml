@@ -8,13 +8,13 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
 process.parent.name == "node" and process.parent.command_line like~ (
   "*next start*", "*--port*", "*PORT=*", "*HOST=*", "*0.0.0.0*", "*/dist/*.js*", "*/build/*.js*", "*/server/*.js*",
-  "*/app/*.js*", "*/apps/*/*.js*", "*/index.js*", "*/main.js*", "*/srv/*", "*/opt/*", "*/var/www/*", "*n8n*"
+  "*/app/*.js*", "*/apps/*/*.js*", "*/index.js*", "*/main.js*", "*/srv/*", "*/opt/*", "*/var/www/*"
 ) and
 process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox") and
 process.args in ("-c", "-cl", "-lc") and (
@@ -95,6 +95,7 @@ not (
   process.args like ("npx *", "node /var/www/html/ext/node_modules/.bin/webpack*", "grep* | awk*") or
   process.parent.executable like "/opt/jenkins/workspace/*/bin/node" or
   process.working_directory == "/runner/_work/personify/personify/node_modules/snyk" or
+  process.parent.working_directory == "/opt/hermes" or 
   (process.command_line like "*REPO_NAME*" and process.parent.command_line like "node /usr/bin/n8n*") or
   (process.parent.command_line == "node /var/www/html/fs-ws-api/controller/cronJob.js" and process.command_line like "/bin/sh -c nc -zv 10.*") or
   (
@@ -123,7 +124,8 @@ not (
   process.parent.executable like (
     "*/.cursor-server/bin/linux-x64/*/node", "*/.vscode-server/*/node",
     "*/.vscode-server/cli/servers/*/server/node", "*/code-server/*/lib/node"
-  )
+  ) or
+  (process.parent.executable like "/opt/actions-runner/_work/_tool/node/*/x64/bin/node" and process.parent.args like "/opt/actions-runner/_work/*/build/workers/processChild.js")
 )
 '''
 

@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.56"
+version = "1.0.57"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -110,7 +110,7 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
 
  not (process.args : "NT\\CurrentVersion').InstallationType;" and process.args : "[System.Text.Encoding]::UTF8.GetBytes($OutStr);") and
 
- not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.", "Denver Technologies, Inc. dba Warp")) and
+ not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.", "Denver Technologies, Inc. dba Warp", "GitHub, Inc.", "SignPath Foundation", "Tencent Technology (Shenzhen) Company Limited")) and
 
  not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
 
@@ -138,7 +138,9 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
                                   "?:\\Users\\*\\.codex\\plugins\\*\\codex.exe",
                                   "?:\\Users\\*\\AppData\\Local\\Programs\\Devin\\*\\devin.exe",
                                   "?:\\Users\\*\\*\\node_modules\\@github\\copilot*\\*\\copilot.exe",
-                                  "?:\\Users\\*\\AppData\\Local\\github-copilot-sdk\\*\\copilot.exe") and
+                                  "?:\\Users\\*\\AppData\\Local\\github-copilot-sdk\\*\\copilot.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\Programs\\hub405\\405 Hub.exe",
+                                  "?:\\Users\\*\\AppData\\Local\\Programs\\@password405desktop\\Password405.exe") and
 
  not process.args :  ("$w=$env:LOCALAPPDATA+'/OPWC/';[Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes($w+'OperaSharpDLL.dll'));[OperaSharpDLL.Helper]::Startup()",
                       "IEX (New-Object Net.WebClient).DownloadString('https://install.demo-toolkit.de/dtkupdater.ps1?apikey=*",

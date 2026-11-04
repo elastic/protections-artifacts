@@ -7,7 +7,7 @@ id = "7d2a993e-967f-4abd-b53e-ac14fdd66ddb"
 license = "Elastic License v2"
 name = "Suspicious Codesign Execution via Osacompile"
 os_list = ["macos"]
-version = "1.0.9"
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -38,6 +38,11 @@ id = "T1059"
 name = "Command and Scripting Interpreter"
 reference = "https://attack.mitre.org/techniques/T1059/"
 [[threat.technique.subtechnique]]
+id = "T1059.002"
+name = "AppleScript"
+reference = "https://attack.mitre.org/techniques/T1059/002/"
+
+[[threat.technique.subtechnique]]
 id = "T1059.004"
 name = "Unix Shell"
 reference = "https://attack.mitre.org/techniques/T1059/004/"
@@ -48,6 +53,23 @@ reference = "https://attack.mitre.org/techniques/T1059/004/"
 id = "TA0002"
 name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1553"
+name = "Subvert Trust Controls"
+reference = "https://attack.mitre.org/techniques/T1553/"
+[[threat.technique.subtechnique]]
+id = "T1553.002"
+name = "Code Signing"
+reference = "https://attack.mitre.org/techniques/T1553/002/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
 min_endpoint_version = "8.16.0"

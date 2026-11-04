@@ -8,8 +8,8 @@ id = "260c06cf-5ad8-4809-bca3-94828796e241"
 license = "Elastic License v2"
 name = "Potential Linux Tunneling or Port Forwarding via SSH"
 os_list = ["linux"]
-reference = ["https://book.hacktricks.xyz/generic-methodologies-and-resources/tunneling-and-port-forwarding"]
-version = "1.0.9"
+reference = ["https://man.openbsd.org/ssh", "https://github.com/sshuttle/sshuttle"]
+version = "1.0.10"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
@@ -57,7 +57,8 @@ not (
     "/home/*/.local/vscode-insiders/usr/share/code-insiders/code-insiders", "/tmp/*/globusconnectpersonal-*/gt_amd64/bin/relaytool",
     "/home/*/.local/share/antigravity-ide/antigravity-ide", "/home/*/bin/minikube/minikube", "/home/*/.local/bin/codex",
     "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/codex-x86_64-unknown-linux-musl", "/home/linuxbrew/.linuxbrew/Caskroom/codex/*/bin/codex",
-    "/root/.vscode-server/cli/servers/Stable-*/server/node", "/home/*/usr/share/code/code"
+    "/root/.vscode-server/cli/servers/Stable-*/server/node", "/home/*/usr/share/code/code", "/home/*/.local/bin/ansible", "/tmp/claude-*",
+    "/home/*/.pyenv/versions/*/bin/python*"
   ) or
   process.parent.command_line like (
     "/home/*/repositories/synthetic-datasets/.venv/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(*) --multiprocessing-fork",

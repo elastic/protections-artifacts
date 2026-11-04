@@ -8,7 +8,7 @@ id = "9e533f20-733e-4d71-bbe5-2ab5939aaf57"
 license = "Elastic License v2"
 name = "Suspicious Remote Process Suspend Activity"
 os_list = ["windows"]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and process.executable != null and
@@ -179,6 +179,8 @@ api where process.Ext.api.name in ("NtSuspendProcess", "SuspendThread") and proc
       process.thread.Ext.call_stack_summary like "ntdll.dll|*|faultrep.dll|werfault.exe|kernel32.dll|ntdll.dll") and
 
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "c:\\windows\\sys?????\\dbgcore.dll!MiniDumpWriteDump*") and
+ not (process.command_line : "*--type=crashpad-handler*" and
+      stringcontains~(process.thread.Ext.call_stack_final_user_module.path, Target.process.executable)) and
  not process.thread.Ext.call_stack_final_user_module.path like ("e:\\*\\*.exe", "f:\\*\\*.exe")
 '''
 

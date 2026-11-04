@@ -8,19 +8,19 @@ id = "57bb41f8-091f-42d5-9eaf-588dfa32d7e3"
 license = "Elastic License v2"
 name = "Suspicious Remote Javascript Evaluation via Nodejs"
 os_list = ["macos"]
-reference = ["https://kl4r10n.tech/blog/dprk-new-malware"]
-version = "1.0.8"
+reference = ["https://jp.security.ntt/insights_resources/tech_blog/en-contagious-interview-ottercookie/"]
+version = "1.0.9"
 
 query = '''
 sequence with maxspan=20s
 [network where event.action == "connection_attempted" and process.name == "node" and
   not (
     destination.domain in ("registry.npmjs.org", "classic.yarnpkg.com", "platform.claude.com", "api.anthropic.com", "registry.yarnpkg.com", "api.z.ai",
-                           "telemetry.nuxt.com", "api.fontshare.com", "yarnpkg.com",
-                           "chatgpt.com", "bedrock-runtime.us-east-1.amazonaws.com", "api.business.githubcopilot.com", "generativelanguage.googleapis.com",
+                           "telemetry.nuxt.com", "api.fontshare.com", "fonts.gstatic.com", "fonts.googleapis.com", "yarnpkg.com",
+                           "chatgpt.com", "api.business.githubcopilot.com", "generativelanguage.googleapis.com",
                            "api.deepseek.com", "api.mdintegrations.com", "consent.cookiebot.com", "www.googletagmanager.com",
-                           "codeload.github.com", "api.stripe.com") or
-    destination.domain like ("telemetry*.elastic.co", "*litellm*")
+                           "codeload.github.com", "api.stripe.com", "us.i.posthog.com") or
+    destination.domain like ("telemetry*.elastic.co", "*litellm*", "bedrock-runtime.*.amazonaws.com")
   )] by process.entity_id
 [process where event.type == "start" and event.action == "exec" and process.name == "node" and
  process.args == "-e" and process.args_count == 3 and

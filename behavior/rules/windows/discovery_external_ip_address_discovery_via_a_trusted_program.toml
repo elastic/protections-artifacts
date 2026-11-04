@@ -7,7 +7,7 @@ id = "51894221-7657-4b56-9406-e080e19ad159"
 license = "Elastic License v2"
 name = "External IP Address Discovery via a Trusted Program"
 os_list = ["windows"]
-version = "1.0.39"
+version = "1.0.40"
 
 query = '''
 sequence by process.entity_id with maxspan=5m
@@ -29,7 +29,14 @@ sequence by process.entity_id with maxspan=5m
           process.parent.executable : "\\Device\\Mup\\VMHOST\\*") and
      not process.command_line :  "\"C:\\Program Files\\PowerShell\\7\\pwsh.exe\"" and
      not (process.name : "curl.exe" and process.command_line : "curl  -s ipinfo.io/*" and 
-          process.parent.name == "cmd.exe" and process.parent.command_line == "\"C:\\Windows\\system32\\cmd.exe\" ")
+          process.parent.name == "cmd.exe" and process.parent.command_line == "\"C:\\Windows\\system32\\cmd.exe\" ") and
+     not (process.name : "curl.exe" and
+          process.parent.executable : ("?:\\Program Files\\Git\\*\\bash.exe",
+                                       "?:\\Users\\*\\AppData\\Local\\Programs\\Git\\*\\bash.exe") and
+          process.command_line : ("*https://api.ipify.org*",
+                                  "*https://ipinfo.io*",
+                                  "*https://checkip.amazonaws.com*",
+                                  "*http://ip-api.com*"))
    ]
   [dns where
     dns.question.name :
@@ -41,10 +48,13 @@ sequence by process.entity_id with maxspan=5m
           "whatismyip.akamai.com",
           "bot.whatismyipaddress.com",
           "ifcfg.me",
+          "ifconfig.me",
           "ident.me",
           "ipof.in",
           "ip.tyk.nu",
           "icanhazip.com",
+          "ipv4.icanhazip.com",
+          "ipv6.icanhazip.com",
           "curlmyip.com",
           "wgetip.com",
           "eth0.me",
@@ -60,7 +70,6 @@ sequence by process.entity_id with maxspan=5m
           "iplogger.*",
           "freegeoip.net",
           "freegeoip.app",
-          "ipinfo.io",
           "geoplugin.net",
           "myip.dnsomatic.com",
           "www.geoplugin.net",
@@ -68,11 +77,15 @@ sequence by process.entity_id with maxspan=5m
           "ip4.seeip.org",
           "*.geojs.io",
           "*portmap.io",
-          "api.2ip.ua",
           "api.db-ip.com",
           "geolocation-db.com",
           "httpbin.org",
-          "myip.opendns.com"
+          "myip.opendns.com",
+          "ipwho.is",
+          "ipwhois.app",
+          "freeipapi.com",
+          "myip.ipip.net",
+          "inet-ip.info"
          )
   ]
 '''

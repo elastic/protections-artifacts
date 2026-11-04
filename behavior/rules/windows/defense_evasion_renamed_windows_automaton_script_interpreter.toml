@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Renamed Windows Automaton Script Interpreter"
 os_list = ["windows"]
 reference = ["https://blog.morphisec.com/explosive-new-mirrorblast-campaign-targets-financial-companies"]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "start" and
@@ -66,7 +66,10 @@ process where event.action == "start" and
                            "?:\\Users\\*\\Stepwise\\Stepwise.exe",
                            "?:\\Users\\*\\AppData\\Local\\Programs\\AutoHotkey\\UX\\AutoHotkeyUX.exe",
                            "C:\\Program Files (x86)\\SofttechLLC\\FlightVector\\FlightVector.exe",
-                           "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe")
+                           "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe") and
+   /* FP - Patch My PC enterprise patch management deploying AutoHotkey */
+   not (process.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\AutoHotkey_*_setup.exe" and
+        process.parent.executable : "?:\\Windows\\SoftwareDistribution\\Download\\Install\\PatchMyPC-ScriptRunner.exe")
 '''
 
 min_endpoint_version = "8.4.0"

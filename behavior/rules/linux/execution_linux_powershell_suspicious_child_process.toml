@@ -7,16 +7,19 @@ id = "e9731cea-c3fc-4183-a76c-9a798ae0a2b0"
 license = "Elastic License v2"
 name = "Linux Powershell Suspicious Child Process"
 os_list = ["linux"]
-version = "1.0.12"
+version = "1.0.13"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.name == "pwsh" and
 process.name like (
-  "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional", "socat", "ngrok", "ping",
+  "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional", "socat", "ngrok",
   "python*", "php*", "perl*", "ruby*", "lua*", "openssl", "telnet"
 ) and
 not (
-  (process.name like "python*" and process.args == "azure.cli") or
+  (
+    process.name like "python*" and
+    process.args in ("azure.cli", "/usr/bin/az", "/opt/venv/bin/nvsec", "venv", "pip")
+  ) or
   process.parent.executable like~ (
     "/opt/ansible*/Evaluate-STIG/powershell/pwsh", "/evaluate/Evaluate-STIG/powershell/pwsh",
     "/opt/Evaluate-STIG/powershell/pwsh"

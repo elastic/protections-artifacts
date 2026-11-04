@@ -9,15 +9,18 @@ id = "b06dcea7-9ef3-428d-bd4d-80004f69200f"
 license = "Elastic License v2"
 name = "URL as Process Argument via Installer Package"
 os_list = ["macos"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and 
  process.Ext.effective_parent.executable like~ ("/usr/sbin/installer", "/System/Library/CoreServices/Installer.app/Contents/MacOS/Installer") and
  process.args like~ ("http://*", "https://*") and
- not process.name in ("wget", "curl", "git", "nscurl") and
+ not process.name in ("wget", "curl", "git", "nscurl", "bash", "sh", "zsh", "dash", "launchctl", "open") and
+ not (process.name == "sudo" and
+  process.args in ("open", "curl", "git", "wget", "nscurl", "bash", "sh", "zsh", "dash", "launchctl")) and
  not process.executable like ("/opt/homebrew/*", "/usr/local/Cellar/*", "/Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin") and
- not process.code_signature.team_id == "PXPZ95SK77"
+ // IDs: Palo Alto Networks, Mosyle corporation, Autodesk
+ not process.code_signature.team_id in ("PXPZ95SK77", "K956F76N8S", "XXKJ396S2Y")
 '''
 
 min_endpoint_version = "8.7.0"

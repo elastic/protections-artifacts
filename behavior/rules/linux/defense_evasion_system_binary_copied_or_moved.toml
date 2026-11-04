@@ -7,7 +7,7 @@ id = "4daceba6-54be-4dfc-95ab-a4a9c19c77af"
 license = "Elastic License v2"
 name = "System Binary Copied or Moved"
 os_list = ["linux"]
-version = "1.0.16"
+version = "1.0.17"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name in ("cp", "mv") and 
@@ -78,11 +78,13 @@ process.args in (
     process.args like "./curl.leap*.x86_64" and
     process.working_directory like "/opt/SIGOS/sitedata/exec/*"
   ) or
-  process.parent.command_line == "/usr/bin/runc init"
+  process.parent.command_line == "/usr/bin/runc init" or
+  process.group_leader.executable == "/usr/bin/make" or
+  (process.parent.args =="/var/lib/dpkg/tmp.ci/preinst" and process.parent.args == "install")
 )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -118,4 +120,4 @@ name = "Defense Evasion"
 reference = "https://attack.mitre.org/tactics/TA0005/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"

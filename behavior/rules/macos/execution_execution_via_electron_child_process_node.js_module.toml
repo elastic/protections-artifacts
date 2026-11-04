@@ -12,7 +12,7 @@ reference = [
     "https://www.trustedsec.com/blog/macos-injection-via-third-party-frameworks/",
     "https://nodejs.org/api/child_process.html",
 ]
-version = "1.0.36"
+version = "1.0.37"
 
 query = '''
 process where event.action == "exec" and
@@ -38,7 +38,8 @@ process where event.action == "exec" and
               "/Applications/Docker.app/Contents/Resources/bin/com.docker.cli") and
  not process.Ext.effective_parent.executable like 
     ("/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude",
-      "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT")
+      "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT",
+      "/Applications/Orca.app/Contents/MacOS/Orca")
 '''
 
 min_endpoint_version = "8.10.2"
@@ -68,9 +69,14 @@ reference = "https://attack.mitre.org/tactics/TA0002/"
 [[threat]]
 framework = "MITRE ATT&CK"
 [[threat.technique]]
-id = "T1548"
-name = "Abuse Elevation Control Mechanism"
-reference = "https://attack.mitre.org/techniques/T1548/"
+id = "T1218"
+name = "System Binary Proxy Execution"
+reference = "https://attack.mitre.org/techniques/T1218/"
+[[threat.technique.subtechnique]]
+id = "T1218.015"
+name = "Electron Applications"
+reference = "https://attack.mitre.org/techniques/T1218/015/"
+
 
 
 [threat.tactic]

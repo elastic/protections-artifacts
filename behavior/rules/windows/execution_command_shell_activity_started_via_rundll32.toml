@@ -5,7 +5,7 @@ license = "Elastic License v2"
 name = "Command Shell Activity Started via RunDLL32"
 os_list = ["windows"]
 reference = ["https://www.elastic.co/security-labs/spring-cleaning-with-latrodectus"]
-version = "1.0.34"
+version = "1.0.35"
 
 query = '''
 process where event.type == "start" and
@@ -18,10 +18,11 @@ process where event.type == "start" and
     not (process.parent.args : "aepdu.dll,AePduRunUpdate" and process.args : "osloader" and process.args : "%windir%\\system32\\bcdedit") and
     not (process.parent.args : ("?:\\Windows\\System32\\LogiLDA.dll,LogiFetch", "?:\\WINDOWS\\system32\\PcaSvc.dll,PcaPatchSdbTask") and
          process.name : "powershell.exe" and process.command_line : "*install*") and
-    not process.parent.args : "C:\\Program Files\\NVIDIA Corporation\\*\\NVI2.DLL,ResumeAsync" and
+    not process.parent.args : ("C:\\Program Files\\NVIDIA Corporation\\*\\NVI2.DLL,*",
+                               "C:\\Program Files (x86)\\NVIDIA Corporation\\*\\NVI2.DLL,*") and
     not (process.args : "dellpointstick://Mainpage/*" and process.parent.args : "Vxd_launch_UI") and
     not (process.parent.args : "?:\\Windows\\system32\\davclnt.dll,DavSetCookie" and process.name : "powershell.exe") and
-    not process.parent.args : "AppXDeploymentExtensions.OneCore.dll,ShellRefresh" and
+    not process.parent.args : ("AppXDeploymentExtensions.OneCore.dll,ShellRefresh", "?:\\Windows\\System32\\AppXDeploymentExtensions.OneCore.dll,ShellRefresh") and
     not (process.args : ("launchalpsdelltouchpad://Mainpage/path2?param=start", "alpsdelltouchpadsettings://Mainpage/path2?param=start") and
          process.parent.args : "?:\\WINDOWS\\System32\\main.cpl") and
     not (process.command_line : "*REG QUERY HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography*" and
@@ -32,8 +33,8 @@ process where event.type == "start" and
     not process.parent.command_line :  "rundll32.exe \"C:\\Program Files (x86)\\Windows Shell\\fx_ws_main.dll\",ProcessDll s=hidedialog" and
     not (process.parent.command_line : "C:\\Windows\\system32\\rundll32.exe iernonce.dll,RunOnceExProcess" and
          process.working_directory : "C:\\Windows\\system32\\") and
-    not (process.parent.command_line : "\"C:\\WINDOWS\\System32\\rundll32.exe\" C:\\WINDOWS\\Lvgic10u.dll,Execute" and
-         process.command_line : "cmd /c C:\\WINDOWS\\System32\\rundll32.exe C:\\WINDOWS\\Lvgic10u.dll,ExecuteQuick")
+    not (process.parent.command_line : "*?:\\WINDOWS\\Lvgic10u.dll*Execute" and
+         process.command_line : "cmd /c *?:\\WINDOWS\\Lvgic10u.dll*ExecuteQuick")
 '''
 
 min_endpoint_version = "7.15.0"

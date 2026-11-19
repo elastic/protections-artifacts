@@ -7,7 +7,7 @@ id = "7d2a993e-967f-4abd-b53e-ac14fdd66ddb"
 license = "Elastic License v2"
 name = "Suspicious Codesign Execution via Osacompile"
 os_list = ["macos"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and 
@@ -16,7 +16,8 @@ process where event.type == "start" and event.action == "exec" and
  process.args in ("--force", "-f") and
  process.args in ("--deep") and
  ((process.parent.name == "osacompile") or (process.parent.name in ("bash", "sh", "zsh") and process.Ext.effective_parent.name like~ ("terminal", "codesign"))) and
- not process.Ext.effective_parent.executable like~ "/Volumes/PostgreSQL*/postgresql*.app/Contents/MacOS/PostgreSQL"
+ not process.Ext.effective_parent.executable like~ ("/Volumes/PostgreSQL*/postgresql*.app/Contents/MacOS/PostgreSQL",
+                                                    "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude")
 '''
 
 min_endpoint_version = "8.16.0"

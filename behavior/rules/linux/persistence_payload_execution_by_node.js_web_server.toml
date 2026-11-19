@@ -8,7 +8,7 @@ id = "b982a098-f3c6-42d7-958a-86c46f06360b"
 license = "Elastic License v2"
 name = "Payload Execution by Node.js Web Server"
 os_list = ["linux"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and
@@ -90,10 +90,14 @@ not (
     "/usr/lib/node_modules/openclaw/dist/index.js", "/opt/yarn*", "*anthropic-ai/claude-code/cli.js*",
     "/usr/bin/docker-builder", "/opt/jenkins/.nvm/versions/node/*/bin/npm", "/usr/local/renovate/node",
     "/opt/buildagent/work/*/node_modules/.bin/cypress", "/var/www/html/ext/node_modules/.bin/webpack",
-    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower", "/usr/local/bin/cursor-agent"
+    "/opt/containerbase/tools/node/*/bin/node", "/opt/*/bin/*/node_modules/.bin/bower", "/usr/local/bin/cursor-agent",
+    "*/vitest/dist/workers/*", "*/kuma*/bridge.js", "*/kuma-ext/bridge.js", "*/codex"
   ) or
   process.args like ("npx *", "node /var/www/html/ext/node_modules/.bin/webpack*", "grep* | awk*") or
-  process.parent.executable like "/opt/jenkins/workspace/*/bin/node" or
+  process.parent.executable like (
+    "/opt/jenkins/workspace/*/bin/node", "/opt/azPipeline*/externals/node*/bin/node", "/opt/dci*/node"
+  ) or
+  process.parent.command_line like~ ("*n8n worker*", "*n8n start*") or
   process.working_directory == "/runner/_work/personify/personify/node_modules/snyk" or
   process.parent.working_directory == "/opt/hermes" or 
   (process.command_line like "*REPO_NAME*" and process.parent.command_line like "node /usr/bin/n8n*") or
@@ -123,7 +127,7 @@ not (
   ) or
   process.parent.executable like (
     "*/.cursor-server/bin/linux-x64/*/node", "*/.vscode-server/*/node",
-    "*/.vscode-server/cli/servers/*/server/node", "*/code-server/*/lib/node"
+    "*/.vscode-server/cli/servers/*/server/node", "*/code-server/*/lib/node", "*/cursor-server/bin/linux-x64/*/node"
   ) or
   (process.parent.executable like "/opt/actions-runner/_work/_tool/node/*/x64/bin/node" and process.parent.args like "/opt/actions-runner/_work/*/build/workers/processChild.js")
 )

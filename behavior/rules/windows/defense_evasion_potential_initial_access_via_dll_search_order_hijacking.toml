@@ -12,7 +12,7 @@ reference = [
     "https://specterops.io/blog/2020/06/30/automating-dll-hijack-discovery/",
     "https://www.elastic.co/security-labs/Hunting-for-Suspicious-Windows-Libraries-for-Execution-and-Evasion",
 ]
-version = "1.0.33"
+version = "1.0.34"
 
 query = '''
 file where event.action != "deletion" and
@@ -30,7 +30,11 @@ file where event.action != "deletion" and
                  "mstsc.exe", "explorer.exe", "dllhost.exe", "xcopy.exe", "expand.exe") and
  not file.path : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\OneDrive\\*\\*.dll",
                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\current\\resources\\meeting-addin\\*",
-                  "?:\\Users\\*\\Teams\\current\\*")
+                  "?:\\Users\\*\\Teams\\current\\*") and
+ not (file.path : "?:\\Users\\*\\AppData\\Local\\Microsoft\\Teams\\previous\\*" and process.name : "explorer.exe") and
+ not (process.name : ("explorer.exe", "dllhost.exe") and
+      file.path : ("?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\User Data\\Domain Actions\\*\\domain_actions.dll",
+                   "?:\\Users\\*\\AppData\\Local\\Microsoft\\Edge\\User Data\\Well Known Domains\\*\\well_known_domains.dll"))
 '''
 
 min_endpoint_version = "7.15.0"

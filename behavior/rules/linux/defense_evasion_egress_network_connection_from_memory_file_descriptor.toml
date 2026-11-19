@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Egress Network Connection from Memory File Descriptor"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -48,7 +48,7 @@ sequence by process.entity_id with maxspan=10s
     ) or
     (
       process.name like "php*" and
-      process.Ext.memfd.name in ("opcache_lock", "anon_hugepage")
+      process.Ext.memfd.name in ("opcache_lock", "anon_hugepage", "memfd:opcache_lock", "memfd:OTEL_CTX")
     ) or
     (
       process.executable == "/app/bin/evolution.bin" and

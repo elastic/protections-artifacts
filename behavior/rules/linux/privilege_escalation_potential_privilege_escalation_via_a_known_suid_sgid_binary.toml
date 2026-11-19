@@ -7,7 +7,7 @@ id = "b1d415dc-796a-48f1-944f-4bb6037b2450"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Known SUID/SGID Binary"
 os_list = ["linux"]
-version = "1.0.4"
+version = "1.0.5"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -23,7 +23,7 @@ process where event.type == "start" and event.action == "exec" and (
   process.name in (
     "sudoedit", "gpasswd", "chfn", "polkit-agent-helper-1", "dbus-daemon-launch-helper", "ssh-keysign",
     "pam_extrausers_chkpwd", "expiry", "chage", "wall", "bsd-write", "ssh-agent",
-    "ping6", "traceroute", "mtr", "ntfs-3g", "chrome-sandbox"
+    "traceroute", "mtr", "ntfs-3g", "chrome-sandbox"
   )
 ) and
 (

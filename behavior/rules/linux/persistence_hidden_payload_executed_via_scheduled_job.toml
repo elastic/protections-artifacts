@@ -13,7 +13,7 @@ reference = [
     "https://intezer.com/blog/research/kaiji-new-chinese-linux-malware-turning-to-golang/",
     "https://www.elastic.co/security-labs/primer-on-persistence-mechanisms",
 ]
-version = "1.0.29"
+version = "1.0.30"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -48,7 +48,11 @@ process where event.type == "start" and event.action == "exec" and (
     "/bin/sh -c /backup/mktphotos/.main*.sh", "/bin/bash -c unset*/var/.cagefs'", "/bin/sh -c *autorestic*", "*/opt/export-ecs-ip/ecs-ip.py*", 
     "/bin/sh -c /usr/local/bin/mettle cache -d /var/cache/mettle *", 
     "/bin/sh -c /opt/tm/mettle/root/mettle cache -d /opt/tm/mettle/root/var/cache/mettle*",
-    "/bin/sh -c gssh-agent scp -r *:/mnt/*/common/shared/*/skills_repo/skills ~/.agents"
+    "/bin/sh -c gssh-agent scp -r *:/mnt/*/common/shared/*/skills_repo/skills ~/.agents",
+    "/bin/sh -c /usr/local/lib/vulnerability_scanning/*",
+    "/bin/sh -c *RECOLL_CONFDIR*recollindex*",
+    "/bin/sh -c flatpak update*~/.flatpak-updates*",
+    "/bin/sh -c /bin/bash */.vscode-server-prune*"
   ) or
   process.args like (
     "/usr/sbin/tmpwatch*", "/usr/sap/*", "sed*", "*/../*", "cd ~/.unison*", "/usr/sbin/logrotate*",

@@ -7,15 +7,46 @@ id = "32b43493-dd69-47b3-ad63-34242aeebe39"
 license = "Elastic License v2"
 name = "Base64 Encoded String Execution via Osascript"
 os_list = ["macos"]
-version = "1.0.7"
+version = "1.0.8"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "osascript" and
  process.args == "-e" and
- process.args regex~ """.*[A-Za-z0-9\+\/]{30,}\={0,2}.*""" and 
- process.command_line : "*base64*" and
+ process.args regex~ """.*[A-Za-z0-9\+\/]{60,}\={0,2}.*""" and
+ process.command_line : ("*base64 -d*", "*base64 --decode*", "*base64Encoded*") and
+ process.parent.executable != null and
+
+ /* protected application paths */
+ not process.parent.executable like ("/Applications/Cortex Code.app/Contents/MacOS/Cortex Code",
+                                     "/Applications/ChatGPT.app/Contents/Resources/codex",
+                                     "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+                                     "/Applications/Codex.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+                                     "/Applications/DeepSeek Harness.app/Contents/MacOS/DeepSeek Harness") and
+
+ /* user-writable paths: require a trusted vendor signature */
+ not (process.parent.executable like "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude" and
+      process.parent.code_signature.team_id == "Q6L2SF6YDW" and
+      process.parent.code_signature.trusted == true) and
+ not (process.parent.executable like ("/Users/*/.local/share/cortex/*/cortex",
+                                      "/Users/*/.vscode/extensions/snowflake.snowflake-vsc-*/bin/cortex") and
+      process.parent.code_signature.team_id == "W4NT6CRQ7U" and
+      process.parent.code_signature.trusted == true) and
+ not (process.parent.executable like "/Users/*/.codex/packages/app-server-daemon/releases/*/bin/codex" and
+      process.parent.code_signature.team_id == "2DC432GLL2" and
+      process.parent.code_signature.trusted == true) and
+ not (process.parent.executable like "*/PhotoCraft.app/Contents/MacOS/PhotoCraft" and
+      process.parent.code_signature.team_id == "DJ6XS33FX8" and
+      process.parent.code_signature.trusted == true) and
+
+ /* parent team id */
  not process.parent.code_signature.team_id == "9BNSXJN65R" and
- not process.Ext.effective_parent.executable like "/Applications/Docker.app/Contents/MacOS/com.docker.backend"
+ /* effective parent */
+ not process.Ext.effective_parent.executable like ("/Applications/Claude.app/Contents/MacOS/Claude",
+                                                   "/Applications/Claude.app/Contents/Frameworks/Claude Helper (Plugin).app/Contents/MacOS/Claude Helper (Plugin)",
+                                                   "/Applications/Visual Studio Code.app/Contents/MacOS/Code",
+                                                   "/Applications/DeepSeek Harness.app/Contents/MacOS/DeepSeek Harness",
+                                                   "/Applications/Codex.app/Contents/MacOS/ChatGPT",
+                                                   "/Applications/Docker.app/Contents/MacOS/com.docker.backend")
 '''
 
 min_endpoint_version = "8.16.0"

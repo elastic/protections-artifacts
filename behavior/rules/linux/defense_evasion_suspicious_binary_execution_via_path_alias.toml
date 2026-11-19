@@ -13,13 +13,16 @@ reference = [
     "https://awesomeagents.ai/news/claude-code-sandbox-escape-denylist/",
     "https://man7.org/linux/man-pages/man5/proc.5.html",
 ]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and
 (
   process.executable like "/proc/*/root/*" or
-  process.args regex """/proc/(self|[0-9]{1,7})/root/[a-z].*"""
+  (
+    process.args regex """/proc/(self|[0-9]{1,7})/root/[a-z].*""" and
+    process.name in ("bash", "dash", "sh", "tcsh", "csh", "zsh", "ksh", "fish", "mksh", "busybox")
+  )
 ) and
 not (
   process.args like ("/proc/*/root/etc/*", "/proc/1/root/var/lib/rancher/*", "/proc/1/root/var/lib/cni/*", "cat", "readlink", "ls") or
@@ -29,7 +32,8 @@ not (
   (
     process.parent.command_line == "/usr/bin/perl /usr/bin/pve8to9 --full" and
     process.executable == "/usr/bin/x86_64-linux-gnu-objdump"
-  )
+  ) or
+  (process.name == "busybox" and process.args == "cmp") 
 )
 '''
 

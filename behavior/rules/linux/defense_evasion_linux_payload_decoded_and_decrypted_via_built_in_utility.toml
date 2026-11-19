@@ -7,7 +7,7 @@ id = "cc8a82b6-eb6e-4e35-8c9e-e6ec3339e12d"
 license = "Elastic License v2"
 name = "Linux Payload Decoded and Decrypted via Built-in Utility"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable like (
@@ -24,7 +24,8 @@ process where event.type == "start" and event.action == "exec" and process.paren
 ) and not (
   process.parent.executable like (
     "/tmp/newroot/*", "/tmp/jwt_vf.sh", "/root/*.sh", "/tmp/.criu.mntns*", "/var/tmp/buildah*/mnt/rootfs/var/lib/dpkg/info/nmap-common.postinst",
-    "/tmp/.mount_*/usr/share/cursor/cursor", "/root/.local/share/claude/versions/*"
+    "/tmp/.mount_*/usr/share/cursor/cursor", "/root/.local/share/claude/versions/*", "/root/.local/bin/claude", "/root/.codex/packages/standalone/releases/*/bin/codex",
+    "/root/.vscode-server/extensions/*/claude"
   ) or
   process.parent.command_line like ("*/tmp/__salt.tmp.*.sh", "*/home/*/.claude/shell-snapshots/snapshot-*", "claude", "/root/.claude/*") or
   process.args == "/usr/bin/coreutils" or

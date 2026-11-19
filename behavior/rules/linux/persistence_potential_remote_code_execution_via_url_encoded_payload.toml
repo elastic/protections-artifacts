@@ -7,7 +7,7 @@ id = "cf54b4c2-5618-4515-9250-26542dd4aa5f"
 license = "Elastic License v2"
 name = "Potential Remote Code Execution via URL Encoded Payload"
 os_list = ["linux"]
-version = "1.0.8"
+version = "1.0.9"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and (
@@ -22,11 +22,13 @@ process.command_line regex~ ".*(%[0-9a-f]{2}.*){4,}.*" and process.command_line 
 not (
   process.parent.executable like (
     "/mnt/Xilinx/PetaLinux/*/python*", "/tmp/petalinux*/python*", "/usr/lib/chatgpt/resources/codex", "/root/.local/share/claude/versions/*",
-    "/home/*/codex", "/home/*/claude*", "/usr/bin/bwrap"
+    "/home/*/codex", "/home/*/claude*", "/usr/bin/bwrap", "/usr/libexec/openssh/sshd-session", "/usr/sbin/sshd", "/usr/lib/openssh/sshd-session"
   ) or
   process.executable like "/tmp/petalinux*/usr/bin/*" or
   process.command_line like ("*/workdir/builder_client/layers/poky/scripts*", "*petalinux.xilinx.com*") or
-  process.parent.args like ("/workdir/builder_client/layers/poky/bitbake/bin/bitbake-worker", "/tmp/petalinux*")
+  process.parent.args like ("/workdir/builder_client/layers/poky/bitbake/bin/bitbake-worker", "/tmp/petalinux*") or
+  (process.name like "python*" and process.args == "/usr/bin/gssh-agent") or
+  (process.parent.name == "timeout" and process.args == "/usr/bin/gssh")
 )
 '''
 

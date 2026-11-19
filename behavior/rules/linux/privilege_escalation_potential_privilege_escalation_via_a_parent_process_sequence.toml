@@ -8,7 +8,7 @@ id = "727c9703-6879-45d1-80ad-7729ff244964"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a Parent Process Sequence"
 os_list = ["linux"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=15s
@@ -90,11 +90,6 @@ state = 0
 action = "kill_process"
 field = "process.entity_id"
 state = 1
-
-[[actions]]
-action = "kill_process"
-field = "process.parent.entity_id"
-state = 0
 
 [[actions]]
 action = "kill_process"

@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Potential Shadow Read via Unprivileged User"
 os_list = ["linux"]
 reference = ["https://github.com/0xdeadbeefnetwork/ssh-keysign-pwn"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "change" and event.action == "gid_change" and
@@ -19,7 +19,8 @@ group.name == "shadow" and user.id >= 1000 and process.parent.user.id >= 1000 an
 ) and
 not (
   process.group_leader.executable in (
-    "/usr/sbin/lightdm", "/usr/bin/xfce4-session", "/usr/bin/ksmserver", "/tmp/newroot/usr/bin/xfce4-session"
+    "/usr/sbin/lightdm", "/usr/bin/xfce4-session", "/usr/bin/ksmserver", "/tmp/newroot/usr/bin/xfce4-session",
+    "/usr/bin/kwin_wayland_wrapper", "/usr/lib/xorg/Xorg"
   ) or
   process.executable in (
     "/tmp/newroot/usr/bin/i3lock", "/tmp/newroot/newroot/newroot/usr/bin/i3lock", "/tmp/newroot/bin/bash"

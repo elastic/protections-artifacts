@@ -8,7 +8,7 @@ id = "6ac2717b-a63d-4697-b01e-918388bdc762"
 license = "Elastic License v2"
 name = "Potential Privilege Escalation via a SUID/SGID Binary"
 os_list = ["linux"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -53,7 +53,8 @@ not (
     "/usr/local/sbin/uid_gid_mapping", "/usr/bin/crontab", "/home/db2inst1/sqllib/adm/db2chparm", "/vz/root/*/opt/psa/admin/bin/osdetect",
     "/data/app/oracle/agent/*", "/usr/lib/plesk-*/msmtp-pwdeval", "/usr/sbin/mount.nfs"
   ) or
-  process.command_line in ("/usr/bin/nvidia-modprobe", "/usr/sbin/login_duo")
+  process.command_line in ("/usr/bin/nvidia-modprobe", "/usr/sbin/login_duo") or
+  process.group_leader.executable in ("/usr/bin/dotnet", "/usr/sbin/sw-engine-fpm")
 )
 '''
 

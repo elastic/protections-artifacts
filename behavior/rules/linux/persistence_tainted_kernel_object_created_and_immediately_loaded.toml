@@ -1,0 +1,94 @@
+[rule]
+description = """
+This rule detects when a kernel object is created and then immediately loaded into the kernel. This may indicate an
+attempt to load a malicious kernel module or rootkit into the system.
+"""
+id = "dd524b41-6ce0-4c67-a1a6-004528fe37b5"
+license = "Elastic License v2"
+name = "Tainted Kernel Object Created and Immediately Loaded"
+os_list = ["linux"]
+reference = ["https://www.elastic.co/security-labs/continuation-on-persistence-mechanisms"]
+version = "1.0.4"
+
+query = '''
+sequence with maxspan=30s
+  [any where (
+     (event.category == "file" and event.action == "creation") or
+     (
+       event.category == "process" and event.type == "start" and event.action == "load_module" and
+       process.Ext.load_module.taint_flags == "OE" and process.Ext.load_module.name != null and
+       not (
+         process.entry_leader.executable == "/opt/ds_agent/ds_agent" or
+         process.session_leader.executable == "/opt/ds_agent/ds_am" or
+         (
+           process.name like "python*" and
+           process.args == "kcarectl.__main__" and
+           process.args in ("--auto-update", "--smart-update")
+         )
+       )
+     )
+   )] as event0
+  [any where
+     (
+       event.category == "file" and event.action == "creation" and
+       event0.event.action == "load_module" and
+       stringcontains~(file.name, event0.process.Ext.load_module.name)
+     ) or
+     (
+       event.category == "process" and event.type == "start" and event.action == "load_module" and
+       event0.event.action == "creation" and
+       stringcontains~(event0.file.name, process.Ext.load_module.name) and
+       process.Ext.load_module.taint_flags == "OE" and
+       process.Ext.load_module.name != null and
+       not (
+         process.entry_leader.executable == "/opt/ds_agent/ds_agent" or
+         process.session_leader.executable == "/opt/ds_agent/ds_am" or
+         (
+           process.name like "python*" and
+           process.args == "kcarectl.__main__" and
+           process.args in ("--auto-update", "--smart-update")
+         )
+       )
+     )
+  ]
+'''
+
+min_endpoint_version = "9.5.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1547"
+name = "Boot or Logon Autostart Execution"
+reference = "https://attack.mitre.org/techniques/T1547/"
+[[threat.technique.subtechnique]]
+id = "T1547.006"
+name = "Kernel Modules and Extensions"
+reference = "https://attack.mitre.org/techniques/T1547/006/"
+
+
+
+[threat.tactic]
+id = "TA0003"
+name = "Persistence"
+reference = "https://attack.mitre.org/tactics/TA0003/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1014"
+name = "Rootkit"
+reference = "https://attack.mitre.org/techniques/T1014/"
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+
+[internal]
+min_endpoint_version = "9.5.0"

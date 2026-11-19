@@ -4,7 +4,7 @@ id = "7e554c18-6435-41ce-b57b-d0ac3b73817f"
 license = "Elastic License v2"
 name = "Suspicious Execution via Windows Management Instrumentation"
 os_list = ["windows"]
-version = "1.0.51"
+version = "1.0.52"
 
 query = '''
 process where event.action == "start" and
@@ -123,7 +123,12 @@ not (process.name : "schtasks.exe" and process.args : ("cmd /c echo N | gpupdate
 not (process.name : "powershell.exe" and
      process.args : ("\\\\*.ps1", "\\\\127.0.0.1\\admin$\\temp\\unregistered", "?:\\SMS_DP$\\*",
                      "QQBkAGQALQBUAHkAcABlACAALQBUAHkAcABlAEQAZQBmAGkAbgBpAHQAaQBvAG4AIABAACcACgB1AHMAaQBuA*",
-                     "cwB0AGEAcgB0AC0AcAByAG8AYwBlAHMAcwAgAHAAbwB3AGUAcgBzAGgAZQBsAGwALgBlAHgAZQAgAC0AQQByAGcAdQBtAGUAbgB0AEwAaQBzAHQAIAAnA*"))
+                     "cwB0AGEAcgB0AC0AcAByAG8AYwBlAHMAcwAgAHAAbwB3AGUAcgBzAGgAZQBsAGwALgBlAHgAZQAgAC0AQQByAGcAdQBtAGUAbgB0AEwAaQBzAHQAIAAnA*")) and
+
+/* IT management OS type query via WMI, exact command only, output goes to a devicetype_ file under Windows Temp */
+not (process.name : "cmd.exe" and
+     process.command_line : "cmd.exe /c \"powershell.exe -Command \"try { $os = Get-WmiObject Win32_OperatingSystem; Write-Output \\\"PRODUCTTYPE=$($os.ProductType)\\\"; Write-Output \\\"SKU=$($os.OperatingSystemSKU)\\\"; Write-Output \\\"CAPTION=$($os.Caption)\\\" } catch { Write-Output \\\"ERROR=$($_.Exception.Message)\\\" }\" > C:\\Windows\\Temp\\devicetype_*.txt 2>&1\"" and
+     not process.command_line : ("*&*&*", "*|*"))
 '''
 
 min_endpoint_version = "7.15.0"

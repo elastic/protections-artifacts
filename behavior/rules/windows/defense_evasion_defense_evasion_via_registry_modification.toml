@@ -7,26 +7,33 @@ id = "e3938d6e-8f66-4871-88c7-442a530f8119"
 license = "Elastic License v2"
 name = "Defense Evasion via Registry Modification"
 os_list = ["windows"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
-registry where not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") and
+registry where
+  (
+    not user.id : ("S-1-5-18", "S-1-5-19", "S-1-5-20") or
+    (user.id == "S-1-5-18" and process.name : "powershell.exe")
+  ) and
 
  (process.code_signature.exists == false or
   process.name : ("powershell.exe", "reg.exe", "cscript.exe", "wscript.exe", "mshta.exe", "winword.exe", "excel.exe") or
   process.executable : ("?:\\Windows\\Microsoft.NET\\*", "?:\\Users\\Public\\*", "?:\\Users\\*\\AppData\\*")) and
 
+ (
+  (
  registry.path : ("HK*\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\*") and
 
  (
-   (registry.value : ("EnableUA", "ConsentPromptBehaviorAdmin", "PromptOnSecureDesktop") and registry.data.strings : "0") or
+   (registry.value : ("EnableLUA", "ConsentPromptBehaviorAdmin", "PromptOnSecureDesktop") and registry.data.strings : "0") or
 
    (registry.value : ("DisableTaskMgr", "DisableRegistryTools", "DisableArchiveScanning") and registry.data.strings : "1") or
 
-    registry.value : "DisableCMD" or
-
+    registry.value : "DisableCMD"
+  )) or
     (registry.path : "HKEY_USERS\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.SecurityAndMaintenance\\Enabled" and
      registry.data.strings : "0")
+
  ) and
  not (registry.value : "DisableTaskMgr" and
       process.executable : ("?:\\Program Files (x86)\\Green's MCI\\MCI.exe",

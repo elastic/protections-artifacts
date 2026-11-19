@@ -8,7 +8,7 @@ license = "Elastic License v2"
 name = "Startup Persistence via Windows Script Interpreter"
 os_list = ["windows"]
 reference = ["https://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee851671(v=msdn.10)"]
-version = "1.0.42"
+version = "1.0.43"
 
 query = '''
 sequence by process.entity_id with maxspan=2m
@@ -26,6 +26,7 @@ sequence by process.entity_id with maxspan=2m
   not (process.pe.original_file_name : "Teams.exe" and process.code_signature.trusted == true) and
   not (process.name : "cscript.exe" and process.args : "?:\\Program Files\\Nextech\\NxTSAddin\\InstallNXTSAddinForCurrentUser.vbs") and
   not (process.parent.name : "powershell.exe" and process.parent.args : "'C:\\ProgramData\\CentraStage\\Packages\\*.ps1'") and
+  not (process.name : "powershell.exe" and process.args : "?:\\Windows\\_IS\\Apps\\Scripts\\SAP_GUI_*\\ADD_HKCU_REG.ps1") and
   not process.executable :
                  ("C:\\Program Files (x86)\\Exclaimer Ltd\\Cloud Signature Update Agent\\Exclaimer.CloudSignatureAgent.exe",
                   "C:\\Windows\\System32\\wsl.exe",
@@ -33,14 +34,15 @@ sequence by process.entity_id with maxspan=2m
                   "C:\\Program Files\\Microsoft Office\\root\\Office??\\ONENOTE.EXE",
                   "C:\\Program Files\\WindowsApps\\MSTeams_*\\ms-teams.exe",
                   "C:\\Program Files\\Nextcloud\\nextcloud.exe",
-                  "C:\\Program Files\\WindowsApps\\MSTeams_*\\ms-teams.exe") and
+                  "?:\\Program Files\\WindowsApps\\Microsoft.BingWallpaper_*\\BingWallpaper.exe") and
   not (process.code_signature.subject_name in ("CrashPlan Group LLC", "Red Hat, Inc", "d7xTech, Inc", "Code42 Software Inc",
        "Galactic Advisors, Inc.", "Hamilton Bonaduz AG", "epostbox epb GmbH", "FastTrack Software ApS", "AnyDesk Software GmbH",
-       "Dassault Systemes SolidWorks Corp.") and
+       "Dassault Systemes SolidWorks Corp.", "Canva", "Thomas Braun", "Fiery, LLC") and
        process.code_signature.trusted == true) and
   not process.parent.executable :
                       ("C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\BESClient.exe",
                        "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\agentexecutor.exe",
+                       "C:\\Program Files (x86)\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe",
                        "C:\\Program Files\\Produce8-Agent\\Produce8-Agent.exe",
                        "C:\\WINDOWS\\_ScriptingFramework\\Modul\\Engine.exe") and
   process.hash.sha256 != null and

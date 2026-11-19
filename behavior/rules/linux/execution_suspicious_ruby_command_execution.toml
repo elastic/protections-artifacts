@@ -8,7 +8,7 @@ id = "a3a3b49c-c135-4959-8a1b-33392bb60991"
 license = "Elastic License v2"
 name = "Suspicious Ruby Command Execution"
 os_list = ["linux"]
-version = "1.0.13"
+version = "1.0.14"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -23,15 +23,16 @@ not (
   process.command_line like ("*rails_env*", "*pid*Process.spawn*ssh*StrictHostKeyChecking*ServerAliveInterval*ServerAliveCountMax*", "*security-agent.webpros.host*") or
   process.command_line == "ruby -e require \"yaml\"; YAML.safe_load(File.read(\".gitlab-ci.yml\"), aliases: true)" or
   process.parent.args like "/home/*/.vscode-server/cli/servers/Stable-*" or
-  process.parent.command_line in ("emacs --daemon", "runc init") or
+  process.parent.command_line like ("emacs --daemon", "runc init", "*/root/.claude/shell-snapshots/snapshot*", "*/home/*/.claude/shell-snapshots/snapshot-*") or
   process.parent.name in ("emacs-gtk", "mmonit", "make") or
   (process.name == "ruby" and process.parent.name == "ruby") or
-  process.parent.executable in ("/opt/gitlab/embedded/bin/gitaly", "/usr/bin/runc") or
-  process.parent.executable like "/home/*/bin/claude*"
+  process.parent.executable in ("/opt/gitlab/embedded/bin/gitaly", "/usr/bin/runc", "/usr/bin/puppet", "./runc") or
+  process.parent.executable like "/home/*/bin/claude*" or
+  process.session_leader.executable like ("/usr/bin/oned", "/home/*/.vscode-server/extensions/*/codex")
 )
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -57,4 +58,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.6.0"

@@ -12,7 +12,7 @@ reference = [
     "https://github.com/MythicAgents/apfell/blob/master/documentation-payload/apfell/commands/spawn_drop_and_execute.md",
     "https://www.elastic.co/security-labs/beyond-the-wail",
 ]
-version = "1.0.21"
+version = "1.0.22"
 
 query = '''
 sequence with maxspan=15s
@@ -32,8 +32,13 @@ sequence with maxspan=15s
   process.name == "osascript" and stringcontains~(process.command_line, event0.file.name) and
   not process.args == "-e" and
   not process.Ext.effective_parent.executable like~ ("/Library/Application Support/JAMF/Jamf.app/Contents/MacOS/JamfDaemon.app/Contents/MacOS/JamfDaemon",
-                                      "/Users/*/Library/Application Support/Claude/claude-code/*/claude.app/Contents/MacOS/claude",
-                                      "/Applications/Cursor.app/Contents/MacOS/Cursor") and
+                                      "/usr/local/jamf/bin/jamf",
+                                      "/Users/*/Library/Application Support/Claude*/claude-code/*/claude.app/Contents/MacOS/claude",
+                                      "/Applications/Cursor.app/Contents/MacOS/Cursor",
+                                      "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT",
+                                      "/Applications/Grok Bot.app/Contents/MacOS/Grok Bot",
+                                      "/Applications/OpenChamber.app/Contents/MacOS/OpenChamber",
+                                      "/Applications/Raycast.app/Contents/MacOS/Raycast") and
   not (process.parent.name in ("zsh", "bash", "sh") and process.parent.command_line : (
     "*/.claude/shell-snapshots/*",
     "*/.codex/shell_snapshots/*",

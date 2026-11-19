@@ -9,7 +9,7 @@ id = "37249ca9-0e71-413f-899b-ae60b1599e34"
 license = "Elastic License v2"
 name = "Script DNS Query to Managed Kubernetes Cluster"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 sequence by process.entity_id with maxspan=1m
@@ -20,7 +20,10 @@ sequence by process.entity_id with maxspan=1m
     ) or
     process.name like ("python*", "perl*", "php*", "ruby*", "lua*")
   )
-  and not (process.name in ("fish", "zsh", "bash", "dash", "sh", "tcsh", "csh", "ksh") and process.args like ("*kubectl*", "*/shims/k9s"))
+  and not (
+    (process.name in ("fish", "zsh", "bash", "dash", "sh", "tcsh", "csh", "ksh") and process.args like ("*kubectl*", "*/shims/k9s")) or
+    process.parent.executable == "/usr/bin/make"
+  )
   ]
   [dns where dns.question.name like~ ("*eks.amazonaws.com", "*.azmk8s.io", "*.gke.goog", "*.vultr-k8s.com")]
 '''

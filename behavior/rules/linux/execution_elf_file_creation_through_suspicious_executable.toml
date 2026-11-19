@@ -1,0 +1,106 @@
+[rule]
+description = """
+This rule detects the creation of ELF files through a suspicious process executable. This could be indicative of an
+attacker attempting to execute a payload through a suspicious process. The rule excludes typical temporary directories,
+reducing false positives.
+"""
+id = "ea92f6e4-6ecd-450e-94d2-b735eaf84336"
+license = "Elastic License v2"
+name = "ELF File Creation Through Suspicious Executable"
+os_list = ["linux"]
+version = "1.0.2"
+
+query = '''
+sequence by process.entity_id with maxspan=10s
+  [process where event.type == "start" and event.action == "exec" and
+   process.executable like (
+     "/tmp/*", "/var/tmp/*", "/dev/shm/*", "/run/*", "/var/run/*", "/boot/*", "/sys/*", "*/www/html/*",
+     "/lost+found/*", "/var/mail/*", "/var/www/*", "/media/*", "/proc/*/fd/*", "?memfd:*", "memfd:*",
+     "*/wp-content/*", "*/wp-includes/*", "*/wp-admin/*"
+   ) and
+   not (
+     process.executable like (
+       "/tmp/par-*", "/tmp/prowlarr_update/Prowlarr.Update", "/tmp/sonarr_update/Sonarr.Update",
+       "/tmp/vmis.*/install/vmware-installer/vmis-launcher", "/tmp/tmp.*/rustup-init", "/tmp/.mount_*/installer",
+       "/tmp/octofence-agent-installer_*"
+     ) or
+     process.group_leader.executable like ("/usr/sap/trans/INSTALL/SWPM/sapinst", "/oracle_agent/agent13c/agent/*/perl/bin/perl") or
+     process.parent.executable == "/opt/puppetlabs/puppet/bin/ruby" or
+     process.session_leader.executable == "/usr/lib/cargo/bin/sudo" or
+     process.working_directory like ("/data/bamboo/bamboo-agent-home/*", "/datadrive/*")
+   )
+  ]
+  [file where event.type != "deletion" and file.Ext.header_bytes like "7f454c46*" and
+   not (
+     file.path like ("/tmp/*", "/var/tmp/*", "/home/*", "/root/*") or  
+     (process.executable like "/tmp/makeself*" and file.path like "/usr/lib/modules/*/kernel/drivers/video/nvidia*.ko")
+   )
+  ]
+'''
+
+min_endpoint_version = "9.3.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 1
+
+[[actions]]
+action = "kill_process"
+field = "process.parent.entity_id"
+state = 1
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1204"
+name = "User Execution"
+reference = "https://attack.mitre.org/techniques/T1204/"
+[[threat.technique.subtechnique]]
+id = "T1204.002"
+name = "Malicious File"
+reference = "https://attack.mitre.org/techniques/T1204/002/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1036"
+name = "Masquerading"
+reference = "https://attack.mitre.org/techniques/T1036/"
+[[threat.technique.subtechnique]]
+id = "T1036.005"
+name = "Match Legitimate Resource Name or Location"
+reference = "https://attack.mitre.org/techniques/T1036/005/"
+
+
+
+[threat.tactic]
+id = "TA0005"
+name = "Defense Evasion"
+reference = "https://attack.mitre.org/tactics/TA0005/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "9.3.0"

@@ -7,7 +7,7 @@ id = "613da93c-226e-4150-9125-3b476103c0b9"
 license = "Elastic License v2"
 name = "Socat Reverse Shell or Listener Activity"
 os_list = ["linux"]
-version = "1.0.20"
+version = "1.0.21"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.name == "socat" and
@@ -17,7 +17,7 @@ not (
   process.command_line like~ ("*127.0.0.1*", "*localhost*", "*/dev/tty*") or
   process.parent.executable in (
     "/usr/bin/wsrep_sst_xtrabackup-v2", "/usr/bin/dumb-init", "/usr/bin/make", "/usr/bin/sudo", "/usr/bin/wsrep_sst_mariabackup",
-    "/bin/wsrep_sst_xtrabackup-v2"
+    "/bin/wsrep_sst_xtrabackup-v2", "/usr/lib/systemd/systemd"
   ) or
   process.parent.command_line == "runc init" or
   process.parent.command_line like "*/var/tmp/claude-*" or

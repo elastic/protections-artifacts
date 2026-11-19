@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Potential Memory File Descriptor Process Execution"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -33,7 +33,9 @@ not (
     "memfd:buildah-chroot-exec", "/usr/lib/openssh/sshd-session", "memfd:lxc-attach",
     "/usr/bin/nvidia-cdi-hook", "/opt/sophos-spl/plugins/runtimedetections/bin/runtimedetections.*",
     "/opt/appimagelauncher.AppDir/usr/lib/x86_64-linux-gnu/appimagelauncher/binfmt-bypass",
-    "/usr/bin/nordlayer"
+    "/usr/bin/nordlayer", "/usr/local/nvidia/toolkit/nvidia-container-cli.real",
+    "/usr/lib/x86_64-linux-gnu/appimagelauncher/binfmt-bypass", "/usr/libexec/nordlayer/nordlayer-setcap",
+    "/usr/bin/podman", "/usr/lib/appimagelauncher/binfmt-bypass", "/usr/libexec/incus/incusd"
   ) or
   (
     process.working_directory == "/run/nordlayer" and

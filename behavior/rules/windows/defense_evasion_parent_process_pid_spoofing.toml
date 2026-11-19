@@ -11,7 +11,7 @@ reference = [
     "https://blog.didierstevens.com/2017/03/20/",
     "https://www.elastic.co/security-labs/elastic-security-labs-steps-through-the-r77-rootkit",
 ]
-version = "1.0.56"
+version = "1.0.57"
 
 query = '''
 sequence with maxspan=5m
@@ -45,7 +45,7 @@ sequence with maxspan=5m
                            "mspub.exe",
                            "msaccess.exe")) and 
 
-  not (process.pe.original_file_name in~ ("devenv.exe", "PowerToys.exe") and process.code_signature.trusted == true and 
+  not (process.pe.original_file_name in~ ("devenv.exe", "PowerToys.exe", "PowerToys.KeyboardManagerEngine.exe") and process.code_signature.trusted == true and 
        process.code_signature.subject_name like "Microsoft*") and 
   not (process.executable : "?:\\Windows\\System32\\dllhost.exe" and process.args : "/Processid:{F544C724-92CF-41D5-85B7-65B02914E52D}" and
        process.parent.executable : "C:\\Windows\\System32\\svchost.exe") and
@@ -76,7 +76,7 @@ sequence with maxspan=5m
       process.code_signature.subject_name : ("BeyondTrust Software, Inc", "BeyondTrust Software Inc") and
        process.code_signature.trusted == true) and
 
-  not (process.executable : "*\\Windows\\SystemApps\\Microsoft*.exe" and
+  not (process.executable : ("*\\Windows\\SystemApps\\Microsoft*.exe", "?:\\Windows\\SystemApps\\ShellExperienceHost_*\\ShellExperienceHost.exe") and
        process.parent.executable : "*\\Windows\\system32\\svchost.exe" and process.parent.args : "DcomLaunch") and
 
   not (process.pe.original_file_name == "MBSetup.exe" and process.code_signature.subject_name in ("Malwarebytes Inc.", "Malwarebytes Inc") and
@@ -120,6 +120,11 @@ sequence with maxspan=5m
   /* FP - uberAgent SetACL (vast limits GmbH) - mirrored from seq 2 */
   not (process.pe.original_file_name == "SetACL.exe" and
        process.code_signature.subject_name == "vast limits GmbH" and
+       process.code_signature.trusted == true) and
+
+  /* FP - GitHub Copilot SDK uses PPID spoofing by design (--copilot-suspended-handle-parent) */
+  not (process.pe.original_file_name in~ ("copilot.exe", "copilot-runtime.exe") and
+       process.code_signature.subject_name == "GitHub, Inc." and
        process.code_signature.trusted == true)
   ] by process.entity_id
  [process where event.action == "start" and process.parent.Ext.real.pid > 0 and 
@@ -183,6 +188,11 @@ sequence with maxspan=5m
 
   /* FP - Modrinth App (Rinth, Inc.) Minecraft mod launcher */
   not (process.code_signature.subject_name == "Rinth, Inc." and
+       process.code_signature.trusted == true) and
+
+  /* FP - Dell Update Package (DUP) driver extraction */
+  not (process.executable : "?:\\ProgramData\\Dell\\drivers\\*\\7z.exe" and
+       process.code_signature.subject_name == "Dell Technologies Inc." and
        process.code_signature.trusted == true)
   ] by process.parent.Ext.real.entity_id
 '''

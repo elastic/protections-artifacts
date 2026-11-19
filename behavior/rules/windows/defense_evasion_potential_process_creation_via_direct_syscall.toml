@@ -11,7 +11,7 @@ reference = [
     "https://www.elastic.co/security-labs/upping-the-ante-detecting-in-memory-threats-with-kernel-call-stacks",
     "https://www.ired.team/offensive-security/defense-evasion/using-syscalls-directly-from-visual-studio-to-bypass-avs-edrs",
 ]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.action == "start" and
@@ -25,7 +25,19 @@ process where event.action == "start" and
  not (process.parent.thread.Ext.call_stack_summary like "Unbacked|cymemdef64.dll|*" and
        _arraysearch(process.parent.thread.Ext.call_stack, $entry, $entry.symbol_info like "C:\\Program Files\\Cylance\\Desktop\\CyMemDef64.dll*")) and
  not (process.executable : "C:\\ProgramData\\Sony Interactive Entertainment Inc\\PSPC_SDK\\*\\crashpad_handler.exe" and
-      process.parent.thread.Ext.call_stack_summary == "Unbacked|kernelbase.dll|kernel32.dll|gameoverlayrenderer64.dll|Unbacked")
+      process.parent.thread.Ext.call_stack_summary == "Unbacked|kernelbase.dll|kernel32.dll|gameoverlayrenderer64.dll|Unbacked") and
+ not (process.parent.executable : "?:\\Program Files\\Riot Vanguard\\vgc.exe" and
+      process.parent.code_signature.subject_name == "Riot Games, Inc." and
+      process.parent.code_signature.trusted == true and
+      process.executable : ("?:\\Program Files\\Riot Vanguard\\vgm.exe", "?:\\Program Files\\Riot Vanguard\\vgtray.exe") and
+      process.code_signature.subject_name == "Riot Games, Inc." and
+      process.code_signature.trusted == true) and
+ not (process.parent.name : "EAAntiCheat.GameServiceLauncher.exe" and
+      process.parent.code_signature.subject_name == "Electronic Arts, Inc." and
+      process.parent.code_signature.trusted == true and
+      process.executable : "?:\\Program Files\\EA\\AC\\EAAntiCheat.Installer.exe" and
+      process.code_signature.subject_name == "Electronic Arts, Inc." and
+      process.code_signature.trusted == true)
 '''
 
 min_endpoint_version = "8.10.0"

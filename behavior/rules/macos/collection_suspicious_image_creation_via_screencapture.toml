@@ -7,7 +7,7 @@ id = "0701ab8c-9abc-41e1-8af7-2d937778e73f"
 license = "Elastic License v2"
 name = "Suspicious Image Creation via ScreenCapture"
 os_list = ["macos"]
-version = "1.0.10"
+version = "1.0.11"
 
 query = '''
 sequence by process.entity_id with maxspan=10s
@@ -15,10 +15,15 @@ sequence by process.entity_id with maxspan=10s
   not process.command_line == "screencapture --help" and
   not process.parent.executable like ("/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer",
                                       "/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow") and
+  not (process.parent.code_signature.team_id == "2DC432GLL2" and process.parent.code_signature.trusted == true and
+       process.parent.executable like ("/Users/*/.codex/packages/*/bin/codex")) and
+  not (process.args like ("/tmp/claude-*/*", "/private/tmp/claude-*/*") and
+       descendant of [process where process.code_signature.team_id == "Q6L2SF6YDW" and process.code_signature.trusted == true]) and
   not process.Ext.effective_parent.executable like ("/System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer",
                                                     "/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow",
                                                     "/Applications/Visual Studio Code.app/*",
                                                     "/Applications/Cursor.app/*",
+                                                    "/Applications/ChatGPT.app/*",
                                                     "/Applications/Claude.app/*",
                                                     "/Applications/Ghostty.app/*",
                                                     "/Applications/IntelliJ IDEA.app/*",
@@ -32,7 +37,11 @@ sequence by process.entity_id with maxspan=10s
                                                     "/Applications/Tabby.app/*",
                                                     "/Applications/Android Studio.app/Contents/MacOS/studio",
                                                     "/Applications/Zed.app/Contents/MacOS/zed",
-                                                    "/Applications/WebStorm.app/*")]
+                                                    "/Applications/WebStorm.app/*",
+                                                    "/Applications/Grok Bot.app/*",
+                                                    "/Applications/T3 Code*.app/*",
+                                                    "/Applications/Cortex Code.app/*",
+                                                    "/Applications/OpenCode.app/*")]
 [file where event.action == "modification" and file.path like ("/Users/Shared/*", "/tmp/*", "/private/tmp/*")]
 '''
 

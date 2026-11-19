@@ -7,7 +7,7 @@ id = "9e879677-2317-4c1d-bddb-8fa4629be810"
 license = "Elastic License v2"
 name = "Sleep Execution from Suspicious Process Path"
 os_list = ["linux"]
-version = "1.0.22"
+version = "1.0.23"
 
 query = '''
 sequence by process.parent.entity_id with maxspan=5s
@@ -26,7 +26,8 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/.mount_Cursor*/usr/share/cursor/resources/app/node_modules/@vscode/ripgrep/bin/rg", "/tmp/install.dir.*/Linux/resource/jre/lib/jspawnhelper",
       "/tmp/gomod-overlay/merged/golang.org/*/bin/go", "/tmp/tmp.*/amfu/bin/cinsh", "/tmp/nagent_install/nagent-ubuntu22_64/InitialValidate",
       "/tmp/arcane-install*", "/tmp/p11_keepalive.*/p11_signer", "/tmp/iperf3-extract/usr/bin/iperf3", "/tmp/ventoy-install.*/tool/x86_64/vtoycli",
-      "/tmp/odindash-build", "/tmp/snap-private-tmp/snap.rootfs_*", "/tmp/CSFFC/*", "*/.vscode-server/bin/*/bin/code-server", "*/.vscode-server/code-*"
+      "/tmp/odindash-build", "/tmp/snap-private-tmp/snap.rootfs_*", "/tmp/CSFFC/*", "*/.vscode-server/bin/*/bin/code-server", "*/.vscode-server/code-*",
+      "/tmp/claude-*"
     ) or
     process.command_line == "runc init" or
     process.name in ("gcc", "xgcc", "nvim") or
@@ -39,8 +40,10 @@ sequence by process.parent.entity_id with maxspan=5s
       "/tmp/go-build*", "/tmp/newroot/tmp/.mount*", "/var/lib/containers/*", "/tmp/newroot/usr/bin/ansible-playbook",
       "/usr/bin/ansible-playbook", "/tmp/newroot/*", "/tmp/.mount_cursor*/cursorsandbox", "/usr/local/bin/crush",
       "./usr/bin/podman", "/usr/bin/podman", "/tmp/*/.vscode-server/extensions/openai.chatgpt-*/bin/*/codex-resources/*",
-      "/tmp/var/lib/docker/overlay2/*/merged/iriswebapp/iris-entrypoint.sh"
+      "/tmp/var/lib/docker/overlay2/*/merged/iriswebapp/iris-entrypoint.sh",
+      "/tmp/claude-*"
     ) or
+    process.entry_leader.executable in ("/usr/lib/systemd/systemd", "/lib/systemd/systemd", "/usr/libexec/openssh/sshd-session", "/usr/sbin/sshd") or
     process.parent.args like ("source /home/*/.claude/shell-snapshots/snapshot-bash*", "/var/ossec/bin/wazuh-control") or
     process.parent.command_line like ("*github.com/community-scripts/ProxmoxVE/*", "*/home/*/.claude/shell-snapshots/snapshot*") or
     process.parent.command_line == "bash -c while true; do sleep 1;head -v -n 8 /proc/meminfo; head -v -n 2 /proc/stat /proc/version /proc/uptime /proc/loadavg /proc/sys/fs/file-nr /proc/sys/kernel/hostname; tail -v -n 32 /proc/net/dev;echo '==> /proc/df <==';df -l;echo '==> /proc/who <==';who;echo '==> /proc/end <==';echo '##Moba##'; done" or
@@ -49,7 +52,7 @@ sequence by process.parent.entity_id with maxspan=5s
   [process where event.type == "start" and event.action == "exec" and process.name == "sleep"]
 '''
 
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"
 optional_actions = []
 [[actions]]
 action = "kill_process"
@@ -75,4 +78,4 @@ name = "Execution"
 reference = "https://attack.mitre.org/tactics/TA0002/"
 
 [internal]
-min_endpoint_version = "7.15.0"
+min_endpoint_version = "8.3.0"

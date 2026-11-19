@@ -7,7 +7,7 @@ id = "c059ead9-d15e-4d13-86ee-ac5d8b9d6c34"
 license = "Elastic License v2"
 name = "Potential Module Stomping with Network Activity"
 os_list = ["windows"]
-version = "1.0.5"
+version = "1.0.6"
 
 query = '''
 registry where event.action == "modification" and process.executable != null and registry.value == "CachePrefix" and
@@ -16,7 +16,18 @@ registry where event.action == "modification" and process.executable != null and
  process.thread.Ext.call_stack_summary regex """ntdll.dll\|kernelbase.dll\|wininet.dll\|ntdll.dll\|kernelbase.dll\|wininet.dll\|[a-z0-9\_\.\-]+\.dll""" and
  _arraysearch(process.thread.Ext.call_stack, $entry, ($entry.callsite_trailing_bytes : "?*" or $entry.protection == "RWX")) and
  not _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info like "?:\\Program Files (x86)\\Steam\\steamapps\\common\\*") and
- not (process.executable == "C:\\Program Files\\KeyShot Studio\\bin\\keyshot.exe" and process.code_signature.subject_name == "KeyShot Inc." and process.code_signature.trusted == true)
+ not (process.executable == "C:\\Program Files\\KeyShot Studio\\bin\\keyshot.exe" and process.code_signature.subject_name == "KeyShot Inc." and process.code_signature.trusted == true) and
+ not (process.executable : "?:\\Program Files\\Mastercam *\\Mastercam.exe" and
+      process.code_signature.subject_name == "CNC Software, LLC" and
+      process.code_signature.trusted == true and
+      _arraysearch(process.thread.Ext.call_stack, $entry, $entry.symbol_info : "?:\\Program Files\\Mastercam *\\Mastercam.Dll*")) and
+ not (process.executable : ("?:\\Program Files\\National Instruments\\Shared\\SLCPCommon\\NationalInstruments.UDC.Slcp.exe",
+                            "?:\\Program Files\\National Instruments\\Shared\\SLCP\\NationalInstruments.UDC.Slcp.exe") and
+      process.code_signature.subject_name == "National Instruments Corporation" and
+      process.code_signature.trusted == true and
+      _arraysearch(process.thread.Ext.call_stack, $entry,
+                   $entry.symbol_info : ("?:\\Program Files\\National Instruments\\Shared\\SLCPCommon\\NationalInstruments.UDC.SF.dll*",
+                                         "?:\\Program Files\\National Instruments\\Shared\\SLCP\\NationalInstruments.UDC.SF.dll*")))
 '''
 
 min_endpoint_version = "8.10.0"

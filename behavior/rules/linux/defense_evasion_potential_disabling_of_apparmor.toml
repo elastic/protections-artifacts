@@ -8,7 +8,7 @@ id = "5a19f19d-6f94-475e-9eba-2520685c3861"
 license = "Elastic License v2"
 name = "Potential Disabling of AppArmor"
 os_list = ["linux"]
-version = "1.0.1"
+version = "1.0.2"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and (
@@ -20,7 +20,7 @@ process where event.type == "start" and event.action == "exec" and (
 ) and
 not (
   process.parent.executable in ("/opt/puppetlabs/puppet/bin/ruby", "/lib/systemd/systemd-sysv-install") or
-  process.parent.args like "/var/lib/dpkg/info/*.postinst" or
+  process.parent.args like ("/var/lib/dpkg/info/*.postinst", "/var/tmp/rpm-tmp.*") or
   process.working_directory == "/home/ansible"
 )
 '''

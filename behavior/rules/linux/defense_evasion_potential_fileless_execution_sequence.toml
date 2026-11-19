@@ -11,7 +11,7 @@ license = "Elastic License v2"
 name = "Potential Fileless Execution Sequence"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.6"
+version = "1.0.7"
 
 query = '''
 sequence by process.entity_id with maxspan=5s
@@ -47,6 +47,10 @@ sequence by process.entity_id with maxspan=5s
     (
       process.parent.executable like ("/usr/local/nvidia/toolkit/nvidia-cdi-hook.real", "/nix/store/*/bin/nvidia-cdi-hook") and
       process.command_line like "ldconfig*"
+    ) or
+    (
+      process.parent.executable in ("/usr/bin/nvidia-cdi-hook", "/usr/local/nvidia/toolkit/nvidia-ctk.real") and
+      process.executable == "memfd:runc_cloned:ldconfig"
     )
   )]
 '''

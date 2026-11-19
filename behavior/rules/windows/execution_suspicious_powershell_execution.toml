@@ -12,7 +12,7 @@ reference = [
     "https://www.elastic.co/security-labs/doing-time-with-the-yipphb-dropper",
     "https://www.elastic.co/security-labs/unmasking-financial-services-intrusion-ref0657",
 ]
-version = "1.0.57"
+version = "1.0.58"
 
 query = '''
 process where event.action == "start" and process.name : "powershell.exe" and process.parent.executable != null and
@@ -111,6 +111,10 @@ process where event.action == "start" and process.name : "powershell.exe" and pr
  not (process.args : "NT\\CurrentVersion').InstallationType;" and process.args : "[System.Text.Encoding]::UTF8.GetBytes($OutStr);") and
 
  not (process.parent.code_signature.trusted == true and process.parent.code_signature.subject_name in ("ControlCase LLC", "HashiCorp, Inc.", "JetBrains s.r.o.", "Johannes Schindelin", "Anomaly Innovations, Inc https://anoma.ly/", "Anthropic, PBC", "Anysphere, Inc.", "Denver Technologies, Inc. dba Warp", "GitHub, Inc.", "SignPath Foundation", "Tencent Technology (Shenzhen) Company Limited")) and
+ not (process.parent.executable : ("?:\\Users\\*\\.gemini\\bin\\agy.exe",
+                                   "?:\\Users\\*\\AppData\\Local\\agy\\bin\\agy.exe") and
+      process.parent.code_signature.trusted == true and
+      process.parent.code_signature.subject_name == "Google LLC") and
 
  not process.parent.command_line :  "\"C:\\Windows\\system32\\cmd.exe\" " and
 

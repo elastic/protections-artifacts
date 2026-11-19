@@ -9,7 +9,7 @@ license = "Elastic License v2"
 name = "Memory File Descriptor Execution from Suspicious Process"
 os_list = ["linux"]
 reference = ["https://man7.org/linux/man-pages/man2/memfd_create.2.html"]
-version = "1.0.11"
+version = "1.0.12"
 
 query = '''
 sequence by process.entity_id with maxspan=30s
@@ -30,6 +30,7 @@ sequence by process.entity_id with maxspan=30s
       "./usr/bin/qemu-s390x", "/usr/bin/cosmic-files", "/nix/store/*-rofi-unwrapped-*/bin/rofi", "/usr/bin/minecraft-launcher",
       "/usr/local/nvidia/toolkit/nvidia-cdi-hook.real", "/home/*/.steam/*"
     ) or
+    (process.executable == "memfd:runc_cloned:ldconfig" and process.parent.executable == "/usr/local/nvidia/toolkit/nvidia-ctk.real") or
     process.executable like (
       "./usr/bin/qemu-aarch64", ".", "/home/*/bin/firefox/firefox-bin", "/home/*/bin/firefox/updater",
       "/home/*/.local/share/torbrowser/tbb/x86_64/tor-browser/Browser/updater", "/home/*/.local/opt/tor-browser/app/Browser/updater",

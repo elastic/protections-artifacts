@@ -9,13 +9,13 @@ license = "Elastic License v2"
 name = "Potential Fileless Execution via O_TMPFILE"
 os_list = ["linux"]
 reference = ["https://github.com/MatheuZSecurity/Dntry"]
-version = "1.0.2"
+version = "1.0.3"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.executable regex """.*/\#[0-9]+.*""" and
 not process.parent.executable like (
  "/usr/bin/podman", "/usr/bin/runc", "/usr/bin/conmon", "/usr/bin/crio", "/usr/sbin/runc", "/usr/libexec/crio/conmon",
- "/var/lib/rancher/k3s/data/*/bin/runc"
+ "/var/lib/rancher/k3s/data/*/bin/runc", "./usr/bin/podman"
 )
 '''
 

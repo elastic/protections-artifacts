@@ -8,7 +8,7 @@ id = "f678ec9a-c348-485c-ac9e-84b0923ff5f5"
 license = "Elastic License v2"
 name = "Suspicious Windows Component Object Model via DLLHOST"
 os_list = ["windows"]
-version = "1.0.28"
+version = "1.0.29"
 
 query = '''
 sequence with maxspan=5m
@@ -147,7 +147,18 @@ sequence with maxspan=5m
             "/Processid:{0FA40ACA-8A2F-11D0-BA53-0080C74F0C94}",
 
             /* Home Networking Configuration Manager */
-            "/Processid:{46C166AA-3108-11D4-9348-00C04F8EEB71}"
+            "/Processid:{46C166AA-3108-11D4-9348-00C04F8EEB71}",
+
+            /* OctoSAM Inventory Scanner */
+            "/Processid:{67448A91-FEE7-410C-A286-966FF69C1469}",
+
+            /* PowerShell interactive system COM */
+            "/Processid:{9D48A7B6-67D6-4A7C-BF60-68FE2292BB40}",
+            "/Processid:{9D48A7B6-67D6-4A7C-BF60-68FE2292BB40}",
+            "/Processid:{67448A91-FEE7-410C-A286-966FF69C1469}",
+            "/Processid:{E2779C61-F87E-4038-98A0-1D9E71334706}",
+            "/Processid:{B366DEBE-645B-43A5-B865-DDD82C345492}",
+            "/Processid:{A79DB36D-6218-48E6-9EC9-DCBA9A39BF0F}"
             )
             ] by process.Ext.effective_parent.entity_id
 '''

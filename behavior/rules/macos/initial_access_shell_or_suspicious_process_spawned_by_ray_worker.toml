@@ -1,0 +1,127 @@
+[rule]
+description = """
+Identifies a Ray worker (ray/_private/workers/default_worker.py) spawning a shell, an inline Python command (python -c /
+python3 -c), or a discovery or download utility. Ray runs job entrypoints from that worker through a shell, so a Python
+reverse shell shows up as sh -c or bash -c whose command line contains python -c and the program it starts, such as
+/bin/sh -i. On an exposed cluster this is exploitation of the public-facing Ray jobs API (CVE-2023-48022). Ray commonly
+hosts LLM training, fine-tuning, and serving, so this can be an attack on that infrastructure: theft of model weights,
+datasets, or API and cloud tokens, tampering with a served model, or use of the GPUs for cryptomining.
+"""
+id = "ef2c037d-2fc9-4fdd-820b-9153533e50de"
+license = "Elastic License v2"
+name = "Shell or Suspicious Process Spawned by Ray Worker"
+os_list = ["macos"]
+reference = [
+    "https://www.oligo.security/blog/shadowray-attack-ai-workloads-actively-exploited-in-the-wild",
+    "https://nvd.nist.gov/vuln/detail/CVE-2023-48022",
+    "https://docs.ray.io/en/latest/ray-security/index.html",
+]
+version = "1.0.1"
+
+query = '''
+process where event.type == "start" and event.action in ("start", "exec") and
+  process.parent.name : "python*" and
+  process.parent.command_line : (
+    "*\\ray\\_private\\workers\\default_worker.py*",
+    "*/ray/_private/workers/default_worker.py*"
+  ) and
+  (
+    process.name in~ (
+      "cmd.exe", "powershell.exe", "pwsh.exe",
+      "bash", "bash.exe", "sh", "zsh", "dash", "tcsh", "csh", "ksh", "fish", "mksh", "busybox",
+      "curl", "curl.exe", "wget", "wget.exe",
+      "whoami", "whoami.exe", "id", "uname", "hostname", "hostname.exe",
+      "nc", "ncat", "netcat", "netcat.openbsd", "netcat.traditional", "nc.openbsd", "nc.traditional", "socat", "openssl"
+    ) or
+    /* Direct python -c child of the worker. python -m (for example vLLM) does not match. */
+    (
+      process.name : "python*" and
+      process.args == "-c"
+    )
+  ) and
+  not process.command_line in ("uname -p", "/bin/sh /sbin/ldconfig -p")
+'''
+
+min_endpoint_version = "7.16.0"
+optional_actions = []
+[[actions]]
+action = "kill_process"
+field = "process.entity_id"
+state = 0
+
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1190"
+name = "Exploit Public-Facing Application"
+reference = "https://attack.mitre.org/techniques/T1190/"
+
+
+[threat.tactic]
+id = "TA0001"
+name = "Initial Access"
+reference = "https://attack.mitre.org/tactics/TA0001/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1059"
+name = "Command and Scripting Interpreter"
+reference = "https://attack.mitre.org/techniques/T1059/"
+[[threat.technique.subtechnique]]
+id = "T1059.001"
+name = "PowerShell"
+reference = "https://attack.mitre.org/techniques/T1059/001/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.003"
+name = "Windows Command Shell"
+reference = "https://attack.mitre.org/techniques/T1059/003/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.004"
+name = "Unix Shell"
+reference = "https://attack.mitre.org/techniques/T1059/004/"
+
+[[threat.technique.subtechnique]]
+id = "T1059.006"
+name = "Python"
+reference = "https://attack.mitre.org/techniques/T1059/006/"
+
+
+
+[threat.tactic]
+id = "TA0002"
+name = "Execution"
+reference = "https://attack.mitre.org/tactics/TA0002/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1033"
+name = "System Owner/User Discovery"
+reference = "https://attack.mitre.org/techniques/T1033/"
+
+[[threat.technique]]
+id = "T1082"
+name = "System Information Discovery"
+reference = "https://attack.mitre.org/techniques/T1082/"
+
+
+[threat.tactic]
+id = "TA0007"
+name = "Discovery"
+reference = "https://attack.mitre.org/tactics/TA0007/"
+[[threat]]
+framework = "MITRE ATT&CK"
+[[threat.technique]]
+id = "T1105"
+name = "Ingress Tool Transfer"
+reference = "https://attack.mitre.org/techniques/T1105/"
+
+
+[threat.tactic]
+id = "TA0011"
+name = "Command and Control"
+reference = "https://attack.mitre.org/tactics/TA0011/"
+
+[internal]
+min_endpoint_version = "7.16.0"

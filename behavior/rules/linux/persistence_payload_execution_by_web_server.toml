@@ -7,7 +7,7 @@ id = "7d4b0dfc-d305-4761-94f4-ab2ed221b3ee"
 license = "Elastic License v2"
 name = "Payload Execution by Web Server"
 os_list = ["linux"]
-version = "1.0.14"
+version = "1.0.15"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.interactive == false and (
@@ -253,7 +253,8 @@ not (
         "sh -c -- php -r \"echo (int)function_exists('pcntl_signal');\"",
         "sh -c -- php -r \"echo PHP_VERSION;\"",
         "sh -c -- php -r \"echo date('T');\"",
-        "sh -c /usr/bin/lsb_release -a 2>/dev/null"
+        "sh -c /usr/bin/lsb_release -a 2>/dev/null",
+        "sh -c /usr/local/bin/php -r 'echo phpversion();'"
       ) or
       process.command_line like (
         "*var_export*extension_loaded*", "*/tmp/tmp_resize*", "*/v1/objects/hosts/*_Infoterminal*", "*python -m json.tool*",

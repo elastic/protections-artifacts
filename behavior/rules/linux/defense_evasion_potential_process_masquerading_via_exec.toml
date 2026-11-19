@@ -8,7 +8,7 @@ id = "e6669bc3-cb75-4fb3-91e0-ddaa06dd59b2"
 license = "Elastic License v2"
 name = "Potential Process Masquerading via Exec"
 os_list = ["linux"]
-version = "1.0.23"
+version = "1.0.24"
 
 query = '''
 process where event.type == "start" and event.action == "exec" and process.parent.executable != null and
@@ -35,6 +35,7 @@ process.args == "-c" and process.command_line : "* exec -a *" and not (
     "/bin/bash -c exec -a sp-agent /opt/sp/serverpilot/agent/bin/sp-agent", """bash -c exec -a "$0" "$@" reboot /usr/sbin/reboot.no-molly-guard""",
     "bash -c exec -a auto_upgrade_fcems /opt/forticlientemstmp/upgradeworker_linux_amd64 -config ./goEMS.conf",
     "bash -c exec -a cubin_gpu_pool_worker sleep *", "bash -c exec -a chroma sleep 7200",
+    "bash -c exec -a claude sleep *",
     "bash -c exec -a 'oes-mfa-agent' /usr/bin/node* --enable-source-maps /opt/novell/oes-mfa-agent/app/mfa-agent/main",
     "bash -c exec -a auto_upgrade_fcems /opt/forticlientemstmp/emsworkers_linux_amd64 -worker_name=upgrade -config ./goEMS.conf",
     "/bin/bash -c exec -a /usr/bin/heidisql /usr/share/heidisql/heidisql  > /dev/null 2>&1 /usr/bin/heidisql",

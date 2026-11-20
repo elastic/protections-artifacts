@@ -20,22 +20,20 @@ Another example of our commitment to openness in security is our existing public
 
 | artifact             | version        | hash            |
 | -------------------- | -------------- | --------------- |
-| production-rules-linux-v1 | 1.0.129 | 041450fc1d27d7cdd4ab39138b2fe21ad6d69b184d8ebd8d171e9fdd13733744 |
-| production-rules-macos-v1 | 1.0.129 | ea2eb934c68fbc509493738427fa6eebc5b24cd978fc78633be79427b615e741 |
-| production-rules-windows-v1 | 1.0.129 | a9f998ab1c39ef00c63194b36c6070eef8bd28b02ed3a49e1d47b892a54ea834 |
+| production-rules-linux-v1 | 1.0.130 | 34da2d477f998462d3528a61cab7c215bfd24f5a86f00e454782feeb93fc83e9 |
+| production-rules-macos-v1 | 1.0.130 | 3d28dec95dedbd3047b527a860b6be7dbee95a8a404863d43a956f51dd4ed543 |
+| production-rules-windows-v1 | 1.0.130 | 4cbf9b192d523d2669d69875f50805f92dbe58d1c9fdec4ab65fd012148c4446 |
 
 ### Rules Summary per Tactic
 
-Note: New Production Rules since last version ('1.0.129', '1.0.128') by OS/MITRE Tactic.
+Note: New Production Rules since last version ('1.0.130', '1.0.129') by OS/MITRE Tactic.
 
-| Tactic            |   Windows |   Linux |   macOS |   Total by Tactic |
-|-------------------|-----------|---------|---------|-------------------|
-| Credential Access |         1 |       0 |       0 |                 1 |
-| Defense Evasion   |         2 |       2 |       0 |                 4 |
-| Execution         |         0 |       1 |       0 |                 1 |
-| Initial Access    |         0 |       1 |       0 |                 1 |
-| Persistence       |         0 |       1 |       0 |                 1 |
-| Total by OS       |         3 |       5 |       0 |                 8 |
+| Tactic         |   Windows |   Linux |   macOS |   Total by Tactic |
+|----------------|-----------|---------|---------|-------------------|
+| Execution      |         0 |       1 |       0 |                 1 |
+| Initial Access |         1 |       1 |       1 |                 3 |
+| Persistence    |         0 |       1 |       0 |                 1 |
+| Total by OS    |         1 |       3 |       1 |                 5 |
 
 Note: Latest Total Production Rules by OS/MITRE Tactic.
 
@@ -46,14 +44,14 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 | Credential Access    |        58 |      16 |      38 |               112 |
 | Defense Evasion      |       333 |      86 |      63 |               482 |
 | Discovery            |        20 |       5 |       3 |                28 |
-| Execution            |       102 |      69 |     105 |               276 |
+| Execution            |       102 |      70 |     104 |               276 |
 | Exfiltration         |         0 |       1 |       2 |                 3 |
 | Impact               |        19 |       6 |       2 |                27 |
-| Initial Access       |        67 |       6 |       7 |                80 |
+| Initial Access       |        68 |       7 |       8 |                83 |
 | Lateral Movement     |        10 |       2 |       1 |                13 |
-| Persistence          |        61 |      29 |      21 |               111 |
+| Persistence          |        60 |      29 |      21 |               110 |
 | Privilege Escalation |        76 |      28 |       9 |               113 |
-| Total by OS          |       804 |     275 |     303 |              1382 |
+| Total by OS          |       804 |     277 |     303 |              1384 |
 
 ### MITRE ATT&CK Coverage
 
@@ -62,7 +60,7 @@ Note: Latest Total Production Rules by OS/MITRE Tactic.
 - Catalog: 61 parent techniques (Win/Linux/macOS under 8 scorecard tactics)
 - Covered (union): 49/61 (80.33%) — production endpoint rules plus production SIEM rules with metadata.integration including "endpoint" and/or index matching logs-endpoint.events*/ logs-endpoint.alerts*
 - Techniques — endpoint-only: 1, SIEM-only: 4, both: 44
-- Rules — production endpoint: 1340, SIEM (in-scope + MITRE): 1062
+- Rules — production endpoint: 1340, SIEM (in-scope + MITRE): 1068
 
 #### Uncovered scorecard techniques (12 distinct parents; listed under each tactic where ATT&CK places them)
 
